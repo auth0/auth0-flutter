@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:auth0_flutter/auth0_flutter.dart';
 
 void main() {
-  const MethodChannel channel = MethodChannel('plugins.flutter.io/auth0_flutter');
+  const MethodChannel channel = MethodChannel('auth0.com/auth0_flutter');
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
