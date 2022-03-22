@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'auth0_flutter_platform.dart';
 
-const MethodChannel _channel = MethodChannel('plugins.flutter.io/auth0_flutter');
+const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter');
     
 class MethodChannelAuth0Flutter extends Auth0FlutterPlatform {
   @override
