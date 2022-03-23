@@ -1,15 +1,15 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:auth0_flutter/auth0_flutter.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({final Key? key}) : super(key: key);
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -52,7 +52,7 @@ class _MyAppState extends State<MyApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      token = await Auth0Flutter.login ?? "";
+      token = await Auth0Flutter.login ?? '';
     } on PlatformException {
       token = 'Failed to get token.';
     }
@@ -68,7 +68,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(final BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -80,9 +80,7 @@ class _MyAppState extends State<MyApp> {
           Text('Running on: $_platformVersion'),
           Text('With token: $_token'),
           ElevatedButton(
-            onPressed: () {
-              loginAction();
-            },
+            onPressed: loginAction,
             child: const Text('Login'),
           ),
         ])),

@@ -10,7 +10,7 @@ abstract class Auth0FlutterPlatform extends PlatformInterface {
 
   static Auth0FlutterPlatform _instance = MethodChannelAuth0Flutter();
 
-  static set instance(Auth0FlutterPlatform instance) {
+  static set instance(final Auth0FlutterPlatform instance) {
     PlatformInterface.verifyToken(instance, _token);
     _instance = instance;
   }
