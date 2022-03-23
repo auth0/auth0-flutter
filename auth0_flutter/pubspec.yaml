@@ -1,7 +1,7 @@
 name: auth0_flutter
 description: A new flutter plugin project.
 version: 0.0.1
-homepage:
+homepage: https://github.com/auth0/auth0-flutter
 publish_to: none
 
 environment:
@@ -9,15 +9,15 @@ environment:
   flutter: ">=2.10.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
   auth0_flutter_platform_interface:
     path: ../auth0_flutter_platform_interface
+  flutter:
+    sdk: flutter
 
 dev_dependencies:
+  flutter_lints: ^1.0.0
   flutter_test:
     sdk: flutter
-  flutter_lints: ^1.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

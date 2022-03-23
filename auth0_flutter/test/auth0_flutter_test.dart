@@ -1,6 +1,6 @@
+import 'package:auth0_flutter/auth0_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:auth0_flutter/auth0_flutter.dart';
 
 void main() {
   const MethodChannel channel = MethodChannel('auth0.com/auth0_flutter');
@@ -8,9 +8,8 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUp(() {
-    channel.setMockMethodCallHandler((MethodCall methodCall) async {
-      return '42';
-    });
+    channel
+        .setMockMethodCallHandler((final MethodCall methodCall) async => '42');
   });
 
   tearDown(() {
