@@ -1,0 +1,4 @@
+class AuthUserProfileResult {
+
+  AuthUserProfileResult();
+}

@@ -1,0 +1,4 @@
+class AuthLoginResult {
+
+  AuthLoginResult();
+}
