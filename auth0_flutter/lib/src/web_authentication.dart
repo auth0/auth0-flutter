@@ -16,4 +16,6 @@ class WebAuthentication {
           final Map<String, Object>? parameters}) =>
       Future.value(const LoginResult(
           idToken: '', accessToken: '', expiresIn: 0, userProfile: {}));
+
+  Future<void> logout() => Future.value();
 }
