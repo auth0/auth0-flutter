@@ -19,6 +19,7 @@ class ExampleApp extends StatefulWidget {
 
 class _ExampleAppState extends State<ExampleApp> {
   String _token = 'Unknown';
+  final auth0 = Auth0('test-domain', 'test-client');
 
   @override
   void initState() {
@@ -27,12 +28,12 @@ class _ExampleAppState extends State<ExampleApp> {
 
   Future<void> webAuthLogin() async {
     String token;
-    WebAuthLoginResult? result;
+
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      result = await WebAuthAuth0Flutter.login;
-      token = result?.accessToken ?? '';
+      final result = await auth0.webAuthentication.login();
+      token = result.accessToken;
     } on PlatformException {
       token = 'Failed to get token.';
     }
