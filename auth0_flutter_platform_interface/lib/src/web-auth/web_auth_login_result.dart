@@ -1,16 +1,16 @@
+class UserProfile {
+  late String name;
+  UserProfile(this.name);
+}
+
 class WebAuthLoginResult {
-  late String userProfile;
+  late UserProfile userProfile;
   late String idToken;
   late String accessToken;
   late String refreshToken;
-  late String expiresIn;
-  late String scopes;
+  late int expiresIn;
+  late Set<String> scopes;
 
-  WebAuthLoginResult(
-      this.userProfile,
-      this.idToken,
-      this.accessToken,
-      this.refreshToken,
-      this.expiresIn,
-      this.scopes);
+  WebAuthLoginResult(this.userProfile, this.idToken, this.accessToken,
+      this.refreshToken, this.expiresIn, this.scopes);
 }

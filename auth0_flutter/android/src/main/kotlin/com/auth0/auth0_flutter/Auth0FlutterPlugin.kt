@@ -38,9 +38,9 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler {
           "accessToken" to "AccessToken",
           "idToken" to "IdToken",
           "refreshToken" to "RefreshToken",
-          "userProfile" to "UserProfile",
-          "expiresIn" to "ExpiresIn",
-          "scopes" to "Scopes"
+          "userProfile" to mapOf("name" to "John Doe"),
+          "expiresIn" to 10,
+          "scopes" to listOf("a", "b")
         ))
       }
       WEBAUTH_LOGOUT_METHOD -> {

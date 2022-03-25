@@ -1,18 +1,30 @@
+import 'dart:ffi';
+
+class IdTokenValidationConfig {}
+
 class WebAuthLoginOptions {
   late String audience;
-  late String scopes;
+  late Set<String> scopes;
   late String redirectUri;
-  late String idTokenValidationConfig;
-  late String organizationId;
-  late String useEphemeralSession;
-  late String parameters;
+  late IdTokenValidationConfig? idTokenValidationConfig;
+  late String? organizationId;
+  late bool? useEphemeralSession;
+  late Map<String, String>? parameters;
 
   WebAuthLoginOptions(
-      this.audience,
-      this.scopes,
-      this.redirectUri,
-      this.idTokenValidationConfig,
-      this.organizationId,
-      this.useEphemeralSession,
-      this.parameters);
+      {required final String audience,
+      required final Set<String> scopes,
+      required final String redirectUri,
+      final IdTokenValidationConfig? idTokenValidationConfig,
+      final String? organizationId,
+      final bool? useEphemeralSession,
+      final Map<String, String>? parameters}) {
+    this.audience = audience;
+    this.scopes = scopes;
+    this.redirectUri = redirectUri;
+    this.idTokenValidationConfig = idTokenValidationConfig;
+    this.organizationId = organizationId;
+    this.useEphemeralSession = useEphemeralSession;
+    this.parameters = parameters;
+  }
 }

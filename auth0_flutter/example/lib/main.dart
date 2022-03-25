@@ -34,7 +34,7 @@ class _ExampleAppState extends State<ExampleApp> {
       result = await Auth0Flutter.webAuthLogin;
       token = result?.accessToken ?? '';
     } on PlatformException {
-      token = 'Failed to login.';
+      token = 'Failed to get token.';
     }
 
     // If the widget was removed from the tree while the asynchronous platform

@@ -24,13 +24,15 @@ class MethodChannelAuth0Flutter extends Auth0FlutterPlatform {
       return null;
     }
 
+    final Map<dynamic, dynamic> userProfileMap = result['userProfile'] as Map<dynamic, dynamic>;
+
     return WebAuthLoginResult(
-      result['userProfile'] as String,
+      UserProfile(userProfileMap['name'] as String),
       result['idToken'] as String,
       result['accessToken'] as String,
       result['refreshToken'] as String,
-      result['expiresIn'] as String,
-      result['scopes'] as String,
+      result['expiresIn'] as int,
+      (result['scopes'] as List<Object?>).map((final e) => e as String).toSet(),
     );
   }
 
