@@ -1,5 +1,24 @@
 import 'account.dart';
-import 'results.dart';
+import 'credentials.dart';
+import 'types.dart';
+
+class LoginResult extends Credentials {
+  final UserProfile userProfile;
+
+  const LoginResult(
+      {required final String idToken,
+      required final String accessToken,
+      final String? refreshToken,
+      required final int expiresIn,
+      final Set<String>? scopes,
+      required this.userProfile})
+      : super(
+            idToken: idToken,
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            expiresIn: expiresIn,
+            scopes: scopes);
+}
 
 class WebAuthentication {
   final Account account;
@@ -17,5 +36,5 @@ class WebAuthentication {
       Future.value(const LoginResult(
           idToken: '', accessToken: '', expiresIn: 0, userProfile: {}));
 
-  Future<void> logout() => Future.value();
+  Future<void> logout({final String? returnTo}) => Future.value();
 }
