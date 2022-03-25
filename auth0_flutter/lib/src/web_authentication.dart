@@ -1,6 +1,7 @@
 import 'account.dart';
 import 'credentials.dart';
 import 'types.dart';
+import 'validation.dart';
 
 class LoginResult extends Credentials {
   final UserProfile userProfile;
@@ -32,7 +33,8 @@ class WebAuthentication {
           final String? organizationId,
           final String? invitationUrl,
           final bool useEphemeralSession = false,
-          final Map<String, Object>? parameters}) =>
+          final Map<String, Object>? parameters,
+          final IdTokenValidationConfig? idTokenValidationConfig}) =>
       Future.value(const LoginResult(
           idToken: '', accessToken: '', expiresIn: 0, userProfile: {}));
 
