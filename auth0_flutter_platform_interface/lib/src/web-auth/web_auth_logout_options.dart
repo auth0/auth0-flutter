@@ -1,9 +1,7 @@
 class WebAuthLogoutOptions {
-  late String redirectTo;
+  final String? redirectTo;
 
   WebAuthLogoutOptions({
-    required final String redirectTo
-  }) {
-    this.redirectTo = redirectTo;
-  }
+    this.redirectTo
+  });
 }
