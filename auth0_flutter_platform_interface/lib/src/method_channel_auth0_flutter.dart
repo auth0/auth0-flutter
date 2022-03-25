@@ -24,15 +24,18 @@ class MethodChannelAuth0Flutter extends Auth0FlutterPlatform {
       return null;
     }
 
-    final Map<dynamic, dynamic> userProfileMap = result['userProfile'] as Map<dynamic, dynamic>;
+    final Map<dynamic, dynamic> userProfileMap =
+        result['userProfile'] as Map<dynamic, dynamic>;
 
     return WebAuthLoginResult(
-      UserProfile(userProfileMap['name'] as String),
-      result['idToken'] as String,
-      result['accessToken'] as String,
-      result['refreshToken'] as String,
-      result['expiresIn'] as int,
-      (result['scopes'] as List<Object?>).map((final e) => e as String).toSet(),
+      userProfile: UserProfile(userProfileMap['name'] as String),
+      idToken: result['idToken'] as String,
+      accessToken: result['accessToken'] as String,
+      refreshToken: result['refreshToken'] as String,
+      expiresIn: result['expiresIn'] as int,
+      scopes: (result['scopes'] as List<Object?>)
+          .map((final e) => e as String)
+          .toSet(),
     );
   }
 
@@ -57,7 +60,7 @@ class MethodChannelAuth0Flutter extends Auth0FlutterPlatform {
       return null;
     }
 
-    return AuthCodeExchangeResult(result['accessToken'] as String);
+    return AuthCodeExchangeResult(accessToken: result['accessToken'] as String);
   }
 
   @override
