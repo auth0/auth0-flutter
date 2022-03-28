@@ -31,7 +31,7 @@ class _ExampleAppState extends State<ExampleApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      result = await Auth0Flutter.webAuthLogin;
+      result = await WebAuthAuth0Flutter.login;
       token = result?.accessToken ?? '';
     } on PlatformException {
       token = 'Failed to get token.';

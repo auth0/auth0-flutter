@@ -16,7 +16,7 @@ void main() {
     channel.setMockMethodCallHandler(null);
   });
 
-  test('getPlatformVersion', () async {
-    expect(await Auth0Flutter.platformVersion, '42');
+  test('login', () async {
+    expect(await WebAuthAuth0Flutter.login, '42');
   });
 }
