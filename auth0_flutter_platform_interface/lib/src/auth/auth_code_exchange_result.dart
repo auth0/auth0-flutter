@@ -1,7 +1,5 @@
 class AuthCodeExchangeResult {
-  late String accessToken;
+  final String accessToken;
 
-  AuthCodeExchangeResult({required final String accessToken}) {
-    this.accessToken = accessToken;
-  }
+  AuthCodeExchangeResult({required this.accessToken});
 }

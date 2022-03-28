@@ -1,10 +1,6 @@
 class AuthResetPasswordOptions {
-  late String email;
-  late String connection;
+  final String email;
+  final String connection;
 
-  AuthResetPasswordOptions(
-      {required final String email, required final String connection}) {
-    this.email = email;
-    this.connection = connection;
-  }
+  AuthResetPasswordOptions({required this.email, required this.connection});
 }

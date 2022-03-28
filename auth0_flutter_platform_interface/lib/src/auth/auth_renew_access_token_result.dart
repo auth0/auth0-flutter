@@ -1,4 +1,1 @@
-class AuthRenewAccessTokenResult {
-
-  AuthRenewAccessTokenResult();
-}
+class AuthRenewAccessTokenResult {}

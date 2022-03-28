@@ -1,4 +1,1 @@
-class AuthUserProfileResult {
-
-  AuthUserProfileResult();
-}
+class AuthUserProfileResult {}
