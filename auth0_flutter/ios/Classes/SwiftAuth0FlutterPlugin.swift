@@ -20,30 +20,22 @@ public class SwiftAuth0FlutterPlugin: NSObject, FlutterPlugin {
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch call.method {
-      case WEBAUTH_LOGIN_METHOD: {
-        result("Web Auth Login Success")
-      }
-      case WEBAUTH_LOGOUT_METHOD: {
-        result("Web Auth Logout Success")
-      }
-      case AUTH_LOGIN_METHOD: {
-        result("Auth Login Success")
-      }
-      case AUTH_CODEEXCHANGE_METHOD: {
-        result("Auth Code Exchange Success")
-      }
-      case AUTH_USERINFO_METHOD: {
-        result("Auth UserInfo Success")
-      }
-      case AUTH_SIGNUP_METHOD: {
-        result("Auth Signup Success")
-      }
-      case AUTH_RENEWACCESSTOKEN_METHOD: {
-        result("Auth Renew Access Token Success")
-      }
-      case AUTH_RESETPASSWORD_METHOD: {
-        result("Auth Reset Password Success")
-      }
+      case WEBAUTH_LOGIN_METHOD: result({
+        "accessToken": "Access Token",
+        "idToken": "ID Token",
+        "refreshToken": "Refresh Token",
+        "userProfile": ["name": "John Doe"],
+        "expiresIn": 10,
+        "scopes": ["a", "b"],
+      })
+      case WEBAUTH_LOGOUT_METHOD: result("Web Auth Logout Success")
+      case AUTH_LOGIN_METHOD: result("Auth Login Success")
+      case AUTH_CODEEXCHANGE_METHOD: result("Auth Code Exchange Success")
+      case AUTH_USERINFO_METHOD: result("Auth UserInfo Success")
+      case AUTH_SIGNUP_METHOD: result("Auth Signup Success")
+      case AUTH_RENEWACCESSTOKEN_METHOD: result("Auth Renew Access Token Success")
+      case AUTH_RESETPASSWORD_METHOD: result("Auth Reset Password Success")
+      default: result("Unknown Method")
     }
   }
 }
