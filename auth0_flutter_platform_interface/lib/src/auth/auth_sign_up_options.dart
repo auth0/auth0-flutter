@@ -1,17 +1,12 @@
 class AuthSignUpOptions {
-  late String email;
-  late String password;
-  late String connection;
-  late Map<String, String>? userMetadata;
+  final String email;
+  final String password;
+  final String connection;
+  final Map<String, String> userMetadata;
 
   AuthSignUpOptions(
-      {required final String email,
-      required final String password,
-      required final String connection,
-      final Map<String, String>? userMetadata}) {
-    this.email = email;
-    this.password = password;
-    this.connection = connection;
-    this.userMetadata = userMetadata;
-  }
+      {required this.email,
+      required this.password,
+      required this.connection,
+      this.userMetadata = const {}});
 }

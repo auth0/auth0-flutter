@@ -1,5 +1,5 @@
 class UserProfile {
-  late String name;
+  final String name;
   UserProfile(this.name);
 }
 
@@ -16,6 +16,6 @@ class WebAuthLoginResult {
       required this.idToken,
       required this.accessToken,
       this.refreshToken,
-      required expiresIn,
-      required scopes});
+      required this.expiresIn,
+      required this.scopes});
 }

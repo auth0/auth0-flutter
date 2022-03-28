@@ -13,21 +13,17 @@ import 'web-auth/web_auth_logout_options.dart';
 
 const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter');
 
-const String WEBAUTH_LOGIN_METHOD = "webAuth#login"
-const String WEBAUTH_LOGOUT_METHOD = "webAuth#logout"
-const String AUTH_LOGIN_METHOD = "auth#login"
-const String AUTH_CODEEXCHANGE_METHOD = "auth#codeExchange"
-const String AUTH_USERINFO_METHOD = "auth#userInfo"
-const String AUTH_SIGNUP_METHOD = "auth#signUp"
-const String AUTH_RENEWACCESSTOKEN_METHOD = "auth#renewAccessToken"
-const String AUTH_RESETPASSWORD_METHOD = "auth#resetPassword"
+const String webAuthLoginMethod = 'webAuth#login';
+const String webAuthLogoutMethod = 'webAuth#logout';
+const String authLoginMethod = 'auth#login';
+const String authCodeExchangeMethod = 'auth#codeExchange';
+const String authUserInfoMethod = 'auth#userInfo';
+const String authSignUpMethod = 'auth#signUp';
+const String authRenewAccessTokenMethod = 'auth#renewAccessToken';
+const String authResetPasswordMethod = 'auth#resetPassword';
 
-extension NumberParsing on List<Object?> {
-  Set<T> toSet<T>() {
-    return this.map((final e) => e as T)
-          .toSet();
-  }
-  // ···
+extension ObjectListExtensions on List<Object?> {
+  Set<T> toTypedSet<T>() => map((final e) => e as T).toSet();
 }
 
 class MethodChannelAuth0Flutter extends Auth0FlutterPlatform {
@@ -35,7 +31,7 @@ class MethodChannelAuth0Flutter extends Auth0FlutterPlatform {
   Future<WebAuthLoginResult?> webAuthLogin(
       final WebAuthLoginOptions options) async {
     final Map<dynamic, dynamic>? result =
-        await _channel.invokeMethod(WEBAUTH_LOGIN_METHOD);
+        await _channel.invokeMapMethod(webAuthLoginMethod);
 
     if (result == null) {
       return null;
@@ -50,27 +46,26 @@ class MethodChannelAuth0Flutter extends Auth0FlutterPlatform {
       accessToken: result['accessToken'] as String,
       refreshToken: result['refreshToken'] as String,
       expiresIn: result['expiresIn'] as int,
-      scopes: (result['scopes'] as List<Object?>)
-          .toSet<String>(),
+      scopes: (result['scopes'] as List<Object?>).toTypedSet<String>(),
     );
   }
 
   @override
   Future<void> webAuthLogout(final WebAuthLogoutOptions options) async {
-    await _channel.invokeMethod(WEBAUTH_LOGOUT_METHOD) as String;
+    await _channel.invokeMethod(webAuthLogoutMethod) as String;
   }
 
   @override
   Future<AuthLoginResult?> authLogin(final AuthLoginOptions options) async {
     final AuthLoginResult? result =
-        await _channel.invokeMethod<AuthLoginResult>(AUTH_LOGIN_METHOD);
+        await _channel.invokeMethod<AuthLoginResult>(authLoginMethod);
     return result;
   }
 
   @override
   Future<AuthCodeExchangeResult?> authCodeExchange(final String code) async {
     final Map<dynamic, dynamic>? result =
-        await _channel.invokeMethod(AUTH_CODEEXCHANGE_METHOD);
+        await _channel.invokeMethod(authCodeExchangeMethod);
 
     if (result == null) {
       return null;
@@ -82,7 +77,7 @@ class MethodChannelAuth0Flutter extends Auth0FlutterPlatform {
   @override
   Future<AuthUserProfileResult?> authUserInfo(final String accessToken) async {
     final Map<dynamic, dynamic>? result =
-        await _channel.invokeMethod(AUTH_USERINFO_METHOD);
+        await _channel.invokeMethod(authUserInfoMethod);
 
     if (result == null) {
       return null;
@@ -93,14 +88,14 @@ class MethodChannelAuth0Flutter extends Auth0FlutterPlatform {
 
   @override
   Future<void> authSignUp(final AuthSignUpOptions options) async {
-    await _channel.invokeMethod(AUTH_USERINFO_METHOD);
+    await _channel.invokeMethod(authSignUpMethod);
   }
 
   @override
   Future<AuthRenewAccessTokenResult?> authRenewAccessToken(
       final String refreshToken) async {
     final Map<dynamic, dynamic>? result =
-        await _channel.invokeMethod(AUTH_RENEWACCESSTOKEN_METHOD);
+        await _channel.invokeMethod(authRenewAccessTokenMethod);
 
     if (result == null) {
       return null;
@@ -111,6 +106,6 @@ class MethodChannelAuth0Flutter extends Auth0FlutterPlatform {
 
   @override
   Future<void> authResetPassword(final AuthResetPasswordOptions options) async {
-    await _channel.invokeMethod(AUTH_RESETPASSWORD_METHOD);
+    await _channel.invokeMethod(authResetPasswordMethod);
   }
 }

@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 class IdTokenValidationConfig {}
 
 class WebAuthLoginOptions {
@@ -9,7 +7,7 @@ class WebAuthLoginOptions {
   final IdTokenValidationConfig? idTokenValidationConfig;
   final String? organizationId;
   final bool useEphemeralSession;
-  final Map<String, String>? parameters;
+  final Map<String, String> parameters;
 
   WebAuthLoginOptions(
       {this.audience,
@@ -17,6 +15,6 @@ class WebAuthLoginOptions {
       this.redirectUri,
       this.idTokenValidationConfig,
       this.organizationId,
-      this.useEphemeralSession,
-      this.parameters});
+      this.useEphemeralSession = false,
+      this.parameters = const {}});
 }
