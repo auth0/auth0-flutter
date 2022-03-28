@@ -33,8 +33,9 @@ class WebAuthentication {
           final String? organizationId,
           final String? invitationUrl,
           final bool useEphemeralSession = false,
-          final Map<String, Object>? parameters,
-          final IdTokenValidationConfig? idTokenValidationConfig}) =>
+          final Map<String, Object> parameters = const {},
+          final IdTokenValidationConfig idTokenValidationConfig =
+              const IdTokenValidationConfig()}) =>
       Future.value(const LoginResult(
           idToken: '', accessToken: '', expiresIn: 0, userProfile: {}));
 

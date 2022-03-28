@@ -11,8 +11,8 @@ class AuthenticationApi {
           {required final String usernameOrEmail,
           required final String password,
           required final String connectionOrRealm,
-          final Set<String>? scope,
-          final Map<String, Object>? parameters}) =>
+          final Set<String> scope = const {},
+          final Map<String, Object> parameters = const {}}) =>
       Future.value();
 
   Future<Credentials> codeExchange(final String code) => Future.value(
@@ -25,7 +25,7 @@ class AuthenticationApi {
           {required final String email,
           required final String password,
           required final String connection,
-          final Map<String, Object>? userMetadata}) =>
+          final Map<String, Object> userMetadata = const {}}) =>
       Future.value();
 
   Future<Credentials> renewAccessToken({required final String refreshToken}) =>
