@@ -1,24 +1,24 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'auth_code_exchange_result.dart';
-import 'auth_login_options.dart';
-import 'auth_login_result.dart';
-import 'auth_method_channel_auth0_flutter.dart';
-import 'auth_renew_access_token_result.dart';
-import 'auth_reset_password_options.dart';
-import 'auth_sign_up_options.dart';
-import 'auth_user_profile_result.dart';
+import 'auth/auth_code_exchange_result.dart';
+import 'auth/auth_login_options.dart';
+import 'auth/auth_login_result.dart';
+import 'auth/auth_renew_access_token_result.dart';
+import 'auth/auth_reset_password_options.dart';
+import 'auth/auth_sign_up_options.dart';
+import 'auth/auth_user_profile_result.dart';
+import 'method_channel_auth0_flutter_auth.dart';
 
-abstract class AuthAuth0FlutterPlatform extends PlatformInterface {
-  AuthAuth0FlutterPlatform() : super(token: _token);
+abstract class Auth0FlutterAuthPlatform extends PlatformInterface {
+  Auth0FlutterAuthPlatform() : super(token: _token);
 
-  static AuthAuth0FlutterPlatform get instance => _instance;
+  static Auth0FlutterAuthPlatform get instance => _instance;
 
   static final Object _token = Object();
 
-  static AuthAuth0FlutterPlatform _instance = AuthMethodChannelAuth0Flutter();
+  static Auth0FlutterAuthPlatform _instance = MethodChannelAuth0FlutterAuth();
 
-  static set instance(final AuthAuth0FlutterPlatform instance) {
+  static set instance(final Auth0FlutterAuthPlatform instance) {
     PlatformInterface.verifyToken(instance, _token);
     _instance = instance;
   }

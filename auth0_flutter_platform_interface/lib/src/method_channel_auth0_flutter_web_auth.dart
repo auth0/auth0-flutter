@@ -1,21 +1,17 @@
 import 'package:flutter/services.dart';
-import 'web_auth_auth0_flutter_platform.dart';
-import 'web_auth_login_options.dart';
-import 'web_auth_login_result.dart';
-import 'web_auth_logout_options.dart';
+import 'auth0_flutter_web_auth_platform.dart';
+import 'extensions/list_extensions.dart';
+import 'web-auth/web_auth_login_options.dart';
+import 'web-auth/web_auth_login_result.dart';
+import 'web-auth/web_auth_logout_options.dart';
 
 const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter');
 const String webAuthLoginMethod = 'webAuth#login';
 const String webAuthLogoutMethod = 'webAuth#logout';
 
-extension ObjectListExtensions on List<Object?> {
-  Set<T> toTypedSet<T>() => map((final e) => e as T).toSet();
-}
-
-class WebAuthMethodChannelAuth0Flutter extends WebAuthAuth0FlutterPlatform {
+class MethodChannelAuth0FlutterWebAuth extends Auth0FlutterWebAuthPlatform {
   @override
-  Future<WebAuthLoginResult?> login(
-      final WebAuthLoginOptions options) async {
+  Future<WebAuthLoginResult?> login(final WebAuthLoginOptions options) async {
     final Map<dynamic, dynamic>? result =
         await _channel.invokeMapMethod(webAuthLoginMethod);
 

@@ -1,13 +1,13 @@
 import 'package:flutter/services.dart';
 
-import 'auth_auth0_flutter_platform.dart';
-import 'auth_code_exchange_result.dart';
-import 'auth_login_options.dart';
-import 'auth_login_result.dart';
-import 'auth_renew_access_token_result.dart';
-import 'auth_reset_password_options.dart';
-import 'auth_sign_up_options.dart';
-import 'auth_user_profile_result.dart';
+import 'auth/auth_code_exchange_result.dart';
+import 'auth/auth_login_options.dart';
+import 'auth/auth_login_result.dart';
+import 'auth/auth_renew_access_token_result.dart';
+import 'auth/auth_reset_password_options.dart';
+import 'auth/auth_sign_up_options.dart';
+import 'auth/auth_user_profile_result.dart';
+import 'auth0_flutter_auth_platform.dart';
 
 const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter');
 const String authLoginMethod = 'auth#login';
@@ -21,7 +21,7 @@ extension ObjectListExtensions on List<Object?> {
   Set<T> toTypedSet<T>() => map((final e) => e as T).toSet();
 }
 
-class AuthMethodChannelAuth0Flutter extends AuthAuth0FlutterPlatform {
+class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   @override
   Future<AuthLoginResult?> login(final AuthLoginOptions options) async {
     final AuthLoginResult? result =
