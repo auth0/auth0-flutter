@@ -21,7 +21,7 @@ class AuthenticationApi {
   Future<UserProfile> userProfile({required final String accessToken}) =>
       Future.value({});
 
-  Future<void> signUp(
+  Future<void> signup(
           {required final String email,
           required final String password,
           required final String connection,
