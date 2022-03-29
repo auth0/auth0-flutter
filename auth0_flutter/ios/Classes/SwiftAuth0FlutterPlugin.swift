@@ -19,7 +19,7 @@ public class SwiftAuth0FlutterWebAuthMethodCallHandler: NSObject, FlutterPlugin 
         "scopes": ["a", "b"],
       ])
       case WEBAUTH_LOGOUT_METHOD: result("Web Auth Logout Success")
-      default: result("Unknown Method")
+      default: result(FlutterMethodNotImplemented)
     }
   }
 }
