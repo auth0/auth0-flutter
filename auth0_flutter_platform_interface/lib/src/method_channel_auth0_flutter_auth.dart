@@ -38,7 +38,13 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
       return null;
     }
 
-    return AuthCodeExchangeResult(accessToken: result['accessToken'] as String);
+    return AuthCodeExchangeResult(
+      idToken: result['idToken'] as String,
+      accessToken: result['accessToken'] as String,
+      refreshToken: result['refreshToken'] as String,
+      expiresIn: result['expiresIn'] as int,
+      scopes: (result['scopes'] as List<Object?>).toTypedSet<String>(),
+    );
   }
 
   @override
@@ -68,7 +74,13 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
       return null;
     }
 
-    return AuthRenewAccessTokenResult();
+    return AuthRenewAccessTokenResult(
+      idToken: result['idToken'] as String,
+      accessToken: result['accessToken'] as String,
+      refreshToken: result['refreshToken'] as String,
+      expiresIn: result['expiresIn'] as int,
+      scopes: (result['scopes'] as List<Object?>).toTypedSet<String>(),
+    );
   }
 
   @override
