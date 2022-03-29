@@ -9,7 +9,7 @@ import 'auth/auth_sign_up_options.dart';
 import 'auth/auth_user_profile_result.dart';
 import 'auth0_flutter_auth_platform.dart';
 
-const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter');
+const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter/auth');
 const String authLoginMethod = 'auth#login';
 const String authCodeExchangeMethod = 'auth#codeExchange';
 const String authUserInfoMethod = 'auth#userInfo';

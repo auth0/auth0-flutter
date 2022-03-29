@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  const MethodChannel channel = MethodChannel('auth0.com/auth0_flutter');
+  const MethodChannel channel = MethodChannel('auth0.com/auth0_flutter/web_auth');
 
   TestWidgetsFlutterBinding.ensureInitialized();
 

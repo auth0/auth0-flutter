@@ -25,6 +25,9 @@ class Auth0FlutterWebAuthMethodCallHandler: MethodCallHandler {
             WEBAUTH_LOGOUT_METHOD -> {
                 result.success("Web Auth Logout Success")
             }
+            else -> {
+                result.notImplemented()
+            }
         }
     }
 }

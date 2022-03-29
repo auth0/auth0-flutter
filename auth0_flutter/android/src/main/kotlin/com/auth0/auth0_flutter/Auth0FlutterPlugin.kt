@@ -18,21 +18,22 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler {
   ///
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
   /// when the Flutter Engine is detached from the Activity
-  private lateinit var channel : MethodChannel
+  private lateinit var webAuthMethodChannel : MethodChannel
+  private lateinit var authMethodChannel : MethodChannel
 
-  private var methodCallHandlers = mutableListOf<MethodCallHandler>();
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    channel = MethodChannel(flutterPluginBinding.binaryMessenger, "auth0.com/auth0_flutter")
-    channel.setMethodCallHandler(this)
-    methodCallHandlers.addAll(listOf(Auth0FlutterWebAuthMethodCallHandler(), Auth0FlutterAuthMethodCallHandler()))
+    webAuthMethodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "auth0.com/auth0_flutter/web_auth")
+    webAuthMethodChannel.setMethodCallHandler(Auth0FlutterWebAuthMethodCallHandler())
+
+    authMethodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "auth0.com/auth0_flutter/auth")
+    authMethodChannel.setMethodCallHandler(Auth0FlutterAuthMethodCallHandler())
   }
 
-  override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-    methodCallHandlers.forEach { it.onMethodCall(call, result) }
-  }
+  override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {}
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-    channel.setMethodCallHandler(null)
+    webAuthMethodChannel.setMethodCallHandler(null)
+    authMethodChannel.setMethodCallHandler(null)
   }
 }

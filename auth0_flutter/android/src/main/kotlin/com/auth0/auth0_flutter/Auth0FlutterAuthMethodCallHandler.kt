@@ -34,6 +34,9 @@ class Auth0FlutterAuthMethodCallHandler: MethodCallHandler {
             AUTH_RESETPASSWORD_METHOD -> {
                 result.success("Auth Reset Password Success")
             }
+            else -> {
+                result.notImplemented()
+            }
         }
     }
 }

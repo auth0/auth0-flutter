@@ -5,7 +5,7 @@ import 'web-auth/web_auth_login_options.dart';
 import 'web-auth/web_auth_login_result.dart';
 import 'web-auth/web_auth_logout_options.dart';
 
-const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter');
+const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter/web_auth');
 const String webAuthLoginMethod = 'webAuth#login';
 const String webAuthLogoutMethod = 'webAuth#logout';
 
