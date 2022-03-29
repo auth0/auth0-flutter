@@ -11,7 +11,7 @@ class LoginResult extends Credentials {
       required final String accessToken,
       final String? refreshToken,
       required final int expiresIn,
-      final Set<String>? scopes,
+      final Set<String> scopes = const {},
       required this.userProfile})
       : super(
             idToken: idToken,
@@ -28,7 +28,7 @@ class WebAuthentication {
 
   Future<LoginResult> login(
           {final String? audience,
-          final Set<String>? scopes,
+          final Set<String> scopes = const {},
           final String? redirectUri,
           final String? organizationId,
           final String? invitationUrl,
