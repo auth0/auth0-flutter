@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  const MethodChannel channel = MethodChannel('auth0.com/auth0_flutter');
+  const MethodChannel channel = MethodChannel('auth0.com/auth0_flutter/web_auth');
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -16,7 +16,7 @@ void main() {
     channel.setMockMethodCallHandler(null);
   });
 
-  test('getPlatformVersion', () async {
-    expect(await Auth0Flutter.platformVersion, '42');
+  test('login', () async {
+    expect(await WebAuthAuth0Flutter.login, '42');
   });
 }

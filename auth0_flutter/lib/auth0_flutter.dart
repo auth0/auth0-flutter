@@ -1,11 +1,15 @@
 import 'dart:async';
-
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
+export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 
-class Auth0Flutter {
-  static Future<String?> get platformVersion async =>
-      Auth0FlutterPlatform.instance.getPlatformVersion();
+class WebAuthAuth0Flutter {
+  static Future<WebAuthLoginResult?> get login async =>
+      Auth0FlutterWebAuthPlatform.instance.login(WebAuthLoginOptions(
+          audience: 'audience', scopes: {'a'}, redirectUri: 'redirect uri'));
+}
 
-  static Future<String?> get login async =>
-      Auth0FlutterPlatform.instance.login();
+class AuthAuth0Flutter {
+  static Future<AuthLoginResult?> get login async =>
+      Auth0FlutterAuthPlatform.instance.login(AuthLoginOptions(
+          usernameOrEmail: '', password: '', connectionOrRealm: ''));
 }

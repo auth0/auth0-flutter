@@ -27,10 +27,12 @@ class _ExampleAppState extends State<ExampleApp> {
 
   Future<void> webAuthLogin() async {
     String token;
+    WebAuthLoginResult? result;
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      token = await Auth0Flutter.login ?? '';
+      result = await WebAuthAuth0Flutter.login;
+      token = result?.accessToken ?? '';
     } on PlatformException {
       token = 'Failed to get token.';
     }
