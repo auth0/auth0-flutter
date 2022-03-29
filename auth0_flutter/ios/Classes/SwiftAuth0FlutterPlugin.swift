@@ -43,7 +43,7 @@ public class SwiftAuth0FlutterAuthMethodCallHandler: NSObject, FlutterPlugin {
       case AUTH_SIGNUP_METHOD: result("Auth Signup Success")
       case AUTH_RENEWACCESSTOKEN_METHOD: result("Auth Renew Access Token Success")
       case AUTH_RESETPASSWORD_METHOD: result("Auth Reset Password Success")
-      default: result("Unknown Method")
+      default: result(FlutterMethodNotImplemented)
     }
   }
 }
