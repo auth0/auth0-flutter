@@ -14,7 +14,6 @@ class AuthenticationApi {
           final Map<String, Object> parameters = const {}}) =>
       Auth0FlutterAuthPlatform.instance.login(AuthLoginOptions(
           usernameOrEmail: '', password: '', connectionOrRealm: ''));
-  // result.
 
   Future<Credentials> codeExchange(final String code) => Future.value(
       const Credentials(idToken: '', accessToken: '', expiresIn: 0));

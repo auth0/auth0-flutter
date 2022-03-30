@@ -2,7 +2,6 @@ import 'package:flutter/services.dart';
 
 import 'auth/auth_code_exchange_result.dart';
 import 'auth/auth_login_options.dart';
-import 'auth/auth_login_result.dart';
 import 'auth/auth_renew_access_token_result.dart';
 import 'auth/auth_reset_password_options.dart';
 import 'auth/auth_sign_up_options.dart';
