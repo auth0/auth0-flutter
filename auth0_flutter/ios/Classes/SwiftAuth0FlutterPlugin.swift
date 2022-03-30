@@ -12,25 +12,33 @@ class WebAuthHandler: NSObject, FlutterPlugin {
   private static let channelName = "auth0.com/auth0_flutter/web_auth"
 
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let webAuthChannel = FlutterMethodChannel(name: WebAuthHandler.channelName,
-                                              binaryMessenger: registrar.messenger())
-    let webAuthHandler = WebAuthHandler()
-    registrar.addMethodCallDelegate(webAuthHandler, channel: webAuthChannel)
+    let handler = WebAuthHandler()
+    let channel = FlutterMethodChannel(name: WebAuthHandler.channelName,
+                                       binaryMessenger: registrar.messenger())
+    registrar.addMethodCallDelegate(handler, channel: channel)
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch Method(rawValue: call.method) {
-    case .login: result([
-        "accessToken": "Access Token",
-        "idToken": "ID Token",
-        "refreshToken": "Refresh Token",
-        "userProfile": ["name": "John Doe"],
-        "expiresIn": 10,
-        "scopes": ["a", "b"],
-      ])
-    case .logout: result("Web Auth Logout Success")
+    case .login: self.login(call, result)
+    case .logout: self.logout(call, result)
     default: result(FlutterMethodNotImplemented)
     }
+  }
+
+  private func login(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) { 
+    result([
+      "accessToken": "Access Token",
+      "idToken": "ID Token",
+      "refreshToken": "Refresh Token",
+      "userProfile": ["name": "John Doe"],
+      "expiresIn": 10,
+      "scopes": ["a", "b"],
+    ])
+  }
+
+  private func logout(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) { 
+    result("Web Auth Logout Success")
   }
 
 }
@@ -47,23 +55,48 @@ class AuthenticationAPIHandler: NSObject, FlutterPlugin {
   }
 
   private static let channelName = "auth0.com/auth0_flutter/auth"
+
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let authenticationAPIChannel = FlutterMethodChannel(name: AuthenticationAPIHandler.channelName,
-                                                        binaryMessenger: registrar.messenger())
-    let authenticationAPIHandler = AuthenticationAPIHandler()
-    registrar.addMethodCallDelegate(authenticationAPIHandler, channel: authenticationAPIChannel)
+    let handler = AuthenticationAPIHandler()
+    let channel = FlutterMethodChannel(name: AuthenticationAPIHandler.channelName,
+                                       binaryMessenger: registrar.messenger())
+    registrar.addMethodCallDelegate(handler, channel: channel)
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch Method(rawValue: call.method) {
-    case .login: result("Auth Login Success")
-    case .codeExchange: result("Auth Code Exchange Success")
-    case .userInfo: result("Auth UserInfo Success")
-    case .signup: result("Auth Signup Success")
-    case .renewAccessToken: result("Auth Renew Access Token Success")
-    case .resetPassword: result("Auth Reset Password Success")
+    case .login: self.login(call, result)
+    case .codeExchange: self.codeExchange(call, result)
+    case .userInfo: self.userInfo(call, result)
+    case .signup: self.signup(call, result)
+    case .renewAccessToken: self.renewAccessToken(call, result)
+    case .resetPassword: self.resetPassword(call, result)
     default: result(FlutterMethodNotImplemented)
     }
+  }
+
+  private func login(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) { 
+    result("Auth Login Success")
+  }
+
+  private func codeExchange(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) { 
+    result("Auth Code Exchange Success")
+  }
+
+  private func userInfo(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) { 
+    result("Auth UserInfo Success")
+  }
+
+  private func signup(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) { 
+    result("Auth Signup Success")
+  }
+
+  private func renewAccessToken(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) { 
+    result("Auth Renew Access Token Success")
+  }
+
+  private func resetPassword(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) { 
+    result("Auth Reset Password Success")
   }
 
 }
