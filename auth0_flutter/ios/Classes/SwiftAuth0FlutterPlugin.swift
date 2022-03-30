@@ -1,5 +1,6 @@
 import Flutter
 import UIKit
+import Auth0
 
 public class SwiftAuth0FlutterWebAuthMethodCallHandler: NSObject, FlutterPlugin {
 
@@ -22,6 +23,7 @@ public class SwiftAuth0FlutterWebAuthMethodCallHandler: NSObject, FlutterPlugin 
       default: result(FlutterMethodNotImplemented)
     }
   }
+
 }
 
 public class SwiftAuth0FlutterAuthMethodCallHandler: NSObject, FlutterPlugin {
@@ -46,6 +48,7 @@ public class SwiftAuth0FlutterAuthMethodCallHandler: NSObject, FlutterPlugin {
       default: result(FlutterMethodNotImplemented)
     }
   }
+
 }
 
 public class SwiftAuth0FlutterPlugin: NSObject, FlutterPlugin {
@@ -63,4 +66,5 @@ public class SwiftAuth0FlutterPlugin: NSObject, FlutterPlugin {
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {}
+
 }
