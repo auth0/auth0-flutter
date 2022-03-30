@@ -9,7 +9,7 @@ jobs:
           name: Flutter Doctor
           command: flutter doctor
       - run:
-          name: Build iOS
+          name: Tests
           command: flutter test
           working_directory: ./auth0_flutter
 workflows:
