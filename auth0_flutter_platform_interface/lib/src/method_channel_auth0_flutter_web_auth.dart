@@ -5,25 +5,26 @@ import 'web-auth/web_auth_login_options.dart';
 import 'web-auth/web_auth_login_result.dart';
 import 'web-auth/web_auth_logout_options.dart';
 
-const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter/web_auth');
+const MethodChannel _channel =
+    MethodChannel('auth0.com/auth0_flutter/web_auth');
 const String webAuthLoginMethod = 'webAuth#login';
 const String webAuthLogoutMethod = 'webAuth#logout';
 
 class MethodChannelAuth0FlutterWebAuth extends Auth0FlutterWebAuthPlatform {
   @override
-  Future<WebAuthLoginResult?> login(final WebAuthLoginOptions options) async {
+  Future<LoginResult> login(final WebAuthLoginOptions options) async {
     final Map<dynamic, dynamic>? result =
         await _channel.invokeMapMethod(webAuthLoginMethod);
 
     if (result == null) {
-      return null;
+      throw Exception('Channel returned null');
     }
 
     final Map<dynamic, dynamic> userProfileMap =
         result['userProfile'] as Map<dynamic, dynamic>;
 
-    return WebAuthLoginResult(
-      userProfile: UserProfile(userProfileMap['name'] as String),
+    return LoginResult(
+      userProfile: const {},
       idToken: result['idToken'] as String,
       accessToken: result['accessToken'] as String,
       refreshToken: result['refreshToken'] as String,
