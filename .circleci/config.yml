@@ -70,7 +70,7 @@ jobs:
   test_examples:
     macos:
       xcode: 13
-      steps:
+    steps:
       - checkout
       - install_android
       - install_flutter
