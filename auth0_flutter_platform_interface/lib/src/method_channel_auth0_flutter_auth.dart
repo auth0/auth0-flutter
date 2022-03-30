@@ -8,6 +8,7 @@ import 'auth/auth_reset_password_options.dart';
 import 'auth/auth_sign_up_options.dart';
 import 'auth/auth_user_profile_result.dart';
 import 'auth0_flutter_auth_platform.dart';
+import 'web-auth/web_auth_login_result.dart';
 
 const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter/auth');
 const String authLoginMethod = 'auth#login';
@@ -23,9 +24,13 @@ extension ObjectListExtensions on List<Object?> {
 
 class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   @override
-  Future<AuthLoginResult?> login(final AuthLoginOptions options) async {
-    final AuthLoginResult? result =
-        await _channel.invokeMethod<AuthLoginResult>(authLoginMethod);
+  Future<LoginResult> login(final AuthLoginOptions options) async {
+    final result = await _channel.invokeMethod<LoginResult>(authLoginMethod);
+
+    if (result == null) {
+      return throw Exception('Auth channel returned null');
+    }
+
     return result;
   }
 

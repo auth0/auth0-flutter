@@ -18,6 +18,6 @@ void main() {
   });
 
   test('login', () async {
-    expect(await WebAuthAuth0Flutter.login, '42');
+    expect(await Auth0('test', 'test').webAuthentication.login(), '42');
   });
 }
