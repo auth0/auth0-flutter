@@ -1,19 +1,19 @@
+import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'account.dart';
-import 'credentials.dart';
-import 'types.dart';
 
 class AuthenticationApi {
   final Account account;
 
   AuthenticationApi(this.account);
 
-  Future<void> login(
+  Future<Credentials> login(
           {required final String usernameOrEmail,
           required final String password,
           required final String connectionOrRealm,
           final Set<String> scope = const {},
           final Map<String, Object> parameters = const {}}) =>
-      Future.value();
+      Auth0FlutterAuthPlatform.instance.login(AuthLoginOptions(
+          usernameOrEmail: '', password: '', connectionOrRealm: ''));
 
   Future<Credentials> codeExchange(final String code) => Future.value(
       const Credentials(idToken: '', accessToken: '', expiresIn: 0));

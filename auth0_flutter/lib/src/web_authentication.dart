@@ -1,25 +1,5 @@
+import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'account.dart';
-import 'credentials.dart';
-import 'types.dart';
-import 'validation.dart';
-
-class LoginResult extends Credentials {
-  final UserProfile userProfile;
-
-  const LoginResult(
-      {required final String idToken,
-      required final String accessToken,
-      final String? refreshToken,
-      required final int expiresIn,
-      final Set<String> scopes = const {},
-      required this.userProfile})
-      : super(
-            idToken: idToken,
-            accessToken: accessToken,
-            refreshToken: refreshToken,
-            expiresIn: expiresIn,
-            scopes: scopes);
-}
 
 class WebAuthentication {
   final Account account;
@@ -36,8 +16,8 @@ class WebAuthentication {
           final Map<String, Object> parameters = const {},
           final IdTokenValidationConfig idTokenValidationConfig =
               const IdTokenValidationConfig()}) =>
-      Future.value(const LoginResult(
-          idToken: '', accessToken: '', expiresIn: 0, userProfile: {}));
+      Auth0FlutterWebAuthPlatform.instance.login(WebAuthLoginOptions(
+          audience: 'audience', scopes: {'a'}, redirectUri: 'redirect uri'));
 
   Future<void> logout({final String? returnTo}) => Future.value();
 }
