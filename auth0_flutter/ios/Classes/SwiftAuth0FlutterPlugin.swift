@@ -2,14 +2,21 @@ import Flutter
 import UIKit
 import Auth0
 
-class WebAuthMethodCallHandler: NSObject, FlutterPlugin { 
+class WebAuthHandler: NSObject, FlutterPlugin { 
 
-  enum Method: String, RawRepresentable {
+  public enum Method: String, RawRepresentable { 
     case login = "webAuth#login"
     case logout = "webAuth#logout"
   }
 
-  public static func register(with registrar: FlutterPluginRegistrar) {}
+  private static let channelName = "auth0.com/auth0_flutter/web_auth"
+
+  public static func register(with registrar: FlutterPluginRegistrar) {
+    let webAuthChannel = FlutterMethodChannel(name: WebAuthHandler.channelName,
+                                              binaryMessenger: registrar.messenger())
+    let webAuthHandler = WebAuthHandler()
+    registrar.addMethodCallDelegate(webAuthHandler, channel: webAuthChannel)
+  }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch Method(rawValue: call.method) {
@@ -28,9 +35,9 @@ class WebAuthMethodCallHandler: NSObject, FlutterPlugin {
 
 }
 
-class AuthenticationAPIMethodCallHandler: NSObject, FlutterPlugin { 
+class AuthenticationAPIHandler: NSObject, FlutterPlugin { 
 
-  enum Method: String, RawRepresentable {
+  public enum Method: String, RawRepresentable { 
     case login = "auth#login"
     case codeExchange = "auth#codeExchange"
     case userInfo = "auth#userInfo"
@@ -39,17 +46,23 @@ class AuthenticationAPIMethodCallHandler: NSObject, FlutterPlugin {
     case resetPassword = "auth#resetPassword"
   }
 
-  public static func register(with registrar: FlutterPluginRegistrar) {}
+  private static let channelName = "auth0.com/auth0_flutter/auth"
+  public static func register(with registrar: FlutterPluginRegistrar) {
+    let authenticationAPIChannel = FlutterMethodChannel(name: AuthenticationAPIHandler.channelName,
+                                                        binaryMessenger: registrar.messenger())
+    let authenticationAPIHandler = AuthenticationAPIHandler()
+    registrar.addMethodCallDelegate(authenticationAPIHandler, channel: authenticationAPIChannel)
+  }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-      switch Method(rawValue: call.method) {
-      case .login: result("Auth Login Success")
-      case .codeExchange: result("Auth Code Exchange Success")
-      case .userInfo: result("Auth UserInfo Success")
-      case .signup: result("Auth Signup Success")
-      case .renewAccessToken: result("Auth Renew Access Token Success")
-      case .resetPassword: result("Auth Reset Password Success")
-      default: result(FlutterMethodNotImplemented)
+    switch Method(rawValue: call.method) {
+    case .login: result("Auth Login Success")
+    case .codeExchange: result("Auth Code Exchange Success")
+    case .userInfo: result("Auth UserInfo Success")
+    case .signup: result("Auth Signup Success")
+    case .renewAccessToken: result("Auth Renew Access Token Success")
+    case .resetPassword: result("Auth Reset Password Success")
+    default: result(FlutterMethodNotImplemented)
     }
   }
 
@@ -57,18 +70,11 @@ class AuthenticationAPIMethodCallHandler: NSObject, FlutterPlugin {
 
 public class SwiftAuth0FlutterPlugin: NSObject, FlutterPlugin {
 
-  private let methodCallHandlers: [FlutterPlugin] = [WebAuthMethodCallHandler(), AuthenticationAPIMethodCallHandler()]
+  private let methodCallHandlers: [FlutterPlugin] = [WebAuthHandler(), AuthenticationAPIHandler()]
 
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let webAuthMethodChannel = FlutterMethodChannel(name: "auth0.com/auth0_flutter/web_auth", binaryMessenger: registrar.messenger())
-    let webAuthMethodCallHandler = WebAuthMethodCallHandler()
-    registrar.addMethodCallDelegate(webAuthMethodCallHandler, channel: webAuthMethodChannel);
-
-    let authMethodChannel = FlutterMethodChannel(name: "auth0.com/auth0_flutter/auth", binaryMessenger: registrar.messenger())
-    let authMethodCallHandler = AuthenticationAPIMethodCallHandler()
-    registrar.addMethodCallDelegate(authMethodCallHandler, channel: authMethodChannel);
+    WebAuthHandler.register(with: registrar)
+    AuthenticationAPIHandler.register(with: registrar)
   }
-
-  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {}
 
 }
