@@ -45,11 +45,10 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Test and Analyze App Facing Package
+          name: Test App Facing Package
           command: |
             flutter pub get
             flutter test
-            dart analyze
           working_directory: ./auth0_flutter
       - run:
           name: Analyze App Facing Package
