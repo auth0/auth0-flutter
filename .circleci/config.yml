@@ -5,7 +5,7 @@ commands:
     steps:
       - run:
           name: Install Brew Dependencies
-          command: brew install --cask android-commandlinetools google-chrome
+          command: brew install --cask android-commandlinetools
       - run:
           name: Configure Android SDK Manager
           command: |
