@@ -1,6 +1,6 @@
 import '../credentials.dart';
 
-typedef UserProfile = Map<String, Object>;
+typedef UserProfile = Map<String, dynamic>;
 
 class LoginResult extends Credentials {
   final UserProfile userProfile;
@@ -9,7 +9,7 @@ class LoginResult extends Credentials {
       {required final String idToken,
       required final String accessToken,
       final String? refreshToken,
-      required final int expiresIn,
+      required final double expiresIn,
       final Set<String> scopes = const {},
       required this.userProfile})
       : super(

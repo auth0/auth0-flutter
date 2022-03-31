@@ -1,5 +1,4 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
-import 'account.dart';
 
 class AuthenticationApi {
   final Account account;

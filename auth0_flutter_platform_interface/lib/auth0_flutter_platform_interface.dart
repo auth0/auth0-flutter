@@ -1,3 +1,4 @@
+export 'src/account.dart';
 export 'src/auth/auth_code_exchange_result.dart';
 export 'src/auth/auth_login_options.dart';
 export 'src/auth/auth_renew_access_token_result.dart';

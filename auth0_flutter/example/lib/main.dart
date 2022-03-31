@@ -18,7 +18,9 @@ class ExampleApp extends StatefulWidget {
 }
 
 class _ExampleAppState extends State<ExampleApp> {
+  bool _loggedIn = false;
   String _token = 'Unknown';
+
   final auth0 = Auth0('test-domain', 'test-client');
 
   @override
@@ -32,7 +34,8 @@ class _ExampleAppState extends State<ExampleApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      final result = await auth0.webAuthentication.login();
+      final result =
+          await auth0.webAuthentication.login(scopes: {'profile', 'email'});
       token = result.accessToken;
     } on PlatformException {
       token = 'Failed to get token.';
@@ -44,7 +47,28 @@ class _ExampleAppState extends State<ExampleApp> {
     if (!mounted) return;
 
     setState(() {
+      _loggedIn = true;
       _token = token;
+    });
+  }
+
+  Future<void> webAuthLogout() async {
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    // We also handle the message potentially returning null.
+    try {
+      await auth0.webAuthentication.logout();
+    } on PlatformException {
+      debugPrint('Failed to logout');
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      _loggedIn = false;
+      _token = 'Unknown';
     });
   }
 
@@ -62,7 +86,10 @@ class _ExampleAppState extends State<ExampleApp> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const FormCard(),
-                      WebAuthCard(webAuthLogin),
+                      if (_loggedIn)
+                        WebAuthCard('Web Auth Logout', webAuthLogout)
+                      else
+                        WebAuthCard('Web Auth Login', webAuthLogin),
                     ]),
               )),
               SliverFillRemaining(
@@ -140,9 +167,11 @@ class FormCardState extends State<FormCard> {
 }
 
 class WebAuthCard extends StatelessWidget {
-  final Future<void> Function() loginAction;
+  final String label;
+  final Future<void> Function() action;
 
-  const WebAuthCard(final this.loginAction, {final Key? key}) : super(key: key);
+  const WebAuthCard(final this.label, final this.action, {final Key? key})
+      : super(key: key);
 
   @override
   Widget build(final BuildContext context) {
@@ -152,8 +181,8 @@ class WebAuthCard extends StatelessWidget {
             child: SizedBox(
               width: double.maxFinite,
               child: ElevatedButton(
-                onPressed: loginAction,
-                child: const Text('Web Auth Login'),
+                onPressed: action,
+                child: Text(label),
               ),
             )));
   }

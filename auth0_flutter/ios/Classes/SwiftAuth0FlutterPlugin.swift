@@ -1,6 +1,8 @@
+import Foundation
 import Flutter
 import UIKit
 import Auth0
+import JWTDecode
 
 class WebAuthHandler: NSObject, FlutterPlugin { 
 
@@ -26,28 +28,103 @@ class WebAuthHandler: NSObject, FlutterPlugin {
     }
   }
 
-  private func login(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) { 
-    result([
-      "accessToken": "Access Token",
-      "idToken": "ID Token",
-      "refreshToken": "Refresh Token",
-      "userProfile": ["name": "John Doe"],
-      "expiresIn": 10,
-      "scopes": ["a", "b"],
-    ])
+  private func login(_ call: FlutterMethodCall, _ callback: @escaping FlutterResult) {
+    guard let arguments = call.arguments as? [String: Any],
+          let clientId = arguments["clientId"] as? String,
+          let domain = arguments["domain"] as? String,
+          let scopes = arguments["scopes"] as? [String],
+          let parameters = arguments["parameters"] as? [String: String],
+          let useEphemeralSession = arguments["useEphemeralSession"] as? Bool
+    else {
+      return callback(["error": "ERROR"])
+    }
+
+    var webAuth = Auth0
+      .webAuth(clientId: clientId, domain: domain)
+      .scope(scopes.joined(separator: " "))
+      .parameters(parameters)
+
+    if useEphemeralSession {
+      webAuth = webAuth.useEphemeralSession()
+    }
+
+    if let audience = arguments["audience"] as? String {
+      webAuth = webAuth.audience(audience)
+    }
+
+    if let redirectURL = arguments["redirectUri"] as? String, let url = URL(string: redirectURL) {
+      webAuth = webAuth.redirectURL(url)
+    }
+
+    if let organizationId = arguments["organizationId"] as? String {
+      webAuth = webAuth.organization(organizationId)
+    }
+
+    if let invitationURL = arguments["invitationUrl"] as? String, let url = URL(string: invitationURL) {
+      webAuth = webAuth.invitationURL(url)
+    }
+
+    if let leeway = arguments["leeway"] as? Int {
+      webAuth = webAuth.leeway(leeway)
+    }
+
+    if let issuer = arguments["issuer"] as? String {
+      webAuth = webAuth.issuer(issuer)
+    }
+
+    if let maxAge = arguments["maxAge"] as? Int {
+      webAuth = webAuth.maxAge(maxAge)
+    }
+
+    webAuth.start { result in
+      switch result {
+      case let .success(credentials):
+        do {
+          let jwt = try decode(jwt: credentials.idToken)
+          let data: [String: Any?] = [
+            "accessToken": credentials.accessToken,
+            "idToken": credentials.idToken,
+            "refreshToken": credentials.refreshToken,
+            "userProfile": jwt.body,
+            "expiresIn": credentials.expiresIn.timeIntervalSince1970,
+            "scopes": credentials.scope?.split(separator: " ").map(String.init),
+          ]
+          callback(data)
+        } catch {
+          callback(["error": "ERROR"])
+        }
+      case let .failure(error): callback(["error": String(describing: error)])
+      }
+    }
   }
 
-  private func logout(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) { 
-    result("Web Auth Logout Success")
-  }
+  private func logout(_ call: FlutterMethodCall, _ callback: @escaping FlutterResult) {
+    guard let arguments = call.arguments as? [String: Any],
+          let clientId = arguments["clientId"] as? String,
+          let domain = arguments["domain"] as? String
+    else {
+      return callback(["error": "ERROR"])
+    }
 
+    var webAuth = Auth0.webAuth(clientId: clientId, domain: domain)
+
+    if let returnTo = arguments["returnTo"] as? String, let url = URL(string: returnTo) { 
+      webAuth = webAuth.redirectURL(url)
+    }
+
+    webAuth.clearSession { result in
+      switch result {
+      case .success: callback(nil)
+      case let .failure(error): callback(["error": String(describing: error)])
+      }
+    }
+  }
 }
 
 class AuthenticationAPIHandler: NSObject, FlutterPlugin { 
 
   public enum Method: String, RawRepresentable { 
     case login = "auth#login"
-    case codeExchange = "auth#codeExchange"
     case userInfo = "auth#userInfo"
     case signup = "auth#signUp"
     case renewAccessToken = "auth#renewAccessToken"
@@ -66,7 +143,6 @@ class AuthenticationAPIHandler: NSObject, FlutterPlugin {
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     switch Method(rawValue: call.method) {
     case .login: self.login(call, result)
-    case .codeExchange: self.codeExchange(call, result)
     case .userInfo: self.userInfo(call, result)
     case .signup: self.signup(call, result)
     case .renewAccessToken: self.renewAccessToken(call, result)
@@ -77,10 +153,6 @@ class AuthenticationAPIHandler: NSObject, FlutterPlugin {
 
   private func login(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) { 
     result("Auth Login Success")
-  }
-
-  private func codeExchange(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) { 
-    result("Auth Code Exchange Success")
   }
 
   private func userInfo(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) { 
