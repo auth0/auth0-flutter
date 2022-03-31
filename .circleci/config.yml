@@ -4,6 +4,9 @@ commands:
     description: "Install the Android SDK"
     steps:
       - run:
+          name: Java Version
+          command: java -version
+      - run:
           name: Install Brew Dependencies
           command: |
             brew tap homebrew/cask-versions
