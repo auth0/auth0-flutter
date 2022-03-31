@@ -36,7 +36,7 @@ class _ExampleAppState extends State<ExampleApp> {
     try {
       final result =
           await auth0.webAuthentication.login(scopes: {'profile', 'email'});
-      token = result.accessToken;
+      token = result.idToken;
     } on PlatformException {
       token = 'Failed to get token.';
     }
