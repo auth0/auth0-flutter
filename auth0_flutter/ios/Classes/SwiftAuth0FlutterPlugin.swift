@@ -1,66 +1,187 @@
+import Foundation
 import Flutter
 import UIKit
+import Auth0
+import JWTDecode
 
-public class SwiftAuth0FlutterWebAuthMethodCallHandler: NSObject, FlutterPlugin {
+class WebAuthHandler: NSObject, FlutterPlugin { 
 
-  private let WEBAUTH_LOGIN_METHOD = "webAuth#login"
-  private let WEBAUTH_LOGOUT_METHOD = "webAuth#logout"
+  public enum Method: String, RawRepresentable { 
+    case login = "webAuth#login"
+    case logout = "webAuth#logout"
+  }
 
-  public static func register(with registrar: FlutterPluginRegistrar) {}
+  private static let channelName = "auth0.com/auth0_flutter/web_auth"
+
+  public static func register(with registrar: FlutterPluginRegistrar) {
+    let handler = WebAuthHandler()
+    let channel = FlutterMethodChannel(name: WebAuthHandler.channelName,
+                                       binaryMessenger: registrar.messenger())
+    registrar.addMethodCallDelegate(handler, channel: channel)
+  }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    switch call.method {
-      case WEBAUTH_LOGIN_METHOD: result([
-        "accessToken": "Access Token",
-        "idToken": "ID Token",
-        "refreshToken": "Refresh Token",
-        "userProfile": ["name": "John Doe"],
-        "expiresIn": 10,
-        "scopes": ["a", "b"],
-      ])
-      case WEBAUTH_LOGOUT_METHOD: result("Web Auth Logout Success")
-      default: result(FlutterMethodNotImplemented)
+    switch Method(rawValue: call.method) {
+    case .login: self.login(call, result)
+    case .logout: self.logout(call, result)
+    default: result(FlutterMethodNotImplemented)
+    }
+  }
+
+  private func login(_ call: FlutterMethodCall, _ callback: @escaping FlutterResult) {
+    guard let arguments = call.arguments as? [String: Any],
+          let clientId = arguments["clientId"] as? String,
+          let domain = arguments["domain"] as? String,
+          let scopes = arguments["scopes"] as? [String],
+          let parameters = arguments["parameters"] as? [String: String],
+          let useEphemeralSession = arguments["useEphemeralSession"] as? Bool
+    else {
+      return callback(["error": "ERROR"])
+    }
+
+    var webAuth = Auth0.webAuth(clientId: clientId, domain: domain)
+      .parameters(parameters)
+
+    if !scopes.isEmpty {
+      webAuth = webAuth.scope(scopes.joined(separator: " "))
+    }
+
+    if useEphemeralSession {
+      webAuth = webAuth.useEphemeralSession()
+    }
+
+    if let audience = arguments["audience"] as? String {
+      webAuth = webAuth.audience(audience)
+    }
+
+    if let redirectURL = arguments["redirectUri"] as? String, let url = URL(string: redirectURL) {
+      webAuth = webAuth.redirectURL(url)
+    }
+
+    if let organizationId = arguments["organizationId"] as? String {
+      webAuth = webAuth.organization(organizationId)
+    }
+
+    if let invitationURL = arguments["invitationUrl"] as? String, let url = URL(string: invitationURL) {
+      webAuth = webAuth.invitationURL(url)
+    }
+
+    if let leeway = arguments["leeway"] as? Int {
+      webAuth = webAuth.leeway(leeway)
+    }
+
+    if let issuer = arguments["issuer"] as? String {
+      webAuth = webAuth.issuer(issuer)
+    }
+
+    if let maxAge = arguments["maxAge"] as? Int {
+      webAuth = webAuth.maxAge(maxAge)
+    }
+
+    webAuth.start { result in
+      switch result {
+      case let .success(credentials):
+        do {
+          let jwt = try decode(jwt: credentials.idToken)
+          let data: [String: Any?] = [
+            "accessToken": credentials.accessToken,
+            "idToken": credentials.idToken,
+            "refreshToken": credentials.refreshToken,
+            "userProfile": jwt.body,
+            "expiresIn": credentials.expiresIn.timeIntervalSince1970,
+            "scopes": credentials.scope?.split(separator: " ").map(String.init),
+          ]
+          callback(data)
+        } catch {
+          callback(["error": "ERROR"])
+        }
+      case let .failure(error): callback(["error": String(describing: error)])
+      }
+    }
+  }
+
+  private func logout(_ call: FlutterMethodCall, _ callback: @escaping FlutterResult) {
+    guard let arguments = call.arguments as? [String: Any],
+          let clientId = arguments["clientId"] as? String,
+          let domain = arguments["domain"] as? String
+    else {
+      return callback(["error": "ERROR"])
+    }
+
+    var webAuth = Auth0.webAuth(clientId: clientId, domain: domain)
+
+    if let returnTo = arguments["returnTo"] as? String, let url = URL(string: returnTo) { 
+      webAuth = webAuth.redirectURL(url)
+    }
+
+    webAuth.clearSession { result in
+      switch result {
+      case .success: callback(nil)
+      case let .failure(error): callback(["error": String(describing: error)])
+      }
     }
   }
 }
 
-public class SwiftAuth0FlutterAuthMethodCallHandler: NSObject, FlutterPlugin {
+class AuthenticationAPIHandler: NSObject, FlutterPlugin { 
 
-  private let AUTH_LOGIN_METHOD = "auth#login"
-  private let AUTH_CODEEXCHANGE_METHOD = "auth#codeExchange"
-  private let AUTH_USERINFO_METHOD = "auth#userInfo"
-  private let AUTH_SIGNUP_METHOD = "auth#signUp"
-  private let AUTH_RENEWACCESSTOKEN_METHOD = "auth#renewAccessToken"
-  private let AUTH_RESETPASSWORD_METHOD = "auth#resetPassword"
+  public enum Method: String, RawRepresentable { 
+    case login = "auth#login"
+    case userInfo = "auth#userInfo"
+    case signup = "auth#signUp"
+    case renewAccessToken = "auth#renewAccessToken"
+    case resetPassword = "auth#resetPassword"
+  }
 
-  public static func register(with registrar: FlutterPluginRegistrar) {}
+  private static let channelName = "auth0.com/auth0_flutter/auth"
+
+  public static func register(with registrar: FlutterPluginRegistrar) {
+    let handler = AuthenticationAPIHandler()
+    let channel = FlutterMethodChannel(name: AuthenticationAPIHandler.channelName,
+                                       binaryMessenger: registrar.messenger())
+    registrar.addMethodCallDelegate(handler, channel: channel)
+  }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    switch call.method {
-      case AUTH_LOGIN_METHOD: result("Auth Login Success")
-      case AUTH_CODEEXCHANGE_METHOD: result("Auth Code Exchange Success")
-      case AUTH_USERINFO_METHOD: result("Auth UserInfo Success")
-      case AUTH_SIGNUP_METHOD: result("Auth Signup Success")
-      case AUTH_RENEWACCESSTOKEN_METHOD: result("Auth Renew Access Token Success")
-      case AUTH_RESETPASSWORD_METHOD: result("Auth Reset Password Success")
-      default: result(FlutterMethodNotImplemented)
+    switch Method(rawValue: call.method) {
+    case .login: self.login(call, result)
+    case .userInfo: self.userInfo(call, result)
+    case .signup: self.signup(call, result)
+    case .renewAccessToken: self.renewAccessToken(call, result)
+    case .resetPassword: self.resetPassword(call, result)
+    default: result(FlutterMethodNotImplemented)
     }
   }
+
+  private func login(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) { 
+    result("Auth Login Success")
+  }
+
+  private func userInfo(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) { 
+    result("Auth UserInfo Success")
+  }
+
+  private func signup(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) { 
+    result("Auth Signup Success")
+  }
+
+  private func renewAccessToken(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) { 
+    result("Auth Renew Access Token Success")
+  }
+
+  private func resetPassword(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) { 
+    result("Auth Reset Password Success")
+  }
+
 }
 
 public class SwiftAuth0FlutterPlugin: NSObject, FlutterPlugin {
 
-  private let methodCallHandlers: [FlutterPlugin] = [SwiftAuth0FlutterWebAuthMethodCallHandler(), SwiftAuth0FlutterAuthMethodCallHandler()]
+  private let methodCallHandlers: [FlutterPlugin] = [WebAuthHandler(), AuthenticationAPIHandler()]
 
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let webAuthMethodChannel = FlutterMethodChannel(name: "auth0.com/auth0_flutter/web_auth", binaryMessenger: registrar.messenger())
-    let webAuthMethodCallHandler =  SwiftAuth0FlutterWebAuthMethodCallHandler()
-    registrar.addMethodCallDelegate(webAuthMethodCallHandler, channel: webAuthMethodChannel);
-
-    let authMethodChannel = FlutterMethodChannel(name: "auth0.com/auth0_flutter/auth", binaryMessenger: registrar.messenger())
-    let authMethodCallHandler =  SwiftAuth0FlutterAuthMethodCallHandler()
-    registrar.addMethodCallDelegate(authMethodCallHandler, channel: authMethodChannel);
+    WebAuthHandler.register(with: registrar)
+    AuthenticationAPIHandler.register(with: registrar)
   }
 
-  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {}
 }

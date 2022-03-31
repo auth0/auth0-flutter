@@ -13,28 +13,26 @@ const String webAuthLogoutMethod = 'webAuth#logout';
 class MethodChannelAuth0FlutterWebAuth extends Auth0FlutterWebAuthPlatform {
   @override
   Future<LoginResult> login(final WebAuthLoginOptions options) async {
-    final Map<dynamic, dynamic>? result =
-        await _channel.invokeMapMethod(webAuthLoginMethod);
+    final Map<String, dynamic>? result =
+        await _channel.invokeMapMethod(webAuthLoginMethod, options.toMap());
 
     if (result == null) {
       throw Exception('Channel returned null');
     }
 
-    final Map<dynamic, dynamic> userProfileMap =
-        result['userProfile'] as Map<dynamic, dynamic>;
-
     return LoginResult(
-      userProfile: const {},
+      userProfile: Map<String, dynamic>.from(
+          result['userProfile'] as Map<dynamic, dynamic>),
       idToken: result['idToken'] as String,
       accessToken: result['accessToken'] as String,
-      refreshToken: result['refreshToken'] as String,
-      expiresIn: result['expiresIn'] as int,
+      refreshToken: result['refreshToken'] as String?,
+      expiresIn: result['expiresIn'] as double,
       scopes: (result['scopes'] as List<Object?>).toTypedSet<String>(),
     );
   }
 
   @override
   Future<void> logout(final WebAuthLogoutOptions options) async {
-    await _channel.invokeMethod(webAuthLogoutMethod) as String;
+    await _channel.invokeMethod(webAuthLogoutMethod, options.toMap());
   }
 }

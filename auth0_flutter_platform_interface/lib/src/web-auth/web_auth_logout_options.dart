@@ -1,7 +1,16 @@
+import '../account.dart';
+
 class WebAuthLogoutOptions {
-  final String? redirectTo;
+  final Account account;
+  final String? returnTo;
 
   WebAuthLogoutOptions({
-    this.redirectTo
+    required this.account, this.returnTo
   });
+
+  Map<String, dynamic> toMap() => {
+        'domain': account.domain,
+        'clientId': account.clientId,
+        'returnTo': returnTo
+      };
 }

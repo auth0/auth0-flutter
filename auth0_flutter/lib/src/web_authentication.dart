@@ -1,5 +1,4 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
-import 'account.dart';
 
 class WebAuthentication {
   final Account account;
@@ -13,11 +12,22 @@ class WebAuthentication {
           final String? organizationId,
           final String? invitationUrl,
           final bool useEphemeralSession = false,
-          final Map<String, Object> parameters = const {},
+          final Map<String, String> parameters = const {},
           final IdTokenValidationConfig idTokenValidationConfig =
               const IdTokenValidationConfig()}) =>
       Auth0FlutterWebAuthPlatform.instance.login(WebAuthLoginOptions(
-          audience: 'audience', scopes: {'a'}, redirectUri: 'redirect uri'));
+          audience: audience,
+          scopes: scopes,
+          redirectUri: redirectUri,
+          organizationId: organizationId,
+          invitationUrl: invitationUrl,
+          parameters: parameters,
+          account: account,
+          idTokenValidationConfig: idTokenValidationConfig));
 
-  Future<void> logout({final String? returnTo}) => Future.value();
+  Future<void> logout({final String? returnTo}) =>
+      Auth0FlutterWebAuthPlatform.instance.logout(WebAuthLogoutOptions(
+        returnTo: returnTo,
+        account: account,
+      ));
 }
