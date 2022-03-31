@@ -42,7 +42,6 @@ android {
 
     defaultConfig {
         minSdkVersion 21
-        manifestPlaceholders = [auth0Domain: "com.auth0.auth0_flutter", auth0Scheme: "https"]
     }
 }
 
