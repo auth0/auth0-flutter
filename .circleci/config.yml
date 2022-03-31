@@ -14,12 +14,9 @@ commands:
       - run:
           name: Setup environment variables
           command: |
-            echo 'export PATH="$PATH:/usr/local/opt/node@8/bin:${HOME}/.yarn/bin:${HOME}/${CIRCLE_PROJECT_REPONAME}/node_modules/.bin:/usr/local/share/android-sdk/tools/bin"' >> $BASH_ENV
-            echo 'export JAVA_HOME=`/usr/libexec/java_home -v 1.8`' >> $BASH_ENV
             echo 'export ANDROID_HOME="/usr/local/share/android-commandlinetools"' >> $BASH_ENV
             echo 'export ANDROID_SDK_HOME="/usr/local/share/android-commandlinetools"' >> $BASH_ENV
             echo 'export ANDROID_SDK_ROOT="/usr/local/share/android-commandlinetools"' >> $BASH_ENV
-            echo 'export QEMU_AUDIO_DRV=none' >> $BASH_ENV
             echo 'export PATH="$PATH:~/flutter/bin"'  >> $BASH_ENV
             echo 'export PATH="$PATH:${ANDROID_HOME}/platform-tools"'  >> $BASH_ENV
             echo 'export PATH="$PATH:${ANDROID_HOME}/tools"'  >> $BASH_ENV
