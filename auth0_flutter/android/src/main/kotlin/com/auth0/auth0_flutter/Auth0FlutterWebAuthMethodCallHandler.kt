@@ -6,7 +6,6 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
 class Auth0FlutterWebAuthMethodCallHandler: MethodCallHandler {
-
     private val WEBAUTH_LOGIN_METHOD = "webAuth#login"
     private val WEBAUTH_LOGOUT_METHOD = "webAuth#logout"
 
@@ -31,4 +30,3 @@ class Auth0FlutterWebAuthMethodCallHandler: MethodCallHandler {
         }
     }
 }
-

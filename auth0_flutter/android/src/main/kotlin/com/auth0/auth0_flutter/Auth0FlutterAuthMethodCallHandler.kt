@@ -6,7 +6,6 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
 class Auth0FlutterAuthMethodCallHandler: MethodCallHandler {
-
     private val AUTH_LOGIN_METHOD = "auth#login"
     private val AUTH_CODEEXCHANGE_METHOD = "auth#codeExchange"
     private val AUTH_USERINFO_METHOD = "auth#userInfo"
