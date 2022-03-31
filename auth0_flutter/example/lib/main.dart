@@ -33,7 +33,8 @@ class _ExampleAppState extends State<ExampleApp> {
     // We also handle the message potentially returning null.
     try {
       final result = await auth0.webAuthentication.login();
-      token = result.accessToken;
+      print(result.idToken);
+      token = result.idToken;
     } on PlatformException {
       token = 'Failed to get token.';
     }
