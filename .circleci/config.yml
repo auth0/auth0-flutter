@@ -52,6 +52,9 @@ jobs:
           name: Flutter Doctor
           command: flutter doctor
       - run:
+          name: Java version
+          command: java -version
+      - run:
           name: Install App Facing Dependencies
           command: flutter pub get
           working_directory: ./auth0_flutter
@@ -82,7 +85,9 @@ jobs:
     steps:
       - checkout
       - install_android
-      - install_flutter
+      - run:
+          name: Java version
+          command: java -version
       - run:
           name: Clean
           command: flutter clean
