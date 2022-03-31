@@ -34,8 +34,7 @@ class _ExampleAppState extends State<ExampleApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      final result =
-          await auth0.webAuthentication.login(scopes: {'profile', 'email'});
+      final result = await auth0.webAuthentication.login();
       token = result.idToken;
     } on PlatformException {
       token = 'Failed to get token.';

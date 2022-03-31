@@ -39,10 +39,12 @@ class WebAuthHandler: NSObject, FlutterPlugin {
       return callback(["error": "ERROR"])
     }
 
-    var webAuth = Auth0
-      .webAuth(clientId: clientId, domain: domain)
-      .scope(scopes.joined(separator: " "))
+    var webAuth = Auth0.webAuth(clientId: clientId, domain: domain)
       .parameters(parameters)
+
+    if !scopes.isEmpty {
+      webAuth = webAuth.scope(scopes.joined(separator: " "))
+    }
 
     if useEphemeralSession {
       webAuth = webAuth.useEphemeralSession()
