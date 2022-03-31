@@ -52,28 +52,28 @@ jobs:
           name: Flutter Doctor
           command: flutter doctor
       - run:
-          name: App Facing Dependencies
+          name: Install App Facing Dependencies
           command: flutter pub get
           working_directory: ./auth0_flutter
       - run:
-          name: Platform Interface Dependencies
+          name: Install Platform Interface Dependencies
           command: flutter pub get
           working_directory: ./auth0_flutter_platform_interface
       - run:
-          name: App Facing Tests
+          name: Run App Facing Tests
           command: flutter test
           working_directory: ./auth0_flutter
       - run:
-          name: Platform Interface Tests
+          name: Run Platform Interface Tests
           command: flutter test
           working_directory: ./auth0_flutter_platform_interface
       - run:
-          name: App Facing Analyze
+          name: Analyze App Facing Package
           command: dart analyze
 
           working_directory: ./auth0_flutter
       - run:
-          name: Platform Interface Analyze
+          name: Analyze Platform Interface Package
           command: dart analyze
           working_directory: ./auth0_flutter_platform_interface
   test_examples:
@@ -88,24 +88,24 @@ jobs:
           command: flutter clean
           working_directory: ./auth0_flutter/example
       - run:
-          name: Build iOS Example App
-          command: flutter pub get
-          working_directory: ./auth0_flutter/example
-      - run:
-          name: Build iOS Example App
-          command: flutter build ios --no-codesign
-          working_directory: ./auth0_flutter/example
-      - run:
-          name: Clean
-          command: flutter clean
-          working_directory: ./auth0_flutter/example
-      - run:
           name: Build Android Example App
           command: flutter pub get
           working_directory: ./auth0_flutter/example
       - run:
           name: Build Android Example App
           command: flutter build apk
+          working_directory: ./auth0_flutter/example
+      - run:
+          name: Clean
+          command: flutter clean
+          working_directory: ./auth0_flutter/example
+      - run:
+          name: Build iOS Example App
+          command: flutter pub get
+          working_directory: ./auth0_flutter/example
+      - run:
+          name: Build iOS Example App
+          command: flutter build ios --no-codesign
           working_directory: ./auth0_flutter/example
 workflows:
   build:
