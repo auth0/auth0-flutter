@@ -55,12 +55,15 @@ jobs:
             unzip ~/flutter_sdk.zip -d ~
             (yes | flutter doctor --android-licenses) || true
       - run:
-          name: Build Example App
+          name: Build iOS Example App
           command: |
             flutter clean
             flutter pub get
-            flutter build apk
             flutter build ios --no-codesign
+          working_directory: ./auth0_flutter/example
+      - run:
+          name: Build Android Example App
+          command: flutter build apk
           working_directory: ./auth0_flutter/example
 workflows:
   tests:
