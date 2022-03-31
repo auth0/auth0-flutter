@@ -84,8 +84,16 @@ jobs:
       - install_android
       - install_flutter
       - run:
+          name: Clean
+          command: flutter clean
+          working_directory: ./auth0_flutter/example
+      - run:
           name: Build iOS Example App
           command: flutter build ios --no-codesign
+          working_directory: ./auth0_flutter/example
+      - run:
+          name: Clean
+          command: flutter clean
           working_directory: ./auth0_flutter/example
       - run:
           name: Build Android Example App
