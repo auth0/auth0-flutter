@@ -9,14 +9,14 @@ commands:
       - run:
           name: Configure Android SDK Manager
           command: |
-            (yes | sdkmanager "cmdline-tools;latest" "platform-tools" "platforms;android-29" "extras;intel;Hardware_Accelerated_Execution_Manager" "build-tools;28.0.3" "system-images;android-29;google_apis;x86" "emulator" --verbose) || true
+            (yes | sdkmanager "cmdline-tools;latest" "platform-tools" "platforms;android-31" "extras;intel;Hardware_Accelerated_Execution_Manager" "build-tools;28.0.3" "system-images;android-31;google_apis;x86" "emulator" --verbose) || true
             (yes | sdkmanager --licenses) || true
       - run:
           name: Setup environment variables
           command: |
             echo 'export ANDROID_HOME="/usr/local/share/android-commandlinetools"' >> $BASH_ENV
-            echo 'export ANDROID_SDK_HOME="/usr/local/share/android-commandlinetools"' >> $BASH_ENV
-            echo 'export ANDROID_SDK_ROOT="/usr/local/share/android-commandlinetools"' >> $BASH_ENV
+            echo 'export ANDROID_SDK_HOME="${ANDROID_HOME}"' >> $BASH_ENV
+            echo 'export ANDROID_SDK_ROOT="${ANDROID_HOME}"' >> $BASH_ENV
             echo 'export PATH="$PATH:~/flutter/bin"'  >> $BASH_ENV
             echo 'export PATH="$PATH:${ANDROID_HOME}/platform-tools"'  >> $BASH_ENV
             echo 'export PATH="$PATH:${ANDROID_HOME}/tools"'  >> $BASH_ENV
@@ -80,28 +80,12 @@ jobs:
       - install_android
       - install_flutter
       - run:
-          name: Clean
-          command: flutter clean
-          working_directory: ./auth0_flutter/example
-      - run:
-          name: Build Android Example App
-          command: flutter pub get
-          working_directory: ./auth0_flutter/example
-      - run:
-          name: Build Android Example App
-          command: flutter build apk
-          working_directory: ./auth0_flutter/example
-      - run:
-          name: Clean
-          command: flutter clean
-          working_directory: ./auth0_flutter/example
-      - run:
-          name: Build iOS Example App
-          command: flutter pub get
-          working_directory: ./auth0_flutter/example
-      - run:
-          name: Build iOS Example App
-          command: flutter build ios --no-codesign
+          name: Build Example App
+          command: |
+            flutter clean
+            flutter pub get
+            flutter build apk
+            flutter build ios --no-codesign
           working_directory: ./auth0_flutter/example
 workflows:
   build:
