@@ -82,7 +82,7 @@ jobs:
       - install_flutter
       - run:
           name: Build iOS Example App
-          command: flutter build ios
+          command: flutter build ios --no-codesign
           working_directory: ./auth0_flutter/example
       - run:
           name: Build Android Example App
