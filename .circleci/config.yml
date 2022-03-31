@@ -59,7 +59,7 @@ jobs:
           command: |
             flutter clean
             flutter pub get
-            flutter build ios --no-codesign
+            flutter build ios --simulator --no-codesign
           working_directory: ./auth0_flutter/example
       - run:
           name: Build Android Example App
