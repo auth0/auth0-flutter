@@ -4,14 +4,18 @@ commands:
     description: "Install the Android SDK"
     steps:
       - run:
-          name: Install Brew Dependencues
-          command: brew install --cask temurin android-commandlinetools google-chrome
+          name: Install Brew Dependencies
+          command: |
+            brew tap homebrew/cask-versions
+            brew install --cask temurin11 android-commandlinetools google-chrome
       - run:
-          name: Install SDK Manager dependencies
-          command: (yes | sdkmanager "cmdline-tools;latest" "platform-tools" "platforms;android-29" "extras;intel;Hardware_Accelerated_Execution_Manager" "build-tools;28.0.3" "system-images;android-29;google_apis;x86" "emulator" --verbose) || true
+          name: Java version
+          command: java -version
       - run:
-          name: Accept SDK Manager licenses
-          command: (yes | sdkmanager --licenses) || true
+          name: Configure Android SDK Manager
+          command: |
+            (yes | sdkmanager "cmdline-tools;latest" "platform-tools" "platforms;android-29" "extras;intel;Hardware_Accelerated_Execution_Manager" "build-tools;28.0.3" "system-images;android-29;google_apis;x86" "emulator" --verbose) || true
+            (yes | sdkmanager --licenses) || true
       - run:
           name: Setup environment variables
           command: |
@@ -85,33 +89,6 @@ jobs:
     steps:
       - checkout
       - install_android
-      - run:
-          name: Java version
-          command: java -version
-      - run:
-          name: Clean
-          command: flutter clean
-          working_directory: ./auth0_flutter/example
-      - run:
-          name: Build Android Example App
-          command: flutter pub get
-          working_directory: ./auth0_flutter/example
-      - run:
-          name: Build Android Example App
-          command: flutter build apk
-          working_directory: ./auth0_flutter/example
-      - run:
-          name: Clean
-          command: flutter clean
-          working_directory: ./auth0_flutter/example
-      - run:
-          name: Build iOS Example App
-          command: flutter pub get
-          working_directory: ./auth0_flutter/example
-      - run:
-          name: Build iOS Example App
-          command: flutter build ios --no-codesign
-          working_directory: ./auth0_flutter/example
 workflows:
   build:
     jobs:
