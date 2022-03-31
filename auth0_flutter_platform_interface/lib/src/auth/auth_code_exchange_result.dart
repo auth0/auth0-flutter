@@ -2,7 +2,7 @@ class AuthCodeExchangeResult {
   final String idToken;
   final String accessToken;
   final String? refreshToken;
-  final int expiresIn;
+  final double expiresIn;
   final Set<String> scopes;
 
   AuthCodeExchangeResult(
