@@ -9,7 +9,7 @@ commands:
       - run:
           name: Configure Android SDK Manager
           command: |
-            (yes | sdkmanager "cmdline-tools;latest" "platform-tools" "platforms;android-31" "extras;intel;Hardware_Accelerated_Execution_Manager" "build-tools;28.0.3" "system-images;android-31;google_apis;x86" "emulator" --verbose) || true
+            (yes | sdkmanager "cmdline-tools;latest") || true
             (yes | sdkmanager --licenses) || true
       - run:
           name: Setup environment variables
