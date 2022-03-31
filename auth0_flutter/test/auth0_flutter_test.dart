@@ -8,9 +8,17 @@ void main() {
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  const Map<dynamic, dynamic> loginResult = {
+    'accessToken': 'accessToken',
+    'idToken': 'idToken',
+    'refreshToken': 'refreshToken',
+    'expiresIn': 10,
+    'scopes': ['a'],
+    'userProfile': {'name': 'John Doe'}
+  };
   setUp(() {
-    channel
-        .setMockMethodCallHandler((final MethodCall methodCall) async => '42');
+    channel.setMockMethodCallHandler(
+        (final MethodCall methodCall) async => loginResult);
   });
 
   tearDown(() {
@@ -18,6 +26,7 @@ void main() {
   });
 
   test('login', () async {
-    expect(await Auth0('test', 'test').webAuthentication.login(), '42');
+    final result = await Auth0('test', 'test').webAuthentication.login();
+    expect(result.accessToken, loginResult['accessToken']);
   });
 }

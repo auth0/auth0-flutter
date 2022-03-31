@@ -1,0 +1,72 @@
+version: '2.1'
+jobs:
+  test_and_analyze:
+    docker:
+      - image: cirrusci/flutter
+    steps:
+      - checkout
+      - run:
+          name: Test App Facing Package
+          command: |
+            flutter pub get
+            flutter test
+          working_directory: ./auth0_flutter
+      - run:
+          name: Analyze App Facing Package
+          command: dart analyze
+          working_directory: ./auth0_flutter
+      - run:
+          name: Test Platform Interface Package
+          command: |
+            flutter pub get
+            flutter test
+          working_directory: ./auth0_flutter_platform_interface
+      - run:
+          name: Analyze Platform Interface Package
+          command: dart analyze
+          working_directory: ./auth0_flutter_platform_interface
+  test_examples:
+    macos:
+      xcode: 13
+    steps:
+      - checkout
+      - run:
+          name: Install Android SDK
+          command: |
+            brew install --cask android-commandlinetools
+            (yes | sdkmanager "cmdline-tools;latest") || true
+            (yes | sdkmanager --licenses) || true
+      - run:
+          name: Setup environment variables
+          command: |
+            echo 'export ANDROID_HOME="/usr/local/share/android-commandlinetools"' >> $BASH_ENV
+            echo 'export ANDROID_SDK_HOME="${ANDROID_HOME}"' >> $BASH_ENV
+            echo 'export ANDROID_SDK_ROOT="${ANDROID_HOME}"' >> $BASH_ENV
+            echo 'export PATH="$PATH:~/flutter/bin"'  >> $BASH_ENV
+            echo 'export PATH="$PATH:${ANDROID_HOME}/platform-tools"'  >> $BASH_ENV
+            echo 'export PATH="$PATH:${ANDROID_HOME}/tools"'  >> $BASH_ENV
+            echo 'export PATH="$PATH:${ANDROID_HOME}/sdkmanager"'  >> $BASH_ENV
+            echo 'export PATH="$PATH:/usr/local/bin"'  >> $BASH_ENV
+            echo 'export PATH="$PATH:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/emulator"'  >> $BASH_ENV
+      - run:
+          name: Install Flutter SDK
+          command: |
+            if ! test -f "~/flutter_sdk.zip"; then curl -o ~/flutter_sdk.zip https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_2.10.4-stable.zip; fi
+            unzip ~/flutter_sdk.zip -d ~
+            (yes | flutter doctor --android-licenses) || true
+      - run:
+          name: Build iOS Example App
+          command: |
+            flutter clean
+            flutter pub get
+            flutter build ios --no-codesign
+          working_directory: ./auth0_flutter/example
+      - run:
+          name: Build Android Example App
+          command: flutter build apk
+          working_directory: ./auth0_flutter/example
+workflows:
+  tests:
+    jobs:
+      - test_and_analyze
+      - test_examples
