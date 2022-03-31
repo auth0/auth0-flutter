@@ -42,10 +42,12 @@ class Auth0FlutterWebAuthMethodCallHandler : MethodCallHandler {
         }
 
         when (call.method) {
+
             WEBAUTH_LOGIN_METHOD -> {
-                Log.d("DEBUG", context.packageName)
+                val args = call.arguments as HashMap<*, *>;
+
                 WebAuthProvider
-                    .login(Auth0("dk1lvC9QyrdALZeXNaiIOwjX9BlMNmpv", "elkdanger.eu.auth0.com"))
+                    .login(Auth0(args["clientId"] as String, args["domain"] as String))
                     .withScheme("demo")
                     .start(context, callback)
             }
