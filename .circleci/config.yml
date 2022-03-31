@@ -52,6 +52,12 @@ jobs:
           name: Flutter Doctor
           command: flutter doctor
       - run:
+          name: Flutter Version
+          command: flutter --version
+      - run:
+          name: Dart Version
+          command: dart --version
+      - run:
           name: App Facing Tests
           command: flutter test
           working_directory: ./auth0_flutter
