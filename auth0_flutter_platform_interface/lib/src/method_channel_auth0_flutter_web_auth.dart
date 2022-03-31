@@ -1,6 +1,8 @@
 import 'package:flutter/services.dart';
+
 import 'auth0_flutter_web_auth_platform.dart';
 import 'extensions/list_extensions.dart';
+import 'extensions/map_extensions.dart';
 import 'web-auth/web_auth_login_options.dart';
 import 'web-auth/web_auth_login_result.dart';
 import 'web-auth/web_auth_logout_options.dart';
@@ -25,7 +27,7 @@ class MethodChannelAuth0FlutterWebAuth extends Auth0FlutterWebAuthPlatform {
           result['userProfile'] as Map<dynamic, dynamic>),
       idToken: result['idToken'] as String,
       accessToken: result['accessToken'] as String,
-      refreshToken: result['refreshToken'] as String?,
+      refreshToken: result.getOrNull('refreshToken'),
       expiresIn: result['expiresIn'] as double,
       scopes: (result['scopes'] as List<Object?>).toTypedSet<String>(),
     );
