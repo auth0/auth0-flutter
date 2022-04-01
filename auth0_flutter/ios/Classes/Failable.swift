@@ -1,5 +1,4 @@
-protocol Failable {
-    func failure(code: String, message: String) -> [String: Any?]
+protocol Failable { 
     func failure(_ handlerError: HandlerError) -> [String: Any?]
 }
 
