@@ -8,12 +8,7 @@ protocol WebAuthMethodHandler: MethodHandler {
     func failure(from webAuthError: WebAuthError) -> [String: Any?]
 }
 
-extension WebAuthMethodHandler {
-    func failure(code: String, message: String) -> [String: Any?] {
-        let error: [String: Any] = ["code": code, "message": message]
-        return self.wrap(error: error)
-    }
-
+extension WebAuthMethodHandler { 
     func failure(from webAuthError: WebAuthError) -> [String: Any?] {
         var code: String
         switch webAuthError {
@@ -28,14 +23,6 @@ extension WebAuthMethodHandler {
         }
         let error: [String: Any] = ["code": code, "message": String(describing: webAuthError)]
         return self.wrap(error: error)
-    }
-
-    func wrap(result: [String: Any?]?) -> [String: Any?] {
-        return ["result": result]
-    }
-
-    func wrap(error: [String: Any]) -> [String: Any?] {
-        return ["error": error]
     }
 }
 
