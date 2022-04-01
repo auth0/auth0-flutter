@@ -102,7 +102,7 @@ struct WebAuthLogoutMethodHandler: WebAuthMethodHandler {
     }
 }
 
-class WebAuthHandler: NSObject { 
+public class WebAuthHandler: NSObject { 
     enum Method: String, RawRepresentable {
         case login = "webAuth#login"
         case logout = "webAuth#logout"

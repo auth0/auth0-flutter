@@ -1,6 +1,6 @@
 import Flutter
 
-class AuthenticationAPIHandler: NSObject, FlutterPlugin {
+public class AuthenticationAPIHandler: NSObject, FlutterPlugin { 
     enum Method: String, RawRepresentable {
         case login = "auth#login"
         case userInfo = "auth#userInfo"
