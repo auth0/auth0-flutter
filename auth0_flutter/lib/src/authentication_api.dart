@@ -15,7 +15,7 @@ class AuthenticationApi {
           usernameOrEmail: '', password: '', connectionOrRealm: ''));
 
   Future<Credentials> codeExchange(final String code) => Future.value(
-      const Credentials(idToken: '', accessToken: '', expiresIn: 0));
+      const Credentials(idToken: '', accessToken: '', expiresAt: 0));
 
   Future<UserProfile> userProfile({required final String accessToken}) =>
       Future.value({});
@@ -29,7 +29,7 @@ class AuthenticationApi {
 
   Future<Credentials> renewAccessToken({required final String refreshToken}) =>
       Future.value(
-          const Credentials(idToken: '', accessToken: '', expiresIn: 0));
+          const Credentials(idToken: '', accessToken: '', expiresAt: 0));
 
   Future<void> resetPassword(
           {required final String email, required final String password}) =>
