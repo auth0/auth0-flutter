@@ -132,7 +132,7 @@ extension WebAuthLogoutMethodHandler {
     }
 }
 
-class WebAuthHandler: NSObject, FlutterPlugin {
+class WebAuthHandler: NSObject { 
     enum Method: String, RawRepresentable {
         case login = "webAuth#login"
         case logout = "webAuth#logout"
@@ -155,9 +155,8 @@ class WebAuthHandler: NSObject, FlutterPlugin {
               let clientId = arguments["clientId"] as? String,
               let domain = arguments["domain"] as? String
         else {
-            let error = self.makeWebAuthError(code: "missingRequiredArguments",
-                                              message: "One or more required parameters are missing.")
-            return result(["error": error] as [String: Any?])
+            return result(self.failure(code: "missingRequiredArguments",
+                                       message: "One or more required parameters are missing."))
         }
 
         let webAuth = Auth0.webAuth(clientId: clientId, domain: domain)
@@ -173,59 +172,7 @@ class WebAuthHandler: NSObject, FlutterPlugin {
         }
     }
 
-    private func logout(_ call: FlutterMethodCall, _ callback: @escaping FlutterResult) {
-        guard let arguments = call.arguments as? [String: Any],
-              let clientId = arguments["clientId"] as? String,
-              let domain = arguments["domain"] as? String
-        else {
-            let error = self.makeWebAuthError(code: "missingRequiredArguments",
-                                              message: "One or more required parameters are missing.")
-            return callback(["error": error] as [String: Any?])
-        }
-
-        var webAuth = Auth0.webAuth(clientId: clientId, domain: domain)
-
-        if let returnTo = arguments["returnTo"] as? String, let url = URL(string: returnTo) {
-            webAuth = webAuth.redirectURL(url)
-        }
-
-        webAuth.clearSession { result in
-            switch result {
-            case .success: callback(["success": nil] as [String: Any?])
-            case let .failure(error):
-                callback(["error": self.makeWebAuthError(from: error)] as [String: Any?])
-            }
-        }
-    }
-
-    private func makeWebAuthLoginResult(from credentials: Credentials) throws -> [String: Any?] {
-        let jwt = try decode(jwt: credentials.idToken)
-        return [
-            "accessToken": credentials.accessToken,
-            "idToken": credentials.idToken,
-            "refreshToken": credentials.refreshToken,
-            "userProfile": jwt.body,
-            "expiresIn": credentials.expiresIn.timeIntervalSince1970,
-            "scopes": credentials.scope?.split(separator: " ").map(String.init),
-        ]
-    }
-
-    private func makeWebAuthError(from error: WebAuthError) -> [String: Any] {
-        var code: String
-        switch error {
-        case .noBundleIdentifier: code = "noBundleIdentifier"
-        case .invalidInvitationURL: code = "invalidInvitationURL"
-        case .userCancelled: code = "userCancelled"
-        case .noAuthorizationCode: code = "noAuthorizationCode"
-        case .pkceNotAllowed: code = "pkceNotAllowed"
-        case .idTokenValidationFailed: code = "idTokenValidationFailed"
-        case .other: code = "other"
-        default: code = "unknown"
-        }
-        return ["code": code, "message": String(describing: error)]
-    }
-
-    private func makeWebAuthError(code: String, message: String) -> [String: Any] {
-        return ["code": code, "message": message]
-    }
 }
+
+extension WebAuthHandler: FlutterPlugin {}
+extension WebAuthHandler: Failable {}
