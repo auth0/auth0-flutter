@@ -21,7 +21,7 @@ extension WebAuthMethodHandler {
         default: code = "unknown"
         }
         let error: [String: Any] = ["code": code, "message": String(describing: webAuthError)]
-        return wrap(error: error)
+        return errorResult(with: error)
     }
 }
 
@@ -33,7 +33,7 @@ struct WebAuthLoginMethodHandler: WebAuthMethodHandler {
               let parameters = arguments["parameters"] as? [String: String],
               let useEphemeralSession = arguments["useEphemeralSession"] as? Bool
         else {
-            return callback(failure(.missingRequiredArguments))
+            return callback(errorResult(.missingRequiredArguments))
         }
 
         var webAuth = client.parameters(parameters)
@@ -95,16 +95,10 @@ struct WebAuthLogoutMethodHandler: WebAuthMethodHandler {
 
         webAuth.clearSession { result in
             switch result {
-            case .success: callback(self.success())
+            case .success: callback(self.successResult())
             case let .failure(error): callback(self.failure(from: error))
             }
         }
-    }
-}
-
-extension WebAuthLogoutMethodHandler {
-    func success() -> [String: Any?] {
-        return wrap(result: nil)
     }
 }
 
@@ -131,7 +125,7 @@ class WebAuthHandler: NSObject {
               let clientId = arguments["clientId"] as? String,
               let domain = arguments["domain"] as? String
         else {
-            return result(failure(.missingRequiredArguments))
+            return result(errorResult(.missingRequiredArguments))
         }
 
         let webAuth = Auth0.webAuth(clientId: clientId, domain: domain)
@@ -149,4 +143,4 @@ class WebAuthHandler: NSObject {
 }
 
 extension WebAuthHandler: FlutterPlugin {}
-extension WebAuthHandler: Failable {}
+extension WebAuthHandler: ErrorResulting {}
