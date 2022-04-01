@@ -14,5 +14,5 @@ class Auth0 {
 
   WebAuthentication get webAuthentication => WebAuthentication(account);
 
-  AuthenticationApi get authenticationApi => AuthenticationApi(account);
+  AuthenticationApi get api => AuthenticationApi(account);
 }

@@ -9,14 +9,14 @@ class LoginResult extends Credentials {
       {required final String idToken,
       required final String accessToken,
       final String? refreshToken,
-      required final double expiresIn,
+      required final double expiresAt,
       final Set<String> scopes = const {},
       required this.userProfile})
       : super(
             idToken: idToken,
             accessToken: accessToken,
             refreshToken: refreshToken,
-            expiresIn: expiresIn,
+            expiresAt: expiresAt,
             scopes: scopes);
   factory LoginResult.fromMap(final Map<String, dynamic> result) => LoginResult(
         userProfile: Map<String, dynamic>.from(
