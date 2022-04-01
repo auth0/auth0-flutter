@@ -2,14 +2,9 @@ protocol Failable {
     func failure(_ handlerError: HandlerError) -> [String: Any?]
 }
 
-extension Failable {
-    func failure(code: String, message: String) -> [String: Any?] {
-        let error: [String: Any] = ["code": code, "message": message]
-        return wrap(error: error)
-    }
-
+extension Failable { 
     func failure(_ handlerError: HandlerError) -> [String: Any?] { 
-        return failure(code: handlerError.code, message: handlerError.message)
+        return wrap(error: ["code": handlerError.code, "message": handlerError.code])
     }
 
     func wrap(error: [String: Any]) -> [String: Any?] {
