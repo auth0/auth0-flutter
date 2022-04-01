@@ -2,19 +2,19 @@ import Auth0
 import Flutter
 import JWTDecode
 
-protocol MethodHandler: SuccessResulting, ErrorResulting { 
+protocol MethodHandler { 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult)
 }
 
 extension MethodHandler { 
-    func result(from credentials: Credentials) -> [String: Any?] {
+    func result(from credentials: Credentials) -> Any? {
         let jwt: JWT
         do {
             jwt = try decode(jwt: credentials.idToken)
-        } catch { 
-            return errorResult(.idTokenDecodingFailed)
+        } catch {
+            return FlutterError(from: .idTokenDecodingFailed)
         }
-        let resultDictionary: [String: Any?] = [
+        let data: [String: Any? ] = [
             "accessToken": credentials.accessToken,
             "idToken": credentials.idToken,
             "refreshToken": credentials.refreshToken,
@@ -22,6 +22,6 @@ extension MethodHandler {
             "expiresIn": credentials.expiresIn.timeIntervalSince1970,
             "scopes": credentials.scope?.split(separator: " ").map(String.init),
         ]
-        return successResult(with: resultDictionary)
+        return data
     }
 }

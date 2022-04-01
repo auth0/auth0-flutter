@@ -1,8 +1,8 @@
 import Flutter
 
 enum HandlerError: String {
-    case missingRequiredArguments
-    case idTokenDecodingFailed
+    case missingRequiredArguments = "MISSING_REQUIRED_ARGUMENTS"
+    case idTokenDecodingFailed = "ID_TOKEN_DECODING_FAILED"
 
     var code: String { 
         return rawValue

@@ -40,8 +40,8 @@ class _ExampleAppState extends State<ExampleApp> {
       setState(() {
         _isLoggedIn = true;
       });
-    } on PlatformException {
-      output = 'Failed to get token.';
+    } on PlatformException catch (e) {
+      output = e.toString();
     } on WebAuthException catch (e) {
       output = e.toString();
     }

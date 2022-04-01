@@ -2,38 +2,31 @@ import Auth0
 import Flutter
 import Foundation
 
-protocol WebAuthMethodHandler: MethodHandler {
-    var client: WebAuth { get }
-    func errorResult(from webAuthError: WebAuthError) -> [String: Any?]
-}
-
-extension WebAuthMethodHandler { 
-    func errorResult(from webAuthError: WebAuthError) -> [String: Any?] { 
+extension FlutterError {
+    convenience init(from webAuthError: WebAuthError) {
         var code: String
         switch webAuthError {
-        case .noBundleIdentifier: code = "noBundleIdentifier"
-        case .invalidInvitationURL: code = "invalidInvitationURL"
-        case .userCancelled: code = "userCancelled"
-        case .noAuthorizationCode: code = "noAuthorizationCode"
-        case .pkceNotAllowed: code = "pkceNotAllowed"
-        case .idTokenValidationFailed: code = "idTokenValidationFailed"
-        case .other: code = "other"
-        default: code = "unknown"
+        case .noBundleIdentifier: code = "NO_BUNDLE_IDENTIFIER"
+        case .invalidInvitationURL: code = "INVALID_INVITATION_URL"
+        case .userCancelled: code = "USER_CANCELLED"
+        case .noAuthorizationCode: code = "NO_AUTHORIZATION_CODE"
+        case .pkceNotAllowed: code = "PKCE_NOT_ALLOWED"
+        case .idTokenValidationFailed: code = "ID_TOKEN_VALIDATION_FAILED"
+        case .other: code = "OTHER"
+        default: code = "UNKNOWN"
         }
-        let error: [String: Any] = ["code": code, "message": String(describing: webAuthError)]
-        return errorResult(with: error)
+        self.init(code: code, message: String(describing: webAuthError), details: webAuthError.details)
     }
 }
 
-struct WebAuthLoginMethodHandler: WebAuthMethodHandler {
+struct WebAuthLoginMethodHandler: MethodHandler {
     let client: WebAuth
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
         guard let scopes = arguments["scopes"] as? [String],
               let parameters = arguments["parameters"] as? [String: String],
-              let useEphemeralSession = arguments["useEphemeralSession"] as? Bool
-        else {
-            return callback(errorResult(.missingRequiredArguments))
+              let useEphemeralSession = arguments["useEphemeralSession"] as? Bool else {
+            return callback(FlutterError(from: .missingRequiredArguments))
         }
 
         var webAuth = client.parameters(parameters)
@@ -74,16 +67,16 @@ struct WebAuthLoginMethodHandler: WebAuthMethodHandler {
             webAuth = webAuth.maxAge(maxAge)
         }
 
-        webAuth.start { result in
-            switch result {
-            case let .success(credentials): callback(self.result(from: credentials))
-            case let .failure(error): callback(self.errorResult(from: error))
+        webAuth.start {
+            switch $0 {
+            case let .success(credentials): callback(result(from: credentials))
+            case let .failure(error): callback(FlutterError(from: error))
             }
         }
     }
 }
 
-struct WebAuthLogoutMethodHandler: WebAuthMethodHandler {
+struct WebAuthLogoutMethodHandler: MethodHandler {
     let client: WebAuth
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
@@ -93,10 +86,10 @@ struct WebAuthLogoutMethodHandler: WebAuthMethodHandler {
             webAuth = webAuth.redirectURL(url)
         }
 
-        webAuth.clearSession { result in
-            switch result {
-            case .success: callback(self.successResult())
-            case let .failure(error): callback(self.errorResult(from: error))
+        webAuth.clearSession {
+            switch $0 {
+            case .success: callback(nil)
+            case let .failure(error): callback(FlutterError(from: error))
             }
         }
     }
@@ -108,8 +101,8 @@ public class WebAuthHandler: NSObject {
         case logout = "webAuth#logout"
     }
 
-    var loginMethodHandler: WebAuthMethodHandler?
-    var logoutMethodHandler: WebAuthMethodHandler?
+    var loginMethodHandler: MethodHandler?
+    var logoutMethodHandler: MethodHandler?
 
     private static let channelName = "auth0.com/auth0_flutter/web_auth"
 
@@ -123,9 +116,8 @@ public class WebAuthHandler: NSObject {
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         guard let arguments = call.arguments as? [String: Any],
               let clientId = arguments["clientId"] as? String,
-              let domain = arguments["domain"] as? String
-        else {
-            return result(errorResult(.missingRequiredArguments))
+              let domain = arguments["domain"] as? String else {
+            return result(FlutterError(from: .missingRequiredArguments))
         }
 
         let webAuth = Auth0.webAuth(clientId: clientId, domain: domain)
@@ -143,4 +135,3 @@ public class WebAuthHandler: NSObject {
 }
 
 extension WebAuthHandler: FlutterPlugin {}
-extension WebAuthHandler: ErrorResulting {}

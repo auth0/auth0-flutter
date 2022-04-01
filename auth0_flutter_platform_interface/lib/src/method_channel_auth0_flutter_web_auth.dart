@@ -14,37 +14,26 @@ const String logoutMethod = 'webAuth#logout';
 class MethodChannelAuth0FlutterWebAuth extends Auth0FlutterWebAuthPlatform {
   @override
   Future<LoginResult> login(final WebAuthLoginInput input) async {
-    final Map<String, dynamic>? result =
-        await _channel.invokeMapMethod(loginMethod, input.toMap());
-
+    final Map<String, dynamic>? result;
+    try {
+      result = await _channel.invokeMapMethod(loginMethod, input.toMap());
+    } on PlatformException catch (e) {
+      throw WebAuthException.fromPlatformException(e);
+    }
     if (result == null) {
       throw const WebAuthException.unknown('Channel returned null.');
     }
-    if (result['success'] != null) {
-      final resultMap = result['success'] as Map<dynamic, dynamic>;
-      return LoginResult.fromMap(Map<String, dynamic>.from(resultMap));
-    }
-    if (result['error'] != null) {
-      final errorMap = result['error'] as Map<dynamic, dynamic>;
-      throw WebAuthException.fromMap(Map<String, String>.from(errorMap));
-    }
-    throw const WebAuthException.unknown('Channel returned invalid result.');
+    return LoginResult.fromMap(Map<String, dynamic>.from(result));
   }
 
   @override
   Future<void> logout(final WebAuthLogoutInput input) async {
-    final Map<String, dynamic>? result =
-        await _channel.invokeMapMethod(logoutMethod, input.toMap());
-
-    if (result == null) {
-      throw const WebAuthException.unknown('Channel returned null.');
+    final Map<String, dynamic>? result;
+    try {
+      result = await _channel.invokeMapMethod(logoutMethod, input.toMap());
+    } on PlatformException catch (e) {
+      throw WebAuthException.fromPlatformException(e);
     }
-    if (result['error'] != null) {
-      final errorMap = result['error'] as Map<dynamic, dynamic>;
-      throw WebAuthException.fromMap(Map<String, String>.from(errorMap));
-    }
-    if (result['success'] == null) return;
-
-    throw const WebAuthException.unknown('Channel returned invalid result.');
+    if (result == null) return;
   }
 }

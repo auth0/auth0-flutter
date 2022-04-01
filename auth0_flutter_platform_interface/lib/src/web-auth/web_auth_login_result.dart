@@ -18,13 +18,13 @@ class LoginResult extends Credentials {
             refreshToken: refreshToken,
             expiresIn: expiresIn,
             scopes: scopes);
-  factory LoginResult.fromMap(final Map<String, dynamic> map) => LoginResult(
+  factory LoginResult.fromMap(final Map<String, dynamic> result) => LoginResult(
         userProfile: Map<String, dynamic>.from(
-            map['userProfile'] as Map<dynamic, dynamic>),
-        idToken: map['idToken'] as String,
-        accessToken: map['accessToken'] as String,
-        refreshToken: map['refreshToken'] as String?,
-        expiresIn: map['expiresIn'] as double,
-        scopes: Set<String>.from(map['scopes'] as List<Object?>),
+            result['userProfile'] as Map<dynamic, dynamic>),
+        idToken: result['idToken'] as String,
+        accessToken: result['accessToken'] as String,
+        refreshToken: result['refreshToken'] as String?,
+        expiresIn: result['expiresIn'] as double,
+        scopes: Set<String>.from(result['scopes'] as List<Object?>),
       );
 }
