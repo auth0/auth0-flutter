@@ -8,7 +8,7 @@ class IdTokenValidationConfig {
   const IdTokenValidationConfig({this.leeway, this.issuer, this.maxAge});
 }
 
-class WebAuthLoginOptions {
+class WebAuthLoginInput {
   final Account account;
   final IdTokenValidationConfig? idTokenValidationConfig;
   final String? audience;
@@ -19,7 +19,7 @@ class WebAuthLoginOptions {
   final bool useEphemeralSession;
   final Map<String, String> parameters;
 
-  WebAuthLoginOptions(
+  WebAuthLoginInput(
       {required this.account,
       this.idTokenValidationConfig,
       this.audience,

@@ -14,10 +14,6 @@ const String authSignUpMethod = 'auth#signUp';
 const String authRenewAccessTokenMethod = 'auth#renewAccessToken';
 const String authResetPasswordMethod = 'auth#resetPassword';
 
-extension ObjectListExtensions on List<Object?> {
-  Set<T> toTypedSet<T>() => map((final e) => e as T).toSet();
-}
-
 class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   @override
   Future<LoginResult> login(final AuthLoginOptions options) async {
@@ -60,9 +56,9 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
     return AuthRenewAccessTokenResult(
       idToken: result['idToken'] as String,
       accessToken: result['accessToken'] as String,
-      refreshToken: result['refreshToken'] as String,
+      refreshToken: result['refreshToken'] as String?,
       expiresAt: result['expiresAt'] as double,
-      scopes: (result['scopes'] as List<Object?>).toTypedSet<String>(),
+      scopes: Set<String>.from(result['scopes'] as List<Object?>),
     );
   }
 
