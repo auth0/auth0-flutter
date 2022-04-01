@@ -1,6 +1,5 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'auth/auth_code_exchange_result.dart';
 import 'auth/auth_login_options.dart';
 import 'auth/auth_renew_access_token_result.dart';
 import 'auth/auth_reset_password_options.dart';
@@ -25,10 +24,6 @@ abstract class Auth0FlutterAuthPlatform extends PlatformInterface {
 
   Future<LoginResult> login(final AuthLoginOptions options) {
     throw UnimplementedError('authLogin() has not been implemented');
-  }
-
-  Future<AuthCodeExchangeResult?> codeExchange(final String code) {
-    throw UnimplementedError('authCodeExchange() has not been implemented');
   }
 
   Future<AuthUserProfileResult?> userInfo(final String accessToken) {
