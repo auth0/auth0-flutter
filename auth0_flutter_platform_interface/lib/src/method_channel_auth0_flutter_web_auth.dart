@@ -20,8 +20,8 @@ class MethodChannelAuth0FlutterWebAuth extends Auth0FlutterWebAuthPlatform {
     if (result == null) {
       throw const WebAuthException.unknown('Channel returned null.');
     }
-    if (result['result'] != null) {
-      final resultMap = result['result'] as Map<dynamic, dynamic>;
+    if (result['success'] != null) {
+      final resultMap = result['success'] as Map<dynamic, dynamic>;
       return LoginResult.fromMap(Map<String, dynamic>.from(resultMap));
     }
     if (result['error'] != null) {
@@ -43,7 +43,7 @@ class MethodChannelAuth0FlutterWebAuth extends Auth0FlutterWebAuthPlatform {
       final errorMap = result['error'] as Map<dynamic, dynamic>;
       throw WebAuthException.fromMap(Map<String, String>.from(errorMap));
     }
-    if (result['result'] == null) return;
+    if (result['success'] == null) return;
 
     throw const WebAuthException.unknown('Channel returned invalid result.');
   }

@@ -2,7 +2,6 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import '../auth0_flutter_platform_interface.dart';
 import 'method_channel_auth0_flutter_web_auth.dart';
-import 'web-auth/web_auth_exception.dart';
 
 abstract class Auth0FlutterWebAuthPlatform extends PlatformInterface {
   Auth0FlutterWebAuthPlatform() : super(token: _token);

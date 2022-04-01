@@ -1,7 +1,6 @@
 import Auth0
 import Flutter
 import Foundation
-import JWTDecode
 
 protocol WebAuthMethodHandler: MethodHandler {
     var client: WebAuth { get }
@@ -22,7 +21,7 @@ extension WebAuthMethodHandler {
         default: code = "unknown"
         }
         let error: [String: Any] = ["code": code, "message": String(describing: webAuthError)]
-        return self.wrap(error: error)
+        return wrap(error: error)
     }
 }
 
@@ -34,11 +33,10 @@ struct WebAuthLoginMethodHandler: WebAuthMethodHandler {
               let parameters = arguments["parameters"] as? [String: String],
               let useEphemeralSession = arguments["useEphemeralSession"] as? Bool
         else {
-            return callback(self.failure(code: "missingRequiredArguments",
-                                         message: "One or more required parameters are missing."))
+            return callback(failure(.missingRequiredArguments))
         }
 
-        var webAuth = self.client.parameters(parameters)
+        var webAuth = client.parameters(parameters)
 
         if !scopes.isEmpty {
             webAuth = webAuth.scope(scopes.joined(separator: " "))
@@ -78,32 +76,10 @@ struct WebAuthLoginMethodHandler: WebAuthMethodHandler {
 
         webAuth.start { result in
             switch result {
-            case let .success(credentials):
-                do {
-                    callback(try self.success(from: credentials))
-                } catch {
-                    callback(self.failure(code: "idTokenDecodingFailed",
-                                          message: "Unable to decode the ID Token."))
-                }
-            case let .failure(error):
-                callback(self.failure(from: error))
+            case let .success(credentials): callback(self.result(from: credentials))
+            case let .failure(error): callback(self.failure(from: error))
             }
         }
-    }
-}
-
-extension WebAuthLoginMethodHandler {
-    func success(from credentials: Credentials) throws -> [String: Any?] {
-        let jwt = try decode(jwt: credentials.idToken)
-        let result: [String: Any?] = [
-            "accessToken": credentials.accessToken,
-            "idToken": credentials.idToken,
-            "refreshToken": credentials.refreshToken,
-            "userProfile": jwt.body,
-            "expiresIn": credentials.expiresIn.timeIntervalSince1970,
-            "scopes": credentials.scope?.split(separator: " ").map(String.init),
-        ]
-        return self.wrap(result: result)
     }
 }
 
@@ -111,7 +87,7 @@ struct WebAuthLogoutMethodHandler: WebAuthMethodHandler {
     let client: WebAuth
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
-        var webAuth = self.client
+        var webAuth = client
 
         if let returnTo = arguments["returnTo"] as? String, let url = URL(string: returnTo) {
             webAuth = webAuth.redirectURL(url)
@@ -128,7 +104,7 @@ struct WebAuthLogoutMethodHandler: WebAuthMethodHandler {
 
 extension WebAuthLogoutMethodHandler {
     func success() -> [String: Any?] {
-        return self.wrap(result: nil)
+        return wrap(result: nil)
     }
 }
 
@@ -155,8 +131,7 @@ class WebAuthHandler: NSObject {
               let clientId = arguments["clientId"] as? String,
               let domain = arguments["domain"] as? String
         else {
-            return result(self.failure(code: "missingRequiredArguments",
-                                       message: "One or more required parameters are missing."))
+            return result(failure(.missingRequiredArguments))
         }
 
         let webAuth = Auth0.webAuth(clientId: clientId, domain: domain)
@@ -171,7 +146,6 @@ class WebAuthHandler: NSObject {
         default: result(FlutterMethodNotImplemented)
         }
     }
-
 }
 
 extension WebAuthHandler: FlutterPlugin {}
