@@ -18,8 +18,8 @@ class ExampleApp extends StatefulWidget {
 }
 
 class _ExampleAppState extends State<ExampleApp> {
-  bool _loggedIn = false;
-  String _token = 'Unknown';
+  bool _isLoggedIn = false;
+  String _output = '';
 
   final auth0 = Auth0('test-domain', 'test-client');
 
@@ -29,15 +29,21 @@ class _ExampleAppState extends State<ExampleApp> {
   }
 
   Future<void> webAuthLogin() async {
-    String token;
+    String output;
 
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
       final result = await auth0.webAuthentication.login();
-      token = result.idToken;
+      output = result.idToken;
+
+      setState(() {
+        _isLoggedIn = true;
+      });
     } on PlatformException {
-      token = 'Failed to get token.';
+      output = 'Failed to get token.';
+    } on WebAuthException catch (e) {
+      output = e.toString();
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -46,18 +52,25 @@ class _ExampleAppState extends State<ExampleApp> {
     if (!mounted) return;
 
     setState(() {
-      _loggedIn = true;
-      _token = token;
+      _output = output;
     });
   }
 
   Future<void> webAuthLogout() async {
+    String output;
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
       await auth0.webAuthentication.logout();
+      output = 'Logged out.';
+
+      setState(() {
+        _isLoggedIn = false;
+      });
     } on PlatformException {
-      debugPrint('Failed to logout');
+      output = 'Failed to logout.';
+    } on WebAuthException catch (e) {
+      output = e.toString();
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -66,8 +79,7 @@ class _ExampleAppState extends State<ExampleApp> {
     if (!mounted) return;
 
     setState(() {
-      _loggedIn = false;
-      _token = 'Unknown';
+      _output = output;
     });
   }
 
@@ -85,7 +97,7 @@ class _ExampleAppState extends State<ExampleApp> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const FormCard(),
-                      if (_loggedIn)
+                      if (_isLoggedIn)
                         WebAuthCard('Web Auth Logout', webAuthLogout)
                       else
                         WebAuthCard('Web Auth Login', webAuthLogin),
@@ -96,7 +108,7 @@ class _ExampleAppState extends State<ExampleApp> {
                   child: Padding(
                       padding: const EdgeInsets.fromLTRB(
                           padding, 0.0, padding, padding),
-                      child: Center(child: Text('With token: $_token')))),
+                      child: Center(child: Text(_output)))),
             ],
           )),
     );

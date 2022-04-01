@@ -1,10 +1,10 @@
 import '../account.dart';
 
-class WebAuthLogoutOptions {
+class WebAuthLogoutInput {
   final Account account;
   final String? returnTo;
 
-  WebAuthLogoutOptions({
+  WebAuthLogoutInput({
     required this.account, this.returnTo
   });
 

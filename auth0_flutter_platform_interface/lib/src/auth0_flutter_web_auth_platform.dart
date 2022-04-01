@@ -2,6 +2,7 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import '../auth0_flutter_platform_interface.dart';
 import 'method_channel_auth0_flutter_web_auth.dart';
+import 'web-auth/web_auth_exception.dart';
 
 abstract class Auth0FlutterWebAuthPlatform extends PlatformInterface {
   Auth0FlutterWebAuthPlatform() : super(token: _token);
@@ -18,11 +19,11 @@ abstract class Auth0FlutterWebAuthPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<LoginResult> login(final WebAuthLoginOptions options) {
+  Future<LoginResult> login(final WebAuthLoginInput input) {
     throw UnimplementedError('webAuth.login() has not been implemented');
   }
 
-  Future<void> logout(final WebAuthLogoutOptions options) {
+  Future<void> logout(final WebAuthLogoutInput input) {
     throw UnimplementedError('webAuth.logout() has not been implemented');
   }
 }

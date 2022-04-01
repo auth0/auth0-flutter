@@ -15,7 +15,7 @@ class WebAuthentication {
           final Map<String, String> parameters = const {},
           final IdTokenValidationConfig idTokenValidationConfig =
               const IdTokenValidationConfig()}) =>
-      Auth0FlutterWebAuthPlatform.instance.login(WebAuthLoginOptions(
+      Auth0FlutterWebAuthPlatform.instance.login(WebAuthLoginInput(
           audience: audience,
           scopes: scopes,
           redirectUri: redirectUri,
@@ -26,7 +26,7 @@ class WebAuthentication {
           idTokenValidationConfig: idTokenValidationConfig));
 
   Future<void> logout({final String? returnTo}) =>
-      Auth0FlutterWebAuthPlatform.instance.logout(WebAuthLogoutOptions(
+      Auth0FlutterWebAuthPlatform.instance.logout(WebAuthLogoutInput(
         returnTo: returnTo,
         account: account,
       ));

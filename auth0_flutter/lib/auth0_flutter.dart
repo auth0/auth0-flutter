@@ -3,6 +3,8 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 import 'src/authentication_api.dart';
 import 'src/web_authentication.dart';
 
+export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
+    show WebAuthException;
 
 class Auth0 {
   final Account account;

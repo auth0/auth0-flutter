@@ -38,7 +38,6 @@ linter:
     avoid_double_and_int_checks: true
     avoid_equals_and_hash_code_on_mutable_classes: true
     avoid_escaping_inner_quotes: true
-    avoid_field_initializers_in_const_classes: true
     avoid_implementing_value_types: true
     avoid_js_rounded_ints: true
     avoid_positional_boolean_parameters: true
