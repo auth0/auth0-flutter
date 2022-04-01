@@ -9,12 +9,14 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   const Map<dynamic, dynamic> loginResult = {
-    'accessToken': 'accessToken',
-    'idToken': 'idToken',
-    'refreshToken': 'refreshToken',
-    'expiresIn': 10.0,
-    'scopes': ['a'],
-    'userProfile': {'name': 'John Doe'}
+    'success': {
+      'accessToken': 'accessToken',
+      'idToken': 'idToken',
+      'refreshToken': 'refreshToken',
+      'expiresIn': 10.0,
+      'scopes': ['a'],
+      'userProfile': {'name': 'John Doe'}
+    }
   };
   setUp(() {
     channel.setMockMethodCallHandler(
@@ -27,6 +29,6 @@ void main() {
 
   test('login', () async {
     final result = await Auth0('test', 'test').webAuthentication.login();
-    expect(result.accessToken, loginResult['accessToken']);
+    expect(result.accessToken, loginResult['success']['accessToken']);
   });
 }
