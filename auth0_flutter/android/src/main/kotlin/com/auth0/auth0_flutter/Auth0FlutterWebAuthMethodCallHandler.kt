@@ -41,6 +41,16 @@ class Auth0FlutterWebAuthMethodCallHandler : MethodCallHandler {
             }
         }
 
+        val logoutCallback = object: Callback<Void?, AuthenticationException> {
+            override fun onFailure(exception: AuthenticationException) {
+                result.error(exception.getCode(), exception.getDescription(), exception);
+            }
+
+            override fun onSuccess(res: Void?) {
+                result.success(null);
+            }
+        }
+
         when (call.method) {
 
             WEBAUTH_LOGIN_METHOD -> {
@@ -52,7 +62,12 @@ class Auth0FlutterWebAuthMethodCallHandler : MethodCallHandler {
                     .start(context, callback)
             }
             WEBAUTH_LOGOUT_METHOD -> {
-                result.success("Web Auth Logout Success")
+                val args = call.arguments as HashMap<*, *>;
+
+                WebAuthProvider
+                    .logout(Auth0(args["clientId"] as String, args["domain"] as String))
+                    .withScheme("demo")
+                    .start(context, logoutCallback)
             }
             else -> {
                 result.notImplemented()
