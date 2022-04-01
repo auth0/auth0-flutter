@@ -4,11 +4,11 @@ import Foundation
 
 protocol WebAuthMethodHandler: MethodHandler {
     var client: WebAuth { get }
-    func failure(from webAuthError: WebAuthError) -> [String: Any?]
+    func errorResult(from webAuthError: WebAuthError) -> [String: Any?]
 }
 
 extension WebAuthMethodHandler { 
-    func failure(from webAuthError: WebAuthError) -> [String: Any?] {
+    func errorResult(from webAuthError: WebAuthError) -> [String: Any?] { 
         var code: String
         switch webAuthError {
         case .noBundleIdentifier: code = "noBundleIdentifier"
@@ -77,7 +77,7 @@ struct WebAuthLoginMethodHandler: WebAuthMethodHandler {
         webAuth.start { result in
             switch result {
             case let .success(credentials): callback(self.result(from: credentials))
-            case let .failure(error): callback(self.failure(from: error))
+            case let .failure(error): callback(self.errorResult(from: error))
             }
         }
     }
@@ -96,7 +96,7 @@ struct WebAuthLogoutMethodHandler: WebAuthMethodHandler {
         webAuth.clearSession { result in
             switch result {
             case .success: callback(self.successResult())
-            case let .failure(error): callback(self.failure(from: error))
+            case let .failure(error): callback(self.errorResult(from: error))
             }
         }
     }
