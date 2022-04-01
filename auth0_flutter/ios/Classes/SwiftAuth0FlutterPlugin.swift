@@ -88,7 +88,7 @@ class WebAuthHandler: NSObject, FlutterPlugin {
             "idToken": credentials.idToken,
             "refreshToken": credentials.refreshToken,
             "userProfile": jwt.body,
-            "expiresIn": credentials.expiresIn.timeIntervalSince1970,
+            "expiresAt": credentials.expiresIn.timeIntervalSince1970,
             "scopes": credentials.scope?.split(separator: " ").map(String.init),
           ]
           callback(data)

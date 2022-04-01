@@ -61,7 +61,7 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
       idToken: result['idToken'] as String,
       accessToken: result['accessToken'] as String,
       refreshToken: result['refreshToken'] as String,
-      expiresIn: result['expiresIn'] as double,
+      expiresAt: result['expiresAt'] as double,
       scopes: (result['scopes'] as List<Object?>).toTypedSet<String>(),
     );
   }
