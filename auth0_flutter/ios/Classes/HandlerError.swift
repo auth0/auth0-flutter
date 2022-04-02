@@ -1,7 +1,5 @@
-import Flutter
-
 enum HandlerError: String {
-    case missingRequiredArguments = "MISSING_REQUIRED_ARGUMENTS"
+    case requiredArgumentsMissing = "REQUIRED_ARGUMENTS_MISSING"
     case idTokenDecodingFailed = "ID_TOKEN_DECODING_FAILED"
 
     var code: String { 
@@ -10,7 +8,7 @@ enum HandlerError: String {
 
     var message: String {
         switch self {
-        case .missingRequiredArguments: return "One or more required arguments are missing."
+        case .requiredArgumentsMissing: return "One or more required arguments are missing."
         case .idTokenDecodingFailed: return "Unable to decode the ID Token."
         }
     }

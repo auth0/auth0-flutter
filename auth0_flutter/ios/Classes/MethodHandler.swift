@@ -1,5 +1,5 @@
-import Auth0
 import Flutter
+import Auth0
 import JWTDecode
 
 protocol MethodHandler { 
