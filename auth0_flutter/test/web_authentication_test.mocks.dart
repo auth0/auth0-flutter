@@ -2,9 +2,13 @@
 // in auth0_flutter/test/web_authentication_test.dart.
 // Do not manually edit this file.
 
+import 'dart:async' as _i4;
+
+import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
+    as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
-import 'web_authentication_test.dart' as _i2;
+import 'web_authentication_test.dart' as _i3;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -16,11 +20,24 @@ import 'web_authentication_test.dart' as _i2;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 
-/// A class which mocks [MethodCallHandler].
+class _FakeLoginResult_0 extends _i1.Fake implements _i2.LoginResult {}
+
+/// A class which mocks [TestPlatform].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockMethodCallHandler extends _i1.Mock implements _i2.MethodCallHandler {
-  MockMethodCallHandler() {
+class MockTestPlatform extends _i1.Mock implements _i3.TestPlatform {
+  MockTestPlatform() {
     _i1.throwOnMissingStub(this);
   }
+
+  @override
+  _i4.Future<_i2.LoginResult> login(_i2.WebAuthLoginOptions? options) =>
+      (super.noSuchMethod(Invocation.method(#login, [options]),
+              returnValue: Future<_i2.LoginResult>.value(_FakeLoginResult_0()))
+          as _i4.Future<_i2.LoginResult>);
+  @override
+  _i4.Future<void> logout(_i2.WebAuthLogoutOptions? options) =>
+      (super.noSuchMethod(Invocation.method(#logout, [options]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
 }

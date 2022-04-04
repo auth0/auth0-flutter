@@ -1,72 +1,62 @@
 import 'package:auth0_flutter/auth0_flutter.dart';
-import 'package:flutter/services.dart';
+import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'web_authentication_test.mocks.dart';
 
-class MethodCallHandler {
-  static const Map<dynamic, dynamic> loginResult = {
-    'accessToken': 'accessToken',
-    'idToken': 'idToken',
-    'refreshToken': 'refreshToken',
-    'expiresIn': 10.0,
-    'scopes': ['a'],
-    'userProfile': {'name': 'John Doe'}
-  };
-
-  Future<dynamic>? methodCallHandler(final MethodCall? methodCall) async {
-    if (methodCall?.method == 'webAuth#login') {
-      return loginResult;
-    }
-  }
+class TestPlatform extends Mock
+    with
+        // ignore: prefer_mixin
+        MockPlatformInterfaceMixin
+    implements
+        Auth0FlutterWebAuthPlatform {
+  static const LoginResult loginResult = LoginResult(
+      accessToken: 'accessToken',
+      idToken: 'idToken',
+      refreshToken: 'refreshToken',
+      expiresIn: 10.0,
+      scopes: {'a'},
+      userProfile: {'name': 'John Doe'});
 }
 
-@GenerateMocks([MethodCallHandler])
+@GenerateMocks([TestPlatform])
 void main() {
-  const MethodChannel channel =
-      MethodChannel('auth0.com/auth0_flutter/web_auth');
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  const Map<dynamic, dynamic> loginResult = {
-    'accessToken': 'accessToken',
-    'idToken': 'idToken',
-    'refreshToken': 'refreshToken',
-    'expiresIn': 10.0,
-    'scopes': ['a'],
-    'userProfile': {'name': 'John Doe'}
-  };
-
-  final mocked = MockMethodCallHandler();
+  final mockedPlatform = MockTestPlatform();
 
   setUp(() {
-    channel.setMockMethodCallHandler(mocked.methodCallHandler);
-    reset(mocked);
-  });
-
-  tearDown(() {
-    channel.setMockMethodCallHandler(null);
+    Auth0FlutterWebAuthPlatform.instance = mockedPlatform;
+    reset(mockedPlatform);
   });
 
   test('login', () async {
-    when(mocked.methodCallHandler(any))
-        .thenAnswer((final _) async => MethodCallHandler.loginResult);
+    when(mockedPlatform.login(any))
+        .thenAnswer((final _) async => TestPlatform.loginResult);
 
-    final result = await Auth0('test', 'test').webAuthentication.login();
+    final result =
+        await Auth0('test-domain', 'test-clientId').webAuthentication.login(audience: 'test-audience', scopes: {'a'});
 
-    expect(verify(mocked.methodCallHandler(captureAny)).captured.single.method,
-        'webAuth#login');
-    expect(result.accessToken, loginResult['accessToken']);
+    final verificationResult = verify(mockedPlatform.login(captureAny)).captured.single;
+    expect(verificationResult.account.domain, 'test-domain');
+    expect(verificationResult.account.clientId, 'test-clientId');
+    expect(verificationResult.audience, 'test-audience');
+    expect(verificationResult.scopes, {'a'});
+    expect(result, TestPlatform.loginResult);
   });
 
   test('logout', () async {
-    when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+    when(mockedPlatform.logout(any)).thenAnswer((final _) async => {});
 
-    await Auth0('test', 'test').webAuthentication.logout();
+    await Auth0('test-domain', 'test-clientId').webAuthentication.logout(returnTo: 'abc');
 
-    expect(verify(mocked.methodCallHandler(captureAny)).captured.single.method,
-        'webAuth#logout');
+    final verificationResult = verify(mockedPlatform.logout(captureAny)).captured.single;
+    expect(verificationResult.account.domain, 'test-domain');
+    expect(verificationResult.account.clientId, 'test-clientId');
+    expect(verificationResult.returnTo, 'abc');
   });
 }
