@@ -9,7 +9,7 @@ export 'src/auth0_flutter_web_auth_platform.dart';
 export 'src/credentials.dart';
 export 'src/method_channel_auth0_flutter_auth.dart';
 export 'src/method_channel_auth0_flutter_web_auth.dart';
-export 'src/web-auth/web_auth_login_options.dart';
 export 'src/web-auth/web_auth_exception.dart';
+export 'src/web-auth/web_auth_login_input.dart';
 export 'src/web-auth/web_auth_login_result.dart';
 export 'src/web-auth/web_auth_logout_input.dart';

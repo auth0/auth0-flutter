@@ -1,9 +1,6 @@
 import 'package:flutter/services.dart';
 
 import 'auth0_flutter_web_auth_platform.dart';
-import 'extensions/list_extensions.dart';
-import 'extensions/map_extensions.dart';
-import 'web-auth/web_auth_login_options.dart';
 import 'web-auth/web_auth_exception.dart';
 import 'web-auth/web_auth_login_input.dart';
 import 'web-auth/web_auth_login_result.dart';
@@ -26,7 +23,7 @@ class MethodChannelAuth0FlutterWebAuth extends Auth0FlutterWebAuthPlatform {
     if (result == null) {
       throw const WebAuthException.unknown('Channel returned null.');
     }
-    
+
     return LoginResult.fromMap(Map<String, dynamic>.from(result));
   }
 

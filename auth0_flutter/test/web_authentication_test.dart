@@ -17,7 +17,7 @@ class TestPlatform extends Mock
       accessToken: 'accessToken',
       idToken: 'idToken',
       refreshToken: 'refreshToken',
-      expiresIn: 10.0,
+      expiresAt: 10.0,
       scopes: {'a'},
       userProfile: {'name': 'John Doe'});
 }
