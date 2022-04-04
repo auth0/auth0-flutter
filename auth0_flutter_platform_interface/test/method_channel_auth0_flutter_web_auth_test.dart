@@ -1,4 +1,5 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
+import 'package:auth0_flutter_platform_interface/src/method_channel_auth0_flutter_web_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
