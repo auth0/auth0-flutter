@@ -11,12 +11,16 @@ extension XCTestCase {
     var timeout: TimeInterval {
         return 2
     }
+
+    func wait(for expectations: [XCTestExpectation]) {
+        wait(for: expectations, timeout: timeout)
+    }
 }
 
 // MARK: - Custom Assertions
 
 func assertHas(handlerError: HandlerError,
-               in result: Any?,
+               _ result: Any?,
                file: StaticString = #filePath,
                line: UInt = #line) {
     if let result = result as? FlutterError,
@@ -25,11 +29,24 @@ func assertHas(handlerError: HandlerError,
        result.details == nil {
         return
     }
-    XCTFail("The handler did not produce a \(handlerError.code) error", file: file, line: line)
+    XCTFail("The handler did not produce the error \(handlerError.code)", file: file, line: line)
+}
+
+func assertHas(webAuthError: WebAuthError,
+               code: String,
+               _ result: Any?,
+               file: StaticString = #filePath,
+               line: UInt = #line) {
+    if let result = result as? FlutterError,
+       result.code == code,
+       result.message == String(describing: webAuthError) {
+        return
+    }
+    XCTFail("The handler did not produce the error '\(webAuthError)'", file: file, line: line)
 }
 
 func assertHas(credentials: Credentials,
-               in result: Any?,
+               _ result: Any?,
                file: StaticString = #filePath,
                line: UInt = #line) {
     if let result = result as? [String: Any],

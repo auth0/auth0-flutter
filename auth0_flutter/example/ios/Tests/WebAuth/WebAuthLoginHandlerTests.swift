@@ -23,60 +23,60 @@ extension WebAuthLoginHandlerTests {
         let arguments: [String: Any] = ["parameters": [:], "useEphemeralSession": false]
         let expectation = self.expectation(description: "scopes is missing")
         sut.handle(with: arguments) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, in: result)
+            assertHas(handlerError: .requiredArgumentsMissing, result)
             expectation.fulfill()
         }
-        wait(for: [expectation], timeout: timeout)
+        wait(for: [expectation])
     }
 
     func testProducesErrorWhenScopesIsNoStringsArray() {
         let arguments: [String: Any] = ["scopes": 1, "parameters": [:], "useEphemeralSession": false]
         let expectation = self.expectation(description: "scopes is not an array of strings")
         sut.handle(with: arguments) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, in: result)
+            assertHas(handlerError: .requiredArgumentsMissing, result)
             expectation.fulfill()
         }
-        wait(for: [expectation], timeout: timeout)
+        wait(for: [expectation])
     }
 
     func testProducesErrorWhenParametersIsMissing() {
         let arguments: [String: Any] = ["scopes": [], "useEphemeralSession": false]
         let expectation = self.expectation(description: "parameters is missing")
         sut.handle(with: arguments) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, in: result)
+            assertHas(handlerError: .requiredArgumentsMissing, result)
             expectation.fulfill()
         }
-        wait(for: [expectation], timeout: timeout)
+        wait(for: [expectation])
     }
 
     func testProducesErrorWhenParametersIsNoStringsDictionary() {
         let arguments: [String: Any] = ["parameters": ["foo": 1], "scopes": [], "useEphemeralSession": false]
         let expectation = self.expectation(description: "parameters is not a dictionary of strings")
         sut.handle(with: arguments) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, in: result)
+            assertHas(handlerError: .requiredArgumentsMissing, result)
             expectation.fulfill()
         }
-        wait(for: [expectation], timeout: timeout)
+        wait(for: [expectation])
     }
 
     func testProducesErrorWhenUseEphemeralSessionIsMissing() {
         let arguments: [String: Any] = ["scopes": [], "parameters": [:]]
         let expectation = self.expectation(description: "parameters is missing")
         sut.handle(with: arguments) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, in: result)
+            assertHas(handlerError: .requiredArgumentsMissing, result)
             expectation.fulfill()
         }
-        wait(for: [expectation], timeout: timeout)
+        wait(for: [expectation])
     }
 
     func testProducesErrorWhenUseEphemeralSessionIsNoBool() {
         let arguments: [String: Any] = ["useEphemeralSession": 1, "scopes": [], "parameters": [:]]
         let expectation = self.expectation(description: "useEphemeralSession is not a bool")
         sut.handle(with: arguments) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, in: result)
+            assertHas(handlerError: .requiredArgumentsMissing, result)
             expectation.fulfill()
         }
-        wait(for: [expectation], timeout: timeout)
+        wait(for: [expectation])
     }
 }
 
@@ -88,10 +88,10 @@ extension WebAuthLoginHandlerTests {
         let expectation = self.expectation(description: "ID Token cannot be decoded")
         spy.loginResult = .success(credentials)
         sut.handle(with: arguments()) { result in
-            assertHas(handlerError: .idTokenDecodingFailed, in: result)
+            assertHas(handlerError: .idTokenDecodingFailed, result)
             expectation.fulfill()
         }
-        wait(for: [expectation], timeout: timeout)
+        wait(for: [expectation])
     }
 }
 
@@ -236,10 +236,10 @@ extension WebAuthLoginHandlerTests {
         let expectation = self.expectation(description: "Produced credentials")
         spy.loginResult = .success(credentials)
         sut.handle(with: arguments()) { result in
-            assertHas(credentials: credentials, in: result)
+            assertHas(credentials: credentials, result)
             expectation.fulfill()
         }
-        wait(for: [expectation], timeout: timeout)
+        wait(for: [expectation])
     }
 
     func testProduceCredentialsWithoutRefreshToken() {
@@ -247,10 +247,32 @@ extension WebAuthLoginHandlerTests {
         let expectation = self.expectation(description: "Produced credentials without a refresh token")
         spy.loginResult = .success(credentials)
         sut.handle(with: arguments()) { result in
-            assertHas(credentials: credentials, in: result)
+            assertHas(credentials: credentials, result)
             expectation.fulfill()
         }
-        wait(for: [expectation], timeout: timeout)
+        wait(for: [expectation])
+    }
+
+    func testProduceWebAuthError() {
+        let errors: [String: WebAuthError] = ["USER_CANCELLED": .userCancelled,
+                                              "ID_TOKEN_VALIDATION_FAILED": .idTokenValidationFailed,
+                                              "INVALID_INVITATION_URL": .invalidInvitationURL,
+                                              "NO_AUTHORIZATION_CODE": .noAuthorizationCode,
+                                              "NO_BUNDLE_IDENTIFIER": .noBundleIdentifier,
+                                              "PKCE_NOT_ALLOWED": .pkceNotAllowed,
+                                              "OTHER": .other,
+                                              "UNKNOWN": .unknown]
+        var expectations: [XCTestExpectation] = []
+        for (code, error) in errors {
+            let expectation = self.expectation(description: "Produced the WebAuth error \(code)")
+            expectations.append(expectation)
+            spy.loginResult = .failure(error)
+            sut.handle(with: arguments()) { result in
+                assertHas(webAuthError: error, code: code, result)
+                expectation.fulfill()
+            }
+        }
+        wait(for: expectations)
     }
 }
 

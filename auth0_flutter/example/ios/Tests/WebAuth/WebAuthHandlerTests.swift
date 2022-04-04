@@ -31,31 +31,31 @@ extension WebAuthHandlerTests {
                          "domain": self.expectation(description: "domain is missing")]
         for (argument, currentExpectation) in arguments {
             sut.handle(FlutterMethodCall(methodName: "foo", arguments: [argument: "bar"])) { result in
-                assertHas(handlerError: .requiredArgumentsMissing, in: result)
+                assertHas(handlerError: .requiredArgumentsMissing, result)
                 currentExpectation.fulfill()
             }
         }
-        wait(for: Array(arguments.values), timeout: timeout)
+        wait(for: Array(arguments.values))
     }
 
     func testProducesErrorWhenClientIdIsNoString() {
         let arguments: [String: Any] = ["clientId": 1, "domain": "foo"]
         let expectation = self.expectation(description: "clientId is not a string")
         sut.handle(FlutterMethodCall(methodName: "foo", arguments: arguments)) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, in: result)
+            assertHas(handlerError: .requiredArgumentsMissing, result)
             expectation.fulfill()
         }
-        wait(for: [expectation], timeout: timeout)
+        wait(for: [expectation])
     }
 
     func testProducesErrorWhenDomainIsNoString() {
         let arguments: [String: Any] = ["clientId": "foo", "domain": 1]
         let expectation = self.expectation(description: "domain is not a string")
         sut.handle(FlutterMethodCall(methodName: "foo", arguments: arguments)) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, in: result)
+            assertHas(handlerError: .requiredArgumentsMissing, result)
             expectation.fulfill()
         }
-        wait(for: [expectation], timeout: timeout)
+        wait(for: [expectation])
     }
 }
 
@@ -72,7 +72,7 @@ extension WebAuthHandlerTests {
             XCTAssertTrue(NSDictionary(dictionary: spy.argumentsValue).isEqual(to: arguments))
             expectation.fulfill()
         }
-        wait(for: [expectation], timeout: timeout)
+        wait(for: [expectation])
     }
 
     func testCallsLogoutMethodHandler() {
@@ -85,6 +85,6 @@ extension WebAuthHandlerTests {
             XCTAssertTrue(NSDictionary(dictionary: spy.argumentsValue).isEqual(to: arguments))
             expectation.fulfill()
         }
-        wait(for: [expectation], timeout: timeout)
+        wait(for: [expectation])
     }
 }
