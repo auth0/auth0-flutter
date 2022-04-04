@@ -23,7 +23,8 @@ class WebAuthentication {
           invitationUrl: invitationUrl,
           parameters: parameters,
           account: account,
-          idTokenValidationConfig: idTokenValidationConfig));
+          idTokenValidationConfig: idTokenValidationConfig,
+          useEphemeralSession: useEphemeralSession));
 
   Future<void> logout({final String? returnTo}) =>
       Auth0FlutterWebAuthPlatform.instance.logout(WebAuthLogoutInput(
