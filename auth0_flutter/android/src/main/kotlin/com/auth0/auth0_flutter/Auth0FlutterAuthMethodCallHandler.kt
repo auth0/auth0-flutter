@@ -1,6 +1,15 @@
 package com.auth0.auth0_flutter
 
+import android.content.Context
 import androidx.annotation.NonNull
+import com.auth0.android.Auth0
+import com.auth0.android.authentication.AuthenticationAPIClient
+import com.auth0.android.authentication.AuthenticationException
+import com.auth0.android.authentication.storage.CredentialsManager
+import com.auth0.android.authentication.storage.SharedPreferencesStorage
+import com.auth0.android.callback.Callback
+import com.auth0.android.provider.AuthProvider
+import com.auth0.android.result.Credentials
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
@@ -12,10 +21,44 @@ class Auth0FlutterAuthMethodCallHandler: MethodCallHandler {
     private val AUTH_RENEWACCESSTOKEN_METHOD = "auth#renewAccessToken"
     private val AUTH_RESETPASSWORD_METHOD = "auth#resetPassword"
 
+    lateinit var context: Context;
+
+
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
+
         when (call.method) {
             AUTH_LOGIN_METHOD -> {
-                result.success("Auth Login Success")
+                val args = call.arguments as HashMap<*, *>;
+                val authentication = AuthenticationAPIClient(Auth0(args["clientId"] as String, args["domain"] as String));
+
+                authentication
+                    .login(args["usernameOrEmail"] as String, args["password"] as String, args["connectionOrRealm"] as String)
+                    .setScope((args["scope"] as List<String>).joinToString(separator = " "))
+                    .addParameters(args["parameters"] as Map<String, String>)
+                    .start(object : Callback<Credentials, AuthenticationException> {
+                        override fun onFailure(exception: AuthenticationException) {
+                            result.error(
+                                exception.getCode(),
+                                exception.getDescription(),
+                                exception
+                            );
+                        }
+
+                        override fun onSuccess(credentials: Credentials) {
+                            val scope = credentials.scope?.split(" ") ?: listOf()
+
+                            result.success(
+                                mapOf(
+                                    "accessToken" to credentials.accessToken,
+                                    "idToken" to credentials.idToken,
+                                    "refreshToken" to credentials.refreshToken,
+                                    "userProfile" to mapOf<String, String>(),
+                                    "expiresIn" to credentials.expiresAt.time.toDouble(),
+                                    "scopes" to scope
+                                )
+                            )
+                        }
+                    });
             }
             AUTH_USERINFO_METHOD -> {
                 result.success("Auth User Info Success")
