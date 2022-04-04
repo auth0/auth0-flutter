@@ -1,6 +1,4 @@
 import 'package:flutter/services.dart';
-
-import 'auth/auth_code_exchange_result.dart';
 import 'auth/auth_login_options.dart';
 import 'auth/auth_renew_access_token_result.dart';
 import 'auth/auth_reset_password_options.dart';
@@ -11,15 +9,10 @@ import 'web-auth/web_auth_login_result.dart';
 
 const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter/auth');
 const String authLoginMethod = 'auth#login';
-const String authCodeExchangeMethod = 'auth#codeExchange';
 const String authUserInfoMethod = 'auth#userInfo';
 const String authSignUpMethod = 'auth#signUp';
 const String authRenewAccessTokenMethod = 'auth#renewAccessToken';
 const String authResetPasswordMethod = 'auth#resetPassword';
-
-extension ObjectListExtensions on List<Object?> {
-  Set<T> toTypedSet<T>() => map((final e) => e as T).toSet();
-}
 
 class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   @override
@@ -31,24 +24,6 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
     }
 
     return result;
-  }
-
-  @override
-  Future<AuthCodeExchangeResult?> codeExchange(final String code) async {
-    final Map<dynamic, dynamic>? result =
-        await _channel.invokeMethod(authCodeExchangeMethod);
-
-    if (result == null) {
-      return null;
-    }
-
-    return AuthCodeExchangeResult(
-      idToken: result['idToken'] as String,
-      accessToken: result['accessToken'] as String,
-      refreshToken: result['refreshToken'] as String,
-      expiresIn: result['expiresIn'] as double,
-      scopes: (result['scopes'] as List<Object?>).toTypedSet<String>(),
-    );
   }
 
   @override
@@ -81,9 +56,9 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
     return AuthRenewAccessTokenResult(
       idToken: result['idToken'] as String,
       accessToken: result['accessToken'] as String,
-      refreshToken: result['refreshToken'] as String,
-      expiresIn: result['expiresIn'] as double,
-      scopes: (result['scopes'] as List<Object?>).toTypedSet<String>(),
+      refreshToken: result['refreshToken'] as String?,
+      expiresAt: result['expiresAt'] as double,
+      scopes: Set<String>.from(result['scopes'] as List<Object?>),
     );
   }
 

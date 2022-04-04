@@ -7,7 +7,6 @@ import io.flutter.plugin.common.MethodChannel.Result
 
 class Auth0FlutterAuthMethodCallHandler: MethodCallHandler {
     private val AUTH_LOGIN_METHOD = "auth#login"
-    private val AUTH_CODEEXCHANGE_METHOD = "auth#codeExchange"
     private val AUTH_USERINFO_METHOD = "auth#userInfo"
     private val AUTH_SIGNUP_METHOD = "auth#signUp"
     private val AUTH_RENEWACCESSTOKEN_METHOD = "auth#renewAccessToken"
@@ -17,9 +16,6 @@ class Auth0FlutterAuthMethodCallHandler: MethodCallHandler {
         when (call.method) {
             AUTH_LOGIN_METHOD -> {
                 result.success("Auth Login Success")
-            }
-            AUTH_CODEEXCHANGE_METHOD -> {
-                result.success("Auth Code Exchange Success")
             }
             AUTH_USERINFO_METHOD -> {
                 result.success("Auth User Info Success")
