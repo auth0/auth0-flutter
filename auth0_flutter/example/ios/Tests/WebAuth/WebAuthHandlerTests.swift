@@ -11,23 +11,27 @@ class WebAuthHandlerTests: XCTestCase {
         sut.loginMethodHandler = MockMethodHandler()
         sut.logoutMethodHandler = MockMethodHandler()
     }
+}
 
-    // MARK: - Registration
+// MARK: - Registration
 
+extension WebAuthHandlerTests {
     func testRegistersItself() {
         let spy = SpyPluginRegistrar()
         WebAuthHandler.register(with: spy)
         XCTAssertTrue(spy.delegate is WebAuthHandler)
     }
+}
 
-    // MARK: - Required Arguments
+// MARK: - Required Arguments Error
 
+extension WebAuthHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
         let arguments = ["clientId": self.expectation(description: "clientId is missing"),
                          "domain": self.expectation(description: "domain is missing")]
         for (argument, currentExpectation) in arguments {
             sut.handle(FlutterMethodCall(methodName: "foo", arguments: [argument: "bar"])) { result in
-                assertRequiredArgumentsError(result)
+                assertHas(handlerError: .requiredArgumentsMissing, in: result)
                 currentExpectation.fulfill()
             }
         }
@@ -38,7 +42,7 @@ class WebAuthHandlerTests: XCTestCase {
         let arguments: [String: Any] = ["clientId": 1, "domain": "foo"]
         let expectation = self.expectation(description: "clientId is not a string")
         sut.handle(FlutterMethodCall(methodName: "foo", arguments: arguments)) { result in
-            assertRequiredArgumentsError(result)
+            assertHas(handlerError: .requiredArgumentsMissing, in: result)
             expectation.fulfill()
         }
         wait(for: [expectation], timeout: timeout)
@@ -48,14 +52,16 @@ class WebAuthHandlerTests: XCTestCase {
         let arguments: [String: Any] = ["clientId": "foo", "domain": 1]
         let expectation = self.expectation(description: "domain is not a string")
         sut.handle(FlutterMethodCall(methodName: "foo", arguments: arguments)) { result in
-            assertRequiredArgumentsError(result)
+            assertHas(handlerError: .requiredArgumentsMissing, in: result)
             expectation.fulfill()
         }
         wait(for: [expectation], timeout: timeout)
     }
+}
 
-    // MARK: - Method Handlers
+// MARK: - Method Handlers
 
+extension WebAuthHandlerTests {
     func testCallsLoginMethodHandler() {
         let spy = SpyMethodHandler()
         let arguments: [String: Any] = ["clientId": "bar", "domain": "baz"]

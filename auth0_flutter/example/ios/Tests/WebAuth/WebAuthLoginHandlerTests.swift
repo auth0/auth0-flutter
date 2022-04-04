@@ -14,14 +14,16 @@ class WebAuthLoginHandlerTests: XCTestCase {
     override func setUpWithError() throws {
         sut = WebAuthLoginMethodHandler(client: spy)
     }
+}
 
-    // MARK: - Required Arguments
+// MARK: - Required Arguments Error
 
+extension WebAuthLoginHandlerTests {
     func testProducesErrorWhenScopesIsMissing() {
         let arguments: [String: Any] = ["parameters": [:], "useEphemeralSession": false]
         let expectation = self.expectation(description: "scopes is missing")
         sut.handle(with: arguments) { result in
-            assertRequiredArgumentsError(result)
+            assertHas(handlerError: .requiredArgumentsMissing, in: result)
             expectation.fulfill()
         }
         wait(for: [expectation], timeout: timeout)
@@ -31,7 +33,7 @@ class WebAuthLoginHandlerTests: XCTestCase {
         let arguments: [String: Any] = ["scopes": 1, "parameters": [:], "useEphemeralSession": false]
         let expectation = self.expectation(description: "scopes is not an array of strings")
         sut.handle(with: arguments) { result in
-            assertRequiredArgumentsError(result)
+            assertHas(handlerError: .requiredArgumentsMissing, in: result)
             expectation.fulfill()
         }
         wait(for: [expectation], timeout: timeout)
@@ -41,7 +43,7 @@ class WebAuthLoginHandlerTests: XCTestCase {
         let arguments: [String: Any] = ["scopes": [], "useEphemeralSession": false]
         let expectation = self.expectation(description: "parameters is missing")
         sut.handle(with: arguments) { result in
-            assertRequiredArgumentsError(result)
+            assertHas(handlerError: .requiredArgumentsMissing, in: result)
             expectation.fulfill()
         }
         wait(for: [expectation], timeout: timeout)
@@ -51,7 +53,7 @@ class WebAuthLoginHandlerTests: XCTestCase {
         let arguments: [String: Any] = ["parameters": ["foo": 1], "scopes": [], "useEphemeralSession": false]
         let expectation = self.expectation(description: "parameters is not a dictionary of strings")
         sut.handle(with: arguments) { result in
-            assertRequiredArgumentsError(result)
+            assertHas(handlerError: .requiredArgumentsMissing, in: result)
             expectation.fulfill()
         }
         wait(for: [expectation], timeout: timeout)
@@ -61,7 +63,7 @@ class WebAuthLoginHandlerTests: XCTestCase {
         let arguments: [String: Any] = ["scopes": [], "parameters": [:]]
         let expectation = self.expectation(description: "parameters is missing")
         sut.handle(with: arguments) { result in
-            assertRequiredArgumentsError(result)
+            assertHas(handlerError: .requiredArgumentsMissing, in: result)
             expectation.fulfill()
         }
         wait(for: [expectation], timeout: timeout)
@@ -71,13 +73,31 @@ class WebAuthLoginHandlerTests: XCTestCase {
         let arguments: [String: Any] = ["useEphemeralSession": 1, "scopes": [], "parameters": [:]]
         let expectation = self.expectation(description: "useEphemeralSession is not a bool")
         sut.handle(with: arguments) { result in
-            assertRequiredArgumentsError(result)
+            assertHas(handlerError: .requiredArgumentsMissing, in: result)
             expectation.fulfill()
         }
         wait(for: [expectation], timeout: timeout)
     }
+}
 
-    // MARK: - Optional Arguments
+// MARK: - ID Token Decoding Failed Error
+
+extension WebAuthLoginHandlerTests {
+    func testProduceErrorWithInvalidIDToken() {
+        let credentials = Credentials(idToken: "foo")
+        let expectation = self.expectation(description: "ID Token cannot be decoded")
+        spy.loginResult = .success(credentials)
+        sut.handle(with: arguments()) { result in
+            assertHas(handlerError: .idTokenDecodingFailed, in: result)
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: timeout)
+    }
+}
+
+// MARK: - Optional Arguments
+
+extension WebAuthLoginHandlerTests {
 
     // MARK: scopes
 
@@ -197,9 +217,11 @@ class WebAuthLoginHandlerTests: XCTestCase {
         sut.handle(with: arguments()) { _ in }
         XCTAssertNil(spy.maxAgeValue)
     }
+}
 
-    // MARK: - Login Result
+// MARK: - Login Result
 
+extension WebAuthLoginHandlerTests {
     func testCallSDKLoginMethod() {
         sut.handle(with: arguments()) { _ in }
         XCTAssertTrue(spy.calledLogin)
@@ -207,39 +229,44 @@ class WebAuthLoginHandlerTests: XCTestCase {
 
     func testProduceCredentials() {
         let credentials = Credentials(accessToken: "accessToken",
-                                      tokenType: "",
                                       idToken: idToken,
                                       refreshToken: "refreshToken",
                                       expiresIn: Date(),
-                                      scope: "foo bar",
-                                      recoveryCode: "")
+                                      scope: "foo bar")
         let expectation = self.expectation(description: "Produced credentials")
         spy.loginResult = .success(credentials)
         sut.handle(with: arguments()) { result in
-            XCTAssertTrue(result is [String: Any?])
-            let result = result as! [String: Any?]
-            XCTAssertEqual(result["accessToken"] as? String, credentials.accessToken)
-            XCTAssertEqual(result["idToken"] as? String, credentials.idToken)
-            XCTAssertEqual(result["refreshToken"] as? String, credentials.refreshToken)
-            XCTAssertEqual(result["expiresAt"] as? TimeInterval, credentials.expiresIn.timeIntervalSince1970)
-            XCTAssertEqual(result["scopes"] as? [String], credentials.scope?.split(separator: " ").map(String.init))
+            assertHas(credentials: credentials, in: result)
             expectation.fulfill()
         }
         wait(for: [expectation], timeout: timeout)
     }
 
-    // MARK: - Helpers
+    func testProduceCredentialsWithoutRefreshToken() {
+        let credentials = Credentials(idToken: idToken, refreshToken: nil)
+        let expectation = self.expectation(description: "Produced credentials without a refresh token")
+        spy.loginResult = .success(credentials)
+        sut.handle(with: arguments()) { result in
+            assertHas(credentials: credentials, in: result)
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: timeout)
+    }
+}
 
-    private func arguments(scopes: [String] = [],
-                           parameters: [String: String] = [:],
-                           useEphemeralSession: Bool = false) -> [String: Any] {
+// MARK: - Helpers
+
+private extension WebAuthLoginHandlerTests {
+    func arguments(scopes: [String] = [],
+                   parameters: [String: String] = [:],
+                   useEphemeralSession: Bool = false) -> [String: Any] {
         return ["scopes": scopes,
                 "parameters": parameters,
                 "useEphemeralSession": useEphemeralSession]
 
     }
 
-    private func arguments<T>(key: String, value: T) -> [String: Any] {
+    func arguments<T>(key: String, value: T) -> [String: Any] {
         var arguments = arguments()
         arguments[key] =  value
         return arguments

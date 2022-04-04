@@ -14,7 +14,7 @@ extension MethodHandler {
         } catch {
             return FlutterError(from: .idTokenDecodingFailed)
         }
-        let data: [String: Any? ] = [
+        let data: [String: Any?] = [
             "accessToken": credentials.accessToken,
             "idToken": credentials.idToken,
             "refreshToken": credentials.refreshToken,
