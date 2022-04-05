@@ -56,10 +56,14 @@ class Auth0FlutterWebAuthMethodCallHandler : MethodCallHandler {
             WEBAUTH_LOGIN_METHOD -> {
                 val args = call.arguments as HashMap<*, *>;
 
-                WebAuthProvider
+                val loginBuilder = WebAuthProvider
                     .login(Auth0(args["clientId"] as String, args["domain"] as String))
-                    .withScheme("demo")
-                    .start(context, callback)
+
+                if (args.containsKey("scheme")) {
+                    loginBuilder.withScheme(args["scheme"] as String)
+                }
+
+                loginBuilder.start(context, callback)
             }
             WEBAUTH_LOGOUT_METHOD -> {
                 val args = call.arguments as HashMap<*, *>;

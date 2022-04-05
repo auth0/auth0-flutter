@@ -11,6 +11,7 @@ class WebAuthentication {
           final String? redirectUri,
           final String? organizationId,
           final String? invitationUrl,
+          final String? scheme,
           final bool useEphemeralSession = false,
           final Map<String, String> parameters = const {},
           final IdTokenValidationConfig idTokenValidationConfig =
@@ -24,6 +25,7 @@ class WebAuthentication {
           parameters: parameters,
           account: account,
           idTokenValidationConfig: idTokenValidationConfig,
+          scheme: scheme,
           useEphemeralSession: useEphemeralSession));
 
   Future<void> logout({final String? returnTo}) =>

@@ -18,6 +18,7 @@ class WebAuthLoginInput {
   final String? invitationUrl;
   final bool useEphemeralSession;
   final Map<String, String> parameters;
+  final String? scheme;
 
   WebAuthLoginInput(
       {required this.account,
@@ -27,9 +28,10 @@ class WebAuthLoginInput {
       this.redirectUri,
       this.organizationId,
       this.invitationUrl,
+      this.scheme,
       this.useEphemeralSession = false,
       this.parameters = const {}});
-  
+
   Map<String, dynamic> toMap() => {
         'domain': account.domain,
         'clientId': account.clientId,
@@ -42,6 +44,7 @@ class WebAuthLoginInput {
         'organizationId': organizationId,
         'invitationUrl': invitationUrl,
         'useEphemeralSession': useEphemeralSession,
-        'parameters': parameters
+        'parameters': parameters,
+        'scheme': scheme
       };
 }
