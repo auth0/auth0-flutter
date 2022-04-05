@@ -5,6 +5,21 @@ import JWTDecode
 
 @testable import auth0_flutter
 
+// MARK: - Operators
+
+public func ==(lhs: [String: Any], rhs: [String: Any]) -> Bool {
+    return NSDictionary(dictionary: lhs).isEqual(to: rhs)
+}
+
+public func ==(lhs: [String: Any]?, rhs: [String: Any]?) -> Bool {
+    guard let lhs = lhs, let rhs = rhs else {
+        // If both are nil return true
+        // == can't be used here as it would be recursive
+        return !(lhs != nil || rhs != nil)
+    }
+    return lhs == rhs
+}
+
 // MARK: - Extensions
 
 extension XCTestCase {
@@ -63,7 +78,7 @@ func assertHas(credentials: Credentials,
        result["scopes"] as? [String] == credentials.scope?.split(separator: " ").map(String.init),
        let jwt = try? decode(jwt: credentials.idToken),
        let userProfile = result["userProfile"] as? [String: Any],
-       NSDictionary(dictionary: userProfile).isEqual(to: jwt.body) {
+       userProfile == jwt.body {
         return
     }
     XCTFail("The handler did not produce matching credentials", file: file, line: line)
