@@ -1,5 +1,13 @@
 import Flutter
 
+class SpyFlutterPlugin: NSObject, FlutterPlugin {
+    static var calledRegister = false
+
+    static func register(with registrar: FlutterPluginRegistrar) {
+        calledRegister = true
+    }
+}
+
 class MockBinaryMessenger: NSObject, FlutterBinaryMessenger {
     func send(onChannel channel: String, message: Data?) {}
 
