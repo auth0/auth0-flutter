@@ -68,10 +68,14 @@ class Auth0FlutterWebAuthMethodCallHandler : MethodCallHandler {
             WEBAUTH_LOGOUT_METHOD -> {
                 val args = call.arguments as HashMap<*, *>;
 
-                WebAuthProvider
+                val logoutBuilder = WebAuthProvider
                     .logout(Auth0(args["clientId"] as String, args["domain"] as String))
-                    .withScheme("demo")
-                    .start(context, logoutCallback)
+
+                if (args.containsKey("scheme")) {
+                    logoutBuilder.withScheme(args["scheme"] as String)
+                }
+
+                logoutBuilder.start(context, logoutCallback)
             }
             else -> {
                 result.notImplemented()
