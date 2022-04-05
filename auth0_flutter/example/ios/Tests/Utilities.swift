@@ -17,6 +17,12 @@ extension XCTestCase {
     }
 }
 
+extension Date {
+    var asISO8601String: String {
+        return ISO8601DateFormatter().string(from: self)
+    }
+}
+
 // MARK: - Custom Assertions
 
 func assertHas(handlerError: HandlerError,
@@ -53,7 +59,7 @@ func assertHas(credentials: Credentials,
        result["accessToken"] as? String == credentials.accessToken,
        result["idToken"] as? String == credentials.idToken,
        result["refreshToken"] as? String == credentials.refreshToken,
-       result["expiresAt"] as? TimeInterval == credentials.expiresIn.timeIntervalSince1970,
+       result["expiresAt"] as? String == credentials.expiresIn.asISO8601String,
        result["scopes"] as? [String] == credentials.scope?.split(separator: " ").map(String.init),
        let jwt = try? decode(jwt: credentials.idToken),
        let userProfile = result["userProfile"] as? [String: Any],
