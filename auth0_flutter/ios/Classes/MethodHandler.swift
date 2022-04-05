@@ -1,5 +1,5 @@
-import Auth0
 import Flutter
+import Auth0
 import JWTDecode
 
 protocol MethodHandler { 
@@ -14,7 +14,7 @@ extension MethodHandler {
         } catch {
             return FlutterError(from: .idTokenDecodingFailed)
         }
-        let data: [String: Any? ] = [
+        let data: [String: Any?] = [
             "accessToken": credentials.accessToken,
             "idToken": credentials.idToken,
             "refreshToken": credentials.refreshToken,

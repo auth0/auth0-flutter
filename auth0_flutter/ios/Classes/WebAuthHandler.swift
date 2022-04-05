@@ -1,6 +1,6 @@
-import Auth0
-import Flutter
 import Foundation
+import Flutter
+import Auth0
 
 extension FlutterError {
     convenience init(from webAuthError: WebAuthError) {
@@ -26,7 +26,7 @@ struct WebAuthLoginMethodHandler: MethodHandler {
         guard let scopes = arguments["scopes"] as? [String],
               let parameters = arguments["parameters"] as? [String: String],
               let useEphemeralSession = arguments["useEphemeralSession"] as? Bool else {
-            return callback(FlutterError(from: .missingRequiredArguments))
+            return callback(FlutterError(from: .requiredArgumentsMissing))
         }
 
         var webAuth = client.parameters(parameters)
@@ -117,7 +117,7 @@ public class WebAuthHandler: NSObject {
         guard let arguments = call.arguments as? [String: Any],
               let clientId = arguments["clientId"] as? String,
               let domain = arguments["domain"] as? String else {
-            return result(FlutterError(from: .missingRequiredArguments))
+            return result(FlutterError(from: .requiredArgumentsMissing))
         }
 
         let webAuth = Auth0.webAuth(clientId: clientId, domain: domain)
