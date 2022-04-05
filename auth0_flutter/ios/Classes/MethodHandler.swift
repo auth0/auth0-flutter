@@ -2,13 +2,15 @@ import Flutter
 import Auth0
 import JWTDecode
 
-protocol MethodHandler { 
+protocol MethodHandler {
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult)
 }
 
-extension MethodHandler { 
+extension MethodHandler {
     func result(from credentials: Credentials) -> Any? {
         let jwt: JWT
+        let formatter = ISO8601DateFormatter()
+        let expiresAt = formatter.string(from: credentials.expiresIn)
         do {
             jwt = try decode(jwt: credentials.idToken)
         } catch {
@@ -19,7 +21,7 @@ extension MethodHandler {
             "idToken": credentials.idToken,
             "refreshToken": credentials.refreshToken,
             "userProfile": jwt.body,
-            "expiresAt": credentials.expiresIn.timeIntervalSince1970,
+            "expiresAt": expiresAt,
             "scopes": credentials.scope?.split(separator: " ").map(String.init),
         ]
         return data

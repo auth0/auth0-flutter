@@ -2,7 +2,7 @@ class Credentials {
   final String idToken;
   final String accessToken;
   final String? refreshToken;
-  final double expiresAt;
+  final DateTime expiresAt;
   final Set<String> scopes;
 
   const Credentials(

@@ -9,7 +9,7 @@ class LoginResult extends Credentials {
       {required final String idToken,
       required final String accessToken,
       final String? refreshToken,
-      required final double expiresAt,
+      required final DateTime expiresAt,
       final Set<String> scopes = const {},
       required this.userProfile})
       : super(
@@ -24,7 +24,7 @@ class LoginResult extends Credentials {
         idToken: result['idToken'] as String,
         accessToken: result['accessToken'] as String,
         refreshToken: result['refreshToken'] as String?,
-        expiresAt: result['expiresAt'] as double,
+        expiresAt: DateTime.parse(result['expiresAt'] as String),
         scopes: Set<String>.from(result['scopes'] as List<Object?>),
       );
 }

@@ -17,7 +17,7 @@ class Auth0FlutterWebAuthMethodCallHandler: MethodCallHandler {
                     "idToken" to "IdToken",
                     "refreshToken" to "RefreshToken",
                     "userProfile" to mapOf("name" to "John Doe"),
-                    "expiresAt" to 10,
+                    "expiresAt" to "2022-04-05",
                     "scopes" to listOf("a", "b")
                 ))
             }
