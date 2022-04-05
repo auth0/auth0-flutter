@@ -10,7 +10,7 @@ extension MethodHandler {
     func result(from credentials: Credentials) -> Any? {
         let jwt: JWT
         let formatter = ISO8601DateFormatter()
-        let expiresAt = formatter.string(from: credentials.expiresIn))
+        let expiresAt = formatter.string(from: credentials.expiresIn)
         do {
             jwt = try decode(jwt: credentials.idToken)
         } catch {
