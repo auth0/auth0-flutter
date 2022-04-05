@@ -116,7 +116,7 @@ class SpyWebAuth: WebAuth {
         callback(loginResult)
     }
 
-    @available(iOS 13.0.0, *)
+    @available(iOS 13.0, *)
     func start() async throws -> Credentials {
         return try loginResult.get()
     }
