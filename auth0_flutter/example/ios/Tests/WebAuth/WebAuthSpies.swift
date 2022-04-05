@@ -6,12 +6,6 @@ import Auth0
 
 // MARK: - MethodHandler Mocks
 
-struct MockMethodHandler: MethodHandler {
-    func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
-        callback(nil)
-    }
-}
-
 class SpyMethodHandler: MethodHandler {
     private(set) var argumentsValue: [String: Any] = [:]
 

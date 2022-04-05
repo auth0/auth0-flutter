@@ -8,8 +8,8 @@ class WebAuthHandlerTests: XCTestCase {
 
     override func setUpWithError() throws {
         sut = WebAuthHandler()
-        sut.loginMethodHandler = MockMethodHandler()
-        sut.logoutMethodHandler = MockMethodHandler()
+        sut.loginMethodHandler = SpyMethodHandler()
+        sut.logoutMethodHandler = SpyMethodHandler()
     }
 }
 
