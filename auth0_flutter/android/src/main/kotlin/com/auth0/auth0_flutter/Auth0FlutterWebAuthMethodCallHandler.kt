@@ -23,7 +23,7 @@ class Auth0FlutterWebAuthMethodCallHandler : MethodCallHandler {
 
         val callback = object : Callback<Credentials, AuthenticationException> {
             override fun onFailure(exception: AuthenticationException) {
-                // Failure! Check the exception for details
+                result.error(exception.getCode(), exception.getDescription(), exception);
             }
 
             override fun onSuccess(credentials: Credentials) {
