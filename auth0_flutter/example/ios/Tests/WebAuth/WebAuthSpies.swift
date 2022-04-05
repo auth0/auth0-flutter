@@ -4,7 +4,7 @@ import Auth0
 
 @testable import auth0_flutter
 
-// MARK: - MethodHandler Mocks
+// MARK: - MethodHandler Spies
 
 class SpyMethodHandler: MethodHandler {
     private(set) var argumentsValue: [String: Any] = [:]
@@ -15,7 +15,7 @@ class SpyMethodHandler: MethodHandler {
     }
 }
 
-// MARK: - Auth0.swift Mocks
+// MARK: - Auth0.swift Spies
 
 class SpyWebAuth: WebAuth {
     var clientId: String
@@ -116,10 +116,12 @@ class SpyWebAuth: WebAuth {
         callback(loginResult)
     }
 
+    @available(iOS 13.0.0, *)
     func start() async throws -> Credentials {
         return try loginResult.get()
     }
 
+    @available(iOS 13.0, *)
     func start() -> AnyPublisher<Credentials, WebAuthError> {
         return loginResult.publisher.eraseToAnyPublisher()
     }
