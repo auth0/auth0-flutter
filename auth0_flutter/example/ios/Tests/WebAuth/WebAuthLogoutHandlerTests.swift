@@ -1,5 +1,4 @@
 import XCTest
-import Flutter
 import Auth0
 
 @testable import auth0_flutter
@@ -34,7 +33,7 @@ extension WebAuthLogoutHandlerTests {
 // MARK: - Logout Result
 
 extension WebAuthLogoutHandlerTests {
-    func testCallSDKLogoutMethod() {
+    func testCallsSDKLogoutMethod() {
         sut.handle(with: [:]) { _ in }
         XCTAssertTrue(spy.calledLogout)
     }

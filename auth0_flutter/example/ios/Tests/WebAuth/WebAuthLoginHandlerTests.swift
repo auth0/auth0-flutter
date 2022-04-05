@@ -1,5 +1,4 @@
 import XCTest
-import Flutter
 import Auth0
 
 @testable import auth0_flutter
@@ -222,7 +221,7 @@ extension WebAuthLoginHandlerTests {
 // MARK: - Login Result
 
 extension WebAuthLoginHandlerTests {
-    func testCallSDKLoginMethod() {
+    func testCallsSDKLoginMethod() {
         sut.handle(with: arguments()) { _ in }
         XCTAssertTrue(spy.calledLogin)
     }

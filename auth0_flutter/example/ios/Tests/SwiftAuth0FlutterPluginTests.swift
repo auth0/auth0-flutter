@@ -1,5 +1,4 @@
 import XCTest
-import Flutter
 
 @testable import auth0_flutter
 
