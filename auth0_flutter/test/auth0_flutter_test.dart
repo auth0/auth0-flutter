@@ -8,11 +8,11 @@ void main() {
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  const Map<dynamic, dynamic> loginResult = {
+  final Map<dynamic, dynamic> loginResult = {
     'accessToken': 'accessToken',
     'idToken': 'idToken',
     'refreshToken': 'refreshToken',
-    'expiresAt': 10.0,
+    'expiresAt': '2022-04-05',
     'scopes': ['a'],
     'userProfile': {'name': 'John Doe'}
   };
