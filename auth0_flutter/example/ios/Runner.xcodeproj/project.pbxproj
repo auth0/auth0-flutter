@@ -16,6 +16,7 @@
 		5C328B5327F7B12F00451E70 /* WebAuthMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C328B5227F7B12F00451E70 /* WebAuthMocks.swift */; };
 		5C328B5527F7B1F300451E70 /* WebAuthLoginHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C328B5427F7B1F300451E70 /* WebAuthLoginHandlerTests.swift */; };
 		5C328B5727F7BFEA00451E70 /* FlutterMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C328B5627F7BFEA00451E70 /* FlutterMocks.swift */; };
+		5C335E3D27FBBC2300EDDE3A /* WebAuthLogoutHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C335E3C27FBBC2300EDDE3A /* WebAuthLogoutHandlerTests.swift */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
@@ -57,6 +58,7 @@
 		5C328B5227F7B12F00451E70 /* WebAuthMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthMocks.swift; sourceTree = "<group>"; };
 		5C328B5427F7B1F300451E70 /* WebAuthLoginHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthLoginHandlerTests.swift; sourceTree = "<group>"; };
 		5C328B5627F7BFEA00451E70 /* FlutterMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlutterMocks.swift; sourceTree = "<group>"; };
+		5C335E3C27FBBC2300EDDE3A /* WebAuthLogoutHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthLogoutHandlerTests.swift; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
@@ -111,6 +113,7 @@
 				5C328B4727F7822600451E70 /* WebAuthHandlerTests.swift */,
 				5C328B5227F7B12F00451E70 /* WebAuthMocks.swift */,
 				5C328B5427F7B1F300451E70 /* WebAuthLoginHandlerTests.swift */,
+				5C335E3C27FBBC2300EDDE3A /* WebAuthLogoutHandlerTests.swift */,
 			);
 			path = WebAuth;
 			sourceTree = "<group>";
@@ -390,6 +393,7 @@
 				5C328B5027F7B0E700451E70 /* Utilities.swift in Sources */,
 				5C328B5527F7B1F300451E70 /* WebAuthLoginHandlerTests.swift in Sources */,
 				5C328B5727F7BFEA00451E70 /* FlutterMocks.swift in Sources */,
+				5C335E3D27FBBC2300EDDE3A /* WebAuthLogoutHandlerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

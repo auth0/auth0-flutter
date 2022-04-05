@@ -83,7 +83,7 @@ extension WebAuthLoginHandlerTests {
 // MARK: - ID Token Decoding Failed Error
 
 extension WebAuthLoginHandlerTests {
-    func testProduceErrorWithInvalidIDToken() {
+    func testProducesErrorWithInvalidIDToken() {
         let credentials = Credentials(idToken: "foo")
         let expectation = self.expectation(description: "ID Token cannot be decoded")
         spy.loginResult = .success(credentials)
@@ -227,7 +227,7 @@ extension WebAuthLoginHandlerTests {
         XCTAssertTrue(spy.calledLogin)
     }
 
-    func testProduceCredentials() {
+    func testProducesCredentials() {
         let credentials = Credentials(accessToken: "accessToken",
                                       idToken: idToken,
                                       refreshToken: "refreshToken",
@@ -242,7 +242,7 @@ extension WebAuthLoginHandlerTests {
         wait(for: [expectation])
     }
 
-    func testProduceCredentialsWithoutRefreshToken() {
+    func testProducesCredentialsWithoutRefreshToken() {
         let credentials = Credentials(idToken: idToken, refreshToken: nil)
         let expectation = self.expectation(description: "Produced credentials without a refresh token")
         spy.loginResult = .success(credentials)
@@ -253,7 +253,7 @@ extension WebAuthLoginHandlerTests {
         wait(for: [expectation])
     }
 
-    func testProduceWebAuthError() {
+    func testProducesWebAuthError() {
         let errors: [String: WebAuthError] = ["USER_CANCELLED": .userCancelled,
                                               "ID_TOKEN_VALIDATION_FAILED": .idTokenValidationFailed,
                                               "INVALID_INVITATION_URL": .invalidInvitationURL,
