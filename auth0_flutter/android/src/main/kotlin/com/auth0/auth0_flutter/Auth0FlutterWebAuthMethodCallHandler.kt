@@ -35,7 +35,7 @@ class Auth0FlutterWebAuthMethodCallHandler : MethodCallHandler {
                     "idToken" to credentials.idToken,
                     "refreshToken" to credentials.refreshToken,
                     "userProfile" to mapOf<String, String>(),
-                    "expiresIn" to credentials.expiresAt.time.toDouble(),
+                    "expiresAt" to credentials.expiresAt.time.toDouble(),
                     "scopes" to scope
                 ))
             }
@@ -59,8 +59,45 @@ class Auth0FlutterWebAuthMethodCallHandler : MethodCallHandler {
                 val loginBuilder = WebAuthProvider
                     .login(Auth0(args["clientId"] as String, args["domain"] as String))
 
-                if (args.containsKey("scheme")) {
+                val scopes = args.getOrDefault("scopes", arrayListOf<String>()) as ArrayList<*>
+                if (scopes.isNotEmpty()) {
+                    loginBuilder.withScope(scopes.joinToString(separator = " "))
+                }
+
+                if (args.getOrDefault("audience", null) is String) {
+                    loginBuilder.withAudience(args["audience"] as String)
+                }
+
+                if (args.getOrDefault("redirectUri", null) is String) {
+                    loginBuilder.withRedirectUri(args["redirectUri"] as String)
+                }
+
+                if (args.getOrDefault("organizationId", null) is String) {
+                    loginBuilder.withOrganization(args["organizationId"] as String)
+                }
+
+                if (args.getOrDefault("invitationUrl", null) is String) {
+                    loginBuilder.withInvitationUrl(args["invitationUrl"] as String)
+                }
+
+                if (args.getOrDefault("leeway", null) is Int) {
+                    loginBuilder.withIdTokenVerificationLeeway(args["leeway"] as Int)
+                }
+
+                if (args.getOrDefault("maxAge", null) is Int) {
+                    loginBuilder.withMaxAge(args["maxAge"] as Int)
+                }
+
+                if (args.getOrDefault("issuer", null) is String) {
+                    loginBuilder.withIdTokenVerificationIssuer(args["issuer"] as String)
+                }
+
+                if (args.getOrDefault("scheme", null) is String) {
                     loginBuilder.withScheme(args["scheme"] as String)
+                }
+
+                if (args.getOrDefault("parameters", hashMapOf<String, Any?>()) is HashMap<*, *>) {
+                    loginBuilder.withParameters(args["parameters"] as HashMap<String, *>)
                 }
 
                 loginBuilder.start(context, callback)
@@ -71,8 +108,12 @@ class Auth0FlutterWebAuthMethodCallHandler : MethodCallHandler {
                 val logoutBuilder = WebAuthProvider
                     .logout(Auth0(args["clientId"] as String, args["domain"] as String))
 
-                if (args.containsKey("scheme")) {
+                if (args.getOrDefault("scheme", null) is String) {
                     logoutBuilder.withScheme(args["scheme"] as String)
+                }
+
+                if (args.getOrDefault("returnTo", null) is String) {
+                    logoutBuilder.withReturnToUrl(args["returnTo"] as String)
                 }
 
                 logoutBuilder.start(context, logoutCallback)
