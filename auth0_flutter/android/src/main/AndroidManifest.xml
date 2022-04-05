@@ -13,9 +13,9 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="elkdanger.eu.auth0.com"
+                    android:host="${auth0Domain}"
                     android:pathPrefix="/android/${applicationId}/callback"
-                    android:scheme="demo" />
+                    android:scheme="${auth0Scheme}" />
             </intent-filter>
         </activity>
     </application>
