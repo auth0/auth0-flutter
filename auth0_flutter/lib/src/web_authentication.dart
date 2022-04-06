@@ -28,9 +28,7 @@ class WebAuthentication {
           scheme: scheme,
           useEphemeralSession: useEphemeralSession));
 
-  Future<void> logout({final String? returnTo}) =>
+  Future<void> logout({final String? returnTo, final String? scheme}) =>
       Auth0FlutterWebAuthPlatform.instance.logout(WebAuthLogoutInput(
-        returnTo: returnTo,
-        account: account,
-      ));
+          returnTo: returnTo, account: account, scheme: scheme));
 }

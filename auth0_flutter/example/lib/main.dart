@@ -66,7 +66,9 @@ class _ExampleAppState extends State<ExampleApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      await auth0.webAuthentication.logout();
+      await auth0.webAuthentication
+          .logout(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
+
       output = 'Logged out.';
 
       setState(() {
