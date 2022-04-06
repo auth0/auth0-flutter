@@ -1,7 +1,6 @@
 package com.auth0.auth0_flutter
 
 import android.content.Context
-import android.util.Log
 import androidx.annotation.NonNull
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationException
@@ -11,8 +10,10 @@ import com.auth0.android.result.Credentials
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import java.text.DateFormat
 import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class Auth0FlutterWebAuthMethodCallHandler : MethodCallHandler {
     private val WEBAUTH_LOGIN_METHOD = "webAuth#login"
@@ -30,12 +31,17 @@ class Auth0FlutterWebAuthMethodCallHandler : MethodCallHandler {
                 // Success! Access token and ID token are presents
                 val scope = credentials.scope?.split(" ") ?: listOf()
 
+                val sdf =
+                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
+
+                val formattedDate = sdf.format(credentials.expiresAt)
+
                 result.success(mapOf(
                     "accessToken" to credentials.accessToken,
                     "idToken" to credentials.idToken,
                     "refreshToken" to credentials.refreshToken,
                     "userProfile" to mapOf<String, String>(),
-                    "expiresAt" to credentials.expiresAt.time.toDouble(),
+                    "expiresAt" to formattedDate,
                     "scopes" to scope
                 ))
             }
