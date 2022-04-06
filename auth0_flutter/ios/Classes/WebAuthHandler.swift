@@ -2,6 +2,8 @@ import Foundation
 import Flutter
 import Auth0
 
+// MARK: - Extensions
+
 extension FlutterError {
     convenience init(from webAuthError: WebAuthError) {
         var code: String
@@ -19,6 +21,8 @@ extension FlutterError {
     }
 }
 
+// MARK: - Method Handlers
+
 struct WebAuthLoginMethodHandler: MethodHandler {
     let client: WebAuth
 
@@ -32,7 +36,7 @@ struct WebAuthLoginMethodHandler: MethodHandler {
         var webAuth = client.parameters(parameters)
 
         if !scopes.isEmpty {
-            webAuth = webAuth.scope(scopes.joined(separator: " "))
+            webAuth = webAuth.scope(scopes.asSpaceSeparatedString)
         }
 
         if useEphemeralSession {
@@ -95,14 +99,15 @@ struct WebAuthLogoutMethodHandler: MethodHandler {
     }
 }
 
-public class WebAuthHandler: NSObject { 
+// MARK: - Web Auth Handler
+
+public class WebAuthHandler: NSObject, FlutterPlugin {
     enum Method: String, RawRepresentable {
         case login = "webAuth#login"
         case logout = "webAuth#logout"
     }
 
-    var loginMethodHandler: MethodHandler?
-    var logoutMethodHandler: MethodHandler?
+    var methodHandlers: [Method: MethodHandler] = [:]
 
     private static let channelName = "auth0.com/auth0_flutter/web_auth"
 
@@ -123,15 +128,21 @@ public class WebAuthHandler: NSObject {
         let webAuth = Auth0.webAuth(clientId: clientId, domain: domain)
 
         switch Method(rawValue: call.method) {
-        case .login:
-            let loginHandler = loginMethodHandler ?? WebAuthLoginMethodHandler(client: webAuth)
-            loginHandler.handle(with: arguments, callback: result)
-        case .logout:
-            let logoutHandler = logoutMethodHandler ?? WebAuthLogoutMethodHandler(client: webAuth)
-            logoutHandler.handle(with: arguments, callback: result)
+        case .login: callLogin(with: arguments, using: webAuth, result: result)
+        case .logout: callLogout(with: arguments, using: webAuth, result: result)
         default: result(FlutterMethodNotImplemented)
         }
     }
 }
 
-extension WebAuthHandler: FlutterPlugin {}
+private extension WebAuthHandler {
+    func callLogin(with arguments: [String: Any], using client: WebAuth, result: @escaping FlutterResult) {
+        let loginHandler = methodHandlers[.login] ?? WebAuthLoginMethodHandler(client: client)
+        loginHandler.handle(with: arguments, callback: result)
+    }
+
+    func callLogout(with arguments: [String: Any], using client: WebAuth, result: @escaping FlutterResult) {
+        let logoutHandler = methodHandlers[.logout] ?? WebAuthLogoutMethodHandler(client: client)
+        logoutHandler.handle(with: arguments, callback: result)
+    }
+}

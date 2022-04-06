@@ -7,8 +7,8 @@ class WebAuthHandlerTests: XCTestCase {
 
     override func setUpWithError() throws {
         sut = WebAuthHandler()
-        sut.loginMethodHandler = SpyMethodHandler()
-        sut.logoutMethodHandler = SpyMethodHandler()
+        sut.methodHandlers[.login] = SpyMethodHandler()
+        sut.methodHandlers[.logout] = SpyMethodHandler()
     }
 }
 
@@ -66,7 +66,7 @@ extension WebAuthHandlerTests {
         let arguments: [String: Any] = ["clientId": "bar", "domain": "baz"]
         let expectation = self.expectation(description: "Login handler call")
         let methodCall = FlutterMethodCall(methodName: WebAuthHandler.Method.login.rawValue, arguments: arguments)
-        sut.loginMethodHandler = spy
+        sut.methodHandlers[.login] = spy
         sut.handle(methodCall) { _ in
             XCTAssertTrue(spy.argumentsValue == arguments)
             expectation.fulfill()
@@ -79,7 +79,7 @@ extension WebAuthHandlerTests {
         let arguments: [String: Any] = ["clientId": "bar", "domain": "baz"]
         let expectation = self.expectation(description: "Logout handler call")
         let methodCall = FlutterMethodCall(methodName: WebAuthHandler.Method.logout.rawValue, arguments: arguments)
-        sut.logoutMethodHandler = spy
+        sut.methodHandlers[.logout] = spy
         sut.handle(methodCall) { _ in
             XCTAssertTrue(spy.argumentsValue == arguments)
             expectation.fulfill()
