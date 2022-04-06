@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
-import 'method_channel_auth0_flutter_web_auth_test.mocks.dart';
+import 'method_channel_auth0_flutter_auth_test.mocks.dart';
 
 class MethodCallHandler {
   static const Map<dynamic, dynamic> loginResult = {
@@ -17,7 +17,7 @@ class MethodCallHandler {
   };
 
   Future<dynamic>? methodCallHandler(final MethodCall? methodCall) async {
-    if (methodCall?.method == 'webAuth#login') {
+    if (methodCall?.method == 'auth#login') {
       return loginResult;
     }
   }
@@ -26,7 +26,7 @@ class MethodCallHandler {
 @GenerateMocks([MethodCallHandler])
 void main() {
   const MethodChannel channel =
-      MethodChannel('auth0.com/auth0_flutter/web_auth');
+      MethodChannel('auth0.com/auth0_flutter/auth');
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -45,20 +45,14 @@ void main() {
     when(mocked.methodCallHandler(any))
         .thenAnswer((final _) async => MethodCallHandler.loginResult);
 
-    final result = await MethodChannelAuth0FlutterWebAuth()
-        .login(WebAuthLoginInput(account: const Account('', ''), scopes: {}));
+    final result = await MethodChannelAuth0FlutterAuth().login(AuthLoginOptions(
+        account: const Account('', ''),
+        usernameOrEmail: '',
+        password: '',
+        connectionOrRealm: ''));
 
     expect(verify(mocked.methodCallHandler(captureAny)).captured.single.method,
-        'webAuth#login');
+        'auth#login');
     expect(result.accessToken, MethodCallHandler.loginResult['accessToken']);
-  });
-  test('logout', () async {
-    when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
-
-    await MethodChannelAuth0FlutterWebAuth()
-        .logout(WebAuthLogoutInput(account: const Account('', '')));
-
-    expect(verify(mocked.methodCallHandler(captureAny)).captured.single.method,
-        'webAuth#logout');
   });
 }
