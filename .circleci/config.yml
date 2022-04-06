@@ -61,8 +61,6 @@ jobs:
           command: |
             flutter clean
             flutter pub get
-            cp .env.example .env
-            flutter build ios --simulator --no-codesign
           working_directory: ./auth0_flutter/example
       - run:
           name: Run iOS Tests
