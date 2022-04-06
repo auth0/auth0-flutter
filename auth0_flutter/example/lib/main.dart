@@ -156,6 +156,7 @@ class AuthCard extends StatefulWidget {
 
   @override
   AuthCardState createState() {
+    // ignore: no_logic_in_create_state
     return AuthCardState(action);
   }
 }
