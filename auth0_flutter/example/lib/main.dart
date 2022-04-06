@@ -149,7 +149,7 @@ class _ExampleAppState extends State<ExampleApp> {
 }
 
 class AuthCard extends StatefulWidget {
-  final Future<void> Function(String usernammeOrEmail, String password) action;
+  final Future<void> Function(String usernameOrEmail, String password) action;
 
   const AuthCard({final Key? key, required final this.action})
       : super(key: key);
@@ -187,7 +187,7 @@ class AuthCardState extends State<AuthCard> {
                       ),
                       validator: (final String? value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter an username or email';
+                          return 'Please enter a username or email';
                         }
                         return null;
                       },
