@@ -13,11 +13,11 @@ class TestPlatform extends Mock
         MockPlatformInterfaceMixin
     implements
         Auth0FlutterWebAuthPlatform {
-  static const LoginResult loginResult = LoginResult(
+  static LoginResult loginResult = LoginResult(
       accessToken: 'accessToken',
       idToken: 'idToken',
       refreshToken: 'refreshToken',
-      expiresAt: 10.0,
+      expiresAt: DateTime.now(),
       scopes: {'a'},
       userProfile: {'name': 'John Doe'});
 }
