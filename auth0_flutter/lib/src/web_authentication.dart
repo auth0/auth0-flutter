@@ -11,6 +11,7 @@ class WebAuthentication {
           final String? redirectUri,
           final String? organizationId,
           final String? invitationUrl,
+          final String? scheme,
           final bool useEphemeralSession = false,
           final Map<String, String> parameters = const {},
           final IdTokenValidationConfig idTokenValidationConfig =
@@ -23,11 +24,11 @@ class WebAuthentication {
           invitationUrl: invitationUrl,
           parameters: parameters,
           account: account,
-          idTokenValidationConfig: idTokenValidationConfig));
+          idTokenValidationConfig: idTokenValidationConfig,
+          scheme: scheme,
+          useEphemeralSession: useEphemeralSession));
 
-  Future<void> logout({final String? returnTo}) =>
+  Future<void> logout({final String? returnTo, final String? scheme}) =>
       Auth0FlutterWebAuthPlatform.instance.logout(WebAuthLogoutInput(
-        returnTo: returnTo,
-        account: account,
-      ));
+          returnTo: returnTo, account: account, scheme: scheme));
 }

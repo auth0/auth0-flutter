@@ -23,6 +23,7 @@ class MethodChannelAuth0FlutterWebAuth extends Auth0FlutterWebAuthPlatform {
     if (result == null) {
       throw const WebAuthException.unknown('Channel returned null.');
     }
+
     return LoginResult.fromMap(Map<String, dynamic>.from(result));
   }
 
