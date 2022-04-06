@@ -13,6 +13,9 @@ import com.auth0.android.result.Credentials
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.HashMap
 
 class Auth0FlutterAuthMethodCallHandler: MethodCallHandler {
     private val AUTH_LOGIN_METHOD = "auth#login"
@@ -46,14 +49,17 @@ class Auth0FlutterAuthMethodCallHandler: MethodCallHandler {
 
                         override fun onSuccess(credentials: Credentials) {
                             val scope = credentials.scope?.split(" ") ?: listOf()
+                            val sdf =
+                                SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
 
+                            val formattedDate = sdf.format(credentials.expiresAt)
                             result.success(
                                 mapOf(
                                     "accessToken" to credentials.accessToken,
                                     "idToken" to credentials.idToken,
                                     "refreshToken" to credentials.refreshToken,
                                     "userProfile" to mapOf<String, String>(),
-                                    "expiresIn" to credentials.expiresAt.time.toDouble(),
+                                    "expiresAt" to formattedDate,
                                     "scopes" to scope
                                 )
                             )
