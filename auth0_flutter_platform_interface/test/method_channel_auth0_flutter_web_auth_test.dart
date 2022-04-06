@@ -11,7 +11,7 @@ class MethodCallHandler {
     'accessToken': 'accessToken',
     'idToken': 'idToken',
     'refreshToken': 'refreshToken',
-    'expiresAt': 10.0,
+    'expiresAt': '2022-01-01',
     'scopes': ['a'],
     'userProfile': {'name': 'John Doe'}
   };
