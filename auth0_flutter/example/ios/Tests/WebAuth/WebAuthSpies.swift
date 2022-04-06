@@ -116,10 +116,19 @@ class SpyWebAuth: WebAuth {
         callback(loginResult)
     }
 
-    @available(iOS 15.0, *)
+#if compiler(>=5.5) && canImport(_Concurrency)
+#if compiler(>=5.5.2)
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.2, *)
     func start() async throws -> Credentials {
         return try loginResult.get()
     }
+#else
+    @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+    func start() async throws -> Credentials {
+        return try loginResult.get()
+    }
+#endif
+#endif
 
     @available(iOS 13.0, *)
     func start() -> AnyPublisher<Credentials, WebAuthError> {

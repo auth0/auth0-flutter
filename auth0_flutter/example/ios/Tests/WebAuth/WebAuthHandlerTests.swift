@@ -68,7 +68,7 @@ extension WebAuthHandlerTests {
         let methodCall = FlutterMethodCall(methodName: WebAuthHandler.Method.login.rawValue, arguments: arguments)
         sut.loginMethodHandler = spy
         sut.handle(methodCall) { _ in
-            XCTAssertTrue(NSDictionary(dictionary: spy.argumentsValue).isEqual(to: arguments))
+            XCTAssertTrue(spy.argumentsValue == arguments)
             expectation.fulfill()
         }
         wait(for: [expectation])
@@ -81,7 +81,7 @@ extension WebAuthHandlerTests {
         let methodCall = FlutterMethodCall(methodName: WebAuthHandler.Method.logout.rawValue, arguments: arguments)
         sut.logoutMethodHandler = spy
         sut.handle(methodCall) { _ in
-            XCTAssertTrue(NSDictionary(dictionary: spy.argumentsValue).isEqual(to: arguments))
+            XCTAssertTrue(spy.argumentsValue == arguments)
             expectation.fulfill()
         }
         wait(for: [expectation])
