@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'auth/auth_exception.dart';
 import 'auth/auth_login_options.dart';
 import 'auth/auth_renew_access_token_result.dart';
 import 'auth/auth_reset_password_options.dart';
@@ -41,11 +42,15 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
 
   @override
   Future<DatabaseUser> signup(final AuthSignupOptions options) async {
-    final Map<dynamic, dynamic>? result =
-        await _channel.invokeMethod(authSignUpMethod, options.toMap());
+    final Map<dynamic, dynamic>? result;
+    try {
+      result = await _channel.invokeMethod(authSignUpMethod, options.toMap());
+    } on PlatformException catch (e) {
+      throw AuthException.fromPlatformException(e);
+    }
 
     if (result == null) {
-      return throw Exception('Auth channel returned null');
+      throw const AuthException.unknown('Channel returned null.');
     }
 
     return DatabaseUser.fromMap(result);
