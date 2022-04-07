@@ -37,13 +37,14 @@ class Auth0FlutterWebAuthMethodCallHandler : MethodCallHandler {
 
                 val formattedDate = sdf.format(credentials.expiresAt)
                 val jwt = JWT(credentials.idToken)
-                val allClaims = jwt.claims.mapValues { it.value.asString() }
+                val claimsToFilter = setOf<String>("aud", "iss", "iat", "exp", "nbf", "nonce", "azp", "auth_time", "s_hash", "at_hash", "c_hash")
+                val claims = jwt.claims.mapValues { it.value.asString() }.filterNot { claimsToFilter.contains(it.key) }
 
                 result.success(mapOf(
                     "accessToken" to credentials.accessToken,
                     "idToken" to credentials.idToken,
                     "refreshToken" to credentials.refreshToken,
-                    "userProfile" to allClaims,
+                    "userProfile" to claims,
                     "expiresAt" to formattedDate,
                     "scopes" to scope
                 ))
