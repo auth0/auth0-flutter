@@ -19,13 +19,14 @@ const String authResetPasswordMethod = 'auth#resetPassword';
 class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   @override
   Future<LoginResult> login(final AuthLoginOptions options) async {
-    final result = await _channel.invokeMethod<LoginResult>(authLoginMethod);
+    final Map<String, dynamic>? result =
+        await _channel.invokeMapMethod(authLoginMethod, options.toMap());
 
     if (result == null) {
       return throw Exception('Auth channel returned null');
     }
 
-    return result;
+    return LoginResult.fromMap(result);
   }
 
   @override
@@ -71,7 +72,7 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
       accessToken: result['accessToken'] as String,
       refreshToken: result['refreshToken'] as String?,
       expiresAt: DateTime.parse(result['expiresAt'] as String),
-      scopes: Set<String>.from(result['scopes'] as List<Object?>),
+      scopes: Set.from(result['scopes'] as List<Object?>),
     );
   }
 

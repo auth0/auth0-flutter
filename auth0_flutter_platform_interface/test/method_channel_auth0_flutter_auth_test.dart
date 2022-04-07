@@ -7,6 +7,15 @@ import 'package:mockito/mockito.dart';
 import 'method_channel_auth0_flutter_auth_test.mocks.dart';
 
 class MethodCallHandler {
+  static const Map<dynamic, dynamic> loginResult = {
+    'accessToken': 'accessToken',
+    'idToken': 'idToken',
+    'refreshToken': 'refreshToken',
+    'expiresAt': '2022-01-01',
+    'scopes': ['a'],
+    'userProfile': {'name': 'John Doe'}
+  };
+
   Future<dynamic>? methodCallHandler(final MethodCall? methodCall) async {}
 }
 
@@ -71,8 +80,7 @@ void main() {
       expect(verificationResult.arguments['connection'], 'test-connection');
     });
 
-    test('correctly returns the response from the Method Channel',
-        () async {
+    test('correctly returns the response from the Method Channel', () async {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
             'email': 'test-email',
             'emailVerified': true,
@@ -123,5 +131,20 @@ void main() {
       verify(mocked.methodCallHandler(captureAny));
       expect(result.emailVerified, false);
     });
+  });
+
+  test('login', () async {
+    when(mocked.methodCallHandler(any))
+        .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+    final result = await MethodChannelAuth0FlutterAuth().login(AuthLoginOptions(
+        account: const Account('', ''),
+        usernameOrEmail: '',
+        password: '',
+        connectionOrRealm: ''));
+
+    expect(verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+        'auth#login');
+    expect(result.accessToken, MethodCallHandler.loginResult['accessToken']);
   });
 }

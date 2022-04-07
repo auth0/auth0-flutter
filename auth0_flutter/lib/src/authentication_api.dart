@@ -10,9 +10,14 @@ class AuthenticationApi {
           required final String password,
           required final String connectionOrRealm,
           final Set<String> scope = const {},
-          final Map<String, Object> parameters = const {}}) =>
+          final Map<String, String> parameters = const {}}) =>
       Auth0FlutterAuthPlatform.instance.login(AuthLoginOptions(
-          usernameOrEmail: '', password: '', connectionOrRealm: ''));
+          usernameOrEmail: usernameOrEmail,
+          password: password,
+          connectionOrRealm: connectionOrRealm,
+          scope: scope,
+          account: account,
+          parameters: parameters));
 
   Future<Credentials> codeExchange(final String code) => Future.value(
       Credentials(idToken: '', accessToken: '', expiresAt: DateTime.now()));

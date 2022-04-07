@@ -1,5 +1,6 @@
 package com.auth0.auth0_flutter
 
+import android.content.Context
 import androidx.annotation.NonNull
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.auth0_flutter.request_handlers.api.*
@@ -17,6 +18,9 @@ class Auth0FlutterAuthMethodCallHandler : MethodCallHandler {
         RenewAccessTokenApiRequestHandler(),
         ResetPasswordApiRequestHandler()
     );
+
+    lateinit var context: Context;
+
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         var requestHandler = requestHandlers.find { it.method == call.method };
