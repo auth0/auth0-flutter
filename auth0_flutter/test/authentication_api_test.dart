@@ -29,7 +29,7 @@ void main() {
   });
 
   test('signUp - passes through properties to the platform', () async {
-    when(mockedPlatform.signUp(any))
+    when(mockedPlatform.signup(any))
         .thenAnswer((final _) async => TestPlatform.signupResult);
 
     final result = await Auth0('test-domain', 'test-clientId').api.signup(
@@ -40,7 +40,7 @@ void main() {
     );
 
     final verificationResult =
-        verify(mockedPlatform.signUp(captureAny)).captured.single;
+        verify(mockedPlatform.signup(captureAny)).captured.single;
     expect(verificationResult.account.domain, 'test-domain');
     expect(verificationResult.account.clientId, 'test-clientId');
     expect(verificationResult.email, 'test-email');
@@ -51,7 +51,7 @@ void main() {
   });
 
   test('signUp - set userMetadata to default value when omitted', () async {
-    when(mockedPlatform.signUp(any))
+    when(mockedPlatform.signup(any))
         .thenAnswer((final _) async => TestPlatform.signupResult);
 
     final result = await Auth0('test-domain', 'test-clientId').api.signup(
@@ -61,7 +61,7 @@ void main() {
         );
 
     final verificationResult =
-        verify(mockedPlatform.signUp(captureAny)).captured.single;
+        verify(mockedPlatform.signup(captureAny)).captured.single;
     // ignore: inference_failure_on_collection_literal
     expect(verificationResult.userMetadata, {});
     expect(result, TestPlatform.signupResult);

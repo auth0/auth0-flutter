@@ -34,7 +34,7 @@ void main() {
           'username': 'test-user'
         });
 
-    await MethodChannelAuth0FlutterAuth().signUp(AuthSignUpOptions(
+    await MethodChannelAuth0FlutterAuth().signup(AuthSignupOptions(
         account: const Account('test-domain', 'test-clientId'),
         email: 'test-email',
         password: 'test-pass',
@@ -52,7 +52,7 @@ void main() {
           'username': 'test-user'
         });
 
-    await MethodChannelAuth0FlutterAuth().signUp(AuthSignUpOptions(
+    await MethodChannelAuth0FlutterAuth().signup(AuthSignupOptions(
         account: const Account('test-domain', 'test-clientId'),
         email: 'test-email',
         password: 'test-pass',
@@ -77,8 +77,8 @@ void main() {
           'username': 'test-user'
         });
 
-    final result = await MethodChannelAuth0FlutterAuth().signUp(
-        AuthSignUpOptions(
+    final result = await MethodChannelAuth0FlutterAuth().signup(
+        AuthSignupOptions(
             account: const Account('test-domain', 'test-clientId'),
             email: 'test-email',
             password: 'test-pass',
@@ -96,8 +96,8 @@ void main() {
     when(mocked.methodCallHandler(any)).thenAnswer(
         (final _) async => {'email': 'test-email', 'emailVerified': true});
 
-    final result = await MethodChannelAuth0FlutterAuth().signUp(
-        AuthSignUpOptions(
+    final result = await MethodChannelAuth0FlutterAuth().signup(
+        AuthSignupOptions(
             account: const Account('', ''),
             email: '',
             password: '',
@@ -111,8 +111,8 @@ void main() {
     when(mocked.methodCallHandler(any)).thenAnswer(
         (final _) async => {'email': 'test-email', 'emailVerified': false});
 
-    final result = await MethodChannelAuth0FlutterAuth().signUp(
-        AuthSignUpOptions(
+    final result = await MethodChannelAuth0FlutterAuth().signup(
+        AuthSignupOptions(
             account: const Account('', ''),
             email: '',
             password: '',

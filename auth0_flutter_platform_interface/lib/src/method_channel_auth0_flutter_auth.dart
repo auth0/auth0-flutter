@@ -2,7 +2,7 @@ import 'package:flutter/services.dart';
 import 'auth/auth_login_options.dart';
 import 'auth/auth_renew_access_token_result.dart';
 import 'auth/auth_reset_password_options.dart';
-import 'auth/auth_sign_up_options.dart';
+import 'auth/auth_signup_options.dart';
 import 'auth/auth_user_profile_result.dart';
 import 'auth0_flutter_auth_platform.dart';
 import 'database_user.dart';
@@ -40,7 +40,7 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   }
 
   @override
-  Future<DatabaseUser> signUp(final AuthSignUpOptions options) async {
+  Future<DatabaseUser> signup(final AuthSignupOptions options) async {
     final Map<dynamic, dynamic>? result =
         await _channel.invokeMethod(authSignUpMethod, options.toMap());
 

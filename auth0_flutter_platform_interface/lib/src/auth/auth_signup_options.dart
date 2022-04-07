@@ -1,6 +1,6 @@
 import '../account.dart';
 
-class AuthSignUpOptions {
+class AuthSignupOptions {
   final Account account;
   final String email;
   final String? username;
@@ -8,7 +8,7 @@ class AuthSignUpOptions {
   final String connection;
   final Map<String, String> userMetadata;
 
-  AuthSignUpOptions(
+  AuthSignupOptions(
       {required this.account,
       required this.email,
       this.username,

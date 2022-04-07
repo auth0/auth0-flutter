@@ -43,8 +43,8 @@ class MockTestPlatform extends _i1.Mock implements _i3.TestPlatform {
               returnValue: Future<_i2.AuthUserProfileResult?>.value())
           as _i4.Future<_i2.AuthUserProfileResult?>);
   @override
-  _i4.Future<_i2.DatabaseUser> signUp(_i2.AuthSignUpOptions? options) =>
-      (super.noSuchMethod(Invocation.method(#signUp, [options]),
+  _i4.Future<_i2.DatabaseUser> signup(_i2.AuthSignupOptions? options) =>
+      (super.noSuchMethod(Invocation.method(#signup, [options]),
               returnValue:
                   Future<_i2.DatabaseUser>.value(_FakeDatabaseUser_1()))
           as _i4.Future<_i2.DatabaseUser>);

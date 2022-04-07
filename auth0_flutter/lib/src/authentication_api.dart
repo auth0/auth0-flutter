@@ -26,7 +26,7 @@ class AuthenticationApi {
           final String? username,
           required final String connection,
           final Map<String, String> userMetadata = const {}}) =>
-      Auth0FlutterAuthPlatform.instance.signUp(AuthSignUpOptions(
+      Auth0FlutterAuthPlatform.instance.signup(AuthSignupOptions(
           email: email,
           password: password,
           connection: connection,
