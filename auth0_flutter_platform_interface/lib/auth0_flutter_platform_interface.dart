@@ -1,4 +1,5 @@
 export 'src/account.dart';
+export 'src/auth/api_exception.dart';
 export 'src/auth/auth_login_options.dart';
 export 'src/auth/auth_renew_access_token_result.dart';
 export 'src/auth/auth_reset_password_options.dart';

@@ -45,7 +45,7 @@ class Auth0FlutterAuthMethodCallHandler : MethodCallHandler {
                         result.error(
                             exception.getCode(),
                             exception.getDescription(),
-                            exception
+                            exception.toMap()
                         );
                     }
 
