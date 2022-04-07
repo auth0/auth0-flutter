@@ -66,6 +66,7 @@ jobs:
           name: Run iOS Tests
           command: |
             pod install
+            cp ../.env.example ../.env
             xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 13'
           working_directory: ./auth0_flutter/example/ios
       - run:
