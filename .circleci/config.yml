@@ -13,7 +13,9 @@ jobs:
           working_directory: ./auth0_flutter
       - run:
           name: Analyze App Facing Package
-          command: dart analyze
+          command: |
+              cp example/.env.example example/.env
+              dart analyze
           working_directory: ./auth0_flutter
       - run:
           name: Test Platform Interface Package
@@ -68,7 +70,9 @@ jobs:
           working_directory: ./auth0_flutter/example/ios
       - run:
           name: Build Android Example App
-          command: flutter build apk
+          command: |
+            cp .env.example .env
+            flutter build apk
           working_directory: ./auth0_flutter/example
 workflows:
   tests:

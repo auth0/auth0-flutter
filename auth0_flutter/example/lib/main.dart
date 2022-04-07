@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:auth0_flutter/auth0_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+Future<dynamic> main() async {
+  await dotenv.load();
   runApp(const ExampleApp());
 }
 
@@ -21,11 +23,12 @@ class _ExampleAppState extends State<ExampleApp> {
   bool _isLoggedIn = false;
   String _output = '';
 
-  final auth0 = Auth0('test-domain', 'test-client');
+  late Auth0 auth0;
 
   @override
   void initState() {
     super.initState();
+    auth0 = Auth0(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
   }
 
   Future<void> webAuthLogin() async {
@@ -34,7 +37,9 @@ class _ExampleAppState extends State<ExampleApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      final result = await auth0.webAuthentication.login();
+      final result = await auth0.webAuthentication
+          .login(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
+
       output = result.idToken;
 
       setState(() {
@@ -61,7 +66,9 @@ class _ExampleAppState extends State<ExampleApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      await auth0.webAuthentication.logout();
+      await auth0.webAuthentication
+          .logout(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
+
       output = 'Logged out.';
 
       setState(() {
