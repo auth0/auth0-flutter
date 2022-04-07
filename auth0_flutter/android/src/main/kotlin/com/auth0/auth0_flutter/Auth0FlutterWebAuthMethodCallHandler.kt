@@ -5,16 +5,14 @@ import androidx.annotation.NonNull
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
+import com.auth0.android.jwt.JWT
 import com.auth0.android.provider.WebAuthProvider
 import com.auth0.android.result.Credentials
-import com.auth0.android.jwt.JWT
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 class Auth0FlutterWebAuthMethodCallHandler : MethodCallHandler {
     private val WEBAUTH_LOGIN_METHOD = "webAuth#login"
@@ -25,7 +23,7 @@ class Auth0FlutterWebAuthMethodCallHandler : MethodCallHandler {
 
         val callback = object : Callback<Credentials, AuthenticationException> {
             override fun onFailure(exception: AuthenticationException) {
-                result.error(exception.getCode(), exception.getDescription(), exception);
+                result.error(exception.getCode(), exception.getDescription(), exception)
             }
 
             override fun onSuccess(credentials: Credentials) {
@@ -37,34 +35,36 @@ class Auth0FlutterWebAuthMethodCallHandler : MethodCallHandler {
 
                 val formattedDate = sdf.format(credentials.expiresAt)
                 val jwt = JWT(credentials.idToken)
-                val claimsToFilter = setOf<String>("aud", "iss", "iat", "exp", "nbf", "nonce", "azp", "auth_time", "s_hash", "at_hash", "c_hash")
-                val claims = jwt.claims.mapValues { it.value.asString() }.filterNot { claimsToFilter.contains(it.key) }
 
-                result.success(mapOf(
-                    "accessToken" to credentials.accessToken,
-                    "idToken" to credentials.idToken,
-                    "refreshToken" to credentials.refreshToken,
-                    "userProfile" to claims,
-                    "expiresAt" to formattedDate,
-                    "scopes" to scope
-                ))
+                // Map all claim values to their underlying type as Any
+                val claims = processClaims(jwt.claims.mapValues { it.value.asObject(Any::class.java) })
+
+                result.success(
+                    mapOf(
+                        "accessToken" to credentials.accessToken,
+                        "idToken" to credentials.idToken,
+                        "refreshToken" to credentials.refreshToken,
+                        "userProfile" to claims,
+                        "expiresAt" to formattedDate,
+                        "scopes" to scope
+                    )
+                )
             }
         }
 
-        val logoutCallback = object: Callback<Void?, AuthenticationException> {
+        val logoutCallback = object : Callback<Void?, AuthenticationException> {
             override fun onFailure(exception: AuthenticationException) {
-                result.error(exception.getCode(), exception.getDescription(), exception);
+                result.error(exception.getCode(), exception.getDescription(), exception)
             }
 
             override fun onSuccess(res: Void?) {
-                result.success(null);
+                result.success(null)
             }
         }
 
         when (call.method) {
-
             WEBAUTH_LOGIN_METHOD -> {
-                val args = call.arguments as HashMap<*, *>;
+                val args = call.arguments as HashMap<*, *>
 
                 val loginBuilder = WebAuthProvider
                     .login(Auth0(args["clientId"] as String, args["domain"] as String))
@@ -113,7 +113,7 @@ class Auth0FlutterWebAuthMethodCallHandler : MethodCallHandler {
                 loginBuilder.start(context, callback)
             }
             WEBAUTH_LOGOUT_METHOD -> {
-                val args = call.arguments as HashMap<*, *>;
+                val args = call.arguments as HashMap<*, *>
 
                 val logoutBuilder = WebAuthProvider
                     .logout(Auth0(args["clientId"] as String, args["domain"] as String))
@@ -132,5 +132,53 @@ class Auth0FlutterWebAuthMethodCallHandler : MethodCallHandler {
                 result.notImplemented()
             }
         }
+    }
+
+    fun processClaims(claims: Map<String, Any?>) : Map<String, Any?> {
+        val claimsToFilter = setOf(
+            "aud",
+            "iss",
+            "iat",
+            "exp",
+            "nbf",
+            "nonce",
+            "azp",
+            "auth_time",
+            "s_hash",
+            "at_hash",
+            "c_hash"
+        )
+
+        val standardClaims = setOf(
+            "sub",
+            "name",
+            "given_name",
+            "family_name",
+            "middle_name",
+            "nickname",
+            "preferred_username",
+            "profile",
+            "picture",
+            "website",
+            "email",
+            "email_verified",
+            "gender",
+            "birthdate",
+            "zoneinfo",
+            "locale",
+            "phone_number",
+            "phone_number",
+            "phone_number_verified_boolean",
+            "address",
+            "updated_at"
+        )
+
+        // Remove the claims we don't want to appear in this map
+        val filteredClaims = claims.filterNot { claimsToFilter.contains(it.key) }
+
+        // Take anything that's not a standard claim and move it to "custom_claims" key
+        return filteredClaims + mapOf("custom_claims" to filteredClaims.filterNot {
+                standardClaims.contains(it.key)
+            }).filterKeys { standardClaims.contains(it) || it == "custom_claims" }
     }
 }
