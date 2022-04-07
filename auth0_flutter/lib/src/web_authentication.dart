@@ -5,6 +5,15 @@ class WebAuthentication {
 
   WebAuthentication(this.account);
 
+  WebAuthentication withCredentialsManager(
+      final CredentialsManager credentialsManager) {
+    Auth0FlutterWebAuthPlatform.credentialsManager = credentialsManager;
+    return this;
+  }
+
+  Future<String?> getAccessToken() async =>
+      (await Auth0FlutterWebAuthPlatform.credentialsManager.get()).accessToken;
+
   Future<LoginResult> login(
           {final String? audience,
           final Set<String> scopes = const {},

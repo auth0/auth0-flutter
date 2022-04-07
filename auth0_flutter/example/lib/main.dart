@@ -22,7 +22,6 @@ class ExampleApp extends StatefulWidget {
 class _ExampleAppState extends State<ExampleApp> {
   bool _isLoggedIn = false;
   String _output = '';
-
   late Auth0 auth0;
 
   @override

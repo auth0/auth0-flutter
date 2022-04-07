@@ -4,7 +4,11 @@ import 'src/authentication_api.dart';
 import 'src/web_authentication.dart';
 
 export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
-    show WebAuthException;
+    show
+        WebAuthException,
+        Credentials,
+        CredentialsManager,
+        NativeCredentialsManager;
 
 class Auth0 {
   final Account account;
