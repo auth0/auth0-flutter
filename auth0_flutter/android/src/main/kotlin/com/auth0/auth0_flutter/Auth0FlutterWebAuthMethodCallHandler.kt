@@ -7,6 +7,7 @@ import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
 import com.auth0.android.provider.WebAuthProvider
 import com.auth0.android.result.Credentials
+import com.auth0.android.jwt.JWT
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
@@ -35,12 +36,14 @@ class Auth0FlutterWebAuthMethodCallHandler : MethodCallHandler {
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
 
                 val formattedDate = sdf.format(credentials.expiresAt)
+                val jwt = JWT(credentials.idToken)
+                val allClaims = jwt.claims.mapValues { it.value.asString() }
 
                 result.success(mapOf(
                     "accessToken" to credentials.accessToken,
                     "idToken" to credentials.idToken,
                     "refreshToken" to credentials.refreshToken,
-                    "userProfile" to mapOf<String, String>(),
+                    "userProfile" to allClaims,
                     "expiresAt" to formattedDate,
                     "scopes" to scope
                 ))
