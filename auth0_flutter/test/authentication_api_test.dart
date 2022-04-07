@@ -28,42 +28,44 @@ void main() {
     reset(mockedPlatform);
   });
 
-  test('signUp - passes through properties to the platform', () async {
-    when(mockedPlatform.signup(any))
-        .thenAnswer((final _) async => TestPlatform.signupResult);
+  group('signup', () {
+    test('passes through properties to the platform', () async {
+      when(mockedPlatform.signup(any))
+          .thenAnswer((final _) async => TestPlatform.signupResult);
 
-    final result = await Auth0('test-domain', 'test-clientId').api.signup(
-      email: 'test-email',
-      password: 'test-pass',
-      connection: 'test-realm',
-      userMetadata: {'test': 'test-123'},
-    );
+      final result = await Auth0('test-domain', 'test-clientId').api.signup(
+        email: 'test-email',
+        password: 'test-pass',
+        connection: 'test-realm',
+        userMetadata: {'test': 'test-123'},
+      );
 
-    final verificationResult =
-        verify(mockedPlatform.signup(captureAny)).captured.single;
-    expect(verificationResult.account.domain, 'test-domain');
-    expect(verificationResult.account.clientId, 'test-clientId');
-    expect(verificationResult.email, 'test-email');
-    expect(verificationResult.password, 'test-pass');
-    expect(verificationResult.connection, 'test-realm');
-    expect(verificationResult.userMetadata['test'], 'test-123');
-    expect(result, TestPlatform.signupResult);
-  });
+      final verificationResult =
+          verify(mockedPlatform.signup(captureAny)).captured.single;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.account.clientId, 'test-clientId');
+      expect(verificationResult.email, 'test-email');
+      expect(verificationResult.password, 'test-pass');
+      expect(verificationResult.connection, 'test-realm');
+      expect(verificationResult.userMetadata['test'], 'test-123');
+      expect(result, TestPlatform.signupResult);
+    });
 
-  test('signUp - set userMetadata to default value when omitted', () async {
-    when(mockedPlatform.signup(any))
-        .thenAnswer((final _) async => TestPlatform.signupResult);
+    test('set userMetadata to default value when omitted', () async {
+      when(mockedPlatform.signup(any))
+          .thenAnswer((final _) async => TestPlatform.signupResult);
 
-    final result = await Auth0('test-domain', 'test-clientId').api.signup(
-          email: 'test-email',
-          password: 'test-pass',
-          connection: 'test-realm',
-        );
+      final result = await Auth0('test-domain', 'test-clientId').api.signup(
+            email: 'test-email',
+            password: 'test-pass',
+            connection: 'test-realm',
+          );
 
-    final verificationResult =
-        verify(mockedPlatform.signup(captureAny)).captured.single;
-    // ignore: inference_failure_on_collection_literal
-    expect(verificationResult.userMetadata, {});
-    expect(result, TestPlatform.signupResult);
+      final verificationResult =
+          verify(mockedPlatform.signup(captureAny)).captured.single;
+      // ignore: inference_failure_on_collection_literal
+      expect(verificationResult.userMetadata, {});
+      expect(result, TestPlatform.signupResult);
+    });
   });
 }

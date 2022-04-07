@@ -27,98 +27,101 @@ void main() {
     channel.setMockMethodCallHandler(null);
   });
 
-  test('signUp - calls the correct MethodChannel method', () async {
-    when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
-          'email': 'test-email',
-          'emailVerified': true,
-          'username': 'test-user'
-        });
+  group('signup', () {
+    test('calls the correct MethodChannel method', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
+            'email': 'test-email',
+            'emailVerified': true,
+            'username': 'test-user'
+          });
 
-    await MethodChannelAuth0FlutterAuth().signup(AuthSignupOptions(
-        account: const Account('test-domain', 'test-clientId'),
-        email: 'test-email',
-        password: 'test-pass',
-        connection: 'test-connection',
-        username: 'test-user'));
+      await MethodChannelAuth0FlutterAuth().signup(AuthSignupOptions(
+          account: const Account('test-domain', 'test-clientId'),
+          email: 'test-email',
+          password: 'test-pass',
+          connection: 'test-connection',
+          username: 'test-user'));
 
-    expect(verify(mocked.methodCallHandler(captureAny)).captured.single.method,
-        'auth#signUp');
-  });
+      expect(
+          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          'auth#signUp');
+    });
 
-  test('signUp - correctly maps all properties', () async {
-    when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
-          'email': 'test-email',
-          'emailVerified': true,
-          'username': 'test-user'
-        });
+    test('correctly maps all properties', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
+            'email': 'test-email',
+            'emailVerified': true,
+            'username': 'test-user'
+          });
 
-    await MethodChannelAuth0FlutterAuth().signup(AuthSignupOptions(
-        account: const Account('test-domain', 'test-clientId'),
-        email: 'test-email',
-        password: 'test-pass',
-        connection: 'test-connection',
-        username: 'test-user'));
+      await MethodChannelAuth0FlutterAuth().signup(AuthSignupOptions(
+          account: const Account('test-domain', 'test-clientId'),
+          email: 'test-email',
+          password: 'test-pass',
+          connection: 'test-connection',
+          username: 'test-user'));
 
-    final verificationResult =
-        verify(mocked.methodCallHandler(captureAny)).captured.single;
-    expect(verificationResult.arguments['domain'], 'test-domain');
-    expect(verificationResult.arguments['clientId'], 'test-clientId');
-    expect(verificationResult.arguments['email'], 'test-email');
-    expect(verificationResult.arguments['username'], 'test-user');
-    expect(verificationResult.arguments['password'], 'test-pass');
-    expect(verificationResult.arguments['connection'], 'test-connection');
-  });
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['domain'], 'test-domain');
+      expect(verificationResult.arguments['clientId'], 'test-clientId');
+      expect(verificationResult.arguments['email'], 'test-email');
+      expect(verificationResult.arguments['username'], 'test-user');
+      expect(verificationResult.arguments['password'], 'test-pass');
+      expect(verificationResult.arguments['connection'], 'test-connection');
+    });
 
-  test('signUp - correctly returns the response from the Method Channel',
-      () async {
-    when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
-          'email': 'test-email',
-          'emailVerified': true,
-          'username': 'test-user'
-        });
+    test('correctly returns the response from the Method Channel',
+        () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
+            'email': 'test-email',
+            'emailVerified': true,
+            'username': 'test-user'
+          });
 
-    final result = await MethodChannelAuth0FlutterAuth().signup(
-        AuthSignupOptions(
-            account: const Account('test-domain', 'test-clientId'),
-            email: 'test-email',
-            password: 'test-pass',
-            connection: 'test-connection',
-            username: 'test-user'));
+      final result = await MethodChannelAuth0FlutterAuth().signup(
+          AuthSignupOptions(
+              account: const Account('test-domain', 'test-clientId'),
+              email: 'test-email',
+              password: 'test-pass',
+              connection: 'test-connection',
+              username: 'test-user'));
 
-    verify(mocked.methodCallHandler(captureAny));
+      verify(mocked.methodCallHandler(captureAny));
 
-    expect(result.email, 'test-email');
-    expect(result.emailVerified, true);
-    expect(result.username, 'test-user');
-  });
+      expect(result.email, 'test-email');
+      expect(result.emailVerified, true);
+      expect(result.username, 'test-user');
+    });
 
-  test('signUp - correctly returns emailVerified when true', () async {
-    when(mocked.methodCallHandler(any)).thenAnswer(
-        (final _) async => {'email': 'test-email', 'emailVerified': true});
+    test('correctly returns emailVerified when true', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => {'email': 'test-email', 'emailVerified': true});
 
-    final result = await MethodChannelAuth0FlutterAuth().signup(
-        AuthSignupOptions(
-            account: const Account('', ''),
-            email: '',
-            password: '',
-            connection: ''));
+      final result = await MethodChannelAuth0FlutterAuth().signup(
+          AuthSignupOptions(
+              account: const Account('', ''),
+              email: '',
+              password: '',
+              connection: ''));
 
-    verify(mocked.methodCallHandler(captureAny));
-    expect(result.emailVerified, true);
-  });
+      verify(mocked.methodCallHandler(captureAny));
+      expect(result.emailVerified, true);
+    });
 
-  test('signUp - correctly returns emailVerified when false', () async {
-    when(mocked.methodCallHandler(any)).thenAnswer(
-        (final _) async => {'email': 'test-email', 'emailVerified': false});
+    test('correctly returns emailVerified when false', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => {'email': 'test-email', 'emailVerified': false});
 
-    final result = await MethodChannelAuth0FlutterAuth().signup(
-        AuthSignupOptions(
-            account: const Account('', ''),
-            email: '',
-            password: '',
-            connection: ''));
+      final result = await MethodChannelAuth0FlutterAuth().signup(
+          AuthSignupOptions(
+              account: const Account('', ''),
+              email: '',
+              password: '',
+              connection: ''));
 
-    verify(mocked.methodCallHandler(captureAny));
-    expect(result.emailVerified, false);
+      verify(mocked.methodCallHandler(captureAny));
+      expect(result.emailVerified, false);
+    });
   });
 }
