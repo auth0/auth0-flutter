@@ -6,6 +6,7 @@ import com.auth0.android.callback.Callback
 import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.toMap
+import com.auth0.auth0_flutter.utils.assertHasProperties
 import io.flutter.plugin.common.MethodChannel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -16,9 +17,9 @@ class RenewAccessTokenApiRequestHandler : ApiRequestHandler {
     override val method: String = AUTH_RENEWACCESSTOKEN_METHOD
 
     override fun handle(api: AuthenticationAPIClient, request: MethodCallRequest, result: MethodChannel.Result) {
-        val args = request.data;
+        assertHasProperties(listOf("refreshToken"), request.data);
 
-        api.renewAuth(args["refreshToken"] as String).start(object :
+        api.renewAuth(request.data["refreshToken"] as String).start(object :
             Callback<Credentials, AuthenticationException> {
             override fun onFailure(exception: AuthenticationException) {
                 result.error(
@@ -34,7 +35,7 @@ class RenewAccessTokenApiRequestHandler : ApiRequestHandler {
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
 
                 val formattedDate = sdf.format(credentials.expiresAt)
-                
+
                 result.success(
                     mapOf(
                         "accessToken" to credentials.accessToken,
