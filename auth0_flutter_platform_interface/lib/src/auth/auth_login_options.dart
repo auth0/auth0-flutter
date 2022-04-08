@@ -5,7 +5,7 @@ class AuthLoginOptions {
   final String usernameOrEmail;
   final String password;
   final String connectionOrRealm;
-  final Set<String> scope;
+  final Set<String> scopes;
   final Map<String, String> parameters;
 
   AuthLoginOptions(
@@ -13,7 +13,7 @@ class AuthLoginOptions {
       required this.usernameOrEmail,
       required this.password,
       required this.connectionOrRealm,
-      this.scope = const {},
+      this.scopes = const {},
       this.parameters = const {}});
 
       Map<String, dynamic> toMap() => {
@@ -22,7 +22,7 @@ class AuthLoginOptions {
         'usernameOrEmail': usernameOrEmail,
         'password': password,
         'connectionOrRealm': connectionOrRealm,
-        'scope': scope.toList(),
+        'scopes': scopes.toList(),
         'parameters': parameters
       };
 }

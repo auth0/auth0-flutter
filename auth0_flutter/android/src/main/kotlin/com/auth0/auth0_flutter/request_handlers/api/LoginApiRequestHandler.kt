@@ -25,7 +25,7 @@ class LoginApiRequestHandler : ApiRequestHandler {
         val loginBuilder = api
             .login(args["usernameOrEmail"] as String, args["password"] as String, args["connectionOrRealm"] as String);
 
-        val scopes = args.getOrDefault("scope", arrayListOf<String>()) as ArrayList<*>
+        val scopes = args.getOrDefault("scopes", arrayListOf<String>()) as ArrayList<*>
         if (scopes.isNotEmpty()) {
             loginBuilder.setScope(scopes.joinToString(separator = " "))
         }
