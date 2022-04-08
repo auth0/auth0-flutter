@@ -38,10 +38,12 @@ android {
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
     }
 
     defaultConfig {
         minSdkVersion 21
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 }
 
@@ -49,4 +51,13 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.auth0.android:auth0:2.7.0'
     implementation 'com.auth0.android:jwtdecode:2.0.1'
+
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.hamcrest:java-hamcrest:2.0.0.0'
+    testImplementation 'org.mockito:mockito-core:3.7.7'
+    // Mockito-Kotlin: See https://github.com/nhaarman/mockito-kotlin/wiki/Parameter-specified-as-non-null-is-null
+    testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
+    testImplementation 'com.jayway.awaitility:awaitility:1.7.0'
+    testImplementation 'org.robolectric:robolectric:4.6.1'
+    testImplementation 'androidx.test.espresso:espresso-intents:3.4.0'
 }
