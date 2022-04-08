@@ -12,6 +12,7 @@ export 'src/credentials.dart';
 export 'src/database_user.dart';
 export 'src/method_channel_auth0_flutter_auth.dart';
 export 'src/method_channel_auth0_flutter_web_auth.dart';
+export 'src/user_profile.dart';
 export 'src/web-auth/web_auth_exception.dart';
 export 'src/web-auth/web_auth_login_input.dart';
 export 'src/web-auth/web_auth_login_result.dart';

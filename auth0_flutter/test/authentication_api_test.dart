@@ -26,12 +26,12 @@ class TestPlatform extends Mock
 
   static AuthRenewAccessTokenResult renewAccessTokenResult =
       AuthRenewAccessTokenResult(
-    accessToken: 'accessToken',
-    idToken: 'idToken',
-    refreshToken: 'refreshToken',
-    expiresAt: DateTime.now(),
-    scopes: {'a'},
-  );
+          accessToken: 'accessToken',
+          idToken: 'idToken',
+          refreshToken: 'refreshToken',
+          expiresAt: DateTime.now(),
+          scopes: {'a'},
+          userProfile: {});
 }
 
 @GenerateMocks([TestPlatform])
@@ -136,11 +136,12 @@ void main() {
 
       final result = await Auth0('test-domain', 'test-clientId')
           .api
-          .renewAccessToken(refreshToken: 'test-refresh-token', scope: {'test-scope1', 'test-scope2'});
+          .renewAccessToken(
+              refreshToken: 'test-refresh-token',
+              scope: {'test-scope1', 'test-scope2'});
 
       final verificationResult =
-          verify(mockedPlatform.renewAccessToken(captureAny))
-              .captured.single;
+          verify(mockedPlatform.renewAccessToken(captureAny)).captured.single;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
       expect(verificationResult.refreshToken, 'test-refresh-token');

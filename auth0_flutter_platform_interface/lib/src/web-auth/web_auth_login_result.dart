@@ -1,6 +1,5 @@
 import '../credentials.dart';
-
-typedef UserProfile = Map<String, dynamic>;
+import '../user_profile.dart';
 
 class LoginResult extends Credentials {
   final UserProfile userProfile;

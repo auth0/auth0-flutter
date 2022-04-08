@@ -7,6 +7,7 @@ import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.toMap
 import com.auth0.auth0_flutter.utils.assertHasProperties
+import com.auth0.auth0_flutter.utils.processClaims
 import io.flutter.plugin.common.MethodChannel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -42,13 +43,17 @@ class RenewAccessTokenApiRequestHandler : ApiRequestHandler {
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
 
                 val formattedDate = sdf.format(credentials.expiresAt)
+                val jwt = JWT(credentials.idToken)
+
+                // Map all claim values to their underlying type as Any
+                val claims = processClaims(jwt.claims.mapValues { it.value.asObject(Any::class.java) })
 
                 result.success(
                     mapOf(
                         "accessToken" to credentials.accessToken,
                         "idToken" to credentials.idToken,
                         "refreshToken" to credentials.refreshToken,
-                        "userProfile" to mapOf<String, String>(),
+                        "userProfile" to claims,
                         "expiresAt" to formattedDate,
                         "scopes" to scope
                     )

@@ -1,20 +1,26 @@
-class AuthRenewAccessTokenResult {
-  final String idToken;
-  final String accessToken;
-  final String? refreshToken;
-  final DateTime expiresAt;
-  final Set<String> scopes;
+import '../credentials.dart';
+import '../user_profile.dart';
+
+class AuthRenewAccessTokenResult extends Credentials {
+
+  final UserProfile userProfile;
 
   AuthRenewAccessTokenResult(
-      {required this.idToken,
-      required this.accessToken,
-      this.refreshToken,
-      required this.expiresAt,
-      required this.scopes});
+      {required final String idToken,
+      required final String accessToken,
+      final String? refreshToken,
+      required final DateTime expiresAt,
+      final Set<String> scopes = const {},
+      required this.userProfile}) : super(
+            idToken: idToken,
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            expiresAt: expiresAt,
+            scopes: scopes);
 
-       factory AuthRenewAccessTokenResult.fromMap(
-          final Map<dynamic, dynamic> result) =>
-      AuthRenewAccessTokenResult(
+      factory AuthRenewAccessTokenResult.fromMap(final Map<dynamic, dynamic> result) => AuthRenewAccessTokenResult(
+        userProfile: Map<String, dynamic>.from(
+            result['userProfile'] as Map<dynamic, dynamic>),
         idToken: result['idToken'] as String,
         accessToken: result['accessToken'] as String,
         refreshToken: result['refreshToken'] as String?,

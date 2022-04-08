@@ -22,6 +22,7 @@ class MethodCallHandler {
     'refreshToken': 'refreshToken',
     'expiresAt': '2022-01-01',
     'scopes': ['a'],
+    'userProfile': {'name': 'John Doe'}
   };
 
   Future<dynamic>? methodCallHandler(final MethodCall? methodCall) async {}
@@ -171,6 +172,8 @@ void main() {
           'auth#renewAccessToken');
       expect(result.accessToken,
           MethodCallHandler.renewAccessTokenResult['accessToken']);
+      expect(result.userProfile['name'],
+          MethodCallHandler.renewAccessTokenResult['userProfile']['name']);
     });
 
     test('correctly maps all properties', () async {
