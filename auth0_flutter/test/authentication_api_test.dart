@@ -23,6 +23,15 @@ class TestPlatform extends Mock
       expiresAt: DateTime.now(),
       scopes: {'a'},
       userProfile: {'name': 'John Doe'});
+
+  static AuthRenewAccessTokenResult renewAccessTokenResult =
+      AuthRenewAccessTokenResult(
+    accessToken: 'accessToken',
+    idToken: 'idToken',
+    refreshToken: 'refreshToken',
+    expiresAt: DateTime.now(),
+    scopes: {'a'},
+  );
 }
 
 @GenerateMocks([TestPlatform])
@@ -117,6 +126,25 @@ void main() {
       // ignore: inference_failure_on_collection_literal
       expect(verificationResult.parameters, {});
       expect(result, TestPlatform.loginResult);
+    });
+  });
+
+  group('renewAccessToken', () {
+    test('passes through properties to the platform', () async {
+      when(mockedPlatform.renewAccessToken(any, any))
+          .thenAnswer((final _) async => TestPlatform.renewAccessTokenResult);
+
+      final result = await Auth0('test-domain', 'test-clientId')
+          .api
+          .renewAccessToken(refreshToken: 'test-refresh-token');
+
+      final verificationResult =
+          verify(mockedPlatform.renewAccessToken(captureAny, captureAny))
+              .captured;
+      expect(verificationResult[0], 'test-refresh-token');
+      expect(verificationResult[1].domain, 'test-domain');
+      expect(verificationResult[1].clientId, 'test-clientId');
+      expect(result, TestPlatform.renewAccessTokenResult);
     });
   });
 }
