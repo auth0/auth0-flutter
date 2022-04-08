@@ -131,19 +131,20 @@ void main() {
 
   group('renewAccessToken', () {
     test('passes through properties to the platform', () async {
-      when(mockedPlatform.renewAccessToken(any, any))
+      when(mockedPlatform.renewAccessToken(any))
           .thenAnswer((final _) async => TestPlatform.renewAccessTokenResult);
 
       final result = await Auth0('test-domain', 'test-clientId')
           .api
-          .renewAccessToken(refreshToken: 'test-refresh-token');
+          .renewAccessToken(refreshToken: 'test-refresh-token', scope: {'test-scope1', 'test-scope2'});
 
       final verificationResult =
-          verify(mockedPlatform.renewAccessToken(captureAny, captureAny))
-              .captured;
-      expect(verificationResult[0], 'test-refresh-token');
-      expect(verificationResult[1].domain, 'test-domain');
-      expect(verificationResult[1].clientId, 'test-clientId');
+          verify(mockedPlatform.renewAccessToken(captureAny))
+              .captured.single;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.account.clientId, 'test-clientId');
+      expect(verificationResult.refreshToken, 'test-refresh-token');
+      expect(verificationResult.scope, {'test-scope1', 'test-scope2'});
       expect(result, TestPlatform.renewAccessTokenResult);
     });
   });

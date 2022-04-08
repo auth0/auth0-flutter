@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
-import 'account.dart';
 import 'auth/api_exception.dart';
 import 'auth/auth_login_options.dart';
+import 'auth/auth_renew_access_token_options.dart';
 import 'auth/auth_renew_access_token_result.dart';
 import 'auth/auth_reset_password_options.dart';
 import 'auth/auth_signup_options.dart';
@@ -60,10 +60,11 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
 
   @override
   Future<AuthRenewAccessTokenResult> renewAccessToken(
-      final String refreshToken, final Account account) async {
+      final AuthRenewAccessTokenOptions options) async {
     final Map<dynamic, dynamic>? result;
     try {
-      result = await _channel.invokeMethod(authRenewAccessTokenMethod, {'refreshToken': refreshToken, 'domain': account.domain, 'clientId': account.clientId});
+      result = await _channel.invokeMethod(
+          authRenewAccessTokenMethod, options.toMap());
     } on PlatformException catch (e) {
       throw ApiException.fromPlatformException(e);
     }

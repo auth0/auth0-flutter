@@ -19,7 +19,14 @@ class RenewAccessTokenApiRequestHandler : ApiRequestHandler {
     override fun handle(api: AuthenticationAPIClient, request: MethodCallRequest, result: MethodChannel.Result) {
         assertHasProperties(listOf("refreshToken"), request.data);
 
-        api.renewAuth(request.data["refreshToken"] as String).start(object :
+        var renewAuthBuilder = api.renewAuth(request.data["refreshToken"] as String);
+
+        val scopes = request.data.getOrDefault("scope", arrayListOf<String>()) as ArrayList<*>
+        if (scopes.isNotEmpty()) {
+            renewAuthBuilder.addParameter("scope", scopes.joinToString(separator = " "))
+        }
+
+        renewAuthBuilder.start(object :
             Callback<Credentials, AuthenticationException> {
             override fun onFailure(exception: AuthenticationException) {
                 result.error(

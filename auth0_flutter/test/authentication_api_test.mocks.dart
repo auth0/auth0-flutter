@@ -53,9 +53,8 @@ class MockTestPlatform extends _i1.Mock implements _i3.TestPlatform {
           as _i4.Future<_i2.DatabaseUser>);
   @override
   _i4.Future<_i2.AuthRenewAccessTokenResult> renewAccessToken(
-          String? refreshToken, _i2.Account? account) =>
-      (super.noSuchMethod(
-              Invocation.method(#renewAccessToken, [refreshToken, account]),
+          _i2.AuthRenewAccessTokenOptions? options) =>
+      (super.noSuchMethod(Invocation.method(#renewAccessToken, [options]),
               returnValue: Future<_i2.AuthRenewAccessTokenResult>.value(
                   _FakeAuthRenewAccessTokenResult_2()))
           as _i4.Future<_i2.AuthRenewAccessTokenResult>);

@@ -162,7 +162,9 @@ void main() {
           (final _) async => MethodCallHandler.renewAccessTokenResult);
 
       final result = await MethodChannelAuth0FlutterAuth().renewAccessToken(
-          'test-refresh-token', const Account('test-domain', 'test-clientId'));
+          AuthRenewAccessTokenOptions(
+              refreshToken: 'test-refresh-token',
+              account: const Account('test-domain', 'test-clientId')));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -176,7 +178,9 @@ void main() {
           (final _) async => MethodCallHandler.renewAccessTokenResult);
 
       await MethodChannelAuth0FlutterAuth().renewAccessToken(
-          'test-refresh-token', const Account('test-domain', 'test-clientId'));
+          AuthRenewAccessTokenOptions(
+              refreshToken: 'test-refresh-token',
+              account: const Account('test-domain', 'test-clientId')));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
