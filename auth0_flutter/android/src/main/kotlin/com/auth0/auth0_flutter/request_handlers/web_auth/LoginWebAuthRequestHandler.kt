@@ -11,6 +11,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import com.auth0.android.jwt.JWT
+
 
 private val WEBAUTH_LOGIN_METHOD = "webAuth#login"
 
@@ -70,6 +72,10 @@ class LoginWebAuthRequestHandler : WebAuthRequestHandler {
             override fun onSuccess(credentials: Credentials) {
                 // Success! Access token and ID token are presents
                 val scope = credentials.scope?.split(" ") ?: listOf()
+                val jwt = JWT(credentials.idToken)
+
+                // Map all claim values to their underlying type as Any
+                val claims = processClaims(jwt.claims.mapValues { it.value.asObject(Any::class.java) })
 
                 val sdf =
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
@@ -80,11 +86,59 @@ class LoginWebAuthRequestHandler : WebAuthRequestHandler {
                     "accessToken" to credentials.accessToken,
                     "idToken" to credentials.idToken,
                     "refreshToken" to credentials.refreshToken,
-                    "userProfile" to mapOf<String, String>(),
+                    "userProfile" to claims,
                     "expiresAt" to formattedDate,
                     "scopes" to scope
                 ))
             }
         })
+    }
+
+    fun processClaims(claims: Map<String, Any?>) : Map<String, Any?> {
+        val claimsToFilter = setOf(
+            "aud",
+            "iss",
+            "iat",
+            "exp",
+            "nbf",
+            "nonce",
+            "azp",
+            "auth_time",
+            "s_hash",
+            "at_hash",
+            "c_hash"
+        )
+
+        val standardClaims = setOf(
+            "sub",
+            "name",
+            "given_name",
+            "family_name",
+            "middle_name",
+            "nickname",
+            "preferred_username",
+            "profile",
+            "picture",
+            "website",
+            "email",
+            "email_verified",
+            "gender",
+            "birthdate",
+            "zoneinfo",
+            "locale",
+            "phone_number",
+            "phone_number",
+            "phone_number_verified_boolean",
+            "address",
+            "updated_at"
+        )
+
+        // Remove the claims we don't want to appear in this map
+        val filteredClaims = claims.filterNot { claimsToFilter.contains(it.key) }
+
+        // Take anything that's not a standard claim and move it to "custom_claims" key
+        return filteredClaims + mapOf("custom_claims" to filteredClaims.filterNot {
+            standardClaims.contains(it.key)
+        }).filterKeys { standardClaims.contains(it) || it == "custom_claims" }
     }
 }
