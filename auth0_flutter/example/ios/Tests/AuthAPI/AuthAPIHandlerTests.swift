@@ -2,27 +2,27 @@ import XCTest
 
 @testable import auth0_flutter
 
-class WebAuthHandlerTests: XCTestCase {
-    var sut: WebAuthHandler!
+class AuthAPIHandlerTests: XCTestCase {
+    var sut: AuthAPIHandler!
 
     override func setUpWithError() throws {
-        sut = WebAuthHandler()
+        sut = AuthAPIHandler()
     }
 }
 
 // MARK: - Registration
 
-extension WebAuthHandlerTests {
+extension AuthAPIHandlerTests {
     func testRegistersItself() {
         let spy = SpyPluginRegistrar()
-        WebAuthHandler.register(with: spy)
-        XCTAssertTrue(spy.delegate is WebAuthHandler)
+        AuthAPIHandler.register(with: spy)
+        XCTAssertTrue(spy.delegate is AuthAPIHandler)
     }
 }
 
 // MARK: - Required Arguments Error
 
-extension WebAuthHandlerTests {
+extension AuthAPIHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
         let arguments = ["clientId": self.expectation(description: "clientId is missing"),
                          "domain": self.expectation(description: "domain is missing")]
@@ -58,11 +58,11 @@ extension WebAuthHandlerTests {
 
 // MARK: - Method Handlers
 
-extension WebAuthHandlerTests {
+extension AuthAPIHandlerTests {
     func testCallsMethodHandlers() {
         var expectations: [XCTestExpectation] = []
 
-        WebAuthHandler.Method.allCases.forEach { method in
+        AuthAPIHandler.Method.allCases.forEach { method in
             let spy = SpyMethodHandler()
             let arguments: [String: Any] = ["clientId": "bar", "domain": "baz"]
             let expectation = self.expectation(description: "\(method.rawValue) handler call")

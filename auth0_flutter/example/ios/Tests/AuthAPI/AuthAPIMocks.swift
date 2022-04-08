@@ -1,6 +1,6 @@
 @testable import Auth0
 
-class MockAuthentication: Authentication {
+class SpyAuthentication: Authentication {
     let clientId: String
     let url: URL
     var telemetry: Telemetry
@@ -10,6 +10,8 @@ class MockAuthentication: Authentication {
     var databaseUserResult: AuthenticationResult<DatabaseUser> = .success((email: "foo", username: nil, verified: true))
     var userInfoResult: AuthenticationResult<UserInfo> = .success(UserInfo(json: ["sub": "foo"])!)
     var voidResult: AuthenticationResult<Void> = .success(())
+
+    var arguments: [String: Any] = [:]
 
     init(clientId: String, url: URL, telemetry: Telemetry) {
         self.clientId = clientId
@@ -22,6 +24,11 @@ class MockAuthentication: Authentication {
                realmOrConnection realm: String,
                audience: String?,
                scope: String) -> Request<Credentials, AuthenticationError> {
+        arguments["username"] = username
+        arguments["password"] = password
+        arguments["realm"] = realm
+        arguments["audience"] = audience
+        arguments["scope"] = scope
         return request(credentialsResult)
     }
 
@@ -39,14 +46,23 @@ class MockAuthentication: Authentication {
                 connection: String,
                 userMetadata: [String: Any]?,
                 rootAttributes: [String: Any]?) -> Request<DatabaseUser, AuthenticationError> {
+        arguments["email"] = email
+        arguments["username"] = username
+        arguments["password"] = password
+        arguments["connection"] = connection
+        arguments["userMetadata"] = userMetadata
+        arguments["rootAttributes"] = rootAttributes
         return request(databaseUserResult)
     }
 
     func resetPassword(email: String, connection: String) -> Request<Void, AuthenticationError> {
+        arguments["email"] = email
+        arguments["connection"] = connection
         return request(voidResult)
     }
 
     func userInfo(withAccessToken accessToken: String) -> Request<UserInfo, AuthenticationError> {
+        arguments["accessToken"] = accessToken
         return request(userInfoResult)
     }
 
@@ -65,7 +81,7 @@ class MockAuthentication: Authentication {
     }
 }
 
-private extension MockAuthentication {
+private extension SpyAuthentication {
     func request<T>(_ result: AuthenticationResult<T>) -> Request<T, AuthenticationError> {
         Request(session: URLSession.shared,
                 url: url,

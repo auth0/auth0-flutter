@@ -102,7 +102,7 @@ struct WebAuthLogoutMethodHandler: MethodHandler {
 // MARK: - Web Auth Handler
 
 public class WebAuthHandler: NSObject, FlutterPlugin {
-    enum Method: String, RawRepresentable {
+    enum Method: String, RawRepresentable, CaseIterable {
         case login = "webAuth#login"
         case logout = "webAuth#logout"
     }
@@ -137,12 +137,12 @@ public class WebAuthHandler: NSObject, FlutterPlugin {
 
 private extension WebAuthHandler {
     func callLogin(with arguments: [String: Any], using client: WebAuth, result: @escaping FlutterResult) {
-        let loginHandler = methodHandlers[.login] ?? WebAuthLoginMethodHandler(client: client)
-        loginHandler.handle(with: arguments, callback: result)
+        let handler = methodHandlers[.login] ?? WebAuthLoginMethodHandler(client: client)
+        handler.handle(with: arguments, callback: result)
     }
 
     func callLogout(with arguments: [String: Any], using client: WebAuth, result: @escaping FlutterResult) {
-        let logoutHandler = methodHandlers[.logout] ?? WebAuthLogoutMethodHandler(client: client)
-        logoutHandler.handle(with: arguments, callback: result)
+        let handler = methodHandlers[.logout] ?? WebAuthLogoutMethodHandler(client: client)
+        handler.handle(with: arguments, callback: result)
     }
 }

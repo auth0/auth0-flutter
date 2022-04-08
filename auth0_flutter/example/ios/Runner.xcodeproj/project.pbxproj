@@ -19,6 +19,7 @@
 		5C335E3F27FBCD1D00EDDE3A /* SwiftAuth0FlutterPluginTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C335E3E27FBCD1D00EDDE3A /* SwiftAuth0FlutterPluginTests.swift */; };
 		5C335E4127FBD2FE00EDDE3A /* ExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C335E4027FBD2FE00EDDE3A /* ExtensionTests.swift */; };
 		5C335E4827FE68BC00EDDE3A /* AuthAPIMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C335E4727FE68BC00EDDE3A /* AuthAPIMocks.swift */; };
+		5C59DA6527FFCF0600365CDB /* AuthAPIHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C59DA6427FFCF0600365CDB /* AuthAPIHandlerTests.swift */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
@@ -66,6 +67,7 @@
 		5C335E3E27FBCD1D00EDDE3A /* SwiftAuth0FlutterPluginTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftAuth0FlutterPluginTests.swift; sourceTree = "<group>"; };
 		5C335E4027FBD2FE00EDDE3A /* ExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionTests.swift; sourceTree = "<group>"; };
 		5C335E4727FE68BC00EDDE3A /* AuthAPIMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPIMocks.swift; sourceTree = "<group>"; };
+		5C59DA6427FFCF0600365CDB /* AuthAPIHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPIHandlerTests.swift; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
@@ -131,6 +133,7 @@
 			isa = PBXGroup;
 			children = (
 				5C335E4727FE68BC00EDDE3A /* AuthAPIMocks.swift */,
+				5C59DA6427FFCF0600365CDB /* AuthAPIHandlerTests.swift */,
 			);
 			path = AuthAPI;
 			sourceTree = "<group>";
@@ -408,6 +411,7 @@
 				5C335E3F27FBCD1D00EDDE3A /* SwiftAuth0FlutterPluginTests.swift in Sources */,
 				5C328B4827F7822600451E70 /* WebAuthHandlerTests.swift in Sources */,
 				5C328B5327F7B12F00451E70 /* WebAuthSpies.swift in Sources */,
+				5C59DA6527FFCF0600365CDB /* AuthAPIHandlerTests.swift in Sources */,
 				5C328B5027F7B0E700451E70 /* Utilities.swift in Sources */,
 				5C328B5527F7B1F300451E70 /* WebAuthLoginHandlerTests.swift in Sources */,
 				5C335E4827FE68BC00EDDE3A /* AuthAPIMocks.swift in Sources */,
