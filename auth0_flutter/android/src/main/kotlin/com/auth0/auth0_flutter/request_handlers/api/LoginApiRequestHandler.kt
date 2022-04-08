@@ -5,7 +5,7 @@ import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
 import com.auth0.android.result.Credentials
-import com.auth0.auth0_flutter_.MethodCallRequest
+import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodChannel
 import java.text.SimpleDateFormat
 import java.util.*

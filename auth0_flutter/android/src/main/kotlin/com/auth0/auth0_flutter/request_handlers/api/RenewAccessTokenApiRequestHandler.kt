@@ -1,7 +1,7 @@
 package com.auth0.auth0_flutter.request_handlers.api
 
 import com.auth0.android.authentication.AuthenticationAPIClient
-import com.auth0.auth0_flutter_.MethodCallRequest
+import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodChannel
 
 private const val AUTH_RENEWACCESSTOKEN_METHOD = "auth#renewAccessToken"

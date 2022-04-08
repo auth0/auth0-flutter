@@ -1,4 +1,4 @@
-package com.auth0.auth0_flutter_
+package com.auth0.auth0_flutter.request_handlers
 
 import com.auth0.android.Auth0
 import io.flutter.plugin.common.MethodCall

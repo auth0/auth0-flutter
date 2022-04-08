@@ -5,7 +5,7 @@ import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
 import com.auth0.android.result.DatabaseUser
 import com.auth0.auth0_flutter.toMap
-import com.auth0.auth0_flutter_.MethodCallRequest
+import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodChannel
 
 private const val AUTH_SIGNUP_METHOD = "auth#signUp"
