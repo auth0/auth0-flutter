@@ -22,6 +22,8 @@ import 'authentication_api_test.dart' as _i3;
 
 class _FakeLoginResult_0 extends _i1.Fake implements _i2.LoginResult {}
 
+class _FakeDatabaseUser_1 extends _i1.Fake implements _i2.DatabaseUser {}
+
 /// A class which mocks [TestPlatform].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -41,10 +43,11 @@ class MockTestPlatform extends _i1.Mock implements _i3.TestPlatform {
               returnValue: Future<_i2.AuthUserProfileResult?>.value())
           as _i4.Future<_i2.AuthUserProfileResult?>);
   @override
-  _i4.Future<void> signUp(_i2.AuthSignUpOptions? options) =>
-      (super.noSuchMethod(Invocation.method(#signUp, [options]),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  _i4.Future<_i2.DatabaseUser> signup(_i2.AuthSignupOptions? options) =>
+      (super.noSuchMethod(Invocation.method(#signup, [options]),
+              returnValue:
+                  Future<_i2.DatabaseUser>.value(_FakeDatabaseUser_1()))
+          as _i4.Future<_i2.DatabaseUser>);
   @override
   _i4.Future<_i2.AuthRenewAccessTokenResult?> renewAccessToken(
           String? refreshToken) =>
