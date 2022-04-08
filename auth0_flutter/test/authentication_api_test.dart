@@ -138,7 +138,7 @@ void main() {
           .api
           .renewAccessToken(
               refreshToken: 'test-refresh-token',
-              scope: {'test-scope1', 'test-scope2'});
+              scopes: {'test-scope1', 'test-scope2'});
 
       final verificationResult =
           verify(mockedPlatform.renewAccessToken(captureAny)).captured.single;

@@ -23,7 +23,7 @@ class RenewAccessTokenApiRequestHandler : ApiRequestHandler {
 
         var renewAuthBuilder = api.renewAuth(request.data["refreshToken"] as String);
 
-        val scopes = request.data.getOrDefault("scope", arrayListOf<String>()) as ArrayList<*>
+        val scopes = request.data.getOrDefault("scopes", arrayListOf<String>()) as ArrayList<*>
         if (scopes.isNotEmpty()) {
             renewAuthBuilder.addParameter("scope", scopes.joinToString(separator = " "))
         }
