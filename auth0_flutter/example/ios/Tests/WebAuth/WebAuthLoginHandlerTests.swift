@@ -284,7 +284,6 @@ private extension WebAuthLoginHandlerTests {
         return ["scopes": scopes,
                 "parameters": parameters,
                 "useEphemeralSession": useEphemeralSession]
-
     }
 
     func arguments<T>(key: String, value: T) -> [String: Any] {

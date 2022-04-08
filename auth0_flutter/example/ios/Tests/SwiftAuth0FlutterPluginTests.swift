@@ -6,7 +6,6 @@ class SwiftAuth0FlutterPluginTests: XCTestCase {
     let sut = SwiftAuth0FlutterPlugin.self
 
     override func setUpWithError() throws {
-        SwiftAuth0FlutterPlugin.handlers = []
         SpyFlutterPlugin.calledRegister = false
     }
 }

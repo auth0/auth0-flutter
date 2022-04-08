@@ -66,6 +66,19 @@ func assertHas(webAuthError: WebAuthError,
     XCTFail("The handler did not produce the error '\(webAuthError)'", file: file, line: line)
 }
 
+func assertHas(authenticationError: AuthenticationError,
+               _ result: Any?,
+               file: StaticString = #filePath,
+               line: UInt = #line) {
+    if let result = result as? FlutterError,
+       let details = result.details as? [String: Any],
+       result.code == authenticationError.code,
+       details == authenticationError.info {
+        return
+    }
+    XCTFail("The handler did not produce the error '\(authenticationError)'", file: file, line: line)
+}
+
 func assertHas(credentials: Credentials,
                _ result: Any?,
                file: StaticString = #filePath,

@@ -10,7 +10,11 @@ class SpyAuthentication: Authentication {
     var databaseUserResult: AuthenticationResult<DatabaseUser> = .success((email: "foo", username: nil, verified: true))
     var userInfoResult: AuthenticationResult<UserInfo> = .success(UserInfo(json: ["sub": "foo"])!)
     var voidResult: AuthenticationResult<Void> = .success(())
-
+    var calledLoginWithUsernameOrEmail = false
+    var calledSignup = false
+    var calledUserInfo = false
+    var calledRenewAccessToken = false
+    var calledResetPassword = false
     var arguments: [String: Any] = [:]
 
     init(clientId: String, url: URL, telemetry: Telemetry) {
@@ -29,6 +33,7 @@ class SpyAuthentication: Authentication {
         arguments["realm"] = realm
         arguments["audience"] = audience
         arguments["scope"] = scope
+        calledLoginWithUsernameOrEmail = true
         return request(credentialsResult)
     }
 
@@ -52,23 +57,33 @@ class SpyAuthentication: Authentication {
         arguments["connection"] = connection
         arguments["userMetadata"] = userMetadata
         arguments["rootAttributes"] = rootAttributes
+        calledSignup = true
         return request(databaseUserResult)
     }
 
     func resetPassword(email: String, connection: String) -> Request<Void, AuthenticationError> {
         arguments["email"] = email
         arguments["connection"] = connection
+        calledResetPassword = true
         return request(voidResult)
     }
 
     func userInfo(withAccessToken accessToken: String) -> Request<UserInfo, AuthenticationError> {
         arguments["accessToken"] = accessToken
+        calledUserInfo = true
         return request(userInfoResult)
     }
 
     func codeExchange(withCode code: String,
                       codeVerifier: String,
                       redirectURI: String) -> Request<Credentials, AuthenticationError> {
+        return request(credentialsResult)
+    }
+
+    func renew(withRefreshToken refreshToken: String, scope: String?) -> Request<Credentials, AuthenticationError> {
+        arguments["refreshToken"] = refreshToken
+        arguments["scope"] = scope
+        calledRenewAccessToken = true
         return request(credentialsResult)
     }
 
