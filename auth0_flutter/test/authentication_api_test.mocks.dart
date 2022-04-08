@@ -24,6 +24,9 @@ class _FakeLoginResult_0 extends _i1.Fake implements _i2.LoginResult {}
 
 class _FakeDatabaseUser_1 extends _i1.Fake implements _i2.DatabaseUser {}
 
+class _FakeAuthRenewAccessTokenResult_2 extends _i1.Fake
+    implements _i2.AuthRenewAccessTokenResult {}
+
 /// A class which mocks [TestPlatform].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -49,11 +52,13 @@ class MockTestPlatform extends _i1.Mock implements _i3.TestPlatform {
                   Future<_i2.DatabaseUser>.value(_FakeDatabaseUser_1()))
           as _i4.Future<_i2.DatabaseUser>);
   @override
-  _i4.Future<_i2.AuthRenewAccessTokenResult?> renewAccessToken(
-          String? refreshToken) =>
-      (super.noSuchMethod(Invocation.method(#renewAccessToken, [refreshToken]),
-              returnValue: Future<_i2.AuthRenewAccessTokenResult?>.value())
-          as _i4.Future<_i2.AuthRenewAccessTokenResult?>);
+  _i4.Future<_i2.AuthRenewAccessTokenResult> renewAccessToken(
+          String? refreshToken, _i2.Account? account) =>
+      (super.noSuchMethod(
+              Invocation.method(#renewAccessToken, [refreshToken, account]),
+              returnValue: Future<_i2.AuthRenewAccessTokenResult>.value(
+                  _FakeAuthRenewAccessTokenResult_2()))
+          as _i4.Future<_i2.AuthRenewAccessTokenResult>);
   @override
   _i4.Future<void> resetPassword(_i2.AuthResetPasswordOptions? options) =>
       (super.noSuchMethod(Invocation.method(#resetPassword, [options]),
