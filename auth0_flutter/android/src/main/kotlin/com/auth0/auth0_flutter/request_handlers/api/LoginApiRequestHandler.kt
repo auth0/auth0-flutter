@@ -6,6 +6,7 @@ import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
 import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
+import com.auth0.auth0_flutter.utils.assertHasProperties
 import io.flutter.plugin.common.MethodChannel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -18,6 +19,9 @@ class LoginApiRequestHandler : ApiRequestHandler {
 
     override fun handle(api: AuthenticationAPIClient, request: MethodCallRequest, result: MethodChannel.Result) {
         val args = request.data;
+
+        assertHasProperties(listOf("usernameOrEmail", "password", "connectionOrRealm"), args);
+
         val loginBuilder = api
             .login(args["usernameOrEmail"] as String, args["password"] as String, args["connectionOrRealm"] as String);
 

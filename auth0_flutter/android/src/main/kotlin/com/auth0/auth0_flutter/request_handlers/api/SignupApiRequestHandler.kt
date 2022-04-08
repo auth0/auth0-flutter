@@ -6,6 +6,7 @@ import com.auth0.android.callback.Callback
 import com.auth0.android.result.DatabaseUser
 import com.auth0.auth0_flutter.toMap
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
+import com.auth0.auth0_flutter.utils.assertHasProperties
 import io.flutter.plugin.common.MethodChannel
 
 private const val AUTH_SIGNUP_METHOD = "auth#signUp"
@@ -14,6 +15,8 @@ class SignupApiRequestHandler : ApiRequestHandler {
     override val method: String = AUTH_SIGNUP_METHOD
 
     override fun handle(api: AuthenticationAPIClient, request: MethodCallRequest, result: MethodChannel.Result) {
+        assertHasProperties(listOf("email", "password", "connection"), request.data);
+
         api.createUser(
             email = request.data["email"] as String,
             password = request.data["password"] as String,
