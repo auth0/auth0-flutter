@@ -11,7 +11,7 @@ import io.flutter.plugin.common.MethodChannel.Result
 
 
 class Auth0FlutterAuthMethodCallHandler : MethodCallHandler {
-    private var requestHandlers = setOf(
+    private var requestHandlers = listOf(
         LoginApiRequestHandler(),
         SignupApiRequestHandler(),
         UserInfoApiRequestHandler(),

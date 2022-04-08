@@ -12,7 +12,7 @@ import io.flutter.plugin.common.MethodChannel.Result
 class Auth0FlutterWebAuthMethodCallHandler : MethodCallHandler {
     lateinit var context: Context
 
-    private var requestHandlers = setOf(
+    private var requestHandlers = listOf(
         LoginWebAuthRequestHandler(),
         LogoutWebAuthRequestHandler()
     );
