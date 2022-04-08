@@ -18,13 +18,19 @@ class LoginApiRequestHandler : ApiRequestHandler {
 
     override fun handle(api: AuthenticationAPIClient, request: MethodCallRequest, result: MethodChannel.Result) {
         val args = request.data;
-        val authentication = AuthenticationAPIClient(Auth0(args["clientId"] as String, args["domain"] as String));
+        val loginBuilder = api
+            .login(args["usernameOrEmail"] as String, args["password"] as String, args["connectionOrRealm"] as String);
 
-        authentication
-            .login(args["usernameOrEmail"] as String, args["password"] as String, args["connectionOrRealm"] as String)
-            .setScope((args["scope"] as List<String>).joinToString(separator = " "))
-            .addParameters(args["parameters"] as Map<String, String>)
-            .start(object : Callback<Credentials, AuthenticationException> {
+        val scopes = args.getOrDefault("scope", arrayListOf<String>()) as ArrayList<*>
+        if (scopes.isNotEmpty()) {
+            loginBuilder.setScope(scopes.joinToString(separator = " "))
+        }
+
+        if (args.getOrDefault("parameters", hashMapOf<String, Any?>()) is HashMap<*, *>) {
+            loginBuilder.addParameters(args["parameters"] as Map<String, String>)
+        }
+
+        loginBuilder.start(object : Callback<Credentials, AuthenticationException> {
                 override fun onFailure(exception: AuthenticationException) {
                     result.error(
                         exception.getCode(),
