@@ -42,7 +42,7 @@ extension MethodHandler {
 }
 
 extension FlutterError {
-    convenience init(from authenticationError: AuthenticationError ) {
+    convenience init(from authenticationError: AuthenticationError) {
         self.init(code: authenticationError.code,
                   message: String(describing: authenticationError),
                   details: authenticationError.details)
@@ -94,15 +94,13 @@ struct AuthAPISignupMethodHandler: MethodHandler {
 
         let username = arguments["username"] as? String
         let userMetadata = arguments["userMetadata"] as? [String: Any]
-        let rootAttributes = arguments["rootAttributes"] as? [String: Any]
 
         client
             .signup(email: email,
                     username: username,
                     password: password,
                     connection: connection,
-                    userMetadata: userMetadata,
-                    rootAttributes: rootAttributes)
+                    userMetadata: userMetadata)
             .parameters(parameters)
             .start {
                 switch $0 {

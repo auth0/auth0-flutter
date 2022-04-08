@@ -1,5 +1,5 @@
-import Auth0
 import Flutter
+import Auth0
 
 extension Array where Element == String {
     var asSpaceSeparatedString: String {
@@ -8,7 +8,7 @@ extension Array where Element == String {
 }
 
 extension FlutterError {
-    convenience init(from handlerError: HandlerError ) {
+    convenience init(from handlerError: HandlerError) {
         self.init(code: handlerError.code, message: handlerError.message, details: nil)
     }
 }

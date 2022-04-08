@@ -4,7 +4,7 @@ import Auth0
 @testable import auth0_flutter
 
 class WebAuthLogoutHandlerTests: XCTestCase {
-    let spy = SpyWebAuth(clientId: "foo", url: URL(string: "https://auth0.com")!, telemetry: Telemetry.init())
+    let spy = SpyWebAuth(clientId: "foo", url: URL(string: "https://auth0.com")!, telemetry: Telemetry())
     var sut: WebAuthLogoutMethodHandler!
 
     override func setUpWithError() throws {

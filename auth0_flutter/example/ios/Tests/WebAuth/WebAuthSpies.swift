@@ -18,8 +18,8 @@ class SpyMethodHandler: MethodHandler {
 // MARK: - Auth0.swift Spies
 
 class SpyWebAuth: WebAuth {
-    var clientId: String
-    var url: URL
+    let clientId: String
+    let url: URL
     var telemetry: Telemetry
     var logger: Logger?
 

@@ -7,7 +7,7 @@ class WebAuthLoginHandlerTests: XCTestCase {
     let idToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmb28iLCJuYW1lIjoiYmFyIiwiZW1haWwiOiJmb29AZXhhbXBsZS5"
         + "jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGljdHVyZSI6ImJheiIsInVwZGF0ZWRfYXQiOiJxdXgifQ.vc9sxvhUVAHowIWJ7D_WDzvq"
         + "JxC4-qYXHmiBVYEKn9E"
-    let spy = SpyWebAuth(clientId: "foo", url: URL(string: "https://auth0.com")!, telemetry: Telemetry.init())
+    let spy = SpyWebAuth(clientId: "foo", url: URL(string: "https://auth0.com")!, telemetry: Telemetry())
     var sut: WebAuthLoginMethodHandler!
 
     override func setUpWithError() throws {
