@@ -86,7 +86,7 @@ void main() {
           usernameOrEmail: 'test-user',
           password: 'test-pass',
           connectionOrRealm: 'test-realm',
-          scope: {'test-scope1', 'test-scope2'},
+          scopes: {'test-scope1', 'test-scope2'},
           parameters: {'test': 'test-parameter'});
 
       final verificationResult =
@@ -96,7 +96,7 @@ void main() {
       expect(verificationResult.usernameOrEmail, 'test-user');
       expect(verificationResult.password, 'test-pass');
       expect(verificationResult.connectionOrRealm, 'test-realm');
-      expect(verificationResult.scope, {'test-scope1', 'test-scope2'});
+      expect(verificationResult.scopes, {'test-scope1', 'test-scope2'});
       expect(verificationResult.parameters['test'], 'test-parameter');
       expect(result, TestPlatform.loginResult);
     });
@@ -113,7 +113,7 @@ void main() {
       final verificationResult =
           verify(mockedPlatform.login(captureAny)).captured.single;
       // ignore: inference_failure_on_collection_literal
-      expect(verificationResult.scope, []);
+      expect(verificationResult.scopes, []);
       // ignore: inference_failure_on_collection_literal
       expect(verificationResult.parameters, {});
       expect(result, TestPlatform.loginResult);
