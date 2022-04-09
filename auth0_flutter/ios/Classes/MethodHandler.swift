@@ -20,10 +20,25 @@ extension MethodHandler {
             "accessToken": credentials.accessToken,
             "idToken": credentials.idToken,
             "refreshToken": credentials.refreshToken,
-            "userProfile": jwt.body,
+            "userProfile": filterClaims(jwt.body),
             "expiresAt": expiresAt,
             "scopes": credentials.scope?.split(separator: " ").map(String.init),
         ]
         return data
+    }
+
+    private func filterClaims(_ claims: [String: Any]) -> [String: Any] {
+        let claimsToFilter = ["aud",
+                              "iss",
+                              "iat",
+                              "exp",
+                              "nbf",
+                              "nonce",
+                              "azp",
+                              "auth_time",
+                              "s_hash",
+                              "at_hash",
+                              "c_hash"]
+        return claims.filter { !claimsToFilter.contains($0.key) }
     }
 }
