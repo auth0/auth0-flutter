@@ -18,20 +18,6 @@ class AuthAPIRenewAccessTokenMethodHandlerTests: XCTestCase {
 // MARK: - Required Arguments Error
 
 extension AuthAPIRenewAccessTokenMethodHandlerTests {
-    func testProducesErrorWhenAccessTokenIsMissing() {
-        let argument = "refreshToken"
-        let expectation = self.expectation(description: "\(argument) is missing")
-        sut.handle(with: arguments(without: argument)) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, result)
-            expectation.fulfill()
-        }
-        wait(for: [expectation])
-    }
-}
-
-// MARK: - ID Token Decoding Failed Error
-
-extension AuthAPIRenewAccessTokenMethodHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
         let inputs = ["refreshToken": self.expectation(description: "refreshToken is missing"),
                       "parameters": self.expectation(description: "parameters is missing")]
@@ -42,6 +28,21 @@ extension AuthAPIRenewAccessTokenMethodHandlerTests {
             }
         }
         wait(for: Array(inputs.values))
+    }
+}
+
+// MARK: - ID Token Decoding Failed Error
+
+extension AuthAPIRenewAccessTokenMethodHandlerTests {
+    func testProducesErrorWithInvalidIDToken() {
+        let credentials = Credentials(idToken: "foo")
+        let expectation = self.expectation(description: "ID Token cannot be decoded")
+        spy.credentialsResult = .success(credentials)
+        sut.handle(with: arguments()) { result in
+            assertHas(handlerError: .idTokenDecodingFailed, result)
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
     }
 }
 
