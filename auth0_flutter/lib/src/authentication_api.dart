@@ -9,13 +9,13 @@ class AuthenticationApi {
           {required final String usernameOrEmail,
           required final String password,
           required final String connectionOrRealm,
-          final Set<String> scope = const {},
+          final Set<String> scopes = const {},
           final Map<String, String> parameters = const {}}) =>
       Auth0FlutterAuthPlatform.instance.login(AuthLoginOptions(
           usernameOrEmail: usernameOrEmail,
           password: password,
           connectionOrRealm: connectionOrRealm,
-          scope: scope,
+          scopes: scopes,
           account: account,
           parameters: parameters));
 

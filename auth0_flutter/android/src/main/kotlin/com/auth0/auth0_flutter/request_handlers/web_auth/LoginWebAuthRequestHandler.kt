@@ -72,7 +72,7 @@ class LoginWebAuthRequestHandler : WebAuthRequestHandler {
 
             override fun onSuccess(credentials: Credentials) {
                 // Success! Access token and ID token are presents
-                val scope = credentials.scope?.split(" ") ?: listOf()
+                val scopes = credentials.scope?.split(" ") ?: listOf()
                 val jwt = JWT(credentials.idToken)
 
                 // Map all claim values to their underlying type as Any
@@ -89,7 +89,7 @@ class LoginWebAuthRequestHandler : WebAuthRequestHandler {
                     "refreshToken" to credentials.refreshToken,
                     "userProfile" to claims,
                     "expiresAt" to formattedDate,
-                    "scopes" to scope
+                    "scopes" to scopes
                 ))
             }
         })
