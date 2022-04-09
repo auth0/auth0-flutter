@@ -7,7 +7,7 @@ class WebAuthLoginHandlerTests: XCTestCase {
     let idToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmb28iLCJuYW1lIjoiYmFyIiwiZW1haWwiOiJmb29AZXhhbXBsZS5"
         + "jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGljdHVyZSI6ImJheiIsInVwZGF0ZWRfYXQiOiJxdXgifQ.vc9sxvhUVAHowIWJ7D_WDzvq"
         + "JxC4-qYXHmiBVYEKn9E"
-    let spy = SpyWebAuth(clientId: "foo", url: URL(string: "https://auth0.com")!, telemetry: Telemetry())
+    let spy = SpyWebAuth(clientId: "", url: URL(string: "https://example.com")!, telemetry: Telemetry())
     var sut: WebAuthLoginMethodHandler!
 
     override func setUpWithError() throws {
@@ -51,19 +51,6 @@ extension WebAuthLoginHandlerTests {
 
 extension WebAuthLoginHandlerTests {
 
-    // MARK: scopes
-
-    func testAddsScopes() {
-        let scopes = ["foo", "bar"]
-        sut.handle(with: arguments(key: "scopes", value: scopes)) { _ in }
-        XCTAssertEqual(spy.scopeValue, scopes.asSpaceSeparatedString)
-    }
-
-    func testDoesNotAddScopesWhenEmpty() {
-        sut.handle(with: arguments(key: "scopes", value:  [])) { _ in }
-        XCTAssertNil(spy.scopeValue)
-    }
-
     // MARK: useEphemeralSession
 
     func testEnablesUseEphemeralSession() {
@@ -75,6 +62,27 @@ extension WebAuthLoginHandlerTests {
     func testDoesNotEnableUseEphemeralSessionWhenFalse() {
         sut.handle(with: arguments(key: "useEphemeralSession", value: false)) { _ in }
         XCTAssertNil(spy.useEmphemeralSessionValue)
+    }
+
+    // MARK: parameters
+
+    func testAddsParameters() {
+        let parameters = ["foo": "bar"]
+        sut.handle(with: arguments(key: "parameters", value: parameters)) { _ in }
+        XCTAssertEqual(spy.parametersValue, parameters)
+    }
+
+    // MARK: scopes
+
+    func testAddsScopes() {
+        let scopes = ["foo", "bar"]
+        sut.handle(with: arguments(key: "scopes", value: scopes)) { _ in }
+        XCTAssertEqual(spy.scopeValue, scopes.asSpaceSeparatedString)
+    }
+
+    func testDoesNotAddScopesWhenEmpty() {
+        sut.handle(with: arguments(key: "scopes", value:  [])) { _ in }
+        XCTAssertNil(spy.scopeValue)
     }
 
     // MARK: audience

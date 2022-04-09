@@ -16,6 +16,7 @@ class SpyAuthentication: Authentication {
     var calledRenewAccessToken = false
     var calledResetPassword = false
     var arguments: [String: Any] = [:]
+    var parameters: [String: Any] = [:]
 
     init(clientId: String, url: URL, telemetry: Telemetry) {
         self.clientId = clientId

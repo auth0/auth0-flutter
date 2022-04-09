@@ -46,18 +46,6 @@ extension XCTestCase {
         dictionary.removeValue(forKey: key)
         return dictionary
     }
-
-    func arguments(key: String, anyValue value: Any) -> [String: Any] {
-        var dictionary = arguments()
-        dictionary[key] = value
-        return dictionary
-    }
-}
-
-extension Date {
-    var asISO8601String: String {
-        return ISO8601DateFormatter().string(from: self)
-    }
 }
 
 // MARK: - Custom Assertions
@@ -130,4 +118,35 @@ func assertHas(databaseUser: DatabaseUser,
         return
     }
     XCTFail("The handler did not produce matching database users", file: file, line: line)
+}
+
+func assertHas(userInfo: UserInfo,
+               _ result: Any?,
+               file: StaticString = #filePath,
+               line: UInt = #line) {
+    if let result = result as? [String: Any],
+       result["sub"] as? String == userInfo.sub,
+       result["name"] as? String == userInfo.name,
+       result["given_name"] as? String == userInfo.givenName,
+       result["family_name"] as? String == userInfo.familyName,
+       result["middle_name"] as? String ==  userInfo.middleName,
+       result["nickname"] as? String ==  userInfo.nickname,
+       result["preferred_username"] as? String == userInfo.preferredUsername,
+       result["profile"] as? String == userInfo.profile?.absoluteString,
+       result["picture"] as? String == userInfo.picture?.absoluteString,
+       result["website"] as? String == userInfo.website?.absoluteString,
+       result["email"] as? String == userInfo.email,
+       result["email_verified"] as? Bool == userInfo.emailVerified,
+       result["gender"] as? String == userInfo.gender,
+       result["birthdate"] as? String == userInfo.birthdate,
+       result["zoneinfo"] as? String == userInfo.zoneinfo?.identifier,
+       result["locale"] as? String == userInfo.locale?.identifier,
+       result["phone_number"] as? String == userInfo.phoneNumber,
+       result["phone_number_verified"] as? Bool == userInfo.phoneNumberVerified,
+       result["address"] as? [String: String] == userInfo.address,
+       result["updated_at"] as? String == userInfo.updatedAt?.asISO8601String,
+       result["custom_claims"] as? [String: Any] == userInfo.customClaims {
+        return
+    }
+    XCTFail("The handler did not produce matching user profiles", file: file, line: line)
 }

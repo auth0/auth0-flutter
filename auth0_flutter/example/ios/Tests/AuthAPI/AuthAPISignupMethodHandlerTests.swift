@@ -4,7 +4,7 @@ import Auth0
 @testable import auth0_flutter
 
 class AuthAPISignupMethodHandlerTests: XCTestCase {
-    let spy = SpyAuthentication(clientId: "foo", url: URL(string: "https://auth0.com")!, telemetry: Telemetry())
+    let spy = SpyAuthentication(clientId: "", url: URL(string: "https://example.com")!, telemetry: Telemetry())
     var sut: AuthAPISignupMethodHandler!
 
     override func setUpWithError() throws {
@@ -77,10 +77,10 @@ extension AuthAPISignupMethodHandlerTests {
     }
 }
 
-// MARK: - Login Result
+// MARK: - Signup Result
 
 extension AuthAPISignupMethodHandlerTests {
-    func testCallsSDKLoginMethod() {
+    func testCallsSDKSignupMethod() {
         sut.handle(with: arguments()) { _ in }
         XCTAssertTrue(spy.calledSignup)
     }

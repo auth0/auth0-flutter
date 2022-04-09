@@ -34,28 +34,6 @@ extension WebAuthHandlerTests {
         }
         wait(for: Array(arguments.values))
     }
-
-    func testProducesErrorWhenClientIdIsNoString() {
-        let argument = "clientId"
-        let arguments: [String: Any] = arguments(key: argument, anyValue: 1)
-        let expectation = self.expectation(description: "\(argument) is not a string")
-        sut.handle(FlutterMethodCall(methodName: "foo", arguments: arguments)) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, result)
-            expectation.fulfill()
-        }
-        wait(for: [expectation])
-    }
-
-    func testProducesErrorWhenDomainIsNoString() {
-        let argument = "domain"
-        let arguments: [String: Any] = arguments(key: argument, anyValue: 1)
-        let expectation = self.expectation(description: "\(argument) is not a string")
-        sut.handle(FlutterMethodCall(methodName: "foo", arguments: arguments)) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, result)
-            expectation.fulfill()
-        }
-        wait(for: [expectation])
-    }
 }
 
 // MARK: - Method Handlers
