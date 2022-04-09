@@ -7,8 +7,8 @@ class SpyAuthentication: Authentication {
     var logger: Logger?
 
     var credentialsResult: AuthenticationResult<Credentials> = .success(Credentials())
-    var databaseUserResult: AuthenticationResult<DatabaseUser> = .success((email: "foo", username: nil, verified: true))
-    var userInfoResult: AuthenticationResult<UserInfo> = .success(UserInfo(json: ["sub": "foo"])!)
+    var databaseUserResult: AuthenticationResult<DatabaseUser> = .success((email: "", username: nil, verified: true))
+    var userInfoResult: AuthenticationResult<UserInfo> = .success(UserInfo(json: ["sub": ""])!)
     var voidResult: AuthenticationResult<Void> = .success(())
     var calledLoginWithUsernameOrEmail = false
     var calledSignup = false
@@ -28,9 +28,9 @@ class SpyAuthentication: Authentication {
                realmOrConnection realm: String,
                audience: String?,
                scope: String) -> Request<Credentials, AuthenticationError> {
-        arguments["username"] = username
+        arguments["usernameOrEmail"] = username
         arguments["password"] = password
-        arguments["realm"] = realm
+        arguments["realmOrConnection"] = realm
         arguments["audience"] = audience
         arguments["scope"] = scope
         calledLoginWithUsernameOrEmail = true
@@ -55,8 +55,8 @@ class SpyAuthentication: Authentication {
         arguments["username"] = username
         arguments["password"] = password
         arguments["connection"] = connection
+        arguments["username"] = username
         arguments["userMetadata"] = userMetadata
-        arguments["rootAttributes"] = rootAttributes
         calledSignup = true
         return request(databaseUserResult)
     }
@@ -100,7 +100,7 @@ private extension SpyAuthentication {
     func request<T>(_ result: AuthenticationResult<T>) -> Request<T, AuthenticationError> {
         Request(session: URLSession.shared,
                 url: url,
-                method: "GET",
+                method: "",
                 handle: {_, callback in callback(result)},
                 logger: nil,
                 telemetry: telemetry)
@@ -109,7 +109,7 @@ private extension SpyAuthentication {
     func request<T>() -> Request<T, AuthenticationError> {
         Request(session: URLSession.shared,
                 url: url,
-                method: "GET",
+                method: "",
                 handle: {_,_ in},
                 logger: nil,
                 telemetry: telemetry)

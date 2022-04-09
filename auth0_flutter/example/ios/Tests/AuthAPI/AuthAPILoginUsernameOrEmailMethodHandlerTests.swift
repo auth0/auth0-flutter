@@ -18,125 +18,19 @@ class AuthAPILoginUsernameOrEmailMethodHandlerTests: XCTestCase {
 // MARK: - Required Arguments Error
 
 extension AuthAPILoginUsernameOrEmailMethodHandlerTests {
-
-    // MARK: usernameOrEmail
-
-    func testProducesErrorWhenUsernameOrEmailIsMissing() {
-        let argument = "usernameOrEmail"
-        let arguments: [String: Any] = arguments(without: argument)
-        let expectation = self.expectation(description: "\(argument) is missing")
-        sut.handle(with: arguments) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, result)
-            expectation.fulfill()
+    func testProducesErrorWhenRequiredArgumentsAreMissing() {
+        let inputs = ["usernameOrEmail": self.expectation(description: "usernameOrEmail is missing"),
+                      "password": self.expectation(description: "password is missing"),
+                      "realmOrConnection": self.expectation(description: "realmOrConnection is missing"),
+                      "scopes": self.expectation(description: "scopes is missing"),
+                      "parameters": self.expectation(description: "parameters is missing")]
+        for (argument, currentExpectation) in inputs {
+            sut.handle(with: arguments(without: argument)) { result in
+                assertHas(handlerError: .requiredArgumentsMissing, result)
+                currentExpectation.fulfill()
+            }
         }
-        wait(for: [expectation])
-    }
-
-    func testProducesErrorWhenUsernameOrEmailIsNoString() {
-        let argument = "usernameOrEmail"
-        let arguments: [String: Any] = arguments(key: argument, anyValue: 1)
-        let expectation = self.expectation(description: "\(argument) is not a string")
-        sut.handle(with: arguments) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, result)
-            expectation.fulfill()
-        }
-        wait(for: [expectation])
-    }
-
-    // MARK: password
-
-    func testProducesErrorWhenPasswordIsMissing() {
-        let argument = "password"
-        let arguments: [String: Any] = arguments(without: argument)
-        let expectation = self.expectation(description: "\(argument) is missing")
-        sut.handle(with: arguments) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, result)
-            expectation.fulfill()
-        }
-        wait(for: [expectation])
-    }
-
-    func testProducesErrorWhenPasswordIsNoString() {
-        let argument = "password"
-        let arguments: [String: Any] = arguments(key: argument, anyValue: 1)
-        let expectation = self.expectation(description: "\(argument) is not a string")
-        sut.handle(with: arguments) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, result)
-            expectation.fulfill()
-        }
-        wait(for: [expectation])
-    }
-
-    // MARK: realmOrConnection
-
-    func testProducesErrorWhenRealmOrConnectionIsMissing() {
-        let argument = "realmOrConnection"
-        let arguments: [String: Any] = arguments(without: argument)
-        let expectation = self.expectation(description: "\(argument) is missing")
-        sut.handle(with: arguments) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, result)
-            expectation.fulfill()
-        }
-        wait(for: [expectation])
-    }
-
-    func testProducesErrorWhenRealmOrConnectionIsNoString() {
-        let argument = "realmOrConnection"
-        let arguments: [String: Any] = arguments(key: argument, anyValue: 1)
-        let expectation = self.expectation(description: "\(argument) is not a string")
-        sut.handle(with: arguments) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, result)
-            expectation.fulfill()
-        }
-        wait(for: [expectation])
-    }
-
-    // MARK: scopes
-
-    func testProducesErrorWhenScopesIsMissing() {
-        let argument = "scopes"
-        let arguments: [String: Any] = arguments(without: argument)
-        let expectation = self.expectation(description: "\(argument) is missing")
-        sut.handle(with: arguments) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, result)
-            expectation.fulfill()
-        }
-        wait(for: [expectation])
-    }
-
-    func testProducesErrorWhenScopesIsNoStringsArray() {
-        let argument = "scopes"
-        let arguments: [String: Any] = arguments(key: argument, anyValue: 1)
-        let expectation = self.expectation(description: "\(argument) is not an array of strings")
-        sut.handle(with: arguments) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, result)
-            expectation.fulfill()
-        }
-        wait(for: [expectation])
-    }
-
-    // MARK: parameters
-
-    func testProducesErrorWhenParametersIsMissing() {
-        let argument = "parameters"
-        let arguments: [String: Any] = arguments(without: argument)
-        let expectation = self.expectation(description: "\(argument) is missing")
-        sut.handle(with: arguments) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, result)
-            expectation.fulfill()
-        }
-        wait(for: [expectation])
-    }
-
-    func testProducesErrorWhenParametersIsNoStringsDictionary() {
-        let argument = "parameters"
-        let arguments: [String: Any] = arguments(key: argument, anyValue: ["foo": 1])
-        let expectation = self.expectation(description: "\(argument) is not a dictionary of strings")
-        sut.handle(with: arguments) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, result)
-            expectation.fulfill()
-        }
-        wait(for: [expectation])
+        wait(for: Array(inputs.values))
     }
 }
 
@@ -156,23 +50,63 @@ extension AuthAPILoginUsernameOrEmailMethodHandlerTests {
     }
 }
 
-// MARK: - Optional Arguments
+// MARK: - Arguments
 
 extension AuthAPILoginUsernameOrEmailMethodHandlerTests {
+
+    // MARK: usernameOrEmail
+
+    func testAddsUsernameOrEmail() {
+        let key = "usernameOrEmail"
+        let value = "foo"
+        sut.handle(with: arguments(key: key, value: value)) { _ in }
+        XCTAssertEqual(spy.arguments[key] as? String, value)
+    }
+
+    // MARK: password
+
+    func testAddsPassword() {
+        let key = "password"
+        let value = "foo"
+        sut.handle(with: arguments(key: key, value: value)) { _ in }
+        XCTAssertEqual(spy.arguments[key] as? String, value)
+    }
+
+    // MARK: realmOrConnection
+
+    func testAddsRealmOrConnection() {
+        let key = "realmOrConnection"
+        let value = "foo"
+        sut.handle(with: arguments(key: key, value: value)) { _ in }
+        XCTAssertEqual(spy.arguments[key] as? String, value)
+    }
+
+    // MARK: scopes
+
+    func testAddsScopes() {
+        let value = ["foo", "bar"]
+        sut.handle(with: arguments(key: "scopes", value: value)) { _ in }
+        XCTAssertEqual(spy.arguments["scope"] as? String, value.asSpaceSeparatedString)
+    }
+
+    func testAddsDefaultScopesWhenEmpty() {
+        sut.handle(with: arguments(key: "scopes", value: [])) { _ in }
+        XCTAssertEqual(spy.arguments["scope"] as? String, Auth0.defaultScope)
+    }
 
     // MARK: audience
 
     func testAddsAudience() {
-        let audience = "foo"
         let key = "audience"
-        sut.handle(with: arguments(key: key, value: audience)) { _ in }
-        XCTAssertNotNil(spy.arguments[key])
-        XCTAssertEqual(spy.arguments[key] as? String, audience)
+        let value = "foo"
+        sut.handle(with: arguments(key: key, value: value)) { _ in }
+        XCTAssertEqual(spy.arguments[key] as? String, value)
     }
 
     func testDoesNotAddAudienceWhenNil() {
-        sut.handle(with: arguments()) { _ in }
-        XCTAssertNil(spy.arguments["audience"])
+        let argument = "audience"
+        sut.handle(with: arguments(without: argument)) { _ in }
+        XCTAssertNil(spy.arguments[argument])
     }
 }
 
@@ -224,34 +158,13 @@ extension AuthAPILoginUsernameOrEmailMethodHandlerTests {
 
 // MARK: - Helpers
 
-private extension AuthAPILoginUsernameOrEmailMethodHandlerTests {
-    func arguments(username: String = "",
-                   password: String = "",
-                   realm: String = "",
-                   scopes: [String] = [],
-                   parameters: [String: Any] = [:]) -> [String: Any] {
-        return ["usernameOrEmail": username,
-                "password": password,
-                "realmOrConnection": realm,
-                "scopes": scopes,
-                "parameters": parameters]
-    }
-
-    func arguments<T>(key: String, value: T) -> [String: Any] {
-        var arguments = arguments()
-        arguments[key] =  value
-        return arguments
-    }
-
-    func arguments(without key: String) -> [String: Any] {
-        var arguments = arguments()
-        arguments.removeValue(forKey: key)
-        return arguments
-    }
-
-    func arguments(key: String, anyValue value: Any) -> [String: Any] {
-        var arguments = arguments()
-        arguments[key] = value
-        return arguments
+extension AuthAPILoginUsernameOrEmailMethodHandlerTests {
+    override func arguments() -> [String: Any] {
+        return ["usernameOrEmail": "",
+                "password": "",
+                "realmOrConnection": "",
+                "scopes": [],
+                "parameters": [:],
+                "audience": ""]
     }
 }

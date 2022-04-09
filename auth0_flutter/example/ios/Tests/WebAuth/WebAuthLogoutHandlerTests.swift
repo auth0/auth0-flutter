@@ -12,7 +12,7 @@ class WebAuthLogoutHandlerTests: XCTestCase {
     }
 }
 
-// MARK: - Optional Arguments
+// MARK: - Arguments
 
 extension WebAuthLogoutHandlerTests {
 

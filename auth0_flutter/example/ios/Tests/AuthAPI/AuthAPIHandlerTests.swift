@@ -24,35 +24,15 @@ extension AuthAPIHandlerTests {
 
 extension AuthAPIHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
-        let arguments = ["clientId": self.expectation(description: "clientId is missing"),
-                         "domain": self.expectation(description: "domain is missing")]
-        for (argument, currentExpectation) in arguments {
-            sut.handle(FlutterMethodCall(methodName: "foo", arguments: [argument: "bar"])) { result in
+        let inputs = ["clientId": self.expectation(description: "clientId is missing"),
+                      "domain": self.expectation(description: "domain is missing")]
+        for (argument, currentExpectation) in inputs {
+            sut.handle(FlutterMethodCall(methodName: "foo", arguments: arguments(without: argument))) { result in
                 assertHas(handlerError: .requiredArgumentsMissing, result)
                 currentExpectation.fulfill()
             }
         }
-        wait(for: Array(arguments.values))
-    }
-
-    func testProducesErrorWhenClientIdIsNoString() {
-        let arguments: [String: Any] = ["clientId": 1, "domain": "foo"]
-        let expectation = self.expectation(description: "clientId is not a string")
-        sut.handle(FlutterMethodCall(methodName: "foo", arguments: arguments)) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, result)
-            expectation.fulfill()
-        }
-        wait(for: [expectation])
-    }
-
-    func testProducesErrorWhenDomainIsNoString() {
-        let arguments: [String: Any] = ["clientId": "foo", "domain": 1]
-        let expectation = self.expectation(description: "domain is not a string")
-        sut.handle(FlutterMethodCall(methodName: "foo", arguments: arguments)) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, result)
-            expectation.fulfill()
-        }
-        wait(for: [expectation])
+        wait(for: Array(inputs.values))
     }
 }
 
@@ -63,7 +43,7 @@ extension AuthAPIHandlerTests {
         var expectations: [XCTestExpectation] = []
         AuthAPIHandler.Method.allCases.forEach { method in
             let spy = SpyMethodHandler()
-            let arguments: [String: Any] = ["clientId": "bar", "domain": "baz"]
+            let arguments: [String: Any] = arguments()
             let expectation = self.expectation(description: "\(method.rawValue) handler call")
             expectations.append(expectation)
             let methodCall = FlutterMethodCall(methodName: method.rawValue, arguments: arguments)
@@ -74,5 +54,13 @@ extension AuthAPIHandlerTests {
             }
         }
         wait(for: expectations)
+    }
+}
+
+// MARK: - Helpers
+
+extension AuthAPIHandlerTests {
+    override func arguments() -> [String: Any] {
+        return ["clientId": "foo", "domain": "bar"]
     }
 }

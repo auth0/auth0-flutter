@@ -138,15 +138,13 @@ struct AuthAPIRenewAccessTokenMethodHandler: MethodHandler {
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
         guard let refreshToken = arguments["refreshToken"] as? String,
-              let scopes = arguments["scopes"] as? [String],
-              let parameters = arguments["parameters"] as? [String: String] else {
+              let scopes = arguments["scopes"] as? [String] else {
             return callback(FlutterError(from: .requiredArgumentsMissing))
         }
 
         client
             .renew(withRefreshToken: refreshToken,
                    scope: scopes.isEmpty ? nil : scopes.asSpaceSeparatedString)
-            .parameters(parameters)
             .start {
                 switch $0 {
                 case let .success(credentials): callback(result(from: credentials))

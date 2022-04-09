@@ -36,8 +36,9 @@ extension WebAuthHandlerTests {
     }
 
     func testProducesErrorWhenClientIdIsNoString() {
-        let arguments: [String: Any] = ["clientId": 1, "domain": "foo"]
-        let expectation = self.expectation(description: "clientId is not a string")
+        let argument = "clientId"
+        let arguments: [String: Any] = arguments(key: argument, anyValue: 1)
+        let expectation = self.expectation(description: "\(argument) is not a string")
         sut.handle(FlutterMethodCall(methodName: "foo", arguments: arguments)) { result in
             assertHas(handlerError: .requiredArgumentsMissing, result)
             expectation.fulfill()
@@ -46,8 +47,9 @@ extension WebAuthHandlerTests {
     }
 
     func testProducesErrorWhenDomainIsNoString() {
-        let arguments: [String: Any] = ["clientId": "foo", "domain": 1]
-        let expectation = self.expectation(description: "domain is not a string")
+        let argument = "domain"
+        let arguments: [String: Any] = arguments(key: argument, anyValue: 1)
+        let expectation = self.expectation(description: "\(argument) is not a string")
         sut.handle(FlutterMethodCall(methodName: "foo", arguments: arguments)) { result in
             assertHas(handlerError: .requiredArgumentsMissing, result)
             expectation.fulfill()
@@ -63,7 +65,7 @@ extension WebAuthHandlerTests {
         var expectations: [XCTestExpectation] = []
         WebAuthHandler.Method.allCases.forEach { method in
             let spy = SpyMethodHandler()
-            let arguments: [String: Any] = ["clientId": "bar", "domain": "baz"]
+            let arguments: [String: Any] = arguments()
             let expectation = self.expectation(description: "\(method.rawValue) handler call")
             expectations.append(expectation)
             let methodCall = FlutterMethodCall(methodName: method.rawValue, arguments: arguments)
@@ -74,5 +76,14 @@ extension WebAuthHandlerTests {
             }
         }
         wait(for: expectations)
+    }
+}
+
+
+// MARK: - Helpers
+
+extension WebAuthHandlerTests {
+    override func arguments() -> [String: Any] {
+        return ["clientId": "foo", "domain": "bar"]
     }
 }

@@ -30,6 +30,28 @@ extension XCTestCase {
     func wait(for expectations: [XCTestExpectation]) {
         wait(for: expectations, timeout: timeout)
     }
+
+    func arguments() -> [String: Any] {
+        return [:]
+    }
+
+    func arguments<T>(key: String, value: T) -> [String: Any] {
+        var dictionary = arguments()
+        dictionary[key] = value
+        return dictionary
+    }
+
+    func arguments(without key: String) -> [String: Any] {
+        var dictionary = arguments()
+        dictionary.removeValue(forKey: key)
+        return dictionary
+    }
+
+    func arguments(key: String, anyValue value: Any) -> [String: Any] {
+        var dictionary = arguments()
+        dictionary[key] = value
+        return dictionary
+    }
 }
 
 extension Date {
@@ -95,4 +117,17 @@ func assertHas(credentials: Credentials,
         return
     }
     XCTFail("The handler did not produce matching credentials", file: file, line: line)
+}
+
+func assertHas(databaseUser: DatabaseUser,
+               _ result: Any?,
+               file: StaticString = #filePath,
+               line: UInt = #line) {
+    if let result = result as? [String: Any],
+       result["email"] as? String == databaseUser.email,
+       result["username"] as? String == databaseUser.username,
+       result["verified"] as? Bool == databaseUser.verified {
+        return
+    }
+    XCTFail("The handler did not produce matching database users", file: file, line: line)
 }
