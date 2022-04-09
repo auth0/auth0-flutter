@@ -32,16 +32,16 @@ extension AuthAPIRenewAccessTokenMethodHandlerTests {
 // MARK: - ID Token Decoding Failed Error
 
 extension AuthAPIRenewAccessTokenMethodHandlerTests {
-    func testProducesErrorWithInvalidIDToken() {
-        let credentials = Credentials(idToken: "foo")
-        let expectation = self.expectation(description: "ID Token cannot be decoded")
-        spy.credentialsResult = .success(credentials)
-        sut.handle(with: arguments()) { result in
-            print((result as!  FlutterError).code)
-            assertHas(handlerError: .idTokenDecodingFailed, result)
-            expectation.fulfill()
+    func testProducesErrorWhenRequiredArgumentsAreMissing() {
+        let inputs = ["refreshToken": self.expectation(description: "refreshToken is missing"),
+                      "parameters": self.expectation(description: "parameters is missing")]
+        for (argument, currentExpectation) in inputs {
+            sut.handle(with: arguments(without: argument)) { result in
+                assertHas(handlerError: .requiredArgumentsMissing, result)
+                currentExpectation.fulfill()
+            }
         }
-        wait(for: [expectation])
+        wait(for: Array(inputs.values))
     }
 }
 
@@ -122,6 +122,6 @@ extension AuthAPIRenewAccessTokenMethodHandlerTests {
 
 extension AuthAPIRenewAccessTokenMethodHandlerTests {
     override func arguments() -> [String: Any] {
-        return ["refreshToken": "", "scopes": []]
+        return ["refreshToken": "", "scopes": [], "parameters": [:]]
     }
 }

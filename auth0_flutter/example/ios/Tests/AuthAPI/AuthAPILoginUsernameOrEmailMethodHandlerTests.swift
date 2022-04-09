@@ -42,7 +42,6 @@ extension AuthAPILoginUsernameOrEmailMethodHandlerTests {
         let expectation = self.expectation(description: "ID Token cannot be decoded")
         spy.credentialsResult = .success(credentials)
         sut.handle(with: arguments()) { result in
-            print((result as!  FlutterError).code)
             assertHas(handlerError: .idTokenDecodingFailed, result)
             expectation.fulfill()
         }
