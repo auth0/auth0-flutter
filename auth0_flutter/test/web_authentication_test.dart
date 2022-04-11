@@ -50,15 +50,15 @@ void main() {
 
     final verificationResult = verify(mockedPlatform.login(captureAny))
         .captured
-        .single as WebAuthLoginInput;
+        .single as WebAuthRequest<WebAuthLoginInput>;
     expect(verificationResult.account.domain, 'test-domain');
     expect(verificationResult.account.clientId, 'test-clientId');
-    expect(verificationResult.audience, 'test-audience');
-    expect(verificationResult.scopes, {'a', 'b'});
-    expect(verificationResult.invitationUrl, 'invitation_url');
-    expect(verificationResult.organizationId, 'org_123');
-    expect(verificationResult.redirectUri, 'redirect_uri');
-    expect(verificationResult.useEphemeralSession, true);
+    expect(verificationResult.options?.audience, 'test-audience');
+    expect(verificationResult.options?.scopes, {'a', 'b'});
+    expect(verificationResult.options?.invitationUrl, 'invitation_url');
+    expect(verificationResult.options?.organizationId, 'org_123');
+    expect(verificationResult.options?.redirectUri, 'redirect_uri');
+    expect(verificationResult.options?.useEphemeralSession, true);
     expect(result, TestPlatform.loginResult);
   });
 
@@ -72,8 +72,8 @@ void main() {
 
     final verificationResult = verify(mockedPlatform.login(captureAny))
         .captured
-        .single as WebAuthLoginInput;
-    expect(verificationResult.useEphemeralSession, false);
+        .single as WebAuthRequest<WebAuthLoginInput>;
+    expect(verificationResult.options?.useEphemeralSession, false);
     expect(result, TestPlatform.loginResult);
   });
 
@@ -85,9 +85,9 @@ void main() {
         .logout(returnTo: 'abc');
 
     final verificationResult =
-        verify(mockedPlatform.logout(captureAny)).captured.single;
+        verify(mockedPlatform.logout(captureAny)).captured.single as WebAuthRequest<WebAuthLogoutInput>;
     expect(verificationResult.account.domain, 'test-domain');
     expect(verificationResult.account.clientId, 'test-clientId');
-    expect(verificationResult.returnTo, 'abc');
+    expect(verificationResult.options?.returnTo, 'abc');
   });
 }

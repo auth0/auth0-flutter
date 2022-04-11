@@ -1,21 +1,18 @@
-import '../account.dart';
+import '../request/request_options.dart';
 
-class AuthRenewAccessTokenOptions {
-  final Account account;
+class AuthRenewAccessTokenOptions implements RequestOptions {
   final String refreshToken;
   final Set<String> scopes;
   final Map<String, String> parameters;
 
   AuthRenewAccessTokenOptions({
-    required this.account,
     required this.refreshToken,
     this.scopes = const {},
     this.parameters = const {},
   });
 
+  @override
   Map<String, dynamic> toMap() => {
-        'domain': account.domain,
-        'clientId': account.clientId,
         'refreshToken': refreshToken,
         'scopes': scopes.toList(),
         'parameters': parameters
