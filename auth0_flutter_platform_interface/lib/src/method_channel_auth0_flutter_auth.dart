@@ -20,40 +20,23 @@ const String authResetPasswordMethod = 'auth#resetPassword';
 class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   @override
   Future<LoginResult> login(final AuthLoginOptions options) async {
-    final Map<String, dynamic>? result =
-        await _channel.invokeMapMethod(authLoginMethod, options.toMap());
-
-    if (result == null) {
-      return throw Exception('Auth channel returned null');
-    }
+    final Map<String, dynamic> result =
+        await invokeMapMethod(authLoginMethod, options.toMap());
 
     return LoginResult.fromMap(result);
   }
 
   @override
   Future<AuthUserProfileResult?> userInfo(final String accessToken) async {
-    final Map<dynamic, dynamic>? result =
-        await _channel.invokeMethod(authUserInfoMethod);
-
-    if (result == null) {
-      return null;
-    }
+   await invokeMapMethod(authUserInfoMethod);
 
     return AuthUserProfileResult();
   }
 
   @override
   Future<DatabaseUser> signup(final AuthSignupOptions options) async {
-    final Map<dynamic, dynamic>? result;
-    try {
-      result = await _channel.invokeMethod(authSignUpMethod, options.toMap());
-    } on PlatformException catch (e) {
-      throw ApiException.fromPlatformException(e);
-    }
-
-    if (result == null) {
-      throw const ApiException.unknown('Channel returned null.');
-    }
+    final Map<String, dynamic> result =
+        await invokeMapMethod(authSignUpMethod, options.toMap());
 
     return DatabaseUser.fromMap(result);
   }
@@ -61,10 +44,22 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   @override
   Future<AuthRenewAccessTokenResult> renewAccessToken(
       final AuthRenewAccessTokenOptions options) async {
-    final Map<dynamic, dynamic>? result;
+    final Map<String, dynamic> result =
+        await invokeMapMethod(authRenewAccessTokenMethod, options.toMap());
+
+    return AuthRenewAccessTokenResult.fromMap(result);
+  }
+
+  @override
+  Future<void> resetPassword(final AuthResetPasswordOptions options) async {
+    await invokeMapMethod(authResetPasswordMethod);
+  }
+
+  Future<Map<String, dynamic>> invokeMapMethod(final String method,
+      [final dynamic arguments]) async {
+    final Map<String, dynamic>? result;
     try {
-      result = await _channel.invokeMethod(
-          authRenewAccessTokenMethod, options.toMap());
+      result = await _channel.invokeMapMethod(method, arguments);
     } on PlatformException catch (e) {
       throw ApiException.fromPlatformException(e);
     }
@@ -73,11 +68,6 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
       throw const ApiException.unknown('Channel returned null.');
     }
 
-    return AuthRenewAccessTokenResult.fromMap(result);
-  }
-
-  @override
-  Future<void> resetPassword(final AuthResetPasswordOptions options) async {
-    await _channel.invokeMethod(authResetPasswordMethod);
+    return result;
   }
 }
