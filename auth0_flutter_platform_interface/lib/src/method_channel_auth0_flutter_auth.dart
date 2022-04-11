@@ -43,7 +43,8 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
 
   @override
   Future<AuthRenewAccessTokenResult> renewAccessToken(
-      final AuthRenewAccessTokenOptions options) async {
+    final AuthRenewAccessTokenOptions options,
+  ) async {
     final Map<String, dynamic> result = await invokeMapMethod(
         method: authRenewAccessTokenMethod, options: options.toMap());
 
@@ -55,10 +56,11 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
     await invokeMapMethod(method: authResetPasswordMethod, throwOnNull: false);
   }
 
-  Future<Map<String, dynamic>> invokeMapMethod(
-      {required final String method,
-      final Map<String, dynamic>? options,
-      final bool? throwOnNull = true}) async {
+  Future<Map<String, dynamic>> invokeMapMethod({
+    required final String method,
+    final Map<String, dynamic>? options,
+    final bool? throwOnNull = true,
+  }) async {
     final Map<String, dynamic>? result;
     try {
       result = await _channel.invokeMapMethod(method, options);
