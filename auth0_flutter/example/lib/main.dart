@@ -131,9 +131,11 @@ class _ExampleAppState extends State<ExampleApp> {
                     children: [
                       ApiCard(action: apiLogin),
                       if (_isLoggedIn)
-                        WebAuthCard('Web Auth Logout', webAuthLogout)
+                        WebAuthCard(
+                            label: 'Web Auth Logout', action: webAuthLogout)
                       else
-                        WebAuthCard('Web Auth Login', webAuthLogin),
+                        WebAuthCard(
+                            label: 'Web Auth Login', action: webAuthLogin),
                     ]),
               )),
               SliverFillRemaining(
@@ -149,7 +151,7 @@ class _ExampleAppState extends State<ExampleApp> {
 
 class ApiCard extends StatefulWidget {
   final Future<void> Function(String usernameOrEmail, String password) action;
-  const ApiCard(final this.action, {final Key? key}) : super(key: key);
+  const ApiCard({required final this.action, final Key? key}) : super(key: key);
 
   @override
   ApiCardState createState() {
@@ -219,7 +221,8 @@ class WebAuthCard extends StatelessWidget {
   final String label;
   final Future<void> Function() action;
 
-  const WebAuthCard(final this.label, final this.action, {final Key? key})
+  const WebAuthCard(
+      {required final this.label, required final this.action, final Key? key})
       : super(key: key);
 
   @override
