@@ -7,7 +7,7 @@ class AuthAPILoginUsernameOrEmailMethodHandlerTests: XCTestCase {
     let idToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmb28iLCJuYW1lIjoiYmFyIiwiZW1haWwiOiJmb29AZXhhbXBsZS5"
     + "jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGljdHVyZSI6ImJheiIsInVwZGF0ZWRfYXQiOiJxdXgifQ.vc9sxvhUVAHowIWJ7D_WDzvq"
     + "JxC4-qYXHmiBVYEKn9E"
-    let spy = SpyAuthentication(clientId: "", url: URL(string: "https://example.com")!, telemetry: Telemetry())
+    let spy = SpyAuthentication()
     var sut: AuthAPILoginUsernameOrEmailMethodHandler!
 
     override func setUpWithError() throws {

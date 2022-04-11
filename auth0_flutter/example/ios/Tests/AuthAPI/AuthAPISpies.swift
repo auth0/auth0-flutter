@@ -1,9 +1,9 @@
 @testable import Auth0
 
 class SpyAuthentication: Authentication {
-    let clientId: String
-    let url: URL
-    var telemetry: Telemetry
+    let clientId = ""
+    let url = mockURL
+    var telemetry = Telemetry()
     var logger: Logger?
 
     var credentialsResult: AuthenticationResult<Credentials> = .success(Credentials())
@@ -18,11 +18,7 @@ class SpyAuthentication: Authentication {
     var arguments: [String: Any] = [:]
     var parameters: [String: Any] = [:]
 
-    init(clientId: String, url: URL, telemetry: Telemetry) {
-        self.clientId = clientId
-        self.url = url
-        self.telemetry = telemetry
-    }
+    init() {}
 
     func login(usernameOrEmail username: String,
                password: String,
@@ -93,25 +89,16 @@ class SpyAuthentication: Authentication {
     }
 
     func jwks() -> Request<JWKS, AuthenticationError> {
-        return request()
+        return request(.success(JWKS(keys: [])))
     }
 }
 
 private extension SpyAuthentication {
     func request<T>(_ result: AuthenticationResult<T>) -> Request<T, AuthenticationError> {
-        Request(session: URLSession.shared,
+        Request(session: mockURLSession,
                 url: url,
                 method: "",
                 handle: {_, callback in callback(result)},
-                logger: nil,
-                telemetry: telemetry)
-    }
-
-    func request<T>() -> Request<T, AuthenticationError> {
-        Request(session: URLSession.shared,
-                url: url,
-                method: "",
-                handle: {_,_ in},
                 logger: nil,
                 telemetry: telemetry)
     }

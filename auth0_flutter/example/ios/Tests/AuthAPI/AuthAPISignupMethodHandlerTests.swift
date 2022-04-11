@@ -4,7 +4,7 @@ import Auth0
 @testable import auth0_flutter
 
 class AuthAPISignupMethodHandlerTests: XCTestCase {
-    let spy = SpyAuthentication(clientId: "", url: URL(string: "https://example.com")!, telemetry: Telemetry())
+    let spy = SpyAuthentication()
     var sut: AuthAPISignupMethodHandler!
 
     override func setUpWithError() throws {

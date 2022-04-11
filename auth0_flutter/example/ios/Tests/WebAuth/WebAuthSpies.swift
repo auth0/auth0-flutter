@@ -18,9 +18,9 @@ class SpyMethodHandler: MethodHandler {
 // MARK: - Auth0.swift Spies
 
 class SpyWebAuth: WebAuth {
-    let clientId: String
-    let url: URL
-    var telemetry: Telemetry
+    let clientId = ""
+    let url = mockURL
+    var telemetry = Telemetry()
     var logger: Logger?
 
     var loginResult: WebAuthResult = .success(Credentials())
@@ -39,11 +39,7 @@ class SpyWebAuth: WebAuth {
     private(set) var invitationURLValue: URL?
     private(set) var organizationValue: String?
 
-    init(clientId: String, url: URL, telemetry: Telemetry) {
-        self.clientId = clientId
-        self.url = url
-        self.telemetry = telemetry
-    }
+    init() {}
 
     func connection(_ connection: String) -> Self {
         return self
