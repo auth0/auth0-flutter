@@ -67,7 +67,13 @@ Go to the settings page of your [Auth0 application](https://manage.auth0.com/#/a
 ##### Android
 
 ```text
-YOUR_BUNDLE_IDENTIFIER://YOUR_AUTH0_DOMAIN/android/YOUR_BUNDLE_IDENTIFIER/callback
+https://{YOUR_AUTH0_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
+```
+
+E.g. if your Auth0 Domain was `company.us.auth0.com` and your Android app package name was `com.company.myapp`, then this value would be:
+
+```text
+https://company.us.auth0.com/android/com.company.myapp/callback
 ```
 
 ##### iOS
@@ -88,11 +94,12 @@ _TBD_
 
 #### iOS configuration: custom URL scheme
 
-Open the `ios/Runner/Info.plist` file and register your iOS Bundle Identifer as a custom scheme.
+Open the `ios/Runner/Info.plist` file and add the following snippet inside the top-level `<dict>` tag to register your iOS Bundle Identifer as a custom scheme.
 
 ```xml
-<!-- Info.plist -->
+<!-- ios/Runner/Info.plist -->
 
+<!-- <dict> -->
 <key>CFBundleURLTypes</key>
 <array>
     <dict>
@@ -106,6 +113,7 @@ Open the `ios/Runner/Info.plist` file and register your iOS Bundle Identifer as 
         </array>
     </dict>
 </array>
+<!-- </dict> -->
 ```
 
 > 💡 If you're opening the `Info.plist` file in Xcode and it is not being shown in this format, you can **Right Click** on `Info.plist` in the Xcode [project navigator](https://developer.apple.com/library/archive/documentation/ToolsLanguages/Conceptual/Xcode_Overview/NavigatingYourWorkspace.html) and then select **Open As > Source Code**.
@@ -152,7 +160,7 @@ You can make users land directly on the Signup page instead of the Login page by
 
 _[snippet]_
 
-> ⚠️ The `screen_hint` parameter can only be used with the **New Universal Login Experience**, not the **Classic Experience**. If you are using the **Classic Universal Login Experience** you can use any custom parameter, e.g. `parameters: {'action': 'signup'}`. Then, customize the [login template](https://manage.auth0.com/#/login_page) to look for this parameter and set the `initialScreen` [option](https://github.com/auth0/lock#database-options) of the `Auth0Lock` constructor.
+> ⚠️ The `screen_hint` parameter will work with the **New Universal Login Experience** without any further configuration. If you are using the **Classic Universal Login Experience**, you need to customize the [login template](https://manage.auth0.com/#/login_page) to look for this parameter and set the `initialScreen` [option](https://github.com/auth0/lock#database-options) of the `Auth0Lock` constructor.
 
 #### Web Auth configuration
 
@@ -164,9 +172,9 @@ Specify an [audience](https://auth0.com/docs/secure/tokens/access-tokens/get-acc
 
 _[snippet]_
 
-##### Add a scope value
+##### Add scope values
 
-Specify a [scope](https://auth0.com/docs/get-started/apis/scopes) to request permission to access protected resources, like the user profile. The default scope value is `openid profile email offline_access`. Regardless of the scope value specified, `openid` is always included.
+Specify [scopes](https://auth0.com/docs/get-started/apis/scopes) to request permission to access protected resources, like the user profile. The default scope values are `openid`, `profile`, `email`, and `offline_access`. Regardless of the values specified, `openid` is always included.
 
 _[snippet]_
 
@@ -208,7 +216,7 @@ For login or signup with username/password, the `Password` grant type needs to b
 
 _[snippet]_
 
-> 💡 The default scope value is `openid profile email offline_access`. Regardless of the scope value specified, `openid` is always included.
+> 💡 The default scope values are `openid`, `profile`, `email`, and `offline_access`. Regardless of the values specified, `openid` is always included.
 
 #### Sign up with database connection
 
