@@ -90,6 +90,32 @@ class _ExampleAppState extends State<ExampleApp> {
     });
   }
 
+  Future<void> authLogin(
+      final String usernameOrEmail, final String password) async {
+    String output;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    // We also handle the message potentially returning null.
+    try {
+      final result = await auth0.api.login(
+          usernameOrEmail: usernameOrEmail,
+          password: password,
+          connectionOrRealm: 'Username-Password-Authentication');
+      output = result.accessToken;
+    } on PlatformException catch (e) {
+      output = 'Failed to get token: ${e.message}';
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      _isLoggedIn = true;
+      _output = output;
+    });
+  }
+
   @override
   Widget build(final BuildContext context) {
     return MaterialApp(
@@ -103,7 +129,7 @@ class _ExampleAppState extends State<ExampleApp> {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const FormCard(),
+                      AuthCard(action: authLogin),
                       if (_isLoggedIn)
                         WebAuthCard('Web Auth Logout', webAuthLogout)
                       else
@@ -122,17 +148,28 @@ class _ExampleAppState extends State<ExampleApp> {
   }
 }
 
-class FormCard extends StatefulWidget {
-  const FormCard({final Key? key}) : super(key: key);
+class AuthCard extends StatefulWidget {
+  final Future<void> Function(String usernameOrEmail, String password) action;
+
+  const AuthCard({final Key? key, required final this.action})
+      : super(key: key);
 
   @override
-  FormCardState createState() {
-    return FormCardState();
+  AuthCardState createState() {
+    // ignore: no_logic_in_create_state
+    return AuthCardState(action);
   }
 }
 
-class FormCardState extends State<FormCard> {
+class AuthCardState extends State<AuthCard> {
   final _formKey = GlobalKey<FormState>();
+
+  final Future<void> Function(String usernammeOrEmail, String password) action;
+
+  AuthCardState(final this.action);
+
+  String usernameOrEmail = '';
+  String password = '';
 
   @override
   Widget build(final BuildContext context) {
@@ -145,16 +182,16 @@ class FormCardState extends State<FormCard> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
                   TextFormField(
-                    decoration: const InputDecoration(
-                      hintText: 'Username or email',
-                    ),
-                    validator: (final String? value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter an username or email';
-                      }
-                      return null;
-                    },
-                  ),
+                      decoration: const InputDecoration(
+                        hintText: 'Username or email',
+                      ),
+                      validator: (final String? value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a username or email';
+                        }
+                        return null;
+                      },
+                      onChanged: (final input) => usernameOrEmail = input),
                   TextFormField(
                     decoration: const InputDecoration(
                       hintText: 'Password',
@@ -162,6 +199,7 @@ class FormCardState extends State<FormCard> {
                     obscureText: true,
                     enableSuggestions: false,
                     autocorrect: false,
+                    onChanged: (final input) => password = input,
                     validator: (final String? value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter a password';
@@ -173,7 +211,7 @@ class FormCardState extends State<FormCard> {
                     onPressed: () {
                       if (_formKey.currentState != null &&
                           _formKey.currentState!.validate()) {
-                        // Process data.
+                        action(usernameOrEmail, password);
                       }
                     },
                     child: const Text('API Login'),

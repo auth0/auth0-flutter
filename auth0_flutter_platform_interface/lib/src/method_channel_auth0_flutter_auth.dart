@@ -1,10 +1,12 @@
 import 'package:flutter/services.dart';
+import 'auth/api_exception.dart';
 import 'auth/auth_login_options.dart';
 import 'auth/auth_renew_access_token_result.dart';
 import 'auth/auth_reset_password_options.dart';
-import 'auth/auth_sign_up_options.dart';
+import 'auth/auth_signup_options.dart';
 import 'auth/auth_user_profile_result.dart';
 import 'auth0_flutter_auth_platform.dart';
+import 'database_user.dart';
 import 'web-auth/web_auth_login_result.dart';
 
 const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter/auth');
@@ -17,13 +19,14 @@ const String authResetPasswordMethod = 'auth#resetPassword';
 class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   @override
   Future<LoginResult> login(final AuthLoginOptions options) async {
-    final result = await _channel.invokeMethod<LoginResult>(authLoginMethod);
+    final Map<String, dynamic>? result =
+        await _channel.invokeMapMethod(authLoginMethod, options.toMap());
 
     if (result == null) {
       return throw Exception('Auth channel returned null');
     }
 
-    return result;
+    return LoginResult.fromMap(result);
   }
 
   @override
@@ -39,8 +42,19 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   }
 
   @override
-  Future<void> signUp(final AuthSignUpOptions options) async {
-    await _channel.invokeMethod(authSignUpMethod);
+  Future<DatabaseUser> signup(final AuthSignupOptions options) async {
+    final Map<dynamic, dynamic>? result;
+    try {
+      result = await _channel.invokeMethod(authSignUpMethod, options.toMap());
+    } on PlatformException catch (e) {
+      throw ApiException.fromPlatformException(e);
+    }
+
+    if (result == null) {
+      throw const ApiException.unknown('Channel returned null.');
+    }
+
+    return DatabaseUser.fromMap(result);
   }
 
   @override
@@ -58,7 +72,7 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
       accessToken: result['accessToken'] as String,
       refreshToken: result['refreshToken'] as String?,
       expiresAt: DateTime.parse(result['expiresAt'] as String),
-      scopes: Set<String>.from(result['scopes'] as List<Object?>),
+      scopes: Set.from(result['scopes'] as List<Object?>),
     );
   }
 

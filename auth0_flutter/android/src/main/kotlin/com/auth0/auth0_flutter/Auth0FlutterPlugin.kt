@@ -21,13 +21,14 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   private lateinit var webAuthMethodChannel : MethodChannel
   private lateinit var authMethodChannel : MethodChannel
   private val webAuthCallHandler = Auth0FlutterWebAuthMethodCallHandler()
+  private val authCallHandler = Auth0FlutterAuthMethodCallHandler()
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     webAuthMethodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "auth0.com/auth0_flutter/web_auth")
     webAuthMethodChannel.setMethodCallHandler(webAuthCallHandler)
 
     authMethodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "auth0.com/auth0_flutter/auth")
-    authMethodChannel.setMethodCallHandler(Auth0FlutterAuthMethodCallHandler())
+    authMethodChannel.setMethodCallHandler(authCallHandler)
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {}
@@ -39,6 +40,7 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     webAuthCallHandler.context = binding.activity
+    authCallHandler.context = binding.activity
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
