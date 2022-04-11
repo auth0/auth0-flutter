@@ -20,23 +20,23 @@ const String authResetPasswordMethod = 'auth#resetPassword';
 class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   @override
   Future<LoginResult> login(final AuthLoginOptions options) async {
-    final Map<String, dynamic> result =
-        await invokeMapMethod(authLoginMethod, options.toMap());
+    final Map<String, dynamic> result = await invokeMapMethod(
+        method: authLoginMethod, options: options.toMap());
 
     return LoginResult.fromMap(result);
   }
 
   @override
   Future<AuthUserProfileResult?> userInfo(final String accessToken) async {
-   await invokeMapMethod(authUserInfoMethod);
+    await invokeMapMethod(method: authUserInfoMethod);
 
     return AuthUserProfileResult();
   }
 
   @override
   Future<DatabaseUser> signup(final AuthSignupOptions options) async {
-    final Map<String, dynamic> result =
-        await invokeMapMethod(authSignUpMethod, options.toMap());
+    final Map<String, dynamic> result = await invokeMapMethod(
+        method: authSignUpMethod, options: options.toMap());
 
     return DatabaseUser.fromMap(result);
   }
@@ -44,30 +44,32 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   @override
   Future<AuthRenewAccessTokenResult> renewAccessToken(
       final AuthRenewAccessTokenOptions options) async {
-    final Map<String, dynamic> result =
-        await invokeMapMethod(authRenewAccessTokenMethod, options.toMap());
+    final Map<String, dynamic> result = await invokeMapMethod(
+        method: authRenewAccessTokenMethod, options: options.toMap());
 
     return AuthRenewAccessTokenResult.fromMap(result);
   }
 
   @override
   Future<void> resetPassword(final AuthResetPasswordOptions options) async {
-    await invokeMapMethod(authResetPasswordMethod);
+    await invokeMapMethod(method: authResetPasswordMethod, throwOnNull: false);
   }
 
-  Future<Map<String, dynamic>> invokeMapMethod(final String method,
-      [final dynamic arguments]) async {
+  Future<Map<String, dynamic>> invokeMapMethod(
+      {required final String method,
+      final Map<String, dynamic>? options,
+      final bool? throwOnNull = true}) async {
     final Map<String, dynamic>? result;
     try {
-      result = await _channel.invokeMapMethod(method, arguments);
+      result = await _channel.invokeMapMethod(method, options);
     } on PlatformException catch (e) {
       throw ApiException.fromPlatformException(e);
     }
 
-    if (result == null) {
+    if (result == null && throwOnNull == true) {
       throw const ApiException.unknown('Channel returned null.');
     }
 
-    return result;
+    return result ?? {};
   }
 }

@@ -16,22 +16,24 @@ class TestPlatform extends Mock
   static DatabaseUser signupResult =
       DatabaseUser(email: 'email', emailVerified: true);
 
-  static LoginResult loginResult = LoginResult(
-      accessToken: 'accessToken',
-      idToken: 'idToken',
-      refreshToken: 'refreshToken',
-      expiresAt: DateTime.now(),
-      scopes: {'a'},
-      userProfile: {'name': 'John Doe'});
+  static LoginResult loginResult = LoginResult.fromMap({
+    'accessToken': 'accessToken',
+    'idToken': 'idToken',
+    'refreshToken': 'refreshToken',
+    'expiresAt': DateTime.now().toIso8601String(),
+    'scopes': ['a'],
+    'userProfile': {'name': 'John Doe'}
+  });
 
   static AuthRenewAccessTokenResult renewAccessTokenResult =
-      AuthRenewAccessTokenResult(
-          accessToken: 'accessToken',
-          idToken: 'idToken',
-          refreshToken: 'refreshToken',
-          expiresAt: DateTime.now(),
-          scopes: {'a'},
-          userProfile: {});
+      AuthRenewAccessTokenResult.fromMap({
+    'accessToken': 'accessToken',
+    'idToken': 'idToken',
+    'refreshToken': 'refreshToken',
+    'expiresAt': DateTime.now().toIso8601String(),
+    'scopes': ['a'],
+    'userProfile': {'name': 'John Doe'}
+  });
 }
 
 @GenerateMocks([TestPlatform])
@@ -145,7 +147,7 @@ void main() {
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
       expect(verificationResult.refreshToken, 'test-refresh-token');
-      expect(verificationResult.scope, {'test-scope1', 'test-scope2'});
+      expect(verificationResult.scopes, {'test-scope1', 'test-scope2'});
       expect(result, TestPlatform.renewAccessTokenResult);
     });
   });
