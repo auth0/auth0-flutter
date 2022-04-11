@@ -103,6 +103,8 @@ class _ExampleAppState extends State<ExampleApp> {
       output = result.accessToken;
     } on PlatformException catch (e) {
       output = 'Failed to get token: ${e.message}';
+    } on ApiException catch (e) {
+      output = output = e.toString();
     }
 
     // If the widget was removed from the tree while the asynchronous platform
