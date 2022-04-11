@@ -52,7 +52,7 @@ extension WebAuthLogoutHandlerTests {
         let errors: [String: WebAuthError] = ["USER_CANCELLED": .userCancelled, "UNKNOWN": .unknown]
         var expectations: [XCTestExpectation] = []
         for (code, error) in errors {
-            let expectation = self.expectation(description: "Produced the WebAuth error \(code)")
+            let expectation = self.expectation(description: "Produced the WebAuthError \(code)")
             expectations.append(expectation)
             spy.logoutResult = .failure(error)
             sut.handle(with: [:]) { result in

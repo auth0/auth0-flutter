@@ -229,7 +229,7 @@ extension WebAuthLoginHandlerTests {
                                               "UNKNOWN": .unknown]
         var expectations: [XCTestExpectation] = []
         for (code, error) in errors {
-            let expectation = self.expectation(description: "Produced the WebAuth error \(code)")
+            let expectation = self.expectation(description: "Produced the WebAuthError \(code)")
             expectations.append(expectation)
             spy.loginResult = .failure(error)
             sut.handle(with: arguments()) { result in

@@ -7,8 +7,8 @@ extension MethodHandler {
     func result(from databaseUser: DatabaseUser) -> Any? {
         let data: [String: Any?] = [
             "email": databaseUser.email,
-            "username": databaseUser.username,
-            "verified": databaseUser.verified
+            "emailVerified": databaseUser.verified,
+            "username": databaseUser.username
         ]
         return data
     }
@@ -57,7 +57,7 @@ struct AuthAPILoginUsernameOrEmailMethodHandler: MethodHandler {
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
         guard let usernameOrEmail = arguments["usernameOrEmail"] as? String,
               let password = arguments["password"] as? String,
-              let realmOrConnection = arguments["realmOrConnection"] as? String,
+              let connectionOrRealm = arguments["connectionOrRealm"] as? String,
               let scopes = arguments["scopes"] as? [String],
               let parameters = arguments["parameters"] as? [String: String] else {
             return callback(FlutterError(from: .requiredArgumentsMissing))
@@ -68,7 +68,7 @@ struct AuthAPILoginUsernameOrEmailMethodHandler: MethodHandler {
         client
             .login(usernameOrEmail: usernameOrEmail,
                    password: password,
-                   realmOrConnection: realmOrConnection,
+                   realmOrConnection: connectionOrRealm,
                    audience: audience,
                    scope: scopes.isEmpty ? Auth0.defaultScope : scopes.asSpaceSeparatedString)
             .parameters(parameters)
@@ -87,8 +87,7 @@ struct AuthAPISignupMethodHandler: MethodHandler {
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
         guard let email = arguments["email"] as? String,
               let password = arguments["password"] as? String,
-              let connection = arguments["connection"] as? String,
-              let parameters = arguments["parameters"] as? [String: String] else {
+              let connection = arguments["connection"] as? String else {
             return callback(FlutterError(from: .requiredArgumentsMissing))
         }
 
@@ -101,7 +100,6 @@ struct AuthAPISignupMethodHandler: MethodHandler {
                     password: password,
                     connection: connection,
                     userMetadata: userMetadata)
-            .parameters(parameters)
             .start {
                 switch $0 {
                 case let .success(databaseUser): callback(result(from: databaseUser))

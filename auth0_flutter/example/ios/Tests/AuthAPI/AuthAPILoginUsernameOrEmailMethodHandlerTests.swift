@@ -5,8 +5,8 @@ import Auth0
 
 class AuthAPILoginUsernameOrEmailMethodHandlerTests: XCTestCase {
     let idToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmb28iLCJuYW1lIjoiYmFyIiwiZW1haWwiOiJmb29AZXhhbXBsZS5"
-    + "jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGljdHVyZSI6ImJheiIsInVwZGF0ZWRfYXQiOiJxdXgifQ.vc9sxvhUVAHowIWJ7D_WDzvq"
-    + "JxC4-qYXHmiBVYEKn9E"
+        + "jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGljdHVyZSI6ImJheiIsInVwZGF0ZWRfYXQiOiJxdXgifQ.vc9sxvhUVAHowIWJ7D_WDzvq"
+        + "JxC4-qYXHmiBVYEKn9E"
     let spy = SpyAuthentication()
     var sut: AuthAPILoginUsernameOrEmailMethodHandler!
 
@@ -21,7 +21,7 @@ extension AuthAPILoginUsernameOrEmailMethodHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
         let inputs = ["usernameOrEmail": self.expectation(description: "usernameOrEmail is missing"),
                       "password": self.expectation(description: "password is missing"),
-                      "realmOrConnection": self.expectation(description: "realmOrConnection is missing"),
+                      "connectionOrRealm": self.expectation(description: "connectionOrRealm is missing"),
                       "scopes": self.expectation(description: "scopes is missing"),
                       "parameters": self.expectation(description: "parameters is missing")]
         for (argument, currentExpectation) in inputs {
@@ -71,10 +71,10 @@ extension AuthAPILoginUsernameOrEmailMethodHandlerTests {
         XCTAssertEqual(spy.arguments[key] as? String, value)
     }
 
-    // MARK: realmOrConnection
+    // MARK: connectionOrRealm
 
-    func testAddsRealmOrConnection() {
-        let key = "realmOrConnection"
+    func testAddsconnectionOrRealm() {
+        let key = "connectionOrRealm"
         let value = "foo"
         sut.handle(with: arguments(key: key, value: value)) { _ in }
         XCTAssertEqual(spy.arguments[key] as? String, value)
@@ -145,7 +145,7 @@ extension AuthAPILoginUsernameOrEmailMethodHandlerTests {
 
     func testProducesAuthenticationError() {
         let error = AuthenticationError(info: [:], statusCode: 0)
-        let expectation = self.expectation(description: "Produced the Authentication error \(error)")
+        let expectation = self.expectation(description: "Produced the AuthenticationError \(error)")
         spy.credentialsResult = .failure(error)
         sut.handle(with: arguments()) { result in
             assertHas(authenticationError: error, result)
@@ -161,7 +161,7 @@ extension AuthAPILoginUsernameOrEmailMethodHandlerTests {
     override func arguments() -> [String: Any] {
         return ["usernameOrEmail": "",
                 "password": "",
-                "realmOrConnection": "",
+                "connectionOrRealm": "",
                 "scopes": [],
                 "parameters": [:],
                 "audience": ""]

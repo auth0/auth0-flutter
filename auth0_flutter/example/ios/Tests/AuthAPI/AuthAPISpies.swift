@@ -16,7 +16,6 @@ class SpyAuthentication: Authentication {
     var calledRenewAccessToken = false
     var calledResetPassword = false
     var arguments: [String: Any] = [:]
-    var parameters: [String: Any] = [:]
 
     init() {}
 
@@ -27,7 +26,7 @@ class SpyAuthentication: Authentication {
                scope: String) -> Request<Credentials, AuthenticationError> {
         arguments["usernameOrEmail"] = username
         arguments["password"] = password
-        arguments["realmOrConnection"] = realm
+        arguments["connectionOrRealm"] = realm
         arguments["audience"] = audience
         arguments["scope"] = scope
         calledLoginWithUsernameOrEmail = true

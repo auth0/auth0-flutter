@@ -109,7 +109,7 @@ extension AuthAPIRenewAccessTokenMethodHandlerTests {
 
     func testProducesAuthenticationError() {
         let error = AuthenticationError(info: [:], statusCode: 0)
-        let expectation = self.expectation(description: "Produced the Authentication error \(error)")
+        let expectation = self.expectation(description: "Produced the AuthenticationError \(error)")
         spy.credentialsResult = .failure(error)
         sut.handle(with: arguments()) { result in
             assertHas(authenticationError: error, result)
