@@ -18,8 +18,7 @@ extension AuthAPISignupMethodHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
         let inputs = ["email": self.expectation(description: "email is missing"),
                       "password": self.expectation(description: "password is missing"),
-                      "connection": self.expectation(description: "connection is missing"),
-                      "parameters": self.expectation(description: "parameters is missing")]
+                      "connection": self.expectation(description: "connection is missing")]
         for (argument, currentExpectation) in inputs {
             sut.handle(with: arguments(without: argument)) { result in
                 assertHas(handlerError: .requiredArgumentsMissing, result)
@@ -115,7 +114,6 @@ extension AuthAPISignupMethodHandlerTests {
         return ["email": "",
                 "password": "",
                 "connection": "",
-                "parameters": [:],
                 "username": "",
                 "userMetadata": [:]]
     }

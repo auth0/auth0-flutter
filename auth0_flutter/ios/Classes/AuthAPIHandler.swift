@@ -110,72 +110,6 @@ struct AuthAPISignupMethodHandler: MethodHandler {
     }
 }
 
-struct AuthAPIUserInfoMethodHandler: MethodHandler {
-    let client: Authentication
-
-    func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
-        guard let accessToken = arguments["accessToken"] as? String,
-              let parameters = arguments["parameters"] as? [String: String] else {
-            return callback(FlutterError(from: .requiredArgumentsMissing))
-        }
-
-        client
-            .userInfo(withAccessToken: accessToken)
-            .parameters(parameters)
-            .start {
-                switch $0 {
-                case let .success(userInfo): callback(result(from: userInfo))
-                case let .failure(error): callback(FlutterError(from: error))
-                }
-            }
-    }
-}
-
-struct AuthAPIRenewAccessTokenMethodHandler: MethodHandler {
-    let client: Authentication
-
-    func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
-        guard let refreshToken = arguments["refreshToken"] as? String,
-              let scopes = arguments["scopes"] as? [String],
-              let parameters = arguments["parameters"] as? [String: String] else {
-            return callback(FlutterError(from: .requiredArgumentsMissing))
-        }
-
-        client
-            .renew(withRefreshToken: refreshToken,
-                   scope: scopes.isEmpty ? nil : scopes.asSpaceSeparatedString)
-            .parameters(parameters)
-            .start {
-                switch $0 {
-                case let .success(credentials): callback(result(from: credentials))
-                case let .failure(error): callback(FlutterError(from: error))
-                }
-            }
-    }
-}
-
-struct AuthAPIResetPasswordMethodHandler: MethodHandler {
-    let client: Authentication
-
-    func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
-        guard let email = arguments["email"] as? String,
-              let connection = arguments["connection"] as? String,
-              let parameters = arguments["parameters"] as? [String: String] else {
-            return callback(FlutterError(from: .requiredArgumentsMissing))
-        }
-
-        client
-            .resetPassword(email: email, connection: connection)
-            .parameters(parameters)
-            .start {
-                switch $0 {
-                case .success: callback(nil)
-                case let .failure(error): callback(FlutterError(from: error))
-                }
-            }
-    }
-}
-
 // MARK: - Authentication API Handler
 
 public class AuthAPIHandler: NSObject, FlutterPlugin {
@@ -210,9 +144,6 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
         switch Method(rawValue: call.method) {
         case .loginWithUsernameOrEmail: callLoginWithUsernameOrEmail(with: arguments, using: client, result: result)
         case .signup: callSignup(with: arguments, using: client, result: result)
-        case .userInfo: callUserInfo(with: arguments, using: client, result: result)
-        case .renewAccessToken: callRenewAccessToken(with: arguments, using: client, result: result)
-        case .resetPassword: callResetPassword(with: arguments, using: client, result: result)
         default: result(FlutterMethodNotImplemented)
         }
     }
@@ -229,25 +160,6 @@ private extension AuthAPIHandler {
 
     func callSignup(with arguments: [String: Any], using client: Authentication, result: @escaping FlutterResult) {
         let handler = methodHandlers[.signup] ?? AuthAPISignupMethodHandler(client: client)
-        handler.handle(with: arguments, callback: result)
-    }
-
-    func callUserInfo(with arguments: [String: Any], using client: Authentication, result: @escaping FlutterResult) {
-        let handler = methodHandlers[.userInfo] ?? AuthAPIUserInfoMethodHandler(client: client)
-        handler.handle(with: arguments, callback: result)
-    }
-
-    func callRenewAccessToken(with arguments: [String: Any],
-                              using client: Authentication,
-                              result: @escaping FlutterResult) {
-        let handler = methodHandlers[.renewAccessToken] ?? AuthAPIRenewAccessTokenMethodHandler(client: client)
-        handler.handle(with: arguments, callback: result)
-    }
-
-    func callResetPassword(with arguments: [String: Any],
-                           using client: Authentication,
-                           result: @escaping FlutterResult) {
-        let handler = methodHandlers[.resetPassword] ?? AuthAPIResetPasswordMethodHandler(client: client)
         handler.handle(with: arguments, callback: result)
     }
 }

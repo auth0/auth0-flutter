@@ -113,8 +113,8 @@ func assertHas(databaseUser: DatabaseUser,
                line: UInt = #line) {
     if let result = result as? [String: Any],
        result["email"] as? String == databaseUser.email,
-       result["username"] as? String == databaseUser.username,
-       result["verified"] as? Bool == databaseUser.verified {
+       result["emailVerified"] as? Bool == databaseUser.verified,
+       result["username"] as? String == databaseUser.username {
         return
     }
     XCTFail("The handler did not produce matching database users", file: file, line: line)
