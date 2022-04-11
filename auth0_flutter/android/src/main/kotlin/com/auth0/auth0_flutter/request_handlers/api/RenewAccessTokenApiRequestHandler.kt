@@ -11,7 +11,7 @@ import com.auth0.auth0_flutter.utils.assertHasProperties
 import com.auth0.auth0_flutter.utils.processClaims
 import io.flutter.plugin.common.MethodChannel
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 
 private const val AUTH_RENEWACCESSTOKEN_METHOD = "auth#renewAccessToken"
 

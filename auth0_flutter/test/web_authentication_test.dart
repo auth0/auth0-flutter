@@ -18,7 +18,7 @@ class TestPlatform extends Mock
     'idToken': 'idToken',
     'refreshToken': 'refreshToken',
     'expiresAt': DateTime.now().toIso8601String(),
-    'scopes': ['a'],
+    'scopes': ['a', 'b'],
     'userProfile': {'name': 'John Doe'}
   });
 }
@@ -42,7 +42,7 @@ void main() {
         .webAuthentication
         .login(
             audience: 'test-audience',
-            scopes: {'a'},
+            scopes: {'a', 'b'},
             invitationUrl: 'invitation_url',
             organizationId: 'org_123',
             redirectUri: 'redirect_uri',
@@ -54,7 +54,7 @@ void main() {
     expect(verificationResult.account.domain, 'test-domain');
     expect(verificationResult.account.clientId, 'test-clientId');
     expect(verificationResult.audience, 'test-audience');
-    expect(verificationResult.scopes, {'a'});
+    expect(verificationResult.scopes, {'a', 'b'});
     expect(verificationResult.invitationUrl, 'invitation_url');
     expect(verificationResult.organizationId, 'org_123');
     expect(verificationResult.redirectUri, 'redirect_uri');
@@ -68,7 +68,7 @@ void main() {
 
     final result = await Auth0('test-domain', 'test-clientId')
         .webAuthentication
-        .login(audience: 'test-audience', scopes: {'a'});
+        .login(audience: 'test-audience', scopes: {'a', 'b'});
 
     final verificationResult = verify(mockedPlatform.login(captureAny))
         .captured
