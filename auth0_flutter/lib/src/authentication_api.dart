@@ -41,10 +41,14 @@ class AuthenticationApi {
 
   Future<AuthRenewAccessTokenResult> renewAccessToken(
           {required final String refreshToken,
-          final Set<String> scopes = const {}}) =>
+          final Set<String> scopes = const {},
+          final Map<String, String> parameters = const {}}) =>
       Auth0FlutterAuthPlatform.instance.renewAccessToken(
           AuthRenewAccessTokenOptions(
-              account: account, refreshToken: refreshToken, scopes: scopes));
+              account: account,
+              refreshToken: refreshToken,
+              scopes: scopes,
+              parameters: parameters));
 
   Future<void> resetPassword(
           {required final String email, required final String password}) =>

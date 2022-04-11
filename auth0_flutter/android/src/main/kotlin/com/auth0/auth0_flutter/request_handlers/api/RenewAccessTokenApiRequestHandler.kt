@@ -28,6 +28,10 @@ class RenewAccessTokenApiRequestHandler : ApiRequestHandler {
             renewAuthBuilder.addParameter("scope", scopes.joinToString(separator = " "))
         }
 
+        if (request.data.getOrDefault("parameters", hashMapOf<String, Any?>()) is HashMap<*, *>) {
+            renewAuthBuilder.addParameters(request.data["parameters"] as Map<String, String>)
+        }
+
         renewAuthBuilder.start(object :
             Callback<Credentials, AuthenticationException> {
             override fun onFailure(exception: AuthenticationException) {

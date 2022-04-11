@@ -140,7 +140,8 @@ void main() {
           .api
           .renewAccessToken(
               refreshToken: 'test-refresh-token',
-              scopes: {'test-scope1', 'test-scope2'});
+              scopes: {'test-scope1', 'test-scope2'},
+              parameters: {'test': 'test-123'});
 
       final verificationResult =
           verify(mockedPlatform.renewAccessToken(captureAny)).captured.single;
@@ -148,6 +149,25 @@ void main() {
       expect(verificationResult.account.clientId, 'test-clientId');
       expect(verificationResult.refreshToken, 'test-refresh-token');
       expect(verificationResult.scopes, {'test-scope1', 'test-scope2'});
+      expect(verificationResult.parameters, {'test': 'test-123'});
+      expect(result, TestPlatform.renewAccessTokenResult);
+    });
+
+    test('set scope and parameters to default value when omitted', () async {
+      when(mockedPlatform.renewAccessToken(any))
+          .thenAnswer((final _) async => TestPlatform.renewAccessTokenResult);
+
+      final result = await Auth0('test-domain', 'test-clientId')
+          .api
+          .renewAccessToken(
+              refreshToken: 'test-refresh-token');
+
+      final verificationResult =
+          verify(mockedPlatform.renewAccessToken(captureAny)).captured.single;
+      // ignore: inference_failure_on_collection_literal
+      expect(verificationResult.scopes, []);
+      // ignore: inference_failure_on_collection_literal
+      expect(verificationResult.parameters, {});
       expect(result, TestPlatform.renewAccessTokenResult);
     });
   });
