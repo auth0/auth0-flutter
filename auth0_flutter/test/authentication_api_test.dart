@@ -16,7 +16,7 @@ class TestPlatform extends Mock
   static DatabaseUser signupResult =
       DatabaseUser(email: 'email', emailVerified: true);
 
-  static LoginResult loginResult = LoginResult.fromMap({
+  static Credentials loginResult = Credentials.fromMap({
     'accessToken': 'accessToken',
     'idToken': 'idToken',
     'refreshToken': 'refreshToken',
@@ -25,8 +25,8 @@ class TestPlatform extends Mock
     'userProfile': {'name': 'John Doe'}
   });
 
-  static AuthRenewAccessTokenResult renewAccessTokenResult =
-      AuthRenewAccessTokenResult.fromMap({
+  static Credentials renewAccessTokenResult =
+      Credentials.fromMap({
     'accessToken': 'accessToken',
     'idToken': 'idToken',
     'refreshToken': 'refreshToken',

@@ -2,13 +2,12 @@ import 'package:flutter/services.dart';
 import 'auth/api_exception.dart';
 import 'auth/auth_login_options.dart';
 import 'auth/auth_renew_access_token_options.dart';
-import 'auth/auth_renew_access_token_result.dart';
 import 'auth/auth_reset_password_options.dart';
 import 'auth/auth_signup_options.dart';
 import 'auth/auth_user_profile_result.dart';
 import 'auth0_flutter_auth_platform.dart';
+import 'credentials.dart';
 import 'database_user.dart';
-import 'web-auth/web_auth_login_result.dart';
 
 const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter/auth');
 const String authLoginMethod = 'auth#login';
@@ -19,11 +18,11 @@ const String authResetPasswordMethod = 'auth#resetPassword';
 
 class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   @override
-  Future<LoginResult> login(final AuthLoginOptions options) async {
+  Future<Credentials> login(final AuthLoginOptions options) async {
     final Map<String, dynamic> result = await invokeMapMethod(
         method: authLoginMethod, options: options.toMap());
 
-    return LoginResult.fromMap(result);
+    return Credentials.fromMap(result);
   }
 
   @override
@@ -42,13 +41,13 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   }
 
   @override
-  Future<AuthRenewAccessTokenResult> renewAccessToken(
+  Future<Credentials> renewAccessToken(
     final AuthRenewAccessTokenOptions options,
   ) async {
     final Map<String, dynamic> result = await invokeMapMethod(
         method: authRenewAccessTokenMethod, options: options.toMap());
 
-    return AuthRenewAccessTokenResult.fromMap(result);
+    return Credentials.fromMap(result);
   }
 
   @override

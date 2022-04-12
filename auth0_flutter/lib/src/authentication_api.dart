@@ -20,7 +20,7 @@ class AuthenticationApi {
           parameters: parameters));
 
   Future<Credentials> codeExchange(final String code) => Future.value(
-      Credentials(idToken: '', accessToken: '', expiresAt: DateTime.now()));
+      Credentials(idToken: '', accessToken: '', expiresAt: DateTime.now(), userProfile: {}));
 
   Future<UserProfile> userProfile({required final String accessToken}) =>
       Future.value({});
@@ -39,7 +39,7 @@ class AuthenticationApi {
           userMetadata: userMetadata,
           account: account));
 
-  Future<AuthRenewAccessTokenResult> renewAccessToken(
+  Future<Credentials> renewAccessToken(
           {required final String refreshToken,
           final Set<String> scopes = const {},
           final Map<String, String> parameters = const {}}) =>

@@ -13,7 +13,7 @@ class TestPlatform extends Mock
         MockPlatformInterfaceMixin
     implements
         Auth0FlutterWebAuthPlatform {
-  static LoginResult loginResult = LoginResult.fromMap({
+  static Credentials loginResult = Credentials.fromMap({
     'accessToken': 'accessToken',
     'idToken': 'idToken',
     'refreshToken': 'refreshToken',
