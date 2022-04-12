@@ -44,6 +44,6 @@ class AuthenticationApi {
           Credentials(idToken: '', accessToken: '', expiresAt: DateTime.now()));
 
   Future<void> resetPassword(
-          {required final String email, required final String password}) =>
+          {required final String email, required final String connection}) =>
       Future.value();
 }
