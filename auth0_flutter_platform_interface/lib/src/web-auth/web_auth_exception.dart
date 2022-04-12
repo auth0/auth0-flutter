@@ -10,6 +10,6 @@ class WebAuthException extends Auth0Exception {
 
   const WebAuthException.unknown(final String message) : super.unknown(message);
   
-  factory WebAuthException.fromPlatformException(final PlatformException e) =>
-      WebAuthException(e.code, e.messageString, e.detailsMap);
+  WebAuthException.fromPlatformException(final PlatformException e)
+      : this(e.code, e.messageString, e.detailsMap);
 }
