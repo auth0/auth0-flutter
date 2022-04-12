@@ -51,6 +51,6 @@ class AuthenticationApi {
               parameters: parameters));
 
   Future<void> resetPassword(
-          {required final String email, required final String password}) =>
+          {required final String email, required final String connection}) =>
       Future.value();
 }
