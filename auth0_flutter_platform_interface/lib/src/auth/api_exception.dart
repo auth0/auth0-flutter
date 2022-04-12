@@ -1,36 +1,29 @@
 import 'package:flutter/services.dart';
 
+import '../auth0_exception.dart';
+import '../extensions/exception_extensions.dart';
 import '../extensions/map_extensions.dart';
 
-class ApiException implements Exception {
-  static const _unknown = 'UNKNOWN';
+class ApiException extends Auth0Exception {
+  static const _errorFlagsKey = '_errorFlags';
 
-  final String code;
-  final String message;
-  final Map<String, dynamic> details;
   final Map<dynamic, dynamic> _errorFlags;
 
-  const ApiException(this.code, this.message, this.details, this._errorFlags);
-  const ApiException.unknown(this.message)
-      : code = ApiException._unknown,
-        details = const {},
-        _errorFlags = const {};
+  const ApiException(final String code, final String message,
+      final Map<String, dynamic> details, this._errorFlags)
+      : super(code, message, details);
+
+  const ApiException.unknown(final String message)
+      : _errorFlags = const {},
+        super.unknown(message);
+
   factory ApiException.fromPlatformException(final PlatformException e) {
-    final details = Map<String, dynamic>.from(
-        (e.details ?? <dynamic, dynamic>{}) as Map<dynamic, dynamic>);
-    final errorFlags = details['_errorFlags'] as Map<dynamic, dynamic>;
-
-    details.remove('_errorFlags');
-
-    return ApiException(
-        e.code,
-        e.message ?? '', // Errors from native should always have a message
-        details,
-        errorFlags);
+    final Map<String, dynamic> errorDetails = e.detailsMap;
+    final errorFlags =
+        errorDetails.getOrDefault(_errorFlagsKey, <dynamic, dynamic>{});
+    errorDetails.remove(_errorFlagsKey);
+    return ApiException(e.code, e.messageString, errorDetails, errorFlags);
   }
-
-  @override
-  String toString() => '$code: $message';
 
   bool get isMultifactorRequired =>
       _errorFlags.getBooleanOrFalse('isMultifactorRequired');

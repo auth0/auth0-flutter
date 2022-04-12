@@ -1,23 +1,15 @@
 import 'package:flutter/services.dart';
 
-class WebAuthException implements Exception {
-  static const _unknown = 'UNKNOWN';
+import '../auth0_exception.dart';
+import '../extensions/exception_extensions.dart';
 
-  final String code;
-  final String message;
-  final Map<String, dynamic> details;
+class WebAuthException extends Auth0Exception {
+  const WebAuthException(final String code, final String message,
+      final Map<String, dynamic> details)
+      : super(code, message, details);
 
-  const WebAuthException(this.code, this.message, this.details);
-  const WebAuthException.unknown(this.message)
-      : code = WebAuthException._unknown,
-        details = const {};
-  factory WebAuthException.fromPlatformException(final PlatformException e) =>
-      WebAuthException(
-          e.code,
-          e.message ?? '', // Errors from native should always have a message
-          Map<String, dynamic>.from(
-              (e.details ?? <dynamic, dynamic>{}) as Map<dynamic, dynamic>));
-
-  @override
-  String toString() => '$code: $message';
+  const WebAuthException.unknown(final String message) : super.unknown(message);
+  
+  WebAuthException.fromPlatformException(final PlatformException e)
+      : this(e.code, e.messageString, e.detailsMap);
 }
