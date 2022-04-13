@@ -8,36 +8,32 @@ import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.toMap
 import com.auth0.auth0_flutter.utils.assertHasProperties
 import io.flutter.plugin.common.MethodChannel
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.HashMap
 
 private const val AUTH_USERINFO_METHOD = "auth#userInfo"
 
 class UserInfoApiRequestHandler : ApiRequestHandler {
     override val method: String = AUTH_USERINFO_METHOD
 
-    override fun handle(api: AuthenticationAPIClient, request: MethodCallRequest, result: MethodChannel.Result) {
+    override fun handle(
+        api: AuthenticationAPIClient,
+        request: MethodCallRequest,
+        result: MethodChannel.Result
+    ) {
         assertHasProperties(listOf("accessToken"), request.data);
 
-        val builder = api.userInfo(request.data["accessToken"] as String);
+        api.userInfo(request.data["accessToken"] as String)
+            .start(object : Callback<UserProfile, AuthenticationException> {
+                override fun onFailure(exception: AuthenticationException) {
+                    result.error(
+                        exception.getCode(),
+                        exception.getDescription(),
+                        exception.toMap()
+                    );
+                }
 
-        if (request.data.getOrDefault("parameters", null) is HashMap<*, *>) {
-            builder.addParameters(request.data["parameters"] as Map<String, String>)
-        }
-
-        builder.start(object : Callback<UserProfile, AuthenticationException> {
-            override fun onFailure(exception: AuthenticationException) {
-                result.error(
-                    exception.getCode(),
-                    exception.getDescription(),
-                    exception.toMap()
-                );
-            }
-
-            override fun onSuccess(res: UserProfile) {
-                result.success(res.toMap())
-            }
-        });
+                override fun onSuccess(res: UserProfile) {
+                    result.success(res.toMap())
+                }
+            });
     }
 }
