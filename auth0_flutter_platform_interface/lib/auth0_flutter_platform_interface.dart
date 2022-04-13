@@ -5,7 +5,7 @@ export 'src/auth/auth_renew_access_token_result.dart';
 export 'src/auth/auth_reset_password_options.dart';
 export 'src/auth/auth_signup_options.dart';
 export 'src/auth/auth_user_info_options.dart';
-export 'src/auth/auth_user_info_result.dart';
+export 'src/auth/user_info.dart';
 export 'src/auth0_flutter_auth_platform.dart';
 export 'src/auth0_flutter_web_auth_platform.dart';
 export 'src/credentials.dart';

@@ -5,7 +5,7 @@ import 'auth/auth_renew_access_token_result.dart';
 import 'auth/auth_reset_password_options.dart';
 import 'auth/auth_signup_options.dart';
 import 'auth/auth_user_info_options.dart';
-import 'auth/auth_user_info_result.dart';
+import 'auth/user_info.dart';
 import 'database_user.dart';
 import 'method_channel_auth0_flutter_auth.dart';
 import 'web-auth/web_auth_login_result.dart';
@@ -28,7 +28,7 @@ abstract class Auth0FlutterAuthPlatform extends PlatformInterface {
     throw UnimplementedError('authLogin() has not been implemented');
   }
 
-  Future<AuthUserInfoResult> userInfo(final AuthUserInfoOptions options) {
+  Future<UserInfo> userInfo(final AuthUserInfoOptions options) {
     throw UnimplementedError('authUserInfo() has not been implemented');
   }
 

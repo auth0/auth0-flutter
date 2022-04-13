@@ -1,4 +1,4 @@
-class AuthUserInfoResult {
+class UserInfo {
   final String? nickname;
   final String? email;
   final String? familyName;
@@ -11,7 +11,7 @@ class AuthUserInfoResult {
   final Map<String, dynamic>? appMetadata;
   final Map<String, dynamic>? extraInfo;
 
-  const AuthUserInfoResult(
+  const UserInfo(
       {final this.nickname,
       final this.email,
       final this.familyName,
@@ -24,8 +24,8 @@ class AuthUserInfoResult {
       final this.appMetadata,
       final this.extraInfo});
 
-  factory AuthUserInfoResult.fromMap(final Map<String, dynamic> result) =>
-      AuthUserInfoResult(
+  factory UserInfo.fromMap(final Map<String, dynamic> result) =>
+      UserInfo(
         nickname: result['nickname'] as String?,
         email: result['email'] as String?,
         familyName: result['familyName'] as String?,
