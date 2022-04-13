@@ -1,23 +1,3 @@
-class UserIdentity {
-  final String id;
-  final String connection;
-  final String provider;
-  final bool isSocial;
-  final String? accessToken;
-  final String? accessTokenSecret;
-  final Map<String, dynamic>? profileInfo;
-
-  const UserIdentity({
-    required final this.id,
-    required final this.connection,
-    required final this.provider,
-    required final this.isSocial,
-    final this.accessToken,
-    final this.accessTokenSecret,
-    final this.profileInfo,
-  });
-}
-
 class UserInfo {
   final String? id;
   final String? nickname;
