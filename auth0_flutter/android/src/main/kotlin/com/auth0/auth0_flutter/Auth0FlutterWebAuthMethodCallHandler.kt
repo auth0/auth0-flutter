@@ -16,14 +16,17 @@ internal const val WEBAUTH_LOGOUT_METHOD = "webAuth#logout"
 class Auth0FlutterWebAuthMethodCallHandler : MethodCallHandler {
     lateinit var context: Context
 
-    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-        val request = MethodCallRequest.fromCall(call)
-
-        val requestHandler = when(call.method) {
+    var handlerResolver = { call: MethodCall, request: MethodCallRequest ->
+        when(call.method) {
             WEBAUTH_LOGIN_METHOD -> LoginWebAuthRequestHandler(WebAuthProvider.login(request.account))
             WEBAUTH_LOGOUT_METHOD -> LogoutWebAuthRequestHandler(WebAuthProvider.logout(request.account))
             else -> null
         }
+    }
+
+    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
+        val request = MethodCallRequest.fromCall(call)
+        val requestHandler = handlerResolver(call, request)
 
         if (requestHandler != null) {
             requestHandler.handle(context, request, result)
