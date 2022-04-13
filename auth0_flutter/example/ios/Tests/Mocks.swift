@@ -1,6 +1,34 @@
 import Flutter
 import Auth0
 
+// MARK: - Foundation Mocks
+
+let mockURL = URL(string: "https://example.com")!
+let mockURLSession = { () -> URLSession in
+    let urlConfiguration = URLSessionConfiguration.default
+    urlConfiguration.protocolClasses?.insert(MockURLProtocol.self, at: 0)
+    return URLSession(configuration: urlConfiguration)
+}()
+
+class MockURLProtocol: URLProtocol {
+    override class func canInit(with request: URLRequest) -> Bool {
+        return true
+    }
+
+    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+        return URLRequest(url: mockURL)
+    }
+
+    override func startLoading() {
+        let response = HTTPURLResponse(url: mockURL, statusCode: 200, httpVersion: nil, headerFields: nil)!
+        client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+        client?.urlProtocol(self, didLoad: Data())
+        client?.urlProtocolDidFinishLoading(self)
+    }
+
+    override func stopLoading() {}
+}
+
 // MARK: - Auth0.swift Mocks
 
 struct MockError: Error {}

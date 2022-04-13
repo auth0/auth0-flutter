@@ -2,46 +2,46 @@ import XCTest
 
 @testable import auth0_flutter
 
-class WebAuthHandlerTests: XCTestCase {
-    var sut: WebAuthHandler!
+class AuthAPIHandlerTests: XCTestCase {
+    var sut: AuthAPIHandler!
 
     override func setUpWithError() throws {
-        sut = WebAuthHandler()
+        sut = AuthAPIHandler()
     }
 }
 
 // MARK: - Registration
 
-extension WebAuthHandlerTests {
+extension AuthAPIHandlerTests {
     func testRegistersItself() {
         let spy = SpyPluginRegistrar()
-        WebAuthHandler.register(with: spy)
-        XCTAssertTrue(spy.delegate is WebAuthHandler)
+        AuthAPIHandler.register(with: spy)
+        XCTAssertTrue(spy.delegate is AuthAPIHandler)
     }
 }
 
 // MARK: - Required Arguments Error
 
-extension WebAuthHandlerTests {
+extension AuthAPIHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
-        let arguments = ["clientId": self.expectation(description: "clientId is missing"),
-                         "domain": self.expectation(description: "domain is missing")]
-        for (argument, currentExpectation) in arguments {
-            sut.handle(FlutterMethodCall(methodName: "foo", arguments: [argument: "bar"])) { result in
+        let inputs = ["clientId": self.expectation(description: "clientId is missing"),
+                      "domain": self.expectation(description: "domain is missing")]
+        for (argument, currentExpectation) in inputs {
+            sut.handle(FlutterMethodCall(methodName: "foo", arguments: arguments(without: argument))) { result in
                 assertHas(handlerError: .requiredArgumentsMissing, result)
                 currentExpectation.fulfill()
             }
         }
-        wait(for: Array(arguments.values))
+        wait(for: Array(inputs.values))
     }
 }
 
 // MARK: - Method Handlers
 
-extension WebAuthHandlerTests {
+extension AuthAPIHandlerTests {
     func testCallsMethodHandlers() {
         var expectations: [XCTestExpectation] = []
-        WebAuthHandler.Method.allCases.forEach { method in
+        [AuthAPIHandler.Method.loginWithUsernameOrEmail, AuthAPIHandler.Method.signup].forEach { method in
             let spy = SpyMethodHandler()
             let arguments: [String: Any] = arguments()
             let expectation = self.expectation(description: "\(method.rawValue) handler call")
@@ -57,10 +57,9 @@ extension WebAuthHandlerTests {
     }
 }
 
-
 // MARK: - Helpers
 
-extension WebAuthHandlerTests {
+extension AuthAPIHandlerTests {
     override func arguments() -> [String: Any] {
         return ["clientId": "foo", "domain": "bar"]
     }
