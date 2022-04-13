@@ -88,7 +88,7 @@ class _ExampleAppState extends State<ExampleApp> {
     });
   }
 
-  Future<void> authLogin(
+  Future<void> apiLogin(
       final String usernameOrEmail, final String password) async {
     String output;
     // Platform messages may fail, so we use a try/catch PlatformException.
@@ -101,6 +101,8 @@ class _ExampleAppState extends State<ExampleApp> {
       output = result.accessToken;
     } on ApiException catch (e) {
       output = 'Failed to get token: ${e.message}';
+    } on ApiException catch (e) {
+      output = output = e.toString();
     }
 
     // If the widget was removed from the tree while the asynchronous platform
@@ -127,15 +129,16 @@ class _ExampleAppState extends State<ExampleApp> {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      AuthCard(action: authLogin),
+                      ApiCard(action: apiLogin),
                       if (_isLoggedIn)
-                        WebAuthCard('Web Auth Logout', webAuthLogout)
+                        WebAuthCard(
+                            label: 'Web Auth Logout', action: webAuthLogout)
                       else
-                        WebAuthCard('Web Auth Login', webAuthLogin),
+                        WebAuthCard(
+                            label: 'Web Auth Login', action: webAuthLogin),
                     ]),
               )),
               SliverFillRemaining(
-                  hasScrollBody: false,
                   child: Padding(
                       padding: const EdgeInsets.fromLTRB(
                           padding, 0.0, padding, padding),
@@ -146,26 +149,19 @@ class _ExampleAppState extends State<ExampleApp> {
   }
 }
 
-class AuthCard extends StatefulWidget {
+class ApiCard extends StatefulWidget {
   final Future<void> Function(String usernameOrEmail, String password) action;
-
-  const AuthCard({final Key? key, required final this.action})
-      : super(key: key);
+  const ApiCard({required final this.action, final Key? key}) : super(key: key);
 
   @override
-  AuthCardState createState() {
+  ApiCardState createState() {
     // ignore: no_logic_in_create_state
-    return AuthCardState(action);
+    return ApiCardState();
   }
 }
 
-class AuthCardState extends State<AuthCard> {
+class ApiCardState extends State<ApiCard> {
   final _formKey = GlobalKey<FormState>();
-
-  final Future<void> Function(String usernammeOrEmail, String password) action;
-
-  AuthCardState(final this.action);
-
   String usernameOrEmail = '';
   String password = '';
 
@@ -180,16 +176,17 @@ class AuthCardState extends State<AuthCard> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
                   TextFormField(
-                      decoration: const InputDecoration(
-                        hintText: 'Username or email',
-                      ),
-                      validator: (final String? value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter a username or email';
-                        }
-                        return null;
-                      },
-                      onChanged: (final input) => usernameOrEmail = input),
+                    decoration: const InputDecoration(
+                      hintText: 'Username or email',
+                    ),
+                    onChanged: (final input) => usernameOrEmail = input,
+                    validator: (final String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter an username or email';
+                      }
+                      return null;
+                    },
+                  ),
                   TextFormField(
                     decoration: const InputDecoration(
                       hintText: 'Password',
@@ -209,7 +206,7 @@ class AuthCardState extends State<AuthCard> {
                     onPressed: () {
                       if (_formKey.currentState != null &&
                           _formKey.currentState!.validate()) {
-                        action(usernameOrEmail, password);
+                        widget.action(usernameOrEmail, password);
                       }
                     },
                     child: const Text('API Login'),
@@ -224,7 +221,8 @@ class WebAuthCard extends StatelessWidget {
   final String label;
   final Future<void> Function() action;
 
-  const WebAuthCard(final this.label, final this.action, {final Key? key})
+  const WebAuthCard(
+      {required final this.label, required final this.action, final Key? key})
       : super(key: key);
 
   @override
