@@ -77,6 +77,5 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
     }
 
     return result ?? {};
-
   }
 }

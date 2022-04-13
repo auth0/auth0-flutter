@@ -242,7 +242,6 @@ void main() {
           verify(mocked.methodCallHandler(captureAny)).captured.single;
       expect(verificationResult.arguments['domain'], 'test-domain');
       expect(verificationResult.arguments['clientId'], 'test-clientId');
-
       expect(
           verificationResult.arguments['refreshToken'], 'test-refresh-token');
     });
