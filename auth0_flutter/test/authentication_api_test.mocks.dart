@@ -22,7 +22,9 @@ import 'authentication_api_test.dart' as _i3;
 
 class _FakeLoginResult_0 extends _i1.Fake implements _i2.LoginResult {}
 
-class _FakeDatabaseUser_1 extends _i1.Fake implements _i2.DatabaseUser {}
+class _FakeUserInfo_1 extends _i1.Fake implements _i2.UserInfo {}
+
+class _FakeDatabaseUser_2 extends _i1.Fake implements _i2.DatabaseUser {}
 
 /// A class which mocks [TestPlatform].
 ///
@@ -38,15 +40,15 @@ class MockTestPlatform extends _i1.Mock implements _i3.TestPlatform {
               returnValue: Future<_i2.LoginResult>.value(_FakeLoginResult_0()))
           as _i4.Future<_i2.LoginResult>);
   @override
-  _i4.Future<_i2.AuthUserProfileResult?> userInfo(String? accessToken) =>
-      (super.noSuchMethod(Invocation.method(#userInfo, [accessToken]),
-              returnValue: Future<_i2.AuthUserProfileResult?>.value())
-          as _i4.Future<_i2.AuthUserProfileResult?>);
+  _i4.Future<_i2.UserInfo> userInfo(_i2.AuthUserInfoOptions? options) =>
+      (super.noSuchMethod(Invocation.method(#userInfo, [options]),
+              returnValue: Future<_i2.UserInfo>.value(_FakeUserInfo_1()))
+          as _i4.Future<_i2.UserInfo>);
   @override
   _i4.Future<_i2.DatabaseUser> signup(_i2.AuthSignupOptions? options) =>
       (super.noSuchMethod(Invocation.method(#signup, [options]),
               returnValue:
-                  Future<_i2.DatabaseUser>.value(_FakeDatabaseUser_1()))
+                  Future<_i2.DatabaseUser>.value(_FakeDatabaseUser_2()))
           as _i4.Future<_i2.DatabaseUser>);
   @override
   _i4.Future<_i2.AuthRenewAccessTokenResult?> renewAccessToken(
