@@ -20,7 +20,7 @@ class AuthenticationApi {
           parameters: parameters));
 
   Future<Credentials> codeExchange(final String code) => Future.value(
-      Credentials(idToken: '', accessToken: '', expiresAt: DateTime.now()));
+      Credentials(idToken: '', accessToken: '', expiresAt: DateTime.now(), userProfile: {}));
 
   Future<UserInfo> userProfile({required final String accessToken}) =>
       Auth0FlutterAuthPlatform.instance.userInfo(AuthUserInfoOptions(accessToken: accessToken, account: account));
@@ -39,9 +39,16 @@ class AuthenticationApi {
           userMetadata: userMetadata,
           account: account));
 
-  Future<Credentials> renewAccessToken({required final String refreshToken}) =>
-      Future.value(
-          Credentials(idToken: '', accessToken: '', expiresAt: DateTime.now()));
+  Future<Credentials> renewAccessToken(
+          {required final String refreshToken,
+          final Set<String> scopes = const {},
+          final Map<String, String> parameters = const {}}) =>
+      Auth0FlutterAuthPlatform.instance.renewAccessToken(
+          AuthRenewAccessTokenOptions(
+              account: account,
+              refreshToken: refreshToken,
+              scopes: scopes,
+              parameters: parameters));
 
   Future<void> resetPassword(
           {required final String email, required final String connection}) =>

@@ -20,7 +20,7 @@ import 'web_authentication_test.dart' as _i3;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 
-class _FakeLoginResult_0 extends _i1.Fake implements _i2.LoginResult {}
+class _FakeCredentials_0 extends _i1.Fake implements _i2.Credentials {}
 
 /// A class which mocks [TestPlatform].
 ///
@@ -31,10 +31,10 @@ class MockTestPlatform extends _i1.Mock implements _i3.TestPlatform {
   }
 
   @override
-  _i4.Future<_i2.LoginResult> login(_i2.WebAuthLoginInput? input) =>
+  _i4.Future<_i2.Credentials> login(_i2.WebAuthLoginInput? input) =>
       (super.noSuchMethod(Invocation.method(#login, [input]),
-              returnValue: Future<_i2.LoginResult>.value(_FakeLoginResult_0()))
-          as _i4.Future<_i2.LoginResult>);
+              returnValue: Future<_i2.Credentials>.value(_FakeCredentials_0()))
+          as _i4.Future<_i2.Credentials>);
   @override
   _i4.Future<void> logout(_i2.WebAuthLogoutInput? input) =>
       (super.noSuchMethod(Invocation.method(#logout, [input]),

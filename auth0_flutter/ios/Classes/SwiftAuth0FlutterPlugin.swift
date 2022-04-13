@@ -1,13 +1,9 @@
 import Flutter
 
-public class SwiftAuth0FlutterPlugin: NSObject {
-    static var webAuthHandler: FlutterPlugin.Type?
-    static var authenticationAPIHandler: FlutterPlugin.Type?
+public class SwiftAuth0FlutterPlugin: NSObject, FlutterPlugin {
+    static var handlers: [FlutterPlugin.Type] = [WebAuthHandler.self, AuthAPIHandler.self]
 
     public static func register(with registrar: FlutterPluginRegistrar) {
-        (webAuthHandler ?? WebAuthHandler.self).register(with: registrar)
-        (authenticationAPIHandler ?? AuthenticationAPIHandler.self).register(with: registrar)
+        handlers.forEach({ $0.register(with: registrar)})
     }
 }
-
-extension SwiftAuth0FlutterPlugin: FlutterPlugin {}

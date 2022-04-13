@@ -16,6 +16,15 @@ class MethodCallHandler {
     'userProfile': {'name': 'John Doe'}
   };
 
+  static const Map<dynamic, dynamic> renewAccessTokenResult = {
+    'accessToken': 'accessToken',
+    'idToken': 'idToken',
+    'refreshToken': 'refreshToken',
+    'expiresAt': '2022-01-01',
+    'scopes': ['a'],
+    'userProfile': {'name': 'John Doe'}
+  };
+
   Future<dynamic>? methodCallHandler(final MethodCall? methodCall) async {}
 }
 
@@ -148,14 +157,50 @@ void main() {
     expect(result.accessToken, MethodCallHandler.loginResult['accessToken']);
   });
 
+  group('renewAccessToken', () {
+    test('returns the response', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.renewAccessTokenResult);
+
+      final result = await MethodChannelAuth0FlutterAuth().renewAccessToken(
+          AuthRenewAccessTokenOptions(
+              refreshToken: 'test-refresh-token',
+              account: const Account('test-domain', 'test-clientId')));
+
+      expect(
+          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          'auth#renewAccessToken');
+      expect(result.accessToken,
+          MethodCallHandler.renewAccessTokenResult['accessToken']);
+      expect(result.userProfile['name'],
+          MethodCallHandler.renewAccessTokenResult['userProfile']['name']);
+    });
+
+    test('correctly maps all properties', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.renewAccessTokenResult);
+
+      await MethodChannelAuth0FlutterAuth().renewAccessToken(
+          AuthRenewAccessTokenOptions(
+              refreshToken: 'test-refresh-token',
+              account: const Account('test-domain', 'test-clientId')));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['domain'], 'test-domain');
+      expect(verificationResult.arguments['clientId'], 'test-clientId');
+      expect(
+          verificationResult.arguments['refreshToken'], 'test-refresh-token');
+    });
+  });
+
   group('userInfo', () {
     test('calls the correct MethodChannel method', () async {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {});
 
-      await MethodChannelAuth0FlutterAuth().userInfo(
-          AuthUserInfoOptions(
-              account: const Account('test-domain', 'test-clientId'),
-              accessToken: 'test-token'));
+      await MethodChannelAuth0FlutterAuth().userInfo(AuthUserInfoOptions(
+          account: const Account('test-domain', 'test-clientId'),
+          accessToken: 'test-token'));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -189,20 +234,15 @@ void main() {
             'name': 'test-name',
             'givenName': 'test-given-name',
             'isEmailVerified': true,
-            'userMetadata': {
-              'test1': 'test1!'
-            },
-            'appMetadata': {
-              'test2': 'test2!'
-            },
-            'extraInfo': {
-              'test3': 'test3!'
-            }
+            'userMetadata': {'test1': 'test1!'},
+            'appMetadata': {'test2': 'test2!'},
+            'extraInfo': {'test3': 'test3!'}
           });
 
-      final result = await MethodChannelAuth0FlutterAuth().userInfo(AuthUserInfoOptions(
-          account: const Account('test-domain', 'test-clientId'),
-          accessToken: 'test-token'));
+      final result = await MethodChannelAuth0FlutterAuth().userInfo(
+          AuthUserInfoOptions(
+              account: const Account('test-domain', 'test-clientId'),
+              accessToken: 'test-token'));
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -226,8 +266,8 @@ void main() {
 
       Future<void> actual() async {
         await MethodChannelAuth0FlutterAuth().userInfo(AuthUserInfoOptions(
-          account: const Account('test-domain', 'test-clientId'),
-          accessToken: 'test-token'));
+            account: const Account('test-domain', 'test-clientId'),
+            accessToken: 'test-token'));
       }
 
       await expectLater(actual, throwsA(isA<ApiException>()));

@@ -7,7 +7,7 @@ class WebAuthLoginHandlerTests: XCTestCase {
     let idToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmb28iLCJuYW1lIjoiYmFyIiwiZW1haWwiOiJmb29AZXhhbXBsZS5"
         + "jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGljdHVyZSI6ImJheiIsInVwZGF0ZWRfYXQiOiJxdXgifQ.vc9sxvhUVAHowIWJ7D_WDzvq"
         + "JxC4-qYXHmiBVYEKn9E"
-    let spy = SpyWebAuth(clientId: "foo", url: URL(string: "https://auth0.com")!, telemetry: Telemetry.init())
+    let spy = SpyWebAuth()
     var sut: WebAuthLoginMethodHandler!
 
     override func setUpWithError() throws {
@@ -18,64 +18,17 @@ class WebAuthLoginHandlerTests: XCTestCase {
 // MARK: - Required Arguments Error
 
 extension WebAuthLoginHandlerTests {
-    func testProducesErrorWhenScopesIsMissing() {
-        let arguments: [String: Any] = ["parameters": [:], "useEphemeralSession": false]
-        let expectation = self.expectation(description: "scopes is missing")
-        sut.handle(with: arguments) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, result)
-            expectation.fulfill()
+    func testProducesErrorWhenRequiredArgumentsAreMissing() {
+        let inputs = ["useEphemeralSession": self.expectation(description: "useEphemeralSession is missing"),
+                      "scopes": self.expectation(description: "scopes is missing"),
+                      "parameters": self.expectation(description: "parameters is missing")]
+        for (argument, currentExpectation) in inputs {
+            sut.handle(with: arguments(without: argument)) { result in
+                assertHas(handlerError: .requiredArgumentsMissing, result)
+                currentExpectation.fulfill()
+            }
         }
-        wait(for: [expectation])
-    }
-
-    func testProducesErrorWhenScopesIsNoStringsArray() {
-        let arguments: [String: Any] = ["scopes": 1, "parameters": [:], "useEphemeralSession": false]
-        let expectation = self.expectation(description: "scopes is not an array of strings")
-        sut.handle(with: arguments) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, result)
-            expectation.fulfill()
-        }
-        wait(for: [expectation])
-    }
-
-    func testProducesErrorWhenParametersIsMissing() {
-        let arguments: [String: Any] = ["scopes": [], "useEphemeralSession": false]
-        let expectation = self.expectation(description: "parameters is missing")
-        sut.handle(with: arguments) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, result)
-            expectation.fulfill()
-        }
-        wait(for: [expectation])
-    }
-
-    func testProducesErrorWhenParametersIsNoStringsDictionary() {
-        let arguments: [String: Any] = ["parameters": ["foo": 1], "scopes": [], "useEphemeralSession": false]
-        let expectation = self.expectation(description: "parameters is not a dictionary of strings")
-        sut.handle(with: arguments) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, result)
-            expectation.fulfill()
-        }
-        wait(for: [expectation])
-    }
-
-    func testProducesErrorWhenUseEphemeralSessionIsMissing() {
-        let arguments: [String: Any] = ["scopes": [], "parameters": [:]]
-        let expectation = self.expectation(description: "parameters is missing")
-        sut.handle(with: arguments) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, result)
-            expectation.fulfill()
-        }
-        wait(for: [expectation])
-    }
-
-    func testProducesErrorWhenUseEphemeralSessionIsNoBool() {
-        let arguments: [String: Any] = ["useEphemeralSession": 1, "scopes": [], "parameters": [:]]
-        let expectation = self.expectation(description: "useEphemeralSession is not a bool")
-        sut.handle(with: arguments) { result in
-            assertHas(handlerError: .requiredArgumentsMissing, result)
-            expectation.fulfill()
-        }
-        wait(for: [expectation])
+        wait(for: Array(inputs.values))
     }
 }
 
@@ -94,36 +47,42 @@ extension WebAuthLoginHandlerTests {
     }
 }
 
-// MARK: - Optional Arguments
+// MARK: - Arguments
 
 extension WebAuthLoginHandlerTests {
-
-    // MARK: scopes
-
-    func testAddsScopes() {
-        let scopes = ["foo", "bar"]
-        sut.handle(with: arguments(scopes: scopes)) { _ in }
-        XCTAssertEqual(spy.scopeValue, scopes.joined(separator: " "))
-    }
-
-    func testDoesNotAddScopesWhenEmpty() {
-        let scopes: [String] = []
-        sut.handle(with: arguments(scopes: scopes)) { _ in }
-        XCTAssertNil(spy.scopeValue)
-    }
 
     // MARK: useEphemeralSession
 
     func testEnablesUseEphemeralSession() {
         let useEphemeralSession = true
-        sut.handle(with: arguments(useEphemeralSession: useEphemeralSession)) { _ in }
-        XCTAssertEqual(spy.useEmphemeralSessionValue, true)
+        sut.handle(with: arguments(key: "useEphemeralSession", value: useEphemeralSession)) { _ in }
+        XCTAssertEqual(spy.useEmphemeralSessionValue, useEphemeralSession)
     }
 
-    func testDoesEnableUseEphemeralSessionWhenFalse() {
-        let useEphemeralSession = false
-        sut.handle(with: arguments(useEphemeralSession: useEphemeralSession)) { _ in }
+    func testDoesNotEnableUseEphemeralSessionWhenFalse() {
+        sut.handle(with: arguments(key: "useEphemeralSession", value: false)) { _ in }
         XCTAssertNil(spy.useEmphemeralSessionValue)
+    }
+
+    // MARK: parameters
+
+    func testAddsParameters() {
+        let parameters = ["foo": "bar"]
+        sut.handle(with: arguments(key: "parameters", value: parameters)) { _ in }
+        XCTAssertEqual(spy.parametersValue, parameters)
+    }
+
+    // MARK: scopes
+
+    func testAddsScopes() {
+        let scopes = ["foo", "bar"]
+        sut.handle(with: arguments(key: "scopes", value: scopes)) { _ in }
+        XCTAssertEqual(spy.scopeValue, scopes.asSpaceSeparatedString)
+    }
+
+    func testDoesNotAddScopesWhenEmpty() {
+        sut.handle(with: arguments(key: "scopes", value:  [])) { _ in }
+        XCTAssertNil(spy.scopeValue)
     }
 
     // MARK: audience
@@ -135,7 +94,8 @@ extension WebAuthLoginHandlerTests {
     }
 
     func testDoesNotAddAudienceWhenNil() {
-        sut.handle(with: arguments()) { _ in }
+        let argument = "audience"
+        sut.handle(with: arguments(without: argument)) { _ in }
         XCTAssertNil(spy.audienceValue)
     }
 
@@ -148,7 +108,8 @@ extension WebAuthLoginHandlerTests {
     }
 
     func testDoesNotAddRedirectURLWhenNil() {
-        sut.handle(with: arguments()) { _ in }
+        let argument = "redirectUri"
+        sut.handle(with: arguments(without: argument)) { _ in }
         XCTAssertNil(spy.redirectURLValue)
     }
 
@@ -161,7 +122,8 @@ extension WebAuthLoginHandlerTests {
     }
 
     func testDoesNotAddOrganizationIdWhenNil() {
-        sut.handle(with: arguments()) { _ in }
+        let argument = "organizationId"
+        sut.handle(with: arguments(without: argument)) { _ in }
         XCTAssertNil(spy.organizationValue)
     }
 
@@ -174,7 +136,8 @@ extension WebAuthLoginHandlerTests {
     }
 
     func testDoesNotAddInvitationURLWhenNil() {
-        sut.handle(with: arguments()) { _ in }
+        let argument = "invitationUrl"
+        sut.handle(with: arguments(without: argument)) { _ in }
         XCTAssertNil(spy.invitationURLValue)
     }
 
@@ -187,7 +150,8 @@ extension WebAuthLoginHandlerTests {
     }
 
     func testDoesNotAddLeewayWhenNil() {
-        sut.handle(with: arguments()) { _ in }
+        let argument = "leeway"
+        sut.handle(with: arguments(without: argument)) { _ in }
         XCTAssertNil(spy.leewayValue)
     }
 
@@ -200,7 +164,8 @@ extension WebAuthLoginHandlerTests {
     }
 
     func testDoesNotAddIssuerWhenNil() {
-        sut.handle(with: arguments()) { _ in }
+        let argument = "issuer"
+        sut.handle(with: arguments(without: argument)) { _ in }
         XCTAssertNil(spy.issuerValue)
     }
 
@@ -213,7 +178,8 @@ extension WebAuthLoginHandlerTests {
     }
 
     func testDoesNotAddMaxAgeWhenNil() {
-        sut.handle(with: arguments()) { _ in }
+        let argument = "maxAge"
+        sut.handle(with: arguments(without: argument)) { _ in }
         XCTAssertNil(spy.maxAgeValue)
     }
 }
@@ -263,7 +229,7 @@ extension WebAuthLoginHandlerTests {
                                               "UNKNOWN": .unknown]
         var expectations: [XCTestExpectation] = []
         for (code, error) in errors {
-            let expectation = self.expectation(description: "Produced the WebAuth error \(code)")
+            let expectation = self.expectation(description: "Produced the WebAuthError \(code)")
             expectations.append(expectation)
             spy.loginResult = .failure(error)
             sut.handle(with: arguments()) { result in
@@ -277,19 +243,17 @@ extension WebAuthLoginHandlerTests {
 
 // MARK: - Helpers
 
-private extension WebAuthLoginHandlerTests {
-    func arguments(scopes: [String] = [],
-                   parameters: [String: String] = [:],
-                   useEphemeralSession: Bool = false) -> [String: Any] {
-        return ["scopes": scopes,
-                "parameters": parameters,
-                "useEphemeralSession": useEphemeralSession]
-
-    }
-
-    func arguments<T>(key: String, value: T) -> [String: Any] {
-        var arguments = arguments()
-        arguments[key] =  value
-        return arguments
+extension WebAuthLoginHandlerTests {
+    override func arguments() -> [String: Any] {
+        return ["scopes": [],
+                "parameters": [:],
+                "useEphemeralSession": false,
+                "audience": "",
+                "redirectUri": "https://example.com",
+                "organizationId": "",
+                "invitationUrl": "https://example.com",
+                "leeway": 1,
+                "issuer": "",
+                "maxAge": 1]
     }
 }

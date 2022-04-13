@@ -4,7 +4,7 @@ import Auth0
 @testable import auth0_flutter
 
 class WebAuthLogoutHandlerTests: XCTestCase {
-    let spy = SpyWebAuth(clientId: "foo", url: URL(string: "https://auth0.com")!, telemetry: Telemetry.init())
+    let spy = SpyWebAuth()
     var sut: WebAuthLogoutMethodHandler!
 
     override func setUpWithError() throws {
@@ -12,7 +12,7 @@ class WebAuthLogoutHandlerTests: XCTestCase {
     }
 }
 
-// MARK: - Optional Arguments
+// MARK: - Arguments
 
 extension WebAuthLogoutHandlerTests {
 
@@ -52,7 +52,7 @@ extension WebAuthLogoutHandlerTests {
         let errors: [String: WebAuthError] = ["USER_CANCELLED": .userCancelled, "UNKNOWN": .unknown]
         var expectations: [XCTestExpectation] = []
         for (code, error) in errors {
-            let expectation = self.expectation(description: "Produced the WebAuth error \(code)")
+            let expectation = self.expectation(description: "Produced the WebAuthError \(code)")
             expectations.append(expectation)
             spy.logoutResult = .failure(error)
             sut.handle(with: [:]) { result in

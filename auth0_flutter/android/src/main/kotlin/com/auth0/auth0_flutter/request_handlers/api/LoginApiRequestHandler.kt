@@ -6,6 +6,7 @@ import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
 import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
+import com.auth0.auth0_flutter.toMap
 import com.auth0.auth0_flutter.utils.assertHasProperties
 import io.flutter.plugin.common.MethodChannel
 import java.text.SimpleDateFormat
@@ -39,7 +40,7 @@ class LoginApiRequestHandler : ApiRequestHandler {
                     result.error(
                         exception.getCode(),
                         exception.getDescription(),
-                        exception
+                        exception.toMap()
                     );
                 }
 

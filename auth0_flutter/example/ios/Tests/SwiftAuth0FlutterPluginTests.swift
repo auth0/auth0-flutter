@@ -14,13 +14,13 @@ class SwiftAuth0FlutterPluginTests: XCTestCase {
 
 extension SwiftAuth0FlutterPluginTests {
     func testRegistersWebAuthHandler() {
-        sut.webAuthHandler = SpyFlutterPlugin.self
+        sut.handlers = [SpyFlutterPlugin.self]
         sut.register(with: SpyPluginRegistrar())
         XCTAssertTrue(SpyFlutterPlugin.calledRegister)
     }
 
     func testRegistersAuthenticationAPIHandler() {
-        sut.authenticationAPIHandler = SpyFlutterPlugin.self
+        sut.handlers = [SpyFlutterPlugin.self]
         sut.register(with: SpyPluginRegistrar())
         XCTAssertTrue(SpyFlutterPlugin.calledRegister)
     }
