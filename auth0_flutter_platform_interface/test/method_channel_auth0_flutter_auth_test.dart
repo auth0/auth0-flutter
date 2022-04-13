@@ -157,6 +157,59 @@ void main() {
     expect(result.accessToken, MethodCallHandler.loginResult['accessToken']);
   });
 
+  group('resetPassword', () {
+    test('calls the correct MethodChannel method', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      await MethodChannelAuth0FlutterAuth().resetPassword(
+          AuthResetPasswordOptions(
+              account: const Account('test-domain', 'test-clientId'),
+              email: 'test-email',
+              connection: 'test-connection'));
+
+      expect(
+          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          'auth#resetPassword');
+    });
+
+    test('correctly maps all properties', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      await MethodChannelAuth0FlutterAuth().resetPassword(
+          AuthResetPasswordOptions(
+              account: const Account('test-domain', 'test-clientId'),
+              email: 'test-email',
+              connection: 'test-connection',
+              parameters: {'test': 'test-123'}));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['domain'], 'test-domain');
+      expect(verificationResult.arguments['clientId'], 'test-clientId');
+      expect(verificationResult.arguments['email'], 'test-email');
+      expect(verificationResult.arguments['connection'], 'test-connection');
+      expect(verificationResult.arguments['parameters']['test'], 'test-123');
+    });
+
+    test(
+        'throws an ApiException when method channel throws a PlatformException',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenThrow(PlatformException(code: '123'));
+
+      Future<void> actual() async {
+        await MethodChannelAuth0FlutterAuth().resetPassword(
+            AuthResetPasswordOptions(
+                account: const Account('test-domain', 'test-clientId'),
+                email: 'test-email',
+                connection: 'test-connection',
+                parameters: {'test': 'test-123'}));
+      }
+
+      await expectLater(actual, throwsA(isA<ApiException>()));
+    });
+  });
+
   group('renewAccessToken', () {
     test('returns the response', () async {
       when(mocked.methodCallHandler(any)).thenAnswer(
