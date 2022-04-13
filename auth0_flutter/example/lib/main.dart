@@ -74,8 +74,6 @@ class _ExampleAppState extends State<ExampleApp> {
       setState(() {
         _isLoggedIn = false;
       });
-    } on PlatformException {
-      output = 'Failed to logout.';
     } on WebAuthException catch (e) {
       output = e.toString();
     }
@@ -101,7 +99,7 @@ class _ExampleAppState extends State<ExampleApp> {
           password: password,
           connectionOrRealm: 'Username-Password-Authentication');
       output = result.accessToken;
-    } on PlatformException catch (e) {
+    } on ApiException catch (e) {
       output = 'Failed to get token: ${e.message}';
     } on ApiException catch (e) {
       output = output = e.toString();
