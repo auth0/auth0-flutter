@@ -25,8 +25,7 @@ class TestPlatform extends Mock
     'userProfile': {'name': 'John Doe'}
   });
 
-  static Credentials renewAccessTokenResult =
-      Credentials.fromMap({
+  static Credentials renewAccessTokenResult = Credentials.fromMap({
     'accessToken': 'accessToken',
     'idToken': 'idToken',
     'refreshToken': 'refreshToken',
@@ -131,22 +130,6 @@ void main() {
     });
   });
 
-  group('userInfo', () {
-    test('passes through properties to the platform', () async {
-      when(mockedPlatform.userInfo(any)).thenAnswer((final _) async => const UserInfo());
-
-      await Auth0('test-domain', 'test-clientId')
-          .api
-          .userProfile(accessToken: 'test-token');
-
-      final verificationResult =
-          verify(mockedPlatform.userInfo(captureAny)).captured.single;
-      expect(verificationResult.account.domain, 'test-domain');
-      expect(verificationResult.account.clientId, 'test-clientId');
-      expect(verificationResult.accessToken, 'test-token');
-    });
-  });
-
   group('renewAccessToken', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.renewAccessToken(any))
@@ -175,8 +158,7 @@ void main() {
 
       final result = await Auth0('test-domain', 'test-clientId')
           .api
-          .renewAccessToken(
-              refreshToken: 'test-refresh-token');
+          .renewAccessToken(refreshToken: 'test-refresh-token');
 
       final verificationResult =
           verify(mockedPlatform.renewAccessToken(captureAny)).captured.single;
@@ -185,6 +167,23 @@ void main() {
       // ignore: inference_failure_on_collection_literal
       expect(verificationResult.parameters, {});
       expect(result, TestPlatform.renewAccessTokenResult);
+    });
+  });
+
+  group('userInfo', () {
+    test('passes through properties to the platform', () async {
+      when(mockedPlatform.userInfo(any))
+          .thenAnswer((final _) async => const UserInfo());
+
+      await Auth0('test-domain', 'test-clientId')
+          .api
+          .userProfile(accessToken: 'test-token');
+
+      final verificationResult =
+          verify(mockedPlatform.userInfo(captureAny)).captured.single;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.account.clientId, 'test-clientId');
+      expect(verificationResult.accessToken, 'test-token');
     });
   });
 }

@@ -258,6 +258,17 @@ void main() {
       expect(result.extraInfo?['test3'], 'test3!');
     });
 
+    test('throws an ApiException when method channel returns null', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      Future<void> actual() async {
+        await MethodChannelAuth0FlutterAuth().userInfo(AuthUserInfoOptions(
+            account: const Account('test-domain', 'test-clientId'),
+            accessToken: 'test-token'));
+      }
+
+      await expectLater(actual, throwsA(isA<ApiException>()));
+    });
     test(
         'throws an ApiException when method channel throws a PlatformException',
         () async {
