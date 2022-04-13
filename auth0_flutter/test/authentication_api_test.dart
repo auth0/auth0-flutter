@@ -25,8 +25,7 @@ class TestPlatform extends Mock
     'userProfile': {'name': 'John Doe'}
   });
 
-  static Credentials renewAccessTokenResult =
-      Credentials.fromMap({
+  static Credentials renewAccessTokenResult = Credentials.fromMap({
     'accessToken': 'accessToken',
     'idToken': 'idToken',
     'refreshToken': 'refreshToken',
@@ -131,6 +130,38 @@ void main() {
     });
   });
 
+  group('resetPassword', () {
+    test('passes through properties to the platform', () async {
+      when(mockedPlatform.resetPassword(any)).thenAnswer((final _) async => {});
+
+      await Auth0('test-domain', 'test-clientId').api.resetPassword(
+          email: 'test-user',
+          connection: 'test-connection',
+          parameters: {'test': 'test-parameter'});
+
+      final verificationResult =
+          verify(mockedPlatform.resetPassword(captureAny)).captured.single;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.account.clientId, 'test-clientId');
+      expect(verificationResult.email, 'test-user');
+      expect(verificationResult.connection, 'test-connection');
+      expect(verificationResult.parameters['test'], 'test-parameter');
+    });
+
+    test('set parameters to default value when omitted', () async {
+      when(mockedPlatform.resetPassword(any)).thenAnswer((final _) async => {});
+
+      await Auth0('test-domain', 'test-clientId')
+          .api
+          .resetPassword(email: 'test-user', connection: 'test-connection');
+
+      final verificationResult =
+          verify(mockedPlatform.resetPassword(captureAny)).captured.single;
+      // ignore: inference_failure_on_collection_literal
+      expect(verificationResult.parameters, {});
+    });
+  });
+
   group('renewAccessToken', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.renewAccessToken(any))
@@ -159,8 +190,7 @@ void main() {
 
       final result = await Auth0('test-domain', 'test-clientId')
           .api
-          .renewAccessToken(
-              refreshToken: 'test-refresh-token');
+          .renewAccessToken(refreshToken: 'test-refresh-token');
 
       final verificationResult =
           verify(mockedPlatform.renewAccessToken(captureAny)).captured.single;

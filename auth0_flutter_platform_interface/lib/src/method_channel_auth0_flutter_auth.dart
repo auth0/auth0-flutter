@@ -52,7 +52,12 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
 
   @override
   Future<void> resetPassword(final AuthResetPasswordOptions options) async {
-    await invokeMapMethod(method: authResetPasswordMethod, throwOnNull: false);
+
+    try {
+      await invokeMapMethod(method: authResetPasswordMethod, options: options.toMap(), throwOnNull: false);
+    } on PlatformException catch (e) {
+      throw ApiException.fromPlatformException(e);
+    }
   }
 
   Future<Map<String, dynamic>> invokeMapMethod({

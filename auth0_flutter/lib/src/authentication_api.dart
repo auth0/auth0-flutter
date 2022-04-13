@@ -51,6 +51,12 @@ class AuthenticationApi {
               parameters: parameters));
 
   Future<void> resetPassword(
-          {required final String email, required final String connection}) =>
-      Future.value();
+          {required final String email,
+          required final String connection,
+          final Map<String, String> parameters = const {}}) =>
+      Auth0FlutterAuthPlatform.instance.resetPassword(AuthResetPasswordOptions(
+          account: account,
+          email: email,
+          connection: connection,
+          parameters: parameters));
 }
