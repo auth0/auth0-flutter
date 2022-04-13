@@ -17,7 +17,7 @@ abstract class Auth0FlutterWebAuthPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<LoginResult> login(final WebAuthLoginInput input) {
+  Future<Credentials> login(final WebAuthLoginInput input) {
     throw UnimplementedError('webAuth.login() has not been implemented');
   }
 
