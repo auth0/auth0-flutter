@@ -94,7 +94,7 @@ _TBD_
 
 #### iOS configuration: custom URL scheme
 
-Open the `ios/Runner/Info.plist` file and add the following snippet inside the top-level `<dict>` tag. This registers your iOS Bundle Identifer as a custom scheme, so the callback and logout URLs can reach your application.
+Open the `ios/Runner/Info.plist` file and add the following snippet inside the top-level `<dict>` tag. This registers your iOS Bundle Identifer as a custom URL scheme, so the callback and logout URLs can reach your application.
 
 ```xml
 <!-- ios/Runner/Info.plist -->
