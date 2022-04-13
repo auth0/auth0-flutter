@@ -67,7 +67,7 @@ Go to the settings page of your [Auth0 application](https://manage.auth0.com/#/a
 ##### Android
 
 ```text
-https://{YOUR_AUTH0_DOMAIN}/android/{YOUR_APP_PACKAGE_NAME}/callback
+https://YOUR_AUTH0_DOMAIN/android/YOUR_APP_PACKAGE_NAME/callback
 ```
 
 E.g. if your Auth0 Domain was `company.us.auth0.com` and your Android app package name was `com.company.myapp`, then this value would be:
@@ -94,7 +94,7 @@ _TBD_
 
 #### iOS configuration: custom URL scheme
 
-Open the `ios/Runner/Info.plist` file and add the following snippet inside the top-level `<dict>` tag to register your iOS Bundle Identifer as a custom scheme.
+Open the `ios/Runner/Info.plist` file and add the following snippet inside the top-level `<dict>` tag. This registers your iOS Bundle Identifer as a custom scheme, so the callback URL can reach your application.
 
 ```xml
 <!-- ios/Runner/Info.plist -->
@@ -128,7 +128,11 @@ _TBD_
 
 ### SSO Alert Box (iOS)
 
-_TBD_
+![ios-sso-alert](assets/ios-sso-alert.png)
+
+Check the [FAQ](FAQ.md) for more information about the alert box that pops up **by default** when using Web Auth on iOS.
+
+> 💡 See also [this blog post](https://developer.okta.com/blog/2022/01/13/mobile-sso) for a detailed overview of Single Sign-On (SSO) on iOS.
 
 [Go up ⤴](#table-of-contents)
 
@@ -149,14 +153,14 @@ _TBD_
 
 #### Web Auth signup
 
-You can make users land directly on the Signup page instead of the Login page by specifying the `"screen_hint": "signup"` parameter. Note that this can be combined with `"prompt": "login"`, which indicates whether you want to always show the authentication page or you want to skip if there's an existing session.
+You can make users land directly on the Signup page instead of the Login page by specifying the `'screen_hint': 'signup'` parameter. Note that this can be combined with `'prompt': 'login'`, which indicates whether you want to always show the authentication page or you want to skip if there's an existing session.
 
 | Parameters                                     | No existing session   | Existing session              |
 |:-----------------------------------------------|:----------------------|:------------------------------|
 | No extra parameters                            | Shows the login page  | Redirects to the callback url |
-| `"screen_hint": "signup"`                      | Shows the signup page | Redirects to the callback url |
-| `"prompt": "login"`                            | Shows the login page  | Shows the login page          |
-| `"prompt": "login", "screen_hint": "signup"`   | Shows the signup page | Shows the signup page         |
+| `'screen_hint': 'signup'`                      | Shows the signup page | Redirects to the callback url |
+| `'prompt': 'login'`                            | Shows the login page  | Shows the login page          |
+| `'prompt': 'login', 'screen_hint': 'signup'`   | Shows the signup page | Shows the signup page         |
 
 _[snippet]_
 
@@ -208,7 +212,7 @@ We recommend using [Universal Login](https://auth0.com/docs/authenticate/login/a
 
 For login or signup with username/password, the `Password` grant type needs to be enabled in your application. If you set the grants via the Management API you should activate both `http://auth0.com/oauth/grant-type/password-realm` and `Password`. Otherwise, the Auth0 Dashboard will take care of activating both when enabling `Password`.
 
-> 💡 If your Auth0 account has the "Bot Detection" feature enabled, your requests might be flagged for verification. Check how to handle this scenario in the [Bot Detection](#bot-detection) section.
+> 💡 If your Auth0 account has the **Bot Detection** feature enabled, your requests might be flagged for verification. Check how to handle this scenario in the [Bot Detection](#bot-detection) section.
 
 > ⚠️ The ID Tokens obtained from Web Auth login are automatically validated by auth0_flutter, ensuring their contents have not been tampered with. **This is not the case for the ID Tokens obtained from the Authentication API client.** You must [validate](https://auth0.com/docs/security/tokens/id-tokens/validate-id-tokens) any ID Tokens received from the Authentication API client before using the information they contain.
 
