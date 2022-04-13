@@ -133,7 +133,7 @@ void main() {
 
   group('userInfo', () {
     test('passes through properties to the platform', () async {
-      when(mockedPlatform.userInfo(any)).thenAnswer((final _) async => {});
+      when(mockedPlatform.userInfo(any)).thenAnswer((final _) async => const UserInfo());
 
       await Auth0('test-domain', 'test-clientId')
           .api
