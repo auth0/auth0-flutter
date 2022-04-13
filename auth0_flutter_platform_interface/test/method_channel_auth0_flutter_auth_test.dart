@@ -184,7 +184,20 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
             'email': 'test-email',
             'nickname': 'test-nickname',
-            'familyName': 'test-family-name'
+            'familyName': 'test-family-name',
+            'createdAt': '2022-04-01',
+            'name': 'test-name',
+            'givenName': 'test-given-name',
+            'isEmailVerified': true,
+            'userMetadata': {
+              'test1': 'test1!'
+            },
+            'appMetadata': {
+              'test2': 'test2!'
+            },
+            'extraInfo': {
+              'test3': 'test3!'
+            }
           });
 
       final result = await MethodChannelAuth0FlutterAuth().userInfo(AuthUserInfoOptions(
@@ -196,6 +209,13 @@ void main() {
       expect(result.email, 'test-email');
       expect(result.nickname, 'test-nickname');
       expect(result.familyName, 'test-family-name');
+      expect(result.createdAt, DateTime.parse('2022-04-01'));
+      expect(result.name, 'test-name');
+      expect(result.givenName, 'test-given-name');
+      expect(result.isEmailVerified, true);
+      expect(result.userMetadata?['test1'], 'test1!');
+      expect(result.appMetadata?['test2'], 'test2!');
+      expect(result.extraInfo?['test3'], 'test3!');
     });
 
     test(
