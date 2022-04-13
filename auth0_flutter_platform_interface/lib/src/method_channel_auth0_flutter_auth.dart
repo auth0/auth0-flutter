@@ -1,13 +1,13 @@
 import 'package:flutter/services.dart';
 import 'auth/api_exception.dart';
 import 'auth/auth_login_options.dart';
-import 'auth/auth_renew_access_token_result.dart';
+import 'auth/auth_renew_access_token_options.dart';
 import 'auth/auth_reset_password_options.dart';
 import 'auth/auth_signup_options.dart';
 import 'auth/auth_user_profile_result.dart';
 import 'auth0_flutter_auth_platform.dart';
+import 'credentials.dart';
 import 'database_user.dart';
-import 'web-auth/web_auth_login_result.dart';
 
 const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter/auth');
 const String authLoginMethod = 'auth#login';
@@ -18,70 +18,65 @@ const String authResetPasswordMethod = 'auth#resetPassword';
 
 class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   @override
-  Future<LoginResult> login(final AuthLoginOptions options) async {
-    final Map<String, dynamic>? result =
-        await _channel.invokeMapMethod(authLoginMethod, options.toMap());
+  Future<Credentials> login(final AuthLoginOptions options) async {
+    final Map<String, dynamic> result = await invokeMapMethod(
+        method: authLoginMethod, options: options.toMap());
 
-    if (result == null) {
-      return throw Exception('Auth channel returned null');
-    }
-
-    return LoginResult.fromMap(result);
+    return Credentials.fromMap(result);
   }
 
   @override
   Future<AuthUserProfileResult?> userInfo(final String accessToken) async {
-    final Map<dynamic, dynamic>? result =
-        await _channel.invokeMethod(authUserInfoMethod);
-
-    if (result == null) {
-      return null;
-    }
+    await invokeMapMethod(method: authUserInfoMethod);
 
     return AuthUserProfileResult();
   }
 
   @override
   Future<DatabaseUser> signup(final AuthSignupOptions options) async {
-    final Map<dynamic, dynamic>? result;
-    try {
-      result = await _channel.invokeMethod(authSignUpMethod, options.toMap());
-    } on PlatformException catch (e) {
-      throw ApiException.fromPlatformException(e);
-    }
-
-    if (result == null) {
-      throw const ApiException.unknown('Channel returned null.');
-    }
+    final Map<String, dynamic> result = await invokeMapMethod(
+        method: authSignUpMethod, options: options.toMap());
 
     return DatabaseUser.fromMap(result);
   }
 
   @override
-  Future<AuthRenewAccessTokenResult?> renewAccessToken(
-      final String refreshToken) async {
-    final Map<dynamic, dynamic>? result =
-        await _channel.invokeMethod(authRenewAccessTokenMethod);
+  Future<Credentials> renewAccessToken(
+    final AuthRenewAccessTokenOptions options,
+  ) async {
+    final Map<String, dynamic> result = await invokeMapMethod(
+        method: authRenewAccessTokenMethod, options: options.toMap());
 
-    if (result == null) {
-      return null;
-    }
-
-    return AuthRenewAccessTokenResult(
-      idToken: result['idToken'] as String,
-      accessToken: result['accessToken'] as String,
-      refreshToken: result['refreshToken'] as String?,
-      expiresAt: DateTime.parse(result['expiresAt'] as String),
-      scopes: Set.from(result['scopes'] as List<Object?>),
-    );
+    return Credentials.fromMap(result);
   }
 
   @override
   Future<void> resetPassword(final AuthResetPasswordOptions options) async {
+
     try {
-      await _channel.invokeMethod(authResetPasswordMethod, options.toMap());
+      await invokeMapMethod(method: authResetPasswordMethod, options: options.toMap(), throwOnNull: false);
     } on PlatformException catch (e) {
       throw ApiException.fromPlatformException(e);
     }
+  }
+
+  Future<Map<String, dynamic>> invokeMapMethod({
+    required final String method,
+    final Map<String, dynamic>? options,
+    final bool? throwOnNull = true,
+  }) async {
+    final Map<String, dynamic>? result;
+    try {
+      result = await _channel.invokeMapMethod(method, options);
+    } on PlatformException catch (e) {
+      throw ApiException.fromPlatformException(e);
+    }
+
+    if (result == null && throwOnNull == true) {
+      throw const ApiException.unknown('Channel returned null.');
+    }
+
+    return result ?? {};
+
   }
 }

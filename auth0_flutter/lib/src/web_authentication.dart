@@ -5,7 +5,7 @@ class WebAuthentication {
 
   WebAuthentication(this.account);
 
-  Future<LoginResult> login(
+  Future<Credentials> login(
           {final String? audience,
           final Set<String> scopes = const {},
           final String? redirectUri,
