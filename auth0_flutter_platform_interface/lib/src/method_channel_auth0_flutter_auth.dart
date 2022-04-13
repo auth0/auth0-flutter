@@ -4,7 +4,8 @@ import 'auth/auth_login_options.dart';
 import 'auth/auth_renew_access_token_result.dart';
 import 'auth/auth_reset_password_options.dart';
 import 'auth/auth_signup_options.dart';
-import 'auth/auth_user_profile_result.dart';
+import 'auth/auth_user_info_options.dart';
+import 'auth/auth_user_info_result.dart';
 import 'auth0_flutter_auth_platform.dart';
 import 'database_user.dart';
 import 'web-auth/web_auth_login_result.dart';
@@ -30,15 +31,21 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   }
 
   @override
-  Future<AuthUserProfileResult?> userInfo(final String accessToken) async {
-    final Map<dynamic, dynamic>? result =
-        await _channel.invokeMethod(authUserInfoMethod);
+  Future<AuthUserInfoResult> userInfo(final AuthUserInfoOptions options) async {
+    final Map<String, dynamic>? result;
 
-    if (result == null) {
-      return null;
+    try {
+      result = await _channel
+          .invokeMapMethod(authUserInfoMethod, options.toMap());
+    } on PlatformException catch (e) {
+      throw ApiException.fromPlatformException(e);
     }
 
-    return AuthUserProfileResult();
+    if (result == null) {
+      throw const ApiException.unknown('Channel returned null.');
+    }
+
+    return AuthUserInfoResult.fromMap(result);
   }
 
   @override

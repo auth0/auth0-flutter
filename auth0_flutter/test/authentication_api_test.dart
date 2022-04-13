@@ -119,4 +119,20 @@ void main() {
       expect(result, TestPlatform.loginResult);
     });
   });
+
+  group('userInfo', () {
+    test('passes through properties to the platform', () async {
+      when(mockedPlatform.userInfo(any)).thenAnswer((final _) async => {});
+
+      await Auth0('test-domain', 'test-clientId')
+          .api
+          .userProfile(accessToken: 'test-token');
+
+      final verificationResult =
+          verify(mockedPlatform.userInfo(captureAny)).captured.single;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.account.clientId, 'test-clientId');
+      expect(verificationResult.accessToken, 'test-token');
+    });
+  });
 }

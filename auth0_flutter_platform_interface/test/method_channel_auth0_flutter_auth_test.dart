@@ -147,4 +147,70 @@ void main() {
         'auth#login');
     expect(result.accessToken, MethodCallHandler.loginResult['accessToken']);
   });
+
+  group('userInfo', () {
+    test('calls the correct MethodChannel method', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {});
+
+      await MethodChannelAuth0FlutterAuth().userInfo(
+          AuthUserInfoOptions(
+              account: const Account('test-domain', 'test-clientId'),
+              accessToken: 'test-token'));
+
+      expect(
+          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          'auth#userInfo');
+    });
+
+    test('correctly maps all properties', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
+            'email': 'test-email',
+            'nickname': 'test-nickname',
+            'familyName': 'test-family-name'
+          });
+
+      await MethodChannelAuth0FlutterAuth().userInfo(AuthUserInfoOptions(
+          account: const Account('test-domain', 'test-clientId'),
+          accessToken: 'test-token'));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['domain'], 'test-domain');
+      expect(verificationResult.arguments['clientId'], 'test-clientId');
+      expect(verificationResult.arguments['accessToken'], 'test-token');
+    });
+
+    test('correctly returns the response from the Method Channel', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
+            'email': 'test-email',
+            'nickname': 'test-nickname',
+            'familyName': 'test-family-name'
+          });
+
+      final result = await MethodChannelAuth0FlutterAuth().userInfo(AuthUserInfoOptions(
+          account: const Account('test-domain', 'test-clientId'),
+          accessToken: 'test-token'));
+
+      verify(mocked.methodCallHandler(captureAny));
+
+      expect(result.email, 'test-email');
+      expect(result.nickname, 'test-nickname');
+      expect(result.familyName, 'test-family-name');
+    });
+
+    test(
+        'throws an ApiException when method channel throws a PlatformException',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenThrow(PlatformException(code: '123'));
+
+      Future<void> actual() async {
+        await MethodChannelAuth0FlutterAuth().userInfo(AuthUserInfoOptions(
+          account: const Account('test-domain', 'test-clientId'),
+          accessToken: 'test-token'));
+      }
+
+      await expectLater(actual, throwsA(isA<ApiException>()));
+    });
+  });
 }
