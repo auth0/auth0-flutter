@@ -227,16 +227,29 @@ void main() {
 
     test('correctly returns the response from the Method Channel', () async {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
-            'email': 'test-email',
-            'nickname': 'test-nickname',
-            'familyName': 'test-family-name',
-            'createdAt': '2022-04-01',
+            'id': 'test-id',
             'name': 'test-name',
             'givenName': 'test-given-name',
+            'familyName': 'test-family-name',
+            'middleName': 'test-middle-name',
+            'nickname': 'test-nickname',
+            'preferredUsername': 'test-preferred-username',
+            'profileURL': 'https://www.google.com',
+            'pictureURL': 'https://www.okta.com',
+            'websiteURL': 'https://www.auth0.com',
+            'email': 'test-email',
             'isEmailVerified': true,
-            'userMetadata': {'test1': 'test1!'},
-            'appMetadata': {'test2': 'test2!'},
-            'extraInfo': {'test3': 'test3!'}
+            'gender': 'test-gender',
+            'birthdate': 'test-birthdate',
+            'zoneinfo': 'test-zoneinfo',
+            'locale': 'test-locale',
+            'phoneNumber': '123456789',
+            'isPhoneNumberVerified': true,
+            'address': {
+              'country': 'us'
+            },
+            'updatedAt': '2022-04-01',
+            'customClaims': {'test3': 'test3!'}
           });
 
       final result = await MethodChannelAuth0FlutterAuth().userInfo(
@@ -246,16 +259,44 @@ void main() {
 
       verify(mocked.methodCallHandler(captureAny));
 
-      expect(result.email, 'test-email');
-      expect(result.nickname, 'test-nickname');
-      expect(result.familyName, 'test-family-name');
-      expect(result.createdAt, DateTime.parse('2022-04-01'));
+      expect(result.id, 'test-id');
       expect(result.name, 'test-name');
       expect(result.givenName, 'test-given-name');
+      expect(result.familyName, 'test-family-name');
+      expect(result.middleName, 'test-middle-name');
+      expect(result.nickname, 'test-nickname');
+      expect(result.preferredUsername, 'test-preferred-username');
+      expect(result.profileURL, 'https://www.google.com');
+      expect(result.pictureURL, 'https://www.okta.com');
+      expect(result.websiteURL, 'https://www.auth0.com');
+      expect(result.email, 'test-email');
       expect(result.isEmailVerified, true);
-      expect(result.userMetadata?['test1'], 'test1!');
-      expect(result.appMetadata?['test2'], 'test2!');
-      expect(result.extraInfo?['test3'], 'test3!');
+      expect(result.gender, 'test-gender');
+      expect(result.birthdate, 'test-birthdate');
+      expect(result.zoneinfo, 'test-zoneinfo');
+      expect(result.locale, 'test-locale');
+      expect(result.phoneNumber, '123456789');
+      expect(result.isPhoneNumberVerified, true);
+      expect(result.address?['country'], 'us');
+      expect(result.updatedAt, DateTime.parse('2022-04-01'));
+      expect(result.customClaims?['test3'], 'test3!');
+    });
+
+    test('correctly returns the response from the Method Channel when properties missing', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
+            'id': 'test-id',
+            'updatedAt': '2022-04-01'
+          });
+
+      final result = await MethodChannelAuth0FlutterAuth().userInfo(
+          AuthUserInfoOptions(
+              account: const Account('test-domain', 'test-clientId'),
+              accessToken: 'test-token'));
+
+      verify(mocked.methodCallHandler(captureAny));
+
+      expect(result.id, 'test-id');
+      expect(result.updatedAt, DateTime.parse('2022-04-01'));
     });
 
     test('throws an ApiException when method channel returns null', () async {
