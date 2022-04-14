@@ -5,9 +5,9 @@ import Auth0
 
 let mockURL = URL(string: "https://example.com")!
 let mockURLSession = { () -> URLSession in
-    let urlConfiguration = URLSessionConfiguration.default
-    urlConfiguration.protocolClasses?.insert(MockURLProtocol.self, at: 0)
-    return URLSession(configuration: urlConfiguration)
+    let configuration = URLSessionConfiguration.default
+    configuration.protocolClasses?.insert(MockURLProtocol.self, at: 0)
+    return URLSession(configuration: configuration)
 }()
 
 class MockURLProtocol: URLProtocol {

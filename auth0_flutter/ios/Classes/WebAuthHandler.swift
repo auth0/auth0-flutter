@@ -24,13 +24,30 @@ extension FlutterError {
 // MARK: - Method Handlers
 
 struct WebAuthLoginMethodHandler: MethodHandler {
+    enum Argument: String {
+        case scopes
+        case parameters
+        case useEphemeralSession
+        case audience
+        case redirectUri
+        case organizationId
+        case invitationUrl
+        case leeway
+        case issuer
+        case maxAge
+    }
+
     let client: WebAuth
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
-        guard let scopes = arguments["scopes"] as? [String],
-              let parameters = arguments["parameters"] as? [String: String],
-              let useEphemeralSession = arguments["useEphemeralSession"] as? Bool else {
-            return callback(FlutterError(from: .requiredArgumentsMissing))
+        guard let useEphemeralSession = arguments[Argument.useEphemeralSession.rawValue] as? Bool else {
+            return callback(FlutterError(from: .requiredArgumentMissing(Argument.useEphemeralSession.rawValue)))
+        }
+        guard let scopes = arguments[Argument.scopes.rawValue] as? [String] else {
+            return callback(FlutterError(from: .requiredArgumentMissing(Argument.scopes.rawValue)))
+        }
+        guard let parameters = arguments[Argument.parameters.rawValue] as? [String: String] else {
+            return callback(FlutterError(from: .requiredArgumentMissing(Argument.parameters.rawValue)))
         }
 
         var webAuth = client.parameters(parameters)
@@ -43,31 +60,32 @@ struct WebAuthLoginMethodHandler: MethodHandler {
             webAuth = webAuth.useEphemeralSession()
         }
 
-        if let audience = arguments["audience"] as? String {
+        if let audience = arguments[Argument.audience.rawValue] as? String {
             webAuth = webAuth.audience(audience)
         }
 
-        if let redirectURL = arguments["redirectUri"] as? String, let url = URL(string: redirectURL) {
+        if let redirectURL = arguments[Argument.redirectUri.rawValue] as? String, let url = URL(string: redirectURL) {
             webAuth = webAuth.redirectURL(url)
         }
 
-        if let organizationId = arguments["organizationId"] as? String {
+        if let organizationId = arguments[Argument.organizationId.rawValue] as? String {
             webAuth = webAuth.organization(organizationId)
         }
 
-        if let invitationURL = arguments["invitationUrl"] as? String, let url = URL(string: invitationURL) {
+        if let invitationURL = arguments[Argument.invitationUrl.rawValue] as? String,
+            let url = URL(string: invitationURL) {
             webAuth = webAuth.invitationURL(url)
         }
 
-        if let leeway = arguments["leeway"] as? Int {
+        if let leeway = arguments[Argument.leeway.rawValue] as? Int {
             webAuth = webAuth.leeway(leeway)
         }
 
-        if let issuer = arguments["issuer"] as? String {
+        if let issuer = arguments[Argument.issuer.rawValue] as? String {
             webAuth = webAuth.issuer(issuer)
         }
 
-        if let maxAge = arguments["maxAge"] as? Int {
+        if let maxAge = arguments[Argument.maxAge.rawValue] as? Int {
             webAuth = webAuth.maxAge(maxAge)
         }
 
@@ -81,12 +99,16 @@ struct WebAuthLoginMethodHandler: MethodHandler {
 }
 
 struct WebAuthLogoutMethodHandler: MethodHandler {
+    enum Argument: String {
+        case returnTo
+    }
+
     let client: WebAuth
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
         var webAuth = client
 
-        if let returnTo = arguments["returnTo"] as? String, let url = URL(string: returnTo) {
+        if let returnTo = arguments[Argument.returnTo.rawValue] as? String, let url = URL(string: returnTo) {
             webAuth = webAuth.redirectURL(url)
         }
 
@@ -102,7 +124,12 @@ struct WebAuthLogoutMethodHandler: MethodHandler {
 // MARK: - Web Auth Handler
 
 public class WebAuthHandler: NSObject, FlutterPlugin {
-    enum Method: String, RawRepresentable, CaseIterable {
+    enum Argument: String {
+        case clientId
+        case domain
+    }
+
+    enum Method: String, CaseIterable {
         case login = "webAuth#login"
         case logout = "webAuth#logout"
     }
@@ -119,10 +146,14 @@ public class WebAuthHandler: NSObject, FlutterPlugin {
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        guard let arguments = call.arguments as? [String: Any],
-              let clientId = arguments["clientId"] as? String,
-              let domain = arguments["domain"] as? String else {
-            return result(FlutterError(from: .requiredArgumentsMissing))
+        guard let arguments = call.arguments as? [String: Any] else {
+            return result(FlutterError(from: .argumentsMissing))
+        }
+        guard let clientId = arguments[Argument.clientId.rawValue] as? String else {
+            return result(FlutterError(from: .requiredArgumentMissing(Argument.clientId.rawValue)))
+        }
+        guard let domain = arguments[Argument.domain.rawValue] as? String else {
+            return result(FlutterError(from: .requiredArgumentMissing(Argument.domain.rawValue)))
         }
 
         let webAuth = Auth0.webAuth(clientId: clientId, domain: domain)
