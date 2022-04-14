@@ -61,10 +61,9 @@ dependencies {
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.hamcrest:java-hamcrest:2.0.0.0'
-    testImplementation 'org.mockito:mockito-core:3.7.7'
-    // Mockito-Kotlin: See https://github.com/nhaarman/mockito-kotlin/wiki/Parameter-specified-as-non-null-is-null
-    testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
+    testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
     testImplementation 'com.jayway.awaitility:awaitility:1.7.0'
     testImplementation 'org.robolectric:robolectric:4.6.1'
     testImplementation 'androidx.test.espresso:espresso-intents:3.4.0'
+    testImplementation 'com.auth0:java-jwt:3.19.1'
 }
