@@ -14,7 +14,7 @@ void main() {
     'refreshToken': 'refreshToken',
     'expiresAt': '2022-04-05',
     'scopes': ['a'],
-    'userProfile': {'name': 'John Doe'}
+    'userProfile': {'sub': '123', 'name': 'John Doe'}
   };
   setUp(() {
     channel.setMockMethodCallHandler(

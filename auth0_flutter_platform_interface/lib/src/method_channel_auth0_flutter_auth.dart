@@ -4,7 +4,8 @@ import 'auth/auth_login_options.dart';
 import 'auth/auth_renew_access_token_options.dart';
 import 'auth/auth_reset_password_options.dart';
 import 'auth/auth_signup_options.dart';
-import 'auth/auth_user_profile_result.dart';
+import 'auth/auth_user_info_options.dart';
+import 'user_profile.dart';
 import 'auth0_flutter_auth_platform.dart';
 import 'credentials.dart';
 import 'database_user.dart';
@@ -26,10 +27,16 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   }
 
   @override
-  Future<AuthUserProfileResult?> userInfo(final String accessToken) async {
-    await invokeMapMethod(method: authUserInfoMethod);
+  Future<UserProfile> userInfo(final AuthUserInfoOptions options) async {
+    final Map<String, dynamic>? result;
 
-    return AuthUserProfileResult();
+    try {
+      result = await invokeMapMethod(method: authUserInfoMethod, options: options.toMap());
+    } on PlatformException catch (e) {
+      throw ApiException.fromPlatformException(e);
+    }
+
+    return UserProfile.fromMap(result);
   }
 
   @override
