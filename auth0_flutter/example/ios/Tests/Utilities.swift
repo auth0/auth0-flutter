@@ -83,7 +83,20 @@ func assertHas(authenticationError: AuthenticationError,
     if let result = result as? FlutterError,
        let details = result.details as? [String: Any],
        result.code == authenticationError.code,
-       details == authenticationError.info {
+       (details.filter({ $0.key != "_errorFlags" }) == authenticationError.details),
+       let flags = details["_errorFlags"] as? [String: Bool],
+       flags["isMultifactorRequired"] == authenticationError.isMultifactorRequired,
+       flags["isMultifactorEnrollRequired"] == authenticationError.isMultifactorEnrollRequired,
+       flags["isMultifactorCodeInvalid"] == authenticationError.isMultifactorCodeInvalid,
+       flags["isMultifactorTokenInvalid"] == authenticationError.isMultifactorTokenInvalid,
+       flags["isPasswordNotStrongEnough"] == authenticationError.isPasswordNotStrongEnough,
+       flags["isPasswordAlreadyUsed"] == authenticationError.isPasswordAlreadyUsed,
+       flags["isRuleError"] == authenticationError.isRuleError,
+       flags["isInvalidCredentials"] == authenticationError.isInvalidCredentials,
+       flags["isRefreshTokenDeleted"] == authenticationError.isRefreshTokenDeleted,
+       flags["isAccessDenied"] == authenticationError.isAccessDenied,
+       flags["isTooManyAttempts"] == authenticationError.isTooManyAttempts,
+       flags["isVerificationRequired"] == authenticationError.isVerificationRequired {
         return
     }
     XCTFail("The handler did not produce the error '\(authenticationError)'", file: file, line: line)

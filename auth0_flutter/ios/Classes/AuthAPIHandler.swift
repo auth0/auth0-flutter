@@ -43,9 +43,26 @@ extension MethodHandler {
 
 extension FlutterError {
     convenience init(from authenticationError: AuthenticationError) {
+        let errorFlags: [String: Bool] = [
+            "isMultifactorRequired": authenticationError.isMultifactorRequired,
+            "isMultifactorEnrollRequired": authenticationError.isMultifactorEnrollRequired,
+            "isMultifactorCodeInvalid": authenticationError.isMultifactorCodeInvalid,
+            "isMultifactorTokenInvalid": authenticationError.isMultifactorTokenInvalid,
+            "isPasswordNotStrongEnough": authenticationError.isPasswordNotStrongEnough,
+            "isPasswordAlreadyUsed": authenticationError.isPasswordAlreadyUsed,
+            "isRuleError": authenticationError.isRuleError,
+            "isInvalidCredentials": authenticationError.isInvalidCredentials,
+            "isRefreshTokenDeleted": authenticationError.isRefreshTokenDeleted,
+            "isAccessDenied": authenticationError.isAccessDenied,
+            "isTooManyAttempts": authenticationError.isTooManyAttempts,
+            "isVerificationRequired": authenticationError.isVerificationRequired
+        ]
+        var errorDetails = authenticationError.details ?? [:]
+        errorDetails["_errorFlags"] = errorFlags
+
         self.init(code: authenticationError.code,
                   message: String(describing: authenticationError),
-                  details: authenticationError.details)
+                  details: errorDetails)
     }
 }
 
