@@ -1,5 +1,5 @@
 class UserProfile {
-  final String? sub;
+  final String sub;
   final String? nickname;
   final String? email;
   final String? familyName;
@@ -23,7 +23,7 @@ class UserProfile {
   final Map<String, dynamic>? customClaims;
 
   const UserProfile({
-    final this.sub,
+    required final this.sub,
     final this.name,
     final this.givenName,
     final this.familyName,
@@ -47,7 +47,7 @@ class UserProfile {
   });
 
   factory UserProfile.fromMap(final Map<String, dynamic> result) => UserProfile(
-        sub: result['sub'] as String?,
+        sub: result['sub'] as String,
         name: result['name'] as String?,
         givenName: result['given_name'] as String?,
         familyName: result['family_name'] as String?,

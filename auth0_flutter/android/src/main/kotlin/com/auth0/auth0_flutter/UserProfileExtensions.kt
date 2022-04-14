@@ -48,8 +48,8 @@ fun createUserProfileFromClaims(claims: Map<String, Any>): UserProfile {
     );
 }
 
-val UserProfile.sub: String?
-    get() = getExtraInfo()["sub"] as String?
+val UserProfile.sub: String
+    get() = getExtraInfo()["sub"] as String
 
 val UserProfile.middleName: String?
     get() = getExtraInfo()["middle_name"] as String?

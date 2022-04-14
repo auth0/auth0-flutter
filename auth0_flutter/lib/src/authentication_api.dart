@@ -20,7 +20,7 @@ class AuthenticationApi {
           parameters: parameters));
 
   Future<Credentials> codeExchange(final String code) => Future.value(
-      Credentials(idToken: '', accessToken: '', expiresAt: DateTime.now(), userProfile: const UserProfile()));
+      Credentials(idToken: '', accessToken: '', expiresAt: DateTime.now(), userProfile: const UserProfile(sub: 'sub')));
 
   Future<UserProfile> userProfile({required final String accessToken}) =>
       Auth0FlutterAuthPlatform.instance.userInfo(AuthUserInfoOptions(accessToken: accessToken, account: account));

@@ -13,7 +13,7 @@ class MethodCallHandler {
     'refreshToken': 'refreshToken',
     'expiresAt': '2022-01-01',
     'scopes': ['a'],
-    'userProfile': {'name': 'John Doe'}
+    'userProfile': {'sub': '123', 'name': 'John Doe'}
   };
 
   static const Map<dynamic, dynamic> renewAccessTokenResult = {
@@ -22,7 +22,7 @@ class MethodCallHandler {
     'refreshToken': 'refreshToken',
     'expiresAt': '2022-01-01',
     'scopes': ['a'],
-    'userProfile': {'name': 'John Doe'}
+    'userProfile': {'sub': '123', 'name': 'John Doe'}
   };
 
   Future<dynamic>? methodCallHandler(final MethodCall? methodCall) async {}
@@ -249,7 +249,8 @@ void main() {
 
   group('userInfo', () {
     test('calls the correct MethodChannel method', () async {
-      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {});
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => {'sub': 'test-id'});
 
       await MethodChannelAuth0FlutterAuth().userInfo(AuthUserInfoOptions(
           account: const Account('test-domain', 'test-clientId'),
@@ -262,6 +263,7 @@ void main() {
 
     test('correctly maps all properties', () async {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
+            'sub': 'test-id',
             'email': 'test-email',
             'nickname': 'test-nickname',
             'family_name': 'test-family-name'
@@ -298,9 +300,7 @@ void main() {
             'locale': 'test-locale',
             'phone_number': '123456789',
             'phone_number_verified': true,
-            'address': {
-              'country': 'us'
-            },
+            'address': {'country': 'us'},
             'updated_at': '2022-04-01',
             'custom_claims': {'test3': 'test3!'}
           });
@@ -335,11 +335,11 @@ void main() {
       expect(result.customClaims?['test3'], 'test3!');
     });
 
-    test('correctly returns the response from the Method Channel when properties missing', () async {
-      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
-            'sub': 'test-id',
-            'updated_at': '2022-04-01'
-          });
+    test(
+        'correctly returns the response from the Method Channel when properties missing',
+        () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => {'sub': 'test-id', 'updated_at': '2022-04-01'});
 
       final result = await MethodChannelAuth0FlutterAuth().userInfo(
           AuthUserInfoOptions(

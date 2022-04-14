@@ -19,7 +19,7 @@ class TestPlatform extends Mock
     'refreshToken': 'refreshToken',
     'expiresAt': DateTime.now().toIso8601String(),
     'scopes': ['a', 'b'],
-    'userProfile': {'name': 'John Doe'}
+    'userProfile': {'sub': '123', 'name': 'John Doe'}
   });
 }
 
