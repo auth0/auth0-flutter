@@ -5,9 +5,14 @@ import com.auth0.jwt.algorithms.Algorithm
 
 class JwtTestUtils {
     companion object {
-        fun createJwt(claims: Map<String, Any> = mapOf()): String {
+        fun createJwt(
+            subject: String = "test-subject",
+            issuer: String = "test-issuer"
+        ): String {
             val alg = Algorithm.HMAC256("test")
-            return JWT.create().withIssuer("test").sign(alg)
+            val jwt = JWT.create().withIssuer(issuer).withSubject(subject)
+
+            return jwt.sign(alg)
         }
     }
 }
