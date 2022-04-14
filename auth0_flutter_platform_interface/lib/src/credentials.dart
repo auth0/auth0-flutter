@@ -1,4 +1,4 @@
-import 'user_profile.dart';
+import '../auth0_flutter_platform_interface.dart';
 
 class Credentials {
   final String idToken;
@@ -24,7 +24,7 @@ class Credentials {
         refreshToken: result['refreshToken'] as String?,
         expiresAt: DateTime.parse(result['expiresAt'] as String),
         scopes: Set<String>.from(result['scopes'] as List<Object?>),
-        userProfile: Map<String, dynamic>.from(
-            result['userProfile'] as Map<dynamic, dynamic>),
+        userProfile: UserProfile.fromMap(Map<String, dynamic>.from(
+            result['userProfile'] as Map<dynamic, dynamic>)),
       );
 }

@@ -22,7 +22,7 @@ class TestPlatform extends Mock
     'refreshToken': 'refreshToken',
     'expiresAt': DateTime.now().toIso8601String(),
     'scopes': ['a'],
-    'userProfile': {'name': 'John Doe'}
+    'userProfile': {'sub': '123', 'name': 'John Doe'}
   });
 
   static Credentials renewAccessTokenResult = Credentials.fromMap({
@@ -31,7 +31,7 @@ class TestPlatform extends Mock
     'refreshToken': 'refreshToken',
     'expiresAt': DateTime.now().toIso8601String(),
     'scopes': ['a'],
-    'userProfile': {'name': 'John Doe'}
+    'userProfile': {'sub': '123', 'name': 'John Doe'}
   });
 }
 
@@ -199,6 +199,23 @@ void main() {
       // ignore: inference_failure_on_collection_literal
       expect(verificationResult.parameters, {});
       expect(result, TestPlatform.renewAccessTokenResult);
+    });
+  });
+
+  group('userInfo', () {
+    test('passes through properties to the platform', () async {
+      when(mockedPlatform.userInfo(any))
+          .thenAnswer((final _) async => const UserProfile(sub: 'sub'));
+
+      await Auth0('test-domain', 'test-clientId')
+          .api
+          .userProfile(accessToken: 'test-token');
+
+      final verificationResult =
+          verify(mockedPlatform.userInfo(captureAny)).captured.single;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.account.clientId, 'test-clientId');
+      expect(verificationResult.accessToken, 'test-token');
     });
   });
 }

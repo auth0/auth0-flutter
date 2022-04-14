@@ -13,7 +13,7 @@ class MethodCallHandler {
     'refreshToken': 'refreshToken',
     'expiresAt': '2022-01-01',
     'scopes': ['a'],
-    'userProfile': {'name': 'John Doe'}
+    'userProfile': {'sub': '123', 'name': 'John Doe'}
   };
 
   Future<dynamic>? methodCallHandler(final MethodCall? methodCall) async {
