@@ -2,13 +2,14 @@
 // in auth0_flutter/test/authentication_api_test.dart.
 // Do not manually edit this file.
 
-import 'dart:async' as _i4;
+import 'dart:async' as _i5;
 
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
     as _i2;
+import 'package:auth0_flutter_platform_interface/src/user_profile.dart' as _i3;
 import 'package:mockito/mockito.dart' as _i1;
 
-import 'authentication_api_test.dart' as _i3;
+import 'authentication_api_test.dart' as _i4;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -22,43 +23,43 @@ import 'authentication_api_test.dart' as _i3;
 
 class _FakeCredentials_0 extends _i1.Fake implements _i2.Credentials {}
 
-class _FakeUserInfo_1 extends _i1.Fake implements _i2.UserInfo {}
+class _FakeUserProfile_1 extends _i1.Fake implements _i3.UserProfile {}
 
 class _FakeDatabaseUser_2 extends _i1.Fake implements _i2.DatabaseUser {}
 
 /// A class which mocks [TestPlatform].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockTestPlatform extends _i1.Mock implements _i3.TestPlatform {
+class MockTestPlatform extends _i1.Mock implements _i4.TestPlatform {
   MockTestPlatform() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.Future<_i2.Credentials> login(_i2.AuthLoginOptions? options) =>
+  _i5.Future<_i2.Credentials> login(_i2.AuthLoginOptions? options) =>
       (super.noSuchMethod(Invocation.method(#login, [options]),
               returnValue: Future<_i2.Credentials>.value(_FakeCredentials_0()))
-          as _i4.Future<_i2.Credentials>);
+          as _i5.Future<_i2.Credentials>);
   @override
-  _i4.Future<_i2.UserInfo> userInfo(_i2.AuthUserInfoOptions? options) =>
+  _i5.Future<_i3.UserProfile> userInfo(_i2.AuthUserInfoOptions? options) =>
       (super.noSuchMethod(Invocation.method(#userInfo, [options]),
-              returnValue: Future<_i2.UserInfo>.value(_FakeUserInfo_1()))
-          as _i4.Future<_i2.UserInfo>);
+              returnValue: Future<_i3.UserProfile>.value(_FakeUserProfile_1()))
+          as _i5.Future<_i3.UserProfile>);
   @override
-  _i4.Future<_i2.DatabaseUser> signup(_i2.AuthSignupOptions? options) =>
+  _i5.Future<_i2.DatabaseUser> signup(_i2.AuthSignupOptions? options) =>
       (super.noSuchMethod(Invocation.method(#signup, [options]),
               returnValue:
                   Future<_i2.DatabaseUser>.value(_FakeDatabaseUser_2()))
-          as _i4.Future<_i2.DatabaseUser>);
+          as _i5.Future<_i2.DatabaseUser>);
   @override
-  _i4.Future<_i2.Credentials> renewAccessToken(
+  _i5.Future<_i2.Credentials> renewAccessToken(
           _i2.AuthRenewAccessTokenOptions? options) =>
       (super.noSuchMethod(Invocation.method(#renewAccessToken, [options]),
               returnValue: Future<_i2.Credentials>.value(_FakeCredentials_0()))
-          as _i4.Future<_i2.Credentials>);
+          as _i5.Future<_i2.Credentials>);
   @override
-  _i4.Future<void> resetPassword(_i2.AuthResetPasswordOptions? options) =>
+  _i5.Future<void> resetPassword(_i2.AuthResetPasswordOptions? options) =>
       (super.noSuchMethod(Invocation.method(#resetPassword, [options]),
           returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+          returnValueForMissingStub: Future<void>.value()) as _i5.Future<void>);
 }

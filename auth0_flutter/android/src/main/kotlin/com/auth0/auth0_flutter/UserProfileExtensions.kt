@@ -1,48 +1,55 @@
 package com.auth0.auth0_flutter
 
 import com.auth0.android.result.UserProfile
+import com.auth0.auth0_flutter.utils.getCustomClaims
 
 fun UserProfile.toMap(): Map<String, Any?> {
     return mapOf(
-        "id" to this.getId(),
+        "sub" to this.sub,
         "name" to this.name,
-        "givenName" to this.givenName,
-        "familyName" to this.familyName,
-        "middleName" to this.middleName,
+        "given_name" to this.givenName,
+        "family_name" to this.familyName,
+        "middle_name" to this.middleName,
         "nickname" to this.nickname,
-        "preferredUsername" to this.preferredUsername,
-        "profileURL" to this.profileURL,
-        "pictureURL" to this.pictureURL,
-        "websiteURL" to this.websiteURL,
+        "preferred_username" to this.preferredUsername,
+        "profile" to this.profileURL,
+        "picture" to this.pictureURL,
+        "website" to this.websiteURL,
         "email" to this.email,
-        "isEmailVerified" to this.isEmailVerified,
+        "email_verified" to this.isEmailVerified,
         "gender" to this.gender,
         "birthdate" to this.birthdate,
         "zoneinfo" to this.zoneinfo,
         "locale" to this.locale,
-        "phoneNumber" to this.phoneNumber,
-        "isPhoneNumberVerified" to this.isPhoneNumberVerified,
+        "phone_number" to this.phoneNumber,
+        "phone_number_verified" to this.isPhoneNumberVerified,
         "address" to this.address,
-        "updatedAt" to this.updatedAt,
-        "customClaims" to this.customClaims,
+        "updated_at" to this.updatedAt,
+        "custom_claims" to this.customClaims,
     )
 }
 
-var publicClaims = listOf(
-    "sub",
-    "middle_name",
-    "preferred_username",
-    "profile",
-    "website",
-    "gender",
-    "birthdate",
-    "zoneinfo",
-    "locale",
-    "phone_number",
-    "phone_number_verified",
-    "updated_at",
-    "address"
-);
+fun createUserProfileFromClaims(claims: Map<String, Any>): UserProfile {
+    return UserProfile(
+        id = claims["sub"] as String?,
+        name = claims["name"] as String?,
+        givenName = claims["given_name"] as String?,
+        familyName = claims["family_name"] as String?,
+        nickname = claims["nickname"] as String?,
+        pictureURL = claims["picture"] as String?,
+        email = claims["email"] as String?,
+        isEmailVerified = claims["email_verified"] as Boolean?,
+        extraInfo = claims,
+        // The following properties are required by Auth0.Android but would never be part of the claims Map.
+        identities = listOf(),
+        appMetadata = mapOf(),
+        userMetadata = mapOf(),
+        createdAt = null
+    );
+}
+
+val UserProfile.sub: String?
+    get() = getExtraInfo()["sub"] as String?
 
 val UserProfile.middleName: String?
     get() = getExtraInfo()["middle_name"] as String?
@@ -80,6 +87,5 @@ val UserProfile.updatedAt: String?
 val UserProfile.address: Map<String, String>?
     get() = getExtraInfo()["address"] as Map<String, String>?
 
-val UserProfile.customClaims: Map<String, Any>?
-    get() = getExtraInfo().entries.filter { entry -> !publicClaims.contains(entry.key) }
-        .associate { it.key to it.value }
+val UserProfile.customClaims: Map<String, Any>
+    get() = getCustomClaims(getExtraInfo())

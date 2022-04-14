@@ -225,7 +225,7 @@ void main() {
           'auth#renewAccessToken');
       expect(result.accessToken,
           MethodCallHandler.renewAccessTokenResult['accessToken']);
-      expect(result.userProfile['name'],
+      expect(result.userProfile.name,
           MethodCallHandler.renewAccessTokenResult['userProfile']['name']);
     });
 
@@ -264,7 +264,7 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
             'email': 'test-email',
             'nickname': 'test-nickname',
-            'familyName': 'test-family-name'
+            'family_name': 'test-family-name'
           });
 
       await MethodChannelAuth0FlutterAuth().userInfo(AuthUserInfoOptions(
@@ -280,29 +280,29 @@ void main() {
 
     test('correctly returns the response from the Method Channel', () async {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
-            'id': 'test-id',
+            'sub': 'test-id',
             'name': 'test-name',
-            'givenName': 'test-given-name',
-            'familyName': 'test-family-name',
-            'middleName': 'test-middle-name',
+            'given_name': 'test-given-name',
+            'family_name': 'test-family-name',
+            'middle_name': 'test-middle-name',
             'nickname': 'test-nickname',
-            'preferredUsername': 'test-preferred-username',
-            'profileURL': 'https://www.google.com',
-            'pictureURL': 'https://www.okta.com',
-            'websiteURL': 'https://www.auth0.com',
+            'preferred_username': 'test-preferred-username',
+            'profile': 'https://www.google.com',
+            'picture': 'https://www.okta.com',
+            'website': 'https://www.auth0.com',
             'email': 'test-email',
-            'isEmailVerified': true,
+            'email_verified': true,
             'gender': 'test-gender',
             'birthdate': 'test-birthdate',
             'zoneinfo': 'test-zoneinfo',
             'locale': 'test-locale',
-            'phoneNumber': '123456789',
-            'isPhoneNumberVerified': true,
+            'phone_number': '123456789',
+            'phone_number_verified': true,
             'address': {
               'country': 'us'
             },
-            'updatedAt': '2022-04-01',
-            'customClaims': {'test3': 'test3!'}
+            'updated_at': '2022-04-01',
+            'custom_claims': {'test3': 'test3!'}
           });
 
       final result = await MethodChannelAuth0FlutterAuth().userInfo(
@@ -312,7 +312,7 @@ void main() {
 
       verify(mocked.methodCallHandler(captureAny));
 
-      expect(result.id, 'test-id');
+      expect(result.sub, 'test-id');
       expect(result.name, 'test-name');
       expect(result.givenName, 'test-given-name');
       expect(result.familyName, 'test-family-name');
@@ -337,8 +337,8 @@ void main() {
 
     test('correctly returns the response from the Method Channel when properties missing', () async {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
-            'id': 'test-id',
-            'updatedAt': '2022-04-01'
+            'sub': 'test-id',
+            'updated_at': '2022-04-01'
           });
 
       final result = await MethodChannelAuth0FlutterAuth().userInfo(
@@ -348,7 +348,7 @@ void main() {
 
       verify(mocked.methodCallHandler(captureAny));
 
-      expect(result.id, 'test-id');
+      expect(result.sub, 'test-id');
       expect(result.updatedAt, DateTime.parse('2022-04-01'));
     });
 

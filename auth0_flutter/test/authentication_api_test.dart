@@ -205,7 +205,7 @@ void main() {
   group('userInfo', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.userInfo(any))
-          .thenAnswer((final _) async => const UserInfo());
+          .thenAnswer((final _) async => const UserProfile());
 
       await Auth0('test-domain', 'test-clientId')
           .api

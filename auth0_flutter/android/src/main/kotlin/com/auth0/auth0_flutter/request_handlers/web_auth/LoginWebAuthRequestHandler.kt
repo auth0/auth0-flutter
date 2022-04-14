@@ -12,7 +12,8 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import com.auth0.android.jwt.JWT
-import com.auth0.auth0_flutter.utils.processClaims
+import com.auth0.auth0_flutter.createUserProfileFromClaims
+import com.auth0.auth0_flutter.toMap
 
 
 private val WEBAUTH_LOGIN_METHOD = "webAuth#login"
@@ -20,7 +21,11 @@ private val WEBAUTH_LOGIN_METHOD = "webAuth#login"
 class LoginWebAuthRequestHandler : WebAuthRequestHandler {
     override val method: String = WEBAUTH_LOGIN_METHOD
 
-    override fun handle(context: Context, request: MethodCallRequest, result: MethodChannel.Result) {
+    override fun handle(
+        context: Context,
+        request: MethodCallRequest,
+        result: MethodChannel.Result
+    ) {
         val loginBuilder = WebAuthProvider.login(request.account)
 
         val args = request.data;
@@ -76,21 +81,25 @@ class LoginWebAuthRequestHandler : WebAuthRequestHandler {
                 val jwt = JWT(credentials.idToken)
 
                 // Map all claim values to their underlying type as Any
-                val claims = processClaims(jwt.claims.mapValues { it.value.asObject(Any::class.java) })
+                var claims = jwt.claims.mapValues { it.value.asObject(Any::class.java) }
+                    .filter { it.value != null } as Map<String, Any>
 
+                val userProfile = createUserProfileFromClaims(claims)
                 val sdf =
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
 
                 val formattedDate = sdf.format(credentials.expiresAt)
 
-                result.success(mapOf(
-                    "accessToken" to credentials.accessToken,
-                    "idToken" to credentials.idToken,
-                    "refreshToken" to credentials.refreshToken,
-                    "userProfile" to claims,
-                    "expiresAt" to formattedDate,
-                    "scopes" to scopes
-                ))
+                result.success(
+                    mapOf(
+                        "accessToken" to credentials.accessToken,
+                        "idToken" to credentials.idToken,
+                        "refreshToken" to credentials.refreshToken,
+                        "userProfile" to userProfile.toMap(),
+                        "expiresAt" to formattedDate,
+                        "scopes" to scopes
+                    )
+                )
             }
         })
     }

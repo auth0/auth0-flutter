@@ -5,7 +5,7 @@ import 'auth/auth_renew_access_token_options.dart';
 import 'auth/auth_reset_password_options.dart';
 import 'auth/auth_signup_options.dart';
 import 'auth/auth_user_info_options.dart';
-import 'auth/user_info.dart';
+import 'user_profile.dart';
 import 'auth0_flutter_auth_platform.dart';
 import 'credentials.dart';
 import 'database_user.dart';
@@ -27,7 +27,7 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   }
 
   @override
-  Future<UserInfo> userInfo(final AuthUserInfoOptions options) async {
+  Future<UserProfile> userInfo(final AuthUserInfoOptions options) async {
     final Map<String, dynamic>? result;
 
     try {
@@ -36,7 +36,7 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
       throw ApiException.fromPlatformException(e);
     }
 
-    return UserInfo.fromMap(result);
+    return UserProfile.fromMap(result);
   }
 
   @override

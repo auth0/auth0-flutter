@@ -5,11 +5,10 @@ import 'auth/auth_renew_access_token_options.dart';
 import 'auth/auth_reset_password_options.dart';
 import 'auth/auth_signup_options.dart';
 import 'auth/auth_user_info_options.dart';
-import 'auth/user_info.dart';
 import 'credentials.dart';
-
 import 'database_user.dart';
 import 'method_channel_auth0_flutter_auth.dart';
+import 'user_profile.dart';
 
 abstract class Auth0FlutterAuthPlatform extends PlatformInterface {
   Auth0FlutterAuthPlatform() : super(token: _token);
@@ -29,7 +28,7 @@ abstract class Auth0FlutterAuthPlatform extends PlatformInterface {
     throw UnimplementedError('authLogin() has not been implemented');
   }
 
-  Future<UserInfo> userInfo(final AuthUserInfoOptions options) {
+  Future<UserProfile> userInfo(final AuthUserInfoOptions options) {
     throw UnimplementedError('authUserInfo() has not been implemented');
   }
 
