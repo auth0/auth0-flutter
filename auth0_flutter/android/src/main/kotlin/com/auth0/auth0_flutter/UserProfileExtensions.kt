@@ -1,7 +1,9 @@
 package com.auth0.auth0_flutter
 
+import com.auth0.android.jwt.Claim
 import com.auth0.android.result.UserProfile
 import com.auth0.auth0_flutter.utils.getCustomClaims
+import com.auth0.android.jwt.JWT
 
 fun UserProfile.toMap(): Map<String, Any?> {
     return mapOf(
@@ -29,7 +31,11 @@ fun UserProfile.toMap(): Map<String, Any?> {
     )
 }
 
-fun createUserProfileFromClaims(claims: Map<String, Any>): UserProfile {
+fun createUserProfileFromClaims(claims: Map<String, Claim>): UserProfile {
+    // Map all claim values to their underlying type as Any
+    val claims = claims.mapValues { it.value.asObject(Any::class.java) }
+        .filter { it.value != null } as Map<String, Any>
+
     return UserProfile(
         id = claims["sub"] as String?,
         name = claims["name"] as String?,

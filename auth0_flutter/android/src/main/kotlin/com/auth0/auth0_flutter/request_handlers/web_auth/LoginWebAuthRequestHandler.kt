@@ -81,10 +81,7 @@ class LoginWebAuthRequestHandler : WebAuthRequestHandler {
                 val jwt = JWT(credentials.idToken)
 
                 // Map all claim values to their underlying type as Any
-                var claims = jwt.claims.mapValues { it.value.asObject(Any::class.java) }
-                    .filter { it.value != null } as Map<String, Any>
-
-                val userProfile = createUserProfileFromClaims(claims)
+                val userProfile = createUserProfileFromClaims(jwt.claims)
                 val sdf =
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
 

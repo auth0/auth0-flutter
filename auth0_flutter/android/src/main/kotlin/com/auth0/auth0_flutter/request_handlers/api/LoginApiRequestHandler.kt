@@ -57,9 +57,7 @@ class LoginApiRequestHandler : ApiRequestHandler {
             override fun onSuccess(credentials: Credentials) {
                 val scope = credentials.scope?.split(" ") ?: listOf()
                 val jwt = JWT(credentials.idToken)
-                var claims = jwt.claims.mapValues { it.value.asObject(Any::class.java) }
-                    .filter { it.value != null } as Map<String, Any>
-                val userProfile = createUserProfileFromClaims(claims)
+                val userProfile = createUserProfileFromClaims(jwt.claims)
                 val sdf =
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
 
