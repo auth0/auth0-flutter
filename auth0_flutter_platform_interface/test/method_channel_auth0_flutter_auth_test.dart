@@ -242,7 +242,7 @@ void main() {
       expect(result.scopes, MethodCallHandler.loginResult['scopes']);
       expect(
           result.refreshToken, MethodCallHandler.loginResult['refreshToken']);
-      expect(result.userProfile['name'],
+      expect(result.userProfile.name,
           MethodCallHandler.loginResult['userProfile']['name']);
     });
 
@@ -387,7 +387,7 @@ void main() {
           MethodCallHandler.renewAccessTokenResult['scopes']);
       expect(result.expiresAt,
           DateTime.parse(MethodCallHandler.renewAccessTokenResult['expiresAt'] as String));
-      expect(result.userProfile['name'],
+      expect(result.userProfile.name,
           MethodCallHandler.renewAccessTokenResult['userProfile']['name']);
     });
 
