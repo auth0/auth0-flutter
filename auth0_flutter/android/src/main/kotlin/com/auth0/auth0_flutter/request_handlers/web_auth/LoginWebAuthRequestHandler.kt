@@ -13,8 +13,7 @@ import io.flutter.plugin.common.MethodChannel
 import java.text.SimpleDateFormat
 import java.util.*
 
-class LoginWebAuthRequestHandler(private val builder: WebAuthProvider.Builder) :
-    WebAuthRequestHandler {
+class LoginWebAuthRequestHandler(val builder: WebAuthProvider.Builder) : WebAuthRequestHandler {
     override fun handle(
         context: Context,
         request: MethodCallRequest,
