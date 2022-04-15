@@ -1,7 +1,7 @@
 import Flutter
 import Auth0
 
-extension MethodHandler {
+fileprivate extension MethodHandler {
     func result(from userInfo: UserInfo) -> Any? {
         return userInfo.asDictionary()
     }

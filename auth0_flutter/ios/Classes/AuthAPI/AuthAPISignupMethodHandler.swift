@@ -7,7 +7,7 @@ enum DatabaseUserProperty: String {
     case username
 }
 
-extension MethodHandler {
+fileprivate extension MethodHandler {
     func result(from databaseUser: DatabaseUser) -> Any? {
         var data: [String: Any] = [
             DatabaseUserProperty.email.rawValue: databaseUser.email,

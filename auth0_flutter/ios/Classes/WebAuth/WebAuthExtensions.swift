@@ -14,6 +14,7 @@ extension FlutterError {
         case .other: code = "OTHER"
         default: code = "UNKNOWN"
         }
+
         self.init(code: code, message: String(describing: webAuthError), details: webAuthError.details)
     }
 }
