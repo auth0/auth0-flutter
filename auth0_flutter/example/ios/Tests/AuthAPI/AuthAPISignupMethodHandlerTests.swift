@@ -3,6 +3,8 @@ import Auth0
 
 @testable import auth0_flutter
 
+fileprivate typealias Argument = AuthAPISignupMethodHandler.Argument
+
 class AuthAPISignupMethodHandlerTests: XCTestCase {
     let spy = SpyAuthentication()
     var sut: AuthAPISignupMethodHandler!
@@ -16,16 +18,15 @@ class AuthAPISignupMethodHandlerTests: XCTestCase {
 
 extension AuthAPISignupMethodHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
-        let inputs = ["email": self.expectation(description: "email is missing"),
-                      "password": self.expectation(description: "password is missing"),
-                      "connection": self.expectation(description: "connection is missing")]
-        for (argument, currentExpectation) in inputs {
-            sut.handle(with: arguments(without: argument)) { result in
-                assertHas(handlerError: .requiredArgumentsMissing, result)
+        let keys: [Argument] = [.email, .password, .connection]
+        let expectations = keys.map({ expectation(description: "\($0.rawValue) is missing") })
+        for (argument, currentExpectation) in zip(keys, expectations) {
+            sut.handle(with: arguments(without: argument.rawValue)) { result in
+                assertHas(handlerError: .requiredArgumentMissing(argument.rawValue), result)
                 currentExpectation.fulfill()
             }
         }
-        wait(for: Array(inputs.values))
+        wait(for: expectations)
     }
 }
 
@@ -36,43 +37,43 @@ extension AuthAPISignupMethodHandlerTests {
     // MARK: email
 
     func testAddsEmail() {
-        let key = "email"
+        let key = Argument.email
         let value = "foo"
         sut.handle(with: arguments(key: key, value: value)) { _ in }
-        XCTAssertEqual(spy.arguments[key] as? String, value)
+        XCTAssertEqual(spy.arguments[key.rawValue] as? String, value)
     }
 
     // MARK: password
 
     func testAddsPassword() {
-        let key = "password"
+        let key = Argument.password
         let value = "foo"
         sut.handle(with: arguments(key: key, value: value)) { _ in }
-        XCTAssertEqual(spy.arguments[key] as? String, value)
+        XCTAssertEqual(spy.arguments[key.rawValue] as? String, value)
     }
 
     // MARK: connection
 
     func testAddsConnection() {
-        let key = "connection"
+        let key = Argument.connection
         let value = "foo"
         sut.handle(with: arguments(key: key, value: value)) { _ in }
-        XCTAssertEqual(spy.arguments[key] as? String, value)
+        XCTAssertEqual(spy.arguments[key.rawValue] as? String, value)
     }
 
     // MARK: username
 
     func testAddsUsername() {
-        let key = "username"
+        let key = Argument.username
         let value = "foo"
         sut.handle(with: arguments(key: key, value: value)) { _ in }
-        XCTAssertEqual(spy.arguments[key] as? String, value)
+        XCTAssertEqual(spy.arguments[key.rawValue] as? String, value)
     }
 
-    func testDoesNotAddAudienceWhenNil() {
-        let argument = "username"
+    func testDoesNotAddUsernameWhenNil() {
+        let argument = Argument.username
         sut.handle(with: arguments(without: argument)) { _ in }
-        XCTAssertNil(spy.arguments[argument])
+        XCTAssertNil(spy.arguments[argument.rawValue])
     }
 }
 
@@ -111,10 +112,20 @@ extension AuthAPISignupMethodHandlerTests {
 
 extension AuthAPISignupMethodHandlerTests {
     override func arguments() -> [String: Any] {
-        return ["email": "",
-                "password": "",
-                "connection": "",
-                "username": "",
-                "userMetadata": [:]]
+        return [Argument.email.rawValue: "",
+                Argument.password.rawValue: "",
+                Argument.connection.rawValue: "",
+                Argument.username.rawValue: "",
+                Argument.userMetadata.rawValue: [:]]
+    }
+}
+
+fileprivate extension AuthAPISignupMethodHandlerTests {
+    func arguments<T>(key: Argument, value: T) -> [String: Any] {
+        return arguments(key: key.rawValue, value: value)
+    }
+
+    func arguments(without key: Argument) -> [String: Any] {
+        return arguments(without: key.rawValue)
     }
 }

@@ -83,7 +83,20 @@ func assertHas(authenticationError: AuthenticationError,
     if let result = result as? FlutterError,
        let details = result.details as? [String: Any],
        result.code == authenticationError.code,
-       details == authenticationError.info {
+       (details.filter({ $0.key != AuthAPIErrorFlag.key }) == authenticationError.details),
+       let flags = details[AuthAPIErrorFlag.key] as? [String: Bool],
+       flags[AuthAPIErrorFlag.isMultifactorRequired.rawValue] == authenticationError.isMultifactorRequired,
+       flags[AuthAPIErrorFlag.isMultifactorEnrollRequired.rawValue] == authenticationError.isMultifactorEnrollRequired,
+       flags[AuthAPIErrorFlag.isMultifactorCodeInvalid.rawValue] == authenticationError.isMultifactorCodeInvalid,
+       flags[AuthAPIErrorFlag.isMultifactorTokenInvalid.rawValue] == authenticationError.isMultifactorTokenInvalid,
+       flags[AuthAPIErrorFlag.isPasswordNotStrongEnough.rawValue] == authenticationError.isPasswordNotStrongEnough,
+       flags[AuthAPIErrorFlag.isPasswordAlreadyUsed.rawValue] == authenticationError.isPasswordAlreadyUsed,
+       flags[AuthAPIErrorFlag.isRuleError.rawValue] == authenticationError.isRuleError,
+       flags[AuthAPIErrorFlag.isInvalidCredentials.rawValue] == authenticationError.isInvalidCredentials,
+       flags[AuthAPIErrorFlag.isRefreshTokenDeleted.rawValue] == authenticationError.isRefreshTokenDeleted,
+       flags[AuthAPIErrorFlag.isAccessDenied.rawValue] == authenticationError.isAccessDenied,
+       flags[AuthAPIErrorFlag.isTooManyAttempts.rawValue] == authenticationError.isTooManyAttempts,
+       flags[AuthAPIErrorFlag.isVerificationRequired.rawValue] == authenticationError.isVerificationRequired {
         return
     }
     XCTFail("The handler did not produce the error '\(authenticationError)'", file: file, line: line)
