@@ -1,4 +1,3 @@
-
 import XCTest
 import Auth0
 
