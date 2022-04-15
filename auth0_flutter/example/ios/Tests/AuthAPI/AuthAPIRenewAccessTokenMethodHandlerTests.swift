@@ -6,9 +6,6 @@ import Auth0
 fileprivate typealias Argument = AuthAPIRenewAccessTokenMethodHandler.Argument
 
 class AuthAPIRenewAccessTokenMethodHandlerTests: XCTestCase {
-    let idToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmb28iLCJuYW1lIjoiYmFyIiwiZW1haWwiOiJmb29AZXhhbXBsZS5"
-        + "jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGljdHVyZSI6ImJheiIsInVwZGF0ZWRfYXQiOiJxdXgifQ.vc9sxvhUVAHowIWJ7D_WDzvq"
-        + "JxC4-qYXHmiBVYEKn9E"
     let spy = SpyAuthentication()
     var sut: AuthAPIRenewAccessTokenMethodHandler!
 
@@ -22,10 +19,10 @@ class AuthAPIRenewAccessTokenMethodHandlerTests: XCTestCase {
 extension AuthAPIRenewAccessTokenMethodHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
         let keys: [Argument] = [.refreshToken, .parameters]
-        let expectations = keys.map({ expectation(description: "\($0.rawValue) is missing") })
+        let expectations = keys.map { expectation(description: "\($0.rawValue) is missing") }
         for (argument, currentExpectation) in zip(keys, expectations) {
-            sut.handle(with: arguments(without: argument.rawValue)) { result in
-                assertHas(handlerError: .requiredArgumentMissing(argument.rawValue), result)
+            sut.handle(with: arguments(without: argument)) { result in
+                assert(result: result, isError: .requiredArgumentMissing(argument.rawValue))
                 currentExpectation.fulfill()
             }
         }
@@ -41,7 +38,7 @@ extension AuthAPIRenewAccessTokenMethodHandlerTests {
         let expectation = self.expectation(description: "ID Token cannot be decoded")
         spy.credentialsResult = .success(credentials)
         sut.handle(with: arguments()) { result in
-            assertHas(handlerError: .idTokenDecodingFailed, result)
+            assert(result: result, isError: .idTokenDecodingFailed)
             expectation.fulfill()
         }
         wait(for: [expectation])
@@ -58,7 +55,7 @@ extension AuthAPIRenewAccessTokenMethodHandlerTests {
         let key = Argument.refreshToken
         let value = "foo"
         sut.handle(with: arguments(key: key, value: value)) { _ in }
-        XCTAssertEqual(spy.arguments[key.rawValue] as? String, value)
+        XCTAssertEqual(spy.arguments[key] as? String, value)
     }
 
     // MARK: scopes
@@ -85,25 +82,14 @@ extension AuthAPIRenewAccessTokenMethodHandlerTests {
 
     func testProducesCredentials() {
         let credentials = Credentials(accessToken: "accessToken",
-                                      idToken: idToken,
+                                      idToken: testIdToken,
                                       refreshToken: "refreshToken",
                                       expiresIn: Date(),
                                       scope: "foo bar")
         let expectation = self.expectation(description: "Produced credentials")
         spy.credentialsResult = .success(credentials)
         sut.handle(with: arguments()) { result in
-            assertHas(credentials: credentials, result)
-            expectation.fulfill()
-        }
-        wait(for: [expectation])
-    }
-
-    func testProducesCredentialsWithoutRefreshToken() {
-        let credentials = Credentials(idToken: idToken, refreshToken: nil)
-        let expectation = self.expectation(description: "Produced credentials without a refresh token")
-        spy.credentialsResult = .success(credentials)
-        sut.handle(with: arguments()) { result in
-            assertHas(credentials: credentials, result)
+            assert(result: result, has: CredentialsProperty.allCases)
             expectation.fulfill()
         }
         wait(for: [expectation])
@@ -114,7 +100,7 @@ extension AuthAPIRenewAccessTokenMethodHandlerTests {
         let expectation = self.expectation(description: "Produced the AuthenticationError \(error)")
         spy.credentialsResult = .failure(error)
         sut.handle(with: arguments()) { result in
-            assertHas(authenticationError: error, result)
+            assert(result: result, isError: error)
             expectation.fulfill()
         }
         wait(for: [expectation])
@@ -126,11 +112,5 @@ extension AuthAPIRenewAccessTokenMethodHandlerTests {
 extension AuthAPIRenewAccessTokenMethodHandlerTests {
     override func arguments() -> [String: Any] {
         return [Argument.refreshToken.rawValue: "", Argument.scopes.rawValue: [], Argument.parameters.rawValue: [:]]
-    }
-}
-
-fileprivate extension AuthAPIRenewAccessTokenMethodHandlerTests {
-    func arguments<T>(key: Argument, value: T) -> [String: Any] {
-        return arguments(key: key.rawValue, value: value)
     }
 }

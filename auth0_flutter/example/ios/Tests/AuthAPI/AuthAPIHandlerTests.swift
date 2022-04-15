@@ -28,7 +28,7 @@ extension AuthAPIHandlerTests {
     func testProducesErrorWhenArgumentsAreMissing() {
         let expectation = expectation(description: "arguments are missing")
         sut.handle(FlutterMethodCall(methodName: "foo", arguments: nil)) { result in
-            assertHas(handlerError: .argumentsMissing, result)
+            assert(result: result, isError: .argumentsMissing)
             expectation.fulfill()
         }
         wait(for: [expectation])
@@ -36,11 +36,11 @@ extension AuthAPIHandlerTests {
 
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
         let keys: [Argument] = [.clientId, .domain]
-        let expectations = keys.map({ expectation(description: "\($0.rawValue) is missing") })
+        let expectations = keys.map { expectation(description: "\($0.rawValue) is missing") }
         for (argument, currentExpectation) in zip(keys, expectations) {
-            let methodCall = FlutterMethodCall(methodName: "foo", arguments: arguments(without: argument.rawValue))
+            let methodCall = FlutterMethodCall(methodName: "foo", arguments: arguments(without: argument))
             sut.handle(methodCall) { result in
-                assertHas(handlerError: .requiredArgumentMissing(argument.rawValue), result)
+                assert(result: result, isError: .requiredArgumentMissing(argument.rawValue))
                 currentExpectation.fulfill()
             }
         }
