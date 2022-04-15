@@ -53,10 +53,7 @@ extension AuthAPIHandlerTests {
 extension AuthAPIHandlerTests {
     func testCallsMethodHandlers() {
         var expectations: [XCTestExpectation] = []
-        [AuthAPIHandler.Method.loginWithUsernameOrEmail,
-         AuthAPIHandler.Method.signup,
-         AuthAPIHandler.Method.renewAccessToken,
-         AuthAPIHandler.Method.resetPassword].forEach { method in
+        AuthAPIHandler.Method.allCases.forEach { method in
             let spy = SpyMethodHandler()
             let arguments: [String: Any] = arguments()
             let expectation = self.expectation(description: "\(method.rawValue) handler call")
