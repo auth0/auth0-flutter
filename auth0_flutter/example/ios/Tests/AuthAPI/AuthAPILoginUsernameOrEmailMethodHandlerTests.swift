@@ -54,7 +54,7 @@ extension AuthAPILoginUsernameOrEmailMethodHandlerTests {
     func testAddsUsernameOrEmail() {
         let key = Argument.usernameOrEmail
         let value = "foo"
-        sut.handle(with: arguments(key: key, value: value)) { _ in }
+        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
         XCTAssertEqual(spy.arguments[key] as? String, value)
     }
 
@@ -63,7 +63,7 @@ extension AuthAPILoginUsernameOrEmailMethodHandlerTests {
     func testAddsPassword() {
         let key = Argument.password
         let value = "foo"
-        sut.handle(with: arguments(key: key, value: value)) { _ in }
+        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
         XCTAssertEqual(spy.arguments[key] as? String, value)
     }
 
@@ -72,7 +72,7 @@ extension AuthAPILoginUsernameOrEmailMethodHandlerTests {
     func testAddsconnectionOrRealm() {
         let key = Argument.connectionOrRealm
         let value = "foo"
-        sut.handle(with: arguments(key: key, value: value)) { _ in }
+        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
         XCTAssertEqual(spy.arguments[key] as? String, value)
     }
 
@@ -80,12 +80,12 @@ extension AuthAPILoginUsernameOrEmailMethodHandlerTests {
 
     func testAddsScopes() {
         let value = ["foo", "bar"]
-        sut.handle(with: arguments(key: Argument.scopes, value: value)) { _ in }
+        sut.handle(with: arguments(withKey: Argument.scopes, value: value)) { _ in }
         XCTAssertEqual(spy.arguments["scope"] as? String, value.asSpaceSeparatedString)
     }
 
     func testAddsDefaultScopesWhenEmpty() {
-        sut.handle(with: arguments(key: Argument.scopes, value: [])) { _ in }
+        sut.handle(with: arguments(withKey: Argument.scopes, value: [])) { _ in }
         XCTAssertEqual(spy.arguments["scope"] as? String, Auth0.defaultScope)
     }
 
@@ -94,7 +94,7 @@ extension AuthAPILoginUsernameOrEmailMethodHandlerTests {
     func testAddsAudience() {
         let key = Argument.audience
         let value = "foo"
-        sut.handle(with: arguments(key: key, value: value)) { _ in }
+        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
         XCTAssertEqual(spy.arguments[key] as? String, value)
     }
 

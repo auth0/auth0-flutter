@@ -38,7 +38,7 @@ extension AuthAPIUserInfoMethodHandlerTests {
     func testAddsAccessToken() {
         let key = Argument.accessToken
         let value = "foo"
-        sut.handle(with: arguments(key: key, value: value)) { _ in }
+        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
         XCTAssertEqual(spy.arguments[key] as? String, value)
     }
 }

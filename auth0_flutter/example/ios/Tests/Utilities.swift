@@ -35,7 +35,7 @@ extension XCTestCase {
         return [:]
     }
 
-    func arguments<K: RawRepresentable, V>(key: K, value: V) -> [String: Any] where K.RawValue == String {
+    func arguments<K: RawRepresentable, V>(withKey key: K, value: V) -> [String: Any] where K.RawValue == String {
         var dictionary = arguments()
         dictionary[key.rawValue] = value
         return dictionary

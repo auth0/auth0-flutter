@@ -39,7 +39,7 @@ extension AuthAPISignupMethodHandlerTests {
     func testAddsEmail() {
         let key = Argument.email
         let value = "foo"
-        sut.handle(with: arguments(key: key, value: value)) { _ in }
+        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
         XCTAssertEqual(spy.arguments[key] as? String, value)
     }
 
@@ -48,7 +48,7 @@ extension AuthAPISignupMethodHandlerTests {
     func testAddsPassword() {
         let key = Argument.password
         let value = "foo"
-        sut.handle(with: arguments(key: key, value: value)) { _ in }
+        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
         XCTAssertEqual(spy.arguments[key] as? String, value)
     }
 
@@ -57,7 +57,7 @@ extension AuthAPISignupMethodHandlerTests {
     func testAddsConnection() {
         let key = Argument.connection
         let value = "foo"
-        sut.handle(with: arguments(key: key, value: value)) { _ in }
+        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
         XCTAssertEqual(spy.arguments[key] as? String, value)
     }
 
@@ -66,7 +66,7 @@ extension AuthAPISignupMethodHandlerTests {
     func testAddsUsername() {
         let key = Argument.username
         let value = "foo"
-        sut.handle(with: arguments(key: key, value: value)) { _ in }
+        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
         XCTAssertEqual(spy.arguments[key] as? String, value)
     }
 

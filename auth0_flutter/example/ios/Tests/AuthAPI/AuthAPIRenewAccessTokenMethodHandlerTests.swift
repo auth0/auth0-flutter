@@ -54,7 +54,7 @@ extension AuthAPIRenewAccessTokenMethodHandlerTests {
     func testAddsAccessToken() {
         let key = Argument.refreshToken
         let value = "foo"
-        sut.handle(with: arguments(key: key, value: value)) { _ in }
+        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
         XCTAssertEqual(spy.arguments[key] as? String, value)
     }
 
@@ -62,12 +62,12 @@ extension AuthAPIRenewAccessTokenMethodHandlerTests {
 
     func testAddsScopes() {
         let value = ["foo", "bar"]
-        sut.handle(with: arguments(key: Argument.scopes, value: value)) { _ in }
+        sut.handle(with: arguments(withKey: Argument.scopes, value: value)) { _ in }
         XCTAssertEqual(spy.arguments["scope"] as? String, value.asSpaceSeparatedString)
     }
 
     func testDoesNotAddScopesWhenEmpty() {
-        sut.handle(with: arguments(key: Argument.scopes, value:  [])) { _ in }
+        sut.handle(with: arguments(withKey: Argument.scopes, value:  [])) { _ in }
         XCTAssertNil(spy.arguments["scope"])
     }
 }

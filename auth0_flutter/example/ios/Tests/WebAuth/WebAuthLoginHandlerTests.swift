@@ -53,12 +53,12 @@ extension WebAuthLoginHandlerTests {
 
     func testEnablesUseEphemeralSession() {
         let value = true
-        sut.handle(with: arguments(key: Argument.useEphemeralSession, value: value)) { _ in }
+        sut.handle(with: arguments(withKey: Argument.useEphemeralSession, value: value)) { _ in }
         XCTAssertEqual(spy.useEmphemeralSessionValue, value)
     }
 
     func testDoesNotEnableUseEphemeralSessionWhenFalse() {
-        sut.handle(with: arguments(key: Argument.useEphemeralSession, value: false)) { _ in }
+        sut.handle(with: arguments(withKey: Argument.useEphemeralSession, value: false)) { _ in }
         XCTAssertNil(spy.useEmphemeralSessionValue)
     }
 
@@ -66,7 +66,7 @@ extension WebAuthLoginHandlerTests {
 
     func testAddsParameters() {
         let value = ["foo": "bar"]
-        sut.handle(with: arguments(key: Argument.parameters, value: value)) { _ in }
+        sut.handle(with: arguments(withKey: Argument.parameters, value: value)) { _ in }
         XCTAssertEqual(spy.parametersValue, value)
     }
 
@@ -74,12 +74,12 @@ extension WebAuthLoginHandlerTests {
 
     func testAddsScopes() {
         let value = ["foo", "bar"]
-        sut.handle(with: arguments(key: Argument.scopes, value: value)) { _ in }
+        sut.handle(with: arguments(withKey: Argument.scopes, value: value)) { _ in }
         XCTAssertEqual(spy.scopeValue, value.asSpaceSeparatedString)
     }
 
     func testDoesNotAddScopesWhenEmpty() {
-        sut.handle(with: arguments(key: Argument.scopes, value:  [])) { _ in }
+        sut.handle(with: arguments(withKey: Argument.scopes, value:  [])) { _ in }
         XCTAssertNil(spy.scopeValue)
     }
 
@@ -87,7 +87,7 @@ extension WebAuthLoginHandlerTests {
 
     func testAddsAudience() {
         let value = "foo"
-        sut.handle(with: arguments(key: Argument.audience, value: value)) { _ in }
+        sut.handle(with: arguments(withKey: Argument.audience, value: value)) { _ in }
         XCTAssertEqual(spy.audienceValue, value)
     }
 
@@ -100,7 +100,7 @@ extension WebAuthLoginHandlerTests {
 
     func testAddsRedirectURL() {
         let value = "https://auth0.com"
-        sut.handle(with: arguments(key: Argument.redirectUri, value: value)) { _ in }
+        sut.handle(with: arguments(withKey: Argument.redirectUri, value: value)) { _ in }
         XCTAssertEqual(spy.redirectURLValue?.absoluteString, value)
     }
 
@@ -113,7 +113,7 @@ extension WebAuthLoginHandlerTests {
 
     func testAddsOrganizationId() {
         let value = "foo"
-        sut.handle(with: arguments(key: Argument.organizationId, value: value)) { _ in }
+        sut.handle(with: arguments(withKey: Argument.organizationId, value: value)) { _ in }
         XCTAssertEqual(spy.organizationValue, value)
     }
 
@@ -126,7 +126,7 @@ extension WebAuthLoginHandlerTests {
 
     func testAddsInvitationURL() {
         let value = "https://auth0.com"
-        sut.handle(with: arguments(key: Argument.invitationUrl, value: value)) { _ in }
+        sut.handle(with: arguments(withKey: Argument.invitationUrl, value: value)) { _ in }
         XCTAssertEqual(spy.invitationURLValue?.absoluteString, value)
     }
 
@@ -139,7 +139,7 @@ extension WebAuthLoginHandlerTests {
 
     func testAddsLeeway() {
         let value = 1_000
-        sut.handle(with: arguments(key: Argument.leeway, value: value)) { _ in }
+        sut.handle(with: arguments(withKey: Argument.leeway, value: value)) { _ in }
         XCTAssertEqual(spy.leewayValue, value)
     }
 
@@ -152,7 +152,7 @@ extension WebAuthLoginHandlerTests {
 
     func testAddsIssuer() {
         let value = "foo"
-        sut.handle(with: arguments(key: Argument.issuer, value: value)) { _ in }
+        sut.handle(with: arguments(withKey: Argument.issuer, value: value)) { _ in }
         XCTAssertEqual(spy.issuerValue, value)
     }
 
@@ -165,7 +165,7 @@ extension WebAuthLoginHandlerTests {
 
     func testAddsMaxAge() {
         let value = 1_000
-        sut.handle(with: arguments(key: Argument.maxAge, value: value)) { _ in }
+        sut.handle(with: arguments(withKey: Argument.maxAge, value: value)) { _ in }
         XCTAssertEqual(spy.maxAgeValue, value)
     }
 
