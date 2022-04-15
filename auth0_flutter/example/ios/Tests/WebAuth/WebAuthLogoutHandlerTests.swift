@@ -19,9 +19,9 @@ extension WebAuthLogoutHandlerTests {
     // MARK: returnTo
 
     func testAddsReturnTo() {
-        let returnTo = "https://auth0.com"
-        sut.handle(with: ["returnTo":  returnTo]) { _ in }
-        XCTAssertEqual(spy.redirectURLValue?.absoluteString, returnTo)
+        let value = "https://auth0.com"
+        sut.handle(with: [WebAuthLogoutMethodHandler.Argument.returnTo.rawValue: value]) { _ in }
+        XCTAssertEqual(spy.redirectURLValue?.absoluteString, value)
     }
 
     func testDoesNotAddReturnToWhenNil() {

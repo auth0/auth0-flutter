@@ -100,8 +100,6 @@ class _ExampleAppState extends State<ExampleApp> {
           connectionOrRealm: 'Username-Password-Authentication');
       output = result.accessToken;
     } on ApiException catch (e) {
-      output = 'Failed to get token: ${e.message}';
-    } on ApiException catch (e) {
       output = output = e.toString();
     }
 
