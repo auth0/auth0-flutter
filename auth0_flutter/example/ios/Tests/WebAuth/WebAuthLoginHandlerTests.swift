@@ -3,6 +3,8 @@ import Auth0
 
 @testable import auth0_flutter
 
+fileprivate typealias Argument = WebAuthLoginMethodHandler.Argument
+
 class WebAuthLoginHandlerTests: XCTestCase {
     let idToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmb28iLCJuYW1lIjoiYmFyIiwiZW1haWwiOiJmb29AZXhhbXBsZS5"
         + "jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGljdHVyZSI6ImJheiIsInVwZGF0ZWRfYXQiOiJxdXgifQ.vc9sxvhUVAHowIWJ7D_WDzvq"
@@ -19,16 +21,15 @@ class WebAuthLoginHandlerTests: XCTestCase {
 
 extension WebAuthLoginHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
-        let inputs = ["useEphemeralSession": self.expectation(description: "useEphemeralSession is missing"),
-                      "scopes": self.expectation(description: "scopes is missing"),
-                      "parameters": self.expectation(description: "parameters is missing")]
-        for (argument, currentExpectation) in inputs {
-            sut.handle(with: arguments(without: argument)) { result in
-                assertHas(handlerError: .requiredArgumentsMissing, result)
+        let keys: [Argument] = [.useEphemeralSession, .scopes, .parameters]
+        let expectations = keys.map({ expectation(description: "\($0.rawValue) is missing") })
+        for (argument, currentExpectation) in zip(keys, expectations) {
+            sut.handle(with: arguments(without: argument.rawValue)) { result in
+                assertHas(handlerError: .requiredArgumentMissing(argument.rawValue), result)
                 currentExpectation.fulfill()
             }
         }
-        wait(for: Array(inputs.values))
+        wait(for: expectations)
     }
 }
 
@@ -54,132 +55,125 @@ extension WebAuthLoginHandlerTests {
     // MARK: useEphemeralSession
 
     func testEnablesUseEphemeralSession() {
-        let useEphemeralSession = true
-        sut.handle(with: arguments(key: "useEphemeralSession", value: useEphemeralSession)) { _ in }
-        XCTAssertEqual(spy.useEmphemeralSessionValue, useEphemeralSession)
+        let value = true
+        sut.handle(with: arguments(key: .useEphemeralSession, value: value)) { _ in }
+        XCTAssertEqual(spy.useEmphemeralSessionValue, value)
     }
 
     func testDoesNotEnableUseEphemeralSessionWhenFalse() {
-        sut.handle(with: arguments(key: "useEphemeralSession", value: false)) { _ in }
+        sut.handle(with: arguments(key: .useEphemeralSession, value: false)) { _ in }
         XCTAssertNil(spy.useEmphemeralSessionValue)
     }
 
     // MARK: parameters
 
     func testAddsParameters() {
-        let parameters = ["foo": "bar"]
-        sut.handle(with: arguments(key: "parameters", value: parameters)) { _ in }
-        XCTAssertEqual(spy.parametersValue, parameters)
+        let value = ["foo": "bar"]
+        sut.handle(with: arguments(key: .parameters, value: value)) { _ in }
+        XCTAssertEqual(spy.parametersValue, value)
     }
 
     // MARK: scopes
 
     func testAddsScopes() {
-        let scopes = ["foo", "bar"]
-        sut.handle(with: arguments(key: "scopes", value: scopes)) { _ in }
-        XCTAssertEqual(spy.scopeValue, scopes.asSpaceSeparatedString)
+        let value = ["foo", "bar"]
+        sut.handle(with: arguments(key: .scopes, value: value)) { _ in }
+        XCTAssertEqual(spy.scopeValue, value.asSpaceSeparatedString)
     }
 
     func testDoesNotAddScopesWhenEmpty() {
-        sut.handle(with: arguments(key: "scopes", value:  [])) { _ in }
+        sut.handle(with: arguments(key: .scopes, value:  [])) { _ in }
         XCTAssertNil(spy.scopeValue)
     }
 
     // MARK: audience
 
     func testAddsAudience() {
-        let audience = "foo"
-        sut.handle(with: arguments(key: "audience", value: audience)) { _ in }
-        XCTAssertEqual(spy.audienceValue, audience)
+        let value = "foo"
+        sut.handle(with: arguments(key: .audience, value: value)) { _ in }
+        XCTAssertEqual(spy.audienceValue, value)
     }
 
     func testDoesNotAddAudienceWhenNil() {
-        let argument = "audience"
-        sut.handle(with: arguments(without: argument)) { _ in }
+        sut.handle(with: arguments(without: .audience)) { _ in }
         XCTAssertNil(spy.audienceValue)
     }
 
     // MARK: redirectUri
 
     func testAddsRedirectURL() {
-        let redirectURL = "https://auth0.com"
-        sut.handle(with: arguments(key: "redirectUri", value: redirectURL)) { _ in }
-        XCTAssertEqual(spy.redirectURLValue?.absoluteString, redirectURL)
+        let value = "https://auth0.com"
+        sut.handle(with: arguments(key: .redirectUri, value: value)) { _ in }
+        XCTAssertEqual(spy.redirectURLValue?.absoluteString, value)
     }
 
     func testDoesNotAddRedirectURLWhenNil() {
-        let argument = "redirectUri"
-        sut.handle(with: arguments(without: argument)) { _ in }
+        sut.handle(with: arguments(without: .redirectUri)) { _ in }
         XCTAssertNil(spy.redirectURLValue)
     }
 
     // MARK: organizationId
 
     func testAddsOrganizationId() {
-        let organizationId = "foo"
-        sut.handle(with: arguments(key: "organizationId", value: organizationId)) { _ in }
-        XCTAssertEqual(spy.organizationValue, organizationId)
+        let value = "foo"
+        sut.handle(with: arguments(key: .organizationId, value: value)) { _ in }
+        XCTAssertEqual(spy.organizationValue, value)
     }
 
     func testDoesNotAddOrganizationIdWhenNil() {
-        let argument = "organizationId"
-        sut.handle(with: arguments(without: argument)) { _ in }
+        sut.handle(with: arguments(without: .organizationId)) { _ in }
         XCTAssertNil(spy.organizationValue)
     }
 
     // MARK: invitationUrl
 
     func testAddsInvitationURL() {
-        let invitationURL = "https://auth0.com"
-        sut.handle(with: arguments(key: "invitationUrl", value: invitationURL)) { _ in }
-        XCTAssertEqual(spy.invitationURLValue?.absoluteString, invitationURL)
+        let value = "https://auth0.com"
+        sut.handle(with: arguments(key: .invitationUrl, value: value)) { _ in }
+        XCTAssertEqual(spy.invitationURLValue?.absoluteString, value)
     }
 
     func testDoesNotAddInvitationURLWhenNil() {
-        let argument = "invitationUrl"
-        sut.handle(with: arguments(without: argument)) { _ in }
+        sut.handle(with: arguments(without: .invitationUrl)) { _ in }
         XCTAssertNil(spy.invitationURLValue)
     }
 
     // MARK: leeway
 
     func testAddsLeeway() {
-        let leeway = 1_000
-        sut.handle(with: arguments(key: "leeway", value: leeway)) { _ in }
-        XCTAssertEqual(spy.leewayValue, leeway)
+        let value = 1_000
+        sut.handle(with: arguments(key: .leeway, value: value)) { _ in }
+        XCTAssertEqual(spy.leewayValue, value)
     }
 
     func testDoesNotAddLeewayWhenNil() {
-        let argument = "leeway"
-        sut.handle(with: arguments(without: argument)) { _ in }
+        sut.handle(with: arguments(without: .leeway)) { _ in }
         XCTAssertNil(spy.leewayValue)
     }
 
     // MARK: issuer
 
     func testAddsIssuer() {
-        let issuer = "foo"
-        sut.handle(with: arguments(key: "issuer", value: issuer)) { _ in }
-        XCTAssertEqual(spy.issuerValue, issuer)
+        let value = "foo"
+        sut.handle(with: arguments(key: .issuer, value: value)) { _ in }
+        XCTAssertEqual(spy.issuerValue, value)
     }
 
     func testDoesNotAddIssuerWhenNil() {
-        let argument = "issuer"
-        sut.handle(with: arguments(without: argument)) { _ in }
+        sut.handle(with: arguments(without: .issuer)) { _ in }
         XCTAssertNil(spy.issuerValue)
     }
 
     // MARK: maxAge
 
     func testAddsMaxAge() {
-        let maxAge = 1_000
-        sut.handle(with: arguments(key: "maxAge", value: maxAge)) { _ in }
-        XCTAssertEqual(spy.maxAgeValue, maxAge)
+        let value = 1_000
+        sut.handle(with: arguments(key: .maxAge, value: value)) { _ in }
+        XCTAssertEqual(spy.maxAgeValue, value)
     }
 
     func testDoesNotAddMaxAgeWhenNil() {
-        let argument = "maxAge"
-        sut.handle(with: arguments(without: argument)) { _ in }
+        sut.handle(with: arguments(without: .maxAge)) { _ in }
         XCTAssertNil(spy.maxAgeValue)
     }
 }
@@ -245,15 +239,25 @@ extension WebAuthLoginHandlerTests {
 
 extension WebAuthLoginHandlerTests {
     override func arguments() -> [String: Any] {
-        return ["scopes": [],
-                "parameters": [:],
-                "useEphemeralSession": false,
-                "audience": "",
-                "redirectUri": "https://example.com",
-                "organizationId": "",
-                "invitationUrl": "https://example.com",
-                "leeway": 1,
-                "issuer": "",
-                "maxAge": 1]
+        return [Argument.scopes.rawValue: [],
+                Argument.parameters.rawValue: [:],
+                Argument.useEphemeralSession.rawValue: false,
+                Argument.audience.rawValue: "",
+                Argument.redirectUri.rawValue: "https://example.com",
+                Argument.organizationId.rawValue: "",
+                Argument.invitationUrl.rawValue: "https://example.com",
+                Argument.leeway.rawValue: 1,
+                Argument.issuer.rawValue: "",
+                Argument.maxAge.rawValue: 1]
+    }
+}
+
+fileprivate extension WebAuthLoginHandlerTests {
+    func arguments<T>(key: Argument, value: T) -> [String: Any] {
+        return arguments(key: key.rawValue, value: value)
+    }
+
+    func arguments(without key: Argument) -> [String: Any] {
+        return arguments(without: key.rawValue)
     }
 }
