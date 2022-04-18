@@ -69,7 +69,7 @@ extension AuthAPILoginUsernameOrEmailMethodHandlerTests {
 
     // MARK: connectionOrRealm
 
-    func testAddsconnectionOrRealm() {
+    func testAddsConnectionOrRealm() {
         let key = Argument.connectionOrRealm
         let value = "foo"
         sut.handle(with: arguments(withKey: key, value: value)) { _ in }
