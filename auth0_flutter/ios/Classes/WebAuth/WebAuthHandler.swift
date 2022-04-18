@@ -14,7 +14,7 @@ public class WebAuthHandler: NSObject, FlutterPlugin {
         case logout = "webAuth#logout"
     }
 
-    var methodHandlers: [Method: MethodHandler] = [:] // For testing
+    var methodHandler: MethodHandler? // For testing
 
     private static let channelName = "auth0.com/auth0_flutter/web_auth"
 
@@ -48,12 +48,12 @@ public class WebAuthHandler: NSObject, FlutterPlugin {
 
 private extension WebAuthHandler {
     func callLogin(with arguments: [String: Any], using client: WebAuth, result: @escaping FlutterResult) {
-        let handler = methodHandlers[.login] ?? WebAuthLoginMethodHandler(client: client)
+        let handler = methodHandler ?? WebAuthLoginMethodHandler(client: client)
         handler.handle(with: arguments, callback: result)
     }
 
     func callLogout(with arguments: [String: Any], using client: WebAuth, result: @escaping FlutterResult) {
-        let handler = methodHandlers[.logout] ?? WebAuthLogoutMethodHandler(client: client)
+        let handler = methodHandler ?? WebAuthLogoutMethodHandler(client: client)
         handler.handle(with: arguments, callback: result)
     }
 }

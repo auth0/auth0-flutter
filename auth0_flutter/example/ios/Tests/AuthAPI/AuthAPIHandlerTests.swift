@@ -59,7 +59,7 @@ extension AuthAPIHandlerTests {
             let expectation = self.expectation(description: "\(method.rawValue) handler call")
             expectations.append(expectation)
             let methodCall = FlutterMethodCall(methodName: method.rawValue, arguments: arguments)
-            sut.methodHandlers[method] = spy
+            sut.methodHandler = spy
             sut.handle(methodCall) { _ in
                 XCTAssertTrue(spy.argumentsValue == arguments)
                 expectation.fulfill()
