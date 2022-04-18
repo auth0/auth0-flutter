@@ -144,11 +144,13 @@ extension AuthAPILoginUsernameOrEmailMethodHandlerTests {
 
 extension AuthAPILoginUsernameOrEmailMethodHandlerTests {
     override func arguments() -> [String: Any] {
-        return [Argument.usernameOrEmail.rawValue: "",
-                Argument.password.rawValue: "",
-                Argument.connectionOrRealm.rawValue: "",
-                Argument.scopes.rawValue: [],
-                Argument.parameters.rawValue: [:],
-                Argument.audience.rawValue: ""]
+        return [
+            Argument.usernameOrEmail.rawValue: "",
+            Argument.password.rawValue: "",
+            Argument.connectionOrRealm.rawValue: "",
+            Argument.scopes.rawValue: [],
+            Argument.parameters.rawValue: [:],
+            Argument.audience.rawValue: ""
+        ]
     }
 }

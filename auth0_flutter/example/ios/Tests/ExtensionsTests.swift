@@ -77,7 +77,7 @@ extension ExtensionsTests {
 
     func testMapsUserInfoName() {
         let data: [String: Any] = [
-            UserInfoProperty.sub.rawValue: "sub",
+            UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.name.rawValue: "name"
         ]
         let userInfo = UserInfo(json: data)!
@@ -88,7 +88,7 @@ extension ExtensionsTests {
 
     func testMapsUserInfoGivenName() {
         let data: [String: Any] = [
-            UserInfoProperty.sub.rawValue: "sub",
+            UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.givenName.rawValue: "givenName"
         ]
         let userInfo = UserInfo(json: data)!
@@ -99,7 +99,7 @@ extension ExtensionsTests {
 
     func testMapsUserInfoFamilyName() {
         let data: [String: Any] = [
-            UserInfoProperty.sub.rawValue: "sub",
+            UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.familyName.rawValue: "familyName"
         ]
         let userInfo = UserInfo(json: data)!
@@ -110,7 +110,7 @@ extension ExtensionsTests {
 
     func testMapsUserInfoMiddleName() {
         let data: [String: Any] = [
-            UserInfoProperty.sub.rawValue: "sub",
+            UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.middleName.rawValue: "middleName"
         ]
         let userInfo = UserInfo(json: data)!
@@ -121,7 +121,7 @@ extension ExtensionsTests {
 
     func testMapsUserInfoNickname() {
         let data: [String: Any] = [
-            UserInfoProperty.sub.rawValue: "sub",
+            UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.nickname.rawValue: "nickname"
         ]
         let userInfo = UserInfo(json: data)!
@@ -132,7 +132,7 @@ extension ExtensionsTests {
 
     func testMapsUserInfoPreferredUsername() {
         let data: [String: Any] = [
-            UserInfoProperty.sub.rawValue: "sub",
+            UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.preferredUsername.rawValue: "preferredUsername"
         ]
         let userInfo = UserInfo(json: data)!
@@ -143,7 +143,7 @@ extension ExtensionsTests {
 
     func testMapsUserInfoProfile() {
         let data: [String: Any] = [
-            UserInfoProperty.sub.rawValue: "sub",
+            UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.profile.rawValue: "https://example.com/profile"
         ]
         let userInfo = UserInfo(json: data)!
@@ -154,7 +154,7 @@ extension ExtensionsTests {
 
     func testMapsUserInfoPicture() {
         let data: [String: Any] = [
-            UserInfoProperty.sub.rawValue: "sub",
+            UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.picture.rawValue: "https://example.com/picture"
         ]
         let userInfo = UserInfo(json: data)!
@@ -165,7 +165,7 @@ extension ExtensionsTests {
 
     func testMapsUserInfoWebsite() {
         let data: [String: Any] = [
-            UserInfoProperty.sub.rawValue: "sub",
+            UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.website.rawValue: "https://example.com/website"
         ]
         let userInfo = UserInfo(json: data)!
@@ -176,7 +176,7 @@ extension ExtensionsTests {
 
     func testMapsUserInfoEmail() {
         let data: [String: Any] = [
-            UserInfoProperty.sub.rawValue: "sub",
+            UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.email.rawValue: "email"
         ]
         let userInfo = UserInfo(json: data)!
@@ -187,7 +187,7 @@ extension ExtensionsTests {
 
     func testMapsUserInfoEmailVerified() {
         let data: [String: Any] = [
-            UserInfoProperty.sub.rawValue: "sub",
+            UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.emailVerified.rawValue: true
         ]
         let userInfo = UserInfo(json: data)!
@@ -198,7 +198,7 @@ extension ExtensionsTests {
 
     func testMapsUserInfoGender() {
         let data: [String: Any] = [
-            UserInfoProperty.sub.rawValue: "sub",
+            UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.gender.rawValue: "gender"
         ]
         let userInfo = UserInfo(json: data)!
@@ -209,7 +209,7 @@ extension ExtensionsTests {
 
     func testMapsUserInfoBirthdate() {
         let data: [String: Any] = [
-            UserInfoProperty.sub.rawValue: "sub",
+            UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.birthdate.rawValue: "birthdate"
         ]
         let userInfo = UserInfo(json: data)!
@@ -220,7 +220,7 @@ extension ExtensionsTests {
 
     func testMapsUserInfoZoneinfo() {
         let data: [String: Any] = [
-            UserInfoProperty.sub.rawValue: "sub",
+            UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.zoneinfo.rawValue: "America/Los_Angeles"
         ]
         let userInfo = UserInfo(json: data)!
@@ -231,7 +231,7 @@ extension ExtensionsTests {
 
     func testMapsUserInfoLocale() {
         let data: [String: Any] = [
-            UserInfoProperty.sub.rawValue: "sub",
+            UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.locale.rawValue: "en_US"
         ]
         let userInfo = UserInfo(json: data)!
@@ -242,7 +242,7 @@ extension ExtensionsTests {
 
     func testMapsUserInfoPhoneNumber() {
         let data: [String: Any] = [
-            UserInfoProperty.sub.rawValue: "sub",
+            UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.phoneNumber.rawValue: "phoneNumber"
         ]
         let userInfo = UserInfo(json: data)!
@@ -253,7 +253,7 @@ extension ExtensionsTests {
 
     func testMapsUserInfoPhoneNumberVerified() {
         let data: [String: Any] = [
-            UserInfoProperty.sub.rawValue: "sub",
+            UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.phoneNumberVerified.rawValue: true
         ]
         let userInfo = UserInfo(json: data)!
@@ -264,7 +264,7 @@ extension ExtensionsTests {
 
     func testMapsUserInfoAddress() {
         let data: [String: Any] = [
-            UserInfoProperty.sub.rawValue: "sub",
+            UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.address.rawValue: ["foo": "bar"] as [String: String]
         ]
         let userInfo = UserInfo(json: data)!
@@ -275,7 +275,7 @@ extension ExtensionsTests {
 
     func testMapsUserInfoUpdatedAt() {
         let data: [String: Any] = [
-            UserInfoProperty.sub.rawValue: "sub",
+            UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.updatedAt.rawValue: "2022-04-15T03:15:51.787Z"
         ]
         let userInfo = UserInfo(json: data)!
@@ -286,7 +286,7 @@ extension ExtensionsTests {
 
     func testMapsUserInfoCustomClaims() {
         let data: [String: Any] = [
-            UserInfoProperty.sub.rawValue: "sub",
+            UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.customClaims.rawValue: ["foo": "bar"]
         ]
         let userInfo = UserInfo(json: data)!

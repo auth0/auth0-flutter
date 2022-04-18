@@ -112,10 +112,12 @@ extension AuthAPISignupMethodHandlerTests {
 
 extension AuthAPISignupMethodHandlerTests {
     override func arguments() -> [String: Any] {
-        return [Argument.email.rawValue: "",
-                Argument.password.rawValue: "",
-                Argument.connection.rawValue: "",
-                Argument.username.rawValue: "",
-                Argument.userMetadata.rawValue: [:]]
+        return [
+            Argument.email.rawValue: "",
+            Argument.password.rawValue: "",
+            Argument.connection.rawValue: "",
+            Argument.username.rawValue: "",
+            Argument.userMetadata.rawValue: [:]
+        ]
     }
 }

@@ -214,15 +214,17 @@ extension WebAuthLoginHandlerTests {
 
 extension WebAuthLoginHandlerTests {
     override func arguments() -> [String: Any] {
-        return [Argument.scopes.rawValue: [],
-                Argument.parameters.rawValue: [:],
-                Argument.useEphemeralSession.rawValue: false,
-                Argument.audience.rawValue: "",
-                Argument.redirectUri.rawValue: "https://example.com",
-                Argument.organizationId.rawValue: "",
-                Argument.invitationUrl.rawValue: "https://example.com",
-                Argument.leeway.rawValue: 1,
-                Argument.issuer.rawValue: "",
-                Argument.maxAge.rawValue: 1]
+        return [
+            Argument.scopes.rawValue: [],
+            Argument.parameters.rawValue: [:],
+            Argument.useEphemeralSession.rawValue: false,
+            Argument.audience.rawValue: "",
+            Argument.redirectUri.rawValue: "https://example.com",
+            Argument.organizationId.rawValue: "",
+            Argument.invitationUrl.rawValue: "https://example.com",
+            Argument.leeway.rawValue: 1,
+            Argument.issuer.rawValue: "",
+            Argument.maxAge.rawValue: 1
+        ]
     }
 }

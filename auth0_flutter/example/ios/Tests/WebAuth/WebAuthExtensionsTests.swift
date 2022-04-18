@@ -5,14 +5,16 @@ import Auth0
 
 class WebAuthExtensionsTests: XCTestCase {
     func testInitializesFlutterErrorFromWebAuthError() {
-        let errors: [String: WebAuthError] = ["USER_CANCELLED": .userCancelled,
-                                              "ID_TOKEN_VALIDATION_FAILED": .idTokenValidationFailed,
-                                              "INVALID_INVITATION_URL": .invalidInvitationURL,
-                                              "NO_AUTHORIZATION_CODE": .noAuthorizationCode,
-                                              "NO_BUNDLE_IDENTIFIER": .noBundleIdentifier,
-                                              "PKCE_NOT_ALLOWED": .pkceNotAllowed,
-                                              "OTHER": .other,
-                                              "UNKNOWN": .unknown]
+        let errors: [String: WebAuthError] = [
+            "USER_CANCELLED": .userCancelled,
+            "ID_TOKEN_VALIDATION_FAILED": .idTokenValidationFailed,
+            "INVALID_INVITATION_URL": .invalidInvitationURL,
+            "NO_AUTHORIZATION_CODE": .noAuthorizationCode,
+            "NO_BUNDLE_IDENTIFIER": .noBundleIdentifier,
+            "PKCE_NOT_ALLOWED": .pkceNotAllowed,
+            "OTHER": .other,
+            "UNKNOWN": .unknown
+        ]
         for (code, error) in errors {
             let flutterError = FlutterError(from: error)
             assert(flutterError: flutterError, is: error, with: code)
