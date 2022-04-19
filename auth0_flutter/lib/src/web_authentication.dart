@@ -2,8 +2,9 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 
 class WebAuthentication {
   final Account account;
+  final Telemetry telemetry;
 
-  WebAuthentication(this.account);
+  WebAuthentication(this.account, this.telemetry);
 
   Future<Credentials> login(
           {final String? audience,
@@ -24,11 +25,15 @@ class WebAuthentication {
           invitationUrl: invitationUrl,
           parameters: parameters,
           account: account,
+          telemetry: telemetry,
           idTokenValidationConfig: idTokenValidationConfig,
           scheme: scheme,
           useEphemeralSession: useEphemeralSession));
 
   Future<void> logout({final String? returnTo, final String? scheme}) =>
       Auth0FlutterWebAuthPlatform.instance.logout(WebAuthLogoutInput(
-          returnTo: returnTo, account: account, scheme: scheme));
+          returnTo: returnTo,
+          account: account,
+          telemetry: telemetry,
+          scheme: scheme));
 }

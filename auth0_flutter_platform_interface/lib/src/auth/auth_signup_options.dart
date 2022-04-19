@@ -1,7 +1,9 @@
 import '../account.dart';
+import '../telemetry.dart';
 
 class AuthSignupOptions {
   final Account account;
+  final Telemetry telemetry;
   final String email;
   final String? username;
   final String password;
@@ -10,6 +12,7 @@ class AuthSignupOptions {
 
   AuthSignupOptions(
       {required this.account,
+      required this.telemetry,
       required this.email,
       this.username,
       required this.password,
@@ -19,6 +22,7 @@ class AuthSignupOptions {
   Map<String, dynamic> toMap() => {
         'domain': account.domain,
         'clientId': account.clientId,
+        'telemetry': telemetry.toMap(),
         'connection': connection,
         'username': username,
         'email': email,

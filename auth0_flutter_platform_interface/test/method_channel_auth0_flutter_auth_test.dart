@@ -55,6 +55,7 @@ void main() {
 
       await MethodChannelAuth0FlutterAuth().signup(AuthSignupOptions(
           account: const Account('test-domain', 'test-clientId'),
+          telemetry: Telemetry(name: 'test-name', version: 'test-version'),
           email: 'test-email',
           password: 'test-pass',
           connection: 'test-connection',
@@ -74,6 +75,7 @@ void main() {
 
       await MethodChannelAuth0FlutterAuth().signup(AuthSignupOptions(
           account: const Account('test-domain', 'test-clientId'),
+          telemetry: Telemetry(name: 'test-name', version: 'test-version'),
           email: 'test-email',
           password: 'test-pass',
           connection: 'test-connection',
@@ -83,6 +85,8 @@ void main() {
           verify(mocked.methodCallHandler(captureAny)).captured.single;
       expect(verificationResult.arguments['domain'], 'test-domain');
       expect(verificationResult.arguments['clientId'], 'test-clientId');
+      expect(verificationResult.arguments['telemetry']['name'], 'test-name');
+      expect(verificationResult.arguments['telemetry']['version'], 'test-version');
       expect(verificationResult.arguments['email'], 'test-email');
       expect(verificationResult.arguments['username'], 'test-user');
       expect(verificationResult.arguments['password'], 'test-pass');
@@ -99,6 +103,7 @@ void main() {
       final result = await MethodChannelAuth0FlutterAuth().signup(
           AuthSignupOptions(
               account: const Account('test-domain', 'test-clientId'),
+              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
               email: 'test-email',
               password: 'test-pass',
               connection: 'test-connection',
@@ -118,6 +123,7 @@ void main() {
       final result = await MethodChannelAuth0FlutterAuth().signup(
           AuthSignupOptions(
               account: const Account('', ''),
+              telemetry: Telemetry(name: '', version: ''),
               email: '',
               password: '',
               connection: ''));
@@ -133,6 +139,7 @@ void main() {
       final result = await MethodChannelAuth0FlutterAuth().signup(
           AuthSignupOptions(
               account: const Account('', ''),
+              telemetry: Telemetry(name: '', version: ''),
               email: '',
               password: '',
               connection: ''));
@@ -148,6 +155,7 @@ void main() {
 
     final result = await MethodChannelAuth0FlutterAuth().login(AuthLoginOptions(
         account: const Account('', ''),
+        telemetry: Telemetry(name: '', version: ''),
         usernameOrEmail: '',
         password: '',
         connectionOrRealm: ''));
@@ -164,6 +172,7 @@ void main() {
       await MethodChannelAuth0FlutterAuth().resetPassword(
           AuthResetPasswordOptions(
               account: const Account('test-domain', 'test-clientId'),
+              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
               email: 'test-email',
               connection: 'test-connection'));
 
@@ -178,6 +187,7 @@ void main() {
       await MethodChannelAuth0FlutterAuth().resetPassword(
           AuthResetPasswordOptions(
               account: const Account('test-domain', 'test-clientId'),
+              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
               email: 'test-email',
               connection: 'test-connection',
               parameters: {'test': 'test-123'}));
@@ -186,6 +196,8 @@ void main() {
           verify(mocked.methodCallHandler(captureAny)).captured.single;
       expect(verificationResult.arguments['domain'], 'test-domain');
       expect(verificationResult.arguments['clientId'], 'test-clientId');
+      expect(verificationResult.arguments['telemetry']['name'], 'test-name');
+      expect(verificationResult.arguments['telemetry']['version'], 'test-version');
       expect(verificationResult.arguments['email'], 'test-email');
       expect(verificationResult.arguments['connection'], 'test-connection');
       expect(verificationResult.arguments['parameters']['test'], 'test-123');
@@ -201,6 +213,7 @@ void main() {
         await MethodChannelAuth0FlutterAuth().resetPassword(
             AuthResetPasswordOptions(
                 account: const Account('test-domain', 'test-clientId'),
+                telemetry: Telemetry(name: 'test-name', version: 'test-version'),
                 email: 'test-email',
                 connection: 'test-connection',
                 parameters: {'test': 'test-123'}));
@@ -218,7 +231,8 @@ void main() {
       final result = await MethodChannelAuth0FlutterAuth().renewAccessToken(
           AuthRenewAccessTokenOptions(
               refreshToken: 'test-refresh-token',
-              account: const Account('test-domain', 'test-clientId')));
+              account: const Account('test-domain', 'test-clientId'),
+              telemetry: Telemetry(name: 'test-name', version: 'test-version')));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -236,12 +250,15 @@ void main() {
       await MethodChannelAuth0FlutterAuth().renewAccessToken(
           AuthRenewAccessTokenOptions(
               refreshToken: 'test-refresh-token',
-              account: const Account('test-domain', 'test-clientId')));
+              account: const Account('test-domain', 'test-clientId'),
+              telemetry: Telemetry(name: 'test-name', version: 'test-version')));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
       expect(verificationResult.arguments['domain'], 'test-domain');
       expect(verificationResult.arguments['clientId'], 'test-clientId');
+      expect(verificationResult.arguments['telemetry']['name'], 'test-name');
+      expect(verificationResult.arguments['telemetry']['version'], 'test-version');
       expect(
           verificationResult.arguments['refreshToken'], 'test-refresh-token');
     });
@@ -254,6 +271,7 @@ void main() {
 
       await MethodChannelAuth0FlutterAuth().userInfo(AuthUserInfoOptions(
           account: const Account('test-domain', 'test-clientId'),
+          telemetry: Telemetry(name: 'test-name', version: 'test-version'),
           accessToken: 'test-token'));
 
       expect(
@@ -271,12 +289,15 @@ void main() {
 
       await MethodChannelAuth0FlutterAuth().userInfo(AuthUserInfoOptions(
           account: const Account('test-domain', 'test-clientId'),
+          telemetry: Telemetry(name: 'test-name', version: 'test-version'),
           accessToken: 'test-token'));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
       expect(verificationResult.arguments['domain'], 'test-domain');
       expect(verificationResult.arguments['clientId'], 'test-clientId');
+      expect(verificationResult.arguments['telemetry']['name'], 'test-name');
+      expect(verificationResult.arguments['telemetry']['version'], 'test-version');
       expect(verificationResult.arguments['accessToken'], 'test-token');
     });
 
@@ -308,6 +329,7 @@ void main() {
       final result = await MethodChannelAuth0FlutterAuth().userInfo(
           AuthUserInfoOptions(
               account: const Account('test-domain', 'test-clientId'),
+          telemetry: Telemetry(name: 'test-name', version: 'test-version'),
               accessToken: 'test-token'));
 
       verify(mocked.methodCallHandler(captureAny));
@@ -344,6 +366,7 @@ void main() {
       final result = await MethodChannelAuth0FlutterAuth().userInfo(
           AuthUserInfoOptions(
               account: const Account('test-domain', 'test-clientId'),
+          telemetry: Telemetry(name: 'test-name', version: 'test-version'),
               accessToken: 'test-token'));
 
       verify(mocked.methodCallHandler(captureAny));
@@ -358,6 +381,7 @@ void main() {
       Future<void> actual() async {
         await MethodChannelAuth0FlutterAuth().userInfo(AuthUserInfoOptions(
             account: const Account('test-domain', 'test-clientId'),
+          telemetry: Telemetry(name: 'test-name', version: 'test-version'),
             accessToken: 'test-token'));
       }
 
@@ -372,6 +396,7 @@ void main() {
       Future<void> actual() async {
         await MethodChannelAuth0FlutterAuth().userInfo(AuthUserInfoOptions(
             account: const Account('test-domain', 'test-clientId'),
+          telemetry: Telemetry(name: 'test-name', version: 'test-version'),
             accessToken: 'test-token'));
       }
 

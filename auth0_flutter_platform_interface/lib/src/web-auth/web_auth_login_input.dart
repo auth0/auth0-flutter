@@ -1,4 +1,5 @@
 import '../account.dart';
+import '../telemetry.dart';
 
 class IdTokenValidationConfig {
   final int? leeway;
@@ -10,6 +11,7 @@ class IdTokenValidationConfig {
 
 class WebAuthLoginInput {
   final Account account;
+  final Telemetry telemetry;
   final IdTokenValidationConfig? idTokenValidationConfig;
   final String? audience;
   final Set<String> scopes;
@@ -22,6 +24,7 @@ class WebAuthLoginInput {
 
   WebAuthLoginInput(
       {required this.account,
+      required this.telemetry,
       this.idTokenValidationConfig,
       this.audience,
       required this.scopes,
@@ -35,6 +38,7 @@ class WebAuthLoginInput {
   Map<String, dynamic> toMap() => {
         'domain': account.domain,
         'clientId': account.clientId,
+        'telemetry': telemetry.toMap(),
         'leeway': idTokenValidationConfig?.leeway,
         'issuer': idTokenValidationConfig?.issuer,
         'maxAge': idTokenValidationConfig?.maxAge,

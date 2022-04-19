@@ -1,7 +1,9 @@
 import '../account.dart';
+import '../telemetry.dart';
 
 class AuthLoginOptions {
   final Account account;
+  final Telemetry telemetry;
   final String usernameOrEmail;
   final String password;
   final String connectionOrRealm;
@@ -10,6 +12,7 @@ class AuthLoginOptions {
 
   AuthLoginOptions(
       {required this.account,
+      required this.telemetry,
       required this.usernameOrEmail,
       required this.password,
       required this.connectionOrRealm,
@@ -19,6 +22,7 @@ class AuthLoginOptions {
       Map<String, dynamic> toMap() => {
         'domain': account.domain,
         'clientId': account.clientId,
+        'telemetry': telemetry.toMap(),
         'usernameOrEmail': usernameOrEmail,
         'password': password,
         'connectionOrRealm': connectionOrRealm,

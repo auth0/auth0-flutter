@@ -45,8 +45,11 @@ void main() {
     when(mocked.methodCallHandler(any))
         .thenAnswer((final _) async => MethodCallHandler.loginResult);
 
-    final result = await MethodChannelAuth0FlutterWebAuth()
-        .login(WebAuthLoginInput(account: const Account('', ''), scopes: {}));
+    final result = await MethodChannelAuth0FlutterWebAuth().login(
+        WebAuthLoginInput(
+            account: const Account('', ''),
+            telemetry: Telemetry(name: '', version: ''),
+            scopes: {}));
 
     expect(verify(mocked.methodCallHandler(captureAny)).captured.single.method,
         'webAuth#login');
@@ -55,8 +58,9 @@ void main() {
   test('logout', () async {
     when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
-    await MethodChannelAuth0FlutterWebAuth()
-        .logout(WebAuthLogoutInput(account: const Account('', '')));
+    await MethodChannelAuth0FlutterWebAuth().logout(WebAuthLogoutInput(
+        account: const Account('', ''),
+        telemetry: Telemetry(name: '', version: '')));
 
     expect(verify(mocked.methodCallHandler(captureAny)).captured.single.method,
         'webAuth#logout');

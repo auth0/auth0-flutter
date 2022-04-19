@@ -2,8 +2,9 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 
 class AuthenticationApi {
   final Account account;
+  final Telemetry telemetry;
 
-  AuthenticationApi(this.account);
+  AuthenticationApi(this.account, this.telemetry);
 
   Future<Credentials> login(
           {required final String usernameOrEmail,
@@ -17,10 +18,12 @@ class AuthenticationApi {
           connectionOrRealm: connectionOrRealm,
           scopes: scopes,
           account: account,
+          telemetry: telemetry,
           parameters: parameters));
 
   Future<UserProfile> userProfile({required final String accessToken}) =>
-      Auth0FlutterAuthPlatform.instance.userInfo(AuthUserInfoOptions(accessToken: accessToken, account: account));
+      Auth0FlutterAuthPlatform.instance.userInfo(AuthUserInfoOptions(
+          accessToken: accessToken, account: account, telemetry: telemetry));
 
   Future<DatabaseUser> signup(
           {required final String email,
@@ -34,7 +37,8 @@ class AuthenticationApi {
           connection: connection,
           username: username,
           userMetadata: userMetadata,
-          account: account));
+          account: account,
+          telemetry: telemetry));
 
   Future<Credentials> renewAccessToken(
           {required final String refreshToken,
@@ -43,6 +47,7 @@ class AuthenticationApi {
       Auth0FlutterAuthPlatform.instance.renewAccessToken(
           AuthRenewAccessTokenOptions(
               account: account,
+              telemetry: telemetry,
               refreshToken: refreshToken,
               scopes: scopes,
               parameters: parameters));
@@ -53,6 +58,7 @@ class AuthenticationApi {
           final Map<String, String> parameters = const {}}) =>
       Auth0FlutterAuthPlatform.instance.resetPassword(AuthResetPasswordOptions(
           account: account,
+          telemetry: telemetry,
           email: email,
           connection: connection,
           parameters: parameters));
