@@ -11,23 +11,12 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
-internal const val WEBAUTH_LOGIN_METHOD = "webAuth#login"
-internal const val WEBAUTH_LOGOUT_METHOD = "webAuth#logout"
-
-class Auth0FlutterWebAuthMethodCallHandler : MethodCallHandler {
+class Auth0FlutterWebAuthMethodCallHandler(private val handlerResolver: (MethodCall, MethodCallRequest) -> WebAuthRequestHandler?) : MethodCallHandler {
     lateinit var context: Context
 
     // This is mainly used by tests to be able to run assertions on the
     // handler actually being used to handle the request.
     var resolvedHandler: WebAuthRequestHandler? = null
-
-    var handlerResolver = { call: MethodCall, request: MethodCallRequest ->
-        when(call.method) {
-            WEBAUTH_LOGIN_METHOD -> LoginWebAuthRequestHandler(WebAuthProvider.login(request.account))
-            WEBAUTH_LOGOUT_METHOD -> LogoutWebAuthRequestHandler(WebAuthProvider.logout(request.account))
-            else -> null
-        }
-    }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         val request = MethodCallRequest.fromCall(call)

@@ -28,79 +28,27 @@ class Auth0FlutterWebAuthMethodCallHandlerTest {
         "clientId" to "test-client"
     )
 
-    private val defaultCredentials =
-        Credentials(JwtTestUtils.createJwt(), "test", "", null, Date(), null)
-
     private fun runCallHandler(
         arguments: HashMap<String, Any?>? = null,
-        resolver: (MethodCall, MethodCallRequest) -> WebAuthRequestHandler? = createResolver(defaultCredentials),
-        onResult: (Result, WebAuthRequestHandler?) -> Unit
+        resolver: (MethodCall, MethodCallRequest) -> WebAuthRequestHandler?,
+        onResult: (Result) -> Unit
     ) {
-        val handler = Auth0FlutterWebAuthMethodCallHandler()
+        val handler = Auth0FlutterWebAuthMethodCallHandler(resolver)
         val mockResult = mock<Result>()
 
         handler.context = mock()
-        handler.handlerResolver = resolver
 
         val args = arguments ?: defaultArguments
 
         handler.onMethodCall(MethodCall("webAuth#login", args), mockResult)
-        onResult(mockResult, handler.resolvedHandler)
-    }
-
-    private fun createResolver(credentials: Credentials): (MethodCall, MethodCallRequest) -> WebAuthRequestHandler? {
-        return { _, _ ->
-            val builder = mock<WebAuthProvider.Builder>()
-
-            doAnswer { invocation ->
-                val callback =
-                    invocation.getArgument<Callback<Credentials, AuthenticationException>>(1)
-
-                callback.onSuccess(credentials)
-            }.`when`(builder).start(any(), any())
-
-            LoginWebAuthRequestHandler(builder)
-        }
+        onResult(mockResult)
     }
 
     @Test
     fun `handler should result in 'notImplemented' if no handler`() {
-        runCallHandler(null, { _, _ -> null }) { result, _ ->
+        val resolver = { _: MethodCall, _: MethodCallRequest -> null }
+        runCallHandler(null, resolver) { result ->
             verify(result).notImplemented()
-        }
-    }
-
-    @Test
-    fun `handler should log in using the Auth0 SDK`() {
-        runCallHandler { result, _ ->
-            val sdf =
-                SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
-
-            val formattedDate = sdf.format(defaultCredentials.expiresAt)
-
-            verify(result).success(check {
-                val map = it as Map<*, *>
-                assertThat(map["idToken"], equalTo(defaultCredentials.idToken))
-                assertThat(map["accessToken"], equalTo(defaultCredentials.accessToken))
-                assertThat(map["expiresAt"], equalTo(formattedDate))
-                assertThat(map["scope"], equalTo(defaultCredentials.scope))
-                assertThat(map["refreshToken"], nullValue())
-            })
-        }
-    }
-
-    @Test
-    fun `handler should request scopes from the SDK when specified`() {
-        val args = hashMapOf<String, Any?>(
-            "scopes" to arrayListOf("openid", "profile", "email")
-        )
-
-        args.putAll(defaultArguments)
-
-        runCallHandler(args) { _, handler ->
-            if (handler is LoginWebAuthRequestHandler) {
-                verify(handler.builder).withScope("openid profile email")
-            } else fail("Expected LoginWebAuthRequestHandler")
         }
     }
 }
