@@ -4,7 +4,7 @@ fun assertHasProperties(requiredProperties: List<String>, data: Map<*, *>) {
     var missingProperties =
         requiredProperties.filter {
             it.split('.')
-                .fold(data) { acc: Any?, v: String -> (acc as Map<*, *>)[v]} == null
+                .fold(data) { acc: Any?, v: String -> (acc as Map<*, *>?)?.get(v) } == null
         };
 
     missingProperties.forEach { throw NullPointerException("Required property '$it' is not provided.") }
