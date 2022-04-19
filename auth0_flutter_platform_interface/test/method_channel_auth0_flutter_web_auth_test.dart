@@ -41,28 +41,166 @@ void main() {
     channel.setMockMethodCallHandler(null);
   });
 
-  test('login', () async {
-    when(mocked.methodCallHandler(any))
-        .thenAnswer((final _) async => MethodCallHandler.loginResult);
+  group('login', () {
+    test('calls the correct MethodChannel method', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
 
-    final result = await MethodChannelAuth0FlutterWebAuth().login(
-        WebAuthLoginInput(
-            account: const Account('', ''),
-            telemetry: Telemetry(name: '', version: ''),
-            scopes: {}));
+      await MethodChannelAuth0FlutterWebAuth().login(WebAuthLoginInput(
+          account: const Account('', ''),
+          telemetry: Telemetry(name: '', version: ''),
+          scopes: {}));
 
-    expect(verify(mocked.methodCallHandler(captureAny)).captured.single.method,
-        'webAuth#login');
-    expect(result.accessToken, MethodCallHandler.loginResult['accessToken']);
+      expect(
+          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          'webAuth#login');
+    });
+
+    test('correctly maps all properties', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      await MethodChannelAuth0FlutterWebAuth().login(WebAuthLoginInput(
+          account: const Account('test-domain', 'test-clientId'),
+          telemetry: Telemetry(name: 'test-name', version: 'test-version'),
+          scopes: {'a', 'b'},
+          audience: 'test-audience',
+          redirectUri: 'http://google.com',
+          organizationId: 'test-org',
+          invitationUrl: 'http://invite.com',
+          parameters: {'test': 'test-123'},
+          scheme: 'test-scheme',
+          useEphemeralSession: true,
+          idTokenValidationConfig: const IdTokenValidationConfig(
+              leeway: 10, issuer: 'test-issuer', maxAge: 20)));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['domain'], 'test-domain');
+      expect(verificationResult.arguments['clientId'], 'test-clientId');
+      expect(verificationResult.arguments['telemetry']['name'], 'test-name');
+      expect(
+          verificationResult.arguments['telemetry']['version'], 'test-version');
+      expect(verificationResult.arguments['scopes'], ['a', 'b']);
+      expect(verificationResult.arguments['audience'], 'test-audience');
+      expect(verificationResult.arguments['redirectUri'], 'http://google.com');
+      expect(verificationResult.arguments['organizationId'], 'test-org');
+      expect(
+          verificationResult.arguments['invitationUrl'], 'http://invite.com');
+      expect(verificationResult.arguments['parameters']['test'], 'test-123');
+      expect(verificationResult.arguments['scheme'], 'test-scheme');
+      expect(verificationResult.arguments['useEphemeralSession'], true);
+      expect(verificationResult.arguments['leeway'], 10);
+      expect(verificationResult.arguments['issuer'], 'test-issuer');
+      expect(verificationResult.arguments['maxAge'], 20);
+    });
+
+    test('correctly returns the response from the Method Channel', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      final result = await MethodChannelAuth0FlutterWebAuth().login(
+          WebAuthLoginInput(
+              account: const Account('test-domain', 'test-clientId'),
+              telemetry: Telemetry(name: '', version: ''),
+              scopes: {'a', 'b'}));
+
+      verify(mocked.methodCallHandler(captureAny));
+
+      expect(result.accessToken, MethodCallHandler.loginResult['accessToken']);
+      expect(result.idToken, MethodCallHandler.loginResult['idToken']);
+      expect(result.expiresAt,
+          DateTime.parse(MethodCallHandler.loginResult['expiresAt'] as String));
+      expect(result.scopes, MethodCallHandler.loginResult['scopes']);
+      expect(
+          result.refreshToken, MethodCallHandler.loginResult['refreshToken']);
+      expect(result.userProfile.name,
+          MethodCallHandler.loginResult['userProfile']['name']);
+    });
+
+    test('throws an WebAuthException when method channel returns null',
+        () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      Future<Credentials> actual() async {
+        final result = await MethodChannelAuth0FlutterWebAuth().login(
+            WebAuthLoginInput(
+                account: const Account('test-domain', 'test-clientId'),
+                telemetry: Telemetry(name: '', version: ''),
+                scopes: {'a', 'b'}));
+
+        return result;
+      }
+
+      await expectLater(actual, throwsA(isA<WebAuthException>()));
+    });
+
+    test(
+        'throws an WebAuthException when method channel throws a PlatformException',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenThrow(PlatformException(code: '123'));
+
+      Future<Credentials> actual() async {
+        final result = await MethodChannelAuth0FlutterWebAuth().login(
+            WebAuthLoginInput(
+                account: const Account('test-domain', 'test-clientId'),
+                telemetry: Telemetry(name: '', version: ''),
+                scopes: {'a', 'b'}));
+
+        return result;
+      }
+
+      await expectLater(actual, throwsA(isA<WebAuthException>()));
+    });
   });
-  test('logout', () async {
-    when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
-    await MethodChannelAuth0FlutterWebAuth().logout(WebAuthLogoutInput(
-        account: const Account('', ''),
-        telemetry: Telemetry(name: '', version: '')));
+  group('logout', () {
+    test('calls the correct MethodChannel method', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
-    expect(verify(mocked.methodCallHandler(captureAny)).captured.single.method,
-        'webAuth#logout');
+      await MethodChannelAuth0FlutterWebAuth().logout(WebAuthLogoutInput(
+          account: const Account('', ''),
+          telemetry: Telemetry(name: '', version: '')));
+
+      expect(
+          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          'webAuth#logout');
+    });
+
+    test('correctly maps all properties', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      await MethodChannelAuth0FlutterWebAuth().logout(WebAuthLogoutInput(
+          account: const Account('test-domain', 'test-clientId'),
+          telemetry: Telemetry(name: 'test-name', version: 'test-version'),
+          returnTo: 'http://localhost:1234',
+          scheme: 'test-scheme'));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['domain'], 'test-domain');
+      expect(verificationResult.arguments['clientId'], 'test-clientId');
+      expect(verificationResult.arguments['telemetry']['name'], 'test-name');
+      expect(
+          verificationResult.arguments['telemetry']['version'], 'test-version');
+      expect(verificationResult.arguments['returnTo'], 'http://localhost:1234');
+      expect(verificationResult.arguments['scheme'], 'test-scheme');
+    });
+
+    test(
+        'throws an WebAuthException when method channel throws a PlatformException',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenThrow(PlatformException(code: '123'));
+
+      Future<void> actual() async {
+        await MethodChannelAuth0FlutterWebAuth().logout(WebAuthLogoutInput(
+            account: const Account('test-domain', 'test-clientId'),
+            telemetry: Telemetry(name: 'test-name', version: 'test-version')));
+      }
+
+      await expectLater(actual, throwsA(isA<WebAuthException>()));
+    });
   });
 }

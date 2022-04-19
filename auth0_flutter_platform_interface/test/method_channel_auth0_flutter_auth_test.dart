@@ -147,22 +147,155 @@ void main() {
       verify(mocked.methodCallHandler(captureAny));
       expect(result.emailVerified, false);
     });
+
+    test('throws an ApiException when method channel returns null', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      Future<DatabaseUser> actual() async {
+        final result = await MethodChannelAuth0FlutterAuth().signup(
+            AuthSignupOptions(
+                account: const Account('', ''),
+                telemetry: Telemetry(name: 'test-name', version: 'test-version'),
+                email: '',
+                password: '',
+                connection: ''));
+
+        return result;
+      }
+
+      expectLater(
+          actual,
+          throwsA(predicate((e) =>
+              e is ApiException && e.message == 'Channel returned null.')));
+    });
+
+    test(
+        'throws an ApiException when method channel throws a PlatformException',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenThrow(PlatformException(code: '123'));
+
+      Future<DatabaseUser> actual() async {
+        final result = await MethodChannelAuth0FlutterAuth().signup(
+            AuthSignupOptions(
+                account: const Account('', ''),
+                telemetry: Telemetry(name: 'test-name', version: 'test-version'),
+                email: '',
+                password: '',
+                connection: ''));
+
+        return result;
+      }
+
+      await expectLater(actual, throwsA(isA<ApiException>()));
+    });
   });
 
-  test('login', () async {
-    when(mocked.methodCallHandler(any))
-        .thenAnswer((final _) async => MethodCallHandler.loginResult);
+  group('login', () {
+    test('calls the correct MethodChannel method', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
 
-    final result = await MethodChannelAuth0FlutterAuth().login(AuthLoginOptions(
-        account: const Account('', ''),
-        telemetry: Telemetry(name: '', version: ''),
-        usernameOrEmail: '',
-        password: '',
-        connectionOrRealm: ''));
+      await MethodChannelAuth0FlutterAuth().login(AuthLoginOptions(
+          account: const Account('', ''),
+          telemetry: Telemetry(name: 'test-name', version: 'test-version'),
+          usernameOrEmail: '',
+          password: '',
+          connectionOrRealm: ''));
 
-    expect(verify(mocked.methodCallHandler(captureAny)).captured.single.method,
-        'auth#login');
-    expect(result.accessToken, MethodCallHandler.loginResult['accessToken']);
+      expect(
+          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          'auth#login');
+    });
+
+    test('correctly maps all properties', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      await MethodChannelAuth0FlutterAuth().login(AuthLoginOptions(
+          account: const Account('test-domain', 'test-clientId'),
+          telemetry: Telemetry(name: 'test-name', version: 'test-version'),
+          usernameOrEmail: 'test-email',
+          password: 'test-pass',
+          connectionOrRealm: 'test-connection',
+          scopes: {'a', 'b'},
+          parameters: {'test': 'test-123'}));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['domain'], 'test-domain');
+      expect(verificationResult.arguments['clientId'], 'test-clientId');
+      expect(verificationResult.arguments['usernameOrEmail'], 'test-email');
+      expect(verificationResult.arguments['password'], 'test-pass');
+      expect(
+          verificationResult.arguments['connectionOrRealm'], 'test-connection');
+      expect(verificationResult.arguments['scopes'], ['a', 'b']);
+      expect(verificationResult.arguments['parameters']['test'], 'test-123');
+    });
+
+    test('correctly returns the response from the Method Channel', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      final result = await MethodChannelAuth0FlutterAuth().login(
+          AuthLoginOptions(
+              account: const Account('test-domain', 'test-clientId'),
+              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
+              usernameOrEmail: 'test-email',
+              password: 'test-pass',
+              connectionOrRealm: 'test-connection'));
+
+      verify(mocked.methodCallHandler(captureAny));
+
+      expect(result.accessToken, MethodCallHandler.loginResult['accessToken']);
+      expect(result.idToken, MethodCallHandler.loginResult['idToken']);
+      expect(result.expiresAt,
+          DateTime.parse(MethodCallHandler.loginResult['expiresAt'] as String));
+      expect(result.scopes, MethodCallHandler.loginResult['scopes']);
+      expect(
+          result.refreshToken, MethodCallHandler.loginResult['refreshToken']);
+      expect(result.userProfile.name,
+          MethodCallHandler.loginResult['userProfile']['name']);
+    });
+
+    test('throws an ApiException when method channel returns null', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      Future<Credentials> actual() async {
+        final Credentials result = await MethodChannelAuth0FlutterAuth().login(
+            AuthLoginOptions(
+                account: const Account('test-domain', 'test-clientId'),
+                telemetry: Telemetry(name: 'test-name', version: 'test-version'),
+                usernameOrEmail: 'test-email',
+                password: 'test-pass',
+                connectionOrRealm: 'test-connection'));
+
+        return result;
+      }
+
+      await expectLater(actual, throwsA(isA<ApiException>()));
+    });
+
+    test(
+        'throws an ApiException when method channel throws a PlatformException',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenThrow(PlatformException(code: '123'));
+
+      Future<Credentials> actual() async {
+        final Credentials result = await MethodChannelAuth0FlutterAuth().login(
+            AuthLoginOptions(
+                account: const Account('test-domain', 'test-clientId'),
+                telemetry: Telemetry(name: 'test-name', version: 'test-version'),
+                usernameOrEmail: 'test-email',
+                password: 'test-pass',
+                connectionOrRealm: 'test-connection'));
+
+        return result;
+      }
+
+      await expectLater(actual, throwsA(isA<ApiException>()));
+    });
   });
 
   group('resetPassword', () {
@@ -224,23 +357,19 @@ void main() {
   });
 
   group('renewAccessToken', () {
-    test('returns the response', () async {
-      when(mocked.methodCallHandler(any)).thenAnswer(
-          (final _) async => MethodCallHandler.renewAccessTokenResult);
+    test('calls the correct MethodChannel method', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => MethodCallHandler.renewAccessTokenResult);
 
-      final result = await MethodChannelAuth0FlutterAuth().renewAccessToken(
+      await MethodChannelAuth0FlutterAuth().renewAccessToken(
           AuthRenewAccessTokenOptions(
               refreshToken: 'test-refresh-token',
               account: const Account('test-domain', 'test-clientId'),
               telemetry: Telemetry(name: 'test-name', version: 'test-version')));
 
+
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
           'auth#renewAccessToken');
-      expect(result.accessToken,
-          MethodCallHandler.renewAccessTokenResult['accessToken']);
-      expect(result.userProfile.name,
-          MethodCallHandler.renewAccessTokenResult['userProfile']['name']);
     });
 
     test('correctly maps all properties', () async {
@@ -261,6 +390,65 @@ void main() {
       expect(verificationResult.arguments['telemetry']['version'], 'test-version');
       expect(
           verificationResult.arguments['refreshToken'], 'test-refresh-token');
+    });
+
+    test('correctly returns the response from the Method Channel', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.renewAccessTokenResult);
+
+      final result = await MethodChannelAuth0FlutterAuth().renewAccessToken(
+          AuthRenewAccessTokenOptions(
+              refreshToken: 'test-refresh-token',
+              account: const Account('test-domain', 'test-clientId'),
+              telemetry: Telemetry(name: 'test-name', version: 'test-version')));
+
+      expect(result.accessToken,
+          MethodCallHandler.renewAccessTokenResult['accessToken']);
+      expect(result.idToken,
+          MethodCallHandler.renewAccessTokenResult['idToken']);
+      expect(result.refreshToken,
+          MethodCallHandler.renewAccessTokenResult['refreshToken']);
+      expect(result.scopes,
+          MethodCallHandler.renewAccessTokenResult['scopes']);
+      expect(result.expiresAt,
+          DateTime.parse(MethodCallHandler.renewAccessTokenResult['expiresAt'] as String));
+      expect(result.userProfile.name,
+          MethodCallHandler.renewAccessTokenResult['userProfile']['name']);
+    });
+
+    test('throws an ApiException when method channel returns null', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      Future<Credentials> actual() async {
+        final result = await MethodChannelAuth0FlutterAuth().renewAccessToken(
+          AuthRenewAccessTokenOptions(
+              refreshToken: 'test-refresh-token',
+              account: const Account('test-domain', 'test-clientId'),
+              telemetry: Telemetry(name: 'test-name', version: 'test-version')));
+
+        return result;
+      }
+
+      await expectLater(actual, throwsA(isA<ApiException>()));
+    });
+
+    test(
+        'throws an ApiException when method channel throws a PlatformException',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenThrow(PlatformException(code: '123'));
+
+      Future<Credentials> actual() async {
+        final result = await MethodChannelAuth0FlutterAuth().renewAccessToken(
+          AuthRenewAccessTokenOptions(
+              refreshToken: 'test-refresh-token',
+              account: const Account('test-domain', 'test-clientId'),
+              telemetry: Telemetry(name: 'test-name', version: 'test-version')));
+
+        return result;
+      }
+
+      await expectLater(actual, throwsA(isA<ApiException>()));
     });
   });
 
