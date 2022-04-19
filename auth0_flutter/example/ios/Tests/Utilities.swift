@@ -35,25 +35,51 @@ extension XCTestCase {
         return [:]
     }
 
-    func arguments<T>(key: String, value: T) -> [String: Any] {
+    func arguments<K: RawRepresentable, V>(withKey key: K, value: V) -> [String: Any] where K.RawValue == String {
         var dictionary = arguments()
-        dictionary[key] = value
+        dictionary[key.rawValue] = value
         return dictionary
     }
 
-    func arguments(without key: String) -> [String: Any] {
+    func arguments<K: RawRepresentable>(without key: K) -> [String: Any] where K.RawValue == String {
         var dictionary = arguments()
-        dictionary.removeValue(forKey: key)
+        dictionary.removeValue(forKey: key.rawValue)
         return dictionary
     }
 }
 
 // MARK: - Custom Assertions
 
-func assertHas(handlerError: HandlerError,
-               _ result: Any?,
-               file: StaticString = #filePath,
-               line: UInt = #line) {
+func assert<K: RawRepresentable>(result: Any?,
+                                 has keys: [K],
+                                 file: StaticString = #filePath,
+                                 line: UInt = #line) where K.RawValue == String {
+    let stringKeys = keys.map(\.rawValue)
+    if let result = result as? [String: Any], result.allSatisfy({ stringKeys.contains($0.key) }) {
+        return
+    }
+    XCTFail("The handler did not produce a dictionary containing \(keys)", file: file, line: line)
+}
+
+func assert(result: Any?, has databaseUser: DatabaseUser, file: StaticString = #filePath, line: UInt = #line) {
+    if let result = result as? [String: Any],
+       result[DatabaseUserProperty.email] as? String == databaseUser.email,
+       result[DatabaseUserProperty.emailVerified] as? Bool == databaseUser.verified,
+       result[DatabaseUserProperty.username] as? String == databaseUser.username {
+        return
+    }
+    XCTFail("The handler did not produce matching database users", file: file, line: line)
+}
+
+func assert(result: Any?, isError error: Auth0Error, file: StaticString = #filePath, line: UInt = #line) {
+    if let result = result as? FlutterError,
+       result.message == String(describing: error) {
+        return
+    }
+    XCTFail("The handler did not produce the error '\(error)'", file: file, line: line)
+}
+
+func assert(result: Any?, isError handlerError: HandlerError, file: StaticString = #filePath, line: UInt = #line) {
     if let result = result as? FlutterError,
        result.code == handlerError.code,
        result.message == handlerError.message,
@@ -63,103 +89,38 @@ func assertHas(handlerError: HandlerError,
     XCTFail("The handler did not produce the error \(handlerError.code)", file: file, line: line)
 }
 
-func assertHas(webAuthError: WebAuthError,
-               code: String,
-               _ result: Any?,
-               file: StaticString = #filePath,
-               line: UInt = #line) {
-    if let result = result as? FlutterError,
-       result.code == code,
-       result.message == String(describing: webAuthError) {
+func assert(flutterError: FlutterError,
+            is webAuthError: WebAuthError,
+            with code: String,
+            file: StaticString = #filePath,
+            line: UInt = #line) {
+    if flutterError.code == code, flutterError.message == String(describing: webAuthError) {
         return
     }
     XCTFail("The handler did not produce the error '\(webAuthError)'", file: file, line: line)
 }
 
-func assertHas(authenticationError: AuthenticationError,
-               _ result: Any?,
-               file: StaticString = #filePath,
-               line: UInt = #line) {
-    if let result = result as? FlutterError,
-       let details = result.details as? [String: Any],
-       result.code == authenticationError.code,
-       (details.filter({ $0.key != AuthAPIErrorFlag.key }) == authenticationError.details),
+func assert(flutterError: FlutterError,
+            is authenticationError: AuthenticationError,
+            file: StaticString = #filePath,
+            line: UInt = #line) {
+    if let details = flutterError.details as? [String: Any],
+       flutterError.code == authenticationError.code,
+       details.filter({ $0.key != AuthAPIErrorFlag.key }) == authenticationError.details,
        let flags = details[AuthAPIErrorFlag.key] as? [String: Bool],
-       flags[AuthAPIErrorFlag.isMultifactorRequired.rawValue] == authenticationError.isMultifactorRequired,
-       flags[AuthAPIErrorFlag.isMultifactorEnrollRequired.rawValue] == authenticationError.isMultifactorEnrollRequired,
-       flags[AuthAPIErrorFlag.isMultifactorCodeInvalid.rawValue] == authenticationError.isMultifactorCodeInvalid,
-       flags[AuthAPIErrorFlag.isMultifactorTokenInvalid.rawValue] == authenticationError.isMultifactorTokenInvalid,
-       flags[AuthAPIErrorFlag.isPasswordNotStrongEnough.rawValue] == authenticationError.isPasswordNotStrongEnough,
-       flags[AuthAPIErrorFlag.isPasswordAlreadyUsed.rawValue] == authenticationError.isPasswordAlreadyUsed,
-       flags[AuthAPIErrorFlag.isRuleError.rawValue] == authenticationError.isRuleError,
-       flags[AuthAPIErrorFlag.isInvalidCredentials.rawValue] == authenticationError.isInvalidCredentials,
-       flags[AuthAPIErrorFlag.isRefreshTokenDeleted.rawValue] == authenticationError.isRefreshTokenDeleted,
-       flags[AuthAPIErrorFlag.isAccessDenied.rawValue] == authenticationError.isAccessDenied,
-       flags[AuthAPIErrorFlag.isTooManyAttempts.rawValue] == authenticationError.isTooManyAttempts,
-       flags[AuthAPIErrorFlag.isVerificationRequired.rawValue] == authenticationError.isVerificationRequired {
+       flags[AuthAPIErrorFlag.isMultifactorRequired] == authenticationError.isMultifactorRequired,
+       flags[AuthAPIErrorFlag.isMultifactorEnrollRequired] == authenticationError.isMultifactorEnrollRequired,
+       flags[AuthAPIErrorFlag.isMultifactorCodeInvalid] == authenticationError.isMultifactorCodeInvalid,
+       flags[AuthAPIErrorFlag.isMultifactorTokenInvalid] == authenticationError.isMultifactorTokenInvalid,
+       flags[AuthAPIErrorFlag.isPasswordNotStrongEnough] == authenticationError.isPasswordNotStrongEnough,
+       flags[AuthAPIErrorFlag.isPasswordAlreadyUsed] == authenticationError.isPasswordAlreadyUsed,
+       flags[AuthAPIErrorFlag.isRuleError] == authenticationError.isRuleError,
+       flags[AuthAPIErrorFlag.isInvalidCredentials] == authenticationError.isInvalidCredentials,
+       flags[AuthAPIErrorFlag.isRefreshTokenDeleted] == authenticationError.isRefreshTokenDeleted,
+       flags[AuthAPIErrorFlag.isAccessDenied] == authenticationError.isAccessDenied,
+       flags[AuthAPIErrorFlag.isTooManyAttempts] == authenticationError.isTooManyAttempts,
+       flags[AuthAPIErrorFlag.isVerificationRequired] == authenticationError.isVerificationRequired {
         return
     }
     XCTFail("The handler did not produce the error '\(authenticationError)'", file: file, line: line)
-}
-
-func assertHas(credentials: Credentials,
-               _ result: Any?,
-               file: StaticString = #filePath,
-               line: UInt = #line) {
-    if let result = result as? [String: Any],
-       result["accessToken"] as? String == credentials.accessToken,
-       result["idToken"] as? String == credentials.idToken,
-       result["refreshToken"] as? String == credentials.refreshToken,
-       result["expiresAt"] as? String == credentials.expiresIn.asISO8601String,
-       result["scopes"] as? [String] == credentials.scope?.split(separator: " ").map(String.init),
-       let jwt = try? decode(jwt: credentials.idToken),
-       let userProfile = result["userProfile"] as? [String: Any],
-       userProfile == jwt.body {
-        return
-    }
-    XCTFail("The handler did not produce matching credentials", file: file, line: line)
-}
-
-func assertHas(databaseUser: DatabaseUser,
-               _ result: Any?,
-               file: StaticString = #filePath,
-               line: UInt = #line) {
-    if let result = result as? [String: Any],
-       result["email"] as? String == databaseUser.email,
-       result["emailVerified"] as? Bool == databaseUser.verified,
-       result["username"] as? String == databaseUser.username {
-        return
-    }
-    XCTFail("The handler did not produce matching database users", file: file, line: line)
-}
-
-func assertHas(userInfo: UserInfo,
-               _ result: Any?,
-               file: StaticString = #filePath,
-               line: UInt = #line) {
-    if let result = result as? [String: Any],
-       result["sub"] as? String == userInfo.sub,
-       result["name"] as? String == userInfo.name,
-       result["given_name"] as? String == userInfo.givenName,
-       result["family_name"] as? String == userInfo.familyName,
-       result["middle_name"] as? String ==  userInfo.middleName,
-       result["nickname"] as? String ==  userInfo.nickname,
-       result["preferred_username"] as? String == userInfo.preferredUsername,
-       result["profile"] as? String == userInfo.profile?.absoluteString,
-       result["picture"] as? String == userInfo.picture?.absoluteString,
-       result["website"] as? String == userInfo.website?.absoluteString,
-       result["email"] as? String == userInfo.email,
-       result["email_verified"] as? Bool == userInfo.emailVerified,
-       result["gender"] as? String == userInfo.gender,
-       result["birthdate"] as? String == userInfo.birthdate,
-       result["zoneinfo"] as? String == userInfo.zoneinfo?.identifier,
-       result["locale"] as? String == userInfo.locale?.identifier,
-       result["phone_number"] as? String == userInfo.phoneNumber,
-       result["phone_number_verified"] as? Bool == userInfo.phoneNumberVerified,
-       result["address"] as? [String: String] == userInfo.address,
-       result["updated_at"] as? String == userInfo.updatedAt?.asISO8601String,
-       result["custom_claims"] as? [String: Any] == userInfo.customClaims {
-        return
-    }
-    XCTFail("The handler did not produce matching user profiles", file: file, line: line)
 }
