@@ -418,7 +418,6 @@ void main() {
               refreshToken: 'test-refresh-token',
               account: const Account('test-domain', 'test-clientId')));
 
-
         return result;
       }
 

@@ -107,7 +107,8 @@ void main() {
           'isInvalidAuthorizeURL': false,
           'isInvalidConfiguration': false,
           'isCanceled': false,
-          'isLoginRequired': false
+          'isLoginRequired': false,
+          'isPasswordLeaked': false
         }
       };
       final platformException =
@@ -134,6 +135,7 @@ void main() {
       expect(exception.isInvalidConfiguration, false);
       expect(exception.isCanceled, false);
       expect(exception.isLoginRequired, false);
+      expect(exception.isPasswordLeaked, false);
     });
   });
 
@@ -167,6 +169,7 @@ void main() {
     expect(exception.isInvalidConfiguration, false);
     expect(exception.isCanceled, false);
     expect(exception.isLoginRequired, false);
+    expect(exception.isPasswordLeaked, false);
   });
 
   test('correctly maps _errorFlags when not present', () async {
@@ -197,5 +200,6 @@ void main() {
     expect(exception.isInvalidConfiguration, false);
     expect(exception.isCanceled, false);
     expect(exception.isLoginRequired, false);
+    expect(exception.isPasswordLeaked, false);
   });
 }
