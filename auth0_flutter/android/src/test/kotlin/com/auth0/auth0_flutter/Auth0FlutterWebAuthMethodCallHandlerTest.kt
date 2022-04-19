@@ -1,25 +1,18 @@
 package com.auth0.auth0_flutter
 
-import com.auth0.android.authentication.AuthenticationException
-import com.auth0.android.callback.Callback
-import com.auth0.android.provider.WebAuthProvider
-import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.request_handlers.web_auth.LoginWebAuthRequestHandler
+import com.auth0.auth0_flutter.request_handlers.web_auth.LogoutWebAuthRequestHandler
 import com.auth0.auth0_flutter.request_handlers.web_auth.WebAuthRequestHandler
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel.Result
-import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.CoreMatchers.nullValue
-import org.hamcrest.MatcherAssert.assertThat
-import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.*
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.robolectric.RobolectricTestRunner
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.HashMap
 
 @RunWith(RobolectricTestRunner::class)
 class Auth0FlutterWebAuthMethodCallHandlerTest {
@@ -29,7 +22,8 @@ class Auth0FlutterWebAuthMethodCallHandlerTest {
     )
 
     private fun runCallHandler(
-        arguments: HashMap<String, Any?>? = null,
+        method: String,
+        arguments: HashMap<String, Any?> = defaultArguments,
         resolver: (MethodCall, MethodCallRequest) -> WebAuthRequestHandler?,
         onResult: (Result) -> Unit
     ) {
@@ -38,17 +32,46 @@ class Auth0FlutterWebAuthMethodCallHandlerTest {
 
         handler.context = mock()
 
-        val args = arguments ?: defaultArguments
-
-        handler.onMethodCall(MethodCall("webAuth#login", args), mockResult)
+        handler.onMethodCall(MethodCall(method, arguments), mockResult)
         onResult(mockResult)
     }
 
     @Test
     fun `handler should result in 'notImplemented' if no handler`() {
-        val resolver = { _: MethodCall, _: MethodCallRequest -> null }
-        runCallHandler(null, resolver) { result ->
+        runCallHandler("random#method", resolver = { _, _ -> null}) { result ->
             verify(result).notImplemented()
+        }
+    }
+
+    @Test
+    fun `handler should run the web auth login handler`() {
+        val handlerMock = mock<LoginWebAuthRequestHandler>()
+
+        val resolver = { call: MethodCall, request: MethodCallRequest ->
+            when(call.method) {
+                WEBAUTH_LOGIN_METHOD -> handlerMock
+                else -> null
+            }
+        }
+
+        runCallHandler(WEBAUTH_LOGIN_METHOD, resolver = resolver) { _ ->
+            verify(handlerMock).handle(any(), any(), any())
+        }
+    }
+
+    @Test
+    fun `handler should run the web auth logout handler`() {
+        val handlerMock = mock<LogoutWebAuthRequestHandler>()
+
+        val resolver = { call: MethodCall, request: MethodCallRequest ->
+            when(call.method) {
+                WEBAUTH_LOGOUT_METHOD -> handlerMock
+                else -> null
+            }
+        }
+
+        runCallHandler(WEBAUTH_LOGOUT_METHOD, resolver = resolver) { _ ->
+            verify(handlerMock).handle(any(), any(), any())
         }
     }
 }
