@@ -17,23 +17,26 @@ class WebAuthentication {
     final IdTokenValidationConfig idTokenValidationConfig =
         const IdTokenValidationConfig(),
   }) =>
-      Auth0FlutterWebAuthPlatform.instance.login(WebAuthRequest<WebAuthLoginInput>(
-          account: account,
-          options: WebAuthLoginInput(
-            audience: audience,
-            scopes: scopes,
-            redirectUri: redirectUri,
-            organizationId: organizationId,
-            invitationUrl: invitationUrl,
-            parameters: parameters,
-            idTokenValidationConfig: idTokenValidationConfig,
-            scheme: scheme,
-            useEphemeralSession: useEphemeralSession,
-          )));
+      Auth0FlutterWebAuthPlatform.instance
+          .login(createWebAuthRequest(WebAuthLoginInput(
+        audience: audience,
+        scopes: scopes,
+        redirectUri: redirectUri,
+        organizationId: organizationId,
+        invitationUrl: invitationUrl,
+        parameters: parameters,
+        idTokenValidationConfig: idTokenValidationConfig,
+        scheme: scheme,
+        useEphemeralSession: useEphemeralSession,
+      )));
 
   Future<void> logout({final String? returnTo, final String? scheme}) =>
-      Auth0FlutterWebAuthPlatform.instance.logout(WebAuthRequest<WebAuthLogoutInput>(
-        account: account,
-        options: WebAuthLogoutInput(returnTo: returnTo, scheme: scheme),
+      Auth0FlutterWebAuthPlatform.instance.logout(createWebAuthRequest(
+        WebAuthLogoutInput(returnTo: returnTo, scheme: scheme),
       ));
+
+  WebAuthRequest<TOptions>
+      createWebAuthRequest<TOptions extends RequestOptions>(
+              final TOptions options) =>
+          WebAuthRequest<TOptions>(account: account, options: options);
 }
