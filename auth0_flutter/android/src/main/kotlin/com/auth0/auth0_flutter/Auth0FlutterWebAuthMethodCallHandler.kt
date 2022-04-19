@@ -14,16 +14,11 @@ import io.flutter.plugin.common.MethodChannel.Result
 class Auth0FlutterWebAuthMethodCallHandler(private val handlerResolver: (MethodCall, MethodCallRequest) -> WebAuthRequestHandler?) : MethodCallHandler {
     lateinit var context: Context
 
-    // This is mainly used by tests to be able to run assertions on the
-    // handler actually being used to handle the request.
-    var resolvedHandler: WebAuthRequestHandler? = null
-
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         val request = MethodCallRequest.fromCall(call)
         val requestHandler = handlerResolver(call, request)
 
         if (requestHandler != null) {
-            resolvedHandler = requestHandler
             requestHandler.handle(context, request, result)
         } else {
             result.notImplemented()
