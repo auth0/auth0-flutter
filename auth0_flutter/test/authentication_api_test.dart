@@ -62,10 +62,10 @@ void main() {
           verify(mockedPlatform.signup(captureAny)).captured.single as ApiRequest<AuthSignupOptions>;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
-      expect(verificationResult.options?.email, 'test-email');
-      expect(verificationResult.options?.password, 'test-pass');
-      expect(verificationResult.options?.connection, 'test-realm');
-      expect(verificationResult.options?.userMetadata['test'], 'test-123');
+      expect(verificationResult.options.email, 'test-email');
+      expect(verificationResult.options.password, 'test-pass');
+      expect(verificationResult.options.connection, 'test-realm');
+      expect(verificationResult.options.userMetadata['test'], 'test-123');
       expect(result, TestPlatform.signupResult);
     });
 
@@ -82,7 +82,7 @@ void main() {
       final verificationResult =
           verify(mockedPlatform.signup(captureAny)).captured.single as ApiRequest<AuthSignupOptions>;
       // ignore: inference_failure_on_collection_literal
-      expect(verificationResult.options?.userMetadata, {});
+      expect(verificationResult.options.userMetadata, {});
       expect(result, TestPlatform.signupResult);
     });
   });
@@ -103,11 +103,11 @@ void main() {
           verify(mockedPlatform.login(captureAny)).captured.single as ApiRequest<AuthLoginOptions>;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
-      expect(verificationResult.options?.usernameOrEmail, 'test-user');
-      expect(verificationResult.options?.password, 'test-pass');
-      expect(verificationResult.options?.connectionOrRealm, 'test-realm');
-      expect(verificationResult.options?.scopes, {'test-scope1', 'test-scope2'});
-      expect(verificationResult.options?.parameters['test'], 'test-parameter');
+      expect(verificationResult.options.usernameOrEmail, 'test-user');
+      expect(verificationResult.options.password, 'test-pass');
+      expect(verificationResult.options.connectionOrRealm, 'test-realm');
+      expect(verificationResult.options.scopes, {'test-scope1', 'test-scope2'});
+      expect(verificationResult.options.parameters['test'], 'test-parameter');
       expect(result, TestPlatform.loginResult);
     });
 
@@ -123,9 +123,9 @@ void main() {
       final verificationResult =
           verify(mockedPlatform.login(captureAny)).captured.single as ApiRequest<AuthLoginOptions>;
       // ignore: inference_failure_on_collection_literal
-      expect(verificationResult.options?.scopes, []);
+      expect(verificationResult.options.scopes, []);
       // ignore: inference_failure_on_collection_literal
-      expect(verificationResult.options?.parameters, {});
+      expect(verificationResult.options.parameters, {});
       expect(result, TestPlatform.loginResult);
     });
   });
@@ -143,9 +143,9 @@ void main() {
           verify(mockedPlatform.resetPassword(captureAny)).captured.single;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
-      expect(verificationResult.options?.email, 'test-user');
-      expect(verificationResult.options?.connection, 'test-connection');
-      expect(verificationResult.options?.parameters['test'], 'test-parameter');
+      expect(verificationResult.options.email, 'test-user');
+      expect(verificationResult.options.connection, 'test-connection');
+      expect(verificationResult.options.parameters['test'], 'test-parameter');
     });
 
     test('set parameters to default value when omitted', () async {
@@ -158,7 +158,7 @@ void main() {
       final verificationResult =
           verify(mockedPlatform.resetPassword(captureAny)).captured.single;
       // ignore: inference_failure_on_collection_literal
-      expect(verificationResult.options?.parameters, {});
+      expect(verificationResult.options.parameters, {});
     });
   });
 
@@ -178,9 +178,9 @@ void main() {
           verify(mockedPlatform.renewAccessToken(captureAny)).captured.single as ApiRequest<AuthRenewAccessTokenOptions>;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
-      expect(verificationResult.options?.refreshToken, 'test-refresh-token');
-      expect(verificationResult.options?.scopes, {'test-scope1', 'test-scope2'});
-      expect(verificationResult.options?.parameters, {'test': 'test-123'});
+      expect(verificationResult.options.refreshToken, 'test-refresh-token');
+      expect(verificationResult.options.scopes, {'test-scope1', 'test-scope2'});
+      expect(verificationResult.options.parameters, {'test': 'test-123'});
       expect(result, TestPlatform.renewAccessTokenResult);
     });
 
@@ -195,9 +195,9 @@ void main() {
       final verificationResult =
           verify(mockedPlatform.renewAccessToken(captureAny)).captured.single as ApiRequest<AuthRenewAccessTokenOptions>;
       // ignore: inference_failure_on_collection_literal
-      expect(verificationResult.options?.scopes, []);
+      expect(verificationResult.options.scopes, []);
       // ignore: inference_failure_on_collection_literal
-      expect(verificationResult.options?.parameters, {});
+      expect(verificationResult.options.parameters, {});
       expect(result, TestPlatform.renewAccessTokenResult);
     });
   });

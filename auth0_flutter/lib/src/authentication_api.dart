@@ -60,6 +60,6 @@ class AuthenticationApi {
               email: email, connection: connection, parameters: parameters)));
 
   ApiRequest<TOptions> createApiRequest<TOptions extends RequestOptions>(
-          final TOptions? options) =>
+          final TOptions options) =>
       ApiRequest<TOptions>(account: account, options: options);
 }
