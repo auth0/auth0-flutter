@@ -1,6 +1,10 @@
 import Flutter
 import Auth0
 
+let testIdToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmb28iLCJuYW1lIjoiYmFyIiwiZW1haWwiOiJmb29AZXhhbXBsZS5"
+    + "jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGljdHVyZSI6Imh0dHBzOi8vZXhhbXBsZS5jb20vcGljdHVyZSIsInVwZGF0ZWRfYXQiOiIyMDI"
+    + "yLTA0LTE1VDAzOjE1OjUxLjc4N1oifQ.mFq-johzLTFQUAl9pjgQraTM6I8AGfcEcWBg0Ah2vss"
+
 // MARK: - Foundation Mocks
 
 let mockURL = URL(string: "https://example.com")!

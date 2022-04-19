@@ -19,10 +19,10 @@ class AuthAPISignupMethodHandlerTests: XCTestCase {
 extension AuthAPISignupMethodHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
         let keys: [Argument] = [.email, .password, .connection]
-        let expectations = keys.map({ expectation(description: "\($0.rawValue) is missing") })
+        let expectations = keys.map { expectation(description: "\($0.rawValue) is missing") }
         for (argument, currentExpectation) in zip(keys, expectations) {
-            sut.handle(with: arguments(without: argument.rawValue)) { result in
-                assertHas(handlerError: .requiredArgumentMissing(argument.rawValue), result)
+            sut.handle(with: arguments(without: argument)) { result in
+                assert(result: result, isError:  .requiredArgumentMissing(argument.rawValue))
                 currentExpectation.fulfill()
             }
         }
@@ -39,8 +39,8 @@ extension AuthAPISignupMethodHandlerTests {
     func testAddsEmail() {
         let key = Argument.email
         let value = "foo"
-        sut.handle(with: arguments(key: key, value: value)) { _ in }
-        XCTAssertEqual(spy.arguments[key.rawValue] as? String, value)
+        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
+        XCTAssertEqual(spy.arguments[key] as? String, value)
     }
 
     // MARK: password
@@ -48,8 +48,8 @@ extension AuthAPISignupMethodHandlerTests {
     func testAddsPassword() {
         let key = Argument.password
         let value = "foo"
-        sut.handle(with: arguments(key: key, value: value)) { _ in }
-        XCTAssertEqual(spy.arguments[key.rawValue] as? String, value)
+        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
+        XCTAssertEqual(spy.arguments[key] as? String, value)
     }
 
     // MARK: connection
@@ -57,8 +57,8 @@ extension AuthAPISignupMethodHandlerTests {
     func testAddsConnection() {
         let key = Argument.connection
         let value = "foo"
-        sut.handle(with: arguments(key: key, value: value)) { _ in }
-        XCTAssertEqual(spy.arguments[key.rawValue] as? String, value)
+        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
+        XCTAssertEqual(spy.arguments[key] as? String, value)
     }
 
     // MARK: username
@@ -66,14 +66,14 @@ extension AuthAPISignupMethodHandlerTests {
     func testAddsUsername() {
         let key = Argument.username
         let value = "foo"
-        sut.handle(with: arguments(key: key, value: value)) { _ in }
-        XCTAssertEqual(spy.arguments[key.rawValue] as? String, value)
+        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
+        XCTAssertEqual(spy.arguments[key] as? String, value)
     }
 
     func testDoesNotAddUsernameWhenNil() {
         let argument = Argument.username
         sut.handle(with: arguments(without: argument)) { _ in }
-        XCTAssertNil(spy.arguments[argument.rawValue])
+        XCTAssertNil(spy.arguments[argument])
     }
 }
 
@@ -90,7 +90,7 @@ extension AuthAPISignupMethodHandlerTests {
         let expectation = self.expectation(description: "Produced a database user")
         spy.databaseUserResult = .success(databaseUser)
         sut.handle(with: arguments()) { result in
-            assertHas(databaseUser: databaseUser, result)
+            assert(result: result, has: databaseUser)
             expectation.fulfill()
         }
         wait(for: [expectation])
@@ -101,7 +101,7 @@ extension AuthAPISignupMethodHandlerTests {
         let expectation = self.expectation(description: "Produced the AuthenticationError \(error)")
         spy.databaseUserResult = .failure(error)
         sut.handle(with: arguments()) { result in
-            assertHas(authenticationError: error, result)
+            assert(result: result, isError: error)
             expectation.fulfill()
         }
         wait(for: [expectation])
@@ -112,20 +112,12 @@ extension AuthAPISignupMethodHandlerTests {
 
 extension AuthAPISignupMethodHandlerTests {
     override func arguments() -> [String: Any] {
-        return [Argument.email.rawValue: "",
-                Argument.password.rawValue: "",
-                Argument.connection.rawValue: "",
-                Argument.username.rawValue: "",
-                Argument.userMetadata.rawValue: [:]]
-    }
-}
-
-fileprivate extension AuthAPISignupMethodHandlerTests {
-    func arguments<T>(key: Argument, value: T) -> [String: Any] {
-        return arguments(key: key.rawValue, value: value)
-    }
-
-    func arguments(without key: Argument) -> [String: Any] {
-        return arguments(without: key.rawValue)
+        return [
+            Argument.email.rawValue: "",
+            Argument.password.rawValue: "",
+            Argument.connection.rawValue: "",
+            Argument.username.rawValue: "",
+            Argument.userMetadata.rawValue: [:]
+        ]
     }
 }

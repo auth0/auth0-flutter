@@ -19,10 +19,10 @@ class AuthAPIResetPasswordMethodHandlerTests: XCTestCase {
 extension AuthAPIResetPasswordMethodHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
         let keys: [Argument] = [.email, .connection, .parameters]
-        let expectations = keys.map({ expectation(description: "\($0.rawValue) is missing") })
+        let expectations = keys.map { expectation(description: "\($0.rawValue) is missing") }
         for (argument, currentExpectation) in zip(keys, expectations) {
-            sut.handle(with: arguments(without: argument.rawValue)) { result in
-                assertHas(handlerError: .requiredArgumentMissing(argument.rawValue), result)
+            sut.handle(with: arguments(without: argument)) { result in
+                assert(result: result, isError: .requiredArgumentMissing(argument.rawValue))
                 currentExpectation.fulfill()
             }
         }
@@ -39,8 +39,8 @@ extension AuthAPIResetPasswordMethodHandlerTests {
     func testAddsEmail() {
         let key = Argument.email
         let value = "foo"
-        sut.handle(with: arguments(key: key, value: value)) { _ in }
-        XCTAssertEqual(spy.arguments[key.rawValue] as? String, value)
+        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
+        XCTAssertEqual(spy.arguments[key] as? String, value)
     }
 
     // MARK: connection
@@ -48,8 +48,8 @@ extension AuthAPIResetPasswordMethodHandlerTests {
     func testAddsConnection() {
         let key = Argument.connection
         let value = "foo"
-        sut.handle(with: arguments(key: key, value: value)) { _ in }
-        XCTAssertEqual(spy.arguments[key.rawValue] as? String, value)
+        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
+        XCTAssertEqual(spy.arguments[key] as? String, value)
     }
 }
 
@@ -76,7 +76,7 @@ extension AuthAPIResetPasswordMethodHandlerTests {
         let expectation = self.expectation(description: "Produced the AuthenticationError \(error)")
         spy.voidResult = .failure(error)
         sut.handle(with: arguments()) { result in
-            assertHas(authenticationError: error, result)
+            assert(result: result, isError: error)
             expectation.fulfill()
         }
         wait(for: [expectation])
@@ -88,11 +88,5 @@ extension AuthAPIResetPasswordMethodHandlerTests {
 extension AuthAPIResetPasswordMethodHandlerTests {
     override func arguments() -> [String: Any] {
         return [Argument.email.rawValue: "", Argument.connection.rawValue: "", Argument.parameters.rawValue: [:]]
-    }
-}
-
-fileprivate extension AuthAPIResetPasswordMethodHandlerTests {
-    func arguments<T>(key: Argument, value: T) -> [String: Any] {
-        return arguments(key: key.rawValue, value: value)
     }
 }
