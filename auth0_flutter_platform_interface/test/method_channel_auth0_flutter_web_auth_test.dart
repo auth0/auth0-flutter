@@ -149,7 +149,7 @@ void main() {
   group('logout', () {
     test('calls the correct MethodChannel method', () async {
       when(mocked.methodCallHandler(any))
-          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+          .thenAnswer((final _) async => null);
 
       await MethodChannelAuth0FlutterWebAuth()
           .logout(WebAuthLogoutInput(account: const Account('', '')));
