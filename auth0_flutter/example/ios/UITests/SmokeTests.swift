@@ -25,7 +25,7 @@ class SmokeTests: XCTestCase {
         let passwordInput = app.webViews.secureTextFields.firstMatch
         passwordInput.tap()
         passwordInput.typeText(password)
-        app.webViews.buttons[continueButton].tap()
+        app.webViews.buttons.firstMatch.tap()
         XCTAssertTrue(app.buttons[logoutButton].waitForExistence(timeout: timeout))
     }
 
