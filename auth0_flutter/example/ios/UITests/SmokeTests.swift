@@ -21,7 +21,7 @@ class SmokeTests: XCTestCase {
         let emailInput = app.webViews.textFields.firstMatch
         XCTAssertTrue(emailInput.waitForExistence(timeout: timeout))
         emailInput.tap()
-        emailInput.typeText("\(email)\n")
+        emailInput.typeText(email)
         let passwordInput = app.webViews.secureTextFields.firstMatch
         passwordInput.tap()
         passwordInput.typeText(password)
