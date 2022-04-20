@@ -70,7 +70,7 @@ class LogoutWebAuthRequestHandlerTest {
         doAnswer { invocation ->
             val callback = invocation.getArgument<Callback<Void?, AuthenticationException>>(1)
             val exception = AuthenticationException("code", "description")
-            
+
             callback.onFailure(exception)
             verify(mockResult).error("code", "description", exception)
         }.`when`(mockBuilder).start(any(), any())

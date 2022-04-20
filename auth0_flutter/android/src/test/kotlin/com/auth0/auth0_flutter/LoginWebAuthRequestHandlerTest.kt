@@ -174,4 +174,23 @@ class LoginWebAuthRequestHandlerTest {
             verify(builder).withParameters(parameters)
         }
     }
+
+    @Test
+    fun `returns the error when the builder fails`() {
+        val builder = mock<WebAuthProvider.Builder>()
+        val mockResult = mock<Result>()
+
+        doAnswer { invocation ->
+            val cb =
+                invocation.getArgument<Callback<Credentials, AuthenticationException>>(1)
+            val exception = AuthenticationException("code", "description")
+
+            cb.onFailure(exception)
+            verify(mockResult).error("code", "description", exception)
+        }.`when`(builder).start(any(), any())
+
+        val handler = LoginWebAuthRequestHandler(builder)
+
+        handler.handle(mock(), mock(), mockResult)
+    }
 }
