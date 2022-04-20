@@ -20,7 +20,7 @@ internal const val WEBAUTH_LOGOUT_METHOD = "webAuth#logout"
 
 /** Auth0FlutterPlugin */
 class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
-  val handlerResolver = { call: MethodCall, request: MethodCallRequest ->
+  private val handlerResolver = { call: MethodCall, request: MethodCallRequest ->
     when(call.method) {
         WEBAUTH_LOGIN_METHOD -> LoginWebAuthRequestHandler(WebAuthProvider.login(request.account))
         WEBAUTH_LOGOUT_METHOD -> LogoutWebAuthRequestHandler(WebAuthProvider.logout(request.account))
