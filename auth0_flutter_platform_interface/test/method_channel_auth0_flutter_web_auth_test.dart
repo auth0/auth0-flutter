@@ -49,6 +49,7 @@ void main() {
       await MethodChannelAuth0FlutterWebAuth().login(
           WebAuthRequest<WebAuthLoginInput>(
               account: const Account('', ''),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
               options: WebAuthLoginInput(scopes: {})));
 
       expect(
@@ -63,6 +64,7 @@ void main() {
       await MethodChannelAuth0FlutterWebAuth().login(
           WebAuthRequest<WebAuthLoginInput>(
               account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
               options: WebAuthLoginInput(
                   scopes: {'a', 'b'},
                   audience: 'test-audience',
@@ -79,6 +81,9 @@ void main() {
           verify(mocked.methodCallHandler(captureAny)).captured.single;
       expect(verificationResult.arguments['domain'], 'test-domain');
       expect(verificationResult.arguments['clientId'], 'test-clientId');
+      expect(verificationResult.arguments['userAgent']['name'], 'test-name');
+      expect(
+          verificationResult.arguments['userAgent']['version'], 'test-version');
       expect(verificationResult.arguments['scopes'], ['a', 'b']);
       expect(verificationResult.arguments['audience'], 'test-audience');
       expect(verificationResult.arguments['redirectUri'], 'http://google.com');
@@ -98,9 +103,10 @@ void main() {
           .thenAnswer((final _) async => MethodCallHandler.loginResult);
 
       final result = await MethodChannelAuth0FlutterWebAuth().login(
-            WebAuthRequest(
-                account: const Account('test-domain', 'test-clientId'),
-                options: WebAuthLoginInput(scopes: {'a', 'b'})));
+          WebAuthRequest(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: WebAuthLoginInput(scopes: {'a', 'b'})));
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -123,8 +129,9 @@ void main() {
         final result = await MethodChannelAuth0FlutterWebAuth().login(
             WebAuthRequest(
                 account: const Account('test-domain', 'test-clientId'),
+                userAgent:
+                    UserAgent(name: 'test-name', version: 'test-version'),
                 options: WebAuthLoginInput(scopes: {'a', 'b'})));
-
         return result;
       }
 
@@ -141,6 +148,8 @@ void main() {
         final result = await MethodChannelAuth0FlutterWebAuth().login(
             WebAuthRequest(
                 account: const Account('test-domain', 'test-clientId'),
+                userAgent:
+                    UserAgent(name: 'test-name', version: 'test-version'),
                 options: WebAuthLoginInput(scopes: {'a', 'b'})));
 
         return result;
@@ -156,7 +165,9 @@ void main() {
 
       await MethodChannelAuth0FlutterWebAuth().logout(
           WebAuthRequest<WebAuthLogoutInput>(
-              account: const Account('', ''), options: WebAuthLogoutInput()));
+              account: const Account('', ''),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: WebAuthLogoutInput()));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -169,6 +180,7 @@ void main() {
       await MethodChannelAuth0FlutterWebAuth().logout(
           WebAuthRequest<WebAuthLogoutInput>(
               account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
               options: WebAuthLogoutInput(
                   returnTo: 'http://localhost:1234', scheme: 'test-scheme')));
 
@@ -176,6 +188,9 @@ void main() {
           verify(mocked.methodCallHandler(captureAny)).captured.single;
       expect(verificationResult.arguments['domain'], 'test-domain');
       expect(verificationResult.arguments['clientId'], 'test-clientId');
+      expect(verificationResult.arguments['userAgent']['name'], 'test-name');
+      expect(
+          verificationResult.arguments['userAgent']['version'], 'test-version');
       expect(verificationResult.arguments['returnTo'], 'http://localhost:1234');
       expect(verificationResult.arguments['scheme'], 'test-scheme');
     });
@@ -190,6 +205,8 @@ void main() {
         await MethodChannelAuth0FlutterWebAuth().logout(
             WebAuthRequest<WebAuthLogoutInput>(
                 account: const Account('test-domain', 'test-clientId'),
+                userAgent:
+                    UserAgent(name: 'test-name', version: 'test-version'),
                 options: WebAuthLogoutInput()));
       }
 

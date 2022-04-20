@@ -2,8 +2,9 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 
 class AuthenticationApi {
   final Account account;
+  final UserAgent userAgent;
 
-  AuthenticationApi(this.account);
+  AuthenticationApi(this.account, this.userAgent);
 
   Future<Credentials> login({
     required final String usernameOrEmail,
@@ -30,26 +31,24 @@ class AuthenticationApi {
           final String? username,
           required final String connection,
           final Map<String, String> userMetadata = const {}}) =>
-      Auth0FlutterAuthPlatform.instance
-          .signup(createApiRequest(AuthSignupOptions(
-        email: email,
-        password: password,
-        connection: connection,
-        username: username,
-        userMetadata: userMetadata,
-      )));
+      Auth0FlutterAuthPlatform.instance.signup(createApiRequest(
+          AuthSignupOptions(
+              email: email,
+              password: password,
+              connection: connection,
+              username: username,
+              userMetadata: userMetadata)));
 
   Future<Credentials> renewAccessToken({
     required final String refreshToken,
     final Set<String> scopes = const {},
     final Map<String, String> parameters = const {},
   }) =>
-      Auth0FlutterAuthPlatform.instance
-          .renewAccessToken(createApiRequest(AuthRenewAccessTokenOptions(
-        refreshToken: refreshToken,
-        scopes: scopes,
-        parameters: parameters,
-      )));
+      Auth0FlutterAuthPlatform.instance.renewAccessToken(createApiRequest(
+          AuthRenewAccessTokenOptions(
+              refreshToken: refreshToken,
+              scopes: scopes,
+              parameters: parameters)));
 
   Future<void> resetPassword(
           {required final String email,
@@ -61,5 +60,6 @@ class AuthenticationApi {
 
   ApiRequest<TOptions> createApiRequest<TOptions extends RequestOptions>(
           final TOptions options) =>
-      ApiRequest<TOptions>(account: account, options: options);
+      ApiRequest<TOptions>(
+          account: account, options: options, userAgent: userAgent);
 }
