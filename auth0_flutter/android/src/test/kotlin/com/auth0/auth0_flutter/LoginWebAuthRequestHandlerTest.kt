@@ -20,7 +20,7 @@ import java.util.*
 @RunWith(RobolectricTestRunner::class)
 class LoginWebAuthRequestHandlerTest {
     private val defaultCredentials =
-        Credentials(JwtTestUtils.createJwt(), "test", "", null, Date(), null)
+        Credentials(JwtTestUtils.createJwt(), "test", "", null, Date(), "openid profile email")
 
     fun runRequestHandler(
         args: HashMap<String, Any?> = hashMapOf(),
@@ -57,7 +57,7 @@ class LoginWebAuthRequestHandlerTest {
                 assertThat(map["idToken"], equalTo(defaultCredentials.idToken))
                 assertThat(map["accessToken"], equalTo(defaultCredentials.accessToken))
                 assertThat(map["expiresAt"], equalTo(formattedDate))
-                assertThat(map["scope"], equalTo(defaultCredentials.scope))
+                assertThat(map["scopes"], equalTo(listOf("openid", "profile", "email")))
                 assertThat(map["refreshToken"], nullValue())
             })
         }
@@ -74,4 +74,104 @@ class LoginWebAuthRequestHandlerTest {
         }
     }
 
+    @Test
+    fun `handler should set the audience on the SDK when specified`() {
+        val args = hashMapOf<String, Any?>(
+            "audience" to "test"
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withAudience("test")
+        }
+    }
+
+    @Test
+    fun `handler should set the redirectUri on the SDK when specified`() {
+        val args = hashMapOf<String, Any?>(
+            "redirectUri" to "http://test.com"
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withRedirectUri("http://test.com")
+        }
+    }
+
+    @Test
+    fun `handler should set the organizationId on the SDK when specified`() {
+        val args = hashMapOf<String, Any?>(
+            "organizationId" to "org_123"
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withOrganization("org_123")
+        }
+    }
+
+    @Test
+    fun `handler should set the invitationUrl on the SDK when specified`() {
+        val args = hashMapOf<String, Any?>(
+            "invitationUrl" to "http://invitation.com"
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withInvitationUrl("http://invitation.com")
+        }
+    }
+
+    @Test
+    fun `handler should set the leeway on the SDK when specified`() {
+        val args = hashMapOf<String, Any?>(
+            "leeway" to 60
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withIdTokenVerificationLeeway(60)
+        }
+    }
+
+    @Test
+    fun `handler should set the maxAge on the SDK when specified`() {
+        val args = hashMapOf<String, Any?>(
+            "maxAge" to 60
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withMaxAge(60)
+        }
+    }
+
+    @Test
+    fun `handler should set the issuer on the SDK when specified`() {
+        val args = hashMapOf<String, Any?>(
+            "issuer" to "http://issuer.com"
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withIdTokenVerificationIssuer("http://issuer.com")
+        }
+    }
+
+    @Test
+    fun `handler should set the scheme on the SDK when specified`() {
+        val args = hashMapOf<String, Any?>(
+            "scheme" to "demo"
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withScheme("demo")
+        }
+    }
+
+    @Test
+    fun `handler should set the parameters on the SDK when specified`() {
+        val parameters = hashMapOf("hello" to "world")
+
+        val args = hashMapOf<String, Any?>(
+            "parameters" to parameters
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withParameters(parameters)
+        }
+    }
 }
