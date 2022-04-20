@@ -1,4 +1,4 @@
-import '../account.dart';
+import '../request/request_options.dart';
 import '../telemetry.dart';
 
 class IdTokenValidationConfig {
@@ -9,8 +9,7 @@ class IdTokenValidationConfig {
   const IdTokenValidationConfig({this.leeway, this.issuer, this.maxAge});
 }
 
-class WebAuthLoginInput {
-  final Account account;
+class WebAuthLoginInput implements RequestOptions {
   final Telemetry telemetry;
   final IdTokenValidationConfig? idTokenValidationConfig;
   final String? audience;
@@ -22,8 +21,7 @@ class WebAuthLoginInput {
   final Map<String, String> parameters;
   final String? scheme;
 
-  WebAuthLoginInput(
-      {required this.account,
+  WebAuthLoginInput({
       required this.telemetry,
       this.idTokenValidationConfig,
       this.audience,
@@ -35,9 +33,8 @@ class WebAuthLoginInput {
       this.useEphemeralSession = false,
       this.parameters = const {}});
 
+  @override
   Map<String, dynamic> toMap() => {
-        'domain': account.domain,
-        'clientId': account.clientId,
         'telemetry': telemetry.toMap(),
         'leeway': idTokenValidationConfig?.leeway,
         'issuer': idTokenValidationConfig?.issuer,

@@ -1,24 +1,21 @@
-import '../account.dart';
+import '../request/request_options.dart';
 import '../telemetry.dart';
 
-class AuthRenewAccessTokenOptions {
-  final Account account;
+class AuthRenewAccessTokenOptions implements RequestOptions {
   final Telemetry telemetry;
   final String refreshToken;
   final Set<String> scopes;
   final Map<String, String> parameters;
 
   AuthRenewAccessTokenOptions({
-    required this.account,
     required this.telemetry,
     required this.refreshToken,
     this.scopes = const {},
     this.parameters = const {},
   });
 
+  @override
   Map<String, dynamic> toMap() => {
-        'domain': account.domain,
-        'clientId': account.clientId,
         'telemetry': telemetry.toMap(),
         'refreshToken': refreshToken,
         'scopes': scopes.toList(),

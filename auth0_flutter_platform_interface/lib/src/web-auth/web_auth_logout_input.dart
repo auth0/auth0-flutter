@@ -1,19 +1,14 @@
-import '../account.dart';
+import '../request/request_options.dart';
 import '../telemetry.dart';
 
-class WebAuthLogoutInput {
-  final Account account;
+class WebAuthLogoutInput implements RequestOptions {
   final Telemetry telemetry;
   final String? returnTo;
   final String? scheme;
 
-  WebAuthLogoutInput({required this.account, required this.telemetry, this.returnTo, this.scheme});
+  WebAuthLogoutInput({required this.telemetry, this.returnTo, this.scheme});
 
-  Map<String, dynamic> toMap() => {
-        'domain': account.domain,
-        'clientId': account.clientId,
-        'telemetry': telemetry.toMap(),
-        'returnTo': returnTo,
-        'scheme': scheme
-      };
+  @override
+  Map<String, dynamic> toMap() =>
+      {'telemetry': telemetry.toMap(), 'returnTo': returnTo, 'scheme': scheme};
 }

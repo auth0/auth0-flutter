@@ -6,24 +6,25 @@ class AuthenticationApi {
 
   AuthenticationApi(this.account, this.telemetry);
 
-  Future<Credentials> login(
-          {required final String usernameOrEmail,
-          required final String password,
-          required final String connectionOrRealm,
-          final Set<String> scopes = const {},
-          final Map<String, String> parameters = const {}}) =>
-      Auth0FlutterAuthPlatform.instance.login(AuthLoginOptions(
-          usernameOrEmail: usernameOrEmail,
-          password: password,
-          connectionOrRealm: connectionOrRealm,
-          scopes: scopes,
-          account: account,
-          telemetry: telemetry,
-          parameters: parameters));
+  Future<Credentials> login({
+    required final String usernameOrEmail,
+    required final String password,
+    required final String connectionOrRealm,
+    final Set<String> scopes = const {},
+    final Map<String, String> parameters = const {},
+  }) =>
+      Auth0FlutterAuthPlatform.instance.login(createApiRequest(AuthLoginOptions(
+        usernameOrEmail: usernameOrEmail,
+        password: password,
+        connectionOrRealm: connectionOrRealm,
+        scopes: scopes,
+        parameters: parameters,
+        telemetry: telemetry,
+      )));
 
   Future<UserProfile> userProfile({required final String accessToken}) =>
-      Auth0FlutterAuthPlatform.instance.userInfo(AuthUserInfoOptions(
-          accessToken: accessToken, account: account, telemetry: telemetry));
+      Auth0FlutterAuthPlatform.instance.userInfo(createApiRequest(
+          AuthUserInfoOptions(accessToken: accessToken, telemetry: telemetry)));
 
   Future<DatabaseUser> signup(
           {required final String email,
@@ -31,35 +32,39 @@ class AuthenticationApi {
           final String? username,
           required final String connection,
           final Map<String, String> userMetadata = const {}}) =>
-      Auth0FlutterAuthPlatform.instance.signup(AuthSignupOptions(
-          email: email,
-          password: password,
-          connection: connection,
-          username: username,
-          userMetadata: userMetadata,
-          account: account,
-          telemetry: telemetry));
+      Auth0FlutterAuthPlatform.instance.signup(createApiRequest(
+          AuthSignupOptions(
+              email: email,
+              password: password,
+              connection: connection,
+              username: username,
+              userMetadata: userMetadata,
+              telemetry: telemetry)));
 
-  Future<Credentials> renewAccessToken(
-          {required final String refreshToken,
-          final Set<String> scopes = const {},
-          final Map<String, String> parameters = const {}}) =>
-      Auth0FlutterAuthPlatform.instance.renewAccessToken(
+  Future<Credentials> renewAccessToken({
+    required final String refreshToken,
+    final Set<String> scopes = const {},
+    final Map<String, String> parameters = const {},
+  }) =>
+      Auth0FlutterAuthPlatform.instance.renewAccessToken(createApiRequest(
           AuthRenewAccessTokenOptions(
-              account: account,
-              telemetry: telemetry,
               refreshToken: refreshToken,
               scopes: scopes,
-              parameters: parameters));
+              parameters: parameters,
+              telemetry: telemetry)));
 
   Future<void> resetPassword(
           {required final String email,
           required final String connection,
           final Map<String, String> parameters = const {}}) =>
-      Auth0FlutterAuthPlatform.instance.resetPassword(AuthResetPasswordOptions(
-          account: account,
-          telemetry: telemetry,
-          email: email,
-          connection: connection,
-          parameters: parameters));
+      Auth0FlutterAuthPlatform.instance.resetPassword(createApiRequest(
+          AuthResetPasswordOptions(
+              email: email,
+              connection: connection,
+              parameters: parameters,
+              telemetry: telemetry)));
+
+  ApiRequest<TOptions> createApiRequest<TOptions extends RequestOptions>(
+          final TOptions options) =>
+      ApiRequest<TOptions>(account: account, options: options);
 }

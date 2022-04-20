@@ -1,8 +1,7 @@
-import '../account.dart';
+import '../request/request_options.dart';
 import '../telemetry.dart';
 
-class AuthLoginOptions {
-  final Account account;
+class AuthLoginOptions implements RequestOptions {
   final Telemetry telemetry;
   final String usernameOrEmail;
   final String password;
@@ -11,17 +10,15 @@ class AuthLoginOptions {
   final Map<String, String> parameters;
 
   AuthLoginOptions(
-      {required this.account,
-      required this.telemetry,
+      {required this.telemetry,
       required this.usernameOrEmail,
       required this.password,
       required this.connectionOrRealm,
       this.scopes = const {},
       this.parameters = const {}});
 
-      Map<String, dynamic> toMap() => {
-        'domain': account.domain,
-        'clientId': account.clientId,
+  @override
+  Map<String, dynamic> toMap() => {
         'telemetry': telemetry.toMap(),
         'usernameOrEmail': usernameOrEmail,
         'password': password,

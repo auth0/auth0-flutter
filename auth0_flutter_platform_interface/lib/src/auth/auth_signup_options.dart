@@ -1,17 +1,16 @@
-import '../account.dart';
+import '../request/request_options.dart';
 import '../telemetry.dart';
 
-class AuthSignupOptions {
-  final Account account;
+class AuthSignupOptions implements RequestOptions {
   final Telemetry telemetry;
+
   final String email;
   final String? username;
   final String password;
   final String connection;
   final Map<String, String> userMetadata;
 
-  AuthSignupOptions(
-      {required this.account,
+  AuthSignupOptions({
       required this.telemetry,
       required this.email,
       this.username,
@@ -19,9 +18,8 @@ class AuthSignupOptions {
       required this.connection,
       this.userMetadata = const {}});
 
+  @override
   Map<String, dynamic> toMap() => {
-        'domain': account.domain,
-        'clientId': account.clientId,
         'telemetry': telemetry.toMap(),
         'connection': connection,
         'username': username,
