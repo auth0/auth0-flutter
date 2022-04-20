@@ -1,4 +1,4 @@
-version: '2.1'
+version: 2.1
 jobs:
   test_and_analyze:
     docker:
@@ -44,12 +44,12 @@ jobs:
             echo 'export ANDROID_HOME="/usr/local/share/android-commandlinetools"' >> $BASH_ENV
             echo 'export ANDROID_SDK_HOME="${ANDROID_HOME}"' >> $BASH_ENV
             echo 'export ANDROID_SDK_ROOT="${ANDROID_HOME}"' >> $BASH_ENV
-            echo 'export PATH="$PATH:~/flutter/bin"'  >> $BASH_ENV
-            echo 'export PATH="$PATH:${ANDROID_HOME}/platform-tools"'  >> $BASH_ENV
-            echo 'export PATH="$PATH:${ANDROID_HOME}/tools"'  >> $BASH_ENV
-            echo 'export PATH="$PATH:${ANDROID_HOME}/sdkmanager"'  >> $BASH_ENV
-            echo 'export PATH="$PATH:/usr/local/bin"'  >> $BASH_ENV
-            echo 'export PATH="$PATH:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/emulator"'  >> $BASH_ENV
+            echo 'export PATH="$PATH:~/flutter/bin"' >> $BASH_ENV
+            echo 'export PATH="$PATH:${ANDROID_HOME}/platform-tools"' >> $BASH_ENV
+            echo 'export PATH="$PATH:${ANDROID_HOME}/tools"' >> $BASH_ENV
+            echo 'export PATH="$PATH:${ANDROID_HOME}/sdkmanager"' >> $BASH_ENV
+            echo 'export PATH="$PATH:/usr/local/bin"' >> $BASH_ENV
+            echo 'export PATH="$PATH:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/emulator"' >> $BASH_ENV
       - run:
           name: Install Flutter SDK
           command: |
@@ -65,9 +65,16 @@ jobs:
       - run:
           name: Run iOS Tests
           command: |
+            touch ../.env
             pod install
-            cp ../.env.example ../.env
-            xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 13'
+            SCHEME=Runner
+            WORKSPACE="$SCHEME".xcworkspace
+            SIMULATOR='platform=iOS Simulator,name=iPhone 13'
+            if [ -z "$CIRCLE_PR_NUMBER" ]; then
+              xcodebuild test -scheme "$SCHEME" -workspace "$WORKSPACE" -destination "$SIMULATOR"
+            else
+              xcodebuild test -scheme "$SCHEME" -workspace "$WORKSPACE" -destination "$SIMULATOR" -skip-testing:"$SCHEME"UITests
+            fi
           working_directory: ./auth0_flutter/example/ios
       - run:
           name: Build Android Example App
