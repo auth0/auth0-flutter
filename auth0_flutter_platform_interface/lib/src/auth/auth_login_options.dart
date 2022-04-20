@@ -1,6 +1,5 @@
 import '../request/request_options.dart';
 
-
 class AuthLoginOptions implements RequestOptions {
   final String usernameOrEmail;
   final String password;

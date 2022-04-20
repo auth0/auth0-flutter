@@ -2,8 +2,8 @@ import '../account.dart';
 import 'request_options.dart';
 
 abstract class BaseRequest<TOptions extends RequestOptions> {
-  late TOptions options;
-  late Account account;
+  final TOptions options;
+  final Account account;
 
   BaseRequest({
     required this.account,
