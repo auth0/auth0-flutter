@@ -171,8 +171,8 @@
 		5C328B5127F7B11300451E70 /* WebAuth */ = {
 			isa = PBXGroup;
 			children = (
-				5C328B4727F7822600451E70 /* WebAuthHandlerTests.swift */,
 				5C328B5227F7B12F00451E70 /* WebAuthSpies.swift */,
+				5C328B4727F7822600451E70 /* WebAuthHandlerTests.swift */,
 				5C328B5427F7B1F300451E70 /* WebAuthLoginHandlerTests.swift */,
 				5C335E3C27FBBC2300EDDE3A /* WebAuthLogoutHandlerTests.swift */,
 				5C59DA8C280938BE00365CDB /* WebAuthExtensionsTests.swift */,

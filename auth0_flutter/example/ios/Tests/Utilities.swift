@@ -106,6 +106,7 @@ func assert(flutterError: FlutterError,
             line: UInt = #line) {
     if let details = flutterError.details as? [String: Any],
        flutterError.code == authenticationError.code,
+       flutterError.message == String(describing: authenticationError),
        details.filter({ $0.key != AuthAPIErrorFlag.key }) == authenticationError.details,
        let flags = details[AuthAPIErrorFlag.key] as? [String: Bool],
        flags[AuthAPIErrorFlag.isMultifactorRequired] == authenticationError.isMultifactorRequired,
