@@ -2,9 +2,9 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 
 class AuthenticationApi {
   final Account account;
-  final Telemetry telemetry;
+  final UserAgent userAgent;
 
-  AuthenticationApi(this.account, this.telemetry);
+  AuthenticationApi(this.account, this.userAgent);
 
   Future<Credentials> login({
     required final String usernameOrEmail,
@@ -61,5 +61,5 @@ class AuthenticationApi {
   ApiRequest<TOptions> createApiRequest<TOptions extends RequestOptions>(
           final TOptions options) =>
       ApiRequest<TOptions>(
-          account: account, options: options, telemetry: telemetry);
+          account: account, options: options, userAgent: userAgent);
 }

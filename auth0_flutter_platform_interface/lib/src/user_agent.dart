@@ -1,8 +1,8 @@
-class Telemetry {
+class UserAgent {
   String name;
   String version;
 
-  Telemetry({required this.name, required this.version});
+  UserAgent({required this.name, required this.version});
 
   Map<String, String> toMap() => {
         'name': name,

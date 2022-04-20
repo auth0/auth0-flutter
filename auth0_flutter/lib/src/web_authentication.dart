@@ -2,9 +2,9 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 
 class WebAuthentication {
   final Account account;
-  final Telemetry telemetry;
+  final UserAgent userAgent;
 
-  WebAuthentication(this.account, this.telemetry);
+  WebAuthentication(this.account, this.userAgent);
 
   Future<Credentials> login({
     final String? audience,
@@ -39,5 +39,5 @@ class WebAuthentication {
       createWebAuthRequest<TOptions extends RequestOptions>(
               final TOptions options) =>
           WebAuthRequest<TOptions>(
-              account: account, options: options, telemetry: telemetry);
+              account: account, options: options, userAgent: userAgent);
 }

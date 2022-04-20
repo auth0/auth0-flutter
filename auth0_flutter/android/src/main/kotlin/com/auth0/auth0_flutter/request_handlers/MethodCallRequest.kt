@@ -23,9 +23,9 @@ class MethodCallRequest {
                 listOf(
                     "domain",
                     "clientId",
-                    "telemetry",
-                    "telemetry.name",
-                    "telemetry.version"
+                    "userAgent",
+                    "userAgent.name",
+                    "userAgent.version"
                 ), args
             );
 
@@ -34,11 +34,11 @@ class MethodCallRequest {
                 args["domain"] as String
             )
 
-            val telemetry = args["telemetry"] as Map<String, String>;
+            val userAgent = args["userAgent"] as Map<String, String>;
 
             account.auth0UserAgent = Auth0UserAgent(
-                name = telemetry["name"] as String,
-                version = telemetry["version"] as String,
+                name = userAgent["name"] as String,
+                version = userAgent["version"] as String,
             )
 
             return MethodCallRequest(account, args);

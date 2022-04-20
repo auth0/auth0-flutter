@@ -14,7 +14,7 @@ export 'src/method_channel_auth0_flutter_auth.dart';
 export 'src/method_channel_auth0_flutter_web_auth.dart';
 export 'src/request/request.dart';
 export 'src/request/request_options.dart';
-export 'src/telemetry.dart';
+export 'src/user_agent.dart';
 export 'src/user_profile.dart';
 export 'src/web-auth/web_auth_exception.dart';
 export 'src/web-auth/web_auth_login_input.dart';
