@@ -119,7 +119,10 @@ func assert(flutterError: FlutterError,
        flags[AuthAPIErrorFlag.isRefreshTokenDeleted] == authenticationError.isRefreshTokenDeleted,
        flags[AuthAPIErrorFlag.isAccessDenied] == authenticationError.isAccessDenied,
        flags[AuthAPIErrorFlag.isTooManyAttempts] == authenticationError.isTooManyAttempts,
-       flags[AuthAPIErrorFlag.isVerificationRequired] == authenticationError.isVerificationRequired {
+       flags[AuthAPIErrorFlag.isVerificationRequired] == authenticationError.isVerificationRequired,
+       flags[AuthAPIErrorFlag.isPasswordLeaked] == authenticationError.isPasswordLeaked,
+       flags[AuthAPIErrorFlag.isLoginRequired] == authenticationError.isLoginRequired,
+       flags[AuthAPIErrorFlag.isNetworkError] == authenticationError.isNetworkError {
         return
     }
     XCTFail("The handler did not produce the error '\(authenticationError)'", file: file, line: line)
