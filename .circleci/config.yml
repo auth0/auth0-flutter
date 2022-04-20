@@ -65,7 +65,7 @@ jobs:
       - run:
           name: Run iOS Tests
           command: |
-            touch ../.env
+            echo "AUTH0_DOMAIN=$AUTH0_DOMAIN\nAUTH0_CLIENT_ID=$AUTH0_CLIENT_ID\nAUTH0_CUSTOM_SCHEME=demo" > ../.env
             pod install
             SCHEME=Runner
             WORKSPACE="$SCHEME".xcworkspace
