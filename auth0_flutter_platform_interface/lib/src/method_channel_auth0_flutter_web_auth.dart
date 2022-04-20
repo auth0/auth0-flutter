@@ -2,6 +2,8 @@ import 'package:flutter/services.dart';
 
 import 'auth0_flutter_web_auth_platform.dart';
 import 'credentials.dart';
+import 'request/request.dart';
+import 'request/request_options.dart';
 import 'web-auth/web_auth_exception.dart';
 import 'web-auth/web_auth_login_input.dart';
 import 'web-auth/web_auth_logout_input.dart';
@@ -13,29 +15,30 @@ const String logoutMethod = 'webAuth#logout';
 
 class MethodChannelAuth0FlutterWebAuth extends Auth0FlutterWebAuthPlatform {
   @override
-  Future<Credentials> login(final WebAuthLoginInput input) async {
+  Future<Credentials> login(final WebAuthRequest<WebAuthLoginInput> request) async {
     final Map<String, dynamic> result =
-        await invokeMapMethod(method: loginMethod, options: input.toMap());
+        await invokeRequest(method: loginMethod, request: request);
 
     return Credentials.fromMap(result);
   }
 
   @override
-  Future<void> logout(final WebAuthLogoutInput input) async {
-    await invokeMapMethod(
+  Future<void> logout(final WebAuthRequest<WebAuthLogoutInput> request) async {
+    await invokeRequest(
       method: logoutMethod,
-      options: input.toMap(),
+      request: request,
       throwOnNull: false,
     );
   }
 
-  Future<Map<String, dynamic>> invokeMapMethod(
-      {required final String method,
-      required final Map<String, dynamic> options,
-      final bool? throwOnNull = true}) async {
+  Future<Map<String, dynamic>> invokeRequest<TOptions extends RequestOptions>({
+    required final String method,
+    required final WebAuthRequest<TOptions> request,
+    final bool? throwOnNull = true,
+  }) async {
     final Map<String, dynamic>? result;
     try {
-      result = await _channel.invokeMapMethod(method, options);
+      result = await _channel.invokeMapMethod(method, request.toMap());
     } on PlatformException catch (e) {
       throw WebAuthException.fromPlatformException(e);
     }

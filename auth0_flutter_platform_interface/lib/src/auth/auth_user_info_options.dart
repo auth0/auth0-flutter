@@ -1,15 +1,12 @@
-import '../account.dart';
+import '../request/request_options.dart';
 
-class AuthUserInfoOptions {
+class AuthUserInfoOptions implements RequestOptions {
   String accessToken;
-  Account account;
 
-  AuthUserInfoOptions(
-      {required final this.accessToken, required final this.account});
+  AuthUserInfoOptions({required final this.accessToken});
 
+  @override
   Map<String, dynamic> toMap() => {
-        'domain': account.domain,
-        'clientId': account.clientId,
         'accessToken': accessToken,
       };
 }

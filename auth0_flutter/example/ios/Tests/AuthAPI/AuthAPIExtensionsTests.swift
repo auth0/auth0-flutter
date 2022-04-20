@@ -5,7 +5,7 @@ import Auth0
 
 class AuthAPIExtensionsTests: XCTestCase {
     func testInitializesFlutterErrorFromAuthAPIError() {
-        let errors: [AuthAPIErrorFlag: [String: String]] = [
+        let errors: [AuthAPIErrorFlag: [String: Any]] = [
             .isMultifactorRequired: ["code": "mfa_required"],
             .isMultifactorEnrollRequired: ["code": "unsupported_challenge_type"],
             .isMultifactorCodeInvalid: ["code": "invalid_grant", "error_description": "Invalid otp_code."],
@@ -19,7 +19,10 @@ class AuthAPIExtensionsTests: XCTestCase {
                                      + " anymore."],
             .isAccessDenied: ["code": "access_denied"],
             .isTooManyAttempts: ["code": "too_many_attempts"],
-            .isVerificationRequired: ["code": "requires_verification"]
+            .isVerificationRequired: ["code": "requires_verification"],
+            .isPasswordLeaked: ["code": "password_leaked"],
+            .isLoginRequired: ["code": "login_required"],
+            .isNetworkError: ["cause": URLError(URLError.Code.notConnectedToInternet)]
         ]
         for (flag, info) in errors {
             let error = AuthenticationError(info: info, statusCode: 400)

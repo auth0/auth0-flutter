@@ -1,16 +1,11 @@
-import '../account.dart';
+import '../request/request_options.dart';
 
-class WebAuthLogoutInput {
-  final Account account;
+class WebAuthLogoutInput implements RequestOptions {
   final String? returnTo;
   final String? scheme;
 
-  WebAuthLogoutInput({required this.account, this.returnTo, this.scheme});
+  WebAuthLogoutInput({this.returnTo, this.scheme});
 
-  Map<String, dynamic> toMap() => {
-        'domain': account.domain,
-        'clientId': account.clientId,
-        'returnTo': returnTo,
-        'scheme': scheme
-      };
+  @override
+  Map<String, dynamic> toMap() => {'returnTo': returnTo, 'scheme': scheme};
 }

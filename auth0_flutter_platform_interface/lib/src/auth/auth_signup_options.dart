@@ -1,7 +1,6 @@
-import '../account.dart';
+import '../request/request_options.dart';
 
-class AuthSignupOptions {
-  final Account account;
+class AuthSignupOptions implements RequestOptions {
   final String email;
   final String? username;
   final String password;
@@ -9,16 +8,14 @@ class AuthSignupOptions {
   final Map<String, String> userMetadata;
 
   AuthSignupOptions(
-      {required this.account,
-      required this.email,
+      {required this.email,
       this.username,
       required this.password,
       required this.connection,
       this.userMetadata = const {}});
 
+  @override
   Map<String, dynamic> toMap() => {
-        'domain': account.domain,
-        'clientId': account.clientId,
         'connection': connection,
         'username': username,
         'email': email,

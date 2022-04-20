@@ -53,12 +53,14 @@ void main() {
             'username': 'test-user'
           });
 
-      await MethodChannelAuth0FlutterAuth().signup(AuthSignupOptions(
-          account: const Account('test-domain', 'test-clientId'),
-          email: 'test-email',
-          password: 'test-pass',
-          connection: 'test-connection',
-          username: 'test-user'));
+      await MethodChannelAuth0FlutterAuth().signup(
+          ApiRequest<AuthSignupOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              options: AuthSignupOptions(
+                  email: 'test-email',
+                  password: 'test-pass',
+                  connection: 'test-connection',
+                  username: 'test-user')));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -72,12 +74,14 @@ void main() {
             'username': 'test-user'
           });
 
-      await MethodChannelAuth0FlutterAuth().signup(AuthSignupOptions(
-          account: const Account('test-domain', 'test-clientId'),
-          email: 'test-email',
-          password: 'test-pass',
-          connection: 'test-connection',
-          username: 'test-user'));
+      await MethodChannelAuth0FlutterAuth().signup(
+          ApiRequest<AuthSignupOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              options: AuthSignupOptions(
+                  email: 'test-email',
+                  password: 'test-pass',
+                  connection: 'test-connection',
+                  username: 'test-user')));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -97,12 +101,13 @@ void main() {
           });
 
       final result = await MethodChannelAuth0FlutterAuth().signup(
-          AuthSignupOptions(
+          ApiRequest<AuthSignupOptions>(
               account: const Account('test-domain', 'test-clientId'),
-              email: 'test-email',
-              password: 'test-pass',
-              connection: 'test-connection',
-              username: 'test-user'));
+              options: AuthSignupOptions(
+                  email: 'test-email',
+                  password: 'test-pass',
+                  connection: 'test-connection',
+                  username: 'test-user')));
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -116,11 +121,10 @@ void main() {
           (final _) async => {'email': 'test-email', 'emailVerified': true});
 
       final result = await MethodChannelAuth0FlutterAuth().signup(
-          AuthSignupOptions(
-              account: const Account('', ''),
-              email: '',
-              password: '',
-              connection: ''));
+          ApiRequest<AuthSignupOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              options:
+                  AuthSignupOptions(email: '', password: '', connection: '')));
 
       verify(mocked.methodCallHandler(captureAny));
       expect(result.emailVerified, true);
@@ -131,11 +135,10 @@ void main() {
           (final _) async => {'email': 'test-email', 'emailVerified': false});
 
       final result = await MethodChannelAuth0FlutterAuth().signup(
-          AuthSignupOptions(
+          ApiRequest<AuthSignupOptions>(
               account: const Account('', ''),
-              email: '',
-              password: '',
-              connection: ''));
+              options:
+                  AuthSignupOptions(email: '', password: '', connection: '')));
 
       verify(mocked.methodCallHandler(captureAny));
       expect(result.emailVerified, false);
@@ -146,11 +149,10 @@ void main() {
 
       Future<DatabaseUser> actual() async {
         final result = await MethodChannelAuth0FlutterAuth().signup(
-            AuthSignupOptions(
+            ApiRequest<AuthSignupOptions>(
                 account: const Account('', ''),
-                email: '',
-                password: '',
-                connection: ''));
+                options: AuthSignupOptions(
+                    email: '', password: '', connection: '')));
 
         return result;
       }
@@ -169,11 +171,10 @@ void main() {
 
       Future<DatabaseUser> actual() async {
         final result = await MethodChannelAuth0FlutterAuth().signup(
-            AuthSignupOptions(
+            ApiRequest<AuthSignupOptions>(
                 account: const Account('', ''),
-                email: '',
-                password: '',
-                connection: ''));
+                options: AuthSignupOptions(
+                    email: '', password: '', connection: '')));
 
         return result;
       }
@@ -187,11 +188,16 @@ void main() {
       when(mocked.methodCallHandler(any))
           .thenAnswer((final _) async => MethodCallHandler.loginResult);
 
-      await MethodChannelAuth0FlutterAuth().login(AuthLoginOptions(
-          account: const Account('', ''),
-          usernameOrEmail: '',
-          password: '',
-          connectionOrRealm: ''));
+      await MethodChannelAuth0FlutterAuth().login(
+        ApiRequest<AuthLoginOptions>(
+            account: const Account('', ''),
+            options: AuthLoginOptions(
+                usernameOrEmail: 'test-email',
+                password: 'test-pass',
+                connectionOrRealm: 'test-connection',
+                scopes: {'a', 'b'},
+                parameters: {'test': 'test-123'})),
+      );
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -202,13 +208,16 @@ void main() {
       when(mocked.methodCallHandler(any))
           .thenAnswer((final _) async => MethodCallHandler.loginResult);
 
-      await MethodChannelAuth0FlutterAuth().login(AuthLoginOptions(
-          account: const Account('test-domain', 'test-clientId'),
-          usernameOrEmail: 'test-email',
-          password: 'test-pass',
-          connectionOrRealm: 'test-connection',
-          scopes: {'a', 'b'},
-          parameters: {'test': 'test-123'}));
+      await MethodChannelAuth0FlutterAuth().login(
+        ApiRequest<AuthLoginOptions>(
+            account: const Account('test-domain', 'test-clientId'),
+            options: AuthLoginOptions(
+                usernameOrEmail: 'test-email',
+                password: 'test-pass',
+                connectionOrRealm: 'test-connection',
+                scopes: {'a', 'b'},
+                parameters: {'test': 'test-123'})),
+      );
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -227,11 +236,15 @@ void main() {
           .thenAnswer((final _) async => MethodCallHandler.loginResult);
 
       final result = await MethodChannelAuth0FlutterAuth().login(
-          AuthLoginOptions(
-              account: const Account('test-domain', 'test-clientId'),
-              usernameOrEmail: 'test-email',
-              password: 'test-pass',
-              connectionOrRealm: 'test-connection'));
+        ApiRequest<AuthLoginOptions>(
+            account: const Account('', ''),
+            options: AuthLoginOptions(
+                usernameOrEmail: 'test-email',
+                password: 'test-pass',
+                connectionOrRealm: 'test-connection',
+                scopes: {'a', 'b'},
+                parameters: {'test': 'test-123'})),
+      );
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -250,12 +263,16 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
       Future<Credentials> actual() async {
-        final Credentials result = await MethodChannelAuth0FlutterAuth().login(
-            AuthLoginOptions(
-                account: const Account('test-domain', 'test-clientId'),
-                usernameOrEmail: 'test-email',
-                password: 'test-pass',
-                connectionOrRealm: 'test-connection'));
+        final result = await MethodChannelAuth0FlutterAuth().login(
+          ApiRequest<AuthLoginOptions>(
+              account: const Account('', ''),
+              options: AuthLoginOptions(
+                  usernameOrEmail: 'test-email',
+                  password: 'test-pass',
+                  connectionOrRealm: 'test-connection',
+                  scopes: {'a', 'b'},
+                  parameters: {'test': 'test-123'})),
+        );
 
         return result;
       }
@@ -270,12 +287,16 @@ void main() {
           .thenThrow(PlatformException(code: '123'));
 
       Future<Credentials> actual() async {
-        final Credentials result = await MethodChannelAuth0FlutterAuth().login(
-            AuthLoginOptions(
-                account: const Account('test-domain', 'test-clientId'),
-                usernameOrEmail: 'test-email',
-                password: 'test-pass',
-                connectionOrRealm: 'test-connection'));
+        final result = await MethodChannelAuth0FlutterAuth().login(
+          ApiRequest<AuthLoginOptions>(
+              account: const Account('', ''),
+              options: AuthLoginOptions(
+                  usernameOrEmail: 'test-email',
+                  password: 'test-pass',
+                  connectionOrRealm: 'test-connection',
+                  scopes: {'a', 'b'},
+                  parameters: {'test': 'test-123'})),
+        );
 
         return result;
       }
@@ -288,11 +309,10 @@ void main() {
     test('calls the correct MethodChannel method', () async {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
-      await MethodChannelAuth0FlutterAuth().resetPassword(
-          AuthResetPasswordOptions(
-              account: const Account('test-domain', 'test-clientId'),
-              email: 'test-email',
-              connection: 'test-connection'));
+      await MethodChannelAuth0FlutterAuth().resetPassword(ApiRequest(
+          account: const Account('test-domain', 'test-clientId'),
+          options: AuthResetPasswordOptions(
+              email: 'test-email', connection: 'test-connection')));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -302,12 +322,12 @@ void main() {
     test('correctly maps all properties', () async {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
-      await MethodChannelAuth0FlutterAuth().resetPassword(
-          AuthResetPasswordOptions(
-              account: const Account('test-domain', 'test-clientId'),
+      await MethodChannelAuth0FlutterAuth().resetPassword(ApiRequest(
+          account: const Account('test-domain', 'test-clientId'),
+          options: AuthResetPasswordOptions(
               email: 'test-email',
               connection: 'test-connection',
-              parameters: {'test': 'test-123'}));
+              parameters: {'test': 'test-123'})));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -325,12 +345,12 @@ void main() {
           .thenThrow(PlatformException(code: '123'));
 
       Future<void> actual() async {
-        await MethodChannelAuth0FlutterAuth().resetPassword(
-            AuthResetPasswordOptions(
-                account: const Account('test-domain', 'test-clientId'),
+        await MethodChannelAuth0FlutterAuth().resetPassword(ApiRequest(
+            account: const Account('test-domain', 'test-clientId'),
+            options: AuthResetPasswordOptions(
                 email: 'test-email',
                 connection: 'test-connection',
-                parameters: {'test': 'test-123'}));
+                parameters: {'test': 'test-123'})));
       }
 
       await expectLater(actual, throwsA(isA<ApiException>()));
@@ -339,12 +359,15 @@ void main() {
 
   group('renewAccessToken', () {
     test('calls the correct MethodChannel method', () async {
-      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => MethodCallHandler.renewAccessTokenResult);
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.renewAccessTokenResult);
 
-      await MethodChannelAuth0FlutterAuth().renewAccessToken(
-          AuthRenewAccessTokenOptions(
+      await MethodChannelAuth0FlutterAuth()
+          .renewAccessToken(ApiRequest<AuthRenewAccessTokenOptions>(
               account: const Account('test-domain', 'test-clientId'),
-              refreshToken: 'test-refresh-token'));
+              options: AuthRenewAccessTokenOptions(
+                refreshToken: 'test-refresh-token',
+              )));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -355,10 +378,12 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer(
           (final _) async => MethodCallHandler.renewAccessTokenResult);
 
-      await MethodChannelAuth0FlutterAuth().renewAccessToken(
-          AuthRenewAccessTokenOptions(
-              refreshToken: 'test-refresh-token',
-              account: const Account('test-domain', 'test-clientId')));
+      await MethodChannelAuth0FlutterAuth()
+          .renewAccessToken(ApiRequest<AuthRenewAccessTokenOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              options: AuthRenewAccessTokenOptions(
+                refreshToken: 'test-refresh-token',
+              )));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -372,21 +397,24 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer(
           (final _) async => MethodCallHandler.renewAccessTokenResult);
 
-      final result = await MethodChannelAuth0FlutterAuth().renewAccessToken(
-          AuthRenewAccessTokenOptions(
-              refreshToken: 'test-refresh-token',
-              account: const Account('test-domain', 'test-clientId')));
+      final result = await MethodChannelAuth0FlutterAuth()
+          .renewAccessToken(ApiRequest<AuthRenewAccessTokenOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              options: AuthRenewAccessTokenOptions(
+                refreshToken: 'test-refresh-token',
+              )));
 
       expect(result.accessToken,
           MethodCallHandler.renewAccessTokenResult['accessToken']);
-      expect(result.idToken,
-          MethodCallHandler.renewAccessTokenResult['idToken']);
+      expect(
+          result.idToken, MethodCallHandler.renewAccessTokenResult['idToken']);
       expect(result.refreshToken,
           MethodCallHandler.renewAccessTokenResult['refreshToken']);
-      expect(result.scopes,
-          MethodCallHandler.renewAccessTokenResult['scopes']);
-      expect(result.expiresAt,
-          DateTime.parse(MethodCallHandler.renewAccessTokenResult['expiresAt'] as String));
+      expect(result.scopes, MethodCallHandler.renewAccessTokenResult['scopes']);
+      expect(
+          result.expiresAt,
+          DateTime.parse(
+              MethodCallHandler.renewAccessTokenResult['expiresAt'] as String));
       expect(result.userProfile.name,
           MethodCallHandler.renewAccessTokenResult['userProfile']['name']);
     });
@@ -395,10 +423,12 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
       Future<Credentials> actual() async {
-        final result = await MethodChannelAuth0FlutterAuth().renewAccessToken(
-          AuthRenewAccessTokenOptions(
-              refreshToken: 'test-refresh-token',
-              account: const Account('test-domain', 'test-clientId')));
+        final result = await MethodChannelAuth0FlutterAuth()
+            .renewAccessToken(ApiRequest<AuthRenewAccessTokenOptions>(
+                account: const Account('test-domain', 'test-clientId'),
+                options: AuthRenewAccessTokenOptions(
+                  refreshToken: 'test-refresh-token',
+                )));
 
         return result;
       }
@@ -413,10 +443,12 @@ void main() {
           .thenThrow(PlatformException(code: '123'));
 
       Future<Credentials> actual() async {
-        final result = await MethodChannelAuth0FlutterAuth().renewAccessToken(
-          AuthRenewAccessTokenOptions(
-              refreshToken: 'test-refresh-token',
-              account: const Account('test-domain', 'test-clientId')));
+        final result = await MethodChannelAuth0FlutterAuth()
+            .renewAccessToken(ApiRequest<AuthRenewAccessTokenOptions>(
+                account: const Account('test-domain', 'test-clientId'),
+                options: AuthRenewAccessTokenOptions(
+                  refreshToken: 'test-refresh-token',
+                )));
 
         return result;
       }
@@ -430,9 +462,9 @@ void main() {
       when(mocked.methodCallHandler(any))
           .thenAnswer((final _) async => {'sub': 'test-id'});
 
-      await MethodChannelAuth0FlutterAuth().userInfo(AuthUserInfoOptions(
+      await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
           account: const Account('test-domain', 'test-clientId'),
-          accessToken: 'test-token'));
+          options: AuthUserInfoOptions(accessToken: 'test-token')));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -447,9 +479,9 @@ void main() {
             'family_name': 'test-family-name'
           });
 
-      await MethodChannelAuth0FlutterAuth().userInfo(AuthUserInfoOptions(
+      await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
           account: const Account('test-domain', 'test-clientId'),
-          accessToken: 'test-token'));
+          options: AuthUserInfoOptions(accessToken: 'test-token')));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -483,10 +515,9 @@ void main() {
             'custom_claims': {'test3': 'test3!'}
           });
 
-      final result = await MethodChannelAuth0FlutterAuth().userInfo(
-          AuthUserInfoOptions(
-              account: const Account('test-domain', 'test-clientId'),
-              accessToken: 'test-token'));
+      final result = await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
+          account: const Account('test-domain', 'test-clientId'),
+          options: AuthUserInfoOptions(accessToken: 'test-token')));
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -519,10 +550,9 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer(
           (final _) async => {'sub': 'test-id', 'updated_at': '2022-04-01'});
 
-      final result = await MethodChannelAuth0FlutterAuth().userInfo(
-          AuthUserInfoOptions(
-              account: const Account('test-domain', 'test-clientId'),
-              accessToken: 'test-token'));
+      final result = await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
+          account: const Account('test-domain', 'test-clientId'),
+          options: AuthUserInfoOptions(accessToken: 'test-token')));
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -534,9 +564,9 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
       Future<void> actual() async {
-        await MethodChannelAuth0FlutterAuth().userInfo(AuthUserInfoOptions(
+        await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
             account: const Account('test-domain', 'test-clientId'),
-            accessToken: 'test-token'));
+            options: AuthUserInfoOptions(accessToken: 'test-token')));
       }
 
       await expectLater(actual, throwsA(isA<ApiException>()));
@@ -548,9 +578,9 @@ void main() {
           .thenThrow(PlatformException(code: '123'));
 
       Future<void> actual() async {
-        await MethodChannelAuth0FlutterAuth().userInfo(AuthUserInfoOptions(
+        await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
             account: const Account('test-domain', 'test-clientId'),
-            accessToken: 'test-token'));
+            options: AuthUserInfoOptions(accessToken: 'test-token')));
       }
 
       await expectLater(actual, throwsA(isA<ApiException>()));
