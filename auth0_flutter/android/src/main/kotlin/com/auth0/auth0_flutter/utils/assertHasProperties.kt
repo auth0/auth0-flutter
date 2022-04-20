@@ -15,5 +15,5 @@ fun assertHasProperties(requiredProperties: List<String>, data: Map<*, *>) {
                 .fold(data) { acc: Any?, key: String -> tryGetByKey(acc, key) } == null
         };
 
-    missingProperties.forEach { throw NullPointerException("Required property '$it' is not provided.") }
+    missingProperties.forEach { throw IllegalArgumentException("Required property '$it' is not provided.") }
 }
