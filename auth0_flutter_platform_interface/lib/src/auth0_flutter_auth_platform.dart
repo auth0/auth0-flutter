@@ -9,6 +9,7 @@ import 'auth/auth_user_info_options.dart';
 import 'credentials.dart';
 import 'database_user.dart';
 import 'method_channel_auth0_flutter_auth.dart';
+import 'request/request.dart';
 import 'user_profile.dart';
 
 abstract class Auth0FlutterAuthPlatform extends PlatformInterface {
@@ -25,24 +26,25 @@ abstract class Auth0FlutterAuthPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<Credentials> login(final AuthLoginOptions options) {
+  Future<Credentials> login(final ApiRequest<AuthLoginOptions> request) {
     throw UnimplementedError('authLogin() has not been implemented');
   }
 
-  Future<UserProfile> userInfo(final AuthUserInfoOptions options) {
+  Future<UserProfile> userInfo(final ApiRequest<AuthUserInfoOptions> request) {
     throw UnimplementedError('authUserInfo() has not been implemented');
   }
 
-  Future<DatabaseUser> signup(final AuthSignupOptions options) {
+  Future<DatabaseUser> signup(final ApiRequest<AuthSignupOptions> request) {
     throw UnimplementedError('authSignup() has not been implemented');
   }
 
   Future<Credentials> renewAccessToken(
-      final AuthRenewAccessTokenOptions options) {
+      final ApiRequest<AuthRenewAccessTokenOptions> request) {
     throw UnimplementedError('authRenewAccessToken() has not been implemented');
   }
 
-  Future<void> resetPassword(final AuthResetPasswordOptions options) {
+  Future<void> resetPassword(
+      final ApiRequest<AuthResetPasswordOptions> request) {
     throw UnimplementedError('authResetPassword() has not been implemented');
   }
 }

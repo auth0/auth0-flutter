@@ -1,4 +1,4 @@
-import '../account.dart';
+import '../request/request_options.dart';
 
 class IdTokenValidationConfig {
   final int? leeway;
@@ -8,8 +8,7 @@ class IdTokenValidationConfig {
   const IdTokenValidationConfig({this.leeway, this.issuer, this.maxAge});
 }
 
-class WebAuthLoginInput {
-  final Account account;
+class WebAuthLoginInput implements RequestOptions {
   final IdTokenValidationConfig? idTokenValidationConfig;
   final String? audience;
   final Set<String> scopes;
@@ -21,8 +20,7 @@ class WebAuthLoginInput {
   final String? scheme;
 
   WebAuthLoginInput(
-      {required this.account,
-      this.idTokenValidationConfig,
+      {this.idTokenValidationConfig,
       this.audience,
       required this.scopes,
       this.redirectUri,
@@ -32,9 +30,8 @@ class WebAuthLoginInput {
       this.useEphemeralSession = false,
       this.parameters = const {}});
 
+  @override
   Map<String, dynamic> toMap() => {
-        'domain': account.domain,
-        'clientId': account.clientId,
         'leeway': idTokenValidationConfig?.leeway,
         'issuer': idTokenValidationConfig?.issuer,
         'maxAge': idTokenValidationConfig?.maxAge,

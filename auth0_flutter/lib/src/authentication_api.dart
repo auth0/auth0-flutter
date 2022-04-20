@@ -5,22 +5,24 @@ class AuthenticationApi {
 
   AuthenticationApi(this.account);
 
-  Future<Credentials> login(
-          {required final String usernameOrEmail,
-          required final String password,
-          required final String connectionOrRealm,
-          final Set<String> scopes = const {},
-          final Map<String, String> parameters = const {}}) =>
-      Auth0FlutterAuthPlatform.instance.login(AuthLoginOptions(
-          usernameOrEmail: usernameOrEmail,
-          password: password,
-          connectionOrRealm: connectionOrRealm,
-          scopes: scopes,
-          account: account,
-          parameters: parameters));
+  Future<Credentials> login({
+    required final String usernameOrEmail,
+    required final String password,
+    required final String connectionOrRealm,
+    final Set<String> scopes = const {},
+    final Map<String, String> parameters = const {},
+  }) =>
+      Auth0FlutterAuthPlatform.instance.login(createApiRequest(AuthLoginOptions(
+        usernameOrEmail: usernameOrEmail,
+        password: password,
+        connectionOrRealm: connectionOrRealm,
+        scopes: scopes,
+        parameters: parameters,
+      )));
 
   Future<UserProfile> userProfile({required final String accessToken}) =>
-      Auth0FlutterAuthPlatform.instance.userInfo(AuthUserInfoOptions(accessToken: accessToken, account: account));
+      Auth0FlutterAuthPlatform.instance.userInfo(
+          createApiRequest(AuthUserInfoOptions(accessToken: accessToken)));
 
   Future<DatabaseUser> signup(
           {required final String email,
@@ -28,32 +30,36 @@ class AuthenticationApi {
           final String? username,
           required final String connection,
           final Map<String, String> userMetadata = const {}}) =>
-      Auth0FlutterAuthPlatform.instance.signup(AuthSignupOptions(
-          email: email,
-          password: password,
-          connection: connection,
-          username: username,
-          userMetadata: userMetadata,
-          account: account));
+      Auth0FlutterAuthPlatform.instance
+          .signup(createApiRequest(AuthSignupOptions(
+        email: email,
+        password: password,
+        connection: connection,
+        username: username,
+        userMetadata: userMetadata,
+      )));
 
-  Future<Credentials> renewAccessToken(
-          {required final String refreshToken,
-          final Set<String> scopes = const {},
-          final Map<String, String> parameters = const {}}) =>
-      Auth0FlutterAuthPlatform.instance.renewAccessToken(
-          AuthRenewAccessTokenOptions(
-              account: account,
-              refreshToken: refreshToken,
-              scopes: scopes,
-              parameters: parameters));
+  Future<Credentials> renewAccessToken({
+    required final String refreshToken,
+    final Set<String> scopes = const {},
+    final Map<String, String> parameters = const {},
+  }) =>
+      Auth0FlutterAuthPlatform.instance
+          .renewAccessToken(createApiRequest(AuthRenewAccessTokenOptions(
+        refreshToken: refreshToken,
+        scopes: scopes,
+        parameters: parameters,
+      )));
 
   Future<void> resetPassword(
           {required final String email,
           required final String connection,
           final Map<String, String> parameters = const {}}) =>
-      Auth0FlutterAuthPlatform.instance.resetPassword(AuthResetPasswordOptions(
-          account: account,
-          email: email,
-          connection: connection,
-          parameters: parameters));
+      Auth0FlutterAuthPlatform.instance.resetPassword(createApiRequest(
+          AuthResetPasswordOptions(
+              email: email, connection: connection, parameters: parameters)));
+
+  ApiRequest<TOptions> createApiRequest<TOptions extends RequestOptions>(
+          final TOptions options) =>
+      ApiRequest<TOptions>(account: account, options: options);
 }
