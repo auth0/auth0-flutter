@@ -56,6 +56,7 @@ void main() {
       await MethodChannelAuth0FlutterAuth().signup(
           ApiRequest<AuthSignupOptions>(
               account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
               options: AuthSignupOptions(
                   email: 'test-email',
                   password: 'test-pass',
@@ -77,6 +78,7 @@ void main() {
       await MethodChannelAuth0FlutterAuth().signup(
           ApiRequest<AuthSignupOptions>(
               account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
               options: AuthSignupOptions(
                   email: 'test-email',
                   password: 'test-pass',
@@ -87,6 +89,9 @@ void main() {
           verify(mocked.methodCallHandler(captureAny)).captured.single;
       expect(verificationResult.arguments['domain'], 'test-domain');
       expect(verificationResult.arguments['clientId'], 'test-clientId');
+      expect(verificationResult.arguments['userAgent']['name'], 'test-name');
+      expect(
+          verificationResult.arguments['userAgent']['version'], 'test-version');
       expect(verificationResult.arguments['email'], 'test-email');
       expect(verificationResult.arguments['username'], 'test-user');
       expect(verificationResult.arguments['password'], 'test-pass');
@@ -103,6 +108,7 @@ void main() {
       final result = await MethodChannelAuth0FlutterAuth().signup(
           ApiRequest<AuthSignupOptions>(
               account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
               options: AuthSignupOptions(
                   email: 'test-email',
                   password: 'test-pass',
@@ -123,6 +129,7 @@ void main() {
       final result = await MethodChannelAuth0FlutterAuth().signup(
           ApiRequest<AuthSignupOptions>(
               account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
               options:
                   AuthSignupOptions(email: '', password: '', connection: '')));
 
@@ -137,6 +144,7 @@ void main() {
       final result = await MethodChannelAuth0FlutterAuth().signup(
           ApiRequest<AuthSignupOptions>(
               account: const Account('', ''),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
               options:
                   AuthSignupOptions(email: '', password: '', connection: '')));
 
@@ -148,11 +156,12 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
       Future<DatabaseUser> actual() async {
-        final result = await MethodChannelAuth0FlutterAuth().signup(
-            ApiRequest<AuthSignupOptions>(
-                account: const Account('', ''),
-                options: AuthSignupOptions(
-                    email: '', password: '', connection: '')));
+        final result = await MethodChannelAuth0FlutterAuth().signup(ApiRequest<
+                AuthSignupOptions>(
+            account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options:
+                AuthSignupOptions(email: '', password: '', connection: '')));
 
         return result;
       }
@@ -170,11 +179,12 @@ void main() {
           .thenThrow(PlatformException(code: '123'));
 
       Future<DatabaseUser> actual() async {
-        final result = await MethodChannelAuth0FlutterAuth().signup(
-            ApiRequest<AuthSignupOptions>(
-                account: const Account('', ''),
-                options: AuthSignupOptions(
-                    email: '', password: '', connection: '')));
+        final result = await MethodChannelAuth0FlutterAuth().signup(ApiRequest<
+                AuthSignupOptions>(
+            account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options:
+                AuthSignupOptions(email: '', password: '', connection: '')));
 
         return result;
       }
@@ -191,6 +201,7 @@ void main() {
       await MethodChannelAuth0FlutterAuth().login(
         ApiRequest<AuthLoginOptions>(
             account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
             options: AuthLoginOptions(
                 usernameOrEmail: 'test-email',
                 password: 'test-pass',
@@ -211,6 +222,7 @@ void main() {
       await MethodChannelAuth0FlutterAuth().login(
         ApiRequest<AuthLoginOptions>(
             account: const Account('test-domain', 'test-clientId'),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
             options: AuthLoginOptions(
                 usernameOrEmail: 'test-email',
                 password: 'test-pass',
@@ -238,6 +250,7 @@ void main() {
       final result = await MethodChannelAuth0FlutterAuth().login(
         ApiRequest<AuthLoginOptions>(
             account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
             options: AuthLoginOptions(
                 usernameOrEmail: 'test-email',
                 password: 'test-pass',
@@ -266,6 +279,7 @@ void main() {
         final result = await MethodChannelAuth0FlutterAuth().login(
           ApiRequest<AuthLoginOptions>(
               account: const Account('', ''),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
               options: AuthLoginOptions(
                   usernameOrEmail: 'test-email',
                   password: 'test-pass',
@@ -290,6 +304,7 @@ void main() {
         final result = await MethodChannelAuth0FlutterAuth().login(
           ApiRequest<AuthLoginOptions>(
               account: const Account('', ''),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
               options: AuthLoginOptions(
                   usernameOrEmail: 'test-email',
                   password: 'test-pass',
@@ -311,6 +326,7 @@ void main() {
 
       await MethodChannelAuth0FlutterAuth().resetPassword(ApiRequest(
           account: const Account('test-domain', 'test-clientId'),
+          userAgent: UserAgent(name: 'test-name', version: 'test-version'),
           options: AuthResetPasswordOptions(
               email: 'test-email', connection: 'test-connection')));
 
@@ -324,6 +340,7 @@ void main() {
 
       await MethodChannelAuth0FlutterAuth().resetPassword(ApiRequest(
           account: const Account('test-domain', 'test-clientId'),
+          userAgent: UserAgent(name: 'test-name', version: 'test-version'),
           options: AuthResetPasswordOptions(
               email: 'test-email',
               connection: 'test-connection',
@@ -333,6 +350,9 @@ void main() {
           verify(mocked.methodCallHandler(captureAny)).captured.single;
       expect(verificationResult.arguments['domain'], 'test-domain');
       expect(verificationResult.arguments['clientId'], 'test-clientId');
+      expect(verificationResult.arguments['userAgent']['name'], 'test-name');
+      expect(
+          verificationResult.arguments['userAgent']['version'], 'test-version');
       expect(verificationResult.arguments['email'], 'test-email');
       expect(verificationResult.arguments['connection'], 'test-connection');
       expect(verificationResult.arguments['parameters']['test'], 'test-123');
@@ -347,6 +367,7 @@ void main() {
       Future<void> actual() async {
         await MethodChannelAuth0FlutterAuth().resetPassword(ApiRequest(
             account: const Account('test-domain', 'test-clientId'),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
             options: AuthResetPasswordOptions(
                 email: 'test-email',
                 connection: 'test-connection',
@@ -365,6 +386,7 @@ void main() {
       await MethodChannelAuth0FlutterAuth()
           .renewAccessToken(ApiRequest<AuthRenewAccessTokenOptions>(
               account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
               options: AuthRenewAccessTokenOptions(
                 refreshToken: 'test-refresh-token',
               )));
@@ -381,6 +403,7 @@ void main() {
       await MethodChannelAuth0FlutterAuth()
           .renewAccessToken(ApiRequest<AuthRenewAccessTokenOptions>(
               account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
               options: AuthRenewAccessTokenOptions(
                 refreshToken: 'test-refresh-token',
               )));
@@ -389,6 +412,9 @@ void main() {
           verify(mocked.methodCallHandler(captureAny)).captured.single;
       expect(verificationResult.arguments['domain'], 'test-domain');
       expect(verificationResult.arguments['clientId'], 'test-clientId');
+      expect(verificationResult.arguments['userAgent']['name'], 'test-name');
+      expect(
+          verificationResult.arguments['userAgent']['version'], 'test-version');
       expect(
           verificationResult.arguments['refreshToken'], 'test-refresh-token');
     });
@@ -400,6 +426,7 @@ void main() {
       final result = await MethodChannelAuth0FlutterAuth()
           .renewAccessToken(ApiRequest<AuthRenewAccessTokenOptions>(
               account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
               options: AuthRenewAccessTokenOptions(
                 refreshToken: 'test-refresh-token',
               )));
@@ -423,9 +450,11 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
       Future<Credentials> actual() async {
-        final result = await MethodChannelAuth0FlutterAuth()
-            .renewAccessToken(ApiRequest<AuthRenewAccessTokenOptions>(
+        final result = await MethodChannelAuth0FlutterAuth().renewAccessToken(
+            ApiRequest<AuthRenewAccessTokenOptions>(
                 account: const Account('test-domain', 'test-clientId'),
+                userAgent:
+                    UserAgent(name: 'test-name', version: 'test-version'),
                 options: AuthRenewAccessTokenOptions(
                   refreshToken: 'test-refresh-token',
                 )));
@@ -443,9 +472,11 @@ void main() {
           .thenThrow(PlatformException(code: '123'));
 
       Future<Credentials> actual() async {
-        final result = await MethodChannelAuth0FlutterAuth()
-            .renewAccessToken(ApiRequest<AuthRenewAccessTokenOptions>(
+        final result = await MethodChannelAuth0FlutterAuth().renewAccessToken(
+            ApiRequest<AuthRenewAccessTokenOptions>(
                 account: const Account('test-domain', 'test-clientId'),
+                userAgent:
+                    UserAgent(name: 'test-name', version: 'test-version'),
                 options: AuthRenewAccessTokenOptions(
                   refreshToken: 'test-refresh-token',
                 )));
@@ -464,6 +495,7 @@ void main() {
 
       await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
           account: const Account('test-domain', 'test-clientId'),
+          userAgent: UserAgent(name: 'test-name', version: 'test-version'),
           options: AuthUserInfoOptions(accessToken: 'test-token')));
 
       expect(
@@ -481,12 +513,16 @@ void main() {
 
       await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
           account: const Account('test-domain', 'test-clientId'),
+          userAgent: UserAgent(name: 'test-name', version: 'test-version'),
           options: AuthUserInfoOptions(accessToken: 'test-token')));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
       expect(verificationResult.arguments['domain'], 'test-domain');
       expect(verificationResult.arguments['clientId'], 'test-clientId');
+      expect(verificationResult.arguments['userAgent']['name'], 'test-name');
+      expect(
+          verificationResult.arguments['userAgent']['version'], 'test-version');
       expect(verificationResult.arguments['accessToken'], 'test-token');
     });
 
@@ -517,6 +553,7 @@ void main() {
 
       final result = await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
           account: const Account('test-domain', 'test-clientId'),
+          userAgent: UserAgent(name: 'test-name', version: 'test-version'),
           options: AuthUserInfoOptions(accessToken: 'test-token')));
 
       verify(mocked.methodCallHandler(captureAny));
@@ -552,6 +589,7 @@ void main() {
 
       final result = await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
           account: const Account('test-domain', 'test-clientId'),
+          userAgent: UserAgent(name: 'test-name', version: 'test-version'),
           options: AuthUserInfoOptions(accessToken: 'test-token')));
 
       verify(mocked.methodCallHandler(captureAny));
@@ -566,6 +604,7 @@ void main() {
       Future<void> actual() async {
         await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
             account: const Account('test-domain', 'test-clientId'),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
             options: AuthUserInfoOptions(accessToken: 'test-token')));
       }
 
@@ -580,6 +619,7 @@ void main() {
       Future<void> actual() async {
         await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
             account: const Account('test-domain', 'test-clientId'),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
             options: AuthUserInfoOptions(accessToken: 'test-token')));
       }
 

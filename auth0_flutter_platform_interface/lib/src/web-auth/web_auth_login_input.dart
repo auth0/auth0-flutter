@@ -19,8 +19,8 @@ class WebAuthLoginInput implements RequestOptions {
   final Map<String, String> parameters;
   final String? scheme;
 
-  WebAuthLoginInput(
-      {this.idTokenValidationConfig,
+  WebAuthLoginInput({
+      this.idTokenValidationConfig,
       this.audience,
       required this.scopes,
       this.redirectUri,
