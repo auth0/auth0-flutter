@@ -1,5 +1,4 @@
 import '../request/request_options.dart';
-import '../telemetry.dart';
 
 class IdTokenValidationConfig {
   final int? leeway;
@@ -10,7 +9,6 @@ class IdTokenValidationConfig {
 }
 
 class WebAuthLoginInput implements RequestOptions {
-  final Telemetry telemetry;
   final IdTokenValidationConfig? idTokenValidationConfig;
   final String? audience;
   final Set<String> scopes;
@@ -22,7 +20,6 @@ class WebAuthLoginInput implements RequestOptions {
   final String? scheme;
 
   WebAuthLoginInput({
-      required this.telemetry,
       this.idTokenValidationConfig,
       this.audience,
       required this.scopes,
@@ -35,7 +32,6 @@ class WebAuthLoginInput implements RequestOptions {
 
   @override
   Map<String, dynamic> toMap() => {
-        'telemetry': telemetry.toMap(),
         'leeway': idTokenValidationConfig?.leeway,
         'issuer': idTokenValidationConfig?.issuer,
         'maxAge': idTokenValidationConfig?.maxAge,

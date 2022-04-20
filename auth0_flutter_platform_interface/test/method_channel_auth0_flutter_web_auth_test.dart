@@ -49,8 +49,8 @@ void main() {
       await MethodChannelAuth0FlutterWebAuth().login(
           WebAuthRequest<WebAuthLoginInput>(
               account: const Account('', ''),
-              options: WebAuthLoginInput(
-                  telemetry: Telemetry(name: '', version: ''), scopes: {})));
+              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
+              options: WebAuthLoginInput(scopes: {})));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -64,9 +64,8 @@ void main() {
       await MethodChannelAuth0FlutterWebAuth().login(
           WebAuthRequest<WebAuthLoginInput>(
               account: const Account('test-domain', 'test-clientId'),
+              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
               options: WebAuthLoginInput(
-                  telemetry:
-                      Telemetry(name: 'test-name', version: 'test-version'),
                   scopes: {'a', 'b'},
                   audience: 'test-audience',
                   redirectUri: 'http://google.com',
@@ -106,10 +105,8 @@ void main() {
       final result = await MethodChannelAuth0FlutterWebAuth().login(
           WebAuthRequest(
               account: const Account('test-domain', 'test-clientId'),
-              options: WebAuthLoginInput(
-                  telemetry:
-                      Telemetry(name: 'test-name', version: 'test-version'),
-                  scopes: {'a', 'b'})));
+              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
+              options: WebAuthLoginInput(scopes: {'a', 'b'})));
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -132,10 +129,9 @@ void main() {
         final result = await MethodChannelAuth0FlutterWebAuth().login(
             WebAuthRequest(
                 account: const Account('test-domain', 'test-clientId'),
-                options: WebAuthLoginInput(
-                    telemetry:
-                        Telemetry(name: 'test-name', version: 'test-version'),
-                    scopes: {'a', 'b'})));
+                telemetry:
+                    Telemetry(name: 'test-name', version: 'test-version'),
+                options: WebAuthLoginInput(scopes: {'a', 'b'})));
         return result;
       }
 
@@ -152,10 +148,9 @@ void main() {
         final result = await MethodChannelAuth0FlutterWebAuth().login(
             WebAuthRequest(
                 account: const Account('test-domain', 'test-clientId'),
-                options: WebAuthLoginInput(
-                    telemetry:
-                        Telemetry(name: 'test-name', version: 'test-version'),
-                    scopes: {'a', 'b'})));
+                telemetry:
+                    Telemetry(name: 'test-name', version: 'test-version'),
+                options: WebAuthLoginInput(scopes: {'a', 'b'})));
 
         return result;
       }
@@ -168,13 +163,11 @@ void main() {
     test('calls the correct MethodChannel method', () async {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
-      await MethodChannelAuth0FlutterWebAuth()
-          .logout(WebAuthRequest<WebAuthLogoutInput>(
+      await MethodChannelAuth0FlutterWebAuth().logout(
+          WebAuthRequest<WebAuthLogoutInput>(
               account: const Account('', ''),
-              options: WebAuthLogoutInput(
-                telemetry:
-                    Telemetry(name: 'test-name', version: 'test-version'),
-              )));
+              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
+              options: WebAuthLogoutInput()));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -187,11 +180,9 @@ void main() {
       await MethodChannelAuth0FlutterWebAuth().logout(
           WebAuthRequest<WebAuthLogoutInput>(
               account: const Account('test-domain', 'test-clientId'),
+              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
               options: WebAuthLogoutInput(
-                  telemetry:
-                      Telemetry(name: 'test-name', version: 'test-version'),
-                  returnTo: 'http://localhost:1234',
-                  scheme: 'test-scheme')));
+                  returnTo: 'http://localhost:1234', scheme: 'test-scheme')));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -211,13 +202,12 @@ void main() {
           .thenThrow(PlatformException(code: '123'));
 
       Future<void> actual() async {
-        await MethodChannelAuth0FlutterWebAuth()
-            .logout(WebAuthRequest<WebAuthLogoutInput>(
+        await MethodChannelAuth0FlutterWebAuth().logout(
+            WebAuthRequest<WebAuthLogoutInput>(
                 account: const Account('test-domain', 'test-clientId'),
-                options: WebAuthLogoutInput(
-                  telemetry:
-                      Telemetry(name: 'test-name', version: 'test-version'),
-                )));
+                telemetry:
+                    Telemetry(name: 'test-name', version: 'test-version'),
+                options: WebAuthLogoutInput()));
       }
 
       await expectLater(actual, throwsA(isA<WebAuthException>()));

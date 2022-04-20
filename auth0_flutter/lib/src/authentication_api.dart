@@ -19,12 +19,11 @@ class AuthenticationApi {
         connectionOrRealm: connectionOrRealm,
         scopes: scopes,
         parameters: parameters,
-        telemetry: telemetry,
       )));
 
   Future<UserProfile> userProfile({required final String accessToken}) =>
-      Auth0FlutterAuthPlatform.instance.userInfo(createApiRequest(
-          AuthUserInfoOptions(accessToken: accessToken, telemetry: telemetry)));
+      Auth0FlutterAuthPlatform.instance.userInfo(
+          createApiRequest(AuthUserInfoOptions(accessToken: accessToken)));
 
   Future<DatabaseUser> signup(
           {required final String email,
@@ -38,8 +37,7 @@ class AuthenticationApi {
               password: password,
               connection: connection,
               username: username,
-              userMetadata: userMetadata,
-              telemetry: telemetry)));
+              userMetadata: userMetadata)));
 
   Future<Credentials> renewAccessToken({
     required final String refreshToken,
@@ -50,8 +48,7 @@ class AuthenticationApi {
           AuthRenewAccessTokenOptions(
               refreshToken: refreshToken,
               scopes: scopes,
-              parameters: parameters,
-              telemetry: telemetry)));
+              parameters: parameters)));
 
   Future<void> resetPassword(
           {required final String email,
@@ -59,12 +56,10 @@ class AuthenticationApi {
           final Map<String, String> parameters = const {}}) =>
       Auth0FlutterAuthPlatform.instance.resetPassword(createApiRequest(
           AuthResetPasswordOptions(
-              email: email,
-              connection: connection,
-              parameters: parameters,
-              telemetry: telemetry)));
+              email: email, connection: connection, parameters: parameters)));
 
   ApiRequest<TOptions> createApiRequest<TOptions extends RequestOptions>(
           final TOptions options) =>
-      ApiRequest<TOptions>(account: account, options: options);
+      ApiRequest<TOptions>(
+          account: account, options: options, telemetry: telemetry);
 }

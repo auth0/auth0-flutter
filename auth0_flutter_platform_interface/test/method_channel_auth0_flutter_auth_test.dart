@@ -56,9 +56,8 @@ void main() {
       await MethodChannelAuth0FlutterAuth().signup(
           ApiRequest<AuthSignupOptions>(
               account: const Account('test-domain', 'test-clientId'),
+              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
               options: AuthSignupOptions(
-                  telemetry:
-                      Telemetry(name: 'test-name', version: 'test-version'),
                   email: 'test-email',
                   password: 'test-pass',
                   connection: 'test-connection',
@@ -79,9 +78,8 @@ void main() {
       await MethodChannelAuth0FlutterAuth().signup(
           ApiRequest<AuthSignupOptions>(
               account: const Account('test-domain', 'test-clientId'),
+              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
               options: AuthSignupOptions(
-                  telemetry:
-                      Telemetry(name: 'test-name', version: 'test-version'),
                   email: 'test-email',
                   password: 'test-pass',
                   connection: 'test-connection',
@@ -110,9 +108,8 @@ void main() {
       final result = await MethodChannelAuth0FlutterAuth().signup(
           ApiRequest<AuthSignupOptions>(
               account: const Account('test-domain', 'test-clientId'),
+              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
               options: AuthSignupOptions(
-                  telemetry:
-                      Telemetry(name: 'test-name', version: 'test-version'),
                   email: 'test-email',
                   password: 'test-pass',
                   connection: 'test-connection',
@@ -132,12 +129,9 @@ void main() {
       final result = await MethodChannelAuth0FlutterAuth().signup(
           ApiRequest<AuthSignupOptions>(
               account: const Account('test-domain', 'test-clientId'),
-              options: AuthSignupOptions(
-                  telemetry:
-                      Telemetry(name: 'test-name', version: 'test-version'),
-                  email: '',
-                  password: '',
-                  connection: '')));
+              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
+              options:
+                  AuthSignupOptions(email: '', password: '', connection: '')));
 
       verify(mocked.methodCallHandler(captureAny));
       expect(result.emailVerified, true);
@@ -150,12 +144,9 @@ void main() {
       final result = await MethodChannelAuth0FlutterAuth().signup(
           ApiRequest<AuthSignupOptions>(
               account: const Account('', ''),
-              options: AuthSignupOptions(
-                  telemetry:
-                      Telemetry(name: 'test-name', version: 'test-version'),
-                  email: '',
-                  password: '',
-                  connection: '')));
+              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
+              options:
+                  AuthSignupOptions(email: '', password: '', connection: '')));
 
       verify(mocked.methodCallHandler(captureAny));
       expect(result.emailVerified, false);
@@ -165,15 +156,12 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
       Future<DatabaseUser> actual() async {
-        final result = await MethodChannelAuth0FlutterAuth().signup(
-            ApiRequest<AuthSignupOptions>(
-                account: const Account('', ''),
-                options: AuthSignupOptions(
-                    telemetry:
-                        Telemetry(name: 'test-name', version: 'test-version'),
-                    email: '',
-                    password: '',
-                    connection: '')));
+        final result = await MethodChannelAuth0FlutterAuth().signup(ApiRequest<
+                AuthSignupOptions>(
+            account: const Account('', ''),
+            telemetry: Telemetry(name: 'test-name', version: 'test-version'),
+            options:
+                AuthSignupOptions(email: '', password: '', connection: '')));
 
         return result;
       }
@@ -191,15 +179,12 @@ void main() {
           .thenThrow(PlatformException(code: '123'));
 
       Future<DatabaseUser> actual() async {
-        final result = await MethodChannelAuth0FlutterAuth().signup(
-            ApiRequest<AuthSignupOptions>(
-                account: const Account('', ''),
-                options: AuthSignupOptions(
-                    telemetry:
-                        Telemetry(name: 'test-name', version: 'test-version'),
-                    email: '',
-                    password: '',
-                    connection: '')));
+        final result = await MethodChannelAuth0FlutterAuth().signup(ApiRequest<
+                AuthSignupOptions>(
+            account: const Account('', ''),
+            telemetry: Telemetry(name: 'test-name', version: 'test-version'),
+            options:
+                AuthSignupOptions(email: '', password: '', connection: '')));
 
         return result;
       }
@@ -216,9 +201,8 @@ void main() {
       await MethodChannelAuth0FlutterAuth().login(
         ApiRequest<AuthLoginOptions>(
             account: const Account('', ''),
+            telemetry: Telemetry(name: 'test-name', version: 'test-version'),
             options: AuthLoginOptions(
-                telemetry:
-                    Telemetry(name: 'test-name', version: 'test-version'),
                 usernameOrEmail: 'test-email',
                 password: 'test-pass',
                 connectionOrRealm: 'test-connection',
@@ -238,9 +222,8 @@ void main() {
       await MethodChannelAuth0FlutterAuth().login(
         ApiRequest<AuthLoginOptions>(
             account: const Account('test-domain', 'test-clientId'),
+            telemetry: Telemetry(name: 'test-name', version: 'test-version'),
             options: AuthLoginOptions(
-                telemetry:
-                    Telemetry(name: 'test-name', version: 'test-version'),
                 usernameOrEmail: 'test-email',
                 password: 'test-pass',
                 connectionOrRealm: 'test-connection',
@@ -267,9 +250,8 @@ void main() {
       final result = await MethodChannelAuth0FlutterAuth().login(
         ApiRequest<AuthLoginOptions>(
             account: const Account('', ''),
+            telemetry: Telemetry(name: 'test-name', version: 'test-version'),
             options: AuthLoginOptions(
-                telemetry:
-                    Telemetry(name: 'test-name', version: 'test-version'),
                 usernameOrEmail: 'test-email',
                 password: 'test-pass',
                 connectionOrRealm: 'test-connection',
@@ -297,9 +279,8 @@ void main() {
         final result = await MethodChannelAuth0FlutterAuth().login(
           ApiRequest<AuthLoginOptions>(
               account: const Account('', ''),
+              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
               options: AuthLoginOptions(
-                  telemetry:
-                      Telemetry(name: 'test-name', version: 'test-version'),
                   usernameOrEmail: 'test-email',
                   password: 'test-pass',
                   connectionOrRealm: 'test-connection',
@@ -323,9 +304,8 @@ void main() {
         final result = await MethodChannelAuth0FlutterAuth().login(
           ApiRequest<AuthLoginOptions>(
               account: const Account('', ''),
+              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
               options: AuthLoginOptions(
-                  telemetry:
-                      Telemetry(name: 'test-name', version: 'test-version'),
                   usernameOrEmail: 'test-email',
                   password: 'test-pass',
                   connectionOrRealm: 'test-connection',
@@ -346,10 +326,9 @@ void main() {
 
       await MethodChannelAuth0FlutterAuth().resetPassword(ApiRequest(
           account: const Account('test-domain', 'test-clientId'),
+          telemetry: Telemetry(name: 'test-name', version: 'test-version'),
           options: AuthResetPasswordOptions(
-              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
-              email: 'test-email',
-              connection: 'test-connection')));
+              email: 'test-email', connection: 'test-connection')));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -361,8 +340,8 @@ void main() {
 
       await MethodChannelAuth0FlutterAuth().resetPassword(ApiRequest(
           account: const Account('test-domain', 'test-clientId'),
+          telemetry: Telemetry(name: 'test-name', version: 'test-version'),
           options: AuthResetPasswordOptions(
-              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
               email: 'test-email',
               connection: 'test-connection',
               parameters: {'test': 'test-123'})));
@@ -388,9 +367,8 @@ void main() {
       Future<void> actual() async {
         await MethodChannelAuth0FlutterAuth().resetPassword(ApiRequest(
             account: const Account('test-domain', 'test-clientId'),
+            telemetry: Telemetry(name: 'test-name', version: 'test-version'),
             options: AuthResetPasswordOptions(
-                telemetry:
-                    Telemetry(name: 'test-name', version: 'test-version'),
                 email: 'test-email',
                 connection: 'test-connection',
                 parameters: {'test': 'test-123'})));
@@ -408,9 +386,8 @@ void main() {
       await MethodChannelAuth0FlutterAuth()
           .renewAccessToken(ApiRequest<AuthRenewAccessTokenOptions>(
               account: const Account('test-domain', 'test-clientId'),
+              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
               options: AuthRenewAccessTokenOptions(
-                telemetry:
-                    Telemetry(name: 'test-name', version: 'test-version'),
                 refreshToken: 'test-refresh-token',
               )));
 
@@ -426,9 +403,8 @@ void main() {
       await MethodChannelAuth0FlutterAuth()
           .renewAccessToken(ApiRequest<AuthRenewAccessTokenOptions>(
               account: const Account('test-domain', 'test-clientId'),
+              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
               options: AuthRenewAccessTokenOptions(
-                telemetry:
-                    Telemetry(name: 'test-name', version: 'test-version'),
                 refreshToken: 'test-refresh-token',
               )));
 
@@ -450,9 +426,8 @@ void main() {
       final result = await MethodChannelAuth0FlutterAuth()
           .renewAccessToken(ApiRequest<AuthRenewAccessTokenOptions>(
               account: const Account('test-domain', 'test-clientId'),
+              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
               options: AuthRenewAccessTokenOptions(
-                telemetry:
-                    Telemetry(name: 'test-name', version: 'test-version'),
                 refreshToken: 'test-refresh-token',
               )));
 
@@ -475,12 +450,12 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
       Future<Credentials> actual() async {
-        final result = await MethodChannelAuth0FlutterAuth()
-            .renewAccessToken(ApiRequest<AuthRenewAccessTokenOptions>(
+        final result = await MethodChannelAuth0FlutterAuth().renewAccessToken(
+            ApiRequest<AuthRenewAccessTokenOptions>(
                 account: const Account('test-domain', 'test-clientId'),
+                telemetry:
+                    Telemetry(name: 'test-name', version: 'test-version'),
                 options: AuthRenewAccessTokenOptions(
-                  telemetry:
-                      Telemetry(name: 'test-name', version: 'test-version'),
                   refreshToken: 'test-refresh-token',
                 )));
 
@@ -497,12 +472,12 @@ void main() {
           .thenThrow(PlatformException(code: '123'));
 
       Future<Credentials> actual() async {
-        final result = await MethodChannelAuth0FlutterAuth()
-            .renewAccessToken(ApiRequest<AuthRenewAccessTokenOptions>(
+        final result = await MethodChannelAuth0FlutterAuth().renewAccessToken(
+            ApiRequest<AuthRenewAccessTokenOptions>(
                 account: const Account('test-domain', 'test-clientId'),
+                telemetry:
+                    Telemetry(name: 'test-name', version: 'test-version'),
                 options: AuthRenewAccessTokenOptions(
-                  telemetry:
-                      Telemetry(name: 'test-name', version: 'test-version'),
                   refreshToken: 'test-refresh-token',
                 )));
 
@@ -520,9 +495,8 @@ void main() {
 
       await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
           account: const Account('test-domain', 'test-clientId'),
-          options: AuthUserInfoOptions(
-              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
-              accessToken: 'test-token')));
+          telemetry: Telemetry(name: 'test-name', version: 'test-version'),
+          options: AuthUserInfoOptions(accessToken: 'test-token')));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -539,9 +513,8 @@ void main() {
 
       await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
           account: const Account('test-domain', 'test-clientId'),
-          options: AuthUserInfoOptions(
-              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
-              accessToken: 'test-token')));
+          telemetry: Telemetry(name: 'test-name', version: 'test-version'),
+          options: AuthUserInfoOptions(accessToken: 'test-token')));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -580,9 +553,8 @@ void main() {
 
       final result = await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
           account: const Account('test-domain', 'test-clientId'),
-          options: AuthUserInfoOptions(
-              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
-              accessToken: 'test-token')));
+          telemetry: Telemetry(name: 'test-name', version: 'test-version'),
+          options: AuthUserInfoOptions(accessToken: 'test-token')));
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -617,9 +589,8 @@ void main() {
 
       final result = await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
           account: const Account('test-domain', 'test-clientId'),
-          options: AuthUserInfoOptions(
-              telemetry: Telemetry(name: 'test-name', version: 'test-version'),
-              accessToken: 'test-token')));
+          telemetry: Telemetry(name: 'test-name', version: 'test-version'),
+          options: AuthUserInfoOptions(accessToken: 'test-token')));
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -633,10 +604,8 @@ void main() {
       Future<void> actual() async {
         await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
             account: const Account('test-domain', 'test-clientId'),
-            options: AuthUserInfoOptions(
-                telemetry:
-                    Telemetry(name: 'test-name', version: 'test-version'),
-                accessToken: 'test-token')));
+            telemetry: Telemetry(name: 'test-name', version: 'test-version'),
+            options: AuthUserInfoOptions(accessToken: 'test-token')));
       }
 
       await expectLater(actual, throwsA(isA<ApiException>()));
@@ -650,10 +619,8 @@ void main() {
       Future<void> actual() async {
         await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
             account: const Account('test-domain', 'test-clientId'),
-            options: AuthUserInfoOptions(
-                telemetry:
-                    Telemetry(name: 'test-name', version: 'test-version'),
-                accessToken: 'test-token')));
+            telemetry: Telemetry(name: 'test-name', version: 'test-version'),
+            options: AuthUserInfoOptions(accessToken: 'test-token')));
       }
 
       await expectLater(actual, throwsA(isA<ApiException>()));

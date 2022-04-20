@@ -1,17 +1,21 @@
 import '../account.dart';
+import '../telemetry.dart';
 import 'request_options.dart';
 
 abstract class BaseRequest<TOptions extends RequestOptions> {
   final TOptions options;
   final Account account;
+  final Telemetry telemetry;
 
   BaseRequest({
     required this.account,
     required this.options,
+    required this.telemetry,
   });
 
-  Map<String, dynamic> toMap() =>
-      account.toMap()..addAll(options.toMap());
+  Map<String, dynamic> toMap() => account.toMap()
+    ..addAll(options.toMap())
+    ..addAll({'telemetry': telemetry.toMap()});
 }
 
 class ApiRequest<TOptions extends RequestOptions>
@@ -19,7 +23,8 @@ class ApiRequest<TOptions extends RequestOptions>
   ApiRequest({
     required final Account account,
     required final TOptions options,
-  }) : super(account: account, options: options);
+    required final Telemetry telemetry,
+  }) : super(account: account, options: options, telemetry: telemetry);
 }
 
 class WebAuthRequest<TOptions extends RequestOptions>
@@ -27,5 +32,6 @@ class WebAuthRequest<TOptions extends RequestOptions>
   WebAuthRequest({
     required final Account account,
     required final TOptions options,
-  }) : super(account: account, options: options);
+    required final Telemetry telemetry,
+  }) : super(account: account, options: options, telemetry: telemetry);
 }

@@ -28,17 +28,16 @@ class WebAuthentication {
               parameters: parameters,
               idTokenValidationConfig: idTokenValidationConfig,
               scheme: scheme,
-              useEphemeralSession: useEphemeralSession,
-              telemetry: telemetry)));
+              useEphemeralSession: useEphemeralSession)));
 
   Future<void> logout({final String? returnTo, final String? scheme}) =>
       Auth0FlutterWebAuthPlatform.instance.logout(createWebAuthRequest(
-        WebAuthLogoutInput(
-            returnTo: returnTo, scheme: scheme, telemetry: telemetry),
+        WebAuthLogoutInput(returnTo: returnTo, scheme: scheme),
       ));
 
   WebAuthRequest<TOptions>
       createWebAuthRequest<TOptions extends RequestOptions>(
               final TOptions options) =>
-          WebAuthRequest<TOptions>(account: account, options: options);
+          WebAuthRequest<TOptions>(
+              account: account, options: options, telemetry: telemetry);
 }
