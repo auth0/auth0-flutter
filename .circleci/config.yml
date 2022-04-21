@@ -1,4 +1,6 @@
 version: '2.1'
+orbs: 
+  android: circleci/android@2.0.3
 jobs:
   test_android:
     executor:
