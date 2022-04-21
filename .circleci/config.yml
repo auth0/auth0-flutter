@@ -1,26 +1,18 @@
 version: '2.1'
-commands:
-  install_android:
-    steps: 
-      - run:
-          name: Install Android SDK
-          command: |
-            brew install --cask android-commandlinetools
-            (yes | sdkmanager "cmdline-tools;latest") || true
-            (yes | sdkmanager --licenses) || true
-      - run:
-          name: Setup environment variables
-          command: |
-            echo 'export ANDROID_HOME="/usr/local/share/android-commandlinetools"' >> $BASH_ENV
-            echo 'export ANDROID_SDK_HOME="${ANDROID_HOME}"' >> $BASH_ENV
-            echo 'export ANDROID_SDK_ROOT="${ANDROID_HOME}"' >> $BASH_ENV
-            echo 'export PATH="$PATH:~/flutter/bin"'  >> $BASH_ENV
-            echo 'export PATH="$PATH:${ANDROID_HOME}/platform-tools"'  >> $BASH_ENV
-            echo 'export PATH="$PATH:${ANDROID_HOME}/tools"'  >> $BASH_ENV
-            echo 'export PATH="$PATH:${ANDROID_HOME}/sdkmanager"'  >> $BASH_ENV
-            echo 'export PATH="$PATH:/usr/local/bin"'  >> $BASH_ENV
-            echo 'export PATH="$PATH:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/emulator"'  >> $BASH_ENV
 jobs:
+  test_android:
+    executor:
+      name: android/android-machine
+      resource-class: xlarge
+    steps:
+      - checkout
+      - android/restore-gradle-cache
+      - android/restore-build-cache
+      - android/run-tests:
+          test-command: ./gradlew testDebug
+          working-directory: ./auth0_flutter/android
+      - android/save-gradle-cache
+      - android/save-build-cache
   test_and_analyze:
     docker:
       - image: cirrusci/flutter
@@ -58,7 +50,24 @@ jobs:
       xcode: 13
     steps:
       - checkout
-      - install_android
+      - run:
+          name: Install Android SDK
+          command: |
+            brew install --cask android-commandlinetools
+            (yes | sdkmanager "cmdline-tools;latest") || true
+            (yes | sdkmanager --licenses) || true
+      - run:
+          name: Setup environment variables
+          command: |
+            echo 'export ANDROID_HOME="/usr/local/share/android-commandlinetools"' >> $BASH_ENV
+            echo 'export ANDROID_SDK_HOME="${ANDROID_HOME}"' >> $BASH_ENV
+            echo 'export ANDROID_SDK_ROOT="${ANDROID_HOME}"' >> $BASH_ENV
+            echo 'export PATH="$PATH:~/flutter/bin"'  >> $BASH_ENV
+            echo 'export PATH="$PATH:${ANDROID_HOME}/platform-tools"'  >> $BASH_ENV
+            echo 'export PATH="$PATH:${ANDROID_HOME}/tools"'  >> $BASH_ENV
+            echo 'export PATH="$PATH:${ANDROID_HOME}/sdkmanager"'  >> $BASH_ENV
+            echo 'export PATH="$PATH:/usr/local/bin"'  >> $BASH_ENV
+            echo 'export PATH="$PATH:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/emulator"'  >> $BASH_ENV
       - run:
           name: Install Flutter SDK
           command: |
@@ -87,5 +96,6 @@ jobs:
 workflows:
   tests:
     jobs:
+      - test_android
       - test_and_analyze
       - test_examples
