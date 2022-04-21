@@ -311,7 +311,7 @@ extension ExtensionsTests {
             "at_hash": "atHash",
             "c_hash": "cHash"
         ]
-        let data = customClaims.merging(claims) { _, _ in }
+        let data = customClaims.merging(claims) { (first, _) in first }
         let userInfo = UserInfo(json: data)!
         let values = userInfo.asDictionary()
         XCTAssertTrue(values[UserInfoProperty.customClaims] as? [String: Any] == customClaims)
