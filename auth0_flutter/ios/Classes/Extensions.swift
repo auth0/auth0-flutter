@@ -65,11 +65,11 @@ extension Credentials {
         var data: [String: Any] = [
             CredentialsProperty.accessToken.rawValue: accessToken,
             CredentialsProperty.idToken.rawValue: idToken,
-            CredentialsProperty.expiresAt.rawValue: expiresIn.asISO8601String
+            CredentialsProperty.expiresAt.rawValue: expiresIn.asISO8601String,
+            CredentialsProperty.userProfile.rawValue: UserInfo(json: jwt.body)?.asDictionary() ?? [:]
         ]
         data[CredentialsProperty.refreshToken] = refreshToken
         data[CredentialsProperty.scopes] = scope?.split(separator: " ").map(String.init)
-        data[CredentialsProperty.userProfile] = UserInfo(json: jwt.body)?.asDictionary()
         return data
     }
 }
