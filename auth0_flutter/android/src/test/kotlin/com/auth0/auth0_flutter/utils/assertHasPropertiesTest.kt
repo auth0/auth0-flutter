@@ -24,7 +24,7 @@ class AssertHasPropertiesTest {
         assertThat(true, equalTo(true));
     }
 
-    /*@Test
+    @Test
     fun `should not throw when nested property found`() {
         assertHasProperties(listOf("test", "test.prop"), mapOf("test" to mapOf("prop" to "value")));
 
@@ -33,7 +33,7 @@ class AssertHasPropertiesTest {
 
     @Test
     fun `should throw when nested property not found`() {
-        val exception = assertThrows(NullPointerException::class.java) {
+        val exception = assertThrows(IllegalArgumentException::class.java) {
             assertHasProperties(listOf("test", "test.prop"), mapOf("test2" to mapOf("prop" to "value")));
         }
 
@@ -42,16 +42,16 @@ class AssertHasPropertiesTest {
 
     @Test
     fun `should throw when nested sub property not found`() {
-        val exception = assertThrows(NullPointerException::class.java) {
+        val exception = assertThrows(IllegalArgumentException::class.java) {
             assertHasProperties(listOf("test", "test.prop"), mapOf("test" to mapOf("prop2" to "value")));
         }
 
         assertThat(exception.message, equalTo("Required property 'test.prop' is not provided."));
-    }*/
+    }
 
     @Test
     fun `should throw when no properties found`() {
-        val exception = assertThrows(NullPointerException::class.java) {
+        val exception = assertThrows(IllegalArgumentException::class.java) {
             assertHasProperties(listOf("test", "test2"), mapOf("test3" to "test3", "test4" to "test4"));
         }
 
@@ -60,7 +60,7 @@ class AssertHasPropertiesTest {
 
     @Test
     fun `should throw when some properties not found`() {
-        val exception = assertThrows(NullPointerException::class.java) {
+        val exception = assertThrows(IllegalArgumentException::class.java) {
             assertHasProperties(listOf("test", "test2"), mapOf("test" to "test", "test3" to "test3"));
         }
 
