@@ -87,6 +87,17 @@ class LoginWebAuthRequestHandlerTest {
     }
 
     @Test
+    fun `handler should not add scopes when given an empty array`() {
+        val args = hashMapOf<String, Any?>(
+            "scopes" to arrayListOf<String>()
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder, never()).withScope(any())
+        }
+    }
+
+    @Test
     fun `handler should set the audience on the SDK when specified`() {
         val args = hashMapOf<String, Any?>(
             "audience" to "test"
