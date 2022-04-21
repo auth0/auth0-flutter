@@ -21,7 +21,6 @@ jobs:
       - image: cirrusci/flutter
     steps:
       - checkout
-      - install_android
       - run:
           name: Test App Facing Package
           command: |
