@@ -1,4 +1,4 @@
-version: '2.1'
+version: 2.1
 orbs: 
   android: circleci/android@2.0.3
   flutter: circleci/flutter@1.1.0
@@ -43,14 +43,14 @@ jobs:
       - flutter/install_sdk_and_pub:
           app-dir: ./auth0_flutter
           flutter_version: 2.10.5
+      - android/restore-gradle-cache
+      - android/restore-build-cache
       - run:
           name: Build Android Example App
           command: |
             cp .env.example .env
             flutter build apk
           working_directory: ./auth0_flutter/example
-      - android/restore-gradle-cache
-      - android/restore-build-cache
       - run:
           name: Run tests
           command: |
