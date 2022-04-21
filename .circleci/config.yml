@@ -42,8 +42,11 @@ jobs:
       - flutter/install_sdk_and_pub:
           app-dir: ./auth0_flutter
           flutter_version: 2.10.5
-      - flutter/unit_test:
-          app-dir: ./auth0_flutter
+      - run:
+          name: Run package unit tests
+          command: |
+            flutter test
+          working_directory: ./auth0_flutter
       - run:
           name: Analyze App Facing Package
           command: |
@@ -52,11 +55,14 @@ jobs:
           working_directory: ./auth0_flutter
       - flutter/install_pub:
           app-dir: ./auth0_flutter_platform_interface
-      - flutter/unit_test:
-          app-dir: ./auth0_flutter_platform_interface
       - run:
           name: Analyze Platform Interface Package
           command: dart analyze
+          working_directory: ./auth0_flutter_platform_interface
+      - run:
+          name: Run platform interface unit tests
+          command: |
+            flutter test
           working_directory: ./auth0_flutter_platform_interface
   test_examples:
     macos:
