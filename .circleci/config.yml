@@ -12,10 +12,11 @@ jobs:
       - android/restore-gradle-cache
       - android/restore-build-cache
       - run:
-        name: Install dependencies
-        command: |
-          sudo chmod +x gradlew 
-          ./gradlew androidDependencies
+          name: Install dependencies
+          command: |
+            sudo chmod +x gradlew 
+            ./gradlew androidDependencies
+          working-directory: ./auth0_flutter/android
       - android/run-tests:
           test-command: ./gradlew test
           working-directory: ./auth0_flutter/android
