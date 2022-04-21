@@ -3,37 +3,6 @@ orbs:
   android: circleci/android@2.0.3
   flutter: circleci/flutter@1.1.0
 jobs:
-  test_android_plugin:
-    executor:
-      name: android/android-machine
-      resource-class: large
-      tag: 2021.10.1
-    steps:
-      - checkout
-      - flutter/install_sdk_and_pub:
-          app-dir: ./auth0_flutter
-          flutter_version: 2.10.5
-      - android/restore-gradle-cache
-      - android/restore-build-cache
-      - run:
-          name: Run tests
-          command: |
-            mv local.properties.ci local.properties
-            mv ../.env.example ../.env
-            gradle clean test
-          working_directory: ./auth0_flutter/example/android
-      - android/save-gradle-cache
-      - android/save-build-cache
-      - run:
-          name: Save test results
-          when: always
-          command: |
-            mkdir -p ~/test-results/junit/
-            find . -type f -regex ".*/build/auth0_flutter/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
-      - store_test_results:
-          path: ~/test-results
-      - store_artifacts:
-          path: ~/test-results/junit
   test_flutter_package:
     docker:
       - image: cimg/base:2022.04
@@ -64,13 +33,50 @@ jobs:
           command: |
             flutter test
           working_directory: ./auth0_flutter_platform_interface
-  test_examples:
+  test_android:
+    executor:
+      name: android/android-machine
+      resource-class: large
+      tag: 2021.10.1
+    steps:
+      - checkout
+      - flutter/install_sdk_and_pub:
+          app-dir: ./auth0_flutter
+          flutter_version: 2.10.5
+      - run:
+          name: Build Android Example App
+          command: |
+            cp .env.example .env
+            flutter build apk
+          working_directory: ./auth0_flutter/example
+      - android/restore-gradle-cache
+      - android/restore-build-cache
+      - run:
+          name: Run tests
+          command: |
+            mv local.properties.ci local.properties
+            mv ../.env.example ../.env
+            gradle clean test
+          working_directory: ./auth0_flutter/example/android
+      - android/save-gradle-cache
+      - android/save-build-cache
+      - run:
+          name: Save test results
+          when: always
+          command: |
+            mkdir -p ~/test-results/junit/
+            find . -type f -regex ".*/build/auth0_flutter/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+      - store_test_results:
+          path: ~/test-results
+      - store_artifacts:
+          path: ~/test-results/junit
+  test_ios:
     macos:
       xcode: 13
     steps:
       - checkout
       - flutter/install_sdk_and_pub:
-          app-dir: ./auth0_flutter
+          app-dir: ./auth0_flutter/example
           flutter_version: 2.10.5
       # - run:
       #     name: Install Android SDK
@@ -90,38 +96,21 @@ jobs:
       #       echo 'export PATH="$PATH:${ANDROID_HOME}/sdkmanager"'  >> $BASH_ENV
       #       echo 'export PATH="$PATH:/usr/local/bin"'  >> $BASH_ENV
       #       echo 'export PATH="$PATH:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/emulator"'  >> $BASH_ENV
-      # - run:
-      #     name: Install Flutter SDK
-      #     command: |
-      #       if ! test -f "~/flutter_sdk.zip"; then curl -o ~/flutter_sdk.zip https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_2.10.4-stable.zip; fi
-      #       unzip ~/flutter_sdk.zip -d ~
-      #       (yes | flutter doctor --android-licenses) || true
       - run:
-          name: Install Dependencies
-          command: |
-            flutter clean
-            flutter pub get
-          working_directory: ./auth0_flutter/example
-      - run:
-          name: Run iOS Tests
+          name: Run tests
           command: |
             pod install
             cp ../.env.example ../.env
             xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 13'
           working_directory: ./auth0_flutter/example/ios
-      - run:
-          name: Build Android Example App
-          command: |
-            cp .env.example .env
-            flutter build apk
-          working_directory: ./auth0_flutter/example
+      
 workflows:
   build_and_test:
     jobs:
       - test_flutter_package
-      - test_android_plugin:
+      - test_android:
           requires:
             - test_flutter_package
-      - test_examples:
+      - test_ios:
           requires:
             - test_flutter_package
