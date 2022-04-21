@@ -47,7 +47,7 @@ class LoginWebAuthRequestHandlerTest {
 
     @Test
     fun `handler should log in using the Auth0 SDK`() {
-        runRequestHandler { result, _ ->
+        runRequestHandler { result, builder ->
             val sdf =
                 SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
 
@@ -61,6 +61,17 @@ class LoginWebAuthRequestHandlerTest {
                 assertThat(map["scopes"], equalTo(listOf("openid", "profile", "email")))
                 assertThat(map["refreshToken"], nullValue())
             })
+
+            verify(builder, never()).withScope(any())
+            verify(builder, never()).withAudience(any())
+            verify(builder, never()).withOrganization(any())
+            verify(builder, never()).withInvitationUrl(any())
+            verify(builder, never()).withRedirectUri(any())
+            verify(builder, never()).withIdTokenVerificationLeeway(any())
+            verify(builder, never()).withMaxAge(any())
+            verify(builder, never()).withIdTokenVerificationIssuer(any())
+            verify(builder, never()).withScheme(any())
+            verify(builder, never()).withParameters(any())
         }
     }
 
