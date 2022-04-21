@@ -5,7 +5,8 @@ jobs:
   test_android:
     executor:
       name: android/android-machine
-      resource-class: xlarge
+      resource-class: large
+      tag: 2021.10.1
     steps:
       - checkout
       - android/restore-gradle-cache
