@@ -39,7 +39,7 @@ class LoginWebAuthRequestHandlerTest {
             callback(mockResult, builder)
         }.`when`(builder).start(any(), any())
 
-        val handler = LoginWebAuthRequestHandler(builder)
+        val handler = LoginWebAuthRequestHandler { builder }
         val request = MethodCallRequest(Auth0("test.auth0.com", "test-client"), args)
 
         handler.handle(mock(), request, mockResult)

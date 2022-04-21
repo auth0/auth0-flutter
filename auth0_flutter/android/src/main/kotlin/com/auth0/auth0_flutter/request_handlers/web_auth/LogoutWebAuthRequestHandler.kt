@@ -7,9 +7,11 @@ import com.auth0.android.provider.WebAuthProvider
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodChannel
 
+class LogoutWebAuthRequestHandler(private val builderResolver: (MethodCallRequest) -> WebAuthProvider.LogoutBuilder) : WebAuthRequestHandler {
+    override val method: String = "webAuth#logout";
 
-class LogoutWebAuthRequestHandler(private val builder: WebAuthProvider.LogoutBuilder) : WebAuthRequestHandler {
     override fun handle(context: Context, request: MethodCallRequest, result: MethodChannel.Result) {
+        val builder = builderResolver(request);
         var args = request.data;
 
         if (args.getOrDefault("scheme", null) is String) {
