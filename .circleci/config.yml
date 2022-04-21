@@ -24,6 +24,17 @@ jobs:
           working_directory: ./auth0_flutter/example/android
       - android/save-gradle-cache
       - android/save-build-cache
+      - run:
+          name: Save test results
+          when: always
+          command: |
+            mkdir -p ~/test-results/junit/
+            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+          when: always
+      - store_test_results:
+          path: ~/test-results
+      - store_artifacts:
+          path: ~/test-results/junit
   test_and_analyze:
     docker:
       - image: cirrusci/flutter
