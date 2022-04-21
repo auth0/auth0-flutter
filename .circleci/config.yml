@@ -16,7 +16,7 @@ jobs:
           command: |
             sudo chmod +x gradlew 
             ./gradlew androidDependencies
-          working-directory: ./auth0_flutter/android
+          working_directory: ./auth0_flutter/android
       - android/run-tests:
           test-command: ./gradlew test
           working-directory: ./auth0_flutter/android
