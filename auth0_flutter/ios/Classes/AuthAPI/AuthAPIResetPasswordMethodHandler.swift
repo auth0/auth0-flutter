@@ -17,7 +17,7 @@ struct AuthAPIResetPasswordMethodHandler: MethodHandler {
         guard let connection = arguments[Argument.connection] as? String else {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.connection.rawValue)))
         }
-        guard let parameters = arguments[Argument.parameters] as? [String: String] else {
+        guard let parameters = arguments[Argument.parameters] as? [String: Any] else {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.parameters.rawValue)))
         }
 
