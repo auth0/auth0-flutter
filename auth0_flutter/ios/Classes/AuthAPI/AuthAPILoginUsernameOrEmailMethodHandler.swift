@@ -26,7 +26,7 @@ struct AuthAPILoginUsernameOrEmailMethodHandler: MethodHandler {
         guard let scopes = arguments[Argument.scopes] as? [String] else {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.scopes.rawValue)))
         }
-        guard let parameters = arguments[Argument.parameters] as? [String: String] else {
+        guard let parameters = arguments[Argument.parameters] as? [String: Any] else {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.parameters.rawValue)))
         }
 
