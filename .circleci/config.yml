@@ -1,4 +1,6 @@
 version: 2.1
+orbs:
+  macos: circleci/macos@2
 jobs:
   test_and_analyze:
     docker:
@@ -28,10 +30,17 @@ jobs:
           command: dart analyze
           working_directory: ./auth0_flutter_platform_interface
   test_examples:
+    parameters:
+        ios_simulator:
+          type: string
     macos:
       xcode: 13
     steps:
       - checkout
+      - macos/preboot-simulator:
+          version: "15.0"
+          platform: iOS
+          device: << parameters.ios_simulator >>
       - run:
           name: Install Android SDK
           command: |
@@ -69,7 +78,7 @@ jobs:
             pod install
             SCHEME=Runner
             WORKSPACE="$SCHEME".xcworkspace
-            SIMULATOR='platform=iOS Simulator,name=iPhone 13'
+            SIMULATOR='platform=iOS Simulator,name=<< parameters.ios_simulator >>'
             if [ -z "$CIRCLE_PR_NUMBER" ]; then
               xcodebuild test -scheme "$SCHEME" -workspace "$WORKSPACE" -destination "$SIMULATOR"
             else
@@ -86,4 +95,5 @@ workflows:
   tests:
     jobs:
       - test_and_analyze
-      - test_examples
+      - test_examples:
+          ios_simulator: iPhone 13
