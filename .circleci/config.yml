@@ -19,6 +19,7 @@ jobs:
           name: Run tests
           command: |
             mv local.properties.ci local.properties
+            mv ../.env.example ../.env
             gradle clean test
           working_directory: ./auth0_flutter/example/android
       - android/save-gradle-cache
