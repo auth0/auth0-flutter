@@ -38,18 +38,18 @@ class Auth0FlutterAuthMethodCallHandlerTest {
 
     @Test
     fun `handler should result in 'notImplemented' if no handlers`() {
-        runCallHandler("random#method", requestHandlers = listOf()) { result ->
+        runCallHandler("auth#login", requestHandlers = listOf()) { result ->
             verify(result).notImplemented()
         }
     }
 
     @Test
     fun `handler should result in 'notImplemented' if no matching handler`() {
-        val loginHandler = spy(LoginApiRequestHandler())
+        val signupHandler = spy(SignupApiRequestHandler())
 
-        doNothing().`when`(loginHandler).handle(any(), any(), any());
+        doNothing().`when`(signupHandler).handle(any(), any(), any());
 
-        runCallHandler("random#method", requestHandlers = listOf(loginHandler)) { result ->
+        runCallHandler("auth#login", requestHandlers = listOf(signupHandler)) { result ->
             verify(result).notImplemented()
         }
     }
