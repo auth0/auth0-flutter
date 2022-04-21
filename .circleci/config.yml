@@ -61,10 +61,6 @@ jobs:
           name: Analyze Platform Interface Package
           command: dart analyze
           working_directory: ./auth0_flutter_platform_interface
-      - run:
-          name: Run Android module tests
-          command: ./gradlew test
-          working_directory: ./auth0_flutter/android
   test_examples:
     macos:
       xcode: 13
