@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.annotation.NonNull
 import com.auth0.android.provider.WebAuthProvider
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
+import com.auth0.auth0_flutter.request_handlers.api.*
 import com.auth0.auth0_flutter.request_handlers.web_auth.LoginWebAuthRequestHandler
 import com.auth0.auth0_flutter.request_handlers.web_auth.LogoutWebAuthRequestHandler
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -35,7 +36,13 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   private lateinit var webAuthMethodChannel : MethodChannel
   private lateinit var authMethodChannel : MethodChannel
   private val webAuthCallHandler = Auth0FlutterWebAuthMethodCallHandler(handlerResolver)
-  private val authCallHandler = Auth0FlutterAuthMethodCallHandler()
+  private val authCallHandler = Auth0FlutterAuthMethodCallHandler(listOf(
+    LoginApiRequestHandler(),
+    SignupApiRequestHandler(),
+    UserInfoApiRequestHandler(),
+    RenewAccessTokenApiRequestHandler(),
+    ResetPasswordApiRequestHandler()
+  ))
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     webAuthMethodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "auth0.com/auth0_flutter/web_auth")
