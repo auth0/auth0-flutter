@@ -22,7 +22,7 @@ class SignupApiRequestHandler : ApiRequestHandler {
             password = request.data["password"] as String,
             username = request.data["username"] as String?,
             connection = request.data["connection"] as String,
-            userMetadata = request.data["userMetadata"] as Map<String, String>
+            userMetadata = request.data["userMetadata"] as Map<String, String>?
         ).start(object : Callback<DatabaseUser, AuthenticationException> {
             override fun onFailure(exception: AuthenticationException) {
                 result.error(
