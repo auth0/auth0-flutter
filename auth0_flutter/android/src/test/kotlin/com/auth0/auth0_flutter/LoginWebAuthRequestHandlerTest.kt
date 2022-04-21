@@ -1,5 +1,6 @@
 package com.auth0.auth0_flutter
 
+import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
 import com.auth0.android.provider.WebAuthProvider
@@ -39,7 +40,7 @@ class LoginWebAuthRequestHandlerTest {
         }.`when`(builder).start(any(), any())
 
         val handler = LoginWebAuthRequestHandler(builder)
-        val request = MethodCallRequest("test.auth0.com", "test-client", args)
+        val request = MethodCallRequest(Auth0("test.auth0.com", "test-client"), args)
 
         handler.handle(mock(), request, mockResult)
     }
