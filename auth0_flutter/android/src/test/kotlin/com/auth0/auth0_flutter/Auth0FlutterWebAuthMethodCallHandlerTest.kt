@@ -11,7 +11,6 @@ import org.mockito.Mockito.`when`
 import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
 
-
 @RunWith(RobolectricTestRunner::class)
 class Auth0FlutterWebAuthMethodCallHandlerTest {
     private val defaultArguments = hashMapOf<String, Any?>(
