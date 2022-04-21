@@ -1,5 +1,6 @@
 import XCTest
 import Auth0
+import JWTDecode
 
 @testable import auth0_flutter
 
@@ -36,15 +37,18 @@ extension ExtensionsTests {
 
 extension ExtensionsTests {
     func testMapsRequiredCredentialsProperties() {
-        let credentials = Credentials(accessToken: "accessToken", idToken: testIdToken, expiresIn: Date())
+        let idToken = "eyJhbGciOiJIUzI1NiJ9.e30.ZRrHA1JJJW8opsbCGfG_HACGpVUMN_a9IV7pAx_Zmeo"
+        let credentials = Credentials(accessToken: "accessToken", idToken: idToken, expiresIn: Date())
         let values = try! credentials.asDictionary()
         XCTAssertEqual(credentials.accessToken, values[CredentialsProperty.accessToken] as? String)
         XCTAssertEqual(credentials.idToken, values[CredentialsProperty.idToken] as? String)
         XCTAssertEqual(credentials.expiresIn.asISO8601String, values[CredentialsProperty.expiresAt] as? String)
+        XCTAssertTrue([] == values[CredentialsProperty.scopes] as? [String])
+        XCTAssertTrue([:] == values[CredentialsProperty.userProfile] as? [String: Any])
     }
 
     func testMapsCredentialsRefreshToken() {
-        let credentials = Credentials(accessToken: "accessToken",
+        let credentials = Credentials(accessToken: "",
                                       idToken: testIdToken,
                                       refreshToken: "refreshToken",
                                       expiresIn: Date())
@@ -54,14 +58,20 @@ extension ExtensionsTests {
     }
 
     func testMapsCredentialsScope() {
-        let credentials = Credentials(accessToken: "accessToken",
-                                      idToken: testIdToken,
-                                      expiresIn: Date(),
-                                      scope: "foo bar")
+        let credentials = Credentials(accessToken: "", idToken: testIdToken, expiresIn: Date(), scope: "foo bar")
         let values = try! credentials.asDictionary()
         XCTAssertNotNil(credentials.scope)
         XCTAssertEqual(credentials.scope?.split(separator: " ").map(String.init),
                        values[CredentialsProperty.scopes] as? [String])
+    }
+
+    func testMapsUserProfile() {
+        let credentials = Credentials(accessToken: "", idToken: testIdToken, expiresIn: Date())
+        let values = try! credentials.asDictionary()
+        let jwt = try! decode(jwt: credentials.idToken)
+        let userProfile = UserInfo(json: jwt.body)?.asDictionary()
+        XCTAssertNotNil(userProfile)
+        XCTAssertTrue(userProfile == values[CredentialsProperty.userProfile] as? [String: Any])
     }
 }
 
