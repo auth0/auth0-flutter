@@ -13,10 +13,11 @@ jobs:
       - flutter/install_sdk
       - android/restore-gradle-cache
       - android/restore-build-cache
-      - android/run-tests:
-          test-command: |
+      - run:
+          name: Run tests
+          command: |
             mv local.properties.ci local.properties
-            ./gradlew clean test
+            gradle clean test
           working-directory: ./auth0_flutter/example/android
       - android/save-gradle-cache
       - android/save-build-cache
