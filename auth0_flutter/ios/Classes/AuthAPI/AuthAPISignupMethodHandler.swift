@@ -39,9 +39,11 @@ struct AuthAPISignupMethodHandler: MethodHandler {
         guard let connection = arguments[Argument.connection] as? String else {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.connection.rawValue)))
         }
+        guard let userMetadata = arguments[Argument.userMetadata] as? [String: Any] else {
+            return callback(FlutterError(from: .requiredArgumentMissing(Argument.userMetadata.rawValue)))
+        }
 
         let username = arguments[Argument.username] as? String
-        let userMetadata = arguments[Argument.userMetadata] as? [String: Any]
 
         client
             .signup(email: email,
