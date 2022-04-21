@@ -1,5 +1,7 @@
 package com.auth0.auth0_flutter
 
+import android.accounts.Account
+import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
 import com.auth0.android.provider.WebAuthProvider
@@ -33,7 +35,7 @@ class LogoutWebAuthRequestHandlerTest {
             resultCallback(mockResult, mockBuilder)
         }.`when`(mockBuilder).start(any(), any())
 
-        handler.handle(mock(), MethodCallRequest("test-domain", "test-client", args), mockResult)
+        handler.handle(mock(), MethodCallRequest(Auth0("test-domain", "test-client"), args), mockResult)
     }
 
     @Test
@@ -75,6 +77,6 @@ class LogoutWebAuthRequestHandlerTest {
             verify(mockResult).error("code", "description", exception)
         }.`when`(mockBuilder).start(any(), any())
 
-        handler.handle(mock(), MethodCallRequest("test-domain", "test-client", mock()), mockResult)
+        handler.handle(mock(), MethodCallRequest(Auth0("test-domain", "test-client"), mock()), mockResult)
     }
 }
