@@ -38,6 +38,8 @@ target 'Runner' do
   target 'RunnerTests' do
     inherit! :search_paths
   end
+
+  target 'RunnerUITests'
 end
 
 post_install do |installer|

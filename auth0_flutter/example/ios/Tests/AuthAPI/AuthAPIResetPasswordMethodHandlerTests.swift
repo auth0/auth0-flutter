@@ -56,7 +56,7 @@ extension AuthAPIResetPasswordMethodHandlerTests {
 // MARK: - Renew Result
 
 extension AuthAPIResetPasswordMethodHandlerTests {
-    func testCallsSDKRenewAccessTokenMethod() {
+    func testCallsSDKResetPasswordMethod() {
         sut.handle(with: arguments()) { _ in }
         XCTAssertTrue(spy.calledResetPassword)
     }

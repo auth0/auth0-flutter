@@ -18,7 +18,7 @@ class AuthAPISignupMethodHandlerTests: XCTestCase {
 
 extension AuthAPISignupMethodHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
-        let keys: [Argument] = [.email, .password, .connection]
+        let keys: [Argument] = [.email, .password, .connection, .userMetadata]
         let expectations = keys.map { expectation(description: "\($0.rawValue) is missing") }
         for (argument, currentExpectation) in zip(keys, expectations) {
             sut.handle(with: arguments(without: argument)) { result in
@@ -59,6 +59,15 @@ extension AuthAPISignupMethodHandlerTests {
         let value = "foo"
         sut.handle(with: arguments(withKey: key, value: value)) { _ in }
         XCTAssertEqual(spy.arguments[key] as? String, value)
+    }
+
+    // MARK: userMetadata
+
+    func testAddsUserMetadata() {
+        let key = Argument.userMetadata
+        let value: [String: Any] = ["foo": "bar"]
+        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
+        XCTAssertTrue(spy.arguments[key] as? [String: Any] == value)
     }
 
     // MARK: username
