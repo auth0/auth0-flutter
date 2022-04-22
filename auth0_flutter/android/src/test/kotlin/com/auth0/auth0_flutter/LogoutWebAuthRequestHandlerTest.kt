@@ -84,7 +84,7 @@ class LogoutWebAuthRequestHandlerTest {
     }
 
     @Test
-    fun `should call login with the correct parameters`() {
+    fun `should call logout with the correct parameters`() {
         runHandler { _, builder ->
             verify(builder).start(any(), any());
         }
