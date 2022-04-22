@@ -41,7 +41,7 @@ class LoginApiRequestHandler : ApiRequestHandler {
             loginBuilder.setScope(scopes.joinToString(separator = " "))
         }
 
-        if (args.getOrDefault("parameters", hashMapOf<String, Any?>()) is HashMap<*, *>) {
+        if (args.getOrDefault("parameters", null) is HashMap<*, *>) {
             loginBuilder.addParameters(args["parameters"] as Map<String, String>)
         }
 

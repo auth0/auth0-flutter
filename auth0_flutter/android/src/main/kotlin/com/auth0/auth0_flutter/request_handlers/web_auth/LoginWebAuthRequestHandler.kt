@@ -61,8 +61,8 @@ class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest
             builder.withScheme(args["scheme"] as String)
         }
 
-        if (args.getOrDefault("parameters", null) is HashMap<*, *>) {
-            builder.withParameters(args["parameters"] as HashMap<String, *>)
+        if (args.getOrDefault("parameters", null) is Map<*, *>) {
+            builder.withParameters(args["parameters"] as Map<String, *>)
         }
 
         builder.start(context, object : Callback<Credentials, AuthenticationException> {
