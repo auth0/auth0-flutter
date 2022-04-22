@@ -1,16 +1,20 @@
-version: '2.1'
+version: 2.1
+orbs: 
+  android: circleci/android@2
+  flutter: circleci/flutter@1
+parameters:
+  flutter_version:
+    type: string
+    default: 2.10.5
 jobs:
-  test_and_analyze:
+  test_flutter_package:
     docker:
-      - image: cirrusci/flutter
+      - image: cimg/base:2022.04
     steps:
       - checkout
-      - run:
-          name: Test App Facing Package
-          command: |
-            flutter pub get
-            flutter test
-          working_directory: ./auth0_flutter
+      - flutter/install_sdk_and_pub:
+          app-dir: ./auth0_flutter
+          flutter_version: << pipeline.parameters.flutter_version >>
       - run:
           name: Analyze App Facing Package
           command: |
@@ -18,65 +22,81 @@ jobs:
               dart analyze
           working_directory: ./auth0_flutter
       - run:
-          name: Test Platform Interface Package
+          name: Run package unit tests
           command: |
-            flutter pub get
             flutter test
-          working_directory: ./auth0_flutter_platform_interface
+          working_directory: ./auth0_flutter
+      - flutter/install_pub:
+          app-dir: ./auth0_flutter_platform_interface
       - run:
           name: Analyze Platform Interface Package
           command: dart analyze
           working_directory: ./auth0_flutter_platform_interface
-  test_examples:
-    macos:
-      xcode: 13
+      - run:
+          name: Run platform interface unit tests
+          command: |
+            flutter test
+          working_directory: ./auth0_flutter_platform_interface
+  test_android:
+    executor:
+      name: android/android-machine
+      resource-class: medium
+      tag: 2021.10.1
     steps:
       - checkout
-      - run:
-          name: Install Android SDK
-          command: |
-            brew install --cask android-commandlinetools
-            (yes | sdkmanager "cmdline-tools;latest") || true
-            (yes | sdkmanager --licenses) || true
-      - run:
-          name: Setup environment variables
-          command: |
-            echo 'export ANDROID_HOME="/usr/local/share/android-commandlinetools"' >> $BASH_ENV
-            echo 'export ANDROID_SDK_HOME="${ANDROID_HOME}"' >> $BASH_ENV
-            echo 'export ANDROID_SDK_ROOT="${ANDROID_HOME}"' >> $BASH_ENV
-            echo 'export PATH="$PATH:~/flutter/bin"'  >> $BASH_ENV
-            echo 'export PATH="$PATH:${ANDROID_HOME}/platform-tools"'  >> $BASH_ENV
-            echo 'export PATH="$PATH:${ANDROID_HOME}/tools"'  >> $BASH_ENV
-            echo 'export PATH="$PATH:${ANDROID_HOME}/sdkmanager"'  >> $BASH_ENV
-            echo 'export PATH="$PATH:/usr/local/bin"'  >> $BASH_ENV
-            echo 'export PATH="$PATH:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/emulator"'  >> $BASH_ENV
-      - run:
-          name: Install Flutter SDK
-          command: |
-            if ! test -f "~/flutter_sdk.zip"; then curl -o ~/flutter_sdk.zip https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_2.10.4-stable.zip; fi
-            unzip ~/flutter_sdk.zip -d ~
-            (yes | flutter doctor --android-licenses) || true
-      - run:
-          name: Install Dependencies
-          command: |
-            flutter clean
-            flutter pub get
-          working_directory: ./auth0_flutter/example
-      - run:
-          name: Run iOS Tests
-          command: |
-            pod install
-            cp ../.env.example ../.env
-            xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 13'
-          working_directory: ./auth0_flutter/example/ios
+      - flutter/install_sdk_and_pub:
+          app-dir: ./auth0_flutter
+          flutter_version: << pipeline.parameters.flutter_version >>
+      - android/restore-gradle-cache
+      - android/restore-build-cache
       - run:
           name: Build Android Example App
           command: |
             cp .env.example .env
             flutter build apk
           working_directory: ./auth0_flutter/example
+      - run:
+          name: Run tests
+          command: |
+            mv local.properties.ci local.properties
+            mv ../.env.example ../.env
+            gradle clean test
+          working_directory: ./auth0_flutter/example/android
+      - android/save-gradle-cache
+      - android/save-build-cache
+      - run:
+          name: Save test results
+          when: always
+          command: |
+            mkdir -p ~/test-results/junit/
+            find . -type f -regex ".*/build/auth0_flutter/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+      - store_test_results:
+          path: ~/test-results
+      - store_artifacts:
+          path: ~/test-results/junit
+  test_ios:
+    macos:
+      xcode: 13
+    steps:
+      - checkout
+      - flutter/install_sdk_and_pub:
+          app-dir: ./auth0_flutter/example
+          flutter_version: << pipeline.parameters.flutter_version >>
+      - run:
+          name: Run tests
+          command: |
+            pod install
+            cp ../.env.example ../.env
+            xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 13'
+          working_directory: ./auth0_flutter/example/ios
+      
 workflows:
-  tests:
+  build_and_test:
     jobs:
-      - test_and_analyze
-      - test_examples
+      - test_flutter_package
+      - test_android:
+          requires:
+            - test_flutter_package
+      - test_ios:
+          requires:
+            - test_flutter_package
