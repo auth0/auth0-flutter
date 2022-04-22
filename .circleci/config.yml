@@ -3,6 +3,7 @@ orbs:
   android: circleci/android@2
   macos: circleci/macos@2
   flutter: circleci/flutter@1
+  codecov: codecov/codecov@3
 parameters:
   flutter_version:
     type: string
@@ -25,7 +26,7 @@ jobs:
       - run:
           name: Run package unit tests
           command: |
-            flutter test
+            flutter test --coverage
           working_directory: ./auth0_flutter
       - flutter/install_pub:
           app-dir: ./auth0_flutter_platform_interface
@@ -35,9 +36,14 @@ jobs:
           working_directory: ./auth0_flutter_platform_interface
       - run:
           name: Run platform interface unit tests
-          command: |
-            flutter test
+          command: flutter test --coverage
           working_directory: ./auth0_flutter_platform_interface
+      - codecov/upload:
+          file: ./auth0_flutter/coverage/lcov.info
+          upload_name: Flutter Package
+      - codecov/upload:
+          file: ./auth0_flutter_platform_interface/coverage/lcov.info
+          upload_name: Flutter Platform Interface Package
   test_android:
     executor:
       name: android/android-machine
