@@ -70,7 +70,6 @@ extension ExtensionsTests {
         let values = try! credentials.asDictionary()
         let jwt = try! decode(jwt: credentials.idToken)
         let userProfile = UserInfo(json: jwt.body)?.asDictionary()
-        XCTAssertNotNil(userProfile)
         XCTAssertTrue(userProfile == values[CredentialsProperty.userProfile] as? [String: Any])
     }
 }
