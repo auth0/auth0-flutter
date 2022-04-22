@@ -25,7 +25,7 @@ class LogoutWebAuthRequestHandlerTest {
     fun runHandler(args: HashMap<String, Any?> = hashMapOf(), resultCallback: (Result, WebAuthProvider.LogoutBuilder) -> Unit) {
         val mockBuilder = mock<WebAuthProvider.LogoutBuilder>()
         val mockResult = mock<Result>()
-        val handler = LogoutWebAuthRequestHandler(mockBuilder)
+        val handler = LogoutWebAuthRequestHandler { mockBuilder }
 
         doAnswer { invocation ->
             val callback = invocation.getArgument<Callback<Void?, AuthenticationException>>(1)
@@ -66,7 +66,7 @@ class LogoutWebAuthRequestHandlerTest {
     fun `handler returns an error when the builder fails`() {
         val mockBuilder = mock<WebAuthProvider.LogoutBuilder>()
         val mockResult = mock<Result>()
-        val handler = LogoutWebAuthRequestHandler(mockBuilder)
+        val handler = LogoutWebAuthRequestHandler { mockBuilder }
 
         doAnswer { invocation ->
             val callback = invocation.getArgument<Callback<Void?, AuthenticationException>>(1)

@@ -212,7 +212,7 @@ class LoginWebAuthRequestHandlerTest {
             verify(mockResult).error("code", "description", exception)
         }.`when`(builder).start(any(), any())
 
-        val handler = LoginWebAuthRequestHandler(builder)
+        val handler = LoginWebAuthRequestHandler { builder }
 
         handler.handle(mock(), mock(), mockResult)
     }
