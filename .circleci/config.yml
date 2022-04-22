@@ -2,6 +2,10 @@ version: 2.1
 orbs: 
   android: circleci/android@2.0.3
   flutter: circleci/flutter@1.1.0
+parameters:
+  flutter_version:
+    type: string
+    default: 2.10.5
 jobs:
   test_flutter_package:
     docker:
@@ -10,7 +14,7 @@ jobs:
       - checkout
       - flutter/install_sdk_and_pub:
           app-dir: ./auth0_flutter
-          flutter_version: 2.10.5
+          flutter_version: << pipeline.parameters.flutter_version >>
       - run:
           name: Analyze App Facing Package
           command: |
@@ -42,7 +46,7 @@ jobs:
       - checkout
       - flutter/install_sdk_and_pub:
           app-dir: ./auth0_flutter
-          flutter_version: 2.10.5
+          flutter_version: << pipeline.parameters.flutter_version >>
       - android/restore-gradle-cache
       - android/restore-build-cache
       - run:
@@ -77,7 +81,7 @@ jobs:
       - checkout
       - flutter/install_sdk_and_pub:
           app-dir: ./auth0_flutter/example
-          flutter_version: 2.10.5
+          flutter_version: << pipeline.parameters.flutter_version >>
       - run:
           name: Run tests
           command: |
