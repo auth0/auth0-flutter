@@ -1,8 +1,19 @@
 import XCTest
+import Auth0
 
 @testable import auth0_flutter
 
-fileprivate typealias Argument = WebAuthHandler.Argument
+fileprivate class SpySUT: WebAuthHandler {
+    fileprivate(set) var accountValue: Account?
+    fileprivate(set) var userAgentValue: UserAgent?
+
+    override func makeClient(account: Account, userAgent: UserAgent) -> WebAuth {
+        accountValue = account
+        userAgentValue = userAgent
+
+        return SpyWebAuth()
+    }
+}
 
 class WebAuthHandlerTests: XCTestCase {
     var sut: WebAuthHandler!
@@ -22,29 +33,46 @@ extension WebAuthHandlerTests {
     }
 }
 
-// MARK: - Required Arguments Error
+// MARK: - Required Arguments
 
 extension WebAuthHandlerTests {
     func testProducesErrorWhenArgumentsAreMissing() {
         let expectation = expectation(description: "arguments are missing")
-        sut.handle(FlutterMethodCall(methodName: "foo", arguments: nil)) { result in
+        sut.handle(FlutterMethodCall(methodName: "", arguments: nil)) { result in
             assert(result: result, isError: .argumentsMissing)
             expectation.fulfill()
         }
         wait(for: [expectation])
     }
 
-    func testProducesErrorWhenRequiredArgumentsAreMissing() {
-        let keys: [Argument] = [.clientId, .domain]
-        let expectations = keys.map { expectation(description: "\($0.rawValue) is missing") }
-        for (argument, currentExpectation) in zip(keys, expectations) {
-            let methodCall = FlutterMethodCall(methodName: "foo", arguments: arguments(without: argument))
-            sut.handle(methodCall) { result in
-                assert(result: result, isError: .requiredArgumentMissing(argument.rawValue))
-                currentExpectation.fulfill()
-            }
+    func testProducesErrorWhenAccountIsMissing() {
+        let expectation = expectation(description: "account is missing")
+        sut.handle(FlutterMethodCall(methodName: "", arguments: arguments(without: Account.key))) { result in
+            assert(result: result, isError: .accountMissing)
+            expectation.fulfill()
         }
-        wait(for: expectations)
+        wait(for: [expectation])
+    }
+
+    func testProducesErrorWhenUserAgentIsMissing() {
+        let expectation = expectation(description: "userAgent is missing")
+        sut.handle(FlutterMethodCall(methodName: "", arguments: arguments(without: UserAgent.key))) { result in
+            assert(result: result, isError: .userAgentMissing)
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
+    }
+
+    func testMakesClientWithRequiredArguments() {
+        let account = [AccountProperty.clientId.rawValue: "foo", AccountProperty.domain.rawValue: "bar"]
+        let userAgent = [UserAgentProperty.name.rawValue: "baz", UserAgentProperty.version.rawValue: "qux"]
+        let argumentsDictionary = [Account.key: account, UserAgent.key: userAgent]
+        let sut = SpySUT()
+        sut.handle(FlutterMethodCall(methodName: "", arguments: argumentsDictionary)) { _ in }
+        XCTAssertEqual(sut.accountValue?.clientId, account[AccountProperty.clientId])
+        XCTAssertEqual(sut.accountValue?.domain, account[AccountProperty.domain])
+        XCTAssertEqual(sut.userAgentValue?.name, userAgent[UserAgentProperty.name])
+        XCTAssertEqual(sut.userAgentValue?.version, userAgent[UserAgentProperty.version])
     }
 }
 
@@ -73,6 +101,9 @@ extension WebAuthHandlerTests {
 
 extension WebAuthHandlerTests {
     override func arguments() -> [String: Any] {
-        return [Argument.clientId.rawValue: "foo", Argument.domain.rawValue: "bar"]
+        return [
+            Account.key: [AccountProperty.clientId.rawValue: "", AccountProperty.domain.rawValue: ""],
+            UserAgent.key: [UserAgentProperty.name.rawValue: "", UserAgentProperty.version.rawValue: ""]
+        ]
     }
 }

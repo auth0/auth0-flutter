@@ -14,9 +14,11 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class Auth0FlutterAuthMethodCallHandlerTest {
     private val defaultArguments = hashMapOf<String, Any?>(
-        "domain" to "test.auth0.com",
-        "clientId" to "test-client",
-        "userAgent" to mapOf(
+        "_account" to mapOf(
+            "domain" to "test.auth0.com",
+            "clientId" to "test-client",
+        ),
+        "_userAgent" to mapOf(
             "name" to "auth0-flutter",
             "version" to "1.0.0"
         )

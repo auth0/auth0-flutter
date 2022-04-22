@@ -79,11 +79,13 @@ void main() {
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
-      expect(verificationResult.arguments['domain'], 'test-domain');
-      expect(verificationResult.arguments['clientId'], 'test-clientId');
-      expect(verificationResult.arguments['userAgent']['name'], 'test-name');
+      expect(verificationResult.arguments['_account']['domain'], 'test-domain');
+      expect(verificationResult.arguments['_account']['clientId'],
+          'test-clientId');
+      expect(verificationResult.arguments['_userAgent']['name'], 'test-name');
       expect(
-          verificationResult.arguments['userAgent']['version'], 'test-version');
+          verificationResult.arguments['_userAgent']['version'],
+          'test-version');
       expect(verificationResult.arguments['scopes'], ['a', 'b']);
       expect(verificationResult.arguments['audience'], 'test-audience');
       expect(verificationResult.arguments['redirectUri'], 'http://google.com');
@@ -186,11 +188,13 @@ void main() {
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
-      expect(verificationResult.arguments['domain'], 'test-domain');
-      expect(verificationResult.arguments['clientId'], 'test-clientId');
-      expect(verificationResult.arguments['userAgent']['name'], 'test-name');
+      expect(verificationResult.arguments['_account']['domain'], 'test-domain');
+      expect(verificationResult.arguments['_account']['clientId'],
+          'test-clientId');
+      expect(verificationResult.arguments['_userAgent']['name'], 'test-name');
       expect(
-          verificationResult.arguments['userAgent']['version'], 'test-version');
+          verificationResult.arguments['_userAgent']['version'],
+          'test-version');
       expect(verificationResult.arguments['returnTo'], 'http://localhost:1234');
       expect(verificationResult.arguments['scheme'], 'test-scheme');
     });

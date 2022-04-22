@@ -2,11 +2,6 @@ import Flutter
 import Auth0
 
 public class AuthAPIHandler: NSObject, FlutterPlugin {
-    enum Argument: String {
-        case clientId
-        case domain
-    }
-
     enum Method: String, CaseIterable {
         case loginWithUsernameOrEmail = "auth#login"
         case signup = "auth#signUp"
@@ -30,14 +25,16 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
         guard let arguments = call.arguments as? [String: Any] else {
             return result(FlutterError(from: .argumentsMissing))
         }
-        guard let clientId = arguments[Argument.clientId] as? String else {
-            return result(FlutterError(from: .requiredArgumentMissing(Argument.clientId.rawValue)))
+        guard let accountDictionary = arguments[Account.key] as? [String: String],
+              let account = Account(from: accountDictionary) else {
+            return result(FlutterError(from: .accountMissing))
         }
-        guard let domain = arguments[Argument.domain] as? String else {
-            return result(FlutterError(from: .requiredArgumentMissing(Argument.domain.rawValue)))
+        guard let userAgentDictionary = arguments[UserAgent.key] as? [String: String],
+              let userAgent = UserAgent(from: userAgentDictionary) else {
+            return result(FlutterError(from: .userAgentMissing))
         }
 
-        let client = Auth0.authentication(clientId: clientId, domain: domain)
+        let client = makeClient(account: account, userAgent: userAgent)
 
         switch Method(rawValue: call.method) {
         case .loginWithUsernameOrEmail: callLoginWithUsernameOrEmail(with: arguments, using: client, result: result)
@@ -47,6 +44,12 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
         case .resetPassword: callResetPassword(with: arguments, using: client, result: result)
         default: result(FlutterMethodNotImplemented)
         }
+    }
+
+    func makeClient(account: Account, userAgent: UserAgent) -> Authentication {
+        var client = Auth0.authentication(clientId: account.clientId, domain: account.domain)
+        client.using(inLibrary: userAgent.name, version: userAgent.version)
+        return client
     }
 }
 
