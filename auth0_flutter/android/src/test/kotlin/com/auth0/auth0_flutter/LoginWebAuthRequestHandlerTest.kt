@@ -1,11 +1,14 @@
 package com.auth0.auth0_flutter
 
 import com.auth0.android.Auth0
+import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
 import com.auth0.android.provider.WebAuthProvider
+import com.auth0.android.request.AuthenticationRequest
 import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
+import com.auth0.auth0_flutter.request_handlers.api.LoginApiRequestHandler
 import com.auth0.auth0_flutter.request_handlers.web_auth.LoginWebAuthRequestHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import org.hamcrest.CoreMatchers.equalTo
@@ -93,7 +96,16 @@ class LoginWebAuthRequestHandlerTest {
         )
 
         runRequestHandler(args) { _, builder ->
-            verify(builder, never()).withScope(any())
+            verify(builder, never()).withScope(anyOrNull())
+        }
+    }
+
+    @Test
+    fun `handler should not add scopes when not specified`() {
+        val args = hashMapOf<String, Any?>()
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder, never()).withScope(anyOrNull())
         }
     }
 
@@ -109,6 +121,15 @@ class LoginWebAuthRequestHandlerTest {
     }
 
     @Test
+    fun `handler should not set the audience on the SDK when not specified`() {
+        val args = hashMapOf<String, Any?>()
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder, never()).withAudience(anyOrNull())
+        }
+    }
+
+    @Test
     fun `handler should set the redirectUri on the SDK when specified`() {
         val args = hashMapOf<String, Any?>(
             "redirectUri" to "http://test.com"
@@ -116,6 +137,15 @@ class LoginWebAuthRequestHandlerTest {
 
         runRequestHandler(args) { _, builder ->
             verify(builder).withRedirectUri("http://test.com")
+        }
+    }
+
+    @Test
+    fun `handler should not set the redirectUri on the SDK when not specified`() {
+        val args = hashMapOf<String, Any?>()
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder, never()).withRedirectUri(anyOrNull())
         }
     }
 
@@ -131,6 +161,15 @@ class LoginWebAuthRequestHandlerTest {
     }
 
     @Test
+    fun `handler should not set the organizationId on the SDK when not specified`() {
+        val args = hashMapOf<String, Any?>()
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder, never()).withOrganization(anyOrNull())
+        }
+    }
+
+    @Test
     fun `handler should set the invitationUrl on the SDK when specified`() {
         val args = hashMapOf<String, Any?>(
             "invitationUrl" to "http://invitation.com"
@@ -138,6 +177,15 @@ class LoginWebAuthRequestHandlerTest {
 
         runRequestHandler(args) { _, builder ->
             verify(builder).withInvitationUrl("http://invitation.com")
+        }
+    }
+
+    @Test
+    fun `handler should not set the invitationUrl on the SDK when not specified`() {
+        val args = hashMapOf<String, Any?>()
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder, never()).withInvitationUrl(anyOrNull())
         }
     }
 
@@ -153,6 +201,15 @@ class LoginWebAuthRequestHandlerTest {
     }
 
     @Test
+    fun `handler should not set the leeway on the SDK when not specified`() {
+        val args = hashMapOf<String, Any?>()
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder, never()).withIdTokenVerificationLeeway(anyOrNull())
+        }
+    }
+
+    @Test
     fun `handler should set the maxAge on the SDK when specified`() {
         val args = hashMapOf<String, Any?>(
             "maxAge" to 60
@@ -160,6 +217,15 @@ class LoginWebAuthRequestHandlerTest {
 
         runRequestHandler(args) { _, builder ->
             verify(builder).withMaxAge(60)
+        }
+    }
+
+    @Test
+    fun `handler should not set the maxAge on the SDK when not specified`() {
+        val args = hashMapOf<String, Any?>()
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder, never()).withMaxAge(anyOrNull())
         }
     }
 
@@ -175,6 +241,15 @@ class LoginWebAuthRequestHandlerTest {
     }
 
     @Test
+    fun `handler should not set the issuer on the SDK when not specified`() {
+        val args = hashMapOf<String, Any?>()
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder, never()).withIdTokenVerificationIssuer(anyOrNull())
+        }
+    }
+
+    @Test
     fun `handler should set the scheme on the SDK when specified`() {
         val args = hashMapOf<String, Any?>(
             "scheme" to "demo"
@@ -182,6 +257,15 @@ class LoginWebAuthRequestHandlerTest {
 
         runRequestHandler(args) { _, builder ->
             verify(builder).withScheme("demo")
+        }
+    }
+
+    @Test
+    fun `handler should not set the scheme on the SDK when not specified`() {
+        val args = hashMapOf<String, Any?>()
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder, never()).withScheme(anyOrNull())
         }
     }
 
@@ -199,21 +283,66 @@ class LoginWebAuthRequestHandlerTest {
     }
 
     @Test
+    fun `handler should not set the parameters on the SDK when not specified`() {
+        val parameters = hashMapOf("hello" to "world")
+
+        val args = hashMapOf<String, Any?>()
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder, never()).withParameters(anyOrNull())
+        }
+    }
+
+    @Test
     fun `returns the error when the builder fails`() {
         val builder = mock<WebAuthProvider.Builder>()
         val mockResult = mock<Result>()
+        val exception = AuthenticationException("code", "description")
 
         doAnswer { invocation ->
             val cb =
                 invocation.getArgument<Callback<Credentials, AuthenticationException>>(1)
-            val exception = AuthenticationException("code", "description")
-
             cb.onFailure(exception)
-            verify(mockResult).error("code", "description", exception)
         }.`when`(builder).start(any(), any())
 
         val handler = LoginWebAuthRequestHandler { builder }
 
         handler.handle(mock(), mock(), mockResult)
+
+        verify(mockResult).error("code", "description", exception)
+    }
+
+    @Test
+    fun `returns the result when the builder succeeds`() {
+        val builder = mock<WebAuthProvider.Builder>()
+        val mockResult = mock<Result>()
+        val idToken = JwtTestUtils.createJwt(claims = mapOf("name" to "John Doe"))
+        val credentials = Credentials(idToken, "test", "", null, Date(), "scope1 scope2")
+
+        doAnswer { invocation ->
+            val cb =
+                invocation.getArgument<Callback<Credentials, AuthenticationException>>(1)
+
+            cb.onSuccess(credentials)
+        }.`when`(builder).start(any(), any())
+
+        val handler = LoginWebAuthRequestHandler { builder }
+
+        handler.handle(mock(), mock(), mockResult)
+
+        val captor = argumentCaptor<() -> Map<String, *>>()
+        verify(mockResult).success(captor.capture())
+
+        val sdf =
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
+
+        val formattedDate = sdf.format(credentials.expiresAt)
+
+        assertThat((captor.firstValue as Map<String, *>)["accessToken"], equalTo(credentials.accessToken))
+        assertThat((captor.firstValue as Map<String, *>)["idToken"], equalTo(credentials.idToken))
+        assertThat((captor.firstValue as Map<String, *>)["refreshToken"], equalTo(credentials.refreshToken))
+        assertThat((captor.firstValue as Map<String, *>)["expiresAt"] as String, equalTo(formattedDate))
+        assertThat((captor.firstValue as Map<String, *>)["scopes"], equalTo(listOf("scope1", "scope2")))
+        assertThat(((captor.firstValue as Map<String, *>)["userProfile"] as Map<String, Any>)["name"], equalTo("John Doe"))
     }
 }
