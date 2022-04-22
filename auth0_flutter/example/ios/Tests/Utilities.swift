@@ -55,8 +55,7 @@ func assert<K: RawRepresentable>(result: Any?, has keys: [K]) where K.RawValue =
         return XCTFail("The handler did not produce a dictionary")
     }
 
-    let stringKeys = keys.map(\.rawValue)
-    XCTAssertTrue(result.allSatisfy({ stringKeys.contains($0.key) }))
+    XCTAssertEqual(result.keys.sorted(), keys.map(\.rawValue).sorted())
 }
 
 func assert(result: Any?, has databaseUser: DatabaseUser) {
