@@ -70,7 +70,6 @@ extension ExtensionsTests {
         let values = try! credentials.asDictionary()
         let jwt = try! decode(jwt: credentials.idToken)
         let userProfile = UserInfo(json: jwt.body)?.asDictionary()
-        XCTAssertNotNil(userProfile)
         XCTAssertTrue(userProfile == values[CredentialsProperty.userProfile] as? [String: Any])
     }
 }
@@ -321,7 +320,7 @@ extension ExtensionsTests {
             "at_hash": "atHash",
             "c_hash": "cHash"
         ]
-        let data = customClaims.merging(claims) { _, _ in }
+        let data = customClaims.merging(claims) { (first, _) in first }
         let userInfo = UserInfo(json: data)!
         let values = userInfo.asDictionary()
         XCTAssertTrue(values[UserInfoProperty.customClaims] as? [String: Any] == customClaims)

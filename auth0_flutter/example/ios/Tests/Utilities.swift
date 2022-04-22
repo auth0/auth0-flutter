@@ -58,80 +58,73 @@ extension XCTestCase {
 
 // MARK: - Custom Assertions
 
-func assert<K: RawRepresentable>(result: Any?,
-                                 has keys: [K],
-                                 file: StaticString = #filePath,
-                                 line: UInt = #line) where K.RawValue == String {
-    let stringKeys = keys.map(\.rawValue)
-    if let result = result as? [String: Any], result.allSatisfy({ stringKeys.contains($0.key) }) {
-        return
+func assert<K: RawRepresentable>(result: Any?, has keys: [K]) where K.RawValue == String {
+    guard let result = result as? [String: Any] else {
+        return XCTFail("The handler did not produce a dictionary")
     }
-    XCTFail("The handler did not produce a dictionary containing \(keys)", file: file, line: line)
+
+    XCTAssertEqual(result.keys.sorted(), keys.map(\.rawValue).sorted())
 }
 
-func assert(result: Any?, has databaseUser: DatabaseUser, file: StaticString = #filePath, line: UInt = #line) {
-    if let result = result as? [String: Any],
-       result[DatabaseUserProperty.email] as? String == databaseUser.email,
-       result[DatabaseUserProperty.emailVerified] as? Bool == databaseUser.verified,
-       result[DatabaseUserProperty.username] as? String == databaseUser.username {
-        return
+func assert(result: Any?, has databaseUser: DatabaseUser) {
+    guard let result = result as? [String: Any] else {
+        return XCTFail("The handler did not produce a dictionary")
     }
-    XCTFail("The handler did not produce matching database users", file: file, line: line)
+
+    XCTAssertEqual(result[DatabaseUserProperty.email] as? String, databaseUser.email)
+    XCTAssertEqual(result[DatabaseUserProperty.emailVerified] as? Bool, databaseUser.verified)
+    XCTAssertEqual(result[DatabaseUserProperty.username] as? String, databaseUser.username)
 }
 
-func assert(result: Any?, isError error: Auth0Error, file: StaticString = #filePath, line: UInt = #line) {
-    if let result = result as? FlutterError,
-       result.message == String(describing: error) {
-        return
+func assert(result: Any?, isError error: Auth0Error) {
+    guard let result = result as? FlutterError else {
+        return XCTFail("The handler did not produce a FlutterError")
     }
-    XCTFail("The handler did not produce the error '\(error)'", file: file, line: line)
+
+    XCTAssertEqual(result.message, String(describing: error))
 }
 
-func assert(result: Any?, isError handlerError: HandlerError, file: StaticString = #filePath, line: UInt = #line) {
-    if let result = result as? FlutterError,
-       result.code == handlerError.code,
-       result.message == handlerError.message,
-       result.details == nil {
-        return
+func assert(result: Any?, isError handlerError: HandlerError) {
+    guard let result = result as? FlutterError else {
+        return XCTFail("The handler did not produce a FlutterError")
     }
-    XCTFail("The handler did not produce the error \(handlerError.code)", file: file, line: line)
+
+    XCTAssertEqual(result.code, handlerError.code)
+    XCTAssertEqual(result.message, handlerError.message)
+    XCTAssertNil(result.details)
 }
 
-func assert(flutterError: FlutterError,
-            is webAuthError: WebAuthError,
-            with code: String,
-            file: StaticString = #filePath,
-            line: UInt = #line) {
-    if flutterError.code == code, flutterError.message == String(describing: webAuthError) {
-        return
-    }
-    XCTFail("The handler did not produce the error '\(webAuthError)'", file: file, line: line)
+func assert(flutterError: FlutterError, is webAuthError: WebAuthError, with code: String) {
+    XCTAssertEqual(flutterError.code, code)
+    XCTAssertEqual(flutterError.message, String(describing: webAuthError))
 }
 
-func assert(flutterError: FlutterError,
-            is authenticationError: AuthenticationError,
-            file: StaticString = #filePath,
-            line: UInt = #line) {
-    if let details = flutterError.details as? [String: Any],
-       flutterError.code == authenticationError.code,
-       details.filter({ $0.key != AuthAPIErrorFlag.key }) == authenticationError.details,
-       let flags = details[AuthAPIErrorFlag.key] as? [String: Bool],
-       flags[AuthAPIErrorFlag.isMultifactorRequired] == authenticationError.isMultifactorRequired,
-       flags[AuthAPIErrorFlag.isMultifactorEnrollRequired] == authenticationError.isMultifactorEnrollRequired,
-       flags[AuthAPIErrorFlag.isMultifactorCodeInvalid] == authenticationError.isMultifactorCodeInvalid,
-       flags[AuthAPIErrorFlag.isMultifactorTokenInvalid] == authenticationError.isMultifactorTokenInvalid,
-       flags[AuthAPIErrorFlag.isPasswordNotStrongEnough] == authenticationError.isPasswordNotStrongEnough,
-       flags[AuthAPIErrorFlag.isPasswordAlreadyUsed] == authenticationError.isPasswordAlreadyUsed,
-       flags[AuthAPIErrorFlag.isRuleError] == authenticationError.isRuleError,
-       flags[AuthAPIErrorFlag.isInvalidCredentials] == authenticationError.isInvalidCredentials,
-       flags[AuthAPIErrorFlag.isRefreshTokenDeleted] == authenticationError.isRefreshTokenDeleted,
-       flags[AuthAPIErrorFlag.isAccessDenied] == authenticationError.isAccessDenied,
-       flags[AuthAPIErrorFlag.isTooManyAttempts] == authenticationError.isTooManyAttempts,
-       flags[AuthAPIErrorFlag.isVerificationRequired] == authenticationError.isVerificationRequired,
-       flags[AuthAPIErrorFlag.isPasswordLeaked] == authenticationError.isPasswordLeaked,
-       flags[AuthAPIErrorFlag.isLoginRequired] == authenticationError.isLoginRequired,
-       flags[AuthAPIErrorFlag.isNetworkError] == authenticationError.isNetworkError {
-        return
+func assert(flutterError: FlutterError, is authenticationError: AuthenticationError) {
+    guard let details = flutterError.details as? [String: Any] else {
+        return XCTFail("The FlutterError is missing the 'details' dictionary")
     }
-    XCTFail("The handler did not produce the error '\(authenticationError)'", file: file, line: line)
+
+    XCTAssertEqual(flutterError.code, authenticationError.code)
+    XCTAssertEqual(flutterError.message, String(describing: authenticationError))
+    XCTAssertTrue(details.filter({ $0.key != AuthAPIErrorFlag.key }) == authenticationError.details)
+
+    guard let flags = details[AuthAPIErrorFlag.key] as? [String: Bool] else {
+        return XCTFail("'details' is missing the '\(AuthAPIErrorFlag.key)' dictionary")
+    }
+
+    XCTAssertEqual(flags[AuthAPIErrorFlag.isMultifactorRequired], authenticationError.isMultifactorRequired)
+    XCTAssertEqual(flags[AuthAPIErrorFlag.isMultifactorEnrollRequired], authenticationError.isMultifactorEnrollRequired)
+    XCTAssertEqual(flags[AuthAPIErrorFlag.isMultifactorCodeInvalid], authenticationError.isMultifactorCodeInvalid)
+    XCTAssertEqual(flags[AuthAPIErrorFlag.isMultifactorTokenInvalid], authenticationError.isMultifactorTokenInvalid)
+    XCTAssertEqual(flags[AuthAPIErrorFlag.isPasswordNotStrongEnough], authenticationError.isPasswordNotStrongEnough)
+    XCTAssertEqual(flags[AuthAPIErrorFlag.isPasswordAlreadyUsed], authenticationError.isPasswordAlreadyUsed)
+    XCTAssertEqual(flags[AuthAPIErrorFlag.isRuleError], authenticationError.isRuleError)
+    XCTAssertEqual(flags[AuthAPIErrorFlag.isInvalidCredentials], authenticationError.isInvalidCredentials)
+    XCTAssertEqual(flags[AuthAPIErrorFlag.isRefreshTokenDeleted], authenticationError.isRefreshTokenDeleted)
+    XCTAssertEqual(flags[AuthAPIErrorFlag.isAccessDenied], authenticationError.isAccessDenied)
+    XCTAssertEqual(flags[AuthAPIErrorFlag.isTooManyAttempts], authenticationError.isTooManyAttempts)
+    XCTAssertEqual(flags[AuthAPIErrorFlag.isVerificationRequired], authenticationError.isVerificationRequired)
+    XCTAssertEqual(flags[AuthAPIErrorFlag.isPasswordLeaked], authenticationError.isPasswordLeaked)
+    XCTAssertEqual(flags[AuthAPIErrorFlag.isLoginRequired], authenticationError.isLoginRequired)
+    XCTAssertEqual(flags[AuthAPIErrorFlag.isNetworkError], authenticationError.isNetworkError)
 }
