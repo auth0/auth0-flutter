@@ -7,15 +7,18 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel.Result
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito.`when`
 import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class Auth0FlutterAuthMethodCallHandlerTest {
     private val defaultArguments = hashMapOf<String, Any?>(
-        "domain" to "test.auth0.com",
-        "clientId" to "test-client",
-        "userAgent" to mapOf(
+        "_account" to mapOf(
+            "domain" to "test.auth0.com",
+            "clientId" to "test-client",
+        ),
+        "_userAgent" to mapOf(
             "name" to "auth0-flutter",
             "version" to "1.0.0"
         )
@@ -45,9 +48,9 @@ class Auth0FlutterAuthMethodCallHandlerTest {
 
     @Test
     fun `handler should result in 'notImplemented' if no matching handler`() {
-        val signupHandler = spy(SignupApiRequestHandler())
+        val signupHandler = mock<SignupApiRequestHandler>();
 
-        doNothing().`when`(signupHandler).handle(any(), any(), any());
+        `when`(signupHandler.method).thenReturn("auth#signup");
 
         runCallHandler("auth#login", requestHandlers = listOf(signupHandler)) { result ->
             verify(result).notImplemented()
@@ -56,11 +59,11 @@ class Auth0FlutterAuthMethodCallHandlerTest {
 
     @Test
     fun `handler should only run the correct handler`() {
-        val loginHandler = spy(LoginApiRequestHandler())
-        val signupHandler = spy(SignupApiRequestHandler())
+        val loginHandler = mock<LoginApiRequestHandler>();
+        val signupHandler = mock<SignupApiRequestHandler>();
 
-        doNothing().`when`(loginHandler).handle(any(), any(), any());
-        doNothing().`when`(signupHandler).handle(any(), any(), any());
+        `when`(loginHandler.method).thenReturn("auth#login");
+        `when`(signupHandler.method).thenReturn("auth#signup");
 
         runCallHandler(loginHandler.method, requestHandlers = listOf(loginHandler, signupHandler)) { _ ->
             verify(loginHandler).handle(any(), any(), any())

@@ -35,16 +35,24 @@ extension XCTestCase {
         return [:]
     }
 
-    func arguments<K: RawRepresentable, V>(withKey key: K, value: V) -> [String: Any] where K.RawValue == String {
+    func arguments<V>(withKey key: String, value: V) -> [String: Any] {
         var dictionary = arguments()
-        dictionary[key.rawValue] = value
+        dictionary[key] = value
+        return dictionary
+    }
+
+    func arguments<K: RawRepresentable, V>(withKey key: K, value: V) -> [String: Any] where K.RawValue == String {
+        return arguments(withKey: key.rawValue, value: value)
+    }
+
+    func arguments(without key: String) -> [String: Any] {
+        var dictionary = arguments()
+        dictionary.removeValue(forKey: key)
         return dictionary
     }
 
     func arguments<K: RawRepresentable>(without key: K) -> [String: Any] where K.RawValue == String {
-        var dictionary = arguments()
-        dictionary.removeValue(forKey: key.rawValue)
-        return dictionary
+        return arguments(without: key.rawValue)
     }
 }
 

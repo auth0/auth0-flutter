@@ -26,7 +26,7 @@ class ResetPasswordApiRequestHandler : ApiRequestHandler {
             connection = request.data["connection"] as String
         )
 
-        if (request.data.getOrDefault("parameters", hashMapOf<String, Any?>()) is HashMap<*, *>) {
+        if (request.data.getOrDefault("parameters", null) is HashMap<*, *>) {
             builder.addParameters(request.data["parameters"] as Map<String, String>)
         }
 

@@ -32,7 +32,7 @@ class RenewAccessTokenApiRequestHandler : ApiRequestHandler {
             renewAuthBuilder.addParameter("scope", scopes.joinToString(separator = " "))
         }
 
-        if (request.data.getOrDefault("parameters", hashMapOf<String, Any?>()) is HashMap<*, *>) {
+        if (request.data.getOrDefault("parameters", null) is HashMap<*, *>) {
             renewAuthBuilder.addParameters(request.data["parameters"] as Map<String, String>)
         }
 
