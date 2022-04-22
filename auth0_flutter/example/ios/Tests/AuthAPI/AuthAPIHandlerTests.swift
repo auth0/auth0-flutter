@@ -4,8 +4,8 @@ import Auth0
 @testable import auth0_flutter
 
 fileprivate class SpySUT: AuthAPIHandler {
-    fileprivate(set) var accountValue: Account?
-    fileprivate(set) var userAgentValue: UserAgent?
+    private(set) var accountValue: Account?
+    private(set) var userAgentValue: UserAgent?
 
     override func makeClient(account: Account, userAgent: UserAgent) -> Authentication {
         accountValue = account
