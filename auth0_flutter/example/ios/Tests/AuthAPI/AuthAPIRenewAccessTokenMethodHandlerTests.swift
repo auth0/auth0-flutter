@@ -18,7 +18,7 @@ class AuthAPIRenewAccessTokenMethodHandlerTests: XCTestCase {
 
 extension AuthAPIRenewAccessTokenMethodHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
-        let keys: [Argument] = [.refreshToken, .parameters]
+        let keys: [Argument] = [.refreshToken, .scopes, .parameters]
         let expectations = keys.map { expectation(description: "\($0.rawValue) is missing") }
         for (argument, currentExpectation) in zip(keys, expectations) {
             sut.handle(with: arguments(without: argument)) { result in
