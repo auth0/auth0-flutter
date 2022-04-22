@@ -1,6 +1,5 @@
 package com.auth0.auth0_flutter
 
-import android.accounts.Account
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback

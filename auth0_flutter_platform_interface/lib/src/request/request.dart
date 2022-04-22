@@ -13,9 +13,9 @@ abstract class BaseRequest<TOptions extends RequestOptions> {
     required this.userAgent,
   });
 
-  Map<String, dynamic> toMap() => account.toMap()
-    ..addAll(options.toMap())
-    ..addAll({'userAgent': userAgent.toMap()});
+  Map<String, dynamic> toMap() => options.toMap()
+    ..addAll({'_account': account.toMap()})
+    ..addAll({'_userAgent': userAgent.toMap()});
 }
 
 class ApiRequest<TOptions extends RequestOptions>
