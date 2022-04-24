@@ -14,7 +14,7 @@ class TestPlatform extends Mock
     implements
         Auth0FlutterAuthPlatform {
   static DatabaseUser signupResult =
-      DatabaseUser(email: 'email', emailVerified: true);
+      DatabaseUser(email: 'email', isEmailVerified: true);
 
   static Credentials loginResult = Credentials.fromMap({
     'accessToken': 'accessToken',
