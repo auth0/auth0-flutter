@@ -139,8 +139,7 @@ void main() {
               options: AuthSignupOptions(
                   email: 'test-email',
                   password: 'test-pass',
-                  connection: 'test-connection',
-                  username: 'test-user')));
+                  connection: 'test-connection')));
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -322,9 +321,7 @@ void main() {
             options: AuthLoginOptions(
                 usernameOrEmail: 'test-email',
                 password: 'test-pass',
-                connectionOrRealm: 'test-connection',
-                scopes: {'a', 'b'},
-                parameters: {'test': 'test-123'})),
+                connectionOrRealm: 'test-connection')),
       );
 
       verify(mocked.methodCallHandler(captureAny));
