@@ -22,7 +22,7 @@ class WebAuthLoginInput implements RequestOptions {
   WebAuthLoginInput({
       this.idTokenValidationConfig,
       this.audience,
-      required this.scopes,
+      this.scopes = const {},
       this.redirectUri,
       this.organizationId,
       this.invitationUrl,
