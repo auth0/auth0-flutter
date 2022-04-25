@@ -4,6 +4,7 @@ import com.auth0.android.authentication.AuthenticationException
 
 fun AuthenticationException.toMap(): Map<String, Any> {
     return mapOf(
+        "_statusCode" to this.statusCode,
         "_errorFlags" to mapOf(
             "isMultifactorRequired" to this.isMultifactorRequired,
             "isMultifactorEnrollRequired" to this.isMultifactorEnrollRequired,

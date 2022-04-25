@@ -173,4 +173,16 @@ class AuthenticationExceptionExtensionsTest {
 
         assertThat(exception.isTooManyAttempts, equalTo(true));
     }
+
+    @Test
+    fun `should set statusCode when calling toMap()`() {
+        val exception = AuthenticationException(mapOf(
+            "code" to "Some Code", "description" to "Some Error"
+        ), 50);
+
+        val map = exception.toMap();
+        val statusCode = map["_statusCode"] as Int;
+
+        assertThat(statusCode, equalTo(50));
+    }
 }

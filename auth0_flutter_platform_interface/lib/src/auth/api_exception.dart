@@ -6,23 +6,31 @@ import '../extensions/map_extensions.dart';
 
 class ApiException extends Auth0Exception {
   static const _errorFlagsKey = '_errorFlags';
+  static const _statusCodeKey = '_statusCode';
 
+  final int? statusCode;
   final Map<dynamic, dynamic> _errorFlags;
 
   const ApiException(final String code, final String message,
-      final Map<String, dynamic> details, this._errorFlags)
+      final Map<String, dynamic> details, this._errorFlags, this.statusCode)
       : super(code, message, details);
 
   const ApiException.unknown(final String message)
       : _errorFlags = const {},
+        statusCode = null,
         super.unknown(message);
 
   factory ApiException.fromPlatformException(final PlatformException e) {
     final Map<String, dynamic> errorDetails = e.detailsMap;
+    final statusCode = errorDetails.getOrDefault<int?>(_statusCodeKey, null);
     final errorFlags =
         errorDetails.getOrDefault(_errorFlagsKey, <dynamic, dynamic>{});
+
+    errorDetails.remove(_statusCodeKey);
     errorDetails.remove(_errorFlagsKey);
-    return ApiException(e.code, e.messageString, errorDetails, errorFlags);
+
+    return ApiException(
+        e.code, e.messageString, errorDetails, errorFlags, statusCode);
   }
 
   bool get isMultifactorRequired =>

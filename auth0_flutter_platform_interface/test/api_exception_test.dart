@@ -18,6 +18,34 @@ void main() {
       expect(exception.details['details-prop'], 'details-value');
     });
 
+    test('removes _statusCode from details', () async {
+      final details = {
+        'details-prop': 'details-value',
+        '_statusCode': 50
+      };
+      final platformException =
+          PlatformException(code: 'test-code', details: details);
+
+      final exception = ApiException.fromPlatformException(platformException);
+
+      expect(exception.details['details-prop'], 'details-value');
+      expect(exception.details['_statusCode'], null);
+    });
+
+     test('correctly maps statusCode', () async {
+      final details = {
+        'details-prop': 'details-value',
+        '_statusCode': 50
+      };
+      final platformException =
+          PlatformException(code: 'test-code', details: details);
+
+      final exception = ApiException.fromPlatformException(platformException);
+
+      expect(exception.statusCode, 50);
+    });
+
+
     test('removes _errorFlags from details', () async {
       final details = {
         'details-prop': 'details-value',
