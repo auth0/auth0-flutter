@@ -12,7 +12,6 @@ class UserProfile {
   final Uri? websiteURL;
   final String? middleName;
   final String? preferredUsername;
-
   final String? gender;
   final String? birthdate;
   final String? zoneinfo;

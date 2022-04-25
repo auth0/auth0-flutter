@@ -120,7 +120,7 @@ void main() {
       verify(mocked.methodCallHandler(captureAny));
 
       expect(result.email, 'test-email');
-      expect(result.emailVerified, true);
+      expect(result.isEmailVerified, true);
       expect(result.username, 'test-user');
     });
 
@@ -136,7 +136,7 @@ void main() {
                   AuthSignupOptions(email: '', password: '', connection: '')));
 
       verify(mocked.methodCallHandler(captureAny));
-      expect(result.emailVerified, true);
+      expect(result.isEmailVerified, true);
     });
 
     test('correctly returns emailVerified when false', () async {
@@ -151,7 +151,7 @@ void main() {
                   AuthSignupOptions(email: '', password: '', connection: '')));
 
       verify(mocked.methodCallHandler(captureAny));
-      expect(result.emailVerified, false);
+      expect(result.isEmailVerified, false);
     });
 
     test('throws an ApiException when method channel returns null', () async {
