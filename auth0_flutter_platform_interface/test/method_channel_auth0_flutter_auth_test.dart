@@ -618,7 +618,7 @@ void main() {
       await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
           account: const Account('test-domain', 'test-clientId'),
           userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-          options: AuthUserInfoOptions(accessToken: 'test-token')));
+          options: AuthUserInfoOptions(accessToken: 'test-token', parameters: {'test': 'test-123'})));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -636,7 +636,7 @@ void main() {
       await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
           account: const Account('test-domain', 'test-clientId'),
           userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-          options: AuthUserInfoOptions(accessToken: 'test-token')));
+          options: AuthUserInfoOptions(accessToken: 'test-token', parameters: {'test': 'test-123'})));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -647,6 +647,7 @@ void main() {
       expect(verificationResult.arguments['_userAgent']['version'],
           'test-version');
       expect(verificationResult.arguments['accessToken'], 'test-token');
+      expect(verificationResult.arguments['parameters']['test'], 'test-123');
     });
 
     test('correctly returns the response from the Method Channel', () async {

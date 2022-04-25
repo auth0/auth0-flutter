@@ -21,7 +21,13 @@ class UserInfoApiRequestHandler : ApiRequestHandler {
     ) {
         assertHasProperties(listOf("accessToken"), request.data);
 
-        api.userInfo(request.data["accessToken"] as String)
+        val builder = api.userInfo(request.data["accessToken"] as String);
+
+        if (request.data.getOrDefault("parameters", null) is HashMap<*, *>) {
+            builder.addParameters(request.data["parameters"] as Map<String, String>)
+        }
+
+        builder
             .start(object : Callback<UserProfile, AuthenticationException> {
                 override fun onFailure(exception: AuthenticationException) {
                     result.error(
