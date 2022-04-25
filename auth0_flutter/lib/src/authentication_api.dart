@@ -21,9 +21,12 @@ class AuthenticationApi {
         parameters: parameters,
       )));
 
-  Future<UserProfile> userProfile({required final String accessToken}) =>
-      Auth0FlutterAuthPlatform.instance.userInfo(
-          createApiRequest(AuthUserInfoOptions(accessToken: accessToken)));
+  Future<UserProfile> userProfile(
+          {required final String accessToken,
+          final Map<String, String> parameters = const {}}) =>
+      Auth0FlutterAuthPlatform.instance.userInfo(createApiRequest(
+          AuthUserInfoOptions(
+              accessToken: accessToken, parameters: parameters)));
 
   Future<DatabaseUser> signup(
           {required final String email,

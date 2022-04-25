@@ -1,12 +1,14 @@
 import '../request/request_options.dart';
 
 class AuthUserInfoOptions implements RequestOptions {
-  String accessToken;
+  final String accessToken;
+  final Map<String, String> parameters;
 
-  AuthUserInfoOptions({required final this.accessToken});
+  AuthUserInfoOptions({required this.accessToken, this.parameters = const {}});
 
   @override
   Map<String, dynamic> toMap() => {
         'accessToken': accessToken,
+        'parameters': parameters,
       };
 }
