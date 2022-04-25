@@ -41,6 +41,10 @@ class LoginApiRequestHandler : ApiRequestHandler {
             loginBuilder.setScope(scopes.joinToString(separator = " "))
         }
 
+        if (args.getOrDefault("audience", null) is String) {
+            loginBuilder.setAudience(args["audience"] as String)
+        }
+
         if (args.getOrDefault("parameters", null) is HashMap<*, *>) {
             loginBuilder.addParameters(args["parameters"] as Map<String, String>)
         }
