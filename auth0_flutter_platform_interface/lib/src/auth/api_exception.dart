@@ -8,7 +8,7 @@ class ApiException extends Auth0Exception {
   static const _errorFlagsKey = '_errorFlags';
   static const _statusCodeKey = '_statusCode';
 
-  final int? statusCode;
+  final int statusCode;
   final Map<dynamic, dynamic> _errorFlags;
 
   const ApiException(final String code, final String message,
@@ -17,12 +17,13 @@ class ApiException extends Auth0Exception {
 
   const ApiException.unknown(final String message)
       : _errorFlags = const {},
-        statusCode = null,
+        statusCode = 0,
         super.unknown(message);
 
   factory ApiException.fromPlatformException(final PlatformException e) {
     final Map<String, dynamic> errorDetails = e.detailsMap;
-    final statusCode = errorDetails.getOrDefault<int?>(_statusCodeKey, null);
+    final statusCode =
+        errorDetails.getOrDefault(_statusCodeKey, 0);
     final errorFlags =
         errorDetails.getOrDefault(_errorFlagsKey, <dynamic, dynamic>{});
 

@@ -45,6 +45,18 @@ void main() {
       expect(exception.statusCode, 50);
     });
 
+    test('sets statusCode to 0 when omitted', () async {
+      final details = {
+        'details-prop': 'details-value',
+      };
+      final platformException =
+          PlatformException(code: 'test-code', details: details);
+
+      final exception = ApiException.fromPlatformException(platformException);
+
+      expect(exception.statusCode, 0);
+    });
+
 
     test('removes _errorFlags from details', () async {
       final details = {
