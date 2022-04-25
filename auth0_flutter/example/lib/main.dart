@@ -104,7 +104,7 @@ class _ExampleAppState extends State<ExampleApp> {
           });
       output = result.email;
     } on ApiException catch (e) {
-      output = output = e.toString();
+      output = output = e.statusCode.toString();
     }
 
     // If the widget was removed from the tree while the asynchronous platform

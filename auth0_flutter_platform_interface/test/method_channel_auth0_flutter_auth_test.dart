@@ -7,13 +7,27 @@ import 'package:mockito/mockito.dart';
 import 'method_channel_auth0_flutter_auth_test.mocks.dart';
 
 class MethodCallHandler {
-  static const Map<dynamic, dynamic> loginResult = {
+  static const Map<dynamic, dynamic> loginResultRequired = {
     'accessToken': 'accessToken',
     'idToken': 'idToken',
-    'refreshToken': 'refreshToken',
     'expiresAt': '2022-01-01',
-    'scopes': ['a'],
+    'scopes': ['a', 'b'],
     'userProfile': {'sub': '123', 'name': 'John Doe'}
+  };
+
+  static const Map<dynamic, dynamic> loginResult = {
+    ...loginResultRequired,
+    'refreshToken': 'refreshToken'
+  };
+
+  static const Map<dynamic, dynamic> signupResultRequired = {
+    'email': 'test-email',
+    'emailVerified': true
+  };
+
+  static const Map<dynamic, dynamic> signupResult = {
+    ...signupResultRequired,
+    'username': 'test-user'
   };
 
   static const Map<dynamic, dynamic> renewAccessTokenResult = {
@@ -21,7 +35,7 @@ class MethodCallHandler {
     'idToken': 'idToken',
     'refreshToken': 'refreshToken',
     'expiresAt': '2022-01-01',
-    'scopes': ['a'],
+    'scopes': ['a', 'b'],
     'userProfile': {'sub': '123', 'name': 'John Doe'}
   };
 
@@ -47,11 +61,8 @@ void main() {
 
   group('signup', () {
     test('calls the correct MethodChannel method', () async {
-      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
-            'email': 'test-email',
-            'emailVerified': true,
-            'username': 'test-user'
-          });
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.signupResult);
 
       await MethodChannelAuth0FlutterAuth().signup(
           ApiRequest<AuthSignupOptions>(
@@ -69,11 +80,8 @@ void main() {
     });
 
     test('correctly maps all properties', () async {
-      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
-            'email': 'test-email',
-            'emailVerified': true,
-            'username': 'test-user'
-          });
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.signupResult);
 
       await MethodChannelAuth0FlutterAuth().signup(
           ApiRequest<AuthSignupOptions>(
@@ -83,7 +91,8 @@ void main() {
                   email: 'test-email',
                   password: 'test-pass',
                   connection: 'test-connection',
-                  username: 'test-user')));
+                  username: 'test-user',
+                  userMetadata: {'test': 'test-123'})));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -91,21 +100,37 @@ void main() {
       expect(verificationResult.arguments['_account']['clientId'],
           'test-clientId');
       expect(verificationResult.arguments['_userAgent']['name'], 'test-name');
-      expect(
-          verificationResult.arguments['_userAgent']['version'],
+      expect(verificationResult.arguments['_userAgent']['version'],
           'test-version');
       expect(verificationResult.arguments['email'], 'test-email');
       expect(verificationResult.arguments['username'], 'test-user');
       expect(verificationResult.arguments['password'], 'test-pass');
       expect(verificationResult.arguments['connection'], 'test-connection');
+      expect(verificationResult.arguments['userMetadata']['test'], 'test-123');
+    });
+
+    test(
+        'correctly assigns default values to all non-required properties when missing',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.signupResult);
+
+      await MethodChannelAuth0FlutterAuth().signup(
+          ApiRequest<AuthSignupOptions>(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: '', version: ''),
+              options:
+                  AuthSignupOptions(email: '', password: '', connection: '')));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['username'], isNull);
+      expect(verificationResult.arguments['userMetadata'], isEmpty);
     });
 
     test('correctly returns the response from the Method Channel', () async {
-      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
-            'email': 'test-email',
-            'emailVerified': true,
-            'username': 'test-user'
-          });
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.signupResult);
 
       final result = await MethodChannelAuth0FlutterAuth().signup(
           ApiRequest<AuthSignupOptions>(
@@ -114,19 +139,36 @@ void main() {
               options: AuthSignupOptions(
                   email: 'test-email',
                   password: 'test-pass',
-                  connection: 'test-connection',
-                  username: 'test-user')));
+                  connection: 'test-connection')));
 
       verify(mocked.methodCallHandler(captureAny));
 
       expect(result.email, 'test-email');
-      expect(result.emailVerified, true);
+      expect(result.isEmailVerified, true);
       expect(result.username, 'test-user');
+    });
+
+    test(
+        'correctly returns the response from the Method Channel when properties missing',
+        () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.signupResultRequired);
+
+      final result = await MethodChannelAuth0FlutterAuth().signup(
+          ApiRequest<AuthSignupOptions>(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: '', version: ''),
+              options:
+                  AuthSignupOptions(email: '', password: '', connection: '')));
+
+      verify(mocked.methodCallHandler(captureAny));
+      expect(result.username, isNull);
     });
 
     test('correctly returns emailVerified when true', () async {
       when(mocked.methodCallHandler(any)).thenAnswer(
-          (final _) async => {'email': 'test-email', 'emailVerified': true});
+          (final _) async =>
+          {...MethodCallHandler.signupResult, 'emailVerified': true});
 
       final result = await MethodChannelAuth0FlutterAuth().signup(
           ApiRequest<AuthSignupOptions>(
@@ -136,12 +178,13 @@ void main() {
                   AuthSignupOptions(email: '', password: '', connection: '')));
 
       verify(mocked.methodCallHandler(captureAny));
-      expect(result.emailVerified, true);
+      expect(result.isEmailVerified, true);
     });
 
     test('correctly returns emailVerified when false', () async {
       when(mocked.methodCallHandler(any)).thenAnswer(
-          (final _) async => {'email': 'test-email', 'emailVerified': false});
+          (final _) async =>
+          {...MethodCallHandler.signupResult, 'emailVerified': false});
 
       final result = await MethodChannelAuth0FlutterAuth().signup(
           ApiRequest<AuthSignupOptions>(
@@ -151,7 +194,7 @@ void main() {
                   AuthSignupOptions(email: '', password: '', connection: '')));
 
       verify(mocked.methodCallHandler(captureAny));
-      expect(result.emailVerified, false);
+      expect(result.isEmailVerified, false);
     });
 
     test('throws an ApiException when method channel returns null', () async {
@@ -229,6 +272,7 @@ void main() {
                 usernameOrEmail: 'test-email',
                 password: 'test-pass',
                 connectionOrRealm: 'test-connection',
+                audience: 'test-audience',
                 scopes: {'a', 'b'},
                 parameters: {'test': 'test-123'})),
       );
@@ -245,8 +289,27 @@ void main() {
       expect(verificationResult.arguments['password'], 'test-pass');
       expect(
           verificationResult.arguments['connectionOrRealm'], 'test-connection');
+      expect(verificationResult.arguments['audience'], 'test-audience');
       expect(verificationResult.arguments['scopes'], ['a', 'b']);
       expect(verificationResult.arguments['parameters']['test'], 'test-123');
+    });
+
+    test(
+        'correctly assigns default values to all non-required properties when missing',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      await MethodChannelAuth0FlutterAuth().login(ApiRequest<AuthLoginOptions>(
+          account: const Account('', ''),
+          userAgent: UserAgent(name: '', version: ''),
+          options: AuthLoginOptions(
+              usernameOrEmail: '', password: '', connectionOrRealm: '')));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['scopes'], isEmpty);
+      expect(verificationResult.arguments['parameters'], isEmpty);
     });
 
     test('correctly returns the response from the Method Channel', () async {
@@ -260,9 +323,7 @@ void main() {
             options: AuthLoginOptions(
                 usernameOrEmail: 'test-email',
                 password: 'test-pass',
-                connectionOrRealm: 'test-connection',
-                scopes: {'a', 'b'},
-                parameters: {'test': 'test-123'})),
+                connectionOrRealm: 'test-connection')),
       );
 
       verify(mocked.methodCallHandler(captureAny));
@@ -276,6 +337,24 @@ void main() {
           result.refreshToken, MethodCallHandler.loginResult['refreshToken']);
       expect(result.userProfile.name,
           MethodCallHandler.loginResult['userProfile']['name']);
+    });
+
+    test(
+        'correctly returns the response from the Method Channel when properties missing',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResultRequired);
+
+      final result = await MethodChannelAuth0FlutterAuth().login(
+          ApiRequest<AuthLoginOptions>(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: '', version: ''),
+              options: AuthLoginOptions(
+                  usernameOrEmail: '', password: '', connectionOrRealm: '')));
+
+      verify(mocked.methodCallHandler(captureAny));
+
+      expect(result.refreshToken, isNull);
     });
 
     test('throws an ApiException when method channel returns null', () async {
@@ -358,12 +437,26 @@ void main() {
       expect(verificationResult.arguments['_account']['clientId'],
           'test-clientId');
       expect(verificationResult.arguments['_userAgent']['name'], 'test-name');
-      expect(
-          verificationResult.arguments['_userAgent']['version'],
+      expect(verificationResult.arguments['_userAgent']['version'],
           'test-version');
       expect(verificationResult.arguments['email'], 'test-email');
       expect(verificationResult.arguments['connection'], 'test-connection');
       expect(verificationResult.arguments['parameters']['test'], 'test-123');
+    });
+
+    test(
+        'correctly assigns default values to all non-required properties when missing',
+        () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      await MethodChannelAuth0FlutterAuth().resetPassword(ApiRequest(
+          account: const Account('', ''),
+          userAgent: UserAgent(name: '', version: ''),
+          options: AuthResetPasswordOptions(email: '', connection: '')));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['parameters'], isEmpty);
     });
 
     test(
@@ -408,13 +501,14 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer(
           (final _) async => MethodCallHandler.renewAccessTokenResult);
 
-      await MethodChannelAuth0FlutterAuth()
-          .renewAccessToken(ApiRequest<AuthRenewAccessTokenOptions>(
+      await MethodChannelAuth0FlutterAuth().renewAccessToken(
+          ApiRequest<AuthRenewAccessTokenOptions>(
               account: const Account('test-domain', 'test-clientId'),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
               options: AuthRenewAccessTokenOptions(
-                refreshToken: 'test-refresh-token',
-              )));
+                  refreshToken: 'test-refresh-token',
+                  scopes: {'a', 'b'},
+                  parameters: {'test': 'test-123'})));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -422,11 +516,29 @@ void main() {
       expect(verificationResult.arguments['_account']['clientId'],
           'test-clientId');
       expect(verificationResult.arguments['_userAgent']['name'], 'test-name');
-      expect(
-          verificationResult.arguments['_userAgent']['version'],
+      expect(verificationResult.arguments['_userAgent']['version'],
           'test-version');
       expect(
           verificationResult.arguments['refreshToken'], 'test-refresh-token');
+      expect(verificationResult.arguments['scopes'], {'a', 'b'});
+      expect(verificationResult.arguments['parameters']['test'], 'test-123');
+    });
+
+    test(
+        'correctly assigns default values to all non-required properties when missing',
+        () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.renewAccessTokenResult);
+
+      await MethodChannelAuth0FlutterAuth().renewAccessToken(
+          ApiRequest<AuthRenewAccessTokenOptions>(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: '', version: ''),
+              options: AuthRenewAccessTokenOptions(refreshToken: '')));
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['scopes'], isEmpty);
+      expect(verificationResult.arguments['parameters'], isEmpty);
     });
 
     test('correctly returns the response from the Method Channel', () async {
@@ -532,8 +644,7 @@ void main() {
       expect(verificationResult.arguments['_account']['clientId'],
           'test-clientId');
       expect(verificationResult.arguments['_userAgent']['name'], 'test-name');
-      expect(
-          verificationResult.arguments['_userAgent']['version'],
+      expect(verificationResult.arguments['_userAgent']['version'],
           'test-version');
       expect(verificationResult.arguments['accessToken'], 'test-token');
     });
