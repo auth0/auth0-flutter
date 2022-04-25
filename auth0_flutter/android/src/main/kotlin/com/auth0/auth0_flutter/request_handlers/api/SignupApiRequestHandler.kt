@@ -17,13 +17,19 @@ class SignupApiRequestHandler : ApiRequestHandler {
     override fun handle(api: AuthenticationAPIClient, request: MethodCallRequest, result: MethodChannel.Result) {
         assertHasProperties(listOf("email", "password", "connection"), request.data);
 
-        api.createUser(
-            email = request.data["email"] as String,
-            password = request.data["password"] as String,
-            username = request.data["username"] as String?,
-            connection = request.data["connection"] as String,
-            userMetadata = request.data["userMetadata"] as Map<String, String>?
-        ).start(object : Callback<DatabaseUser, AuthenticationException> {
+        val builder = api.createUser(
+                email = request.data["email"] as String,
+                password = request.data["password"] as String,
+                username = request.data["username"] as String?,
+                connection = request.data["connection"] as String,
+                userMetadata = request.data["userMetadata"] as Map<String, String>?
+            );
+
+        if (request.data.getOrDefault("parameters", null) is HashMap<*, *>) {
+            builder.addParameters(request.data["parameters"] as Map<String, String>)
+        }
+
+        builder.start(object : Callback<DatabaseUser, AuthenticationException> {
             override fun onFailure(exception: AuthenticationException) {
                 result.error(
                     exception.getCode(),
