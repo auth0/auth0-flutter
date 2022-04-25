@@ -272,6 +272,7 @@ void main() {
                 usernameOrEmail: 'test-email',
                 password: 'test-pass',
                 connectionOrRealm: 'test-connection',
+                audience: 'test-audience',
                 scopes: {'a', 'b'},
                 parameters: {'test': 'test-123'})),
       );
@@ -288,6 +289,7 @@ void main() {
       expect(verificationResult.arguments['password'], 'test-pass');
       expect(
           verificationResult.arguments['connectionOrRealm'], 'test-connection');
+      expect(verificationResult.arguments['audience'], 'test-audience');
       expect(verificationResult.arguments['scopes'], ['a', 'b']);
       expect(verificationResult.arguments['parameters']['test'], 'test-123');
     });
