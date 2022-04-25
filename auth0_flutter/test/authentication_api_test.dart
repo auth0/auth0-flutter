@@ -241,5 +241,18 @@ void main() {
       expect(verificationResult.account.clientId, 'test-clientId');
       expect(verificationResult.options?.accessToken, 'test-token');
     });
+
+    test('set parameters to default value when omitted', () async {
+      when(mockedPlatform.userInfo(any)).thenAnswer((final _) async => const UserProfile(sub: 'sub'));
+
+      await Auth0('test-domain', 'test-clientId')
+          .api
+          .userProfile(accessToken: 'test-token');
+
+      final verificationResult =
+          verify(mockedPlatform.userInfo(captureAny)).captured.single;
+      // ignore: inference_failure_on_collection_literal
+      expect(verificationResult.options.parameters, {});
+    });
   });
 }
