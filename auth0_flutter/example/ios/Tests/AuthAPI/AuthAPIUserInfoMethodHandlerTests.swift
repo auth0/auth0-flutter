@@ -18,13 +18,15 @@ class AuthAPIUserInfoMethodHandlerTests: XCTestCase {
 
 extension AuthAPIUserInfoMethodHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
-        let key = Argument.accessToken
-        let expectation = expectation(description: "\(key.rawValue) is missing")
-        sut.handle(with: arguments(without: key)) { result in
-            assert(result: result, isError: .requiredArgumentMissing(key.rawValue))
-            expectation.fulfill()
+        let keys: [Argument] = [.accessToken, .parameters]
+        let expectations = keys.map { expectation(description: "\($0.rawValue) is missing") }
+        for (argument, currentExpectation) in zip(keys, expectations) {
+            sut.handle(with: arguments(without: argument)) { result in
+                assert(result: result, isError: .requiredArgumentMissing(argument.rawValue))
+                currentExpectation.fulfill()
+            }
         }
-        wait(for: [expectation])
+        wait(for: expectations)
     }
 }
 
@@ -100,6 +102,6 @@ extension AuthAPIUserInfoMethodHandlerTests {
 
 extension AuthAPIUserInfoMethodHandlerTests {
     override func arguments() -> [String: Any] {
-        return [Argument.accessToken.rawValue: ""]
+        return [Argument.accessToken.rawValue: "", Argument.parameters.rawValue: [:]]
     }
 }
