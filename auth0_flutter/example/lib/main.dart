@@ -94,11 +94,15 @@ class _ExampleAppState extends State<ExampleApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      final result = await auth0.api.login(
+      /*final result = await auth0.api.login(
           usernameOrEmail: usernameOrEmail,
           password: password,
-          connectionOrRealm: 'Username-Password-Authentication');
-      output = result.accessToken;
+          connectionOrRealm: 'Username-Password-Authentication');*/
+
+          final result = await auth0.api.signup(email: usernameOrEmail, password: password, connection: 'Username-Password-Authentication', parameters: {
+            'test': 'test-foo'
+          });
+      output = result.email;
     } on ApiException catch (e) {
       output = output = e.toString();
     }

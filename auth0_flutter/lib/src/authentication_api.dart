@@ -30,14 +30,16 @@ class AuthenticationApi {
           required final String password,
           final String? username,
           required final String connection,
-          final Map<String, String> userMetadata = const {}}) =>
+          final Map<String, String> userMetadata = const {},
+          final Map<String, String> parameters = const {}}) =>
       Auth0FlutterAuthPlatform.instance.signup(createApiRequest(
           AuthSignupOptions(
               email: email,
               password: password,
               connection: connection,
               username: username,
-              userMetadata: userMetadata)));
+              userMetadata: userMetadata,
+              parameters: parameters)));
 
   Future<Credentials> renewAccessToken({
     required final String refreshToken,
