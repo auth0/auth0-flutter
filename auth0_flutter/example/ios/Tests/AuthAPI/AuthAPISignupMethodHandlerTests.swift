@@ -18,7 +18,7 @@ class AuthAPISignupMethodHandlerTests: XCTestCase {
 
 extension AuthAPISignupMethodHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
-        let keys: [Argument] = [.email, .password, .connection, .userMetadata]
+        let keys: [Argument] = [.email, .password, .connection, .userMetadata, .parameters]
         let expectations = keys.map { expectation(description: "\($0.rawValue) is missing") }
         for (argument, currentExpectation) in zip(keys, expectations) {
             sut.handle(with: arguments(without: argument)) { result in
@@ -126,6 +126,7 @@ extension AuthAPISignupMethodHandlerTests {
             Argument.password.rawValue: "",
             Argument.connection.rawValue: "",
             Argument.username.rawValue: "",
+            Argument.parameters.rawValue: [:],
             Argument.userMetadata.rawValue: [:]
         ]
     }
