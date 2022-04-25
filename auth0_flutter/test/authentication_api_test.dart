@@ -14,7 +14,7 @@ class TestPlatform extends Mock
     implements
         Auth0FlutterAuthPlatform {
   static DatabaseUser signupResult =
-      DatabaseUser(email: 'email', emailVerified: true);
+      DatabaseUser(email: 'email', isEmailVerified: true);
 
   static Credentials loginResult = Credentials.fromMap({
     'accessToken': 'accessToken',
@@ -58,8 +58,9 @@ void main() {
         userMetadata: {'test': 'test-123'},
       );
 
-      final verificationResult =
-          verify(mockedPlatform.signup(captureAny)).captured.single as ApiRequest<AuthSignupOptions>;
+      final verificationResult = verify(mockedPlatform.signup(captureAny))
+          .captured
+          .single as ApiRequest<AuthSignupOptions>;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
       expect(verificationResult.options.email, 'test-email');
@@ -79,8 +80,9 @@ void main() {
             connection: 'test-realm',
           );
 
-      final verificationResult =
-          verify(mockedPlatform.signup(captureAny)).captured.single as ApiRequest<AuthSignupOptions>;
+      final verificationResult = verify(mockedPlatform.signup(captureAny))
+          .captured
+          .single as ApiRequest<AuthSignupOptions>;
       // ignore: inference_failure_on_collection_literal
       expect(verificationResult.options.userMetadata, {});
       expect(result, TestPlatform.signupResult);
@@ -96,16 +98,19 @@ void main() {
           usernameOrEmail: 'test-user',
           password: 'test-pass',
           connectionOrRealm: 'test-realm',
+          audience: 'test-audience',
           scopes: {'test-scope1', 'test-scope2'},
           parameters: {'test': 'test-parameter'});
 
-      final verificationResult =
-          verify(mockedPlatform.login(captureAny)).captured.single as ApiRequest<AuthLoginOptions>;
+      final verificationResult = verify(mockedPlatform.login(captureAny))
+          .captured
+          .single as ApiRequest<AuthLoginOptions>;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
       expect(verificationResult.options.usernameOrEmail, 'test-user');
       expect(verificationResult.options.password, 'test-pass');
       expect(verificationResult.options.connectionOrRealm, 'test-realm');
+      expect(verificationResult.options.audience, 'test-audience');
       expect(verificationResult.options.scopes, {'test-scope1', 'test-scope2'});
       expect(verificationResult.options.parameters['test'], 'test-parameter');
       expect(result, TestPlatform.loginResult);
@@ -120,13 +125,30 @@ void main() {
           password: 'test-pass',
           connectionOrRealm: 'test-realm');
 
-      final verificationResult =
-          verify(mockedPlatform.login(captureAny)).captured.single as ApiRequest<AuthLoginOptions>;
+      final verificationResult = verify(mockedPlatform.login(captureAny))
+          .captured
+          .single as ApiRequest<AuthLoginOptions>;
       // ignore: inference_failure_on_collection_literal
       expect(verificationResult.options.scopes, []);
       // ignore: inference_failure_on_collection_literal
       expect(verificationResult.options.parameters, {});
       expect(result, TestPlatform.loginResult);
+    });
+
+    test('set audience to null when omitted', () async {
+      when(mockedPlatform.login(any))
+          .thenAnswer((final _) async => TestPlatform.loginResult);
+
+      await Auth0('test-domain', 'test-clientId').api.login(
+          usernameOrEmail: 'test-user',
+          password: 'test-pass',
+          connectionOrRealm: 'test-realm');
+
+      final verificationResult = verify(mockedPlatform.login(captureAny))
+          .captured
+          .single as ApiRequest<AuthLoginOptions>;
+      // ignore: inference_failure_on_collection_literal
+      expect(verificationResult.options.audience, null);
     });
   });
 
@@ -175,7 +197,8 @@ void main() {
               parameters: {'test': 'test-123'});
 
       final verificationResult =
-          verify(mockedPlatform.renewAccessToken(captureAny)).captured.single as ApiRequest<AuthRenewAccessTokenOptions>;
+          verify(mockedPlatform.renewAccessToken(captureAny)).captured.single
+              as ApiRequest<AuthRenewAccessTokenOptions>;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
       expect(verificationResult.options.refreshToken, 'test-refresh-token');
@@ -193,7 +216,8 @@ void main() {
           .renewAccessToken(refreshToken: 'test-refresh-token');
 
       final verificationResult =
-          verify(mockedPlatform.renewAccessToken(captureAny)).captured.single as ApiRequest<AuthRenewAccessTokenOptions>;
+          verify(mockedPlatform.renewAccessToken(captureAny)).captured.single
+              as ApiRequest<AuthRenewAccessTokenOptions>;
       // ignore: inference_failure_on_collection_literal
       expect(verificationResult.options.scopes, []);
       // ignore: inference_failure_on_collection_literal

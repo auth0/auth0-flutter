@@ -7,13 +7,17 @@ import 'package:mockito/mockito.dart';
 import 'method_channel_auth0_flutter_web_auth_test.mocks.dart';
 
 class MethodCallHandler {
-  static const Map<dynamic, dynamic> loginResult = {
+  static const Map<dynamic, dynamic> loginResultRequired = {
     'accessToken': 'accessToken',
     'idToken': 'idToken',
-    'refreshToken': 'refreshToken',
     'expiresAt': '2022-01-01',
-    'scopes': ['a'],
+    'scopes': ['a', 'b'],
     'userProfile': {'sub': '123', 'name': 'John Doe'}
+  };
+
+  static const Map<dynamic, dynamic> loginResult = {
+    ...loginResultRequired,
+    'refreshToken': 'refreshToken'
   };
 
   Future<dynamic>? methodCallHandler(final MethodCall? methodCall) async {
@@ -50,7 +54,7 @@ void main() {
           WebAuthRequest<WebAuthLoginInput>(
               account: const Account('', ''),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: WebAuthLoginInput(scopes: {})));
+              options: WebAuthLoginInput()));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -100,6 +104,31 @@ void main() {
       expect(verificationResult.arguments['maxAge'], 20);
     });
 
+    test(
+        'correctly assigns default values to all non-required properties when missing',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      await MethodChannelAuth0FlutterWebAuth().login(
+          WebAuthRequest<WebAuthLoginInput>(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: '', version: ''),
+              options: WebAuthLoginInput()));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['scopes'], isEmpty);
+      expect(verificationResult.arguments['audience'], isNull);
+      expect(verificationResult.arguments['redirectUri'], isNull);
+      expect(verificationResult.arguments['organizationId'], isNull);
+      expect(verificationResult.arguments['invitationUrl'], isNull);
+      expect(verificationResult.arguments['parameters'], isEmpty);
+      expect(verificationResult.arguments['scheme'], isNull);
+      expect(verificationResult.arguments['useEphemeralSession'], false);
+      expect(verificationResult.arguments['idTokenValidationConfig'], isNull);
+    });
+   
     test('correctly returns the response from the Method Channel', () async {
       when(mocked.methodCallHandler(any))
           .thenAnswer((final _) async => MethodCallHandler.loginResult);
@@ -108,7 +137,7 @@ void main() {
           WebAuthRequest(
               account: const Account('test-domain', 'test-clientId'),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: WebAuthLoginInput(scopes: {'a', 'b'})));
+              options: WebAuthLoginInput()));
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -122,6 +151,23 @@ void main() {
       expect(result.userProfile.name,
           MethodCallHandler.loginResult['userProfile']['name']);
     });
+  
+    test(
+        'correctly returns the response from the Method Channel when properties missing',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResultRequired);
+
+      final result = await MethodChannelAuth0FlutterWebAuth().login(
+          WebAuthRequest(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: '', version: ''),
+              options: WebAuthLoginInput()));
+
+      verify(mocked.methodCallHandler(captureAny));
+
+      expect(result.refreshToken, isNull);
+    });
 
     test('throws an WebAuthException when method channel returns null',
         () async {
@@ -133,7 +179,7 @@ void main() {
                 account: const Account('test-domain', 'test-clientId'),
                 userAgent:
                     UserAgent(name: 'test-name', version: 'test-version'),
-                options: WebAuthLoginInput(scopes: {'a', 'b'})));
+                options: WebAuthLoginInput()));
         return result;
       }
 
@@ -152,7 +198,7 @@ void main() {
                 account: const Account('test-domain', 'test-clientId'),
                 userAgent:
                     UserAgent(name: 'test-name', version: 'test-version'),
-                options: WebAuthLoginInput(scopes: {'a', 'b'})));
+                options: WebAuthLoginInput()));
 
         return result;
       }
@@ -199,6 +245,23 @@ void main() {
       expect(verificationResult.arguments['scheme'], 'test-scheme');
     });
 
+    test(
+        'correctly assigns default values to all non-required properties when missing',
+        () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      await MethodChannelAuth0FlutterWebAuth().logout(
+          WebAuthRequest<WebAuthLogoutInput>(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: '', version: ''),
+              options: WebAuthLogoutInput()));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['returnTo'], isNull);
+      expect(verificationResult.arguments['scheme'], isNull);
+    });
+  
     test(
         'throws an WebAuthException when method channel throws a PlatformException',
         () async {

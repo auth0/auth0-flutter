@@ -121,6 +121,59 @@ class LoginApiRequestHandlerTest {
     }
 
     @Test
+    fun `should configure the audience when provided`() {
+        val options = hashMapOf(
+            "usernameOrEmail" to "test-email",
+            "password" to "test-pass",
+            "connectionOrRealm" to "test-connection",
+            "audience" to "test-audience"
+        );
+        val handler = LoginApiRequestHandler();
+        val mockLoginBuilder = mock<AuthenticationRequest>();
+        val mockApi = mock<AuthenticationAPIClient>();
+        val mockAccount = mock<Auth0>();
+        val mockResult = mock<Result>();
+        val request = MethodCallRequest(account = mockAccount, options);
+
+        doReturn(mockLoginBuilder).`when`(mockApi).login(any(), any(), any());
+        doReturn(mockLoginBuilder).`when`(mockLoginBuilder).setScope(any());
+
+        handler.handle(
+            mockApi,
+            request,
+            mockResult
+        );
+
+        verify(mockLoginBuilder).setAudience("test-audience");
+    }
+
+    @Test
+    fun `should not configure the audience when not provided`() {
+        val options = hashMapOf(
+            "usernameOrEmail" to "test-email",
+            "password" to "test-pass",
+            "connectionOrRealm" to "test-connection",
+        );
+        val handler = LoginApiRequestHandler();
+        val mockLoginBuilder = mock<AuthenticationRequest>();
+        val mockApi = mock<AuthenticationAPIClient>();
+        val mockAccount = mock<Auth0>();
+        val mockResult = mock<Result>();
+        val request = MethodCallRequest(account = mockAccount, options);
+
+        doReturn(mockLoginBuilder).`when`(mockApi).login(any(), any(), any());
+        doReturn(mockLoginBuilder).`when`(mockLoginBuilder).setScope(any());
+
+        handler.handle(
+            mockApi,
+            request,
+            mockResult
+        );
+
+        verify(mockLoginBuilder, times(0)).setAudience(any());
+    }
+
+    @Test
     fun `should configure the scopes when provided`() {
         val options = hashMapOf(
             "usernameOrEmail" to "test-email",

@@ -1,15 +1,16 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 
 class AuthenticationApi {
-  final Account account;
-  final UserAgent userAgent;
+  final Account _account;
+  final UserAgent _userAgent;
 
-  AuthenticationApi(this.account, this.userAgent);
+  AuthenticationApi(this._account, this._userAgent);
 
   Future<Credentials> login({
     required final String usernameOrEmail,
     required final String password,
     required final String connectionOrRealm,
+    final String? audience,
     final Set<String> scopes = const {},
     final Map<String, String> parameters = const {},
   }) =>
@@ -17,6 +18,7 @@ class AuthenticationApi {
         usernameOrEmail: usernameOrEmail,
         password: password,
         connectionOrRealm: connectionOrRealm,
+        audience: audience,
         scopes: scopes,
         parameters: parameters,
       )));
@@ -64,5 +66,5 @@ class AuthenticationApi {
   ApiRequest<TOptions> createApiRequest<TOptions extends RequestOptions>(
           final TOptions options) =>
       ApiRequest<TOptions>(
-          account: account, options: options, userAgent: userAgent);
+          account: _account, options: options, userAgent: _userAgent);
 }
