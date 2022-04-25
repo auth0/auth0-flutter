@@ -100,7 +100,7 @@ class _ExampleAppState extends State<ExampleApp> {
           connectionOrRealm: 'Username-Password-Authentication');
       output = result.accessToken;
     } on ApiException catch (e) {
-      output = output = e.toString();
+      output = output = e.statusCode.toString();
     }
 
     // If the widget was removed from the tree while the asynchronous platform
