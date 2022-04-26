@@ -54,9 +54,9 @@ class MockTestPlatform extends _i1.Mock implements _i3.TestPlatform {
                   Future<_i2.DatabaseUser>.value(_FakeDatabaseUser_2()))
           as _i4.Future<_i2.DatabaseUser>);
   @override
-  _i4.Future<_i2.Credentials> renewAccessToken(
-          _i2.ApiRequest<_i2.AuthRenewAccessTokenOptions>? request) =>
-      (super.noSuchMethod(Invocation.method(#renewAccessToken, [request]),
+  _i4.Future<_i2.Credentials> renew(
+          _i2.ApiRequest<_i2.AuthRenewOptions>? request) =>
+      (super.noSuchMethod(Invocation.method(#renew, [request]),
               returnValue: Future<_i2.Credentials>.value(_FakeCredentials_0()))
           as _i4.Future<_i2.Credentials>);
   @override

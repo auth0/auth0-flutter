@@ -46,13 +46,12 @@ class AuthenticationApi {
               userMetadata: userMetadata,
               parameters: parameters)));
 
-  Future<Credentials> renewAccessToken({
+  Future<Credentials> renewCredentials({
     required final String refreshToken,
     final Set<String> scopes = const {},
     final Map<String, String> parameters = const {},
   }) =>
-      Auth0FlutterAuthPlatform.instance.renewAccessToken(createApiRequest(
-          AuthRenewAccessTokenOptions(
+      Auth0FlutterAuthPlatform.instance.renew(createApiRequest(AuthRenewOptions(
               refreshToken: refreshToken,
               scopes: scopes,
               parameters: parameters)));

@@ -25,7 +25,7 @@ class TestPlatform extends Mock
     'userProfile': {'sub': '123', 'name': 'John Doe'}
   });
 
-  static Credentials renewAccessTokenResult = Credentials.fromMap({
+  static Credentials renewResult = Credentials.fromMap({
     'accessToken': 'accessToken',
     'idToken': 'idToken',
     'refreshToken': 'refreshToken',
@@ -184,45 +184,47 @@ void main() {
     });
   });
 
-  group('renewAccessToken', () {
+  group('renewCredentials', () {
     test('passes through properties to the platform', () async {
-      when(mockedPlatform.renewAccessToken(any))
-          .thenAnswer((final _) async => TestPlatform.renewAccessTokenResult);
+      when(mockedPlatform.renew(any))
+          .thenAnswer((final _) async => TestPlatform.renewResult);
 
       final result = await Auth0('test-domain', 'test-clientId')
           .api
-          .renewAccessToken(
+          .renewCredentials(
               refreshToken: 'test-refresh-token',
               scopes: {'test-scope1', 'test-scope2'},
               parameters: {'test': 'test-123'});
 
       final verificationResult =
-          verify(mockedPlatform.renewAccessToken(captureAny)).captured.single
-              as ApiRequest<AuthRenewAccessTokenOptions>;
+          verify(mockedPlatform.renew(captureAny))
+          .captured
+          .single as ApiRequest<AuthRenewOptions>;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
       expect(verificationResult.options.refreshToken, 'test-refresh-token');
       expect(verificationResult.options.scopes, {'test-scope1', 'test-scope2'});
       expect(verificationResult.options.parameters, {'test': 'test-123'});
-      expect(result, TestPlatform.renewAccessTokenResult);
+      expect(result, TestPlatform.renewResult);
     });
 
     test('set scope and parameters to default value when omitted', () async {
-      when(mockedPlatform.renewAccessToken(any))
-          .thenAnswer((final _) async => TestPlatform.renewAccessTokenResult);
+      when(mockedPlatform.renew(any))
+          .thenAnswer((final _) async => TestPlatform.renewResult);
 
       final result = await Auth0('test-domain', 'test-clientId')
           .api
-          .renewAccessToken(refreshToken: 'test-refresh-token');
+          .renewCredentials(refreshToken: 'test-refresh-token');
 
       final verificationResult =
-          verify(mockedPlatform.renewAccessToken(captureAny)).captured.single
-              as ApiRequest<AuthRenewAccessTokenOptions>;
+          verify(mockedPlatform.renew(captureAny))
+          .captured
+          .single as ApiRequest<AuthRenewOptions>;
       // ignore: inference_failure_on_collection_literal
       expect(verificationResult.options.scopes, []);
       // ignore: inference_failure_on_collection_literal
       expect(verificationResult.options.parameters, {});
-      expect(result, TestPlatform.renewAccessTokenResult);
+      expect(result, TestPlatform.renewResult);
     });
   });
 

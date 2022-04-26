@@ -17,7 +17,7 @@ const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter/auth');
 const String authLoginMethod = 'auth#login';
 const String authUserInfoMethod = 'auth#userInfo';
 const String authSignUpMethod = 'auth#signUp';
-const String authRenewAccessTokenMethod = 'auth#renewAccessToken';
+const String authRenewMethod = 'auth#renew';
 const String authResetPasswordMethod = 'auth#resetPassword';
 
 class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
@@ -30,8 +30,8 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   }
 
   @override
-  Future<UserProfile> userInfo(final ApiRequest<AuthUserInfoOptions> request) async {
-
+  Future<UserProfile> userInfo(
+      final ApiRequest<AuthUserInfoOptions> request) async {
     final Map<String, dynamic> result = await invokeRequest(method: authUserInfoMethod, request: request);
 
     return UserProfile.fromMap(result);
@@ -46,10 +46,9 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   }
 
   @override
-  Future<Credentials> renewAccessToken(
-      final ApiRequest<AuthRenewAccessTokenOptions> request) async {
+  Future<Credentials> renew(final ApiRequest<AuthRenewOptions> request) async {
     final Map<String, dynamic> result = await invokeRequest(
-      method: authRenewAccessTokenMethod,
+      method: authRenewMethod,
       request: request,
     );
 

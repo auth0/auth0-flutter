@@ -1,7 +1,7 @@
 import Flutter
 import Auth0
 
-struct AuthAPIRenewAccessTokenMethodHandler: MethodHandler {
+struct AuthAPIRenewMethodHandler: MethodHandler {
     enum Argument: String {
         case refreshToken
         case scopes
