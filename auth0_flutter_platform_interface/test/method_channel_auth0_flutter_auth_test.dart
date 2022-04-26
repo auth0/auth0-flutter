@@ -488,9 +488,7 @@ void main() {
           .renew(ApiRequest<AuthRenewOptions>(
               account: const Account('test-domain', 'test-clientId'),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-          options: AuthRenewOptions(
-                refreshToken: 'test-refresh-token',
-              )));
+          options: AuthRenewOptions(refreshToken: 'test-refresh-token')));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -547,9 +545,7 @@ void main() {
           .renew(ApiRequest<AuthRenewOptions>(
               account: const Account('test-domain', 'test-clientId'),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: AuthRenewOptions(
-                refreshToken: 'test-refresh-token',
-              )));
+              options: AuthRenewOptions(refreshToken: 'test-refresh-token')));
 
       expect(result.accessToken,
           MethodCallHandler.renewResult['accessToken']);
@@ -575,9 +571,7 @@ void main() {
                 account: const Account('test-domain', 'test-clientId'),
                 userAgent:
                     UserAgent(name: 'test-name', version: 'test-version'),
-                options: AuthRenewOptions(
-                  refreshToken: 'test-refresh-token',
-                )));
+                options: AuthRenewOptions(refreshToken: 'test-refresh-token')));
 
         return result;
       }
@@ -597,9 +591,7 @@ void main() {
                 account: const Account('test-domain', 'test-clientId'),
                 userAgent:
                     UserAgent(name: 'test-name', version: 'test-version'),
-                options: AuthRenewOptions(
-                  refreshToken: 'test-refresh-token',
-                )));
+                options: AuthRenewOptions(refreshToken: 'test-refresh-token')));
 
         return result;
       }
