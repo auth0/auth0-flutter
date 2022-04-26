@@ -27,7 +27,7 @@ class AuthAPIExtensionsTests: XCTestCase {
         for (flag, info) in errors {
             let error = AuthenticationError(info: info, statusCode: 400)
             let flutterError = FlutterError(from: error)
-            let flags = (flutterError.details as? [String: Any])?[AuthAPIErrorFlag.key] as? [String: Bool]
+            let flags = (flutterError.details as? [String: Any])?[AuthAPIErrorKey.errorFlags] as? [String: Bool]
             assert(flutterError: flutterError, is: error)
             XCTAssertEqual(flags?[flag], true)
         }

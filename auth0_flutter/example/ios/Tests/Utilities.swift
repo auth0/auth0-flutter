@@ -106,10 +106,14 @@ func assert(flutterError: FlutterError, is authenticationError: AuthenticationEr
 
     XCTAssertEqual(flutterError.code, authenticationError.code)
     XCTAssertEqual(flutterError.message, String(describing: authenticationError))
-    XCTAssertTrue(details.filter({ $0.key != AuthAPIErrorFlag.key }) == authenticationError.details)
 
-    guard let flags = details[AuthAPIErrorFlag.key] as? [String: Bool] else {
-        return XCTFail("'details' is missing the '\(AuthAPIErrorFlag.key)' dictionary")
+    let keysToFilter = AuthAPIErrorKey.allCases.map(\.rawValue)
+
+    XCTAssertTrue(details.filter({ !keysToFilter.contains($0.key) }) == authenticationError.details)
+    XCTAssertEqual(details[AuthAPIErrorKey.statusCode] as? Int, authenticationError.statusCode)
+
+    guard let flags = details[AuthAPIErrorKey.errorFlags] as? [String: Bool] else {
+        return XCTFail("'details' is missing the '\(AuthAPIErrorKey.errorFlags.rawValue)' dictionary")
     }
 
     XCTAssertEqual(flags[AuthAPIErrorFlag.isMultifactorRequired], authenticationError.isMultifactorRequired)
