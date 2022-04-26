@@ -8,15 +8,15 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
     show WebAuthException, ApiException;
 
 class Auth0 {
-  final Account account;
-  final UserAgent userAgent =
+  final Account _account;
+  final UserAgent _userAgent =
       UserAgent(name: 'auth0-flutter', version: version);
 
   Auth0(final String domain, final String clientId)
-      : account = Account(domain, clientId);
+      : _account = Account(domain, clientId);
 
   WebAuthentication get webAuthentication =>
-      WebAuthentication(account, userAgent);
+      WebAuthentication(_account, _userAgent);
 
-  AuthenticationApi get api => AuthenticationApi(account, userAgent);
+  AuthenticationApi get api => AuthenticationApi(_account, _userAgent);
 }
