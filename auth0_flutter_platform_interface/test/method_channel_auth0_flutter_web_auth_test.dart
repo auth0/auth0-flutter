@@ -72,7 +72,7 @@ void main() {
               options: WebAuthLoginInput(
                   scopes: {'a', 'b'},
                   audience: 'test-audience',
-                  redirectUri: 'http://google.com',
+                  redirectUrl: 'http://google.com',
                   organizationId: 'test-org',
                   invitationUrl: 'http://invite.com',
                   parameters: {'test': 'test-123'},
@@ -92,7 +92,7 @@ void main() {
           'test-version');
       expect(verificationResult.arguments['scopes'], ['a', 'b']);
       expect(verificationResult.arguments['audience'], 'test-audience');
-      expect(verificationResult.arguments['redirectUri'], 'http://google.com');
+      expect(verificationResult.arguments['redirectUrl'], 'http://google.com');
       expect(verificationResult.arguments['organizationId'], 'test-org');
       expect(
           verificationResult.arguments['invitationUrl'], 'http://invite.com');
@@ -120,7 +120,7 @@ void main() {
           verify(mocked.methodCallHandler(captureAny)).captured.single;
       expect(verificationResult.arguments['scopes'], isEmpty);
       expect(verificationResult.arguments['audience'], isNull);
-      expect(verificationResult.arguments['redirectUri'], isNull);
+      expect(verificationResult.arguments['redirectUrl'], isNull);
       expect(verificationResult.arguments['organizationId'], isNull);
       expect(verificationResult.arguments['invitationUrl'], isNull);
       expect(verificationResult.arguments['parameters'], isEmpty);

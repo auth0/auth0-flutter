@@ -8,7 +8,7 @@ struct WebAuthLoginMethodHandler: MethodHandler {
         case parameters
         case useEphemeralSession
         case audience
-        case redirectUri
+        case redirectUrl
         case organizationId
         case invitationUrl
         case leeway
@@ -43,7 +43,7 @@ struct WebAuthLoginMethodHandler: MethodHandler {
             webAuth = webAuth.audience(audience)
         }
 
-        if let redirectURL = arguments[Argument.redirectUri] as? String, let url = URL(string: redirectURL) {
+        if let redirectURL = arguments[Argument.redirectUrl] as? String, let url = URL(string: redirectURL) {
             webAuth = webAuth.redirectURL(url)
         }
 

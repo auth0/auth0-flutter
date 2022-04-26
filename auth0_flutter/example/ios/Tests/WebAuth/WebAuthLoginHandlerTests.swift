@@ -96,16 +96,16 @@ extension WebAuthLoginHandlerTests {
         XCTAssertNil(spy.audienceValue)
     }
 
-    // MARK: redirectUri
+    // MARK: redirectUrl
 
     func testAddsRedirectURL() {
         let value = "https://auth0.com"
-        sut.handle(with: arguments(withKey: Argument.redirectUri, value: value)) { _ in }
+        sut.handle(with: arguments(withKey: Argument.redirectUrl, value: value)) { _ in }
         XCTAssertEqual(spy.redirectURLValue?.absoluteString, value)
     }
 
     func testDoesNotAddRedirectURLWhenNil() {
-        sut.handle(with: arguments(without: Argument.redirectUri)) { _ in }
+        sut.handle(with: arguments(without: Argument.redirectUrl)) { _ in }
         XCTAssertNil(spy.redirectURLValue)
     }
 
@@ -219,7 +219,7 @@ extension WebAuthLoginHandlerTests {
             Argument.parameters.rawValue: [:],
             Argument.useEphemeralSession.rawValue: false,
             Argument.audience.rawValue: "",
-            Argument.redirectUri.rawValue: "https://example.com",
+            Argument.redirectUrl.rawValue: "https://example.com",
             Argument.organizationId.rawValue: "",
             Argument.invitationUrl.rawValue: "https://example.com",
             Argument.leeway.rawValue: 1,

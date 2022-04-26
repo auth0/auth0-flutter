@@ -12,7 +12,7 @@ class WebAuthLoginInput implements RequestOptions {
   final IdTokenValidationConfig? idTokenValidationConfig;
   final String? audience;
   final Set<String> scopes;
-  final String? redirectUri;
+  final String? redirectUrl;
   final String? organizationId;
   final String? invitationUrl;
   final bool useEphemeralSession;
@@ -23,7 +23,7 @@ class WebAuthLoginInput implements RequestOptions {
       this.idTokenValidationConfig,
       this.audience,
       this.scopes = const {},
-      this.redirectUri,
+      this.redirectUrl,
       this.organizationId,
       this.invitationUrl,
       this.scheme,
@@ -37,7 +37,7 @@ class WebAuthLoginInput implements RequestOptions {
         'maxAge': idTokenValidationConfig?.maxAge,
         'audience': audience,
         'scopes': scopes.toList(),
-        'redirectUri': redirectUri,
+        'redirectUrl': redirectUrl,
         'organizationId': organizationId,
         'invitationUrl': invitationUrl,
         'useEphemeralSession': useEphemeralSession,

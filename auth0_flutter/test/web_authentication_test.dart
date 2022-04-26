@@ -45,7 +45,7 @@ void main() {
             scopes: {'a', 'b'},
             invitationUrl: 'invitation_url',
             organizationId: 'org_123',
-            redirectUri: 'redirect_uri',
+            redirectUrl: 'redirect_url',
             useEphemeralSession: true);
 
     final verificationResult = verify(mockedPlatform.login(captureAny))
@@ -57,7 +57,7 @@ void main() {
     expect(verificationResult.options.scopes, {'a', 'b'});
     expect(verificationResult.options.invitationUrl, 'invitation_url');
     expect(verificationResult.options.organizationId, 'org_123');
-    expect(verificationResult.options.redirectUri, 'redirect_uri');
+    expect(verificationResult.options.redirectUrl, 'redirect_url');
     expect(verificationResult.options.useEphemeralSession, true);
     expect(result, TestPlatform.loginResult);
   });

@@ -9,7 +9,7 @@ class WebAuthentication {
   Future<Credentials> login({
     final String? audience,
     final Set<String> scopes = const {},
-    final String? redirectUri,
+    final String? redirectUrl,
     final String? organizationId,
     final String? invitationUrl,
     final String? scheme,
@@ -22,7 +22,7 @@ class WebAuthentication {
           WebAuthLoginInput(
               audience: audience,
               scopes: scopes,
-              redirectUri: redirectUri,
+              redirectUrl: redirectUrl,
               organizationId: organizationId,
               invitationUrl: invitationUrl,
               parameters: parameters,
