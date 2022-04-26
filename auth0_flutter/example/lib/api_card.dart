@@ -30,6 +30,33 @@ class ApiCardState extends State<ApiCard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      hintText: 'Username or email',
+                    ),
+                    onChanged: (final input) => usernameOrEmail = input,
+                    validator: (final String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter an username or email';
+                      }
+                      return null;
+                    },
+                  ),
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      hintText: 'Password',
+                    ),
+                    obscureText: true,
+                    enableSuggestions: false,
+                    autocorrect: false,
+                    onChanged: (final input) => password = input,
+                    validator: (final String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a password';
+                      }
+                      return null;
+                    },
+                  ),
                   ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState != null &&
