@@ -23,11 +23,11 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @RunWith(RobolectricTestRunner::class)
-class RenewAccessTokenApiRequestHandlerTest {
+class RenewApiRequestHandlerTest {
     @Test
     fun `should throw when missing refreshToken`() {
         val options = hashMapOf<String, Any>();
-        val handler = RenewAccessTokenApiRequestHandler();
+        val handler = RenewApiRequestHandler();
         val mockApi = mock<AuthenticationAPIClient>();
         val mockAccount = mock<Auth0>();
         val mockResult = mock<Result>();
@@ -52,7 +52,7 @@ class RenewAccessTokenApiRequestHandlerTest {
         val options = hashMapOf(
             "refreshToken" to "test-token"
         );
-        val handler = RenewAccessTokenApiRequestHandler();
+        val handler = RenewApiRequestHandler();
         val mockBuilder = mock<Request<Credentials, AuthenticationException>>();
         val mockApi = mock<AuthenticationAPIClient>();
         val mockAccount = mock<Auth0>();
@@ -77,7 +77,7 @@ class RenewAccessTokenApiRequestHandlerTest {
             "refreshToken" to "test-token",
             "scopes" to arrayListOf("scope1", "scope2")
         );
-        val handler = RenewAccessTokenApiRequestHandler();
+        val handler = RenewApiRequestHandler();
         val mockBuilder = mock<Request<Credentials, AuthenticationException>>();
         val mockApi = mock<AuthenticationAPIClient>();
         val mockAccount = mock<Auth0>();
@@ -101,7 +101,7 @@ class RenewAccessTokenApiRequestHandlerTest {
         val options = hashMapOf(
             "refreshToken" to "test-token",
         );
-        val handler = RenewAccessTokenApiRequestHandler();
+        val handler = RenewApiRequestHandler();
         val mockBuilder = mock<Request<Credentials, AuthenticationException>>();
         val mockApi = mock<AuthenticationAPIClient>();
         val mockAccount = mock<Auth0>();
@@ -126,7 +126,7 @@ class RenewAccessTokenApiRequestHandlerTest {
             "refreshToken" to "test-token",
             "parameters" to mapOf("test" to "test-value", "test2" to "test-value")
         );
-        val handler = RenewAccessTokenApiRequestHandler();
+        val handler = RenewApiRequestHandler();
         val mockBuilder = mock<Request<Credentials, AuthenticationException>>();
         val mockApi = mock<AuthenticationAPIClient>();
         val mockAccount = mock<Auth0>();
@@ -155,7 +155,7 @@ class RenewAccessTokenApiRequestHandlerTest {
         val options = hashMapOf(
             "refreshToken" to "test-token",
         );
-        val handler = RenewAccessTokenApiRequestHandler();
+        val handler = RenewApiRequestHandler();
         val mockBuilder = mock<Request<Credentials, AuthenticationException>>();
         val mockApi = mock<AuthenticationAPIClient>();
         val mockAccount = mock<Auth0>();
@@ -179,7 +179,7 @@ class RenewAccessTokenApiRequestHandlerTest {
         val options = hashMapOf(
             "refreshToken" to "test-token",
         );
-        val handler = RenewAccessTokenApiRequestHandler();
+        val handler = RenewApiRequestHandler();
         val mockBuilder = mock<Request<Credentials, AuthenticationException>>();
         val mockApi = mock<AuthenticationAPIClient>();
         val mockAccount = mock<Auth0>();
@@ -209,7 +209,7 @@ class RenewAccessTokenApiRequestHandlerTest {
         val options = hashMapOf(
             "refreshToken" to "test-token",
         );
-        val handler = RenewAccessTokenApiRequestHandler();
+        val handler = RenewApiRequestHandler();
         val mockBuilder = mock<Request<Credentials, AuthenticationException>>();
         val mockApi = mock<AuthenticationAPIClient>();
         val mockAccount = mock<Auth0>();

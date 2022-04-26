@@ -30,7 +30,7 @@ class MethodCallHandler {
     'username': 'test-user'
   };
 
-  static const Map<dynamic, dynamic> renewAccessTokenResult = {
+  static const Map<dynamic, dynamic> renewResult = {
     'accessToken': 'accessToken',
     'idToken': 'idToken',
     'refreshToken': 'refreshToken',
@@ -479,33 +479,32 @@ void main() {
     });
   });
 
-  group('renewAccessToken', () {
+  group('renew', () {
     test('calls the correct MethodChannel method', () async {
       when(mocked.methodCallHandler(any)).thenAnswer(
-          (final _) async => MethodCallHandler.renewAccessTokenResult);
+          (final _) async => MethodCallHandler.renewResult);
 
       await MethodChannelAuth0FlutterAuth()
-          .renewAccessToken(ApiRequest<AuthRenewAccessTokenOptions>(
+          .renew(ApiRequest<AuthRenewOptions>(
               account: const Account('test-domain', 'test-clientId'),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: AuthRenewAccessTokenOptions(
+          options: AuthRenewOptions(
                 refreshToken: 'test-refresh-token',
               )));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
-          'auth#renewAccessToken');
+          'auth#renew');
     });
 
     test('correctly maps all properties', () async {
       when(mocked.methodCallHandler(any)).thenAnswer(
-          (final _) async => MethodCallHandler.renewAccessTokenResult);
+          (final _) async => MethodCallHandler.renewResult);
 
-      await MethodChannelAuth0FlutterAuth().renewAccessToken(
-          ApiRequest<AuthRenewAccessTokenOptions>(
+      await MethodChannelAuth0FlutterAuth().renew(ApiRequest<AuthRenewOptions>(
               account: const Account('test-domain', 'test-clientId'),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: AuthRenewAccessTokenOptions(
+          options: AuthRenewOptions(
                   refreshToken: 'test-refresh-token',
                   scopes: {'a', 'b'},
                   parameters: {'test': 'test-123'})));
@@ -528,13 +527,12 @@ void main() {
         'correctly assigns default values to all non-required properties when missing',
         () async {
       when(mocked.methodCallHandler(any)).thenAnswer(
-          (final _) async => MethodCallHandler.renewAccessTokenResult);
+          (final _) async => MethodCallHandler.renewResult);
 
-      await MethodChannelAuth0FlutterAuth().renewAccessToken(
-          ApiRequest<AuthRenewAccessTokenOptions>(
+      await MethodChannelAuth0FlutterAuth().renew(ApiRequest<AuthRenewOptions>(
               account: const Account('', ''),
               userAgent: UserAgent(name: '', version: ''),
-              options: AuthRenewAccessTokenOptions(refreshToken: '')));
+          options: AuthRenewOptions(refreshToken: '')));
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
       expect(verificationResult.arguments['scopes'], isEmpty);
@@ -543,41 +541,41 @@ void main() {
 
     test('correctly returns the response from the Method Channel', () async {
       when(mocked.methodCallHandler(any)).thenAnswer(
-          (final _) async => MethodCallHandler.renewAccessTokenResult);
+          (final _) async => MethodCallHandler.renewResult);
 
       final result = await MethodChannelAuth0FlutterAuth()
-          .renewAccessToken(ApiRequest<AuthRenewAccessTokenOptions>(
+          .renew(ApiRequest<AuthRenewOptions>(
               account: const Account('test-domain', 'test-clientId'),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: AuthRenewAccessTokenOptions(
+              options: AuthRenewOptions(
                 refreshToken: 'test-refresh-token',
               )));
 
       expect(result.accessToken,
-          MethodCallHandler.renewAccessTokenResult['accessToken']);
+          MethodCallHandler.renewResult['accessToken']);
       expect(
-          result.idToken, MethodCallHandler.renewAccessTokenResult['idToken']);
+          result.idToken, MethodCallHandler.renewResult['idToken']);
       expect(result.refreshToken,
-          MethodCallHandler.renewAccessTokenResult['refreshToken']);
-      expect(result.scopes, MethodCallHandler.renewAccessTokenResult['scopes']);
+          MethodCallHandler.renewResult['refreshToken']);
+      expect(result.scopes, MethodCallHandler.renewResult['scopes']);
       expect(
           result.expiresAt,
           DateTime.parse(
-              MethodCallHandler.renewAccessTokenResult['expiresAt'] as String));
+              MethodCallHandler.renewResult['expiresAt'] as String));
       expect(result.userProfile.name,
-          MethodCallHandler.renewAccessTokenResult['userProfile']['name']);
+          MethodCallHandler.renewResult['userProfile']['name']);
     });
 
     test('throws an ApiException when method channel returns null', () async {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
       Future<Credentials> actual() async {
-        final result = await MethodChannelAuth0FlutterAuth().renewAccessToken(
-            ApiRequest<AuthRenewAccessTokenOptions>(
+        final result = await MethodChannelAuth0FlutterAuth().renew(
+            ApiRequest<AuthRenewOptions>(
                 account: const Account('test-domain', 'test-clientId'),
                 userAgent:
                     UserAgent(name: 'test-name', version: 'test-version'),
-                options: AuthRenewAccessTokenOptions(
+                options: AuthRenewOptions(
                   refreshToken: 'test-refresh-token',
                 )));
 
@@ -594,12 +592,12 @@ void main() {
           .thenThrow(PlatformException(code: '123'));
 
       Future<Credentials> actual() async {
-        final result = await MethodChannelAuth0FlutterAuth().renewAccessToken(
-            ApiRequest<AuthRenewAccessTokenOptions>(
+        final result = await MethodChannelAuth0FlutterAuth().renew(
+            ApiRequest<AuthRenewOptions>(
                 account: const Account('test-domain', 'test-clientId'),
                 userAgent:
                     UserAgent(name: 'test-name', version: 'test-version'),
-                options: AuthRenewAccessTokenOptions(
+                options: AuthRenewOptions(
                   refreshToken: 'test-refresh-token',
                 )));
 

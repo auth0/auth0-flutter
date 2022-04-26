@@ -13,10 +13,10 @@ import io.flutter.plugin.common.MethodChannel
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-private const val AUTH_RENEWACCESSTOKEN_METHOD = "auth#renewAccessToken"
+private const val AUTH_RENEW_METHOD = "auth#renew"
 
-class RenewAccessTokenApiRequestHandler : ApiRequestHandler {
-    override val method: String = AUTH_RENEWACCESSTOKEN_METHOD
+class RenewApiRequestHandler : ApiRequestHandler {
+    override val method: String = AUTH_RENEW_METHOD
 
     override fun handle(
         api: AuthenticationAPIClient,

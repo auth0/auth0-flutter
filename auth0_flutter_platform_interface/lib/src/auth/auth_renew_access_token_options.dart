@@ -1,11 +1,11 @@
 import '../request/request_options.dart';
 
-class AuthRenewAccessTokenOptions implements RequestOptions {
+class AuthRenewOptions implements RequestOptions {
   final String refreshToken;
   final Set<String> scopes;
   final Map<String, String> parameters;
 
-  AuthRenewAccessTokenOptions({
+  AuthRenewOptions({
     required this.refreshToken,
     this.scopes = const {},
     this.parameters = const {},

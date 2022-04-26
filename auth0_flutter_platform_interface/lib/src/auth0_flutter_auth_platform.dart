@@ -38,9 +38,8 @@ abstract class Auth0FlutterAuthPlatform extends PlatformInterface {
     throw UnimplementedError('authSignup() has not been implemented');
   }
 
-  Future<Credentials> renewAccessToken(
-      final ApiRequest<AuthRenewAccessTokenOptions> request) {
-    throw UnimplementedError('authRenewAccessToken() has not been implemented');
+  Future<Credentials> renew(final ApiRequest<AuthRenewOptions> request) {
+    throw UnimplementedError('authRenewCredentials() has not been implemented');
   }
 
   Future<void> resetPassword(

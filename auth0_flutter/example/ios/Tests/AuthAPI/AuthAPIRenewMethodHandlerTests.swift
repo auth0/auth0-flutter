@@ -3,20 +3,20 @@ import Auth0
 
 @testable import auth0_flutter
 
-fileprivate typealias Argument = AuthAPIRenewAccessTokenMethodHandler.Argument
+fileprivate typealias Argument = AuthAPIRenewMethodHandler.Argument
 
-class AuthAPIRenewAccessTokenMethodHandlerTests: XCTestCase {
+class AuthAPIRenewMethodHandlerTests: XCTestCase {
     let spy = SpyAuthentication()
-    var sut: AuthAPIRenewAccessTokenMethodHandler!
+    var sut: AuthAPIRenewMethodHandler!
 
     override func setUpWithError() throws {
-        sut = AuthAPIRenewAccessTokenMethodHandler(client: spy)
+        sut = AuthAPIRenewMethodHandler(client: spy)
     }
 }
 
 // MARK: - Required Arguments Error
 
-extension AuthAPIRenewAccessTokenMethodHandlerTests {
+extension AuthAPIRenewMethodHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
         let keys: [Argument] = [.refreshToken, .scopes, .parameters]
         let expectations = keys.map { expectation(description: "\($0.rawValue) is missing") }
@@ -32,7 +32,7 @@ extension AuthAPIRenewAccessTokenMethodHandlerTests {
 
 // MARK: - ID Token Decoding Failed Error
 
-extension AuthAPIRenewAccessTokenMethodHandlerTests {
+extension AuthAPIRenewMethodHandlerTests {
     func testProducesErrorWithInvalidIDToken() {
         let credentials = Credentials(idToken: "foo")
         let expectation = self.expectation(description: "ID Token cannot be decoded")
@@ -47,7 +47,7 @@ extension AuthAPIRenewAccessTokenMethodHandlerTests {
 
 // MARK: - Arguments
 
-extension AuthAPIRenewAccessTokenMethodHandlerTests {
+extension AuthAPIRenewMethodHandlerTests {
 
     // MARK: refreshToken
 
@@ -74,10 +74,10 @@ extension AuthAPIRenewAccessTokenMethodHandlerTests {
 
 // MARK: - Renew Result
 
-extension AuthAPIRenewAccessTokenMethodHandlerTests {
-    func testCallsSDKRenewAccessTokenMethod() {
+extension AuthAPIRenewMethodHandlerTests {
+    func testCallsSDKRenewMethod() {
         sut.handle(with: arguments()) { _ in }
-        XCTAssertTrue(spy.calledRenewAccessToken)
+        XCTAssertTrue(spy.calledRenew)
     }
 
     func testProducesCredentials() {
@@ -109,7 +109,7 @@ extension AuthAPIRenewAccessTokenMethodHandlerTests {
 
 // MARK: - Helpers
 
-extension AuthAPIRenewAccessTokenMethodHandlerTests {
+extension AuthAPIRenewMethodHandlerTests {
     override func arguments() -> [String: Any] {
         return [Argument.refreshToken.rawValue: "", Argument.scopes.rawValue: [], Argument.parameters.rawValue: [:]]
     }

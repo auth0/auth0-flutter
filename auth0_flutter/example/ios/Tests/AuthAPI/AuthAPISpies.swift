@@ -13,7 +13,7 @@ class SpyAuthentication: Authentication {
     var calledLoginWithUsernameOrEmail = false
     var calledSignup = false
     var calledUserInfo = false
-    var calledRenewAccessToken = false
+    var calledRenew = false
     var calledResetPassword = false
     var arguments: [String: Any] = [:]
 
@@ -79,7 +79,7 @@ class SpyAuthentication: Authentication {
     func renew(withRefreshToken refreshToken: String, scope: String?) -> Request<Credentials, AuthenticationError> {
         arguments["refreshToken"] = refreshToken
         arguments["scope"] = scope
-        calledRenewAccessToken = true
+        calledRenew = true
         return request(credentialsResult)
     }
 

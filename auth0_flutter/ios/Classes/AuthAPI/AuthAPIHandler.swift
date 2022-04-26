@@ -6,7 +6,7 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
         case loginWithUsernameOrEmail = "auth#login"
         case signup = "auth#signUp"
         case userInfo = "auth#userInfo"
-        case renewAccessToken = "auth#renewAccessToken"
+        case renew = "auth#renew"
         case resetPassword = "auth#resetPassword"
     }
 
@@ -40,7 +40,7 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
         case .loginWithUsernameOrEmail: callLoginWithUsernameOrEmail(with: arguments, using: client, result: result)
         case .signup: callSignup(with: arguments, using: client, result: result)
         case .userInfo: callUserInfo(with: arguments, using: client, result: result)
-        case .renewAccessToken: callRenewAccessToken(with: arguments, using: client, result: result)
+        case .renew: callRenew(with: arguments, using: client, result: result)
         case .resetPassword: callResetPassword(with: arguments, using: client, result: result)
         default: result(FlutterMethodNotImplemented)
         }
@@ -71,10 +71,10 @@ private extension AuthAPIHandler {
         handler.handle(with: arguments, callback: result)
     }
 
-    func callRenewAccessToken(with arguments: [String: Any],
-                              using client: Authentication,
-                              result: @escaping FlutterResult) {
-        let handler = methodHandler ?? AuthAPIRenewAccessTokenMethodHandler(client: client)
+    func callRenew(with arguments: [String: Any],
+                   using client: Authentication,
+                   result: @escaping FlutterResult) {
+        let handler = methodHandler ?? AuthAPIRenewMethodHandler(client: client)
         handler.handle(with: arguments, callback: result)
     }
 
