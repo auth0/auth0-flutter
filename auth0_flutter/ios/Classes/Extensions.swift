@@ -35,6 +35,7 @@ extension Auth0Error {
     var details: [String: Any]? {
         if let apiError = self as? Auth0APIError {
             var info = apiError.info
+            info.removeValue(forKey: "statusCode")
             if let cause = cause {
                 info["cause"] = String(describing: cause)
             }

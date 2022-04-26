@@ -17,8 +17,11 @@ enum AuthAPIErrorFlag: String, CaseIterable {
     case isPasswordLeaked
     case isLoginRequired
     case isNetworkError
+}
 
-    static let key = "_errorFlags"
+enum AuthAPIErrorKey: String, CaseIterable {
+    case errorFlags = "_errorFlags"
+    case statusCode = "_statusCode"
 }
 
 // MARK: - Extensions
@@ -43,7 +46,8 @@ extension FlutterError {
             AuthAPIErrorFlag.isNetworkError.rawValue: authenticationError.isNetworkError,
         ]
         var errorDetails = authenticationError.details ?? [:]
-        errorDetails[AuthAPIErrorFlag.key] = errorFlags
+        errorDetails[AuthAPIErrorKey.errorFlags] = errorFlags
+        errorDetails[AuthAPIErrorKey.statusCode] = authenticationError.statusCode
 
         self.init(code: authenticationError.code,
                   message: String(describing: authenticationError),
