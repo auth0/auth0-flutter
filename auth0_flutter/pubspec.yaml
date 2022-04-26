@@ -10,7 +10,10 @@ environment:
 
 dependencies:
   auth0_flutter_platform_interface:
-    path: ../auth0_flutter_platform_interface
+    git:
+      url: git@github.com:auth0/auth0-flutter.git
+      ref: main
+      path: auth0_flutter_platform_interface
   flutter:
     sdk: flutter
 
