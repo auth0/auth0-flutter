@@ -9,6 +9,9 @@ class ExtensionsTests: XCTestCase {}
 // MARK: - Auth0Error+details
 
 extension ExtensionsTests {
+
+    // MARK: Cause
+
     func testReturnsNilWhenErrorIsAuth0ErrorWithNoCause() {
         XCTAssertNil(MockAuth0Error(debugDescription: "foo").details)
     }
@@ -30,6 +33,14 @@ extension ExtensionsTests {
         let error = MockAuth0APIError(info: [:], statusCode: 0, cause: cause)
         let expected = ["cause": String(describing: cause)]
         XCTAssertTrue(error.details == expected)
+    }
+
+    // MARK: Status code
+
+    func testRemovesStatusCodeWhenErrorIsAuth0APIError() {
+        let cause = MockError()
+        let error = MockAuth0APIError(info: [:], statusCode: 0, cause: cause)
+        XCTAssertNil(error.details?["statusCode"])
     }
 }
 
