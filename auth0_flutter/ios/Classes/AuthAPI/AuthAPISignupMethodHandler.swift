@@ -25,6 +25,7 @@ struct AuthAPISignupMethodHandler: MethodHandler {
         case connection
         case username
         case userMetadata
+        case parameters
     }
 
     let client: Authentication
@@ -42,6 +43,9 @@ struct AuthAPISignupMethodHandler: MethodHandler {
         guard let userMetadata = arguments[Argument.userMetadata] as? [String: Any] else {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.userMetadata.rawValue)))
         }
+        guard let parameters = arguments[Argument.parameters] as? [String: Any] else {
+            return callback(FlutterError(from: .requiredArgumentMissing(Argument.parameters.rawValue)))
+        }
 
         let username = arguments[Argument.username] as? String
 
@@ -51,6 +55,7 @@ struct AuthAPISignupMethodHandler: MethodHandler {
                     password: password,
                     connection: connection,
                     userMetadata: userMetadata)
+            .parameters(parameters)
             .start {
                 switch $0 {
                 case let .success(databaseUser): callback(result(from: databaseUser))
