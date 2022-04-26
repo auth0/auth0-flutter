@@ -33,8 +33,8 @@ class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest
             builder.withAudience(args["audience"] as String)
         }
 
-        if (args.getOrDefault("redirectUri", null) is String) {
-            builder.withRedirectUri(args["redirectUri"] as String)
+        if (args.getOrDefault("redirectUrl", null) is String) {
+            builder.withRedirectUri(args["redirectUrl"] as String)
         }
 
         if (args.getOrDefault("organizationId", null) is String) {

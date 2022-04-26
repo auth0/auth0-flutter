@@ -130,9 +130,9 @@ class LoginWebAuthRequestHandlerTest {
     }
 
     @Test
-    fun `handler should set the redirectUri on the SDK when specified`() {
+    fun `handler should set the redirectUrl on the SDK when specified`() {
         val args = hashMapOf<String, Any?>(
-            "redirectUri" to "http://test.com"
+            "redirectUrl" to "http://test.com"
         )
 
         runRequestHandler(args) { _, builder ->
@@ -141,7 +141,7 @@ class LoginWebAuthRequestHandlerTest {
     }
 
     @Test
-    fun `handler should not set the redirectUri on the SDK when not specified`() {
+    fun `handler should not set the redirectUrl on the SDK when not specified`() {
         val args = hashMapOf<String, Any?>()
 
         runRequestHandler(args) { _, builder ->
