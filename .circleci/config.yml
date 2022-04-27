@@ -84,7 +84,7 @@ jobs:
           path: ~/test-results/junit
       - codecov/upload:
           file: ./auth0_flutter/example/build/auth0_flutter/reports/coverage/debug/report.xml
-          upload_name: Android unit test coverage
+          upload_name: Upload Android unit test coverage report
   test_ios:
     parameters:
       ios_simulator:
@@ -100,11 +100,14 @@ jobs:
       - flutter/install_sdk_and_pub:
           app-dir: ./auth0_flutter/example
           flutter_version: << pipeline.parameters.flutter_version >>
+      - flutter/install_ios_gem:
+          app-dir: ./auth0_flutter/example
+      - flutter/install_ios_pod:
+          app-dir: ./auth0_flutter/example
       - run:
           name: Run tests
           command: |
             printf '%s\n%s\n%s' "AUTH0_DOMAIN=$AUTH0_DOMAIN" "AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID" 'AUTH0_CUSTOM_SCHEME=demo' >> ../.env
-            pod install
             SCHEME=Runner
             WORKSPACE="$SCHEME".xcworkspace
             SIMULATOR='platform=iOS Simulator,name=<< parameters.ios_simulator >>'
@@ -114,6 +117,17 @@ jobs:
               xcodebuild test -scheme "$SCHEME" -workspace "$WORKSPACE" -destination "$SIMULATOR" -skip-testing:"$SCHEME"UITests
             fi
           working_directory: ./auth0_flutter/example/ios
+      - run:
+          name: Generate iOS test coverage report
+          command: |
+            mkdir -p ~/test-results/cobertura
+            bundle exec slather coverage -x --scheme "$SCHEME" --workspace "$WORKSPACE" --output-directory ~/test-results/cobertura "$SCHEME".xcodeproj
+          working_directory: ./auth0_flutter/example/ios
+      - store_artifacts:
+          path: ~/test-results/cobertura
+      - codecov/upload:
+          file: ~/test-results/cobertura/cobertura.xml
+          upload_name: Upload iOS test coverage report
 
 workflows:
   build_and_test:
