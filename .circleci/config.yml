@@ -121,7 +121,7 @@ jobs:
           name: Generate iOS test coverage report
           command: |
             mkdir -p ~/test-results/cobertura
-            bundle exec slather coverage -x --scheme "$SCHEME" --workspace "$WORKSPACE" --output-directory ~/test-results/cobertura "$SCHEME".xcodeproj
+            bundle exec slather coverage -x --scheme Runner --workspace Runner.xcworkspace --output-directory ~/test-results/cobertura Runner.xcodeproj
           working_directory: ./auth0_flutter/example/ios
       - store_artifacts:
           path: ~/test-results/cobertura
