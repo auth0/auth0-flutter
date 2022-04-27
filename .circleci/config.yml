@@ -1,5 +1,5 @@
 version: 2.1
-orbs: 
+orbs:
   android: circleci/android@2
   macos: circleci/macos@2
   flutter: circleci/flutter@1
@@ -20,8 +20,8 @@ jobs:
       - run:
           name: Analyze App Facing Package
           command: |
-              cp example/.env.example example/.env
-              dart analyze
+            cp example/.env.example example/.env
+            dart analyze
           working_directory: ./auth0_flutter
       - run:
           name: Run package unit tests
@@ -81,10 +81,13 @@ jobs:
           path: ~/test-results
       - store_artifacts:
           path: ~/test-results/junit
+      - codecov/upload:
+          file: ./auth0_flutter/example/build/auth0_flutter/reports/coverage/report.xml
+          upload_name: Android unit test coverage
   test_ios:
     parameters:
-        ios_simulator:
-          type: string
+      ios_simulator:
+        type: string
     macos:
       xcode: 13
     steps:
@@ -110,7 +113,7 @@ jobs:
               xcodebuild test -scheme "$SCHEME" -workspace "$WORKSPACE" -destination "$SIMULATOR" -skip-testing:"$SCHEME"UITests
             fi
           working_directory: ./auth0_flutter/example/ios
-      
+
 workflows:
   build_and_test:
     jobs:
