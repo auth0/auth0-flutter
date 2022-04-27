@@ -67,7 +67,7 @@ jobs:
           command: |
             mv local.properties.ci local.properties
             mv ../.env.example ../.env
-            gradle clean test
+            gradle clean testDebugUnitTest
           working_directory: ./auth0_flutter/example/android
       - android/save-gradle-cache
       - android/save-build-cache
@@ -77,6 +77,7 @@ jobs:
           command: |
             mkdir -p ~/test-results/junit/
             find . -type f -regex ".*/build/auth0_flutter/test-results/.*xml" -exec cp {} ~/test-results/junit/ \;
+
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
