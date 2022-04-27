@@ -4,10 +4,6 @@ orbs:
   macos: circleci/macos@2
   flutter: circleci/flutter@1
   codecov: codecov/codecov@3
-environment:
-      BUNDLE_RETRY: 3
-      HOMEBREW_NO_AUTO_UPDATE: 1
-      HOMEBREW_NO_INSTALL_CLEANUP: 1
 
 parameters:
   flutter_version:
@@ -96,6 +92,10 @@ jobs:
         type: string
     macos:
       xcode: 13
+    environment:
+      BUNDLE_RETRY: 3
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
     steps:
       - checkout
       - macos/preboot-simulator:
