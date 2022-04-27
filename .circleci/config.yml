@@ -82,7 +82,7 @@ jobs:
       - store_artifacts:
           path: ~/test-results/junit
       - codecov/upload:
-          file: ./auth0_flutter/example/build/auth0_flutter/reports/coverage/report.xml
+          file: ./auth0_flutter/example/build/auth0_flutter/reports/coverage/debug/report.xml
           upload_name: Android unit test coverage
   test_ios:
     parameters:
