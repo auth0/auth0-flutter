@@ -1,6 +1,13 @@
 import Flutter
 import Auth0
 
+// MARK: - Providers
+
+typealias AuthAPIClientProvider = (_ account: Account, _ userAgent: UserAgent) -> Authentication
+typealias AuthAPIMethodHandlerProvider = (_ method: AuthAPIHandler.Method, _ client: Authentication) -> MethodHandler
+
+// MARK: - Auth Auth Handler
+
 public class AuthAPIHandler: NSObject, FlutterPlugin {
     enum Method: String, CaseIterable {
         case loginWithUsernameOrEmail = "auth#login"
@@ -10,8 +17,6 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
         case resetPassword = "auth#resetPassword"
     }
 
-    var methodHandler: MethodHandler? // For testing
-
     private static let channelName = "auth0.com/auth0_flutter/auth"
 
     public static func register(with registrar: FlutterPluginRegistrar) {
@@ -19,6 +24,22 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
         let channel = FlutterMethodChannel(name: AuthAPIHandler.channelName,
                                            binaryMessenger: registrar.messenger())
         registrar.addMethodCallDelegate(handler, channel: channel)
+    }
+
+    var clientProvider: AuthAPIClientProvider = { account, userAgent in
+        var client = Auth0.authentication(clientId: account.clientId, domain: account.domain)
+        client.using(inLibrary: userAgent.name, version: userAgent.version)
+        return client
+    }
+
+    var methodHandlerProvider: AuthAPIMethodHandlerProvider = { method, client in
+        switch method {
+        case .loginWithUsernameOrEmail: return AuthAPILoginUsernameOrEmailMethodHandler(client: client)
+        case .signup: return AuthAPISignupMethodHandler(client: client)
+        case .userInfo: return AuthAPIUserInfoMethodHandler(client: client)
+        case .renew: return AuthAPIRenewMethodHandler(client: client)
+        case .resetPassword: return AuthAPIResetPasswordMethodHandler(client: client)
+        }
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -33,55 +54,13 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
               let userAgent = UserAgent(from: userAgentDictionary) else {
             return result(FlutterError(from: .userAgentMissing))
         }
-
-        let client = makeClient(account: account, userAgent: userAgent)
-
-        switch Method(rawValue: call.method) {
-        case .loginWithUsernameOrEmail: callLoginWithUsernameOrEmail(with: arguments, using: client, result: result)
-        case .signup: callSignup(with: arguments, using: client, result: result)
-        case .userInfo: callUserInfo(with: arguments, using: client, result: result)
-        case .renew: callRenew(with: arguments, using: client, result: result)
-        case .resetPassword: callResetPassword(with: arguments, using: client, result: result)
-        default: result(FlutterMethodNotImplemented)
+        guard let method = Method(rawValue: call.method) else {
+            return result(FlutterMethodNotImplemented)
         }
-    }
 
-    func makeClient(account: Account, userAgent: UserAgent) -> Authentication {
-        var client = Auth0.authentication(clientId: account.clientId, domain: account.domain)
-        client.using(inLibrary: userAgent.name, version: userAgent.version)
-        return client
-    }
-}
+        let client = clientProvider(account, userAgent)
+        let methodHandler = methodHandlerProvider(method, client)
 
-private extension AuthAPIHandler {
-    func callLoginWithUsernameOrEmail(with arguments: [String: Any],
-                                      using client: Authentication,
-                                      result: @escaping FlutterResult) {
-        let handler = methodHandler ?? AuthAPILoginUsernameOrEmailMethodHandler(client: client)
-        handler.handle(with: arguments, callback: result)
-    }
-
-    func callSignup(with arguments: [String: Any], using client: Authentication, result: @escaping FlutterResult) {
-        let handler = methodHandler ?? AuthAPISignupMethodHandler(client: client)
-        handler.handle(with: arguments, callback: result)
-    }
-
-    func callUserInfo(with arguments: [String: Any], using client: Authentication, result: @escaping FlutterResult) {
-        let handler = methodHandler ?? AuthAPIUserInfoMethodHandler(client: client)
-        handler.handle(with: arguments, callback: result)
-    }
-
-    func callRenew(with arguments: [String: Any],
-                   using client: Authentication,
-                   result: @escaping FlutterResult) {
-        let handler = methodHandler ?? AuthAPIRenewMethodHandler(client: client)
-        handler.handle(with: arguments, callback: result)
-    }
-
-    func callResetPassword(with arguments: [String: Any],
-                           using client: Authentication,
-                           result: @escaping FlutterResult) {
-        let handler = methodHandler ?? AuthAPIResetPasswordMethodHandler(client: client)
-        handler.handle(with: arguments, callback: result)
+        methodHandler.handle(with: arguments, callback: result)
     }
 }

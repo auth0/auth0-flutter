@@ -1,6 +1,11 @@
 import Flutter
 import Auth0
 
+// MARK: - Providers
+
+typealias WebAuthClientProvider = (_ account: Account, _ userAgent: UserAgent) -> WebAuth
+typealias WebAuthMethodHandlerProvider = (_ method: WebAuthHandler.Method, _ client: WebAuth) -> MethodHandler
+
 // MARK: - Web Auth Handler
 
 public class WebAuthHandler: NSObject, FlutterPlugin {
@@ -8,9 +13,6 @@ public class WebAuthHandler: NSObject, FlutterPlugin {
         case login = "webAuth#login"
         case logout = "webAuth#logout"
     }
-
-    var methodHandler: MethodHandler? // For testing
-
     private static let channelName = "auth0.com/auth0_flutter/web_auth"
 
     public static func register(with registrar: FlutterPluginRegistrar) {
@@ -18,6 +20,19 @@ public class WebAuthHandler: NSObject, FlutterPlugin {
         let channel = FlutterMethodChannel(name: WebAuthHandler.channelName,
                                            binaryMessenger: registrar.messenger())
         registrar.addMethodCallDelegate(handler, channel: channel)
+    }
+
+    var clientProvider: WebAuthClientProvider = { account, userAgent in
+        var client = Auth0.webAuth(clientId: account.clientId, domain: account.domain)
+        client.using(inLibrary: userAgent.name, version: userAgent.version)
+        return client
+    }
+
+    var methodHandlerProvider: WebAuthMethodHandlerProvider = { method, client in
+        switch method {
+        case .login: return WebAuthLoginMethodHandler(client: client)
+        case .logout: return WebAuthLogoutMethodHandler(client: client)
+        }
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -32,31 +47,13 @@ public class WebAuthHandler: NSObject, FlutterPlugin {
               let userAgent = UserAgent(from: userAgentDictionary) else {
             return result(FlutterError(from: .userAgentMissing))
         }
-
-        let client = makeClient(account: account, userAgent: userAgent)
-
-        switch Method(rawValue: call.method) {
-        case .login: callLogin(with: arguments, using: client, result: result)
-        case .logout: callLogout(with: arguments, using: client, result: result)
-        default: result(FlutterMethodNotImplemented)
+        guard let method = Method(rawValue: call.method) else {
+            return result(FlutterMethodNotImplemented)
         }
-    }
 
-    func makeClient(account: Account, userAgent: UserAgent) -> WebAuth {
-        var client = Auth0.webAuth(clientId: account.clientId, domain: account.domain)
-        client.using(inLibrary: userAgent.name, version: userAgent.version)
-        return client
-    }
-}
+        let client = clientProvider(account, userAgent)
+        let methodHandler = methodHandlerProvider(method, client)
 
-private extension WebAuthHandler {
-    func callLogin(with arguments: [String: Any], using client: WebAuth, result: @escaping FlutterResult) {
-        let handler = methodHandler ?? WebAuthLoginMethodHandler(client: client)
-        handler.handle(with: arguments, callback: result)
-    }
-
-    func callLogout(with arguments: [String: Any], using client: WebAuth, result: @escaping FlutterResult) {
-        let handler = methodHandler ?? WebAuthLogoutMethodHandler(client: client)
-        handler.handle(with: arguments, callback: result)
+        methodHandler.handle(with: arguments, callback: result)
     }
 }

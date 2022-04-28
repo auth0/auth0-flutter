@@ -1,12 +1,5 @@
 import '../request/request_options.dart';
-
-class IdTokenValidationConfig {
-  final int? leeway;
-  final String? issuer;
-  final int? maxAge;
-
-  const IdTokenValidationConfig({this.leeway, this.issuer, this.maxAge});
-}
+import 'id_token_validation_config.dart';
 
 class WebAuthLoginInput implements RequestOptions {
   final IdTokenValidationConfig? idTokenValidationConfig;
