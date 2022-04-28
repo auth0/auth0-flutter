@@ -19,19 +19,16 @@ class SmokeTests: XCTestCase {
         tap(button: loginButton)
         let app = XCUIApplication()
         let emailInput = app.webViews.textFields.firstMatch
-        expectation(for: NSPredicate(format: "hittable == true"), evaluatedWith: emailInput, handler: nil)
-        waitForExpectations(timeout: timeout, handler: nil)
+        waitUntilHittable(element: emailInput)
         emailInput.tap()
         emailInput.typeText(email)
         let passwordInput = app.webViews.secureTextFields.firstMatch
-        expectation(for: NSPredicate(format: "hittable == true"), evaluatedWith: passwordInput, handler: nil)
-        waitForExpectations(timeout: timeout, handler: nil)
+        waitUntilHittable(element: passwordInput)
         passwordInput.tap()
         passwordInput.typeText(password)
         passwordInput.typeText("\n")
         let webLoginButton = app.webViews.buttons.firstMatch
-        expectation(for: NSPredicate(format: "hittable == true"), evaluatedWith: webLoginButton, handler: nil)
-        waitForExpectations(timeout: timeout, handler: nil)
+        webLoginButton.swipeUp()
         webLoginButton.tap()
         XCTAssertTrue(app.buttons[logoutButton].waitForExistence(timeout: timeout))
     }
@@ -59,5 +56,10 @@ private extension SmokeTests {
         XCTAssertTrue(button.waitForExistence(timeout: timeout))
         button.tap()
         tapAlert()
+    }
+
+    func waitUntilHittable(element: XCUIElement) {
+        expectation(for: NSPredicate(format: "hittable == true"), evaluatedWith: element, handler: nil)
+        waitForExpectations(timeout: timeout, handler: nil)
     }
 }
