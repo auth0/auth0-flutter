@@ -210,22 +210,24 @@ final result = await auth0.webAuthentication.login();
 
 <details>
   <summary>Add an audience value</summary>
-Specify an [audience](https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#control-access-token-audience) to obtain an Access Token that can be used to make authenticated requests to a backend. The audience value is the **API Identifier** of your [Auth0 API](https://auth0.com/docs/get-started/apis), e.g. `https://example.com/api`.
 
-```dart
-final result = await auth0.webAuthentication
-    .login(audience: 'YOUR_AUTH0_API_IDENTIFIER');
-```
+  Specify an [audience](https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#control-access-token-audience) to obtain an Access Token that can be used to make authenticated requests to a backend. The audience value is the **API Identifier** of your [Auth0 API](https://auth0.com/docs/get-started/apis), e.g. `https://example.com/api`.
+
+  ```dart
+  final result = await auth0.webAuthentication
+      .login(audience: 'YOUR_AUTH0_API_IDENTIFIER');
+  ```
 </details>
 
 <details>
   <summary>Add scope values</summary>
-Specify [scopes](https://auth0.com/docs/get-started/apis/scopes) to request permission to access protected resources, like the user profile. The default scope values are `openid`, `profile` and `email`. Regardless of the values specified, `openid` is always included.
 
-```dart
-final result = await auth0.webAuthentication
-    .login(scopes: {'profile', 'email', 'offline_access', 'read:todos'});
-```
+  Specify [scopes](https://auth0.com/docs/get-started/apis/scopes) to request permission to access protected resources, like the user profile. The default scope values are `openid`, `profile` and `email`. Regardless of the values specified, `openid` is always included.
+
+  ```dart
+  final result = await auth0.webAuthentication
+      .login(scopes: {'profile', 'email', 'offline_access', 'read:todos'});
+  ```
 </details>
 
 ### Web Auth Logout
@@ -330,28 +332,30 @@ final result = await auth0.api.login(
 
 <details>
   <summary>Add an audience value</summary>
-Specify an [audience](https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#control-access-token-audience) to obtain an Access Token that can be used to make authenticated requests to a backend. The audience value is the **API Identifier** of your [Auth0 API](https://auth0.com/docs/get-started/apis), e.g. `https://example.com/api`.
 
-```dart
-final result = await auth0.api.login(
-    usernameOrEmail: 'jane.smith@example.com',
-    password: 'secret-password',
-    connectionOrRealm: 'Username-Password-Authentication',
-    audience: 'YOUR_AUTH0_API_IDENTIFIER');
-```
+  Specify an [audience](https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#control-access-token-audience) to obtain an Access Token that can be used to make authenticated requests to a backend. The audience value is the **API Identifier** of your [Auth0 API](https://auth0.com/docs/get-started/apis), e.g. `https://example.com/api`.
+
+  ```dart
+  final result = await auth0.api.login(
+      usernameOrEmail: 'jane.smith@example.com',
+      password: 'secret-password',
+      connectionOrRealm: 'Username-Password-Authentication',
+      audience: 'YOUR_AUTH0_API_IDENTIFIER');
+  ```
 </details>
 
 <details>
   <summary>Add scope values</summary>
-Specify [scopes](https://auth0.com/docs/get-started/apis/scopes) to request permission to access protected resources, like the user profile. The default scope values are `openid`, `profile` and `email`. Regardless of the values specified, `openid` is always included.
 
-```dart
-final result = await auth0.api.login(
-    usernameOrEmail: 'jane.smith@example.com',
-    password: 'secret-password',
-    connectionOrRealm: 'Username-Password-Authentication',
-    scopes: {'profile', 'email', 'offline_access', 'read:todos'});
-```
+  Specify [scopes](https://auth0.com/docs/get-started/apis/scopes) to request permission to access protected resources, like the user profile. The default scope values are `openid`, `profile` and `email`. Regardless of the values specified, `openid` is always included.
+
+  ```dart
+  final result = await auth0.api.login(
+      usernameOrEmail: 'jane.smith@example.com',
+      password: 'secret-password',
+      connectionOrRealm: 'Username-Password-Authentication',
+      scopes: {'profile', 'email', 'offline_access', 'read:todos'});
+  ```
 </details>
 
 #### Sign up with database connection
