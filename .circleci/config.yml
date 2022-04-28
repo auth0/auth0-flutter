@@ -68,7 +68,7 @@ jobs:
           command: |
             mv local.properties.ci local.properties
             mv ../.env.example ../.env
-            gradle clean testDebugUnitTest
+            gradle clean testDebugUnitTest jacocoTestReportDebug
           working_directory: ./auth0_flutter/example/android
       - android/save-gradle-cache
       - android/save-build-cache
@@ -84,7 +84,7 @@ jobs:
       - store_artifacts:
           path: ~/test-results/junit
       - codecov/upload:
-          file: ./auth0_flutter/example/build/auth0_flutter/reports/coverage/debug/report.xml
+          file: ./auth0_flutter/example/build/auth0_flutter/reports/jacoco/debug/jacoco.xml
           upload_name: Upload Android unit test coverage report
   test_ios:
     parameters:
