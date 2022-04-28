@@ -45,7 +45,7 @@ extension FlutterError {
             AuthAPIErrorFlag.isLoginRequired.rawValue: authenticationError.isLoginRequired,
             AuthAPIErrorFlag.isNetworkError.rawValue: authenticationError.isNetworkError,
         ]
-        var errorDetails = authenticationError.details ?? [:]
+        var errorDetails = authenticationError.details
         errorDetails[AuthAPIErrorKey.errorFlags] = errorFlags
         errorDetails[AuthAPIErrorKey.statusCode] = authenticationError.statusCode
 
