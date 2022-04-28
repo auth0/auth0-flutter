@@ -27,8 +27,7 @@ class SmokeTests: XCTestCase {
         passwordInput.tap()
         passwordInput.typeText(password)
         passwordInput.typeText("\n")
-        let webLoginButton = app.buttons.firstMatch
-        webLoginButton.tap()
+        app.buttons.firstMatch.tap()
         XCTAssertTrue(app.buttons[logoutButton].waitForExistence(timeout: timeout))
     }
 
