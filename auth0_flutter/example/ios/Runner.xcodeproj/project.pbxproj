@@ -28,6 +28,8 @@
 		5C59DA8B2809386B00365CDB /* AuthAPIExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C59DA8A2809386B00365CDB /* AuthAPIExtensionsTests.swift */; };
 		5C59DA8D280938BE00365CDB /* WebAuthExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C59DA8C280938BE00365CDB /* WebAuthExtensionsTests.swift */; };
 		5C59DA97280958FB00365CDB /* SmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C59DA96280958FB00365CDB /* SmokeTests.swift */; };
+		5CAAA4A2281A0C7D007666F1 /* AccountTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CAAA4A1281A0C7D007666F1 /* AccountTests.swift */; };
+		5CAAA4A4281A0E50007666F1 /* UserAgentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CAAA4A3281A0E50007666F1 /* UserAgentTests.swift */; };
 		5E38CCA5A74BB28EABC10976 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29F5DF109AAC0995DAF67FD3 /* Pods_RunnerTests.framework */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
@@ -95,6 +97,8 @@
 		5C59DA8C280938BE00365CDB /* WebAuthExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthExtensionsTests.swift; sourceTree = "<group>"; };
 		5C59DA94280958FA00365CDB /* RunnerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C59DA96280958FB00365CDB /* SmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeTests.swift; sourceTree = "<group>"; };
+		5CAAA4A1281A0C7D007666F1 /* AccountTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountTests.swift; sourceTree = "<group>"; };
+		5CAAA4A3281A0E50007666F1 /* UserAgentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAgentTests.swift; sourceTree = "<group>"; };
 		5E0D97321D283DD3C2559B6B /* Pods-Runner-RunnerUITests.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner-RunnerUITests.profile.xcconfig"; path = "Target Support Files/Pods-Runner-RunnerUITests/Pods-Runner-RunnerUITests.profile.xcconfig"; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -161,6 +165,8 @@
 				5C335E4627FE68A500EDDE3A /* AuthAPI */,
 				5C328B5127F7B11300451E70 /* WebAuth */,
 				5C335E3E27FBCD1D00EDDE3A /* SwiftAuth0FlutterPluginTests.swift */,
+				5CAAA4A1281A0C7D007666F1 /* AccountTests.swift */,
+				5CAAA4A3281A0E50007666F1 /* UserAgentTests.swift */,
 				5C335E4027FBD2FE00EDDE3A /* ExtensionsTests.swift */,
 				5C328B5627F7BFEA00451E70 /* Mocks.swift */,
 				5C328B4F27F7B0E600451E70 /* Utilities.swift */,
@@ -550,6 +556,7 @@
 				5C335E3F27FBCD1D00EDDE3A /* SwiftAuth0FlutterPluginTests.swift in Sources */,
 				5C328B4827F7822600451E70 /* WebAuthHandlerTests.swift in Sources */,
 				5C328B5327F7B12F00451E70 /* WebAuthSpies.swift in Sources */,
+				5CAAA4A2281A0C7D007666F1 /* AccountTests.swift in Sources */,
 				5C59DA6527FFCF0600365CDB /* AuthAPIHandlerTests.swift in Sources */,
 				5C59DA712807B19900365CDB /* AuthAPIRenewMethodHandlerTests.swift in Sources */,
 				5C328B5027F7B0E700451E70 /* Utilities.swift in Sources */,
@@ -560,6 +567,7 @@
 				5C335E4127FBD2FE00EDDE3A /* ExtensionsTests.swift in Sources */,
 				5C59DA732807B1A300365CDB /* AuthAPIResetPasswordMethodHandlerTests.swift in Sources */,
 				5C59DA832809214200365CDB /* AuthAPIUserInfoMethodHandlerTests.swift in Sources */,
+				5CAAA4A4281A0E50007666F1 /* UserAgentTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

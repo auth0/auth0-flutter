@@ -32,17 +32,20 @@ extension FlutterError {
 }
 
 extension Auth0Error {
-    var details: [String: Any]? {
-        if let apiError = self as? Auth0APIError {
-            var info = apiError.info
-            info.removeValue(forKey: "statusCode")
-            if let cause = cause {
-                info["cause"] = String(describing: cause)
-            }
-            return info
-        }
-        guard let cause = cause else { return nil }
+    var details: [String: Any] {
+        guard let cause = cause else { return [:] }
         return ["cause": String(describing: cause)]
+    }
+}
+
+extension Auth0APIError {
+    var details: [String: Any] {
+        var info = self.info
+        info.removeValue(forKey: "statusCode")
+        if let cause = cause {
+            info["cause"] = String(describing: cause)
+        }
+        return info
     }
 }
 
