@@ -90,6 +90,19 @@ extension AuthAPIHandlerTests {
         wait(for: [expectation])
     }
 
+    func testDoesNotCallMethodHandlerProviderWhenMethodIsUnsupported() {
+        let expectation = self.expectation(description: "did not call method handler provider")
+        sut.methodHandlerProvider = { _, _ in
+            XCTFail("called method handler provider")
+            return SpyMethodHandler()
+        }
+        sut.handle(FlutterMethodCall(methodName: "foo", arguments: arguments())) { result in
+            XCTAssertEqual(result as? NSObject, FlutterMethodNotImplemented)
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
+    }
+
     func testReturnsMethodHandlers() {
         var expectations: [XCTestExpectation] = []
         let methodHandlers: [AuthAPIHandler.Method: MethodHandler.Type] = [
@@ -135,15 +148,6 @@ extension AuthAPIHandlerTests {
             }
         }
         wait(for: expectations)
-    }
-
-    func testDoesNotCallAnyMethodHandlerWhenTheMethodIsUnsupported() {
-        let expectation = self.expectation(description: "did not call any method handler")
-        sut.handle(FlutterMethodCall(methodName: "foo", arguments: arguments())) { result in
-            XCTAssertEqual(result as? NSObject, FlutterMethodNotImplemented)
-            expectation.fulfill()
-        }
-        wait(for: [expectation])
     }
 }
 
