@@ -12,23 +12,23 @@ extension ExtensionsTests {
 
     // MARK: Cause
 
-    func testReturnsNilWhenErrorIsAuth0ErrorWithNoCause() {
-        XCTAssertNil(MockAuth0Error(debugDescription: "foo").details)
+    func testReturnsEmptyDetailsWhenErrorIsAuth0ErrorWithNoCause() {
+        XCTAssertTrue(MockAuth0Error(debugDescription: "foo").details.isEmpty)
     }
 
-    func testReturnsDictionaryWhenErrorIsAuth0ErrorWithCause() {
+    func testReturnsDetailsWhenErrorIsAuth0ErrorWithCause() {
         let cause = MockError()
         let error = MockAuth0Error(debugDescription: "foo", cause: cause)
         let expected = ["cause": String(describing: cause)]
         XCTAssertTrue(error.details == expected)
     }
 
-    func testReturnsInfoWhenErrorIsAuth0APIErrorWithNoCause() {
+    func testReturnsDetailsWhenErrorIsAuth0APIErrorWithNoCause() {
         let error = MockAuth0APIError(info: ["foo": "bar"], statusCode: 0)
         XCTAssertTrue(error.details == error.info)
     }
 
-    func testReturnsInfoWhenErrorIsAuth0APIErrorWithCause() {
+    func testReturnsDetailsWhenErrorIsAuth0APIErrorWithCause() {
         let cause = MockError()
         let error = MockAuth0APIError(info: [:], statusCode: 0, cause: cause)
         let expected = ["cause": String(describing: cause)]
@@ -40,7 +40,7 @@ extension ExtensionsTests {
     func testRemovesStatusCodeWhenErrorIsAuth0APIError() {
         let cause = MockError()
         let error = MockAuth0APIError(info: [:], statusCode: 0, cause: cause)
-        XCTAssertNil(error.details?["statusCode"])
+        XCTAssertNil(error.details["statusCode"])
     }
 }
 

@@ -5,7 +5,7 @@ import 'src/version.dart';
 import 'src/web_authentication.dart';
 
 export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
-    show WebAuthException, ApiException;
+    show WebAuthException, ApiException, IdTokenValidationConfig;
 
 class Auth0 {
   final Account _account;

@@ -47,24 +47,17 @@ android {
         manifestPlaceholders = [auth0Domain: "test-domain", auth0Scheme: "test"]
     }
 
-    buildTypes {
-        debug {
-            testCoverageEnabled true
-        }
-    }
+   buildTypes {
+       debug {
+           testCoverageEnabled true
+       }
+   }
 
     testOptions {
         unitTests {
             includeAndroidResources = true
             returnDefaultValues = true
         }
-
-//        unitTests.all {
-//            jacoco {
-//                includeNoLocationClasses = true
-//            }
-//        }
-
     }
 }
 
@@ -80,23 +73,4 @@ dependencies {
     testImplementation 'org.robolectric:robolectric:4.6.1'
     testImplementation 'androidx.test.espresso:espresso-intents:3.4.0'
     testImplementation 'com.auth0:java-jwt:3.19.1'
-}
-
-task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']) {
-    reports {
-        xml.enabled = true
-        html.enabled = true
-    }
-
-    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
-    def debugTree = fileTree(dir: "${buildDir}/intermediates/classes/debug", excludes: fileFilter)
-//    def mainSrc = "${project.projectDir}/src/main/java"
-    def mainSrc = "${project.projectDir}../../android/src/main/kotlin"
-
-    sourceDirectories.setFrom(files([mainSrc]))
-    classDirectories.setFrom(files([debugTree]))
-    executionData.setFrom(fileTree(dir: "$buildDir", includes: [
-            "jacoco/testDebugUnitTest.exec",
-            "outputs/code-coverage/connected/*coverage.ec"
-    ]))
 }
