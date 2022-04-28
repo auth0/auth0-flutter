@@ -142,6 +142,6 @@ workflows:
           requires:
             - test_flutter_package
       - test_ios:
-          ios_simulator: iPhone 13 Pro
+          ios_simulator: iPhone 13
           requires:
             - test_flutter_package

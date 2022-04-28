@@ -6,7 +6,7 @@ class SmokeTests: XCTestCase {
     private let loginButton = "Web Auth Login"
     private let logoutButton = "Web Auth Logout"
     private let continueButton = "Continue"
-    private let timeout: TimeInterval = 10
+    private let timeout: TimeInterval = 15
 
     override func setUp() {
         continueAfterFailure = false
@@ -27,8 +27,7 @@ class SmokeTests: XCTestCase {
         passwordInput.tap()
         passwordInput.typeText(password)
         passwordInput.typeText("\n")
-        let webLoginButton = app.webViews.buttons.firstMatch
-        webLoginButton.swipeUp()
+        let webLoginButton = app.buttons.firstMatch
         webLoginButton.tap()
         XCTAssertTrue(app.buttons[logoutButton].waitForExistence(timeout: timeout))
     }
