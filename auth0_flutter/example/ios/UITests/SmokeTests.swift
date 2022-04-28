@@ -16,26 +16,29 @@ class SmokeTests: XCTestCase {
     }
 
     func testLogin() {
-        let app = XCUIApplication()
-        app.activate()
         tap(button: loginButton)
+        let app = XCUIApplication()
         let emailInput = app.webViews.textFields.firstMatch
-        XCTAssertTrue(emailInput.waitForExistence(timeout: timeout))
+        expectation(for: NSPredicate(format: "hittable == true"), evaluatedWith: emailInput, handler: nil)
+        waitForExpectations(timeout: timeout, handler: nil)
         emailInput.tap()
         emailInput.typeText(email)
         let passwordInput = app.webViews.secureTextFields.firstMatch
+        expectation(for: NSPredicate(format: "hittable == true"), evaluatedWith: passwordInput, handler: nil)
+        waitForExpectations(timeout: timeout, handler: nil)
         passwordInput.tap()
-        passwordInput.typeText("\(password)\n")
-        let webLoginButton = app.webViews.buttons.firstMatch;
-        XCTAssertTrue(webLoginButton.waitForExistence(timeout: timeout))
+        passwordInput.typeText(password)
+        passwordInput.typeText("\n")
+        let webLoginButton = app.webViews.buttons.firstMatch
+        expectation(for: NSPredicate(format: "hittable == true"), evaluatedWith: webLoginButton, handler: nil)
+        waitForExpectations(timeout: timeout, handler: nil)
         webLoginButton.tap()
         XCTAssertTrue(app.buttons[logoutButton].waitForExistence(timeout: timeout))
     }
 
     func testLogout() {
-        let app = XCUIApplication()
-        app.activate()
         tap(button: loginButton)
+        let app = XCUIApplication()
         let sessionButton = app.webViews.staticTexts[email]
         XCTAssertTrue(sessionButton.waitForExistence(timeout: timeout))
         sessionButton.tap()
