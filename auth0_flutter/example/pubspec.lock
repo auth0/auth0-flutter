@@ -18,11 +18,9 @@ packages:
   auth0_flutter_platform_interface:
     dependency: transitive
     description:
-      path: auth0_flutter_platform_interface
-      ref: main
-      resolved-ref: b6308b45305ce0a56ad9fb67ca127d99ed5aa83b
-      url: "git@github.com:auth0/auth0-flutter.git"
-    source: git
+      path: "../../auth0_flutter_platform_interface"
+      relative: true
+    source: path
     version: "0.0.1"
   boolean_selector:
     dependency: transitive
