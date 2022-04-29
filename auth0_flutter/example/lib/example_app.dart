@@ -92,7 +92,7 @@ class _ExampleAppState extends State<ExampleApp> {
           usernameOrEmail: usernameOrEmail,
           password: password,
           connectionOrRealm: 'Username-Password-Authentication');
-      output = 'ID Token: ${_credentials?.idToken}';
+      output = 'ID Token: ${result.idToken}';
     } on ApiException catch (e) {
       output = e.toString();
     }
