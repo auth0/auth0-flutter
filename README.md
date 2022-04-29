@@ -1,10 +1,10 @@
-# auth0_flutter (Early Access)
+# auth0_flutter (Beta)
 
 [![CircleCI](https://img.shields.io/circleci/project/github/auth0/auth0-flutter.svg?style=flat-square)](https://circleci.com/gh/auth0/auth0-flutter/tree/main)
 
 Auth0 SDK for Android / iOS Flutter applications.
 
-> ⚠️ This library is currently in Early Access. We do not recommend using this library in production yet. As we move towards Beta, please be aware that releases may contain breaking changes.
+> ⚠️ This library is currently in Beta. We do not recommend using this library in production yet. As we move towards First Availability, please be aware that releases may contain breaking changes.
 
 ---
 
@@ -68,6 +68,10 @@ final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID');
 ```
 
 ### Web Auth Configuration
+
+- [Configure callback and logout URLs](#configure-callback-and-logout-urls)
+- [Android configuration: manifest placeholders](#android-configuration-manifest-placeholders)
+- [iOS configuration: custom URL scheme](#ios-configuration-custom-url-scheme)
 
 #### Configure callback and logout URLs
 
@@ -226,7 +230,7 @@ final result = await auth0.webAuthentication.login();
 </details>
 
 <details>
-  <summary>Add a custom scheme value (Android only)</summary>
+  <summary>Add a custom scheme value (Android-only)</summary>
 
   On Android, auth0_flutter uses `https` by default as the callback URL scheme. This works best for Android API 23+ if you're using [Android App Links](https://auth0.com/docs/get-started/applications/enable-android-app-links-support), but in previous Android versions this _may_ show the intent chooser dialog prompting the user to choose either your application or the browser. You can change this behavior by using a custom unique scheme so that Android opens the link directly with your app. Note that schemes [can only have lowercase letters](https://developer.android.com/guide/topics/manifest/data-element).
 
@@ -454,7 +458,7 @@ try {
   if (e.isVerificationRequired) {
     final result = await auth0.webAuthentication.login(
         scopes: scopes,
-        useEphemeralSession: true, // Otherwise a session cookie will remain (iOS only)
+        useEphemeralSession: true, // Otherwise a session cookie will remain (iOS-only)
         parameters: {
           'connection': connection,
           'login_hint': email // So the user doesn't have to type it again
