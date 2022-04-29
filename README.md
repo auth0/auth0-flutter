@@ -4,11 +4,13 @@
 
 Auth0 SDK for Android / iOS Flutter applications.
 
+> ⚠️ This library is currently in Early Access. We do not recommend using this library in production yet. As we move towards Beta, please be aware that releases may contain breaking changes.
+
 ---
 
 ## Table of Contents
 
-- [**Documentation**](#documentation)
+<!-- - [**Documentation**](#documentation) -->
 - [**Requirements**](#requirements)
 - [**Installation**](#installation)
 - [**Getting Started**](#getting-started)
@@ -18,7 +20,7 @@ Auth0 SDK for Android / iOS Flutter applications.
   + [Web Auth Logout](#web-auth-logout)
   + [SSO Alert Box (iOS)](#sso-alert-box-ios)
 - [**Next Steps**](#next-steps)
-  + [Common Tasks](#common-tasks)
+  <!-- + [Common Tasks](#common-tasks) -->
   + [Web Auth](#web-auth)
   + [API](#api)
 - [**Advanced Features**](#advanced-features)
@@ -28,9 +30,11 @@ Auth0 SDK for Android / iOS Flutter applications.
 - [**What is Auth0?**](#what-is-auth0)
 - [**License**](#license)
 
+<!-- 
 ## Documentation
 
-_TBD_
+TBD
+-->
 
 ## Requirements
 
@@ -42,7 +46,14 @@ _TBD_
 
 ## Installation
 
-_TBD_
+During the Early Access stage the SDK will not be published to Pub.dev, but you can install it as a [path package](https://dart.dev/tools/pub/dependencies#path-packages). Extract the contents of the provided zip file and then add the following dependency in your `pubspec.yaml`:
+
+```yaml
+auth0_flutter:
+    path: path/to/auth0_flutter
+```
+
+Then run `flutter pub get`.
 
 ## Getting Started
 
@@ -50,9 +61,11 @@ _TBD_
 
 auth0_flutter needs the **Client ID** and **Domain** of the Auth0 application to communicate with Auth0. You can find these details on the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/). If you are using a [Custom Domain](https://auth0.com/docs/brand-and-customize/custom-domains), use the value of your Custom Domain instead of the value from the settings page.
 
-> ⚠️ Make sure that the [application type](https://auth0.com/docs/configure/applications) of the Auth0 application is **Native**. If you don’t have a Native Auth0 application, [create one](https://auth0.com/docs/get-started/create-apps/native-apps) before continuing.
+> ⚠️ Make sure that the [application type](https://auth0.com/docs/configure/applications) of the Auth0 application is **Native**. If you don’t have a Native Auth0 application already, [create one](https://auth0.com/docs/get-started/create-apps/native-apps) before continuing.
 
-_[snippet]_
+```dart
+final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID');
+```
 
 ### Web Auth Configuration
 
@@ -90,7 +103,57 @@ com.company.myapp://company.us.auth0.com/ios/com.company.myapp/callback
 
 #### Android configuration: manifest placeholders
 
-_TBD_
+Open the `android/build.gradle` file and add the following manifest placeholders inside `android > defaultConfig`. The `applicationId` value will be auto-replaced at runtime with your Android app package name. 
+
+```groovy
+// android/build.gradle
+
+android {
+    // ...
+    defaultConfig {
+        // ...
+        // Add the following line
+        manifestPlaceholders = [auth0Domain: "YOUR_AUTH0_DOMAIN", auth0Scheme: "${applicationId}"]
+    }
+    // ...
+}
+```
+
+E.g. if your Auth0 Domain was `company.us.auth0.com`, then the manifest placeholders line would be:
+
+```groovy
+manifestPlaceholders = [auth0Domain: "company.us.auth0.com", auth0Scheme: "${applicationId}"]
+```
+
+> 💡 If your Android application is using [product flavors](https://developer.android.com/studio/build/build-variants#product-flavors), you might need to specify different manifest placeholders for each flavor.
+
+##### Skipping the Web Auth configuration
+
+If you don't plan to use Web Auth, you will notice that the compiler will still prompt you to provide the `manifestPlaceholders` values, since the `RedirectActivity` included in this library will require them, and the Gradle tasks won't be able to run without them.
+
+Re-declare the activity manually using `tools:node="remove"` in the `android/src/main/AndroidManifest.xml` file to make the [manifest merger](https://developer.android.com/studio/build/manage-manifests#merge-manifests) remove it from the final manifest file. Additionally, one more unused activity can be removed from the final APK by using the same process. A complete snippet to achieve this is:
+
+```xml
+<!-- android/src/main/AndroidManifest.xml -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.company.myapp">
+    <application android:theme="@style/AppTheme">
+        <!-- ... -->
+  
+        <activity
+            android:name="com.auth0.android.provider.AuthenticationActivity"
+            tools:node="remove"/>
+        <!-- Optional: Remove RedirectActivity -->
+        <activity
+            android:name="com.auth0.android.provider.RedirectActivity"
+            tools:node="remove"/>
+  
+        <!-- ... -->
+    </application>
+</manifest>
+```
 
 #### iOS configuration: custom URL scheme
 
@@ -99,32 +162,92 @@ Open the `ios/Runner/Info.plist` file and add the following snippet inside the t
 ```xml
 <!-- ios/Runner/Info.plist -->
 
-<!-- <dict> -->
-<key>CFBundleURLTypes</key>
-<array>
-    <dict>
-        <key>CFBundleTypeRole</key>
-        <string>None</string>
-        <key>CFBundleURLName</key>
-        <string>auth0</string>
-        <key>CFBundleURLSchemes</key>
-        <array>
-            <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-        </array>
-    </dict>
-</array>
-<!-- </dict> -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+<!-- ... -->
+
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>None</string>
+            <key>CFBundleURLName</key>
+            <string>auth0</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+            </array>
+        </dict>
+    </array>
+  
+<!-- ... -->
+</dict>
+</plist>
 ```
 
 > 💡 If you're opening the `Info.plist` file in Xcode and it is not being shown in this format, you can **Right Click** on `Info.plist` in the Xcode [project navigator](https://developer.apple.com/library/archive/documentation/ToolsLanguages/Conceptual/Xcode_Overview/NavigatingYourWorkspace.html) and then select **Open As > Source Code**.
 
 ### Web Auth Login
 
-_TBD_
+Import auth0_flutter in the file where you want to present the login page.
+
+```dart
+import 'package:auth0_flutter/auth0_flutter.dart';
+```
+
+Then, present the [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login) page in the `onPressed` callback of your **Login** button.
+
+```dart
+final result = await auth0.webAuthentication.login();
+```
+
+<details>
+  <summary>Add an audience value</summary>
+
+  Specify an [audience](https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#control-access-token-audience) to obtain an Access Token that can be used to make authenticated requests to a backend. The audience value is the **API Identifier** of your [Auth0 API](https://auth0.com/docs/get-started/apis), e.g. `https://example.com/api`.
+
+  ```dart
+  final result = await auth0.webAuthentication
+      .login(audience: 'YOUR_AUTH0_API_IDENTIFIER');
+  ```
+</details>
+
+<details>
+  <summary>Add scope values</summary>
+
+  Specify [scopes](https://auth0.com/docs/get-started/apis/scopes) to request permission to access protected resources, like the user profile. The default scope values are `openid`, `profile` and `email`. Regardless of the values specified, `openid` is always included.
+
+  ```dart
+  final result = await auth0.webAuthentication
+      .login(scopes: {'profile', 'email', 'offline_access', 'read:todos'});
+  ```
+</details>
+
+<details>
+  <summary>Add a custom scheme value (Android only)</summary>
+
+  On Android, auth0_flutter uses `https` by default as the callback URL scheme. This works best for Android API 23+ if you're using [Android App Links](https://auth0.com/docs/get-started/applications/enable-android-app-links-support), but in previous Android versions this _may_ show the intent chooser dialog prompting the user to choose either your application or the browser. You can change this behavior by using a custom unique scheme so that Android opens the link directly with your app. Note that schemes [can only have lowercase letters](https://developer.android.com/guide/topics/manifest/data-element).
+
+  1. Update the `auth0Scheme` manifest placeholder on the `android/build.gradle` file.
+  2. Update the **Allowed Callback URLs** in the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/).
+  3. Pass the scheme value to the `login()` method.
+
+  ```dart
+  final result = await auth0.webAuthentication.login(scheme: {'demo'});
+  ```
+</details>
 
 ### Web Auth Logout
 
-_TBD_
+Logging the user out involves clearing the Universal Login session cookie and then deleting the user's credentials from your application.
+
+Call the `logout()` method in the in the `onPressed` callback of your **Logout** button. Once the session cookie has been cleared, delete the user's credentials.<!--  link to the section on deleting the stored credentials -->
+
+```dart
+await auth0.webAuthentication.logout();
+```
 
 ### SSO Alert Box (iOS)
 
@@ -138,16 +261,17 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 
 ## Next Steps
 
+<!-- 
 ### Common Tasks
 
-_TBD_
+TBD
+-->
 
 ### Web Auth
 
-**See all the available features in the API documentation ↗** _[link to API documentation]_
+<!-- **See all the available features in the API documentation ↗** [link to API documentation] -->
 
 - [Web Auth signup](#web-auth-signup)
-- [Web Auth configuration](#web-auth-configuration)
 - [ID Token validation](#id-token-validation)
 - [Web Auth errors](#web-auth-errors)
 
@@ -162,25 +286,12 @@ You can make users land directly on the Signup page instead of the Login page by
 | `'prompt': 'login'`                            | Shows the login page  | Shows the login page          |
 | `'prompt': 'login', 'screen_hint': 'signup'`   | Shows the signup page | Shows the signup page         |
 
-_[snippet]_
+```dart
+final result = await auth0.webAuthentication
+    .login(parameters: {'screen_hint': 'signup'});
+```
 
 > ⚠️ The `screen_hint` parameter will work with the **New Universal Login Experience** without any further configuration. If you are using the **Classic Universal Login Experience**, you need to customize the [login template](https://manage.auth0.com/#/login_page) to look for this parameter and set the `initialScreen` [option](https://github.com/auth0/lock#database-options) of the `Auth0Lock` constructor.
-
-#### Web Auth configuration
-
-The following are some of the available Web Auth configuration options. Check the API documentation _[link to API documentation]_ for the full list.
-
-##### Add an audience value
-
-Specify an [audience](https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#control-access-token-audience) to obtain an Access Token that can be used to make authenticated requests to a backend. The audience value is the **API Identifier** of your [Auth0 API](https://auth0.com/docs/get-started/apis), e.g. `https://example.com/api`.
-
-_[snippet]_
-
-##### Add scope values
-
-Specify [scopes](https://auth0.com/docs/get-started/apis/scopes) to request permission to access protected resources, like the user profile. The default scope values are `openid`, `profile`, `email`, and `offline_access`. Regardless of the values specified, `openid` is always included.
-
-_[snippet]_
 
 #### ID Token validation
 
@@ -190,21 +301,24 @@ auth0_flutter automatically [validates](https://auth0.com/docs/secure/tokens/id-
 
 Users of Auth0 Private Cloud with Custom Domains still on the [legacy behavior](https://auth0.com/docs/deploy/private-cloud/private-cloud-migrations/migrate-private-cloud-custom-domains) need to specify a custom issuer to match the Auth0 Domain when performing Web Auth login. Otherwise, the ID Token validation will fail.
 
-_[snippet]_
+```dart
+final config = IdTokenValidationConfig(issuer: 'https://YOUR_AUTH0_DOMAIN/');
+final result =
+    await auth0.webAuthentication.login(idTokenValidationConfig: config);
+```
 
 #### Web Auth errors
 
-_TBD_
+Web Auth will only throw `WebAuthException` exceptions. You can find the error information in the `details` property of the exception value.<!-- Check the API documentation [link to API documentation] to learn more about the available `WebAuthException` properties. -->
 
 ### API
 
-**See all the available features in the API documentation ↗** _[link to API documentation]_
+<!-- **See all the available features in the API documentation ↗** [link to API documentation] -->
 
 - [Login with database connection](#login-with-database-connection)
 - [Sign up with database connection](#sign-up-with-database-connection)
 - [Retrieve user information](#retrieve-user-information)
 - [Renew credentials](#renew-credentials)
-- [API client configuration](#api-client-configuration)
 - [API client errors](#api-client-errors)
 
 The Authentication API exposes the AuthN/AuthZ functionality of Auth0, as well as the supported identity protocols like OpenID Connect, OAuth 2.0, and SAML.
@@ -218,13 +332,50 @@ For login or signup with username/password, the `Password` grant type needs to b
 
 #### Login with database connection
 
-_[snippet]_
+```dart
+final result = await auth0.api.login(
+    usernameOrEmail: 'jane.smith@example.com',
+    password: 'secret-password',
+    connectionOrRealm: 'Username-Password-Authentication');
+```
 
-> 💡 The default scope values are `openid`, `profile`, `email`, and `offline_access`. Regardless of the values specified, `openid` is always included.
+<details>
+  <summary>Add an audience value</summary>
+
+  Specify an [audience](https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#control-access-token-audience) to obtain an Access Token that can be used to make authenticated requests to a backend. The audience value is the **API Identifier** of your [Auth0 API](https://auth0.com/docs/get-started/apis), e.g. `https://example.com/api`.
+
+  ```dart
+  final result = await auth0.api.login(
+      usernameOrEmail: 'jane.smith@example.com',
+      password: 'secret-password',
+      connectionOrRealm: 'Username-Password-Authentication',
+      audience: 'YOUR_AUTH0_API_IDENTIFIER');
+  ```
+</details>
+
+<details>
+  <summary>Add scope values</summary>
+
+  Specify [scopes](https://auth0.com/docs/get-started/apis/scopes) to request permission to access protected resources, like the user profile. The default scope values are `openid`, `profile` and `email`. Regardless of the values specified, `openid` is always included.
+
+  ```dart
+  final result = await auth0.api.login(
+      usernameOrEmail: 'jane.smith@example.com',
+      password: 'secret-password',
+      connectionOrRealm: 'Username-Password-Authentication',
+      scopes: {'profile', 'email', 'offline_access', 'read:todos'});
+  ```
+</details>
 
 #### Sign up with database connection
 
-_[snippet]_
+```dart
+final user = await auth0.api.signup(
+    email: 'jane.smith@example.com',
+    password: 'secret-password',
+    connection: 'Username-Password-Authentication',
+    userMetadata: {'first_name': 'Jane', 'last_name': 'Smith'});
+```
 
 > 💡 You might want to log the user in after signup. See [Login with database connection](#login-with-database-connection) above for an example.
 
@@ -232,27 +383,25 @@ _[snippet]_
 
 Fetch the latest user information from the `/userinfo` endpoint.
 
-This method will yield a `UserProfile` instance. Check the API documentation _[link to API documentation]_ to learn more about its available properties.
+This method will yield a `UserProfile` instance.<!--Check the API documentation [link to API documentation] to learn more about its available properties. -->
 
-_[snippet]_
+```dart
+final userProfile = await auth0.api.userInfo(accessToken: accessToken);
+```
 
 #### Renew credentials
 
 Use a [Refresh Token](https://auth0.com/docs/secure/tokens/refresh-tokens) to renew the user's credentials. It's recommended that you read and understand the Refresh Token process beforehand.
 
-_[snippet]_
+```dart
+final result = await auth0.api.renewCredentials(refreshToken: refreshToken);
+```
 
 > 💡 To obtain a Refresh Token, make sure your Auth0 application has the **Refresh Token** [grant enabled](https://auth0.com/docs/get-started/applications/update-grant-types). If you are also specifying an audience value, make sure that the corresponding Auth0 API has the **Allow Offline Access** [setting enabled](https://auth0.com/docs/get-started/apis/api-settings#access-settings).
 
-#### API client configuration
+#### API client errors
 
-##### Add custom parameters
-
-_TBD_
-
-#### Authentication API client errors
-
-_TBD_
+The Authentication API client will only throw `ApiException` exceptions. You can find the error information in the `details` property of the exception value.<!--Check the API documentation [link to API documentation] to learn more about the available `ApiException` properties. -->
 
 [Go up ⤴](#table-of-contents)
 
@@ -274,17 +423,46 @@ Using Organizations, you can:
 
 #### Log in to an organization
 
-_[snippet]_
+```dart
+final result = await auth0.webAuthentication
+    .login(organizationId: 'YOUR_AUTH0_ORGANIZATION_ID');
+```
 
 #### Accept user invitations
 
-_TBD_
+To accept organization invitations your application needs to support [deep linking](https://docs.flutter.dev/development/ui/navigation/deep-linking), as invitation links are HTTPS-only. Tapping on the invitation link should open your application.
+
+When your application gets opened by an invitation link, grab the invitation URL and pass it to the `login()` method.
+
+```dart
+final result = await auth0.webAuthentication.login(invitationUrl: url);
+```
 
 ### Bot Detection
 
 If you are performing database login/signup via the Authentication API and would like to use the [Bot Detection](https://auth0.com/docs/secure/attack-protection/bot-detection) feature, you need to handle the `isVerificationRequired` error. It indicates that the request was flagged as suspicious and an additional verification step is necessary to log the user in. That verification step is web-based, so you need to use Web Auth to complete it.
 
-_[snippet]_
+```dart
+try {
+  final result = await auth0.api.login(
+      usernameOrEmail: email,
+      password: password,
+      connectionOrRealm: connection,
+      scopes: scopes);
+  // ...
+} on ApiException catch (e) {
+  if (e.isVerificationRequired) {
+    final result = await auth0.webAuthentication.login(
+        scopes: scopes,
+        useEphemeralSession: true, // Otherwise a session cookie will remain (iOS only)
+        parameters: {
+          'connection': connection,
+          'login_hint': email // So the user doesn't have to type it again
+        });
+    // ...
+  }
+}
+```
 
 ## Issue Reporting
 
