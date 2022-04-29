@@ -4,7 +4,7 @@
 
 Auth0 SDK for Android / iOS Flutter applications.
 
-> ⚠️ This library is currently in Early Access and has not had a complete security review. We do not recommend using this library in production yet. As we move towards Beta, please be aware that releases may contain breaking changes.
+> ⚠️ This library is currently in Early Access. We do not recommend using this library in production yet. As we move towards Beta, please be aware that releases may contain breaking changes.
 
 ---
 
@@ -46,18 +46,14 @@ TBD
 
 ## Installation
 
-During Early Access the SDK will not be published to Pub.dev, but you can install it as a git package.
-Add the following dependency in your `pubspec.yaml`:
+During the Early Access stage the SDK will not be published to Pub.dev, but you can install it as a [path package](https://dart.dev/tools/pub/dependencies#path-packages). Extract the contents of the provided zip file and then add the following dependency in your `pubspec.yaml`:
 
 ```yaml
 auth0_flutter:
-  git:
-    url: git@github.com:auth0/auth0-flutter.git
-    ref: main
-    path: auth0_flutter
+    path: path/to/auth0_flutter
 ```
 
-Then run `dart pub get`.
+Then run `flutter pub get`.
 
 ## Getting Started
 
@@ -69,7 +65,6 @@ auth0_flutter needs the **Client ID** and **Domain** of the Auth0 application to
 
 ```dart
 final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID');
-
 ```
 
 ### Web Auth Configuration
@@ -196,7 +191,7 @@ Open the `ios/Runner/Info.plist` file and add the following snippet inside the t
 
 ### Web Auth Login
 
-Import the SDK in the file where you want to present the login page.
+Import auth0_flutter in the file where you want to present the login page.
 
 ```dart
 import 'package:auth0_flutter/auth0_flutter.dart';
@@ -230,6 +225,20 @@ final result = await auth0.webAuthentication.login();
   ```
 </details>
 
+<details>
+  <summary>Add a custom scheme value (Android only)</summary>
+
+  On Android, auth0_flutter uses `https` by default as the callback URL scheme. This works best for Android API 23+ if you're using [Android App Links](https://auth0.com/docs/get-started/applications/enable-android-app-links-support), but in previous Android versions this _may_ show the intent chooser dialog prompting the user to choose either your application or the browser. You can change this behavior by using a custom unique scheme so that Android opens the link directly with your app. Note that schemes [can only have lowercase letters](https://developer.android.com/guide/topics/manifest/data-element).
+
+  1. Update the `auth0Scheme` manifest placeholder on the `android/build.gradle` file.
+  2. Update the **Allowed Callback URLs** in the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/).
+  3. Pass the scheme value to the `login()` method.
+
+  ```dart
+  final result = await auth0.webAuthentication.login(scheme: {'demo'});
+  ```
+</details>
+
 ### Web Auth Logout
 
 Logging the user out involves clearing the Universal Login session cookie and then deleting the user's credentials from your application.
@@ -260,7 +269,7 @@ TBD
 
 ### Web Auth
 
-**See all the available features in the API documentation ↗**<!-- link to API documentation -->
+<!-- **See all the available features in the API documentation ↗** [link to API documentation] -->
 
 - [Web Auth signup](#web-auth-signup)
 - [ID Token validation](#id-token-validation)
@@ -300,11 +309,11 @@ final result =
 
 #### Web Auth errors
 
-Web Auth will only throw `WebAuthException` exceptions. You can find the error information in the `details` map of the exception value. Check the API documentation<!-- link to API documentation --> to learn more about the available `WebAuthException` properties.
+Web Auth will only throw `WebAuthException` exceptions. You can find the error information in the `details` property of the exception value.<!-- Check the API documentation [link to API documentation] to learn more about the available `WebAuthException` properties. -->
 
 ### API
 
-**See all the available features in the API documentation ↗** _[link to API documentation]_
+<!-- **See all the available features in the API documentation ↗** [link to API documentation] -->
 
 - [Login with database connection](#login-with-database-connection)
 - [Sign up with database connection](#sign-up-with-database-connection)
@@ -374,7 +383,7 @@ final user = await auth0.api.signup(
 
 Fetch the latest user information from the `/userinfo` endpoint.
 
-This method will yield a `UserProfile` instance. Check the API documentation<!-- [link to API documentation] --> to learn more about its available properties.
+This method will yield a `UserProfile` instance.<!--Check the API documentation [link to API documentation] to learn more about its available properties. -->
 
 ```dart
 final userProfile = await auth0.api.userInfo(accessToken: accessToken);
@@ -390,9 +399,9 @@ final result = await auth0.api.renewCredentials(refreshToken: refreshToken);
 
 > 💡 To obtain a Refresh Token, make sure your Auth0 application has the **Refresh Token** [grant enabled](https://auth0.com/docs/get-started/applications/update-grant-types). If you are also specifying an audience value, make sure that the corresponding Auth0 API has the **Allow Offline Access** [setting enabled](https://auth0.com/docs/get-started/apis/api-settings#access-settings).
 
-#### Authentication API client errors
+#### API client errors
 
-The Authentication API client will only throw `ApiException` exceptions. You can find the error information in the `details` map of the exception value. Check the API documentation<!-- link to API documentation --> to learn more about the available `ApiException` properties.
+The Authentication API client will only throw `ApiException` exceptions. You can find the error information in the `details` property of the exception value.<!--Check the API documentation [link to API documentation] to learn more about the available `ApiException` properties. -->
 
 [Go up ⤴](#table-of-contents)
 
@@ -421,7 +430,13 @@ final result = await auth0.webAuthentication
 
 #### Accept user invitations
 
-_TBD_
+To accept organization invitations your application needs to support [deep linking](https://docs.flutter.dev/development/ui/navigation/deep-linking), as invitation links are HTTPS-only. Tapping on the invitation link should open your application.
+
+When your application gets opened by an invitation link, grab the invitation URL and pass it to the `login()` method.
+
+```dart
+final result = await auth0.webAuthentication.login(invitationUrl: url);
+```
 
 ### Bot Detection
 
@@ -439,7 +454,7 @@ try {
   if (e.isVerificationRequired) {
     final result = await auth0.webAuthentication.login(
         scopes: scopes,
-        useEphemeralSession: true, // Otherwise a session cookie will remain (iOS)
+        useEphemeralSession: true, // Otherwise a session cookie will remain (iOS only)
         parameters: {
           'connection': connection,
           'login_hint': email // So the user doesn't have to type it again
