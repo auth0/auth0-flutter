@@ -20,9 +20,9 @@ class WebAuthCard extends StatelessWidget {
             child: SizedBox(
                 width: double.maxFinite,
                 child: Semantics(
-                  label: 'webAuthLoginBtn',
+                  label: label,
                   child: ElevatedButton(
-                    key: const Key('webAuthLoginBtn'),
+                    key: Key(label),
                     onPressed: action,
                     child: Text(label),
                   ),
