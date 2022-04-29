@@ -61,9 +61,8 @@ That alert box is displayed and managed by `ASWebAuthenticationSession`, not by 
 If you don't need SSO, you can disable this behavior by adding `useEphemeralSession: true` to the login call. This will configure `ASWebAuthenticationSession` to not store the session cookie in the shared cookie jar, as if using an incognito browser window. With no shared cookie, `ASWebAuthenticationSession` will not prompt the user for consent.
 
 ```dart
-final result = await Auth0(domain, clientId)
-  .webAuthentication()
-  .login(useEphemeralSession: true); // No SSO, therefore no alert box
+final result = await auth0.webAuthentication
+    .login(useEphemeralSession: true); // No SSO, therefore no alert box
 ```
 
 Note that with `useEphemeralSession: true` you don't need to call `logout()` at all. Just clearing the credentials from the application will suffice. What `logout()` does is clear the shared session cookie, so that in the next login call the user gets asked to log in again. But with `useEphemeralSession: true` there will be no shared cookie to remove.
@@ -79,11 +78,11 @@ You still need to call `logout()` on Android, though, as `useEphemeralSession` i
 If you need SSO and/or are willing to tolerate the alert box on the login call, but would prefer to get rid of it when calling `logout()`, you can simply not call `logout()` and just clear the credentials from the application. This means that the shared session cookie will not be removed, so to get the user to log in again you need to add the `'prompt': 'login'` parameter to the _login_ call.
 
 ```dart
-final result = await Auth0(domain, clientId)
-  .webAuthentication()
-  .login(
-    useEphemeralSession: true, 
-    parameters: {'prompt': 'login'}); // Ignore the cookie (if present) and show the login page
+final result = await auth0.webAuthentication.login(
+    useEphemeralSession: true,
+    parameters: {
+      'prompt': 'login'
+    }); // Ignore the cookie (if present) and show the login page
 ```
 
 Otherwise, the browser modal will close right away and the user will be automatically logged in again, as the cookie will still be there.
