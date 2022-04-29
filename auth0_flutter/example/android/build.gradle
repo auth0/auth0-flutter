@@ -1,5 +1,6 @@
 buildscript {
     ext.kotlin_version = '1.6.10'
+
     repositories {
         google()
         mavenCentral()
@@ -8,7 +9,14 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:4.1.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.vanniktech:gradle-android-junit-jacoco-plugin:0.16.0"
     }
+}
+
+apply plugin: "com.vanniktech.android.junit.jacoco"
+
+junitJacoco {
+    jacocoVersion = '0.8.8' // type String
 }
 
 allprojects {
@@ -29,3 +37,4 @@ subprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
