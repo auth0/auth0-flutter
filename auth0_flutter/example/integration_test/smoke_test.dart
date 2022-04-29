@@ -1,4 +1,3 @@
-
 import 'package:appium_driver/async_io.dart';
 import 'package:test/test.dart';
 

@@ -36,7 +36,7 @@ class _ExampleAppState extends State<ExampleApp> {
       final result = await auth0.webAuthentication
           .login(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
 
-      output = 'Token: ${result.idToken}';
+      output = result.idToken;
 
       setState(() {
         _isLoggedIn = true;
@@ -92,7 +92,7 @@ class _ExampleAppState extends State<ExampleApp> {
           usernameOrEmail: usernameOrEmail,
           password: password,
           connectionOrRealm: 'Username-Password-Authentication');
-      output = 'ID Token: ${result.idToken}';
+      output = result.accessToken;
     } on ApiException catch (e) {
       output = e.toString();
     }
