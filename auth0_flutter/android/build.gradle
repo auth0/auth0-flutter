@@ -47,16 +47,9 @@ android {
         manifestPlaceholders = [auth0Domain: "test-domain", auth0Scheme: "test"]
     }
 
-   buildTypes {
-       debug {
-           testCoverageEnabled true
-       }
-   }
-
     testOptions {
         unitTests {
             includeAndroidResources = true
-            returnDefaultValues = true
         }
     }
 }
