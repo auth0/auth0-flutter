@@ -131,33 +131,35 @@ manifestPlaceholders = [auth0Domain: "company.us.auth0.com", auth0Scheme: "${app
 
 > 💡 If your Android application is using [product flavors](https://developer.android.com/studio/build/build-variants#product-flavors), you might need to specify different manifest placeholders for each flavor.
 
-##### Skipping the Web Auth configuration
+<details>
+  <summary>Skipping the Web Auth configuration</summary>
 
-If you don't plan to use Web Auth, you will notice that the compiler will still prompt you to provide the `manifestPlaceholders` values, since the `RedirectActivity` included in this library will require them, and the Gradle tasks won't be able to run without them.
+  If you don't plan to use Web Auth, you will notice that the compiler will still prompt you to provide the `manifestPlaceholders` values, since the `RedirectActivity` included in this library will require them, and the Gradle tasks won't be able to run without them.
 
-Re-declare the activity manually using `tools:node="remove"` in the `android/src/main/AndroidManifest.xml` file to make the [manifest merger](https://developer.android.com/studio/build/manage-manifests#merge-manifests) remove it from the final manifest file. Additionally, one more unused activity can be removed from the final APK by using the same process. A complete snippet to achieve this is:
+  Re-declare the activity manually using `tools:node="remove"` in the `android/src/main/AndroidManifest.xml` file to make the [manifest merger](https://developer.android.com/studio/build/manage-manifests#merge-manifests) remove it from the final manifest file. Additionally, one more unused activity can be removed from the final APK by using the same process. A complete snippet to achieve this is:
 
-```xml
-<!-- android/src/main/AndroidManifest.xml -->
+  ```xml
+  <!-- android/src/main/AndroidManifest.xml -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    package="com.company.myapp">
-    <application android:theme="@style/AppTheme">
-        <!-- ... -->
-  
-        <activity
-            android:name="com.auth0.android.provider.AuthenticationActivity"
-            tools:node="remove"/>
-        <!-- Optional: Remove RedirectActivity -->
-        <activity
-            android:name="com.auth0.android.provider.RedirectActivity"
-            tools:node="remove"/>
-  
-        <!-- ... -->
-    </application>
-</manifest>
-```
+  <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:tools="http://schemas.android.com/tools"
+      package="com.company.myapp">
+      <application android:theme="@style/AppTheme">
+          <!-- ... -->
+    
+          <activity
+              android:name="com.auth0.android.provider.AuthenticationActivity"
+              tools:node="remove"/>
+          <!-- Optional: Remove RedirectActivity -->
+          <activity
+              android:name="com.auth0.android.provider.RedirectActivity"
+              tools:node="remove"/>
+    
+          <!-- ... -->
+      </application>
+  </manifest>
+  ```
+</details>
 
 #### iOS configuration: custom URL scheme
 
