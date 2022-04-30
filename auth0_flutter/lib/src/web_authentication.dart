@@ -19,7 +19,7 @@ class WebAuthentication {
         const IdTokenValidationConfig(),
   }) =>
       Auth0FlutterWebAuthPlatform.instance.login(createWebAuthRequest(
-          WebAuthLoginInput(
+          WebAuthLoginOptions(
               audience: audience,
               scopes: scopes,
               redirectUrl: redirectUrl,

@@ -50,7 +50,7 @@ void main() {
 
     final verificationResult = verify(mockedPlatform.login(captureAny))
         .captured
-        .single as WebAuthRequest<WebAuthLoginInput>;
+        .single as WebAuthRequest<WebAuthLoginOptions>;
     expect(verificationResult.account.domain, 'test-domain');
     expect(verificationResult.account.clientId, 'test-clientId');
     expect(verificationResult.options.audience, 'test-audience');
@@ -72,7 +72,7 @@ void main() {
 
     final verificationResult = verify(mockedPlatform.login(captureAny))
         .captured
-        .single as WebAuthRequest<WebAuthLoginInput>;
+        .single as WebAuthRequest<WebAuthLoginOptions>;
     expect(verificationResult.options.useEphemeralSession, false);
     expect(result, TestPlatform.loginResult);
   });

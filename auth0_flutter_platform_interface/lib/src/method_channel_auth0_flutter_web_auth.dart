@@ -5,7 +5,7 @@ import 'credentials.dart';
 import 'request/request.dart';
 import 'request/request_options.dart';
 import 'web-auth/web_auth_exception.dart';
-import 'web-auth/web_auth_login_input.dart';
+import 'web-auth/web_auth_login_options.dart';
 import 'web-auth/web_auth_logout_input.dart';
 
 const MethodChannel _channel =
@@ -15,7 +15,8 @@ const String logoutMethod = 'webAuth#logout';
 
 class MethodChannelAuth0FlutterWebAuth extends Auth0FlutterWebAuthPlatform {
   @override
-  Future<Credentials> login(final WebAuthRequest<WebAuthLoginInput> request) async {
+  Future<Credentials> login(
+      final WebAuthRequest<WebAuthLoginOptions> request) async {
     final Map<String, dynamic> result =
         await invokeRequest(method: loginMethod, request: request);
 

@@ -51,10 +51,10 @@ void main() {
           .thenAnswer((final _) async => MethodCallHandler.loginResult);
 
       await MethodChannelAuth0FlutterWebAuth().login(
-          WebAuthRequest<WebAuthLoginInput>(
+          WebAuthRequest<WebAuthLoginOptions>(
               account: const Account('', ''),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: WebAuthLoginInput()));
+              options: WebAuthLoginOptions()));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -66,10 +66,10 @@ void main() {
           .thenAnswer((final _) async => MethodCallHandler.loginResult);
 
       await MethodChannelAuth0FlutterWebAuth().login(
-          WebAuthRequest<WebAuthLoginInput>(
+          WebAuthRequest<WebAuthLoginOptions>(
               account: const Account('test-domain', 'test-clientId'),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: WebAuthLoginInput(
+              options: WebAuthLoginOptions(
                   scopes: {'a', 'b'},
                   audience: 'test-audience',
                   redirectUrl: 'http://google.com',
@@ -111,10 +111,10 @@ void main() {
           .thenAnswer((final _) async => MethodCallHandler.loginResult);
 
       await MethodChannelAuth0FlutterWebAuth().login(
-          WebAuthRequest<WebAuthLoginInput>(
+          WebAuthRequest<WebAuthLoginOptions>(
               account: const Account('', ''),
               userAgent: UserAgent(name: '', version: ''),
-              options: WebAuthLoginInput()));
+              options: WebAuthLoginOptions()));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -137,7 +137,7 @@ void main() {
           WebAuthRequest(
               account: const Account('test-domain', 'test-clientId'),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: WebAuthLoginInput()));
+              options: WebAuthLoginOptions()));
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -162,7 +162,7 @@ void main() {
           WebAuthRequest(
               account: const Account('', ''),
               userAgent: UserAgent(name: '', version: ''),
-              options: WebAuthLoginInput()));
+              options: WebAuthLoginOptions()));
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -179,7 +179,7 @@ void main() {
                 account: const Account('test-domain', 'test-clientId'),
                 userAgent:
                     UserAgent(name: 'test-name', version: 'test-version'),
-                options: WebAuthLoginInput()));
+                options: WebAuthLoginOptions()));
         return result;
       }
 
@@ -198,7 +198,7 @@ void main() {
                 account: const Account('test-domain', 'test-clientId'),
                 userAgent:
                     UserAgent(name: 'test-name', version: 'test-version'),
-                options: WebAuthLoginInput()));
+                options: WebAuthLoginOptions()));
 
         return result;
       }
