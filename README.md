@@ -315,7 +315,16 @@ final result =
 
 #### Web Auth errors
 
-Web Auth will only throw `WebAuthException` exceptions. You can find the error information in the `details` property of the exception.<!-- Check the API documentation [link to API documentation] to learn more about the available `WebAuthException` properties. -->
+Web Auth will only throw `WebAuthException` exceptions.<!-- Check the API documentation [link to API documentation] to learn more about the available `WebAuthException` properties. -->
+
+```dart
+try {
+  final result = await auth0.webAuthentication.login();
+  // ...
+} on WebAuthException catch (e) {
+  print(e.toString())
+}
+```
 
 ### API
 
@@ -407,7 +416,19 @@ final result = await auth0.api.renewCredentials(refreshToken: refreshToken);
 
 #### API client errors
 
-The Authentication API client will only throw `ApiException` exceptions. You can find the error information in the `details` property of the exception.<!--Check the API documentation [link to API documentation] to learn more about the available `ApiException` properties. -->
+The Authentication API client will only throw `ApiException` exceptions. You can find more information in the `details` property of the exception.<!--Check the API documentation [link to API documentation] to learn more about the available `ApiException` properties. -->
+
+```dart
+try {
+  final result = await auth0.api.login(
+    usernameOrEmail: email,
+    password: password,
+    connectionOrRealm: connection);
+  // ...
+} on ApiException catch (e) {
+  print(e.toString())
+}
+```
 
 [Go up ⤴](#table-of-contents)
 
