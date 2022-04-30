@@ -32,7 +32,7 @@ class WebAuthentication {
 
   Future<void> logout({final String? returnTo, final String? scheme}) =>
       Auth0FlutterWebAuthPlatform.instance.logout(createWebAuthRequest(
-        WebAuthLogoutInput(returnTo: returnTo, scheme: scheme),
+        WebAuthLogoutOptions(returnTo: returnTo, scheme: scheme),
       ));
 
   WebAuthRequest<TOptions>

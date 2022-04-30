@@ -212,10 +212,10 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
       await MethodChannelAuth0FlutterWebAuth().logout(
-          WebAuthRequest<WebAuthLogoutInput>(
+          WebAuthRequest<WebAuthLogoutOptions>(
               account: const Account('', ''),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: WebAuthLogoutInput()));
+              options: WebAuthLogoutOptions()));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -226,10 +226,10 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
       await MethodChannelAuth0FlutterWebAuth().logout(
-          WebAuthRequest<WebAuthLogoutInput>(
+          WebAuthRequest<WebAuthLogoutOptions>(
               account: const Account('test-domain', 'test-clientId'),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: WebAuthLogoutInput(
+              options: WebAuthLogoutOptions(
                   returnTo: 'http://localhost:1234', scheme: 'test-scheme')));
 
       final verificationResult =
@@ -251,10 +251,10 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
       await MethodChannelAuth0FlutterWebAuth().logout(
-          WebAuthRequest<WebAuthLogoutInput>(
+          WebAuthRequest<WebAuthLogoutOptions>(
               account: const Account('', ''),
               userAgent: UserAgent(name: '', version: ''),
-              options: WebAuthLogoutInput()));
+              options: WebAuthLogoutOptions()));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -270,11 +270,11 @@ void main() {
 
       Future<void> actual() async {
         await MethodChannelAuth0FlutterWebAuth().logout(
-            WebAuthRequest<WebAuthLogoutInput>(
+            WebAuthRequest<WebAuthLogoutOptions>(
                 account: const Account('test-domain', 'test-clientId'),
                 userAgent:
                     UserAgent(name: 'test-name', version: 'test-version'),
-                options: WebAuthLogoutInput()));
+                options: WebAuthLogoutOptions()));
       }
 
       await expectLater(actual, throwsA(isA<WebAuthException>()));

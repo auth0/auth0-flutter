@@ -21,7 +21,7 @@ abstract class Auth0FlutterWebAuthPlatform extends PlatformInterface {
     throw UnimplementedError('webAuth.login() has not been implemented');
   }
 
-  Future<void> logout(final WebAuthRequest<WebAuthLogoutInput> request) {
+  Future<void> logout(final WebAuthRequest<WebAuthLogoutOptions> request) {
     throw UnimplementedError('webAuth.logout() has not been implemented');
   }
 }

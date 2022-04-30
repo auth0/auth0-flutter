@@ -1,10 +1,10 @@
 import '../request/request_options.dart';
 
-class WebAuthLogoutInput implements RequestOptions {
+class WebAuthLogoutOptions implements RequestOptions {
   final String? returnTo;
   final String? scheme;
 
-  WebAuthLogoutInput({this.returnTo, this.scheme});
+  WebAuthLogoutOptions({this.returnTo, this.scheme});
 
   @override
   Map<String, dynamic> toMap() => {'returnTo': returnTo, 'scheme': scheme};

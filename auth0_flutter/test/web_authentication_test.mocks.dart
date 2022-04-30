@@ -38,7 +38,7 @@ class MockTestPlatform extends _i1.Mock implements _i3.TestPlatform {
           as _i4.Future<_i2.Credentials>);
   @override
   _i4.Future<void> logout(
-          _i2.WebAuthRequest<_i2.WebAuthLogoutInput>? request) =>
+          _i2.WebAuthRequest<_i2.WebAuthLogoutOptions>? request) =>
       (super.noSuchMethod(Invocation.method(#logout, [request]),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);

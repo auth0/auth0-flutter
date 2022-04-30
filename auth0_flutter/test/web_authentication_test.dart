@@ -85,7 +85,9 @@ void main() {
         .logout(returnTo: 'abc');
 
     final verificationResult =
-        verify(mockedPlatform.logout(captureAny)).captured.single as WebAuthRequest<WebAuthLogoutInput>;
+        verify(mockedPlatform.logout(captureAny))
+        .captured
+        .single as WebAuthRequest<WebAuthLogoutOptions>;
     expect(verificationResult.account.domain, 'test-domain');
     expect(verificationResult.account.clientId, 'test-clientId');
     expect(verificationResult.options.returnTo, 'abc');
