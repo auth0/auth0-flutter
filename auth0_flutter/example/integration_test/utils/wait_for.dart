@@ -17,7 +17,7 @@ Future<AppiumWebElement> waitForElement(
     } on NoSuchElementException {
       if (currentTry == maxTries) {
         rethrow;
-      } else {}
+      }
     }
   }
 
