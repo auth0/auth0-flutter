@@ -135,10 +135,8 @@ class _ExampleAppState extends State<ExampleApp> {
                       padding: const EdgeInsets.fromLTRB(
                           padding, 0.0, padding, padding),
                       child: Center(
-                          child: Semantics(
-                              label: 'output',
-                              child:
-                                  Text(_output, key: const Key('output')))))),
+                        child: Text(_output),
+                      ))),
             ],
           )),
     );
