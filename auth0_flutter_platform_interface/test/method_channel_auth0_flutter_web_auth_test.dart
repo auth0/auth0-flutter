@@ -51,10 +51,10 @@ void main() {
           .thenAnswer((final _) async => MethodCallHandler.loginResult);
 
       await MethodChannelAuth0FlutterWebAuth().login(
-          WebAuthRequest<WebAuthLoginInput>(
+          WebAuthRequest<WebAuthLoginOptions>(
               account: const Account('', ''),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: WebAuthLoginInput()));
+              options: WebAuthLoginOptions()));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -66,10 +66,10 @@ void main() {
           .thenAnswer((final _) async => MethodCallHandler.loginResult);
 
       await MethodChannelAuth0FlutterWebAuth().login(
-          WebAuthRequest<WebAuthLoginInput>(
+          WebAuthRequest<WebAuthLoginOptions>(
               account: const Account('test-domain', 'test-clientId'),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: WebAuthLoginInput(
+              options: WebAuthLoginOptions(
                   scopes: {'a', 'b'},
                   audience: 'test-audience',
                   redirectUrl: 'http://google.com',
@@ -111,10 +111,10 @@ void main() {
           .thenAnswer((final _) async => MethodCallHandler.loginResult);
 
       await MethodChannelAuth0FlutterWebAuth().login(
-          WebAuthRequest<WebAuthLoginInput>(
+          WebAuthRequest<WebAuthLoginOptions>(
               account: const Account('', ''),
               userAgent: UserAgent(name: '', version: ''),
-              options: WebAuthLoginInput()));
+              options: WebAuthLoginOptions()));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -137,7 +137,7 @@ void main() {
           WebAuthRequest(
               account: const Account('test-domain', 'test-clientId'),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: WebAuthLoginInput()));
+              options: WebAuthLoginOptions()));
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -162,7 +162,7 @@ void main() {
           WebAuthRequest(
               account: const Account('', ''),
               userAgent: UserAgent(name: '', version: ''),
-              options: WebAuthLoginInput()));
+              options: WebAuthLoginOptions()));
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -179,7 +179,7 @@ void main() {
                 account: const Account('test-domain', 'test-clientId'),
                 userAgent:
                     UserAgent(name: 'test-name', version: 'test-version'),
-                options: WebAuthLoginInput()));
+                options: WebAuthLoginOptions()));
         return result;
       }
 
@@ -198,7 +198,7 @@ void main() {
                 account: const Account('test-domain', 'test-clientId'),
                 userAgent:
                     UserAgent(name: 'test-name', version: 'test-version'),
-                options: WebAuthLoginInput()));
+                options: WebAuthLoginOptions()));
 
         return result;
       }
@@ -212,10 +212,10 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
       await MethodChannelAuth0FlutterWebAuth().logout(
-          WebAuthRequest<WebAuthLogoutInput>(
+          WebAuthRequest<WebAuthLogoutOptions>(
               account: const Account('', ''),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: WebAuthLogoutInput()));
+              options: WebAuthLogoutOptions()));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -226,10 +226,10 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
       await MethodChannelAuth0FlutterWebAuth().logout(
-          WebAuthRequest<WebAuthLogoutInput>(
+          WebAuthRequest<WebAuthLogoutOptions>(
               account: const Account('test-domain', 'test-clientId'),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: WebAuthLogoutInput(
+              options: WebAuthLogoutOptions(
                   returnTo: 'http://localhost:1234', scheme: 'test-scheme')));
 
       final verificationResult =
@@ -251,10 +251,10 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
       await MethodChannelAuth0FlutterWebAuth().logout(
-          WebAuthRequest<WebAuthLogoutInput>(
+          WebAuthRequest<WebAuthLogoutOptions>(
               account: const Account('', ''),
               userAgent: UserAgent(name: '', version: ''),
-              options: WebAuthLogoutInput()));
+              options: WebAuthLogoutOptions()));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -270,11 +270,11 @@ void main() {
 
       Future<void> actual() async {
         await MethodChannelAuth0FlutterWebAuth().logout(
-            WebAuthRequest<WebAuthLogoutInput>(
+            WebAuthRequest<WebAuthLogoutOptions>(
                 account: const Account('test-domain', 'test-clientId'),
                 userAgent:
                     UserAgent(name: 'test-name', version: 'test-version'),
-                options: WebAuthLogoutInput()));
+                options: WebAuthLogoutOptions()));
       }
 
       await expectLater(actual, throwsA(isA<WebAuthException>()));

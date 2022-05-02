@@ -9,7 +9,7 @@
 
 ## 1. How can I have separate Auth0 domains for each environment on Android?
 
-This library uses [Auth0.Android](https://github.com/auth0/Auth0.Android) under the hood on Android. Auth0.Android declares a `RedirectActivity` along with an **intent-filter** in its Android Manifest file to handle the Web Auth callback and logout URLs. While this approach prevents the developer from adding an activity declaration to their application's Android Manifest file, it requires the use of [manifest placeholders](https://developer.android.com/studio/build/manage-manifests#inject_build_variables_into_the_manifest).
+This library uses [Auth0.Android](https://github.com/auth0/Auth0.Android) under the hood on Android. Auth0.Android declares a `RedirectActivity` along with an **intent-filter** in its Android Manifest file to handle the Web Auth callback and logout URLs. While this approach prevents the developer from adding an activity declaration to their app's Android Manifest file, it requires the use of [manifest placeholders](https://developer.android.com/studio/build/manage-manifests#inject_build_variables_into_the_manifest).
 
 Alternatively, you can re-declare the `RedirectActivity` in the `android/app/src/main/AndroidManifest.xml` file with your own **intent-filter** so it overrides the library's default one. If you do this then the `manifestPlaceholders` don't need to be set as long as the activity contains `tools:node="replace"` like in the snippet below.
 
@@ -61,12 +61,11 @@ That alert box is displayed and managed by `ASWebAuthenticationSession`, not by 
 If you don't need SSO, you can disable this behavior by adding `useEphemeralSession: true` to the login call. This will configure `ASWebAuthenticationSession` to not store the session cookie in the shared cookie jar, as if using an incognito browser window. With no shared cookie, `ASWebAuthenticationSession` will not prompt the user for consent.
 
 ```dart
-final result = await Auth0(domain, clientId)
-  .webAuthentication()
-  .login(useEphemeralSession: true); // No SSO, therefore no alert box
+final result = await auth0.webAuthentication
+    .login(useEphemeralSession: true); // No SSO, therefore no alert box
 ```
 
-Note that with `useEphemeralSession: true` you don't need to call `logout()` at all. Just clearing the credentials from the application will suffice. What `logout()` does is clear the shared session cookie, so that in the next login call the user gets asked to log in again. But with `useEphemeralSession: true` there will be no shared cookie to remove.
+Note that with `useEphemeralSession: true` you don't need to call `logout()` at all. Just clearing the credentials from the app will suffice. What `logout()` does is clear the shared session cookie, so that in the next login call the user gets asked to log in again. But with `useEphemeralSession: true` there will be no shared cookie to remove.
 
 You still need to call `logout()` on Android, though, as `useEphemeralSession` is iOS-only.
 
@@ -76,19 +75,19 @@ You still need to call `logout()` on Android, though, as `useEphemeralSession` i
 
 ![ios-sso-alert](assets/ios-sso-alert.png)
 
-If you need SSO and/or are willing to tolerate the alert box on the login call, but would prefer to get rid of it when calling `logout()`, you can simply not call `logout()` and just clear the credentials from the application. This means that the shared session cookie will not be removed, so to get the user to log in again you need to add the `'prompt': 'login'` parameter to the _login_ call.
+If you need SSO and/or are willing to tolerate the alert box on the login call, but would prefer to get rid of it when calling `logout()`, you can simply not call `logout()` and just clear the credentials from the app. This means that the shared session cookie will not be removed, so to get the user to log in again you need to add the `'prompt': 'login'` parameter to the _login_ call.
 
 ```dart
-final result = await Auth0(domain, clientId)
-  .webAuthentication()
-  .login(
-    useEphemeralSession: true, 
-    parameters: {'prompt': 'login'}); // Ignore the cookie (if present) and show the login page
+final result = await auth0.webAuthentication.login(
+    useEphemeralSession: true,
+    parameters: {
+      'prompt': 'login'
+    }); // Ignore the cookie (if present) and show the login page
 ```
 
 Otherwise, the browser modal will close right away and the user will be automatically logged in again, as the cookie will still be there.
 
-> ⚠️ Keeping the shared session cookie may not be an option if you have strong privacy and/or security requirements, e.g. for a banking application.
+> ⚠️ Keeping the shared session cookie may not be an option if you have strong privacy and/or security requirements, e.g. for a banking app.
 
 ## 4. Is there a way to disable the iOS _login_ alert box without `useEphemeralSession`?
 
