@@ -32,13 +32,13 @@ class MockTestPlatform extends _i1.Mock implements _i3.TestPlatform {
 
   @override
   _i4.Future<_i2.Credentials> login(
-          _i2.WebAuthRequest<_i2.WebAuthLoginInput>? request) =>
+          _i2.WebAuthRequest<_i2.WebAuthLoginOptions>? request) =>
       (super.noSuchMethod(Invocation.method(#login, [request]),
               returnValue: Future<_i2.Credentials>.value(_FakeCredentials_0()))
           as _i4.Future<_i2.Credentials>);
   @override
   _i4.Future<void> logout(
-          _i2.WebAuthRequest<_i2.WebAuthLogoutInput>? request) =>
+          _i2.WebAuthRequest<_i2.WebAuthLogoutOptions>? request) =>
       (super.noSuchMethod(Invocation.method(#logout, [request]),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);

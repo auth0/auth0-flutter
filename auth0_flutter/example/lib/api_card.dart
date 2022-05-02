@@ -20,9 +20,6 @@ class ApiCardState extends State<ApiCard> {
   String usernameOrEmail = '';
   String password = '';
 
-  final usernameOrEmailController = TextEditingController();
-  final passwordController = TextEditingController();
-
   @override
   Widget build(final BuildContext context) {
     return Card(
@@ -34,10 +31,10 @@ class ApiCardState extends State<ApiCard> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
                   TextFormField(
-                    controller: usernameOrEmailController,
                     decoration: const InputDecoration(
                       hintText: 'Username or email',
                     ),
+                    onChanged: (final input) => usernameOrEmail = input,
                     validator: (final String? value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter an username or email';
@@ -46,13 +43,13 @@ class ApiCardState extends State<ApiCard> {
                     },
                   ),
                   TextFormField(
-                    controller: passwordController,
                     decoration: const InputDecoration(
                       hintText: 'Password',
                     ),
                     obscureText: true,
                     enableSuggestions: false,
                     autocorrect: false,
+                    onChanged: (final input) => password = input,
                     validator: (final String? value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter a password';
@@ -64,7 +61,7 @@ class ApiCardState extends State<ApiCard> {
                     onPressed: () {
                       if (_formKey.currentState != null &&
                           _formKey.currentState!.validate()) {
-                        widget.action(usernameOrEmailController.text, passwordController.text);
+                        widget.action(usernameOrEmail, password);
                       }
                     },
                     child: const Text('API Login'),

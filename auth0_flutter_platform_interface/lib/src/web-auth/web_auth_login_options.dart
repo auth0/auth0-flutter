@@ -1,14 +1,7 @@
 import '../request/request_options.dart';
+import 'id_token_validation_config.dart';
 
-class IdTokenValidationConfig {
-  final int? leeway;
-  final String? issuer;
-  final int? maxAge;
-
-  const IdTokenValidationConfig({this.leeway, this.issuer, this.maxAge});
-}
-
-class WebAuthLoginInput implements RequestOptions {
+class WebAuthLoginOptions implements RequestOptions {
   final IdTokenValidationConfig? idTokenValidationConfig;
   final String? audience;
   final Set<String> scopes;
@@ -19,8 +12,8 @@ class WebAuthLoginInput implements RequestOptions {
   final Map<String, String> parameters;
   final String? scheme;
 
-  WebAuthLoginInput({
-      this.idTokenValidationConfig,
+  WebAuthLoginOptions(
+      {this.idTokenValidationConfig,
       this.audience,
       this.scopes = const {},
       this.redirectUrl,

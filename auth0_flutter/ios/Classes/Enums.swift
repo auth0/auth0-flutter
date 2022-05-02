@@ -1,13 +1,3 @@
-enum AccountProperty: String {
-    case clientId
-    case domain
-}
-
-enum UserAgentProperty: String {
-    case name
-    case version
-}
-
 enum CredentialsProperty: String, CaseIterable {
     case accessToken
     case idToken
