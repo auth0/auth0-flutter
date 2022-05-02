@@ -10,9 +10,9 @@ import 'pages/system_page.dart';
 dart_dot_env.DotEnv env = dart_dot_env.DotEnv(includePlatformEnvironment: true)
   ..load();
 
-String email = env['AUTH0_TEST_USERNAME'] ?? '';
-String password = env['AUTH0_TEST_PASSWORD'] ?? '';
-String appiumUrl = env['AUTH0_TEST_APPIUM_URL'] ?? '';
+String email = env['USER_EMAIL'] ?? '';
+String password = env['USER_PASSWORD'] ?? '';
+String appiumUrl = env['APPIUM_URL'] ?? '';
 
 void main() {
   late AppiumWebDriver driver;
