@@ -19,7 +19,7 @@ class WebAuthentication {
         const IdTokenValidationConfig(),
   }) =>
       Auth0FlutterWebAuthPlatform.instance.login(createWebAuthRequest(
-          WebAuthLoginInput(
+          WebAuthLoginOptions(
               audience: audience,
               scopes: scopes,
               redirectUrl: redirectUrl,
@@ -32,7 +32,7 @@ class WebAuthentication {
 
   Future<void> logout({final String? returnTo, final String? scheme}) =>
       Auth0FlutterWebAuthPlatform.instance.logout(createWebAuthRequest(
-        WebAuthLogoutInput(returnTo: returnTo, scheme: scheme),
+        WebAuthLogoutOptions(returnTo: returnTo, scheme: scheme),
       ));
 
   WebAuthRequest<TOptions>
