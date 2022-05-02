@@ -1,6 +1,6 @@
-# Auth0 SDK for Flutter (Early Access)
+# Auth0 SDK for Flutter (Beta)
 
-> ⚠️ This library is currently in Early Access. We do not recommend using this library in production yet. As we move towards Beta, please be aware that releases may contain breaking changes.
+> ⚠️ This library is currently in Beta. We do not recommend using this library in production yet. As we move towards First Availaibility, please be aware that releases may contain breaking changes.
 
 | Package                                                                 | Description                                   |
 |:------------------------------------------------------------------------|:----------------------------------------------|
