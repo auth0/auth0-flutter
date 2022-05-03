@@ -48,7 +48,7 @@ appium
 The above tests rely on a couple of environment variables that can be defined in **/auth0_flutter/example/.env**:
 
 - `AUTH0_DOMAIN`: Auth0 Domain
-- `AUTH0_CLIENT_ID`: Auth0 Client ID
+- `AUTH0_CLIENT_ID`: Auth0 Client Id
 - `USER_EMAIL`: Email to log into the configured Auth0 Domain and Client Id
 - `USER_PASSWORD`: Password to log into the configured Auth0 Domain and Client Id
 - `APPIUM_URL`: The URL to the Appium (`/wd/hub`) Endpoint.
