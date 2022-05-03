@@ -54,7 +54,7 @@ jobs:
           name: Build Android Example App
           command: |
             cp .env.example .env
-            flutter build apk --debug
+            flutter build apk
           working_directory: ./auth0_flutter/example
       - run:
           name: Run tests
@@ -75,44 +75,6 @@ jobs:
           path: ~/test-results
       - store_artifacts:
           path: ~/test-results/junit
-  integration_test_android:
-    executor:
-      name: android/android-machine
-      resource-class: medium
-      tag: 2021.10.1
-    environment:
-      APPIUM_URL: http://127.0.0.1:4723/wd/hub/
-    steps:
-      - checkout
-      - flutter/install_sdk_and_pub:
-          app-dir: ./auth0_flutter
-          flutter_version: << pipeline.parameters.flutter_version >>
-      - android/restore-gradle-cache
-      - android/restore-build-cache
-      - run:
-          name: Build Android Example App
-          command: |
-            cp .env.example .env
-            flutter build apk --debug
-          working_directory: ./auth0_flutter/example
-      - run:
-          name: Run integration tests
-          command: |
-            npm i -g appium appium-flutter-driver
-            npx appium-doctor
-      - run:
-          name: SDKs
-          command: sdkmanager --list
-      - android/create-avd:
-          avd-name: myavd
-          install: true
-          system-image: system-images;android-30;default;x86_64
-      - android/start-emulator:
-          avd-name: myavd
-          no-window: true
-          restore-gradle-cache-prefix: v1a
-          post-emulator-launch-assemble-command: npx concurrently --raw --kill-others --success first "adb kill-server && adb start-server && appium" "adb kill-server && adb start-server && cd auth0_flutter/example && dart test integration_test/smoke_test.dart"
-
   test_ios:
     parameters:
         ios_simulator:
@@ -142,7 +104,6 @@ jobs:
               xcodebuild test -scheme "$SCHEME" -workspace "$WORKSPACE" -destination "$SIMULATOR" -skip-testing:"$SCHEME"UITests
             fi
           working_directory: ./auth0_flutter/example/ios
-
 workflows:
   build_and_test:
     jobs:
@@ -154,6 +115,3 @@ workflows:
           ios_simulator: iPhone 13
           requires:
             - test_flutter_package
-      - integration_test_android:
-          context:
-            - browserstack-env
