@@ -18,7 +18,7 @@ class WebAuthentication {
     final IdTokenValidationConfig idTokenValidationConfig =
         const IdTokenValidationConfig(),
   }) =>
-      Auth0FlutterWebAuthPlatform.instance.login(createWebAuthRequest(
+      Auth0FlutterWebAuthPlatform.instance.login(_createWebAuthRequest(
           WebAuthLoginOptions(
               audience: audience,
               scopes: scopes,
@@ -31,12 +31,12 @@ class WebAuthentication {
               useEphemeralSession: useEphemeralSession)));
 
   Future<void> logout({final String? returnTo, final String? scheme}) =>
-      Auth0FlutterWebAuthPlatform.instance.logout(createWebAuthRequest(
+      Auth0FlutterWebAuthPlatform.instance.logout(_createWebAuthRequest(
         WebAuthLogoutOptions(returnTo: returnTo, scheme: scheme),
       ));
 
   WebAuthRequest<TOptions>
-      createWebAuthRequest<TOptions extends RequestOptions>(
+      _createWebAuthRequest<TOptions extends RequestOptions>(
               final TOptions options) =>
           WebAuthRequest<TOptions>(
               account: _account, options: options, userAgent: _userAgent);
