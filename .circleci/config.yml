@@ -1,5 +1,5 @@
 version: 2.1
-orbs: 
+orbs:
   android: circleci/android@2
   macos: circleci/macos@2
   flutter: circleci/flutter@1
@@ -104,7 +104,6 @@ jobs:
               xcodebuild test -scheme "$SCHEME" -workspace "$WORKSPACE" -destination "$SIMULATOR" -skip-testing:"$SCHEME"UITests
             fi
           working_directory: ./auth0_flutter/example/ios
-      
 workflows:
   build_and_test:
     jobs:
