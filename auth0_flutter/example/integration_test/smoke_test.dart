@@ -26,8 +26,6 @@ void main() {
     examplePage = ExamplePage(driver: driver);
     auth0Page = Auth0Page(driver: driver);
     systemPage = SystemPage(driver: driver);
-
-    driver.driver.timeouts.setImplicitTimeout(const Duration(seconds: 2));
   });
 
   tearDownAll(() async {
