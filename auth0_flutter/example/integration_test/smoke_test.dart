@@ -47,10 +47,8 @@ void main() {
     // which will redirect to Auth0 and redirect back.
     await examplePage.startLogout();
 
-    await Future<void>.delayed(const Duration(seconds: 2));
+    final loginButton = await examplePage.getLoginButton();
 
-    // Expect the logout button to be hidden
-    await expectLater(() => examplePage.getLogoutButton(),
-        throwsA(isA<NoSuchElementException>()));
+    expect(loginButton, isNotNull);
   });
 }
