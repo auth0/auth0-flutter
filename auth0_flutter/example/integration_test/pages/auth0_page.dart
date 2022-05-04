@@ -3,6 +3,10 @@ import 'package:appium_driver/async_io.dart';
 import '../utils/wait_for.dart';
 
 class Auth0Page {
+  static const webViewClass = 'android.webkit.WebView';
+  static const inputClass = 'android.widget.EditText';
+  static const buttonClass = 'android.widget.Button';
+
   AppiumWebDriver driver;
 
   Auth0Page({required this.driver});
@@ -10,6 +14,7 @@ class Auth0Page {
   Future<void> enterCredentialsAndSubmit(
       final String email, final String password) async {
     await waitForBrowser();
+    await waitForInputs();
 
     final emailInput = await getEmailInput();
     final passwordInput = await getPasswordInput();
@@ -24,24 +29,27 @@ class Auth0Page {
 
   Future<void> waitForBrowser() async {
     await waitForElement(
-        driver, const AppiumBy.className('android.webkit.WebView'));
+        driver, const AppiumBy.className(webViewClass));
+  }
+
+  Future<void> waitForInputs() async {
+    await waitForElement(driver, const AppiumBy.className(inputClass));
   }
 
   Future<AppiumWebElement> getEmailInput() {
     return driver
-        .findElements(const AppiumBy.className('android.widget.EditText'))
+        .findElements(const AppiumBy.className(inputClass))
         .elementAt(0);
   }
 
   Future<AppiumWebElement> getPasswordInput() {
     return driver
-        .findElements(const AppiumBy.className('android.widget.EditText'))
+        .findElements(const AppiumBy.className(inputClass))
         .elementAt(1);
   }
 
   Future<AppiumWebElement> getLoginButton() {
     return driver
-        .findElements(const AppiumBy.className('android.widget.Button'))
-        .elementAt(1);
+        .findElements(const AppiumBy.className(buttonClass)).last;
   }
 }

@@ -2,7 +2,7 @@ import 'package:appium_driver/async_io.dart';
 
 Future<AppiumWebElement> waitForElement(
     final AppiumWebDriver driver, final AppiumBy by,
-    {final int timeout = 2500}) async {
+    {final int timeout = 5000}) async {
   const delayDuration = Duration(milliseconds: 500);
   final maxTries = timeout / delayDuration.inMilliseconds;
 
