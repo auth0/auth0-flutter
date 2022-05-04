@@ -257,7 +257,7 @@ await auth0.webAuthentication.logout();
 
 ### SSO Alert Box (iOS)
 
-![ios-sso-alert](assets/ios-sso-alert.png)
+![ios-sso-alert](../assets/ios-sso-alert.png)
 
 Check the [FAQ](FAQ.md) for more information about the alert box that pops up **by default** when using Web Auth on iOS.
 
