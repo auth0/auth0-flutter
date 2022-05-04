@@ -18,11 +18,14 @@ class WebAuthCard extends StatelessWidget {
         child: Padding(
             padding: const EdgeInsets.all(padding),
             child: SizedBox(
-              width: double.maxFinite,
-              child: ElevatedButton(
-                onPressed: action,
-                child: Text(label),
-              ),
-            )));
+                width: double.maxFinite,
+                child: Semantics(
+                  label: label,
+                  child: ElevatedButton(
+                    key: Key(label),
+                    onPressed: action,
+                    child: Text(label),
+                  ),
+                ))));
   }
 }
