@@ -1,5 +1,7 @@
 # Auth0 SDK for Flutter (Beta)
 
+Auth0 SDK for Android / iOS Flutter apps.
+
 > ⚠️ This library is currently in Beta. We do not recommend using this library in production yet. As we move towards First Availaibility, please be aware that releases may contain breaking changes.
 
 | Package                                                                 | Description                                   |
@@ -10,6 +12,12 @@
 ## Getting Started
 
 See the README of the [auth0_flutter](./auth0_flutter#readme) package.
+
+## Issue Reporting
+
+For general support or usage questions, use the [Auth0 Community](https://community.auth0.com/c/sdks/5) forums or raise a [support ticket](https://support.auth0.com/). Only [raise an issue](https://github.com/auth0/auth0_flutter/issues) if you have found a bug or want to request a feature.
+
+**Do not report security vulnerabilities on the public GitHub issue tracker.** The [Responsible Disclosure Program](https://auth0.com/responsible-disclosure-policy) details the procedure for disclosing security issues.
 
 ## What is Auth0?
 
