@@ -41,7 +41,11 @@ Rename the `.env.example` file to `.env`. Then, open it and fill in the values:
 
 ### 3. Configure Android project
 
-Open the `android/app/src/main/res/values/strings.xml` file and replace `YOUR_AUTH0_DOMAIN` with your own value, e.g. `company.us.auth0.com`. This value will be passed to the respective manifest placeholder.
+Copy the `android/app/src/main/res/values/strings.xml.example` file into a new file called `strings.xml` in the same folder. This new file is ignored by Git.
+
+Open the `strings.xml` file and replace `YOUR_AUTH0_DOMAIN` with your own value, e.g. `company.us.auth0.com`. This value will be passed to the respective manifest placeholder.
+
+Configure the `com_auth0_scheme` entry with the correct value, if you require a custom scheme.
 
 ## What is Auth0?
 
