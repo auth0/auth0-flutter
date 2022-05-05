@@ -53,7 +53,7 @@ auth0_flutter:
     path: path/to/auth0_flutter
 ```
 
-Then run `flutter pub get`.
+Then, run `flutter pub get`.
 
 ## Getting Started
 
@@ -132,7 +132,7 @@ manifestPlaceholders = [auth0Domain: "company.us.auth0.com", auth0Scheme: "${app
 > 💡 If your Android app is using [product flavors](https://developer.android.com/studio/build/build-variants#product-flavors), you might need to specify different manifest placeholders for each flavor.
 
 <details>
-  <summary>Skipping the Web Auth configuration</summary>
+  <summary>Skipping the Android Web Auth configuration</summary>
 
   If you don't plan to use Web Auth, you will notice that the compiler will still prompt you to provide the `manifestPlaceholders` values, since the `RedirectActivity` included in this library will require them, and the Gradle tasks won't be able to run without them.
 
