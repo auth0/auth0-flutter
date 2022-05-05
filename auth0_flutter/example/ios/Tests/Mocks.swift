@@ -51,9 +51,9 @@ struct MockAuth0APIError: Auth0APIError {
 
     init(info: [String: Any], statusCode: Int, cause: Error?) {
         self.info = info
-        self.code = "foo"
+        self.code = ""
         self.statusCode = statusCode
-        self.debugDescription = "bar"
+        self.debugDescription = ""
         self.cause = cause
     }
 
