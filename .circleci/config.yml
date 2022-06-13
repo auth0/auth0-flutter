@@ -65,11 +65,11 @@ jobs:
             flutter build apk
           working_directory: ./auth0_flutter/example
       - run:
-          name: Run tests
+          name: Run Android tests
           command: |
             mv local.properties.ci local.properties
             mv ../.env.example ../.env
-            gradle clean test
+            gradle clean jacocoTestReportDebug
           working_directory: ./auth0_flutter/example/android
       - android/save-gradle-cache
       - android/save-build-cache
@@ -83,6 +83,9 @@ jobs:
           path: ~/test-results
       - store_artifacts:
           path: ~/test-results/junit
+      - codecov/upload:
+          file: ./auth0_flutter/example/build/auth0_flutter/reports/jacoco/debug/jacoco.xml
+          upload_name: Upload Android unit test coverage report
   test_ios:
     parameters:
       ios_simulator:
