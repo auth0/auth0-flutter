@@ -107,6 +107,10 @@ class SpyWebAuth: WebAuth {
         return self
     }
 
+    func provider(_ provider: @escaping WebAuthProvider) -> Self {
+        return self
+    }
+
     func start(_ callback: @escaping (WebAuthResult<Credentials>) -> Void) {
         calledLogin = true
         callback(loginResult)
