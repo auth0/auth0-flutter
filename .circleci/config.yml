@@ -3,6 +3,7 @@ orbs:
   android: circleci/android@2
   macos: circleci/macos@2
   flutter: circleci/flutter@1
+  codecov: codecov/codecov@3
 parameters:
   flutter_version:
     type: string
@@ -25,7 +26,7 @@ jobs:
       - run:
           name: Run package unit tests
           command: |
-            flutter test
+            flutter test --coverage
           working_directory: ./auth0_flutter
       - flutter/install_pub:
           app-dir: ./auth0_flutter_platform_interface
@@ -36,8 +37,16 @@ jobs:
       - run:
           name: Run platform interface unit tests
           command: |
-            flutter test
+            flutter test --coverage
           working_directory: ./auth0_flutter_platform_interface
+      - codecov/upload:
+          file: ./auth0_flutter/coverage/lcov.info
+          upload_name: Auth0 Flutter
+          flags: auth0_flutter
+      - codecov/upload:
+          file: ./auth0_flutter_platform_interface/coverage/lcov.info
+          upload_name: Auth0 Flutter Platform Interface
+          flags: auth0_flutter_platform_interface
   test_android:
     executor:
       name: android/android-machine
@@ -58,11 +67,11 @@ jobs:
             flutter build apk
           working_directory: ./auth0_flutter/example
       - run:
-          name: Run tests
+          name: Run Android tests
           command: |
             mv local.properties.ci local.properties
             mv ../.env.example ../.env
-            gradle clean test
+            gradle clean jacocoTestReportDebug
           working_directory: ./auth0_flutter/example/android
       - android/save-gradle-cache
       - android/save-build-cache
@@ -76,12 +85,20 @@ jobs:
           path: ~/test-results
       - store_artifacts:
           path: ~/test-results/junit
+      - codecov/upload:
+          file: ./auth0_flutter/example/build/auth0_flutter/reports/jacoco/debug/jacoco.xml
+          upload_name: Auth0 Flutter Android
+          flags: auth0_flutter_android
   test_ios:
     parameters:
       ios_simulator:
         type: string
     macos:
       xcode: 13
+    environment:
+      BUNDLE_RETRY: 3
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
     steps:
       - checkout
       - macos/preboot-simulator:
@@ -91,8 +108,12 @@ jobs:
       - flutter/install_sdk_and_pub:
           app-dir: ./auth0_flutter/example
           flutter_version: << pipeline.parameters.flutter_version >>
+      - flutter/install_ios_gem:
+          app-dir: ./auth0_flutter/example
+      - flutter/install_ios_pod:
+          app-dir: ./auth0_flutter/example
       - run:
-          name: Run tests
+          name: Run iOS tests
           command: |
             printf '%s\n%s\n%s' "AUTH0_DOMAIN=$AUTH0_DOMAIN" "AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID" 'AUTH0_CUSTOM_SCHEME=demo' >> ../.env
             pod install
@@ -105,6 +126,18 @@ jobs:
               xcodebuild test -scheme "$SCHEME" -workspace "$WORKSPACE" -destination "$SIMULATOR" -skip-testing:"$SCHEME"UITests
             fi
           working_directory: ./auth0_flutter/example/ios
+      - run:
+          name: Generate iOS test coverage report
+          command: |
+            mkdir -p ~/test-results/cobertura
+            bundle exec slather
+          working_directory: ./auth0_flutter/example/ios
+      - store_artifacts:
+          path: ~/test-results/cobertura
+      - codecov/upload:
+          file: ~/test-results/cobertura/cobertura.xml
+          upload_name: Auth0 Flutter iOS
+          flags: auth0_flutter_ios
 workflows:
   build_and_test:
     jobs:
