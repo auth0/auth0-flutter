@@ -41,10 +41,12 @@ jobs:
           working_directory: ./auth0_flutter_platform_interface
       - codecov/upload:
           file: ./auth0_flutter/coverage/lcov.info
-          upload_name: Flutter Package
+          upload_name: Auth0 Flutter
+          flags: auth0_flutter
       - codecov/upload:
           file: ./auth0_flutter_platform_interface/coverage/lcov.info
-          upload_name: Flutter Platform Interface Package
+          upload_name: Auth0 Flutter Platform Interface
+          flags: auth0_flutter_platform_interface
   test_android:
     executor:
       name: android/android-machine
@@ -85,7 +87,8 @@ jobs:
           path: ~/test-results/junit
       - codecov/upload:
           file: ./auth0_flutter/example/build/auth0_flutter/reports/jacoco/debug/jacoco.xml
-          upload_name: Upload Android unit test coverage report
+          upload_name: Auth0 Flutter Android
+          flags: auth0_flutter_android
   test_ios:
     parameters:
       ios_simulator:
@@ -133,7 +136,8 @@ jobs:
           path: ~/test-results/cobertura
       - codecov/upload:
           file: ~/test-results/cobertura/cobertura.xml
-          upload_name: Upload iOS test coverage report
+          upload_name: Auth0 Flutter iOS
+          flags: auth0_flutter_ios
 workflows:
   build_and_test:
     jobs:
