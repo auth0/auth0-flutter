@@ -9,6 +9,16 @@ Auth0 SDK for Android / iOS Flutter apps.
 | [auth0_flutter](./auth0_flutter/)                                       | SDK for Android / iOS Flutter applications    |
 | [auth0_flutter_platform_interface](./auth0_flutter_platform_interface/) | Common interface for platform implementations |
 
+## Features
+
+- Web Auth login and logout
+- Authentication API operations:
+  + Login with username/email and password
+  + Signup
+  + Get user information from `/userinfo`
+  + Renew credentials
+  + Reset password
+
 ## Getting Started
 
 See the README of the [auth0_flutter](./auth0_flutter#readme) package.
