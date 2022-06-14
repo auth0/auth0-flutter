@@ -1,3 +1,7 @@
+![Stage: Beta Release](https://img.shields.io/badge/stage-beta-orange)
+[![CircleCI](https://img.shields.io/circleci/build/github/auth0/auth0-flutter)](https://circleci.com/gh/auth0/auth0-flutter)
+[![Codecov](https://img.shields.io/codecov/c/github/auth0/auth0-flutter)](https://codecov.io/gh/auth0/auth0-flutter)
+
 # Auth0 SDK for Flutter (Beta)
 
 Auth0 SDK for Android / iOS Flutter apps.
