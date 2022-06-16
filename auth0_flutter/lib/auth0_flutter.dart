@@ -1,11 +1,14 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 
 import 'src/authentication_api.dart';
+import 'src/credentials_manager.dart';
 import 'src/version.dart';
 import 'src/web_authentication.dart';
 
 export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
-    show WebAuthException, ApiException, IdTokenValidationConfig;
+    show WebAuthException, ApiException, IdTokenValidationConfig, Credentials;
+
+export 'src/credentials_manager.dart';
 
 class Auth0 {
   final Account _account;
@@ -19,4 +22,6 @@ class Auth0 {
       WebAuthentication(_account, _userAgent);
 
   AuthenticationApi get api => AuthenticationApi(_account, _userAgent);
+
+  CredentialsManager credentialsManager() => CredentialsManager(_account, _userAgent);
 }

@@ -7,6 +7,7 @@ class Credentials {
   final DateTime expiresAt;
   final Set<String> scopes;
   final UserProfile userProfile;
+  final String type;
 
   Credentials({
     required this.idToken,
@@ -15,6 +16,7 @@ class Credentials {
     required this.expiresAt,
     this.scopes = const {},
     required this.userProfile,
+    required this.type,
   });
 
   factory Credentials.fromMap(final Map<dynamic, dynamic> result) =>
@@ -26,5 +28,15 @@ class Credentials {
         scopes: Set<String>.from(result['scopes'] as List<Object?>),
         userProfile: UserProfile.fromMap(Map<String, dynamic>.from(
             result['userProfile'] as Map<dynamic, dynamic>)),
+        type: result['type'] as String,
       );
+
+  Map<String, dynamic> toMap() => {
+        'idToken': idToken,
+        'accessToken': accessToken,
+        'refreshToken': refreshToken,
+        'expiresAt': expiresAt.toIso8601String(),
+        'scopes': scopes.toList(),
+        'type': type,
+      };
 }
