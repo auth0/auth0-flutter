@@ -6,28 +6,22 @@ class CredentialsManager {
 
   CredentialsManager(this._account, this._userAgent);
 
-  Future<Credentials> getCredentials() {
-    return CredentialsManagerPlatform.instance
-        .getCredentials(_createApiRequest(GetCredentialsOptions()));
-  }
+  Future<Credentials> getCredentials() => CredentialsManagerPlatform.instance
+      .getCredentials(_createApiRequest(GetCredentialsOptions()));
 
-  Future<void> saveCredentials(final Credentials credentials) {
-    return CredentialsManagerPlatform.instance.saveCredentials(
-        _createApiRequest(SaveCredentialsOptions(credentials: credentials)));
-  }
+  Future<void> saveCredentials(final Credentials credentials) =>
+      CredentialsManagerPlatform.instance.saveCredentials(
+          _createApiRequest(SaveCredentialsOptions(credentials: credentials)));
 
-  Future<bool> hasValidCredentials() {
-    return CredentialsManagerPlatform.instance
-        .hasValidCredentials(_createApiRequest(HasValidCredentialsOptions()));
-  }
+  Future<bool> hasValidCredentials() => CredentialsManagerPlatform.instance
+      .hasValidCredentials(_createApiRequest(null));
 
-  Future<void> clearCredentials() {
-    return CredentialsManagerPlatform.instance
-        .clearCredentials(_createApiRequest(ClearCredentialsOptions()));
-  }
+  Future<void> clearCredentials() => CredentialsManagerPlatform.instance
+      .clearCredentials(_createApiRequest(null));
 
-  ApiRequest<TOptions> _createApiRequest<TOptions extends RequestOptions>(
-          final TOptions options) =>
-      ApiRequest<TOptions>(
-          account: _account, options: options, userAgent: _userAgent);
+  CredentialsManagerRequest<TOptions>
+      _createApiRequest<TOptions extends RequestOptions>(
+              final TOptions? options) =>
+          CredentialsManagerRequest<TOptions>(
+              account: _account, options: options, userAgent: _userAgent);
 }

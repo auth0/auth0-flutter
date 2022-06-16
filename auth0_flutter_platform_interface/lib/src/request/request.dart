@@ -3,19 +3,28 @@ import '../user_agent.dart';
 import 'request_options.dart';
 
 abstract class BaseRequest<TOptions extends RequestOptions> {
-  final TOptions options;
+  final TOptions? options;
   final Account account;
   final UserAgent userAgent;
 
   BaseRequest({
     required this.account,
-    required this.options,
+    this.options,
     required this.userAgent,
   });
 
-  Map<String, dynamic> toMap() => options.toMap()
+  Map<String, dynamic> toMap() => (options?.toMap() ?? {})
     ..addAll({'_account': account.toMap()})
     ..addAll({'_userAgent': userAgent.toMap()});
+}
+
+class CredentialsManagerRequest<TOptions extends RequestOptions>
+    extends BaseRequest<TOptions> {
+  CredentialsManagerRequest({
+    required final Account account,
+    final TOptions? options,
+    required final UserAgent userAgent,
+  }) : super(account: account, options: options, userAgent: userAgent);
 }
 
 class ApiRequest<TOptions extends RequestOptions>
