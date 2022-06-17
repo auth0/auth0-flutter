@@ -1,15 +1,13 @@
-import '../account.dart';
-import '../user_agent.dart';
-import 'request_options.dart';
+import '../../auth0_flutter_platform_interface.dart';
 
-abstract class BaseRequest<TOptions extends RequestOptions> {
-  final TOptions? options;
+abstract class BaseRequest<TOptions extends RequestOptions?> {
   final Account account;
+  final TOptions options;
   final UserAgent userAgent;
 
   BaseRequest({
     required this.account,
-    this.options,
+    required this.options,
     required this.userAgent,
   });
 
@@ -18,8 +16,8 @@ abstract class BaseRequest<TOptions extends RequestOptions> {
     ..addAll({'_userAgent': userAgent.toMap()});
 }
 
-class CredentialsManagerRequest<TOptions extends RequestOptions>
-    extends BaseRequest<TOptions> {
+class CredentialsManagerRequest<TOptions extends RequestOptions?>
+    extends BaseRequest<TOptions?> {
   CredentialsManagerRequest({
     required final Account account,
     final TOptions? options,
