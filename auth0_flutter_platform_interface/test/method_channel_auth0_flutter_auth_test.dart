@@ -12,7 +12,8 @@ class MethodCallHandler {
     'idToken': 'idToken',
     'expiresAt': '2022-01-01',
     'scopes': ['a', 'b'],
-    'userProfile': {'sub': '123', 'name': 'John Doe'}
+    'userProfile': {'sub': '123', 'name': 'John Doe'},
+    'type': 'Bearer'
   };
 
   static const Map<dynamic, dynamic> loginResult = {
@@ -36,7 +37,8 @@ class MethodCallHandler {
     'refreshToken': 'refreshToken',
     'expiresAt': '2022-01-01',
     'scopes': ['a', 'b'],
-    'userProfile': {'sub': '123', 'name': 'John Doe'}
+    'userProfile': {'sub': '123', 'name': 'John Doe'},
+    'type': 'Bearer'
   };
 
   Future<dynamic>? methodCallHandler(final MethodCall? methodCall) async {}

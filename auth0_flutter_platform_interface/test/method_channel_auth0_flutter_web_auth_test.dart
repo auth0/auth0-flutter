@@ -12,7 +12,8 @@ class MethodCallHandler {
     'idToken': 'idToken',
     'expiresAt': '2022-01-01',
     'scopes': ['a', 'b'],
-    'userProfile': {'sub': '123', 'name': 'John Doe'}
+    'userProfile': {'sub': '123', 'name': 'John Doe'},
+    'type': 'Bearer'
   };
 
   static const Map<dynamic, dynamic> loginResult = {
@@ -128,7 +129,7 @@ void main() {
       expect(verificationResult.arguments['useEphemeralSession'], false);
       expect(verificationResult.arguments['idTokenValidationConfig'], isNull);
     });
-   
+
     test('correctly returns the response from the Method Channel', () async {
       when(mocked.methodCallHandler(any))
           .thenAnswer((final _) async => MethodCallHandler.loginResult);
@@ -151,7 +152,7 @@ void main() {
       expect(result.userProfile.name,
           MethodCallHandler.loginResult['userProfile']['name']);
     });
-  
+
     test(
         'correctly returns the response from the Method Channel when properties missing',
         () async {
@@ -261,7 +262,7 @@ void main() {
       expect(verificationResult.arguments['returnTo'], isNull);
       expect(verificationResult.arguments['scheme'], isNull);
     });
-  
+
     test(
         'throws an WebAuthException when method channel throws a PlatformException',
         () async {
