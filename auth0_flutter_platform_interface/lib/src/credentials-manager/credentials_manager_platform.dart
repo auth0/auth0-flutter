@@ -5,6 +5,7 @@ import '../credentials.dart';
 import '../request/request.dart';
 import 'method_channel_credentials_manager.dart';
 import 'options/get_credentials_options.dart';
+import 'options/has_valid_credentials_options.dart';
 import 'options/save_credentials_options.dart';
 
 abstract class CredentialsManagerPlatform extends PlatformInterface {
@@ -38,7 +39,7 @@ abstract class CredentialsManagerPlatform extends PlatformInterface {
   }
 
   Future<bool> hasValidCredentials(
-      final CredentialsManagerRequest request) {
+      final CredentialsManagerRequest<HasValidCredentialsOptions> request) {
     throw UnimplementedError('hasValidCredentials() has not been implemented');
   }
 }

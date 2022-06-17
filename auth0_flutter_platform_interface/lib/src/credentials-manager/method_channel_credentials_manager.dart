@@ -7,6 +7,7 @@ import '../request/request_options.dart';
 import 'credentials_manager_exception.dart';
 import 'credentials_manager_platform.dart';
 import 'options/get_credentials_options.dart';
+import 'options/has_valid_credentials_options.dart';
 import 'options/save_credentials_options.dart';
 
 const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter/credentials_manager');
@@ -35,7 +36,7 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
   }
 
   @override
-  Future<bool> hasValidCredentials(final CredentialsManagerRequest request) async {
+  Future<bool> hasValidCredentials(final CredentialsManagerRequest<HasValidCredentialsOptions> request) async {
     final bool? result =
         await invokeRequest(method: credentialsManagerHasValidCredentialsMethod, request: request);
 
