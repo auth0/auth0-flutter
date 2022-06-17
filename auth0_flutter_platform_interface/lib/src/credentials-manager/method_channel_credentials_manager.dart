@@ -63,7 +63,7 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
     return result;
   }
 
-  Future<Map<String, dynamic>> invokeMapRequest<TOptions extends RequestOptions>({
+  Future<Map<String, dynamic>> invokeMapRequest<TOptions extends RequestOptions?>({
     required final String method,
     required final CredentialsManagerRequest<TOptions> request,
     final bool? throwOnNull = true,
