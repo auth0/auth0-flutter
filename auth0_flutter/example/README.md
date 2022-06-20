@@ -1,6 +1,6 @@
-# auth0_flutter_example
+# Auth0 Flutter SDK: Example
 
-Flutter app for Android / iOS that demonstrates how to use the auth0_flutter SDK.
+Flutter app for Android / iOS that demonstrates how to use the Auth0 Flutter SDK.
 
 ## Configuration
 

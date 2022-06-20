@@ -7,6 +7,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 environment:
   sdk: ">=2.16.0 <3.0.0"
+  flutter: ">=3.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -37,13 +38,13 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   appium_driver: ^0.5.2
+  dotenv: '^4.0.1'
   flutter_driver:
     sdk: flutter
   flutter_lints: ^1.0.0
   flutter_test:
     sdk: flutter
   test: '^1.16.5'
-  dotenv: '^4.0.1'
 
 
 # For information on the generic Dart part of this file, see the

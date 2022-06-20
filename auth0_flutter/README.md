@@ -1,4 +1,4 @@
-# auth0_flutter (Beta)
+# Auth0 SDK for Flutter (Beta)
 
 [![CircleCI](https://img.shields.io/circleci/project/github/auth0/auth0-flutter.svg?style=flat-square)](https://circleci.com/gh/auth0/auth0-flutter/tree/main)
 
@@ -40,7 +40,7 @@ TBD
 
 | Flutter    | Android         |iOS                |
 |:-----------|:----------------|:------------------|
-| SDK 2.10+  | Android API 21+ | iOS 12+           |
+| SDK 3.0+   | Android API 21+ | iOS 12+           |
 | Dart 2.16+ | Java 8+         | Swift 5.3+        |
 |            |                 | Xcode 12.x / 13.x |
 
