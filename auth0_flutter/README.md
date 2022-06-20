@@ -41,7 +41,7 @@ TBD
 | Flutter    | Android         |iOS                |
 |:-----------|:----------------|:------------------|
 | SDK 3.0+   | Android API 21+ | iOS 12+           |
-| Dart 2.16+ | Java 8+         | Swift 5.3+        |
+| Dart 2.17+ | Java 8+         | Swift 5.3+        |
 |            |                 | Xcode 12.x / 13.x |
 
 ## Installation
