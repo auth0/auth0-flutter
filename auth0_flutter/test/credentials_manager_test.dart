@@ -35,14 +35,14 @@ void main() {
     reset(mockedPlatform);
   });
 
-  group('getCredentials', () {
+  group('get', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.getCredentials(any))
           .thenAnswer((final _) async => TestPlatform.credentials);
 
       await Auth0('test-domain', 'test-clientId')
           .credentialsManager()
-          .getCredentials(
+          .get(
               minTtl: 30, scopes: {'a', 'b'}, parameters: {'a': 'b'});
 
       final verificationResult =
@@ -61,7 +61,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .credentialsManager()
-          .getCredentials();
+          .get();
 
       final verificationResult =
           verify(mockedPlatform.getCredentials(captureAny)).captured.single
@@ -74,14 +74,14 @@ void main() {
     });
   });
 
-  group('saveCredentials', () {
+  group('set', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.saveCredentials(any))
           .thenAnswer((final _) async => {});
 
       await Auth0('test-domain', 'test-clientId')
           .credentialsManager()
-          .saveCredentials(TestPlatform.credentials);
+          .set(TestPlatform.credentials);
 
       final verificationResult =
           verify(mockedPlatform.saveCredentials(captureAny)).captured.single
@@ -159,14 +159,14 @@ void main() {
     });
   });
 
-  group('clearCredentials', () {
+  group('clear', () {
     test('calls the platform', () async {
       when(mockedPlatform.clearCredentials(any))
           .thenAnswer((final _) async => {});
 
       await Auth0('test-domain', 'test-clientId')
           .credentialsManager()
-          .clearCredentials();
+          .clear();
 
       final verificationResult =
           verify(mockedPlatform.clearCredentials(captureAny)).captured.single

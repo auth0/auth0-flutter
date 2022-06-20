@@ -6,7 +6,7 @@ class CredentialsManager {
 
   CredentialsManager(this._account, this._userAgent);
 
-  Future<Credentials> getCredentials({
+  Future<Credentials> get({
     final int? minTtl,
     final Set<String> scopes = const {},
     final Map<String, String>? parameters,
@@ -18,7 +18,7 @@ class CredentialsManager {
         parameters: parameters,
       )));
 
-  Future<void> saveCredentials(final Credentials credentials) =>
+  Future<void> set(final Credentials credentials) =>
       CredentialsManagerPlatform.instance.saveCredentials(
           _createApiRequest(SaveCredentialsOptions(credentials: credentials)));
 
@@ -28,7 +28,7 @@ class CredentialsManager {
       CredentialsManagerPlatform.instance.hasValidCredentials(
           _createApiRequest(HasValidCredentialsOptions(minTtl: minTtl)));
 
-  Future<void> clearCredentials() => CredentialsManagerPlatform.instance
+  Future<void> clear() => CredentialsManagerPlatform.instance
       .clearCredentials(_createApiRequest(null));
 
   CredentialsManagerRequest<TOptions>
