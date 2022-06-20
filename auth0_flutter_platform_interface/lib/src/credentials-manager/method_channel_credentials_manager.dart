@@ -57,7 +57,7 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
     }
 
     if (result == null && throwOnNull == true) {
-      throw const ApiException.unknown('Channel returned null.');
+      throw const CredentialsManagerException.unknown('Channel returned null.');
     }
 
     return result;
