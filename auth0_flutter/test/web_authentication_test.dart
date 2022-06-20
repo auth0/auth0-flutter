@@ -40,7 +40,7 @@ void main() {
         .thenAnswer((final _) async => TestPlatform.loginResult);
 
     final result = await Auth0('test-domain', 'test-clientId')
-        .webAuthentication
+        .webAuthentication()
         .login(
             audience: 'test-audience',
             scopes: {'a', 'b'},
@@ -68,7 +68,7 @@ void main() {
         .thenAnswer((final _) async => TestPlatform.loginResult);
 
     final result = await Auth0('test-domain', 'test-clientId')
-        .webAuthentication
+        .webAuthentication()
         .login(audience: 'test-audience', scopes: {'a', 'b'});
 
     final verificationResult = verify(mockedPlatform.login(captureAny))
@@ -82,7 +82,7 @@ void main() {
     when(mockedPlatform.logout(any)).thenAnswer((final _) async => {});
 
     await Auth0('test-domain', 'test-clientId')
-        .webAuthentication
+        .webAuthentication()
         .logout(returnTo: 'abc');
 
     final verificationResult =
