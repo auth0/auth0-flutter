@@ -24,20 +24,33 @@ class TestPlatform extends Mock
   });
 }
 
-@GenerateMocks([TestPlatform])
+class TestCMPlatform extends Mock
+    with
+        // ignore: prefer_mixin
+        MockPlatformInterfaceMixin
+    implements
+        CredentialsManagerPlatform {
+}
+
+@GenerateMocks([TestPlatform, TestCMPlatform])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   final mockedPlatform = MockTestPlatform();
+  final mockedCMPlatform = MockTestCMPlatform();
 
   setUp(() {
     Auth0FlutterWebAuthPlatform.instance = mockedPlatform;
+    CredentialsManagerPlatform.instance = mockedCMPlatform;
     reset(mockedPlatform);
+    reset(mockedCMPlatform);
   });
 
   test('login', () async {
     when(mockedPlatform.login(any))
         .thenAnswer((final _) async => TestPlatform.loginResult);
+    when(mockedCMPlatform.saveCredentials(any))
+        .thenAnswer((final _) async => {});
 
     final result = await Auth0('test-domain', 'test-clientId')
         .webAuthentication()
@@ -80,6 +93,8 @@ void main() {
 
   test('logout', () async {
     when(mockedPlatform.logout(any)).thenAnswer((final _) async => {});
+    when(mockedCMPlatform.clearCredentials(any))
+        .thenAnswer((final _) async => {});
 
     await Auth0('test-domain', 'test-clientId')
         .webAuthentication()

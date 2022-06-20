@@ -4,9 +4,8 @@
 
 import 'dart:async' as _i4;
 
-import 'package:auth0_flutter/auth0_flutter.dart' as _i2;
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
-    as _i5;
+    as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
 import 'credentials_manager_test.dart' as _i3;
@@ -33,25 +32,25 @@ class MockTestPlatform extends _i1.Mock implements _i3.TestPlatform {
 
   @override
   _i4.Future<_i2.Credentials> getCredentials(
-          _i5.CredentialsManagerRequest<_i5.GetCredentialsOptions>? request) =>
+          _i2.CredentialsManagerRequest<_i2.GetCredentialsOptions>? request) =>
       (super.noSuchMethod(Invocation.method(#getCredentials, [request]),
               returnValue: Future<_i2.Credentials>.value(_FakeCredentials_0()))
           as _i4.Future<_i2.Credentials>);
   @override
   _i4.Future<void> clearCredentials(
-          _i5.CredentialsManagerRequest<_i5.RequestOptions?>? request) =>
+          _i2.CredentialsManagerRequest<_i2.RequestOptions?>? request) =>
       (super.noSuchMethod(Invocation.method(#clearCredentials, [request]),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
   _i4.Future<void> saveCredentials(
-          _i5.CredentialsManagerRequest<_i5.SaveCredentialsOptions>? request) =>
+          _i2.CredentialsManagerRequest<_i2.SaveCredentialsOptions>? request) =>
       (super.noSuchMethod(Invocation.method(#saveCredentials, [request]),
           returnValue: Future<void>.value(),
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
   _i4.Future<bool> hasValidCredentials(
-          _i5.CredentialsManagerRequest<_i5.HasValidCredentialsOptions>?
+          _i2.CredentialsManagerRequest<_i2.HasValidCredentialsOptions>?
               request) =>
       (super.noSuchMethod(Invocation.method(#hasValidCredentials, [request]),
           returnValue: Future<bool>.value(false)) as _i4.Future<bool>);
