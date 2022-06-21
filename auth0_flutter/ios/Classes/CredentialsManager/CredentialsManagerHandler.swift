@@ -5,7 +5,7 @@ import Auth0
 
 typealias CredentialsManagerMethodHandlerProvider = (_ method: CredentialsManagerHandler.Method) -> MethodHandler
 
-// MARK: - Web Auth Handler
+// MARK: - Credentials Manager Handler
 
 public class CredentialsManagerHandler: NSObject, FlutterPlugin {
     enum Method: String, CaseIterable {
