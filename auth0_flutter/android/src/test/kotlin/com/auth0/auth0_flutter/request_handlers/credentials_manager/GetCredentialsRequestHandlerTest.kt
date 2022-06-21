@@ -16,7 +16,6 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
-import java.security.InvalidParameterException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -56,7 +55,7 @@ class GetCredentialsRequestHandlerTest {
         val request = MethodCallRequest(account = mockAccount, options);
 
 
-        val exception = Assert.assertThrows(InvalidParameterException::class.java) {
+        val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
             handler.handle(
                 mockCredentialsManager,
                 mock(),
@@ -108,7 +107,7 @@ class GetCredentialsRequestHandlerTest {
         val request = MethodCallRequest(account = mockAccount, options);
 
 
-        val exception = Assert.assertThrows(InvalidParameterException::class.java) {
+        val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
             handler.handle(
                 mockCredentialsManager,
                 mock(),
@@ -162,7 +161,7 @@ class GetCredentialsRequestHandlerTest {
         val request = MethodCallRequest(account = mockAccount, options);
 
 
-        val exception = Assert.assertThrows(InvalidParameterException::class.java) {
+        val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
             handler.handle(
                 mockCredentialsManager,
                 mock(),

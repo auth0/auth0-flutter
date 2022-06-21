@@ -50,7 +50,7 @@ class SaveCredentialsRequestHandlerTest {
         val options =
             hashMapOf<String, Any>("credentials" to hashMapOf(
                 "idToken" to "test-id-token",
-                "type" to "Bearer",
+                "tokenType" to "Bearer",
                 "expiresAt" to "2022-01-01"
             ));
         val handler = SaveCredentialsRequestHandler();
@@ -79,7 +79,7 @@ class SaveCredentialsRequestHandlerTest {
         val options =
             hashMapOf<String, Any>("credentials" to hashMapOf(
                 "accessToken" to "test-access-token",
-                "type" to "Bearer",
+                "tokenType" to "Bearer",
                 "expiresAt" to "2022-01-01"
             ));
         val handler = SaveCredentialsRequestHandler();
@@ -128,7 +128,7 @@ class SaveCredentialsRequestHandlerTest {
 
         assertThat(
             exception.message,
-            equalTo("Required property 'credentials.type' is not provided.")
+            equalTo("Required property 'credentials.tokenType' is not provided.")
         );
     }
 
@@ -138,7 +138,7 @@ class SaveCredentialsRequestHandlerTest {
             hashMapOf<String, Any>("credentials" to hashMapOf(
                 "accessToken" to "test-access-token",
                 "idToken" to "test-id-token",
-                "type" to "Bearer",
+                "tokenType" to "Bearer",
             ));
         val handler = SaveCredentialsRequestHandler();
         val mockResult = mock<Result>();
@@ -167,7 +167,7 @@ class SaveCredentialsRequestHandlerTest {
         var credentialsMap = hashMapOf(
             "accessToken" to "test-access-token",
             "idToken" to "test-access-token",
-            "type" to "Bearer",
+            "tokenType" to "Bearer",
             "expiresAt" to "2022-01-01T00:00:00.000Z",
             "scopes" to arrayListOf("a", "b")
         );
@@ -183,7 +183,7 @@ class SaveCredentialsRequestHandlerTest {
         var credentials = Credentials(
             credentialsMap.get("idToken") as String,
             credentialsMap.get("accessToken") as String,
-            credentialsMap.get("type") as String,
+            credentialsMap.get("tokenType") as String,
             credentialsMap.get("refreshToken") as String?,
             date,
             scope,
@@ -217,7 +217,7 @@ class SaveCredentialsRequestHandlerTest {
         var credentialsMap = hashMapOf(
             "accessToken" to "test-access-token",
             "idToken" to "test-access-token",
-            "type" to "Bearer",
+            "tokenType" to "Bearer",
             "expiresAt" to "2022-01-01T00:00:00.000Z"
         );
         val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -232,7 +232,7 @@ class SaveCredentialsRequestHandlerTest {
         var credentials = Credentials(
             credentialsMap.get("idToken") as String,
             credentialsMap.get("accessToken") as String,
-            credentialsMap.get("type") as String,
+            credentialsMap.get("tokenType") as String,
             credentialsMap.get("refreshToken"),
             date,
             scope,
