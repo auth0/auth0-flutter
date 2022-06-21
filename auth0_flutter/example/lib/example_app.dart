@@ -33,7 +33,7 @@ class _ExampleAppState extends State<ExampleApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      final result = await auth0.webAuthentication()
+      final result = await auth0.webAuthentication(useCredentialsManager: false)
           .login(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
 
       output = result.idToken;
@@ -60,7 +60,7 @@ class _ExampleAppState extends State<ExampleApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      await auth0.webAuthentication()
+      await auth0.webAuthentication(useCredentialsManager: false)
           .logout(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
 
       output = 'Logged out.';
