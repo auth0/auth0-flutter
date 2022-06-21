@@ -22,7 +22,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
 
     var methodHandlerProvider: CredentialsManagerMethodHandlerProvider = { method in
         switch method {
-        case .clear: return WebAuthLoginMethodHandler()
+        case .clear: return CredentialsManagerClearMethodHandler()
         }
     }
 
