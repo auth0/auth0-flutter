@@ -23,7 +23,7 @@ class TestPlatform extends Mock
     'expiresAt': DateTime.now().toIso8601String(),
     'scopes': ['a'],
     'userProfile': {'sub': '123', 'name': 'John Doe'},
-    'type': 'Bearer'
+    'tokenType': 'Bearer'
   });
 
   static Credentials renewResult = Credentials.fromMap({
@@ -33,7 +33,7 @@ class TestPlatform extends Mock
     'expiresAt': DateTime.now().toIso8601String(),
     'scopes': ['a'],
     'userProfile': {'sub': '123', 'name': 'John Doe'},
-    'type': 'Bearer'
+    'tokenType': 'Bearer'
   });
 }
 

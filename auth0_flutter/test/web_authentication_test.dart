@@ -20,7 +20,7 @@ class TestPlatform extends Mock
     'expiresAt': DateTime.now().toIso8601String(),
     'scopes': ['a', 'b'],
     'userProfile': {'sub': '123', 'name': 'John Doe'},
-    'type': 'Bearer'
+    'tokenType': 'Bearer'
   });
 }
 
