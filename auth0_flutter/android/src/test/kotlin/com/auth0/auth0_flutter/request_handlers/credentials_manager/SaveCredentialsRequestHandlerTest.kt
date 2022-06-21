@@ -168,6 +168,56 @@ class SaveCredentialsRequestHandlerTest {
             "accessToken" to "test-access-token",
             "idToken" to "test-access-token",
             "type" to "Bearer",
+            "expiresAt" to "2022-01-01T00:00:00.000Z",
+            "scopes" to arrayListOf("a", "b")
+        );
+        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        var date = format.parse(credentialsMap.get("expiresAt") as String);
+        var scope: String? = null;
+        val scopes = credentialsMap.getOrDefault("scopes", arrayListOf<String>()) as ArrayList<*>
+        if (scopes.isNotEmpty()) {
+            scope = scopes.joinToString(separator = " ");
+        }
+
+
+        var credentials = Credentials(
+            credentialsMap.get("idToken") as String,
+            credentialsMap.get("accessToken") as String,
+            credentialsMap.get("type") as String,
+            credentialsMap.get("refreshToken") as String?,
+            date,
+            scope,
+        )
+        val options = hashMapOf(
+            "credentials" to credentialsMap,
+        );
+        val mockResult = mock<Result>();
+        val mockAccount = mock<Auth0>();
+        var mockCredentialsManager = mock<CredentialsManager>();
+        val request = MethodCallRequest(account = mockAccount, options);
+
+        handler.handle(
+            mockCredentialsManager,
+            mock(),
+            request,
+            mockResult
+        );
+
+
+        val captor = argumentCaptor<Credentials>()
+        verify(mockCredentialsManager).saveCredentials(captor.capture());
+
+        assertThat((captor.firstValue as Credentials).accessToken, equalTo(credentials.accessToken))
+
+    }
+
+    @Test
+    fun `should call saveCredentials with the correct parameters without scopes`() {
+        val handler = SaveCredentialsRequestHandler();
+        var credentialsMap = hashMapOf(
+            "accessToken" to "test-access-token",
+            "idToken" to "test-access-token",
+            "type" to "Bearer",
             "expiresAt" to "2022-01-01T00:00:00.000Z"
         );
         val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());

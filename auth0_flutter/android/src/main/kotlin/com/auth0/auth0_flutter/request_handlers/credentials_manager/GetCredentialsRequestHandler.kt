@@ -43,7 +43,7 @@ class GetCredentialsRequestHandler : CredentialsManagerRequestHandler {
         getCredentials(credentialsManager, scope, minTtl, parameters, object:
             Callback<Credentials, CredentialsManagerException> {
             override fun onFailure(exception: CredentialsManagerException) {
-                result.error(exception.message, exception.message, exception);
+                result.error(exception.message ?: "UNKNOWN ERROR", exception.message, exception);
             }
 
             override fun onSuccess(credentials: Credentials) {

@@ -341,6 +341,29 @@ void main() {
 
       await expectLater(actual, throwsA(isA<CredentialsManagerException>()));
     });
+
+    test(
+        'throws a CredentialsManagerException when method channel returns null',
+        () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      Future<bool> actual() async {
+        final result = await MethodChannelCredentialsManager().hasValidCredentials(
+                CredentialsManagerRequest<HasValidCredentialsOptions>(
+                    account: const Account('', ''),
+                    userAgent:
+                        UserAgent(name: 'test-name', version: 'test-version'),
+                    options: HasValidCredentialsOptions()));
+
+        return result;
+      }
+
+      expectLater(
+          actual,
+          throwsA(predicate((e) =>
+              e is CredentialsManagerException &&
+              e.message == 'Channel returned null.')));
+    });
   });
 
   group('clearCredentials', () {
