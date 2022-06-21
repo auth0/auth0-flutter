@@ -63,7 +63,7 @@ class GetCredentialsRequestHandler : CredentialsManagerRequestHandler {
                         "userProfile" to userProfile.toMap(),
                         "expiresAt" to formattedDate,
                         "scopes" to scopes,
-                        "type" to credentials.type
+                        "tokenType" to credentials.type
                     )
                 )
             }

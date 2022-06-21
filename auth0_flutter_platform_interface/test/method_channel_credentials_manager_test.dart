@@ -14,7 +14,7 @@ class MethodCallHandler {
     'expiresAt': '2022-01-01',
     'scopes': ['a', 'b'],
     'userProfile': {'sub': '123', 'name': 'John Doe'},
-    'type': 'Bearer'
+    'tokenType': 'Bearer'
   };
 
   Future<dynamic>? methodCallHandler(final MethodCall? methodCall) async {}
@@ -124,7 +124,7 @@ void main() {
       expect(result.scopes, MethodCallHandler.credentials['scopes']);
       expect(result.expiresAt,
           DateTime.parse(MethodCallHandler.credentials['expiresAt'] as String));
-      expect(result.type, MethodCallHandler.credentials['type']);
+      expect(result.tokenType, MethodCallHandler.credentials['tokenType']);
     });
 
     test(
@@ -182,7 +182,7 @@ void main() {
         'expiresAt': DateTime.now().toIso8601String(),
         'scopes': ['a'],
         'userProfile': {'sub': '123', 'name': 'John Doe'},
-        'type': 'Bearer',
+        'tokenType': 'Bearer',
       });
 
       await MethodChannelCredentialsManager().saveCredentials(
@@ -206,7 +206,7 @@ void main() {
         'expiresAt': DateTime.now().toIso8601String(),
         'scopes': ['a'],
         'userProfile': {'sub': '123', 'name': 'John Doe'},
-        'type': 'Bearer',
+        'tokenType': 'Bearer',
       });
 
       await MethodChannelCredentialsManager().saveCredentials(
@@ -233,7 +233,7 @@ void main() {
       expect(verificationResult.arguments['credentials']['expiresAt'],
           credentials.expiresAt.toIso8601String());
       expect(verificationResult.arguments['credentials']['scopes'], ['a']);
-      expect(verificationResult.arguments['credentials']['type'], 'Bearer');
+      expect(verificationResult.arguments['credentials']['tokenType'], 'Bearer');
       expect(
           verificationResult.arguments['credentials']['userProfile'], isNull);
     });
@@ -251,7 +251,7 @@ void main() {
         'expiresAt': DateTime.now().toIso8601String(),
         'scopes': ['a'],
         'userProfile': {'sub': '123', 'name': 'John Doe'},
-        'type': 'Bearer',
+        'tokenType': 'Bearer',
       });
 
       Future<void> actual() async {

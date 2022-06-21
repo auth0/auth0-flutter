@@ -13,7 +13,7 @@ class MethodCallHandler {
     'expiresAt': '2022-01-01',
     'scopes': ['a', 'b'],
     'userProfile': {'sub': '123', 'name': 'John Doe'},
-    'type': 'Bearer'
+    'tokenType': 'Bearer'
   };
 
   static const Map<dynamic, dynamic> loginResult = {

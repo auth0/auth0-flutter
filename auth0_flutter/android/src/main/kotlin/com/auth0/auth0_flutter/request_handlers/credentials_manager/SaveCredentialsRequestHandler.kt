@@ -23,7 +23,7 @@ class SaveCredentialsRequestHandler : CredentialsManagerRequestHandler {
 
         val credentials = request.data.get("credentials") as HashMap<*, *>;
 
-        assertHasProperties(listOf("accessToken", "idToken" , "type", "expiresAt"), credentials, "credentials");
+        assertHasProperties(listOf("accessToken", "idToken" , "tokenType", "expiresAt"), credentials, "credentials");
 
         var scope: String? = null;
         val scopes = credentials.getOrDefault("scopes", arrayListOf<String>()) as ArrayList<*>
@@ -37,7 +37,7 @@ class SaveCredentialsRequestHandler : CredentialsManagerRequestHandler {
         credentialsManager.saveCredentials(Credentials(
             credentials.get("idToken") as String,
             credentials.get("accessToken") as String,
-            credentials.get("type") as String,
+            credentials.get("tokenType") as String,
             credentials.get("refreshToken") as String?,
             date,
             scope,
