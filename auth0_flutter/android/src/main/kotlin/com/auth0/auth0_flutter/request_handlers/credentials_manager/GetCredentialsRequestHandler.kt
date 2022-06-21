@@ -78,7 +78,7 @@ class GetCredentialsRequestHandler : CredentialsManagerRequestHandler {
         } else if (minTtl != null && parameters != null) {
             credentialsManager.getCredentials(scope, minTtl, parameters, callback);
         } else {
-            throw InvalidParameterException("Invalid parameter combination, can't specify 'scopes' or 'parameters' without specifying 'minTtl'.");
+            throw IllegalArgumentException("Can't specify 'scopes' or 'parameters' without specifying 'minTtl'.");
         }
     }
 }
