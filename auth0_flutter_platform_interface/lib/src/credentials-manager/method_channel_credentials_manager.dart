@@ -16,34 +16,47 @@ const String credentialsManagerGetCredentialsMethod = 'credentialsManager#getCre
 const String credentialsManagerClearCredentialsMethod = 'credentialsManager#clearCredentials';
 const String credentialsManagerHasValidCredentialsMethod = 'credentialsManager#hasValidCredentials';
 
+/// Method Channel Implementattion to cummunicate with the Native CredentialsManager
 class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
+  /// Retrieves the credentials from the native storage and refresh them if they have already expired.
+  ///
+  /// Uses he [MethodChannel] to communicate with the Native platforms.
   @override
   Future<Credentials> getCredentials(final CredentialsManagerRequest<GetCredentialsOptions> request) async {
     final Map<String, dynamic> result =
-        await invokeMapRequest(method: credentialsManagerGetCredentialsMethod, request: request);
+        await _invokeMapRequest(method: credentialsManagerGetCredentialsMethod, request: request);
 
     return Credentials.fromMap(result);
   }
 
+  /// Stores the given credentials in the native storage. Must have an access_token or id_token and a expires_in value.
+  ///
+  /// Uses he [MethodChannel] to communicate with the Native platforms.
   @override
   Future<void> saveCredentials(final CredentialsManagerRequest<SaveCredentialsOptions> request) async {
-    await invokeMapRequest(method: credentialsManagerSaveCredentialsMethod, request: request, throwOnNull: false);
+    await _invokeMapRequest(method: credentialsManagerSaveCredentialsMethod, request: request, throwOnNull: false);
   }
 
+  /// Removes the credentials from the native storage if present.
+  ///
+  /// Uses he [MethodChannel] to communicate with the Native platforms.
   @override
   Future<void> clearCredentials(final CredentialsManagerRequest request) async {
-    await invokeMapRequest(method: credentialsManagerClearCredentialsMethod, request: request, throwOnNull: false);
+    await _invokeMapRequest(method: credentialsManagerClearCredentialsMethod, request: request, throwOnNull: false);
   }
 
+  /// Checks if a non-expired pair of credentials can be obtained from the native storage.
+  ///
+  /// Uses he [MethodChannel] to communicate with the Native platforms.
   @override
   Future<bool> hasValidCredentials(final CredentialsManagerRequest<HasValidCredentialsOptions> request) async {
     final bool? result =
-        await invokeRequest(method: credentialsManagerHasValidCredentialsMethod, request: request);
+        await _invokeRequest(method: credentialsManagerHasValidCredentialsMethod, request: request);
 
     return result ?? false;
   }
 
-  Future<TResult?> invokeRequest<TResult, TOptions extends RequestOptions>({
+  Future<TResult?> _invokeRequest<TResult, TOptions extends RequestOptions>({
     required final String method,
     required final CredentialsManagerRequest<TOptions> request,
     final bool? throwOnNull = true,
@@ -63,7 +76,7 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
     return result;
   }
 
-  Future<Map<String, dynamic>> invokeMapRequest<TOptions extends RequestOptions?>({
+  Future<Map<String, dynamic>> _invokeMapRequest<TOptions extends RequestOptions?>({
     required final String method,
     required final CredentialsManagerRequest<TOptions> request,
     final bool? throwOnNull = true,

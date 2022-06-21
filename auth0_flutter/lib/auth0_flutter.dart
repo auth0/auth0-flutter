@@ -22,6 +22,12 @@ class Auth0 {
 
   AuthenticationApi get api => AuthenticationApi(_account, _userAgent);
 
+  /// Creates an instance of [WebAuthentication].
+  ///
+  /// Uses the [DefaultCredentialsManager] by default. If you want to use your own implementation to handle credenial storage, provide your own [CredentialsManager] implementation
+  /// by setting [customCredentialsManager].
+  ///
+  /// In order to not use any [CredentialsManager] at all, opt-out by setting [useCredentialsManager] to false.
   WebAuthentication webAuthentication({
     final bool useCredentialsManager = true,
     final CredentialsManager? customCredentialsManager,
@@ -36,5 +42,6 @@ class Auth0 {
     return WebAuthentication(_account, _userAgent, cm);
   }
 
+  /// Returns the already created [CredentialsManager] if [webAuthentication] was called. If not, creates and returns an instance of [DefaultCredentialsManager].
   CredentialsManager credentialsManager() => _credentialsManager ??= DefaultCredentialsManager(_account, _userAgent);
 }
