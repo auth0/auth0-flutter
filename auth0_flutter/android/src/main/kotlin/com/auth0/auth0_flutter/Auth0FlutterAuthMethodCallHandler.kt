@@ -19,7 +19,7 @@ class Auth0FlutterAuthMethodCallHandler(private val requestHandlers: List<ApiReq
 
         if (requestHandler != null) {
             val request = MethodCallRequest.fromCall(call);
-            val api = Auth0AuthApi.getOrCreateInstance(request.account);
+            val api = AuthenticationAPIClient(request.account);
 
             requestHandler.handle(api, request, result);
         } else {

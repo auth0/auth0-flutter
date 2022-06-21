@@ -2,9 +2,9 @@ package com.auth0.auth0_flutter
 
 import android.content.Context
 import androidx.annotation.NonNull
+import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.storage.CredentialsManager
 import com.auth0.android.authentication.storage.SharedPreferencesStorage
-import com.auth0.auth0_flutter.credentials_manager.CredentialsManagerAccessor
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.request_handlers.credentials_manager.CredentialsManagerRequestHandler
 import io.flutter.plugin.common.MethodCall
@@ -20,9 +20,9 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
         if (requestHandler != null) {
             val request = MethodCallRequest.fromCall(call);
 
-            val api = Auth0AuthApi.getOrCreateInstance(request.account);
+            val api = AuthenticationAPIClient(request.account);
             val storage = SharedPreferencesStorage(context);
-            val credentialsManager = CredentialsManagerAccessor.getOrCreateInstance(api, storage);
+            val credentialsManager = CredentialsManager(api, storage);
 
             requestHandler.handle(credentialsManager, context, request, result)
         } else {
