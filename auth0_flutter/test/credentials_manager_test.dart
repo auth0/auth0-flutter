@@ -20,7 +20,7 @@ class TestPlatform extends Mock
     'expiresAt': DateTime.now().toIso8601String(),
     'scopes': ['a'],
     'userProfile': {'sub': '123', 'name': 'John Doe'},
-    'type': 'Bearer'
+    'tokenType': 'Bearer'
   });
 }
 
@@ -97,8 +97,8 @@ void main() {
           TestPlatform.credentials.expiresAt);
       expect(verificationResult.options?.credentials.scopes,
           TestPlatform.credentials.scopes);
-      expect(verificationResult.options?.credentials.type,
-          TestPlatform.credentials.type);
+      expect(verificationResult.options?.credentials.tokenType,
+          TestPlatform.credentials.tokenType);
     });
   });
 
