@@ -67,7 +67,7 @@ class GetCredentialsRequestHandlerTest {
 
         MatcherAssert.assertThat(
             exception.message,
-            CoreMatchers.equalTo("Invalid parameter combination, no overload to call.")
+            CoreMatchers.equalTo("Invalid parameter combination, can't specify 'scopes' or 'parameters' without specifying 'minTtl'.")
         );
     }
 
@@ -119,7 +119,7 @@ class GetCredentialsRequestHandlerTest {
 
         MatcherAssert.assertThat(
             exception.message,
-            CoreMatchers.equalTo("Invalid parameter combination, no overload to call.")
+            CoreMatchers.equalTo("Invalid parameter combination, can't specify 'scopes' or 'parameters' without specifying 'minTtl'.")
         );
     }
 
@@ -173,7 +173,7 @@ class GetCredentialsRequestHandlerTest {
 
         MatcherAssert.assertThat(
             exception.message,
-            CoreMatchers.equalTo("Invalid parameter combination, no overload to call.")
+            CoreMatchers.equalTo("Invalid parameter combination, can't specify 'scopes' or 'parameters' without specifying 'minTtl'.")
         );
     }
 
