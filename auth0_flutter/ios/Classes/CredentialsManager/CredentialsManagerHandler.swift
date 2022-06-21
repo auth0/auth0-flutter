@@ -3,7 +3,7 @@ import Auth0
 
 // MARK: - Providers
 
-typealias CredentialsManagerMethodHandlerProvider = (_ method: WebAuthHandler.Method) -> MethodHandler
+typealias CredentialsManagerMethodHandlerProvider = (_ method: CredentialsManagerHandler.Method) -> MethodHandler
 
 // MARK: - Web Auth Handler
 
