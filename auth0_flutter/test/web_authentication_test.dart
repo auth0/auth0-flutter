@@ -180,7 +180,7 @@ void main() {
       expect(verificationResult.account.clientId, 'test-clientId');
       expect(verificationResult.options?.minTtl, 30);
       expect(verificationResult.options?.scopes, {'a', 'b'});
-      expect(verificationResult.options?.parameters?['test'], 'test-value');
+      expect(verificationResult.options?.parameters['test'], 'test-value');
     });
 
     test('returns null when opted out of credential manager', () async {
