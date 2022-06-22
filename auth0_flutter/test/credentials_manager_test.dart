@@ -66,10 +66,10 @@ void main() {
       final verificationResult =
           verify(mockedPlatform.getCredentials(captureAny)).captured.single
               as CredentialsManagerRequest<GetCredentialsOptions>;
-      expect(verificationResult.options?.minTtl, null);
+      expect(verificationResult.options?.minTtl, isNull);
       // ignore: inference_failure_on_collection_literal
-      expect(verificationResult.options?.scopes, []);
-      expect(verificationResult.options?.parameters, null);
+      expect(verificationResult.options?.scopes, isEmpty);
+      expect(verificationResult.options?.parameters, isEmpty);
     });
   });
 

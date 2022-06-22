@@ -1,11 +1,11 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 
-/// Abstract CredentialsManager that can be used to provide a custom CredentialManager
+/// Abstract CredentialsManager that can be used to provide a custom CredentialManager.
 abstract class CredentialsManager {
   Future<Credentials> get({
     final int? minTtl,
     final Set<String> scopes = const {},
-    final Map<String, String>? parameters,
+    final Map<String, String> parameters = const {},
   });
 
   Future<void> set(final Credentials credentials);
@@ -25,7 +25,7 @@ class DefaultCredentialsManager extends CredentialsManager {
 
   DefaultCredentialsManager(this._account, this._userAgent);
 
-  /// Retrieves the credentials from the storage and refresh them if they have already expired.
+  /// Retrieves the credentials from the storage and refreshes them if they have already expired.
   ///
   /// Change the minimum time in seconds that the access token should last before expiration by setting the [minTtl].
   /// Use the [scopes] parameter to set the scope to request for the access token. If `null` is passed, the previous scope will be kept.
@@ -34,7 +34,7 @@ class DefaultCredentialsManager extends CredentialsManager {
   Future<Credentials> get({
     final int? minTtl,
     final Set<String> scopes = const {},
-    final Map<String, String>? parameters,
+    final Map<String, String> parameters = const {},
   }) =>
       CredentialsManagerPlatform.instance
           .getCredentials(_createApiRequest(GetCredentialsOptions(

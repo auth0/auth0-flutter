@@ -13,6 +13,8 @@ import org.hamcrest.MatcherAssert
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyMap
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
@@ -39,12 +41,15 @@ class GetCredentialsRequestHandlerTest {
         );
 
         verify(mockCredentialsManager).getCredentials(
+            isNull(),
+            eq(0),
+            anyMap(),
             any()
         );
     }
 
     @Test
-    fun `should throw when only providing scope`() {
+    fun `should use default value for minTtl and parameters when only providing scope`() {
         val handler = GetCredentialsRequestHandler();
         var options = hashMapOf(
             "scopes" to arrayListOf<String>("test-scope1", "test-scope2"),
@@ -54,24 +59,23 @@ class GetCredentialsRequestHandlerTest {
         var mockCredentialsManager = mock<CredentialsManager>();
         val request = MethodCallRequest(account = mockAccount, options);
 
+        handler.handle(
+            mockCredentialsManager,
+            mock(),
+            request,
+            mockResult
+        );
 
-        val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
-            handler.handle(
-                mockCredentialsManager,
-                mock(),
-                request,
-                mockResult
-            );
-        }
-
-        MatcherAssert.assertThat(
-            exception.message,
-            CoreMatchers.equalTo("Can't specify 'scopes' or 'parameters' without specifying 'minTtl'.")
+        verify(mockCredentialsManager).getCredentials(
+            eq("test-scope1 test-scope2"),
+            eq(0),
+            anyMap(),
+            any()
         );
     }
 
     @Test
-    fun `should call getCredentials when only providing minTtl`() {
+    fun `should use default value for parameters when only providing minTtl`() {
         val handler = GetCredentialsRequestHandler();
         var options = hashMapOf(
             "minTtl" to 30,
@@ -91,12 +95,13 @@ class GetCredentialsRequestHandlerTest {
         verify(mockCredentialsManager).getCredentials(
             isNull(),
             eq(30),
+            anyMap(),
             any()
         );
     }
 
     @Test
-    fun `should throw when only providing parameters`() {
+    fun `should use default value for minTtl when only providing parameters`() {
         val handler = GetCredentialsRequestHandler();
         var options = hashMapOf(
             "parameters" to mapOf("test" to "test-value", "test2" to "test-value")
@@ -106,24 +111,23 @@ class GetCredentialsRequestHandlerTest {
         var mockCredentialsManager = mock<CredentialsManager>();
         val request = MethodCallRequest(account = mockAccount, options);
 
+        handler.handle(
+            mockCredentialsManager,
+            mock(),
+            request,
+            mockResult
+        );
 
-        val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
-            handler.handle(
-                mockCredentialsManager,
-                mock(),
-                request,
-                mockResult
-            );
-        }
-
-        MatcherAssert.assertThat(
-            exception.message,
-            CoreMatchers.equalTo("Can't specify 'scopes' or 'parameters' without specifying 'minTtl'.")
+        verify(mockCredentialsManager).getCredentials(
+            isNull(),
+            eq(0),
+            eq(mapOf("test" to "test-value", "test2" to "test-value")),
+            any()
         );
     }
 
     @Test
-    fun `should call getCredentials when providing scope and minTtl`() {
+    fun `should use default value for parameters when providing scope and minTtl`() {
         val handler = GetCredentialsRequestHandler();
         var options = hashMapOf(
             "minTtl" to 30,
@@ -144,12 +148,13 @@ class GetCredentialsRequestHandlerTest {
         verify(mockCredentialsManager).getCredentials(
             eq("test-scope1 test-scope2"),
             eq(30),
+            anyMap(),
             any()
         );
     }
 
     @Test
-    fun `should throw when only providing scope and parameters`() {
+    fun `should use default value for minTtl when only providing scope and parameters`() {
         val handler = GetCredentialsRequestHandler();
         var options = hashMapOf(
             "scopes" to arrayListOf<String>("test-scope1", "test-scope2"),
@@ -160,19 +165,18 @@ class GetCredentialsRequestHandlerTest {
         var mockCredentialsManager = mock<CredentialsManager>();
         val request = MethodCallRequest(account = mockAccount, options);
 
+        handler.handle(
+            mockCredentialsManager,
+            mock(),
+            request,
+            mockResult
+        );
 
-        val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
-            handler.handle(
-                mockCredentialsManager,
-                mock(),
-                request,
-                mockResult
-            );
-        }
-
-        MatcherAssert.assertThat(
-            exception.message,
-            CoreMatchers.equalTo("Can't specify 'scopes' or 'parameters' without specifying 'minTtl'.")
+        verify(mockCredentialsManager).getCredentials(
+            eq("test-scope1 test-scope2"),
+            eq(0),
+            eq(mapOf("test" to "test-value", "test2" to "test-value")),
+            any()
         );
     }
 
@@ -245,9 +249,9 @@ class GetCredentialsRequestHandlerTest {
         `when`(exception.message).thenReturn("test-message")
 
         doAnswer {
-            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(0);
+            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(3);
             ob.onFailure(exception);
-        }.`when`(mockCredentialsManager).getCredentials(any());
+        }.`when`(mockCredentialsManager).getCredentials(isNull(), anyInt(), anyMap(), any());
 
         handler.handle(
             mockCredentialsManager,
@@ -273,9 +277,9 @@ class GetCredentialsRequestHandlerTest {
         `when`(exception.message).thenReturn(null)
 
         doAnswer {
-            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(0);
+            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(3);
             ob.onFailure(exception);
-        }.`when`(mockCredentialsManager).getCredentials(any());
+        }.`when`(mockCredentialsManager).getCredentials(isNull(), anyInt(), anyMap(), any());
 
         handler.handle(
             mockCredentialsManager,
@@ -299,9 +303,9 @@ class GetCredentialsRequestHandlerTest {
         val credentials = Credentials(idToken, "test", "", null, Date(), "scope1 scope2")
 
         doAnswer {
-            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(0);
+            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(3);
             ob.onSuccess(credentials);
-        }.`when`(mockCredentialsManager).getCredentials(any());
+        }.`when`(mockCredentialsManager).getCredentials(isNull(), anyInt(), anyMap(), any());
 
         handler.handle(
             mockCredentialsManager,
@@ -356,9 +360,9 @@ class GetCredentialsRequestHandlerTest {
         val credentials = Credentials(idToken, "test", "", null, Date(), scope = null)
 
         doAnswer {
-            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(0);
+            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(3);
             ob.onSuccess(credentials);
-        }.`when`(mockCredentialsManager).getCredentials(any());
+        }.`when`(mockCredentialsManager).getCredentials(isNull(), anyInt(), anyMap(), any());
 
         handler.handle(
             mockCredentialsManager,

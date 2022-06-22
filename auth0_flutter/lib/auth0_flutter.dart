@@ -24,7 +24,7 @@ class Auth0 {
 
   /// Creates an instance of [WebAuthentication].
   ///
-  /// Uses the [DefaultCredentialsManager] by default. If you want to use your own implementation to handle credenial storage, provide your own [CredentialsManager] implementation
+  /// Uses the [DefaultCredentialsManager] by default. If you want to use your own implementation to handle credential storage, provide your own [CredentialsManager] implementation
   /// by setting [customCredentialsManager].
   ///
   /// In order to not use any [CredentialsManager] at all, opt-out by setting [useCredentialsManager] to false.

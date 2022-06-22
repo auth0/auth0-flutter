@@ -118,7 +118,7 @@ void main() {
       verifyNever(mockedCMPlatform.saveCredentials(any));
     });
 
-    test('uses custom Credential Manager on succes', () async {
+    test('uses custom Credentials Manager on success', () async {
       when(mockedPlatform.login(any))
           .thenAnswer((final _) async => TestPlatform.loginResult);
       when(mockedCMPlatform.saveCredentials(any))
@@ -135,7 +135,7 @@ void main() {
               redirectUrl: 'redirect_url',
               useEphemeralSession: true);
 
-      // Verify it doesn't call our own Platform Interface when providing a custom CredenialsManager
+      // Verify it doesn't call our own Platform Interface when providing a custom CredentialsManager
       verifyNever(mockedCMPlatform.saveCredentials(any));
 
       final verificationResult =
@@ -197,7 +197,7 @@ void main() {
       expect(result, null);
     });
 
-    test('uses custom Credential Manager on succes', () async {
+    test('uses custom Credential Manager on success', () async {
       when(mockedCMPlatform.getCredentials(any))
           .thenAnswer((final _) async => TestPlatform.loginResult);
       final mockCm = MockCredentialsManager();
@@ -214,7 +214,7 @@ void main() {
               scopes: {'a', 'b'},
               parameters: {'test': 'test-value'});
 
-      // Verify it doesn't call our own Platform Interface when providing a custom CredenialsManager
+      // Verify it doesn't call our own Platform Interface when providing a custom CredentialsManager
       verifyNever(mockedCMPlatform.getCredentials(any));
 
       verify(mockCm.get(
@@ -272,7 +272,7 @@ void main() {
       verifyNever(mockedCMPlatform.clearCredentials(any));
     });
 
-    test('uses custom Credential Manager on succes', () async {
+    test('uses custom Credentials Manager on success', () async {
       when(mockedPlatform.login(any))
           .thenAnswer((final _) async => TestPlatform.loginResult);
       when(mockedCMPlatform.clearCredentials(any))
@@ -283,7 +283,7 @@ void main() {
           .webAuthentication(customCredentialsManager: mockCm)
           .logout(returnTo: 'abc');
 
-      // Verify it doesn't call our own Platform Interface when providing a custom CredenialsManager
+      // Verify it doesn't call our own Platform Interface when providing a custom CredentialsManager
       verifyNever(mockedCMPlatform.clearCredentials(any));
 
       verify(mockCm.clear()).called(1);

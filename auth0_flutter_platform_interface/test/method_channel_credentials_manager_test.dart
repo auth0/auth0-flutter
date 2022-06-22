@@ -98,7 +98,7 @@ void main() {
           verify(mocked.methodCallHandler(captureAny)).captured.single;
       expect(verificationResult.arguments['minTtl'], isNull);
       expect(verificationResult.arguments['scopes'], isEmpty);
-      expect(verificationResult.arguments['parameters'], isNull);
+      expect(verificationResult.arguments['parameters'], isEmpty);
     });
 
     test('correctly returns the response from the Method Channel', () async {

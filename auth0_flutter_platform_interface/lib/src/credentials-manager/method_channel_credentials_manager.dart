@@ -20,7 +20,7 @@ const String credentialsManagerHasValidCredentialsMethod = 'credentialsManager#h
 class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
   /// Retrieves the credentials from the native storage and refresh them if they have already expired.
   ///
-  /// Uses he [MethodChannel] to communicate with the Native platforms.
+  /// Uses the [MethodChannel] to communicate with the Native platforms.
   @override
   Future<Credentials> getCredentials(final CredentialsManagerRequest<GetCredentialsOptions> request) async {
     final Map<String, dynamic> result =
@@ -31,23 +31,23 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
 
   /// Stores the given credentials in the native storage. Must have an access_token or id_token and a expires_in value.
   ///
-  /// Uses he [MethodChannel] to communicate with the Native platforms.
+  /// Uses the [MethodChannel] to communicate with the Native platforms.
   @override
   Future<void> saveCredentials(final CredentialsManagerRequest<SaveCredentialsOptions> request) async {
-    await _invokeMapRequest(method: credentialsManagerSaveCredentialsMethod, request: request, throwOnNull: false);
+    await _invokeRequest<void, RequestOptions?>(method: credentialsManagerSaveCredentialsMethod, request: request, throwOnNull: false);
   }
 
   /// Removes the credentials from the native storage if present.
   ///
-  /// Uses he [MethodChannel] to communicate with the Native platforms.
+  /// Uses the [MethodChannel] to communicate with the Native platforms.
   @override
   Future<void> clearCredentials(final CredentialsManagerRequest request) async {
-    await _invokeMapRequest(method: credentialsManagerClearCredentialsMethod, request: request, throwOnNull: false);
+    await _invokeRequest<void, RequestOptions?>(method: credentialsManagerClearCredentialsMethod, request: request, throwOnNull: false);
   }
 
   /// Checks if a non-expired pair of credentials can be obtained from the native storage.
   ///
-  /// Uses he [MethodChannel] to communicate with the Native platforms.
+  /// Uses the [MethodChannel] to communicate with the Native platforms.
   @override
   Future<bool> hasValidCredentials(final CredentialsManagerRequest<HasValidCredentialsOptions> request) async {
     final bool? result =
@@ -56,10 +56,10 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
     return result ?? false;
   }
 
-  Future<TResult?> _invokeRequest<TResult, TOptions extends RequestOptions>({
+  Future<TResult?> _invokeRequest<TResult, TOptions extends RequestOptions?>({
     required final String method,
     required final CredentialsManagerRequest<TOptions> request,
-    final bool? throwOnNull = true,
+    final bool throwOnNull = true,
   }) async {
     final TResult? result;
     try {
@@ -79,7 +79,7 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
   Future<Map<String, dynamic>> _invokeMapRequest<TOptions extends RequestOptions?>({
     required final String method,
     required final CredentialsManagerRequest<TOptions> request,
-    final bool? throwOnNull = true,
+    final bool throwOnNull = true,
   }) async {
     final Map<String, dynamic>? result;
     try {
