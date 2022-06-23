@@ -2,7 +2,7 @@ import '../../credentials.dart';
 import '../../request/request_options.dart';
 
 // ignore: comment_references
-/// Options used to save [Credentials] using the [CredentialsManagerPlatform]
+/// Options used to save [Credentials] using the [CredentialsManagerPlatform].
 class SaveCredentialsOptions implements RequestOptions {
   final Credentials credentials;
 

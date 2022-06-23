@@ -16,7 +16,7 @@ const String credentialsManagerGetCredentialsMethod = 'credentialsManager#getCre
 const String credentialsManagerClearCredentialsMethod = 'credentialsManager#clearCredentials';
 const String credentialsManagerHasValidCredentialsMethod = 'credentialsManager#hasValidCredentials';
 
-/// Method Channel Implementattion to cummunicate with the Native CredentialsManager
+/// Method Channel implementation to communicate with the Native CredentialsManager
 class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
   /// Retrieves the credentials from the native storage and refresh them if they have already expired.
   ///
