@@ -1,3 +1,4 @@
+/// A collection of properties that represents the authenticated user, extracted from ID token claims.
 class UserProfile {
   final String sub;
   final String? nickname;
@@ -53,9 +54,15 @@ class UserProfile {
         middleName: result['middle_name'] as String?,
         nickname: result['nickname'] as String?,
         preferredUsername: result['preferred_username'] as String?,
-        profileURL: result['profile'] != null ? Uri.parse(result['profile'] as String) : null,
-        pictureURL: result['picture'] != null ? Uri.parse(result['picture'] as String) : null,
-        websiteURL: result['website'] != null ? Uri.parse(result['website'] as String) : null,
+        profileURL: result['profile'] != null
+            ? Uri.parse(result['profile'] as String)
+            : null,
+        pictureURL: result['picture'] != null
+            ? Uri.parse(result['picture'] as String)
+            : null,
+        websiteURL: result['website'] != null
+            ? Uri.parse(result['website'] as String)
+            : null,
         email: result['email'] as String?,
         isEmailVerified: result['email_verified'] as bool?,
         gender: result['gender'] as String?,

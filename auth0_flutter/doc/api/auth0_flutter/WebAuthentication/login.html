@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the login method from the WebAuthentication class, for the Dart programming language.">
+  <title>login method - WebAuthentication class - auth0_flutter library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../../"
+      data-using-base-href="false">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">auth0_flutter</a></li>
+    <li><a href="../../auth0_flutter/auth0_flutter-library.html">auth0_flutter</a></li>
+    <li><a href="../../auth0_flutter/WebAuthentication-class.html">WebAuthentication</a></li>
+    <li class="self-crumb">login method</li>
+  </ol>
+  <div class="self-name">login</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<main>
+
+
+  <div id="dartdoc-main-content" class="main-content">
+      <div>
+<h1><span class="kind-method">login</span> method 
+    <a href="https://dart.dev/null-safety" class="feature feature-null-safety" title="Supports the null safety language feature.">Null safety</a>
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+
+<span class="returntype"><a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../../auth0_flutter/Credentials-class.html">Credentials</a></span>&gt;</span></span>
+<span class="name ">login</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="login-param-audience">{<span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">audience</span>, </span></li>
+<li><span class="parameter" id="login-param-scopes"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Set-class.html">Set</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>&gt;</span></span> <span class="parameter-name">scopes</span> = <span class="default-value">const {}</span>, </span></li>
+<li><span class="parameter" id="login-param-redirectUrl"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">redirectUrl</span>, </span></li>
+<li><span class="parameter" id="login-param-organizationId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">organizationId</span>, </span></li>
+<li><span class="parameter" id="login-param-invitationUrl"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">invitationUrl</span>, </span></li>
+<li><span class="parameter" id="login-param-scheme"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">scheme</span>, </span></li>
+<li><span class="parameter" id="login-param-useEphemeralSession"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">useEphemeralSession</span> = <span class="default-value">false</span>, </span></li>
+<li><span class="parameter" id="login-param-parameters"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>, <span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>&gt;</span></span> <span class="parameter-name">parameters</span> = <span class="default-value">const {}</span>, </span></li>
+<li><span class="parameter" id="login-param-idTokenValidationConfig"><span class="type-annotation"><a href="../../auth0_flutter/IdTokenValidationConfig-class.html">IdTokenValidationConfig</a></span> <span class="parameter-name">idTokenValidationConfig</span> = <span class="default-value">const IdTokenValidationConfig()</span>}</span></li>
+</ol>)
+
+      
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Redirects the user to the <a href="https://auth0.com/docs/authenticate/login/auth0-universal-login">Auth0 Universal Login page</a> for authentication. It returns
+a set of tokens and the user profile (constructed from ID token claims).</p>
+<p>Notes:</p>
+<ul>
+<li>(iOS only): <code>useEphemeralSession</code> controls whether shared persistent storage is used for caches, cookies, or credentials. <a href="https://github.com/auth0/Auth0.swift/blob/master/FAQ.md#1-how-can-i-disable-the-login-alert-box">Read more on the effects this setting has</a></li>
+<li>(Android only): specify <code>scheme</code> if you're using a custom URL scheme for your app. This value must match the value used to configure the <code>auth0Scheme</code> manifest placeholder, for the Redirect intent filter to work</li>
+<li><code>audience</code> relates to the API Identifier you want to reference in your access tokens (see <a href="https://auth0.com/docs/get-started/apis/api-settings">API settings</a>)</li>
+</ul>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">Future&lt;Credentials&gt; login({
+  final String? audience,
+  final Set&lt;String&gt; scopes = const {},
+  final String? redirectUrl,
+  final String? organizationId,
+  final String? invitationUrl,
+  final String? scheme,
+  final bool useEphemeralSession = false,
+  final Map&lt;String, String&gt; parameters = const {},
+  final IdTokenValidationConfig idTokenValidationConfig =
+      const IdTokenValidationConfig(),
+}) =&gt;
+    Auth0FlutterWebAuthPlatform.instance.login(_createWebAuthRequest(
+        WebAuthLoginOptions(
+            audience: audience,
+            scopes: scopes,
+            redirectUrl: redirectUrl,
+            organizationId: organizationId,
+            invitationUrl: invitationUrl,
+            parameters: parameters,
+            idTokenValidationConfig: idTokenValidationConfig,
+            scheme: scheme,
+            useEphemeralSession: useEphemeralSession)));</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+  <li><a href="../../index.html">auth0_flutter</a></li>
+  <li><a href="../../auth0_flutter/auth0_flutter-library.html">auth0_flutter</a></li>
+  <li><a href="../../auth0_flutter/WebAuthentication-class.html">WebAuthentication</a></li>
+  <li class="self-crumb">login method</li>
+</ol>
+
+
+    <h5>WebAuthentication class</h5>
+    <ol>
+
+        <li class="section-title"><a href="../../auth0_flutter/WebAuthentication-class.html#constructors">Constructors</a></li>
+          <li><a href="../../auth0_flutter/WebAuthentication/WebAuthentication.html">WebAuthentication</a></li>
+
+
+    <li class="section-title inherited">
+      <a href="../../auth0_flutter/WebAuthentication-class.html#instance-properties">Properties</a>
+    </li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/hashCode.html">hashCode</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/runtimeType.html">runtimeType</a></li>
+
+    <li class="section-title"><a href="../../auth0_flutter/WebAuthentication-class.html#instance-methods">Methods</a></li>
+    <li><a href="../../auth0_flutter/WebAuthentication/login.html">login</a></li>
+    <li><a href="../../auth0_flutter/WebAuthentication/logout.html">logout</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/toString.html">toString</a></li>
+
+    <li class="section-title inherited"><a href="../../auth0_flutter/WebAuthentication-class.html#operators">Operators</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/operator_equals.html">operator ==</a></li>
+
+
+
+
+</ol>
+
+  </div><!--/.sidebar-offcanvas-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    auth0_flutter
+      1.0.0-beta.0
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/script.js?v1"></script>
+
+
+
+</body>
+
+</html>
+

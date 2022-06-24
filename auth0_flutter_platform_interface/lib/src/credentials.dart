@@ -1,5 +1,6 @@
 import '../auth0_flutter_platform_interface.dart';
 
+/// A collection of authentication artifacts obtained from Auth0 when a user logs in.
 class Credentials {
   final String idToken;
   final String accessToken;
