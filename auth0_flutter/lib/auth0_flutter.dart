@@ -6,42 +6,56 @@ import 'src/version.dart';
 import 'src/web_authentication.dart';
 
 export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
-    show WebAuthException, ApiException, IdTokenValidationConfig, Credentials, CredentialsManagerException;
+    show
+        WebAuthException,
+        ApiException,
+        IdTokenValidationConfig,
+        Credentials,
+        CredentialsManagerException;
 
 export 'src/credentials_manager.dart';
+
+class Auth0Options {
+  late bool useCredentialsManager;
+}
 
 class Auth0 {
   final Account _account;
   final UserAgent _userAgent =
       UserAgent(name: 'auth0-flutter', version: version);
 
-  CredentialsManager? _credentialsManager;
+  late CredentialsManager? _credentialsManager;
 
-  Auth0(final String domain, final String clientId)
-      : _account = Account(domain, clientId);
+  /// Uses the [DefaultCredentialsManager] by default. If you want to use your own implementation to handle credential storage, provide your own [CredentialsManager] implementation
+  /// by setting [customCredentialsManager].
+  /// In case you want to opt-out of using any [CredentialsManager] alltogether, set [useCredentialsManager] to `false`.
+  /// If you want to use biometrics when using the [DefaultCredentialsManager], set [useBiometrics]` to `true`.
+  /// Note however that this settings has no effect when specifying a [customCredentialsManager]
+  Auth0(
+    final String domain,
+    final String clientId, {
+    final bool useCredentialsManager = true,
+    final bool useBiometrics = false,
+    final CredentialsManager? customCredentialsManager,
+  }) : _account = Account(domain, clientId) {
+    _credentialsManager = useCredentialsManager
+        ? (customCredentialsManager ??
+            (DefaultCredentialsManager(_account, _userAgent,
+                useBiometrics: useBiometrics)))
+        : null;
+  }
 
   AuthenticationApi get api => AuthenticationApi(_account, _userAgent);
 
   /// Creates an instance of [WebAuthentication].
   ///
-  /// Uses the [DefaultCredentialsManager] by default. If you want to use your own implementation to handle credential storage, provide your own [CredentialsManager] implementation
-  /// by setting [customCredentialsManager].
-  ///
-  /// In order to not use any [CredentialsManager] at all, opt-out by setting [useCredentialsManager] to false.
+  /// In order to not use any [CredentialsManager], opt-out by setting [useCredentialsManager] to false.
   WebAuthentication webAuthentication({
     final bool useCredentialsManager = true,
-    final CredentialsManager? customCredentialsManager,
-  }) {
-    CredentialsManager? cm;
-    if (useCredentialsManager) {
-      cm = customCredentialsManager ?? credentialsManager();
-    }
-
-    _credentialsManager = cm;
-
-    return WebAuthentication(_account, _userAgent, cm);
-  }
+  }) =>
+      WebAuthentication(_account, _userAgent,
+          useCredentialsManager ? _credentialsManager : null);
 
   /// Returns the already created [CredentialsManager] if [webAuthentication] was called. If not, creates and returns an instance of [DefaultCredentialsManager].
-  CredentialsManager credentialsManager() => _credentialsManager ??= DefaultCredentialsManager(_account, _userAgent);
+  CredentialsManager? credentialsManager() => _credentialsManager;
 }
