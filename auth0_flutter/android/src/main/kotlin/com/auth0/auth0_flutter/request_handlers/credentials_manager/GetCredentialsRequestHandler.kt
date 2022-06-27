@@ -1,8 +1,8 @@
 package com.auth0.auth0_flutter.request_handlers.credentials_manager
 
 import android.content.Context
-import com.auth0.android.authentication.storage.CredentialsManager
 import com.auth0.android.authentication.storage.CredentialsManagerException
+import com.auth0.android.authentication.storage.SecureCredentialsManager
 import com.auth0.android.callback.Callback
 import com.auth0.android.jwt.JWT
 import com.auth0.android.result.Credentials
@@ -17,7 +17,7 @@ class GetCredentialsRequestHandler : CredentialsManagerRequestHandler {
     override val method: String = "credentialsManager#getCredentials";
 
     override fun handle(
-        credentialsManager: CredentialsManager,
+        credentialsManager: SecureCredentialsManager,
         context: Context,
         request: MethodCallRequest,
         result: MethodChannel.Result
@@ -29,8 +29,8 @@ class GetCredentialsRequestHandler : CredentialsManagerRequestHandler {
             scope = scopes.joinToString(separator = " ");
         }
 
-        var minTtl = request.data.getOrDefault("minTtl", 0) as Int;
-        var parameters = request.data.getOrDefault("parameters", mapOf<String, String>()) as Map<String, String>;
+        var minTtl = request.data.get("minTtl") as Int? ?: 0;
+        var parameters = request.data.get("parameters") as Map<String, String>? ?: mapOf();
 
         credentialsManager.getCredentials(scope, minTtl, parameters, object:
             Callback<Credentials, CredentialsManagerException> {

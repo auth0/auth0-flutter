@@ -125,8 +125,8 @@ void main() {
           .thenAnswer((final _) async => {});
       final mockCm = MockCredentialsManager();
 
-      await Auth0('test-domain', 'test-clientId')
-          .webAuthentication(customCredentialsManager: mockCm)
+      await Auth0('test-domain', 'test-clientId', customCredentialsManager: mockCm)
+          .webAuthentication()
           .login(
               audience: 'test-audience',
               scopes: {'a', 'b'},
@@ -207,8 +207,8 @@ void main() {
               parameters: anyNamed('parameters')))
           .thenAnswer((final _) async => TestPlatform.loginResult);
 
-      await Auth0('test-domain', 'test-clientId')
-          .webAuthentication(customCredentialsManager: mockCm)
+      await Auth0('test-domain', 'test-clientId', customCredentialsManager: mockCm)
+          .webAuthentication()
           .credentials(
               minTtl: 30,
               scopes: {'a', 'b'},
@@ -279,8 +279,8 @@ void main() {
           .thenAnswer((final _) async => {});
       final mockCm = MockCredentialsManager();
 
-      await Auth0('test-domain', 'test-clientId')
-          .webAuthentication(customCredentialsManager: mockCm)
+      await Auth0('test-domain', 'test-clientId', customCredentialsManager: mockCm)
+          .webAuthentication()
           .logout(returnTo: 'abc');
 
       // Verify it doesn't call our own Platform Interface when providing a custom CredentialsManager

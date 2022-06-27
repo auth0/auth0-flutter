@@ -42,7 +42,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .credentialsManager()
-          .get(
+          ?.get(
               minTtl: 30, scopes: {'a', 'b'}, parameters: {'a': 'b'});
 
       final verificationResult =
@@ -61,7 +61,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .credentialsManager()
-          .get();
+          ?.get();
 
       final verificationResult =
           verify(mockedPlatform.getCredentials(captureAny)).captured.single
@@ -80,7 +80,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .credentialsManager()
-          .set(TestPlatform.credentials);
+          ?.set(TestPlatform.credentials);
 
       final verificationResult =
           verify(mockedPlatform.saveCredentials(captureAny)).captured.single
@@ -109,7 +109,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .credentialsManager()
-          .hasValidCredentials(minTtl: 30);
+          ?.hasValidCredentials(minTtl: 30);
 
       final verificationResult =
           verify(mockedPlatform.hasValidCredentials(captureAny)).captured.single
@@ -125,7 +125,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .credentialsManager()
-          .hasValidCredentials();
+          ?.hasValidCredentials();
 
       final verificationResult =
           verify(mockedPlatform.hasValidCredentials(captureAny)).captured.single
@@ -141,7 +141,7 @@ void main() {
 
       final result = await Auth0('test-domain', 'test-clientId')
           .credentialsManager()
-          .hasValidCredentials();
+          ?.hasValidCredentials();
 
       expect(result, true);
     });
@@ -152,7 +152,7 @@ void main() {
 
       final result = await Auth0('test-domain', 'test-clientId')
           .credentialsManager()
-          .hasValidCredentials();
+          ?.hasValidCredentials();
 
       expect(result, false);
     });
@@ -165,7 +165,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .credentialsManager()
-          .clear();
+          ?.clear();
 
       final verificationResult =
           verify(mockedPlatform.clearCredentials(captureAny)).captured.single

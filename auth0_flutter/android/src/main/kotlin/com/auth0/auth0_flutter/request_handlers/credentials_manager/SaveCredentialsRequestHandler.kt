@@ -1,7 +1,7 @@
 package com.auth0.auth0_flutter.request_handlers.credentials_manager
 
 import android.content.Context
-import com.auth0.android.authentication.storage.CredentialsManager
+import com.auth0.android.authentication.storage.SecureCredentialsManager
 import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.utils.assertHasProperties
@@ -14,7 +14,7 @@ class SaveCredentialsRequestHandler : CredentialsManagerRequestHandler {
     override val method: String = "credentialsManager#saveCredentials";
 
     override fun handle(
-        credentialsManager: CredentialsManager,
+        credentialsManager: SecureCredentialsManager,
         context: Context,
         request: MethodCallRequest,
         result: MethodChannel.Result

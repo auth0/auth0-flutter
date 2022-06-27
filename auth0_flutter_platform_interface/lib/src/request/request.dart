@@ -18,11 +18,17 @@ abstract class BaseRequest<TOptions extends RequestOptions?> {
 
 class CredentialsManagerRequest<TOptions extends RequestOptions?>
     extends BaseRequest<TOptions?> {
+  bool useBiometrics;
   CredentialsManagerRequest({
     required final Account account,
     final TOptions? options,
     required final UserAgent userAgent,
+    final this.useBiometrics = false,
   }) : super(account: account, options: options, userAgent: userAgent);
+
+  @override
+  Map<String, dynamic> toMap() => (super.toMap())
+    ..addAll({'useBiometrics': useBiometrics});
 }
 
 class ApiRequest<TOptions extends RequestOptions>

@@ -1,9 +1,10 @@
 package com.auth0.auth0_flutter
 
+import android.app.Activity
 import android.content.Context
 import androidx.annotation.NonNull
 import com.auth0.android.authentication.AuthenticationAPIClient
-import com.auth0.android.authentication.storage.CredentialsManager
+import com.auth0.android.authentication.storage.SecureCredentialsManager
 import com.auth0.android.authentication.storage.SharedPreferencesStorage
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.request_handlers.credentials_manager.CredentialsManagerRequestHandler
@@ -22,9 +23,12 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
 
             val api = AuthenticationAPIClient(request.account);
             val storage = SharedPreferencesStorage(context);
-            val credentialsManager = CredentialsManager(api, storage);
-
-            requestHandler.handle(credentialsManager, context, request, result)
+            val credentialsManager = SecureCredentialsManager(context, api, storage);
+            val useBiometrics = request.data["useBiometrics"] as Boolean? ?: false;
+            if (useBiometrics) {
+                credentialsManager.requireAuthentication(context as Activity, 111, null, null)
+            }
+            requestHandler.handle(credentialsManager, context, request, result);
         } else {
             result.notImplemented()
         }
