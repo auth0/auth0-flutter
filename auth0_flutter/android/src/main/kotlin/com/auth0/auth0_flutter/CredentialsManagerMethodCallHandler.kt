@@ -24,8 +24,8 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
             val api = AuthenticationAPIClient(request.account);
             val storage = SharedPreferencesStorage(context);
             val credentialsManager = SecureCredentialsManager(context, api, storage);
-            val useBiometrics = request.data["useBiometrics"] as Boolean? ?: false;
-            if (useBiometrics) {
+            val useLocalAuthentication = request.data["useLocalAuthentication"] as Boolean? ?: false;
+            if (useLocalAuthentication) {
                 credentialsManager.requireAuthentication(context as Activity, 111, null, null)
             }
             requestHandler.handle(credentialsManager, context, request, result);

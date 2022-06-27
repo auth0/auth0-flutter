@@ -29,6 +29,8 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   final mockedPlatform = MockTestPlatform();
+  const account = Account('test-domain', 'test-clientId');
+  final userAgent = UserAgent(name: 'test', version: '0.0.1');
 
   setUp(() {
     CredentialsManagerPlatform.instance = mockedPlatform;
@@ -40,10 +42,8 @@ void main() {
       when(mockedPlatform.getCredentials(any))
           .thenAnswer((final _) async => TestPlatform.credentials);
 
-      await Auth0('test-domain', 'test-clientId')
-          .credentialsManager()
-          ?.get(
-              minTtl: 30, scopes: {'a', 'b'}, parameters: {'a': 'b'});
+      await DefaultCredentialsManager(account, userAgent)
+          .get(minTtl: 30, scopes: {'a', 'b'}, parameters: {'a': 'b'});
 
       final verificationResult =
           verify(mockedPlatform.getCredentials(captureAny)).captured.single
@@ -55,13 +55,12 @@ void main() {
       expect(verificationResult.options?.parameters, {'a': 'b'});
     });
 
-    test('set minTtl, scope and parameters to default value when omitted', () async {
+    test('set minTtl, scope and parameters to default value when omitted',
+        () async {
       when(mockedPlatform.getCredentials(any))
           .thenAnswer((final _) async => TestPlatform.credentials);
 
-      await Auth0('test-domain', 'test-clientId')
-          .credentialsManager()
-          ?.get();
+      await DefaultCredentialsManager(account, userAgent).get();
 
       final verificationResult =
           verify(mockedPlatform.getCredentials(captureAny)).captured.single
@@ -78,9 +77,7 @@ void main() {
       when(mockedPlatform.saveCredentials(any))
           .thenAnswer((final _) async => {});
 
-      await Auth0('test-domain', 'test-clientId')
-          .credentialsManager()
-          ?.set(TestPlatform.credentials);
+      await DefaultCredentialsManager(account, userAgent).set(TestPlatform.credentials);
 
       final verificationResult =
           verify(mockedPlatform.saveCredentials(captureAny)).captured.single
@@ -107,9 +104,7 @@ void main() {
       when(mockedPlatform.hasValidCredentials(any))
           .thenAnswer((final _) async => true);
 
-      await Auth0('test-domain', 'test-clientId')
-          .credentialsManager()
-          ?.hasValidCredentials(minTtl: 30);
+      await DefaultCredentialsManager(account, userAgent).hasValidCredentials(minTtl: 30);
 
       final verificationResult =
           verify(mockedPlatform.hasValidCredentials(captureAny)).captured.single
@@ -123,9 +118,7 @@ void main() {
       when(mockedPlatform.hasValidCredentials(any))
           .thenAnswer((final _) async => true);
 
-      await Auth0('test-domain', 'test-clientId')
-          .credentialsManager()
-          ?.hasValidCredentials();
+      await DefaultCredentialsManager(account, userAgent).hasValidCredentials();
 
       final verificationResult =
           verify(mockedPlatform.hasValidCredentials(captureAny)).captured.single
@@ -139,9 +132,7 @@ void main() {
       when(mockedPlatform.hasValidCredentials(any))
           .thenAnswer((final _) async => true);
 
-      final result = await Auth0('test-domain', 'test-clientId')
-          .credentialsManager()
-          ?.hasValidCredentials();
+      final result = await DefaultCredentialsManager(account, userAgent).hasValidCredentials();
 
       expect(result, true);
     });
@@ -150,9 +141,7 @@ void main() {
       when(mockedPlatform.hasValidCredentials(any))
           .thenAnswer((final _) async => false);
 
-      final result = await Auth0('test-domain', 'test-clientId')
-          .credentialsManager()
-          ?.hasValidCredentials();
+      final result = await DefaultCredentialsManager(account, userAgent).hasValidCredentials();
 
       expect(result, false);
     });
@@ -163,9 +152,7 @@ void main() {
       when(mockedPlatform.clearCredentials(any))
           .thenAnswer((final _) async => {});
 
-      await Auth0('test-domain', 'test-clientId')
-          .credentialsManager()
-          ?.clear();
+      await DefaultCredentialsManager(account, userAgent).clear();
 
       final verificationResult =
           verify(mockedPlatform.clearCredentials(captureAny)).captured.single

@@ -18,17 +18,17 @@ abstract class BaseRequest<TOptions extends RequestOptions?> {
 
 class CredentialsManagerRequest<TOptions extends RequestOptions?>
     extends BaseRequest<TOptions?> {
-  bool useBiometrics;
+  bool useLocalAuthentication;
   CredentialsManagerRequest({
     required final Account account,
     final TOptions? options,
     required final UserAgent userAgent,
-    final this.useBiometrics = false,
+    final this.useLocalAuthentication = false,
   }) : super(account: account, options: options, userAgent: userAgent);
 
   @override
   Map<String, dynamic> toMap() => (super.toMap())
-    ..addAll({'useBiometrics': useBiometrics});
+    ..addAll({'useLocalAuthentication': useLocalAuthentication});
 }
 
 class ApiRequest<TOptions extends RequestOptions>
