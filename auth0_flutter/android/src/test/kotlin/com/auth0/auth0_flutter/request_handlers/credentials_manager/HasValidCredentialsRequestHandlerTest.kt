@@ -1,7 +1,7 @@
 package com.auth0.auth0_flutter.request_handlers.credentials_manager
 
 import com.auth0.android.Auth0
-import com.auth0.android.authentication.storage.CredentialsManager
+import com.auth0.android.authentication.storage.SecureCredentialsManager
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodChannel.Result
 import org.hamcrest.CoreMatchers.equalTo
@@ -23,7 +23,7 @@ class HasValidCredentialsRequestHandlerTest {
         );
         val mockResult = mock<Result>();
         val mockAccount = mock<Auth0>();
-        var mockCredentialsManager = mock<CredentialsManager>();
+        var mockCredentialsManager = mock<SecureCredentialsManager>();
         val request = MethodCallRequest(account = mockAccount, options);
 
         handler.handle(
@@ -37,11 +37,11 @@ class HasValidCredentialsRequestHandlerTest {
     }
 
     @Test
-    fun `should call hasValidCredentials without setting minTtl`() {
+    fun `should call hasValidCredentials with minTtl set to the default value`() {
         val handler = HasValidCredentialsRequestHandler();
         val mockResult = mock<Result>();
         val mockAccount = mock<Auth0>();
-        var mockCredentialsManager = mock<CredentialsManager>();
+        var mockCredentialsManager = mock<SecureCredentialsManager>();
         val request = MethodCallRequest(account = mockAccount, mock());
 
         handler.handle(
@@ -51,7 +51,7 @@ class HasValidCredentialsRequestHandlerTest {
             mockResult
         );
 
-        verify(mockCredentialsManager).hasValidCredentials();
+        verify(mockCredentialsManager).hasValidCredentials(0);
     }
 
     @Test
@@ -63,7 +63,7 @@ class HasValidCredentialsRequestHandlerTest {
         );
         val mockResult = mock<Result>();
         val mockAccount = mock<Auth0>();
-        var mockCredentialsManager = mock<CredentialsManager>();
+        var mockCredentialsManager = mock<SecureCredentialsManager>();
         val request = MethodCallRequest(account = mockAccount, options);
 
 

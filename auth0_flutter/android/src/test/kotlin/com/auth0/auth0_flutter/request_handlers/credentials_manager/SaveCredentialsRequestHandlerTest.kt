@@ -1,7 +1,7 @@
 package com.auth0.auth0_flutter.request_handlers.credentials_manager
 
 import com.auth0.android.Auth0
-import com.auth0.android.authentication.storage.CredentialsManager
+import com.auth0.android.authentication.storage.SecureCredentialsManager
 import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodChannel.Result
@@ -27,7 +27,7 @@ class SaveCredentialsRequestHandlerTest {
         val handler = SaveCredentialsRequestHandler();
         val mockResult = mock<Result>();
         val mockAccount = mock<Auth0>();
-        var mockCredentialsManager = mock<CredentialsManager>();
+        var mockCredentialsManager = mock<SecureCredentialsManager>();
         val request = MethodCallRequest(account = mockAccount, options);
 
         val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
@@ -56,7 +56,7 @@ class SaveCredentialsRequestHandlerTest {
         val handler = SaveCredentialsRequestHandler();
         val mockResult = mock<Result>();
         val mockAccount = mock<Auth0>();
-        var mockCredentialsManager = mock<CredentialsManager>();
+        var mockCredentialsManager = mock<SecureCredentialsManager>();
         val request = MethodCallRequest(account = mockAccount, options);
 
         val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
@@ -85,7 +85,7 @@ class SaveCredentialsRequestHandlerTest {
         val handler = SaveCredentialsRequestHandler();
         val mockResult = mock<Result>();
         val mockAccount = mock<Auth0>();
-        var mockCredentialsManager = mock<CredentialsManager>();
+        var mockCredentialsManager = mock<SecureCredentialsManager>();
         val request = MethodCallRequest(account = mockAccount, options);
 
         val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
@@ -114,7 +114,7 @@ class SaveCredentialsRequestHandlerTest {
         val handler = SaveCredentialsRequestHandler();
         val mockResult = mock<Result>();
         val mockAccount = mock<Auth0>();
-        var mockCredentialsManager = mock<CredentialsManager>();
+        var mockCredentialsManager = mock<SecureCredentialsManager>();
         val request = MethodCallRequest(account = mockAccount, options);
 
         val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
@@ -143,7 +143,7 @@ class SaveCredentialsRequestHandlerTest {
         val handler = SaveCredentialsRequestHandler();
         val mockResult = mock<Result>();
         val mockAccount = mock<Auth0>();
-        var mockCredentialsManager = mock<CredentialsManager>();
+        var mockCredentialsManager = mock<SecureCredentialsManager>();
         val request = MethodCallRequest(account = mockAccount, options);
 
         val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
@@ -193,7 +193,7 @@ class SaveCredentialsRequestHandlerTest {
         );
         val mockResult = mock<Result>();
         val mockAccount = mock<Auth0>();
-        var mockCredentialsManager = mock<CredentialsManager>();
+        var mockCredentialsManager = mock<SecureCredentialsManager>();
         val request = MethodCallRequest(account = mockAccount, options);
 
         handler.handle(
@@ -242,7 +242,7 @@ class SaveCredentialsRequestHandlerTest {
         );
         val mockResult = mock<Result>();
         val mockAccount = mock<Auth0>();
-        var mockCredentialsManager = mock<CredentialsManager>();
+        var mockCredentialsManager = mock<SecureCredentialsManager>();
         val request = MethodCallRequest(account = mockAccount, options);
 
         handler.handle(

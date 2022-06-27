@@ -3,7 +3,7 @@ package com.auth0.auth0_flutter.request_handlers.credentials_manager
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
-import com.auth0.android.authentication.storage.CredentialsManager;
+import com.auth0.android.authentication.storage.SecureCredentialsManager;
 import com.auth0.android.callback.Callback
 import com.auth0.android.request.AuthenticationRequest
 import com.auth0.android.result.Credentials
@@ -30,7 +30,7 @@ class ClearCredentialsRequestHandlerTest {
         val handler = ClearCredentialsRequestHandler();
         val mockResult = mock<Result>();
         val mockAccount = mock<Auth0>();
-        var mockCredentialsManager = mock<CredentialsManager>();
+        var mockCredentialsManager = mock<SecureCredentialsManager>();
         val request = MethodCallRequest(account = mockAccount, mock());
 
         handler.handle(
@@ -48,7 +48,7 @@ class ClearCredentialsRequestHandlerTest {
         val handler = ClearCredentialsRequestHandler();
         val mockResult = mock<Result>();
         val mockAccount = mock<Auth0>();
-        var mockCredentialsManager = mock<CredentialsManager>();
+        var mockCredentialsManager = mock<SecureCredentialsManager>();
         val request = MethodCallRequest(account = mockAccount, mock());
 
         handler.handle(
