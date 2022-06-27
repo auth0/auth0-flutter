@@ -55,7 +55,7 @@
 <p>Authentication using Universal Login works by redirecting your user to a login page hosted on Auth0's servers. To achieve this on a native device,
 this class uses the <a href="https://github.com/auth0/Auth0.Android">Auth0.Android</a> and <a href="https://github.com/auth0/Auth0.swift">Auth0.Swift</a> SDKs on Android and iOS respectively to
 perform interactions with Universal Login.</p>
-<p>You would not instantiate this yourself, as an instance of it is already exposed as <a href="../auth0_flutter/Auth0/webAuthentication.html">Auth0.webAuthentication</a>.</p>
+<p>It is not intended for you to instantiate this class yourself, as an instance of it is already exposed as <a href="../auth0_flutter/Auth0/webAuthentication.html">Auth0.webAuthentication</a>.</p>
 <p>Usage example:</p>
 <pre class="language-dart"><code class="language-dart">final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
 final result = await auth0.webAuthentication.login();
@@ -122,8 +122,8 @@ final idToken = result.idToken;
 
 </dt>
 <dd>
-  Redirects the user to the <a href="https://auth0.com/docs/authenticate/login/auth0-universal-login">Auth0 Universal Login page</a> for authentication. It returns
-a set of tokens and the user profile (constructed from ID token claims).
+  Redirects the user to the <a href="https://auth0.com/docs/authenticate/login/auth0-universal-login">Auth0 Universal Login page</a> for authentication. If successful, it returns
+a set of tokens, as well as the user's profile (constructed from ID token claims).
   
 
 </dd>

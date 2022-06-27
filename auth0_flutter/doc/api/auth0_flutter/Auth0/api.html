@@ -63,6 +63,17 @@
 
 <section class="desc markdown">
   <p>An instance of <a href="../../auth0_flutter/AuthenticationApi-class.html">AuthenticationApi</a>, the primary interface for interacting with the Auth0 Authentication API</p>
+<p>Usage example:</p>
+<pre class="language-dart"><code class="language-dart">final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
+
+final result = await auth0.api.login({
+  usernameOrEmail: 'my@email.com',
+  password: 'my_password'
+  connectionOrRealm: 'Username-Password-Authentication'
+})
+
+final idToken = result.idToken;
+</code></pre>
 </section>
 
 

@@ -50,6 +50,24 @@
 </h1></div>
 
     
+<section class="desc markdown">
+  <p>An interface for calling some of the endpoints in <a href="https://auth0.com/docs/api/authentication">Auth0's Authentication API</a>.</p>
+<p>This class presents building blocks for doing more fine-grained authentication with Auth0 using Username and Password login. Unlike
+<a href="../auth0_flutter/WebAuthentication-class.html">WebAuthentication</a>, these do <strong>not</strong> use <a href="https://auth0.com/docs/authenticate/login/auth0-universal-login">Auth0 Universal Login</a> (the recommended way of doing authentication),
+and thus users are not redirected to Auth0 for authentication.</p>
+<p>It is not intended for you to instantiate this class yourself, as an instance of it is already exposed as <a href="../auth0_flutter/Auth0/api.html">Auth0.api</a>.</p>
+<p>Usage example:</p>
+<pre class="language-dart"><code class="language-dart">final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
+
+final result = await auth0.api.login({
+  usernameOrEmail: 'my@email.com',
+  password: 'my_password'
+  connectionOrRealm: 'Username-Password-Authentication'
+})
+
+final idToken = result.idToken;
+</code></pre>
+</section>
 
 
 
@@ -110,7 +128,8 @@
 
 </dt>
 <dd>
-  
+  Authenticates the user using a username (or email address) and a password, with the specified <code>connectionOrRealm</code>. If successful, it returns
+a set of tokens, as well as the user's profile (constructed from ID token claims).
   
 
 </dd>
@@ -136,7 +155,7 @@
 
 </dt>
 <dd>
-  
+  Uses a refresh token to get a new access token.
   
 
 </dd>
@@ -149,7 +168,7 @@
 
 </dt>
 <dd>
-  
+  Initiates a reset of password of the user with the specific <code>email</code> address in the specifid <code>connection</code>.
   
 
 </dd>
@@ -162,7 +181,7 @@
 
 </dt>
 <dd>
-  
+  Registers a new user with the specified <code>email</code> address and <code>password</code> in the specified <code>connection</code>.
   
 
 </dd>
@@ -188,7 +207,7 @@
 
 </dt>
 <dd>
-  
+  Fetches the user's profile from the /userinfo endpoint. An <code>accessToken</code> from a successful authentication call must be supplied.
   
 
 </dd>

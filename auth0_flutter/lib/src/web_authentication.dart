@@ -6,7 +6,7 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 /// this class uses the [Auth0.Android](https://github.com/auth0/Auth0.Android) and [Auth0.Swift](https://github.com/auth0/Auth0.swift) SDKs on Android and iOS respectively to
 /// perform interactions with Universal Login.
 ///
-/// You would not instantiate this yourself, as an instance of it is already exposed as [Auth0.webAuthentication].
+/// It is not intended for you to instantiate this class yourself, as an instance of it is already exposed as [Auth0.webAuthentication].
 ///
 /// Usage example:
 ///
@@ -21,8 +21,8 @@ class WebAuthentication {
 
   WebAuthentication(this._account, this._userAgent);
 
-  /// Redirects the user to the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login) for authentication. It returns
-  /// a set of tokens and the user profile (constructed from ID token claims).
+  /// Redirects the user to the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login) for authentication. If successful, it returns
+  /// a set of tokens, as well as the user's profile (constructed from ID token claims).
   ///
   /// Notes:
   ///

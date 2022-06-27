@@ -41,5 +41,19 @@ class Auth0 {
       WebAuthentication(_account, _userAgent);
 
   /// An instance of [AuthenticationApi], the primary interface for interacting with the Auth0 Authentication API
+  ///
+  /// Usage example:
+  ///
+  /// ```dart
+  /// final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
+  ///
+  /// final result = await auth0.api.login({
+  ///   usernameOrEmail: 'my@email.com',
+  ///   password: 'my_password'
+  ///   connectionOrRealm: 'Username-Password-Authentication'
+  /// });
+  ///
+  /// final idToken = result.idToken;
+  /// ```
   AuthenticationApi get api => AuthenticationApi(_account, _userAgent);
 }
