@@ -19,7 +19,7 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 ///   connectionOrRealm: 'Username-Password-Authentication'
 /// })
 ///
-/// final idToken = result.idToken;
+/// final accessToken = result.accessToken;
 /// ```
 class AuthenticationApi {
   final Account _account;
@@ -27,7 +27,7 @@ class AuthenticationApi {
 
   AuthenticationApi(this._account, this._userAgent);
 
-  /// Authenticates the user using a username (or email address) and a password, with the specified [connectionOrRealm]. If successful, it returns
+  /// Authenticates the user using a [usernameOrEmail] and a [password], with the specified [connectionOrRealm]. If successful, it returns
   /// a set of tokens, as well as the user's profile (constructed from ID token claims).
   ///
   /// If using the default username and password database connection, [connectionOrRealm] should be set to `Username-Password-Authentication`.
@@ -38,7 +38,7 @@ class AuthenticationApi {
   /// ## Notes
   ///
   /// * [audience] relates to the API Identifier you want to reference in your access tokens (see [API settings](https://auth0.com/docs/get-started/apis/api-settings))
-  /// * [scopes] defaults to `openid profile email` on the Native platforms
+  /// * [scopes] defaults to `openid profile email`
   /// * [parameters] can be used to sent through custom parameters to the endpoint to be picked up in a Rule or Action.
   ///
   /// ## Usage example
@@ -115,7 +115,7 @@ class AuthenticationApi {
               userMetadata: userMetadata,
               parameters: parameters)));
 
-  /// Uses a refresh token to get a new access token.
+  /// Uses a [refreshToken] to get a new access token.
   ///
   /// ## Endpoint
   /// https://auth0.com/docs/api/authentication#refresh-token
@@ -151,7 +151,7 @@ class AuthenticationApi {
               scopes: scopes,
               parameters: parameters)));
 
-  /// Initiates a reset of password of the user with the specific [email] address in the specifid [connection].
+  /// Initiates a reset of password of the user with the specific [email] address in the specific [connection].
   ///
   /// ## Endpoint
   /// https://auth0.com/docs/api/authentication#change-password

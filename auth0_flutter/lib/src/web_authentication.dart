@@ -13,7 +13,7 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 /// ```dart
 /// final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
 /// final result = await auth0.webAuthentication.login();
-/// final idToken = result.idToken;
+/// final accessToken = result.accessToken;
 /// ```
 class WebAuthentication {
   final Account _account;
@@ -26,7 +26,7 @@ class WebAuthentication {
   ///
   /// Notes:
   ///
-  /// * (iOS only): [useEphemeralSession] controls whether shared persistent storage is used for caches, cookies, or credentials. [Read more on the effects this setting has](https://github.com/auth0/Auth0.swift/blob/master/FAQ.md#1-how-can-i-disable-the-login-alert-box)
+  /// * (iOS only): [useEphemeralSession] controls whether shared persistent storage is used for cookies. [Read more on the effects this setting has](https://github.com/auth0/Auth0.swift/blob/master/FAQ.md#1-how-can-i-disable-the-login-alert-box)
   /// * (Android only): specify [scheme] if you're using a custom URL scheme for your app. This value must match the value used to configure the `auth0Scheme` manifest placeholder, for the Redirect intent filter to work
   /// * [audience] relates to the API Identifier you want to reference in your access tokens (see [API settings](https://auth0.com/docs/get-started/apis/api-settings))
   Future<Credentials> login({
