@@ -35,7 +35,7 @@ class WebAuthentication {
   /// * (Android only): specify [scheme] if you're using a custom URL scheme for your app. This value must match the value used to configure the `auth0Scheme` manifest placeholder, for the Redirect intent filter to work
   /// * [audience] relates to the API Identifier you want to reference in your access tokens (see [API settings](https://auth0.com/docs/get-started/apis/api-settings))
   /// * [scopes] defaults to `openid profile email`. You can override these scopes, but `openid` is always requested regardless of this setting.
-  /// * Arbitrary [parameters] can be specified and then picked up in a custom Auth0 [Action](https://auth0.com/docs/customize/actions) or
+  /// * Arbitrary [parameters] can be specified and then picked up in a custom Auth0 [Action](https://auth0.com/docs/customize/actions) or [Rule](https://auth0.com/docs/customize/rules).
   /// * If you want to log into a specific organization, provide the [organizationId]. Provide [invitationUrl] if a user has been invited to
   ///   join an organization.
   Future<Credentials> login({
