@@ -29,7 +29,7 @@ class Credentials {
   /// The absolute date and time of when the access token expires.
   final DateTime expiresAt;
 
-  /// The scopes that have been grated by the authorization server.
+  /// The scopes that have been granted by Auth0.
   ///
   /// [Read more about scopes](https://auth0.com/docs/get-started/apis/scopes).
   final Set<String> scopes;
