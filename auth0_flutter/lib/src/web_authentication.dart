@@ -24,11 +24,10 @@ class WebAuthentication {
   /// Redirects the user to the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login) for authentication. If successful, it returns
   /// a set of tokens, as well as the user's profile (constructed from ID token claims).
   ///
-  /// How the ID token is validated can be configured using [idTokenValidationConfig],
-  /// but in general the defaults for this are adequate.
+  /// If [redirectUrl] is not specified, a default URL is used that incorporates the `domain` value specified to [Auth0.new], and [scheme] on Android, or the
+  /// bundle identifier in iOS. [redirectUrl] must appear in your **Allowed Callback URLs** list for the Auth0 app. [Read more about redirecting users](https://auth0.com/docs/authenticate/login/redirect-users-after-login).
   ///
-  /// If you want to log into a specific organization, provide the [organizationId] here. Provide [invitationUrl] if a user has been invited to
-  /// join an organization.
+  /// How the ID token is validated can be configured using [idTokenValidationConfig], but in general the defaults for this are adequate.
   ///
   /// Additonal notes:
   ///
@@ -37,6 +36,8 @@ class WebAuthentication {
   /// * [audience] relates to the API Identifier you want to reference in your access tokens (see [API settings](https://auth0.com/docs/get-started/apis/api-settings))
   /// * [scopes] defaults to `openid profile email`. You can override these scopes, but `openid` is always requested regardless of this setting.
   /// * Arbitrary [parameters] can be specified and then picked up in a custom Auth0 [Action](https://auth0.com/docs/customize/actions) or
+  /// * If you want to log into a specific organization, provide the [organizationId]. Provide [invitationUrl] if a user has been invited to
+  ///   join an organization.
   ///  [Rule](https://auth0.com/docs/customize/rules).
   Future<Credentials> login({
     final String? audience,

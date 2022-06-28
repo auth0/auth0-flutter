@@ -71,17 +71,18 @@
 <section class="desc markdown">
   <p>Redirects the user to the <a href="https://auth0.com/docs/authenticate/login/auth0-universal-login">Auth0 Universal Login page</a> for authentication. If successful, it returns
 a set of tokens, as well as the user's profile (constructed from ID token claims).</p>
-<p>How the ID token is validated can be configured using <code>idTokenValidationConfig</code>,
-but in general the defaults for this are adequate.</p>
-<p>If you want to log into a specific organization, provide the <code>organizationId</code> here. Provide <code>invitationUrl</code> if a user has been invited to
-join an organization.</p>
+<p>If <code>redirectUrl</code> is not specified, a default URL is used that incorporates the <code>domain</code> value specified to <a href="../../auth0_flutter/Auth0/Auth0.html">Auth0.new</a>, and <code>scheme</code> on Android, or the
+bundle identifier in iOS. <code>redirectUrl</code> must appear in your <strong>Allowed Callback URLs</strong> list for the Auth0 app. <a href="https://auth0.com/docs/authenticate/login/redirect-users-after-login">Read more about redirecting users</a>.</p>
+<p>How the ID token is validated can be configured using <code>idTokenValidationConfig</code>, but in general the defaults for this are adequate.</p>
 <p>Additonal notes:</p>
 <ul>
 <li>(iOS only): <code>useEphemeralSession</code> controls whether shared persistent storage is used for cookies. <a href="https://github.com/auth0/Auth0.swift/blob/master/FAQ.md#1-how-can-i-disable-the-login-alert-box">Read more on the effects this setting has</a></li>
 <li>(Android only): specify <code>scheme</code> if you're using a custom URL scheme for your app. This value must match the value used to configure the <code>auth0Scheme</code> manifest placeholder, for the Redirect intent filter to work</li>
 <li><code>audience</code> relates to the API Identifier you want to reference in your access tokens (see <a href="https://auth0.com/docs/get-started/apis/api-settings">API settings</a>)</li>
 <li><code>scopes</code> defaults to <code>openid profile email</code>. You can override these scopes, but <code>openid</code> is always requested regardless of this setting.</li>
-<li>Arbitrary <code>parameters</code> can be specified and then picked up in a custom Auth0 <a href="https://auth0.com/docs/customize/actions">Action</a> or
+<li>Arbitrary <code>parameters</code> can be specified and then picked up in a custom Auth0 <a href="https://auth0.com/docs/customize/actions">Action</a> or</li>
+<li>If you want to log into a specific organization, provide the <code>organizationId</code>. Provide <code>invitationUrl</code> if a user has been invited to
+join an organization.
  <a href="https://auth0.com/docs/customize/rules">Rule</a>.</li>
 </ul>
 </section>
