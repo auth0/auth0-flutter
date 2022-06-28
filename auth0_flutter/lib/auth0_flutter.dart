@@ -35,7 +35,7 @@ class Auth0 {
   /// ```dart
   /// final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
   /// final result = await auth0.webAuthentication.login();
-  /// final idToken = result.idToken;
+  /// final accessToken = result.accessToken;
   /// ```
   WebAuthentication get webAuthentication =>
       WebAuthentication(_account, _userAgent);
@@ -53,7 +53,7 @@ class Auth0 {
   ///   connectionOrRealm: 'Username-Password-Authentication'
   /// });
   ///
-  /// final idToken = result.idToken;
+  /// final accessToken = result.accessToken;
   /// ```
   AuthenticationApi get api => AuthenticationApi(_account, _userAgent);
 }
