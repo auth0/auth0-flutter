@@ -66,7 +66,7 @@
     </section>
     
 <section class="desc markdown">
-  <p>Authenticates the user using a username (or email address) and a password, with the specified <code>connectionOrRealm</code>. If successful, it returns
+  <p>Authenticates the user using a <code>usernameOrEmail</code> and a <code>password</code>, with the specified <code>connectionOrRealm</code>. If successful, it returns
 a set of tokens, as well as the user's profile (constructed from ID token claims).</p>
 <p>If using the default username and password database connection, <code>connectionOrRealm</code> should be set to <code>Username-Password-Authentication</code>.</p>
 <h2 id="endpoint-docs">Endpoint docs</h2>
@@ -74,7 +74,7 @@ a set of tokens, as well as the user's profile (constructed from ID token claims
 <h2 id="notes">Notes</h2>
 <ul>
 <li><code>audience</code> relates to the API Identifier you want to reference in your access tokens (see <a href="https://auth0.com/docs/get-started/apis/api-settings">API settings</a>)</li>
-<li><code>scopes</code> defaults to <code>openid profile email</code> on the Native platforms</li>
+<li><code>scopes</code> defaults to <code>openid profile email</code></li>
 <li><code>parameters</code> can be used to sent through custom parameters to the endpoint to be picked up in a Rule or Action.</li>
 </ul>
 <h2 id="usage-example">Usage example</h2>

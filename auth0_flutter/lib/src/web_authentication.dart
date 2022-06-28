@@ -24,11 +24,20 @@ class WebAuthentication {
   /// Redirects the user to the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login) for authentication. If successful, it returns
   /// a set of tokens, as well as the user's profile (constructed from ID token claims).
   ///
-  /// Notes:
+  /// How the ID token is validated can be configured using [idTokenValidationConfig],
+  /// but in general the defaults for this are adequate.
+  ///
+  /// If you want to log into a specific organization, provide the [organizationId] here. Provide [invitationUrl] if a user has been invited to
+  /// join an organization.
+  ///
+  /// Additonal notes:
   ///
   /// * (iOS only): [useEphemeralSession] controls whether shared persistent storage is used for cookies. [Read more on the effects this setting has](https://github.com/auth0/Auth0.swift/blob/master/FAQ.md#1-how-can-i-disable-the-login-alert-box)
   /// * (Android only): specify [scheme] if you're using a custom URL scheme for your app. This value must match the value used to configure the `auth0Scheme` manifest placeholder, for the Redirect intent filter to work
   /// * [audience] relates to the API Identifier you want to reference in your access tokens (see [API settings](https://auth0.com/docs/get-started/apis/api-settings))
+  /// * [scopes] defaults to `openid profile email`. You can override these scopes, but `openid` is always requested regardless of this setting.
+  /// * Arbitrary [parameters] can be specified and then picked up in a custom Auth0 [Action](https://auth0.com/docs/customize/actions) or
+  ///  [Rule](https://auth0.com/docs/customize/rules).
   Future<Credentials> login({
     final String? audience,
     final Set<String> scopes = const {},

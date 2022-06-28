@@ -122,6 +122,7 @@ class AuthenticationApi {
   ///
   /// ## Notes
   /// * Refresh tokens can be retrieved by specifying the `offline_access` scope during authentication.
+  /// * [scopes] can be specified if a reduced set of scopes is desired.
   ///
   /// ## Further reading
   /// [Refresh Tokens on Auth0 docs](https://auth0.com/docs/secure/tokens/refresh-tokens)
@@ -160,6 +161,9 @@ class AuthenticationApi {
   ///
   /// Calling this endpoint does not reset the user's password in itself, but it asks Auth0 to send the user
   /// an email with a link they can use to reset their password on the web.
+  ///
+  /// Arbitrary [parameters] can be specified and then picked up in a custom Auth0 [Action](https://auth0.com/docs/customize/actions) or
+  ///  [Rule](https://auth0.com/docs/customize/rules).
   Future<void> resetPassword(
           {required final String email,
           required final String connection,

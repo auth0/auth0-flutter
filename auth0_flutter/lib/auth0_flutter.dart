@@ -22,9 +22,9 @@ class Auth0 {
   final UserAgent _userAgent =
       UserAgent(name: 'auth0-flutter', version: version);
 
-  /// Creates an intance of an Auth0 client with the provided `domain` and `clientId` properties.
+  /// Creates an intance of an Auth0 client with the provided [domain] and [clientId] properties.
   ///
-  /// `domain` and `clientId` are both values that can be retrieved from the application in your [Auth0 Dashboard](https://manage.auth0.com).
+  /// [domain] and [clientId] are both values that can be retrieved from the application in your [Auth0 Dashboard](https://manage.auth0.com).
   Auth0(final String domain, final String clientId)
       : _account = Account(domain, clientId);
 

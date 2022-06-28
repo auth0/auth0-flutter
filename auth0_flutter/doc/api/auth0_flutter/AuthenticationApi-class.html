@@ -65,7 +65,7 @@ final result = await auth0.api.login({
   connectionOrRealm: 'Username-Password-Authentication'
 })
 
-final idToken = result.idToken;
+final accessToken = result.accessToken;
 </code></pre>
 </section>
 
@@ -128,7 +128,7 @@ final idToken = result.idToken;
 
 </dt>
 <dd>
-  Authenticates the user using a username (or email address) and a password, with the specified <code>connectionOrRealm</code>. If successful, it returns
+  Authenticates the user using a <code>usernameOrEmail</code> and a <code>password</code>, with the specified <code>connectionOrRealm</code>. If successful, it returns
 a set of tokens, as well as the user's profile (constructed from ID token claims).
   
 
@@ -155,7 +155,7 @@ a set of tokens, as well as the user's profile (constructed from ID token claims
 
 </dt>
 <dd>
-  Uses a refresh token to get a new access token.
+  Uses a <code>refreshToken</code> to get a new access token.
   
 
 </dd>
@@ -168,7 +168,7 @@ a set of tokens, as well as the user's profile (constructed from ID token claims
 
 </dt>
 <dd>
-  Initiates a reset of password of the user with the specific <code>email</code> address in the specifid <code>connection</code>.
+  Initiates a reset of password of the user with the specific <code>email</code> address in the specific <code>connection</code>.
   
 
 </dd>
