@@ -66,6 +66,9 @@ class WebAuthentication {
   /// Redirects the user to the Auth0 Logout endpoint to remove their authentication session, and log out. The user is immediately redirected back to the application
   /// once logout is complete.
   ///
+  /// If [returnTo] is not specified, a default URL is used that incorporates the `domain` value specified to [Auth0.new], and [scheme] on Android, or the
+  /// bundle identifier in iOS. [returnTo] must appear in your **Allowed Logout URLs** list for the Auth0 app. [Read more about redirecting users after logout](https://auth0.com/docs/authenticate/login/logout#redirect-users-after-logout).
+  ///
   /// (Android only): [scheme] must match the scheme that was used to configure the `auth0Scheme` manifest placeholder
   Future<void> logout({final String? returnTo, final String? scheme}) =>
       Auth0FlutterWebAuthPlatform.instance.logout(_createWebAuthRequest(

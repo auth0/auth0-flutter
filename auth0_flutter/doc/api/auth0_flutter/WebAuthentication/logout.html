@@ -64,6 +64,8 @@
 <section class="desc markdown">
   <p>Redirects the user to the Auth0 Logout endpoint to remove their authentication session, and log out. The user is immediately redirected back to the application
 once logout is complete.</p>
+<p>If <code>returnTo</code> is not specified, a default URL is used that incorporates the <code>domain</code> value specified to <a href="../../auth0_flutter/Auth0/Auth0.html">Auth0.new</a>, and <code>scheme</code> on Android, or the
+bundle identifier in iOS. <code>returnTo</code> must appear in your <strong>Allowed Logout URLs</strong> list for the Auth0 app. <a href="https://auth0.com/docs/authenticate/login/logout#redirect-users-after-logout">Read more about redirecting users after logout</a>.</p>
 <p>(Android only): <code>scheme</code> must match the scheme that was used to configure the <code>auth0Scheme</code> manifest placeholder</p>
 </section>
 
