@@ -26,7 +26,7 @@ class Credentials {
   /// [Read more about refresh tokens](https://auth0.com/docs/secure/tokens/refresh-tokens).
   final String? refreshToken;
 
-  /// The absolute date and time of when the access token expiries.
+  /// The absolute date and time of when the access token expires.
   final DateTime expiresAt;
 
   /// The scopes that have been grated by the authorization server.
