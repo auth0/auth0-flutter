@@ -13,6 +13,7 @@ public class WebAuthHandler: NSObject, FlutterPlugin {
         case login = "webAuth#login"
         case logout = "webAuth#logout"
     }
+
     private static let channelName = "auth0.com/auth0_flutter/web_auth"
 
     public static func register(with registrar: FlutterPluginRegistrar) {

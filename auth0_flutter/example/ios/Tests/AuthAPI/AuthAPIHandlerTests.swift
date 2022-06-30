@@ -63,7 +63,7 @@ extension AuthAPIHandlerTests {
         let accountDictionary = [AccountProperty.clientId.rawValue: "foo", AccountProperty.domain.rawValue: "bar"]
         let userAgentDictionary = [UserAgentProperty.name.rawValue: "baz", UserAgentProperty.version.rawValue: "qux"]
         let argumentsDictionary = [Account.key: accountDictionary, UserAgent.key: userAgentDictionary]
-        let expectation = self.expectation(description: "called client provider")
+        let expectation = self.expectation(description: "Called client provider")
         sut.clientProvider = { account, userAgent in
             XCTAssertEqual(account.clientId, accountDictionary[AccountProperty.clientId])
             XCTAssertEqual(account.domain, accountDictionary[AccountProperty.domain])
@@ -80,7 +80,7 @@ extension AuthAPIHandlerTests {
 
     func testCallsMethodHandlerProvider() {
         let methodName = AuthAPIHandler.Method.loginWithUsernameOrEmail.rawValue
-        let expectation = self.expectation(description: "called method handler provider")
+        let expectation = self.expectation(description: "Called method handler provider")
         sut.methodHandlerProvider = { method, _ in
             XCTAssertTrue(method.rawValue == methodName)
             expectation.fulfill()
@@ -91,7 +91,7 @@ extension AuthAPIHandlerTests {
     }
 
     func testDoesNotCallMethodHandlerProviderWhenMethodIsUnsupported() {
-        let expectation = self.expectation(description: "did not call method handler provider")
+        let expectation = self.expectation(description: "Did not call method handler provider")
         sut.methodHandlerProvider = { _, _ in
             XCTFail("called method handler provider")
             return SpyMethodHandler()
@@ -114,7 +114,7 @@ extension AuthAPIHandlerTests {
         ]
         methodHandlers.forEach { method, methodHandler in
             let methodCall = FlutterMethodCall(methodName: method.rawValue, arguments: arguments())
-            let expectation = self.expectation(description: "returned \(methodHandler)")
+            let expectation = self.expectation(description: "Returned \(methodHandler)")
             expectations.append(expectation)
             sut.methodHandlerProvider = { method, client in
                 let result = AuthAPIHandler().methodHandlerProvider(method, client)

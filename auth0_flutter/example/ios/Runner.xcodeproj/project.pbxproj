@@ -13,12 +13,18 @@
 		5C328B4827F7822600451E70 /* WebAuthHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C328B4727F7822600451E70 /* WebAuthHandlerTests.swift */; };
 		5C328B5027F7B0E700451E70 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C328B4F27F7B0E600451E70 /* Utilities.swift */; };
 		5C328B5327F7B12F00451E70 /* WebAuthSpies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C328B5227F7B12F00451E70 /* WebAuthSpies.swift */; };
-		5C328B5527F7B1F300451E70 /* WebAuthLoginHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C328B5427F7B1F300451E70 /* WebAuthLoginHandlerTests.swift */; };
+		5C328B5527F7B1F300451E70 /* WebAuthLoginMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C328B5427F7B1F300451E70 /* WebAuthLoginMethodHandlerTests.swift */; };
 		5C328B5727F7BFEA00451E70 /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C328B5627F7BFEA00451E70 /* Mocks.swift */; };
-		5C335E3D27FBBC2300EDDE3A /* WebAuthLogoutHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C335E3C27FBBC2300EDDE3A /* WebAuthLogoutHandlerTests.swift */; };
+		5C335E3D27FBBC2300EDDE3A /* WebAuthLogoutMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C335E3C27FBBC2300EDDE3A /* WebAuthLogoutMethodHandlerTests.swift */; };
 		5C335E3F27FBCD1D00EDDE3A /* SwiftAuth0FlutterPluginTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C335E3E27FBCD1D00EDDE3A /* SwiftAuth0FlutterPluginTests.swift */; };
 		5C335E4127FBD2FE00EDDE3A /* ExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C335E4027FBD2FE00EDDE3A /* ExtensionsTests.swift */; };
 		5C335E4827FE68BC00EDDE3A /* AuthAPISpies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C335E4727FE68BC00EDDE3A /* AuthAPISpies.swift */; };
+		5C4E65BF286D151C00141449 /* CredentialsManagerClearMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4E65BD286D151400141449 /* CredentialsManagerClearMethodHandlerTests.swift */; };
+		5C4E65C1286D15AF00141449 /* CredentialsManagerSpies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4E65C0286D15AF00141449 /* CredentialsManagerSpies.swift */; };
+		5C4E65C3286D19DC00141449 /* CredentialsManagerHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4E65C2286D19DC00141449 /* CredentialsManagerHandlerTests.swift */; };
+		5C4E65C5286D1CFB00141449 /* CredentialsManagerHasValidMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4E65C4286D1CFB00141449 /* CredentialsManagerHasValidMethodHandlerTests.swift */; };
+		5C4E65C7286D24A900141449 /* CredentialsManagerSaveMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4E65C6286D24A900141449 /* CredentialsManagerSaveMethodHandlerTests.swift */; };
+		5C4E65C9286D26D800141449 /* CredentialsManagerGetMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4E65C8286D26D800141449 /* CredentialsManagerGetMethodHandlerTests.swift */; };
 		5C59DA6527FFCF0600365CDB /* AuthAPIHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C59DA6427FFCF0600365CDB /* AuthAPIHandlerTests.swift */; };
 		5C59DA6727FFE75600365CDB /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C59DA6627FFE75600365CDB /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift */; };
 		5C59DA6928011D4F00365CDB /* AuthAPISignupMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C59DA6828011D4F00365CDB /* AuthAPISignupMethodHandlerTests.swift */; };
@@ -81,12 +87,18 @@
 		5C328B4727F7822600451E70 /* WebAuthHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthHandlerTests.swift; sourceTree = "<group>"; };
 		5C328B4F27F7B0E600451E70 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		5C328B5227F7B12F00451E70 /* WebAuthSpies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthSpies.swift; sourceTree = "<group>"; };
-		5C328B5427F7B1F300451E70 /* WebAuthLoginHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthLoginHandlerTests.swift; sourceTree = "<group>"; };
+		5C328B5427F7B1F300451E70 /* WebAuthLoginMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthLoginMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C328B5627F7BFEA00451E70 /* Mocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
-		5C335E3C27FBBC2300EDDE3A /* WebAuthLogoutHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthLogoutHandlerTests.swift; sourceTree = "<group>"; };
+		5C335E3C27FBBC2300EDDE3A /* WebAuthLogoutMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthLogoutMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C335E3E27FBCD1D00EDDE3A /* SwiftAuth0FlutterPluginTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftAuth0FlutterPluginTests.swift; sourceTree = "<group>"; };
 		5C335E4027FBD2FE00EDDE3A /* ExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionsTests.swift; sourceTree = "<group>"; };
 		5C335E4727FE68BC00EDDE3A /* AuthAPISpies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPISpies.swift; sourceTree = "<group>"; };
+		5C4E65BD286D151400141449 /* CredentialsManagerClearMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerClearMethodHandlerTests.swift; sourceTree = "<group>"; };
+		5C4E65C0286D15AF00141449 /* CredentialsManagerSpies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerSpies.swift; sourceTree = "<group>"; };
+		5C4E65C2286D19DC00141449 /* CredentialsManagerHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerHandlerTests.swift; sourceTree = "<group>"; };
+		5C4E65C4286D1CFB00141449 /* CredentialsManagerHasValidMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerHasValidMethodHandlerTests.swift; sourceTree = "<group>"; };
+		5C4E65C6286D24A900141449 /* CredentialsManagerSaveMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerSaveMethodHandlerTests.swift; sourceTree = "<group>"; };
+		5C4E65C8286D26D800141449 /* CredentialsManagerGetMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerGetMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C59DA6427FFCF0600365CDB /* AuthAPIHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPIHandlerTests.swift; sourceTree = "<group>"; };
 		5C59DA6627FFE75600365CDB /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPILoginUsernameOrEmailMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C59DA6828011D4F00365CDB /* AuthAPISignupMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPISignupMethodHandlerTests.swift; sourceTree = "<group>"; };
@@ -164,6 +176,7 @@
 			children = (
 				5C335E4627FE68A500EDDE3A /* AuthAPI */,
 				5C328B5127F7B11300451E70 /* WebAuth */,
+				5C4E65BC286D022200141449 /* CredentialsManager */,
 				5C335E3E27FBCD1D00EDDE3A /* SwiftAuth0FlutterPluginTests.swift */,
 				5CAAA4A1281A0C7D007666F1 /* AccountTests.swift */,
 				5CAAA4A3281A0E50007666F1 /* UserAgentTests.swift */,
@@ -179,8 +192,8 @@
 			children = (
 				5C328B5227F7B12F00451E70 /* WebAuthSpies.swift */,
 				5C328B4727F7822600451E70 /* WebAuthHandlerTests.swift */,
-				5C328B5427F7B1F300451E70 /* WebAuthLoginHandlerTests.swift */,
-				5C335E3C27FBBC2300EDDE3A /* WebAuthLogoutHandlerTests.swift */,
+				5C328B5427F7B1F300451E70 /* WebAuthLoginMethodHandlerTests.swift */,
+				5C335E3C27FBBC2300EDDE3A /* WebAuthLogoutMethodHandlerTests.swift */,
 				5C59DA8C280938BE00365CDB /* WebAuthExtensionsTests.swift */,
 			);
 			path = WebAuth;
@@ -199,6 +212,19 @@
 				5C59DA8A2809386B00365CDB /* AuthAPIExtensionsTests.swift */,
 			);
 			path = AuthAPI;
+			sourceTree = "<group>";
+		};
+		5C4E65BC286D022200141449 /* CredentialsManager */ = {
+			isa = PBXGroup;
+			children = (
+				5C4E65C0286D15AF00141449 /* CredentialsManagerSpies.swift */,
+				5C4E65C2286D19DC00141449 /* CredentialsManagerHandlerTests.swift */,
+				5C4E65C6286D24A900141449 /* CredentialsManagerSaveMethodHandlerTests.swift */,
+				5C4E65C4286D1CFB00141449 /* CredentialsManagerHasValidMethodHandlerTests.swift */,
+				5C4E65C8286D26D800141449 /* CredentialsManagerGetMethodHandlerTests.swift */,
+				5C4E65BD286D151400141449 /* CredentialsManagerClearMethodHandlerTests.swift */,
+			);
+			path = CredentialsManager;
 			sourceTree = "<group>";
 		};
 		5C59DA95280958FB00365CDB /* UITests */ = {
@@ -549,25 +575,31 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5C4E65BF286D151C00141449 /* CredentialsManagerClearMethodHandlerTests.swift in Sources */,
 				5C59DA6928011D4F00365CDB /* AuthAPISignupMethodHandlerTests.swift in Sources */,
 				5C59DA6727FFE75600365CDB /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift in Sources */,
 				5C59DA8B2809386B00365CDB /* AuthAPIExtensionsTests.swift in Sources */,
 				5C59DA8D280938BE00365CDB /* WebAuthExtensionsTests.swift in Sources */,
 				5C335E3F27FBCD1D00EDDE3A /* SwiftAuth0FlutterPluginTests.swift in Sources */,
+				5C4E65C5286D1CFB00141449 /* CredentialsManagerHasValidMethodHandlerTests.swift in Sources */,
 				5C328B4827F7822600451E70 /* WebAuthHandlerTests.swift in Sources */,
 				5C328B5327F7B12F00451E70 /* WebAuthSpies.swift in Sources */,
 				5CAAA4A2281A0C7D007666F1 /* AccountTests.swift in Sources */,
 				5C59DA6527FFCF0600365CDB /* AuthAPIHandlerTests.swift in Sources */,
+				5C4E65C7286D24A900141449 /* CredentialsManagerSaveMethodHandlerTests.swift in Sources */,
 				5C59DA712807B19900365CDB /* AuthAPIRenewMethodHandlerTests.swift in Sources */,
 				5C328B5027F7B0E700451E70 /* Utilities.swift in Sources */,
-				5C328B5527F7B1F300451E70 /* WebAuthLoginHandlerTests.swift in Sources */,
+				5C328B5527F7B1F300451E70 /* WebAuthLoginMethodHandlerTests.swift in Sources */,
+				5C4E65C3286D19DC00141449 /* CredentialsManagerHandlerTests.swift in Sources */,
 				5C335E4827FE68BC00EDDE3A /* AuthAPISpies.swift in Sources */,
+				5C4E65C9286D26D800141449 /* CredentialsManagerGetMethodHandlerTests.swift in Sources */,
 				5C328B5727F7BFEA00451E70 /* Mocks.swift in Sources */,
-				5C335E3D27FBBC2300EDDE3A /* WebAuthLogoutHandlerTests.swift in Sources */,
+				5C335E3D27FBBC2300EDDE3A /* WebAuthLogoutMethodHandlerTests.swift in Sources */,
 				5C335E4127FBD2FE00EDDE3A /* ExtensionsTests.swift in Sources */,
 				5C59DA732807B1A300365CDB /* AuthAPIResetPasswordMethodHandlerTests.swift in Sources */,
 				5C59DA832809214200365CDB /* AuthAPIUserInfoMethodHandlerTests.swift in Sources */,
 				5CAAA4A4281A0E50007666F1 /* UserAgentTests.swift in Sources */,
+				5C4E65C1286D15AF00141449 /* CredentialsManagerSpies.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

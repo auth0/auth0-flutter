@@ -3,27 +3,27 @@ import Auth0
 
 @testable import auth0_flutter
 
-class WebAuthHandlerTests: XCTestCase {
-    var sut: WebAuthHandler!
+class CredentialsManagerHandlerTests: XCTestCase {
+    var sut: CredentialsManagerHandler!
 
     override func setUpWithError() throws {
-        sut = WebAuthHandler()
+        sut = CredentialsManagerHandler()
     }
 }
 
 // MARK: - Registration
 
-extension WebAuthHandlerTests {
+extension CredentialsManagerHandlerTests {
     func testRegistersItself() {
         let spy = SpyPluginRegistrar()
-        WebAuthHandler.register(with: spy)
-        XCTAssertTrue(spy.delegate is WebAuthHandler)
+        CredentialsManagerHandler.register(with: spy)
+        XCTAssertTrue(spy.delegate is CredentialsManagerHandler)
     }
 }
 
 // MARK: - Required Arguments
 
-extension WebAuthHandlerTests {
+extension CredentialsManagerHandlerTests {
     func testProducesErrorWhenArgumentsAreMissing() {
         let expectation = expectation(description: "arguments are missing")
         sut.handle(FlutterMethodCall(methodName: "", arguments: nil)) { result in
@@ -54,32 +54,32 @@ extension WebAuthHandlerTests {
 
 // MARK: - Providers
 
-extension WebAuthHandlerTests {
+extension CredentialsManagerHandlerTests {
 
-    // MARK: WebAuthClientProvider
+    // MARK: AuthAPIClientProvider
 
-    func testCallsClientProvider() {
-        let methodName = WebAuthHandler.Method.login.rawValue
+    func testCallsAPIClientProvider() {
+        let methodName = CredentialsManagerHandler.Method.save.rawValue
         let accountDictionary = [AccountProperty.clientId.rawValue: "foo", AccountProperty.domain.rawValue: "bar"]
         let userAgentDictionary = [UserAgentProperty.name.rawValue: "baz", UserAgentProperty.version.rawValue: "qux"]
         let argumentsDictionary = [Account.key: accountDictionary, UserAgent.key: userAgentDictionary]
-        let expectation = self.expectation(description: "Called client provider")
-        sut.clientProvider = { account, userAgent in
+        let expectation = self.expectation(description: "Called API client provider")
+        sut.apiClientProvider = { account, userAgent in
             XCTAssertEqual(account.clientId, accountDictionary[AccountProperty.clientId])
             XCTAssertEqual(account.domain, accountDictionary[AccountProperty.domain])
             XCTAssertEqual(userAgent.name, userAgentDictionary[UserAgentProperty.name])
             XCTAssertEqual(userAgent.version, userAgentDictionary[UserAgentProperty.version])
             expectation.fulfill()
-            return SpyWebAuth()
+            return SpyAuthentication()
         }
         sut.handle(FlutterMethodCall(methodName: methodName, arguments: argumentsDictionary)) { _ in }
         wait(for: [expectation])
     }
 
-    // MARK: WebAuthMethodHandlerProvider
+    // MARK: CredentialsManagerMethodHandlerProvider
 
     func testCallsMethodHandlerProvider() {
-        let methodName = WebAuthHandler.Method.login.rawValue
+        let methodName = CredentialsManagerHandler.Method.save.rawValue
         let expectation = self.expectation(description: "Called method handler provider")
         sut.methodHandlerProvider = { method, _ in
             XCTAssertTrue(method.rawValue == methodName)
@@ -105,16 +105,18 @@ extension WebAuthHandlerTests {
 
     func testReturnsMethodHandlers() {
         var expectations: [XCTestExpectation] = []
-        let methodHandlers: [WebAuthHandler.Method: MethodHandler.Type] = [
-            .login: WebAuthLoginMethodHandler.self,
-            .logout: WebAuthLogoutMethodHandler.self
+        let methodHandlers: [CredentialsManagerHandler.Method: MethodHandler.Type] = [
+            .save: CredentialsManagerSaveMethodHandler.self,
+            .hasValid: CredentialsManagerHasValidMethodHandler.self,
+            .get: CredentialsManagerGetMethodHandler.self,
+            .clear: CredentialsManagerClearMethodHandler.self
         ]
         methodHandlers.forEach { method, methodHandler in
             let methodCall = FlutterMethodCall(methodName: method.rawValue, arguments: arguments())
             let expectation = self.expectation(description: "Returned \(methodHandler)")
             expectations.append(expectation)
             sut.methodHandlerProvider = { method, client in
-                let result = WebAuthHandler().methodHandlerProvider(method, client)
+                let result = CredentialsManagerHandler().methodHandlerProvider(method, client)
                 XCTAssertTrue(type(of: result) == methodHandler)
                 expectation.fulfill()
                 return result
@@ -127,10 +129,10 @@ extension WebAuthHandlerTests {
 
 // MARK: - Method Handlers
 
-extension WebAuthHandlerTests {
+extension CredentialsManagerHandlerTests {
     func testCallsMethodHandlers() {
         var expectations: [XCTestExpectation] = []
-        WebAuthHandler.Method.allCases.forEach { method in
+        CredentialsManagerHandler.Method.allCases.forEach { method in
             let arguments: [String: Any] = arguments()
             let expectation = self.expectation(description: "\(method.rawValue) handler call")
             expectations.append(expectation)
@@ -150,7 +152,7 @@ extension WebAuthHandlerTests {
 
 // MARK: - Helpers
 
-extension WebAuthHandlerTests {
+extension CredentialsManagerHandlerTests {
     override func arguments() -> [String: Any] {
         return [
             Account.key: [AccountProperty.clientId.rawValue: "", AccountProperty.domain.rawValue: ""],

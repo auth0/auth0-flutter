@@ -6,10 +6,11 @@ import Auth0
 fileprivate typealias Argument = AuthAPILoginUsernameOrEmailMethodHandler.Argument
 
 class AuthAPILoginUsernameOrEmailMethodHandlerTests: XCTestCase {
-    let spy = SpyAuthentication()
+    var spy: SpyAuthentication!
     var sut: AuthAPILoginUsernameOrEmailMethodHandler!
 
     override func setUpWithError() throws {
+        spy = SpyAuthentication()
         sut = AuthAPILoginUsernameOrEmailMethodHandler(client: spy)
     }
 }
@@ -115,6 +116,7 @@ extension AuthAPILoginUsernameOrEmailMethodHandlerTests {
 
     func testProducesCredentials() {
         let credentials = Credentials(accessToken: "accessToken",
+                                      tokenType: "tokenType",
                                       idToken: testIdToken,
                                       refreshToken: "refreshToken",
                                       expiresIn: Date(),
