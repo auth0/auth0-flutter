@@ -1,24 +1,104 @@
+/// A collection of properties that represents the authenticated user, extracted from ID token claims.
 class UserProfile {
+  /// The Auth0 user identifier.
   final String sub;
+
+  /// The nickname of the user.
+  ///
+  /// Requires the `profile` scope.
   final String? nickname;
+
+  /// The email of the user.
+  ///
+  /// Requires the `email` scope.
   final String? email;
+
+  /// The last name of the user.
+  ///
+  /// Requires the `profile` scope.
   final String? familyName;
+
+  /// The first name of the user.
+  ///
+  /// Requires the `profile` scope.
   final String? givenName;
+
+  /// The date and time the user's information was last updated.
+  ///
+  /// Requires the `profile` scope.
   final DateTime? updatedAt;
+
+  /// If the user's email is verified.
+  ///
+  /// Requires the `email` scope.
   final bool? isEmailVerified;
+
+  /// The name of the user.
+  ///
+  /// Requires the `profile` scope.
   final String? name;
+
+  /// The URL of the user's profile page.
+  ///
+  /// Requires the `profile` scope.
   final Uri? profileURL;
+
+  /// The URL of the user's picture.
+  ///
+  /// Requires the `profile` scope.
   final Uri? pictureURL;
+
+  /// The URL of the user's website.
+  ///
+  /// Requires the `profile` scope.
   final Uri? websiteURL;
+
+  /// The middle name of the user.
+  ///
+  /// Requires the `profile` scope.
   final String? middleName;
+
+  /// The preferred username of the user.
+  ///
+  /// Requires the `profile` scope.
   final String? preferredUsername;
+
+  /// The gender of the user.
+  ///
+  /// Requires the `profile` scope.
   final String? gender;
+
+  /// The birthdate of the user.
+  ///
+  /// Requires the `profile` scope.
   final String? birthdate;
+
+  /// The time zone of the user.
+  ///
+  /// Requires the `profile` scope.
   final String? zoneinfo;
+
+  /// The locale of the user.
+  ///
+  /// Requires the `profile` scope.
   final String? locale;
+
+  /// The phone number of the user.
+  ///
+  /// Requires the `phone` scope.
   final String? phoneNumber;
+
+  /// If the user's phone number is verified.
+  ///
+  /// Requires the `phone` scope.
   final bool? isPhoneNumberVerified;
+
+  /// The address of the user.
+  ///
+  /// Requires the `address` scope.
   final Map<String, String>? address;
+
+  /// Any custom claims
   final Map<String, dynamic>? customClaims;
 
   const UserProfile({
@@ -53,9 +133,15 @@ class UserProfile {
         middleName: result['middle_name'] as String?,
         nickname: result['nickname'] as String?,
         preferredUsername: result['preferred_username'] as String?,
-        profileURL: result['profile'] != null ? Uri.parse(result['profile'] as String) : null,
-        pictureURL: result['picture'] != null ? Uri.parse(result['picture'] as String) : null,
-        websiteURL: result['website'] != null ? Uri.parse(result['website'] as String) : null,
+        profileURL: result['profile'] != null
+            ? Uri.parse(result['profile'] as String)
+            : null,
+        pictureURL: result['picture'] != null
+            ? Uri.parse(result['picture'] as String)
+            : null,
+        websiteURL: result['website'] != null
+            ? Uri.parse(result['website'] as String)
+            : null,
         email: result['email'] as String?,
         isEmailVerified: result['email_verified'] as bool?,
         gender: result['gender'] as String?,

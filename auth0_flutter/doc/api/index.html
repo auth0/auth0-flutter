@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="generator" content="made with love by dartdoc 5.1.0-dev">
+  <meta name="description" content="auth0_flutter API docs, for the Dart programming language.">
+  <title>auth0_flutter - Dart API docs</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <link rel="stylesheet" href="static-assets/github.css?v1">
+  <link rel="stylesheet" href="static-assets/styles.css?v1">
+  <link rel="icon" href="static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href=""
+      data-using-base-href="false">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="https://github.com/auth0/auth0-flutter">auth0_flutter package</a></li>
+  </ol>
+  <div class="self-name">auth0_flutter</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<main>
+
+
+  <div id="dartdoc-main-content" class="main-content">
+      
+<section class="desc markdown">
+  <h1 id="auth0-sdk-for-flutter-beta">Auth0 SDK for Flutter (Beta)</h1>
+<p><a href="https://circleci.com/gh/auth0/auth0-flutter/tree/main"><img src="https://img.shields.io/circleci/project/github/auth0/auth0-flutter.svg?style=flat-square" alt="CircleCI"></a></p>
+<p>Auth0 SDK for Android / iOS Flutter apps.</p>
+<blockquote>
+<p>⚠️ This library is currently in Beta. We do not recommend using this library in production yet. As we move towards First Availability, please be aware that releases may contain breaking changes.</p>
+</blockquote>
+<hr>
+<h2 id="table-of-contents">Table of Contents</h2><!-- - [**Documentation**](#documentation) -->
+<ul>
+<li><a href="#requirements"><strong>Requirements</strong></a></li>
+<li><a href="#installation"><strong>Installation</strong></a></li>
+<li><a href="#getting-started"><strong>Getting Started</strong></a>
+<ul>
+<li><a href="#configuration">Configuration</a></li>
+<li><a href="#web-auth-configuration">Web Auth Configuration</a></li>
+<li><a href="#web-auth-login">Web Auth Login</a></li>
+<li><a href="#web-auth-logout">Web Auth Logout</a></li>
+<li><a href="#sso-alert-box-ios">SSO Alert Box (iOS)</a></li>
+</ul>
+</li>
+<li><a href="#next-steps"><strong>Next Steps</strong></a><!-- + [Common Tasks](#common-tasks) -->
+<ul>
+<li><a href="#web-auth">Web Auth</a></li>
+<li><a href="#api">API</a></li>
+</ul>
+</li>
+<li><a href="#advanced-features"><strong>Advanced Features</strong></a>
+<ul>
+<li><a href="#organizations">Organizations</a></li>
+<li><a href="#bot-detection">Bot Detection</a></li>
+</ul>
+</li>
+<li><a href="#issue-reporting"><strong>Issue Reporting</strong></a></li>
+<li><a href="#what-is-auth0"><strong>What is Auth0?</strong></a></li>
+<li><a href="#license"><strong>License</strong></a></li>
+</ul><!-- 
+## Documentation
+
+TBD
+-->
+<h2 id="requirements">Requirements</h2>
+<table><thead><tr><th style="text-align: left;">Flutter</th><th style="text-align: left;">Android</th><th style="text-align: left;">iOS</th></tr></thead><tbody><tr><td style="text-align: left;">SDK 3.0+</td><td style="text-align: left;">Android API 21+</td><td style="text-align: left;">iOS 12+</td></tr><tr><td style="text-align: left;">Dart 2.17+</td><td style="text-align: left;">Java 8+</td><td style="text-align: left;">Swift 5.3+</td></tr><tr><td style="text-align: left;"></td><td style="text-align: left;"></td><td style="text-align: left;">Xcode 12.x / 13.x</td></tr></tbody></table>
+<h2 id="installation">Installation</h2>
+<p>During the Beta stage the SDK will not be published to Pub.dev, but you can install it as a <a href="https://dart.dev/tools/pub/dependencies#path-packages">path package</a>. Extract the contents of the provided zip file and then add the following dependency in your <code>pubspec.yaml</code> file:</p>
+<pre class="language-yaml"><code class="language-yaml">auth0_flutter:
+    path: path/to/auth0_flutter
+</code></pre>
+<p>Then, run <code>flutter pub get</code>.</p>
+<h2 id="getting-started">Getting Started</h2>
+<h3 id="configuration">Configuration</h3>
+<p>auth0_flutter needs the <strong>Client ID</strong> and <strong>Domain</strong> of the Auth0 application to communicate with Auth0. You can find these details on the settings page of your <a href="https://manage.auth0.com/#/applications/">Auth0 application</a>. If you are using a&nbsp;<a href="https://auth0.com/docs/brand-and-customize/custom-domains">Custom Domain</a>, use the value of your Custom Domain instead of the value from the settings page.</p>
+<blockquote>
+<p>⚠️ Make sure that the <a href="https://auth0.com/docs/configure/applications">application type</a> of the Auth0 application is <strong>Native</strong>. If you don’t have a Native Auth0 application already, <a href="https://auth0.com/docs/get-started/create-apps/native-apps">create one</a> before continuing.</p>
+</blockquote>
+<pre class="language-dart"><code class="language-dart">final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID');
+</code></pre>
+<h3 id="web-auth-configuration">Web Auth Configuration</h3>
+<ul>
+<li><a href="#configure-callback-and-logout-urls">Configure callback and logout URLs</a></li>
+<li><a href="#android-configuration-manifest-placeholders">Android configuration: manifest placeholders</a></li>
+<li><a href="#ios-configuration-custom-url-scheme">iOS configuration: custom URL scheme</a></li>
+</ul>
+<h4 id="configure-callback-and-logout-urls">Configure callback and logout URLs</h4>
+<p>The callback and logout URLs are the URLs that Auth0 invokes to redirect back to your app. Auth0 invokes the callback URL after authenticating the user, and the logout URL after removing the session cookie.</p>
+<p>Since callback and logout URLs can be manipulated, you will need to add your URLs to the <strong>Allowed Callback URLs</strong> and <strong>Allowed Logout URLs</strong>&nbsp;fields in the settings page of your Auth0 application. This will enable Auth0 to recognize these URLs as valid. If the callback and logout URLs are not set, users will be unable to log in and out of the app and will get an error.</p>
+<p>Go to the settings page of your <a href="https://manage.auth0.com/#/applications/">Auth0 application</a> and add the corresponding URLs to <strong>Allowed Callback URLs</strong> and <strong>Allowed Logout URLs</strong>, according to the platforms used by your app. If you are using a&nbsp;<a href="https://auth0.com/docs/brand-and-customize/custom-domains">Custom Domain</a>, replace <code>YOUR_AUTH0_DOMAIN</code> with the value of your Custom Domain instead of the value from the settings page.</p>
+<h5 id="android">Android</h5>
+<pre class="language-text"><code class="language-text">https://YOUR_AUTH0_DOMAIN/android/YOUR_APP_PACKAGE_NAME/callback
+</code></pre>
+<p>E.g. if your Auth0 Domain was <code>company.us.auth0.com</code> and your Android app package name was <code>com.company.myapp</code>, then this value would be:</p>
+<pre class="language-text"><code class="language-text">https://company.us.auth0.com/android/com.company.myapp/callback
+</code></pre>
+<h5 id="ios">iOS</h5>
+<pre class="language-text"><code class="language-text">YOUR_BUNDLE_IDENTIFIER://YOUR_AUTH0_DOMAIN/ios/YOUR_BUNDLE_IDENTIFIER/callback
+</code></pre>
+<p>E.g. if your iOS bundle identifier was <code>com.company.myapp</code> and your Auth0 Domain was <code>company.us.auth0.com</code>, then this value would be:</p>
+<pre class="language-text"><code class="language-text">com.company.myapp://company.us.auth0.com/ios/com.company.myapp/callback
+</code></pre>
+<h4 id="android-configuration-manifest-placeholders">Android configuration: manifest placeholders</h4>
+<p>Open the <code>android/build.gradle</code> file and add the following manifest placeholders inside <code>android &gt; defaultConfig</code>. The <code>applicationId</code> value will be auto-replaced at runtime with your Android app package name.</p>
+<pre class="language-groovy"><code class="language-groovy">// android/build.gradle
+
+android {
+    // ...
+    defaultConfig {
+        // ...
+        // Add the following line
+        manifestPlaceholders = [auth0Domain: "YOUR_AUTH0_DOMAIN", auth0Scheme: "${applicationId}"]
+    }
+    // ...
+}
+</code></pre>
+<p>E.g. if your Auth0 Domain was <code>company.us.auth0.com</code>, then the manifest placeholders line would be:</p>
+<pre class="language-groovy"><code class="language-groovy">manifestPlaceholders = [auth0Domain: "company.us.auth0.com", auth0Scheme: "${applicationId}"]
+</code></pre>
+<blockquote>
+<p>💡 If your Android app is using <a href="https://developer.android.com/studio/build/build-variants#product-flavors">product flavors</a>, you might need to specify different manifest placeholders for each flavor.</p>
+</blockquote><details>
+  <summary>Skipping the Android Web Auth configuration</summary>
+<p>If you don't plan to use Web Auth, you will notice that the compiler will still prompt you to provide the <code>manifestPlaceholders</code> values, since the <code>RedirectActivity</code> included in this library will require them, and the Gradle tasks won't be able to run without them.</p>
+<p>Re-declare the activity manually using <code>tools:node="remove"</code> in the <code>android/src/main/AndroidManifest.xml</code> file to make the <a href="https://developer.android.com/studio/build/manage-manifests#merge-manifests">manifest merger</a> remove it from the final manifest file. Additionally, one more unused activity can be removed from the final APK by using the same process. A complete snippet to achieve this is:</p>
+<pre class="language-xml"><code class="language-xml">  &lt;!-- android/src/main/AndroidManifest.xml --&gt;
+
+  &lt;manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:tools="http://schemas.android.com/tools"
+      package="com.company.myapp"&gt;
+      &lt;application android:theme="@style/AppTheme"&gt;
+          &lt;!-- ... --&gt;
+    
+          &lt;activity
+              android:name="com.auth0.android.provider.AuthenticationActivity"
+              tools:node="remove"/&gt;
+          &lt;!-- Optional: Remove RedirectActivity --&gt;
+          &lt;activity
+              android:name="com.auth0.android.provider.RedirectActivity"
+              tools:node="remove"/&gt;
+    
+          &lt;!-- ... --&gt;
+      &lt;/application&gt;
+  &lt;/manifest&gt;
+</code></pre></details>
+<h4 id="ios-configuration-custom-url-scheme">iOS configuration: custom URL scheme</h4>
+<p>Open the <code>ios/Runner/Info.plist</code> file and add the following snippet inside the top-level <code>&lt;dict&gt;</code> tag. This registers your iOS Bundle Identifier as a custom URL scheme, so the callback and logout URLs can reach your app.</p>
+<pre class="language-xml"><code class="language-xml">&lt;!-- ios/Runner/Info.plist --&gt;
+
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+&lt;dict&gt;
+&lt;!-- ... --&gt;
+
+    &lt;key&gt;CFBundleURLTypes&lt;/key&gt;
+    &lt;array&gt;
+        &lt;dict&gt;
+            &lt;key&gt;CFBundleTypeRole&lt;/key&gt;
+            &lt;string&gt;None&lt;/string&gt;
+            &lt;key&gt;CFBundleURLName&lt;/key&gt;
+            &lt;string&gt;auth0&lt;/string&gt;
+            &lt;key&gt;CFBundleURLSchemes&lt;/key&gt;
+            &lt;array&gt;
+                &lt;string&gt;$(PRODUCT_BUNDLE_IDENTIFIER)&lt;/string&gt;
+            &lt;/array&gt;
+        &lt;/dict&gt;
+    &lt;/array&gt;
+  
+&lt;!-- ... --&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+</code></pre>
+<blockquote>
+<p>💡 If you're opening the <code>Info.plist</code> file in Xcode and it is not being shown in this format, you can <strong>Right Click</strong> on <code>Info.plist</code> in the Xcode <a href="https://developer.apple.com/library/archive/documentation/ToolsLanguages/Conceptual/Xcode_Overview/NavigatingYourWorkspace.html">project navigator</a> and then select <strong>Open As &gt; Source Code</strong>.</p>
+</blockquote>
+<h3 id="web-auth-login">Web Auth Login</h3>
+<p>Import auth0_flutter in the file where you want to present the login page.</p>
+<pre class="language-dart"><code class="language-dart">import 'package:auth0_flutter/auth0_flutter.dart';
+</code></pre>
+<p>Then, present the <a href="https://auth0.com/docs/authenticate/login/auth0-universal-login">Universal Login</a> page in the <code>onPressed</code> callback of your <strong>Login</strong> button.</p>
+<pre class="language-dart"><code class="language-dart">final result = await auth0.webAuthentication.login();
+</code></pre><details>
+  <summary>Add an audience value</summary>
+<p>Specify an <a href="https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#control-access-token-audience">audience</a> to obtain an Access Token that can be used to make authenticated requests to a backend. The audience value is the <strong>API Identifier</strong> of your <a href="https://auth0.com/docs/get-started/apis">Auth0 API</a>, e.g. <code>https://example.com/api</code>.</p>
+<pre class="language-dart"><code class="language-dart">  final result = await auth0.webAuthentication
+      .login(audience: 'YOUR_AUTH0_API_IDENTIFIER');
+</code></pre></details><details>
+  <summary>Add scope values</summary>
+<p>Specify <a href="https://auth0.com/docs/get-started/apis/scopes">scopes</a> to request permission to access protected resources, like the user profile. The default scope values are <code>openid</code>, <code>profile</code> and <code>email</code>. Regardless of the values specified, <code>openid</code> is always included.</p>
+<pre class="language-dart"><code class="language-dart">  final result = await auth0.webAuthentication
+      .login(scopes: {'profile', 'email', 'offline_access', 'read:todos'});
+</code></pre></details><details>
+  <summary>Add a custom scheme value (Android-only)</summary>
+<p>On Android, auth0_flutter uses <code>https</code> by default as the callback URL scheme. This works best for Android API 23+ if you're using <a href="https://auth0.com/docs/get-started/applications/enable-android-app-links-support">Android App Links</a>, but in previous Android versions this <em>may</em> show the intent chooser dialog prompting the user to choose either your app or the browser. You can change this behavior by using a custom unique scheme so that Android opens the link directly with your app. Note that schemes <a href="https://developer.android.com/guide/topics/manifest/data-element">can only have lowercase letters</a>.</p>
+<ol>
+<li>Update the <code>auth0Scheme</code> manifest placeholder on the <code>android/build.gradle</code> file.</li>
+<li>Update the <strong>Allowed Callback URLs</strong> in the settings page of your <a href="https://manage.auth0.com/#/applications/">Auth0 application</a>.</li>
+<li>Pass the scheme value to the <code>login()</code> method.</li>
+</ol>
+<pre class="language-dart"><code class="language-dart">  final result = await auth0.webAuthentication.login(scheme: {'demo'});
+</code></pre></details>
+<h3 id="web-auth-logout">Web Auth Logout</h3>
+<p>Logging the user out involves clearing the Universal Login session cookie and then deleting the user's credentials from your app.</p>
+<p>Call the <code>logout()</code> method in the in the <code>onPressed</code> callback of your <strong>Logout</strong> button. Once the session cookie has been cleared, delete the user's credentials.&lt;!--  link to the section on deleting the stored credentials --&gt;</p>
+<pre class="language-dart"><code class="language-dart">await auth0.webAuthentication.logout();
+</code></pre>
+<h3 id="sso-alert-box-ios">SSO Alert Box (iOS)</h3>
+<p><img src="../assets/ios-sso-alert.png" alt="ios-sso-alert"></p>
+<p>Check the <a href="FAQ.md">FAQ</a> for more information about the alert box that pops up <strong>by default</strong> when using Web Auth on iOS.</p>
+<blockquote>
+<p>💡 See also <a href="https://developer.okta.com/blog/2022/01/13/mobile-sso">this blog post</a> for a detailed overview of Single Sign-On (SSO) on iOS.</p>
+</blockquote>
+<p><a href="#table-of-contents">Go up ⤴</a></p>
+<h2 id="next-steps">Next Steps</h2><!-- 
+### Common Tasks
+
+TBD
+-->
+<h3 id="web-auth">Web Auth</h3><!-- **See all the available features in the API documentation ↗** [link to API documentation] -->
+<ul>
+<li><a href="#web-auth-signup">Web Auth signup</a></li>
+<li><a href="#id-token-validation">ID Token validation</a></li>
+<li><a href="#web-auth-errors">Web Auth errors</a></li>
+</ul>
+<h4 id="web-auth-signup">Web Auth signup</h4>
+<p>You can make users land directly on the Signup page instead of the Login page by specifying the <code>'screen_hint': 'signup'</code> parameter. Note that this can be combined with <code>'prompt': 'login'</code>, which indicates whether you want to always show the authentication page or you want to skip if there's an existing session.</p>
+<table><thead><tr><th style="text-align: left;">Parameters</th><th style="text-align: left;">No existing session</th><th style="text-align: left;">Existing session</th></tr></thead><tbody><tr><td style="text-align: left;">No extra parameters</td><td style="text-align: left;">Shows the login page</td><td style="text-align: left;">Redirects to the callback url</td></tr><tr><td style="text-align: left;"><code>'screen_hint': 'signup'</code></td><td style="text-align: left;">Shows the signup page</td><td style="text-align: left;">Redirects to the callback url</td></tr><tr><td style="text-align: left;"><code>'prompt': 'login'</code></td><td style="text-align: left;">Shows the login page</td><td style="text-align: left;">Shows the login page</td></tr><tr><td style="text-align: left;"><code>'prompt': 'login', 'screen_hint': 'signup'</code></td><td style="text-align: left;">Shows the signup page</td><td style="text-align: left;">Shows the signup page</td></tr></tbody></table>
+<pre class="language-dart"><code class="language-dart">final result = await auth0.webAuthentication
+    .login(parameters: {'screen_hint': 'signup'});
+</code></pre>
+<blockquote>
+<p>⚠️ The <code>screen_hint</code> parameter will work with the <strong>New Universal Login Experience</strong> without any further configuration. If you are using the <strong>Classic Universal Login Experience</strong>, you need to customize the <a href="https://manage.auth0.com/#/login_page">login template</a> to look for this parameter and set the <code>initialScreen</code> <a href="https://github.com/auth0/lock#database-options">option</a> of the <code>Auth0Lock</code> constructor.</p>
+</blockquote>
+<h4 id="id-token-validation">ID Token validation</h4>
+<p>auth0_flutter automatically <a href="https://auth0.com/docs/secure/tokens/id-tokens/validate-id-tokens">validates</a> the ID Token obtained from Web Auth login, following the <a href="https://openid.net/specs/openid-connect-core-1_0.html">OpenID Connect specification</a>. This ensures the contents of the ID Token have not been tampered with and can be safely used.</p>
+<h5 id="custom-domains">Custom Domains</h5>
+<p>Users of Auth0 Private Cloud with Custom Domains still on the <a href="https://auth0.com/docs/deploy/private-cloud/private-cloud-migrations/migrate-private-cloud-custom-domains">legacy behavior</a> need to specify a custom issuer to match the Auth0 Domain when performing Web Auth login. Otherwise, the ID Token validation will fail.</p>
+<pre class="language-dart"><code class="language-dart">final config = IdTokenValidationConfig(issuer: 'https://YOUR_AUTH0_DOMAIN/');
+final result =
+    await auth0.webAuthentication.login(idTokenValidationConfig: config);
+</code></pre>
+<h4 id="web-auth-errors">Web Auth errors</h4>
+<p>Web Auth will only throw <code>WebAuthException</code> exceptions.&lt;!-- Check the API documentation <code>link to API documentation</code> to learn more about the available <code>WebAuthException</code> properties. --&gt;</p>
+<pre class="language-dart"><code class="language-dart">try {
+  final result = await auth0.webAuthentication.login();
+  // ...
+} on WebAuthException catch (e) {
+  print(e.toString())
+}
+</code></pre>
+<h3 id="api">API</h3><!-- **See all the available features in the API documentation ↗** [link to API documentation] -->
+<ul>
+<li><a href="#login-with-database-connection">Login with database connection</a></li>
+<li><a href="#sign-up-with-database-connection">Sign up with database connection</a></li>
+<li><a href="#retrieve-user-information">Retrieve user information</a></li>
+<li><a href="#renew-credentials">Renew credentials</a></li>
+<li><a href="#api-client-errors">API client errors</a></li>
+</ul>
+<p>The Authentication API exposes the AuthN/AuthZ functionality of Auth0, as well as the supported identity protocols like OpenID Connect, OAuth 2.0, and SAML.
+We recommend using <a href="https://auth0.com/docs/authenticate/login/auth0-universal-login">Universal Login</a>, but if you prefer to build your own UI you can use our API endpoints to do so. However, some Auth flows (grant types) are disabled by default so you must enable them in the settings page of your <a href="https://manage.auth0.com/#/applications/">Auth0 application</a>, as explained in <a href="https://auth0.com/docs/get-started/applications/update-grant-types">Update Grant Types</a>.</p>
+<p>For login or signup with username/password, the <code>Password</code> grant type needs to be enabled in your app. If you set the grants via the Management API you should activate both <code>http://auth0.com/oauth/grant-type/password-realm</code> and <code>Password</code>. Otherwise, the Auth0 Dashboard will take care of activating both when enabling <code>Password</code>.</p>
+<blockquote>
+<p>💡 If your Auth0 account has the <strong>Bot Detection</strong> feature enabled, your requests might be flagged for verification. Check how to handle this scenario in the <a href="#bot-detection">Bot Detection</a> section.</p>
+</blockquote>
+<blockquote>
+<p>⚠️ The ID Tokens obtained from Web Auth login are automatically validated by auth0_flutter, ensuring their contents have not been tampered with. <strong>This is not the case for the ID Tokens obtained from the Authentication API client.</strong> You must <a href="https://auth0.com/docs/security/tokens/id-tokens/validate-id-tokens">validate</a> any ID Tokens received from the Authentication API client before using the information they contain.</p>
+</blockquote>
+<h4 id="login-with-database-connection">Login with database connection</h4>
+<pre class="language-dart"><code class="language-dart">final result = await auth0.api.login(
+    usernameOrEmail: 'jane.smith@example.com',
+    password: 'secret-password',
+    connectionOrRealm: 'Username-Password-Authentication');
+</code></pre><details>
+  <summary>Add an audience value</summary>
+<p>Specify an <a href="https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#control-access-token-audience">audience</a> to obtain an Access Token that can be used to make authenticated requests to a backend. The audience value is the <strong>API Identifier</strong> of your <a href="https://auth0.com/docs/get-started/apis">Auth0 API</a>, e.g. <code>https://example.com/api</code>.</p>
+<pre class="language-dart"><code class="language-dart">  final result = await auth0.api.login(
+      usernameOrEmail: 'jane.smith@example.com',
+      password: 'secret-password',
+      connectionOrRealm: 'Username-Password-Authentication',
+      audience: 'YOUR_AUTH0_API_IDENTIFIER');
+</code></pre></details><details>
+  <summary>Add scope values</summary>
+<p>Specify <a href="https://auth0.com/docs/get-started/apis/scopes">scopes</a> to request permission to access protected resources, like the user profile. The default scope values are <code>openid</code>, <code>profile</code> and <code>email</code>. Regardless of the values specified, <code>openid</code> is always included.</p>
+<pre class="language-dart"><code class="language-dart">  final result = await auth0.api.login(
+      usernameOrEmail: 'jane.smith@example.com',
+      password: 'secret-password',
+      connectionOrRealm: 'Username-Password-Authentication',
+      scopes: {'profile', 'email', 'offline_access', 'read:todos'});
+</code></pre></details>
+<h4 id="sign-up-with-database-connection">Sign up with database connection</h4>
+<pre class="language-dart"><code class="language-dart">final user = await auth0.api.signup(
+    email: 'jane.smith@example.com',
+    password: 'secret-password',
+    connection: 'Username-Password-Authentication',
+    userMetadata: {'first_name': 'Jane', 'last_name': 'Smith'});
+</code></pre>
+<blockquote>
+<p>💡 You might want to log the user in after signup. See <a href="#login-with-database-connection">Login with database connection</a> above for an example.</p>
+</blockquote>
+<h4 id="retrieve-user-information">Retrieve user information</h4>
+<p>Fetch the latest user information from the <code>/userinfo</code> endpoint.</p>
+<p>This method will yield a <code>UserProfile</code> instance.&lt;!--Check the API documentation <code>link to API documentation</code> to learn more about its available properties. --&gt;</p>
+<pre class="language-dart"><code class="language-dart">final userProfile = await auth0.api.userInfo(accessToken: accessToken);
+</code></pre>
+<h4 id="renew-credentials">Renew credentials</h4>
+<p>Use a <a href="https://auth0.com/docs/secure/tokens/refresh-tokens">Refresh Token</a> to renew the user's credentials. It's recommended that you read and understand the Refresh Token process beforehand.</p>
+<pre class="language-dart"><code class="language-dart">final result = await auth0.api.renewCredentials(refreshToken: refreshToken);
+</code></pre>
+<blockquote>
+<p>💡 To obtain a Refresh Token, make sure your Auth0 application has the <strong>Refresh Token</strong> <a href="https://auth0.com/docs/get-started/applications/update-grant-types">grant enabled</a>. If you are also specifying an audience value, make sure that the corresponding Auth0 API has the <strong>Allow Offline Access</strong> <a href="https://auth0.com/docs/get-started/apis/api-settings#access-settings">setting enabled</a>.</p>
+</blockquote>
+<h4 id="api-client-errors">API client errors</h4>
+<p>The Authentication API client will only throw <code>ApiException</code> exceptions. You can find more information in the <code>details</code> property of the exception.&lt;!--Check the API documentation <code>link to API documentation</code> to learn more about the available <code>ApiException</code> properties. --&gt;</p>
+<pre class="language-dart"><code class="language-dart">try {
+  final result = await auth0.api.login(
+    usernameOrEmail: email,
+    password: password,
+    connectionOrRealm: connection);
+  // ...
+} on ApiException catch (e) {
+  print(e.toString())
+}
+</code></pre>
+<p><a href="#table-of-contents">Go up ⤴</a></p>
+<h2 id="advanced-features">Advanced Features</h2>
+<h3 id="organizations">Organizations</h3>
+<p><a href="https://auth0.com/docs/manage-users/organizations">Organizations</a> is a set of features that provide better support for developers who build and maintain SaaS and Business-to-Business (B2B) applications.</p>
+<p>Using Organizations, you can:</p>
+<ul>
+<li>Represent teams, business customers, partner companies, or any logical grouping of users that should have different ways of accessing your applications, as organizations.</li>
+<li>Manage their membership in a variety of ways, including user invitation.</li>
+<li>Configure branded, federated login flows for each organization.</li>
+<li>Implement role-based access control, such that users can have different roles when authenticating in the context of different organizations.</li>
+<li>Build administration capabilities into your products, using Organizations APIs, so that those businesses can manage their own organizations.</li>
+</ul>
+<blockquote>
+<p>💡 Organizations is currently only available to customers on our Enterprise and Startup subscription plans.</p>
+</blockquote>
+<h4 id="log-in-to-an-organization">Log in to an organization</h4>
+<pre class="language-dart"><code class="language-dart">final result = await auth0.webAuthentication
+    .login(organizationId: 'YOUR_AUTH0_ORGANIZATION_ID');
+</code></pre>
+<h4 id="accept-user-invitations">Accept user invitations</h4>
+<p>To accept organization invitations your app needs to support <a href="https://docs.flutter.dev/development/ui/navigation/deep-linking">deep linking</a>, as invitation links are HTTPS-only. Tapping on the invitation link should open your app.</p>
+<p>When your app gets opened by an invitation link, grab the invitation URL and pass it to the <code>login()</code> method.</p>
+<pre class="language-dart"><code class="language-dart">final result = await auth0.webAuthentication.login(invitationUrl: url);
+</code></pre>
+<h3 id="bot-detection">Bot Detection</h3>
+<p>If you are performing database login/signup via the Authentication API and would like to use the <a href="https://auth0.com/docs/secure/attack-protection/bot-detection">Bot Detection</a> feature, you need to handle the <code>isVerificationRequired</code> error. It indicates that the request was flagged as suspicious and an additional verification step is necessary to log the user in. That verification step is web-based, so you need to use Web Auth to complete it.</p>
+<pre class="language-dart"><code class="language-dart">try {
+  final result = await auth0.api.login(
+      usernameOrEmail: email,
+      password: password,
+      connectionOrRealm: connection,
+      scopes: scopes);
+  // ...
+} on ApiException catch (e) {
+  if (e.isVerificationRequired) {
+    final result = await auth0.webAuthentication.login(
+        scopes: scopes,
+        useEphemeralSession: true, // Otherwise a session cookie will remain (iOS-only)
+        parameters: {
+          'connection': connection,
+          'login_hint': email // So the user doesn't have to type it again
+        });
+    // ...
+  }
+}
+</code></pre>
+<h2 id="issue-reporting">Issue Reporting</h2>
+<p>For general support or usage questions, use the <a href="https://community.auth0.com/c/sdks/5">Auth0 Community</a> forums or raise a <a href="https://support.auth0.com/">support ticket</a>. Only <a href="https://github.com/auth0/auth0_flutter/issues">raise an issue</a> if you have found a bug or want to request a feature.</p>
+<p><strong>Do not report security vulnerabilities on the public GitHub issue tracker.</strong> The <a href="https://auth0.com/responsible-disclosure-policy">Responsible Disclosure Program</a> details the procedure for disclosing security issues.</p>
+<h2 id="what-is-auth0">What is Auth0?</h2>
+<p>Auth0 helps you to:</p>
+<ul>
+<li>Add authentication with <a href="https://auth0.com/docs/authenticate/identity-providers">multiple sources</a>, either social identity providers such as <strong>Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter, Box, Salesforce</strong> (amongst others), or enterprise identity systems like <strong>Windows Azure AD, Google Apps, Active Directory, ADFS, or any SAML Identity Provider</strong>.</li>
+<li>Add authentication through more traditional <strong><a href="https://auth0.com/docs/authenticate/database-connections/custom-db">username/password databases</a></strong>.</li>
+<li>Add support for <strong><a href="https://auth0.com/docs/manage-users/user-accounts/user-account-linking">linking different user accounts</a></strong> with the same user.</li>
+<li>Support for generating signed <a href="https://auth0.com/docs/secure/tokens/json-web-tokens">JSON Web Tokens</a> to call your APIs and <strong>flow the user identity</strong> securely.</li>
+<li>Analytics of how, when, and where users are logging in.</li>
+<li>Pull data from other sources and add it to the user profile through <a href="https://auth0.com/docs/customize/actions">JavaScript Actions</a>.</li>
+</ul>
+<p><strong>Why Auth0?</strong> Because you should save time, be happy, and focus on what really matters: building your product.</p>
+<h2 id="license">License</h2>
+<p>This project is licensed under the MIT license. See the <a href="LICENSE">LICENSE</a> file for more information.</p>
+<hr>
+<p><a href="#table-of-contents">Go up ⤴</a></p>
+</section>
+
+
+      <section class="summary">
+          <h2>Libraries</h2>
+        <dl>
+          <dt id="auth0_flutter">
+  <span class="name"><a href="auth0_flutter/auth0_flutter-library.html">auth0_flutter</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+        </dl>
+      </section>
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+  <li><a href="https://github.com/auth0/auth0-flutter">auth0_flutter package</a></li>
+</ol>
+
+
+    <h5 class="hidden-xs"><span class="package-name">auth0_flutter</span> <span class="package-kind">package</span></h5>
+    <ol>
+      <li class="section-title">Libraries</li>
+      <li><a href="auth0_flutter/auth0_flutter-library.html">auth0_flutter</a></li>
+</ol>
+
+  </div>
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div>
+
+</main>
+
+<footer>
+  <span class="no-break">
+    auth0_flutter
+      1.0.0-beta.0
+  </span>
+
+  
+</footer>
+
+
+
+<script src="static-assets/highlight.pack.js?v1"></script>
+<script src="static-assets/script.js?v1"></script>
+
+
+
+</body>
+
+</html>
+

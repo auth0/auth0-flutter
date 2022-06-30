@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the login method from the AuthenticationApi class, for the Dart programming language.">
+  <title>login method - AuthenticationApi class - auth0_flutter library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../../"
+      data-using-base-href="false">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">auth0_flutter</a></li>
+    <li><a href="../../auth0_flutter/auth0_flutter-library.html">auth0_flutter</a></li>
+    <li><a href="../../auth0_flutter/AuthenticationApi-class.html">AuthenticationApi</a></li>
+    <li class="self-crumb">login method</li>
+  </ol>
+  <div class="self-name">login</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<main>
+
+
+  <div id="dartdoc-main-content" class="main-content">
+      <div>
+<h1><span class="kind-method">login</span> method 
+    <a href="https://dart.dev/null-safety" class="feature feature-null-safety" title="Supports the null safety language feature.">Null safety</a>
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+
+<span class="returntype"><a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../../auth0_flutter/Credentials-class.html">Credentials</a></span>&gt;</span></span>
+<span class="name ">login</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="login-param-usernameOrEmail">{<span>required</span> <span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">usernameOrEmail</span>, </span></li>
+<li><span class="parameter" id="login-param-password"><span>required</span> <span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">password</span>, </span></li>
+<li><span class="parameter" id="login-param-connectionOrRealm"><span>required</span> <span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">connectionOrRealm</span>, </span></li>
+<li><span class="parameter" id="login-param-audience"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">audience</span>, </span></li>
+<li><span class="parameter" id="login-param-scopes"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Set-class.html">Set</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>&gt;</span></span> <span class="parameter-name">scopes</span> = <span class="default-value">const {}</span>, </span></li>
+<li><span class="parameter" id="login-param-parameters"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>, <span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>&gt;</span></span> <span class="parameter-name">parameters</span> = <span class="default-value">const {}</span>}</span></li>
+</ol>)
+
+      
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Authenticates the user using a <code>usernameOrEmail</code> and a <code>password</code>, with the specified <code>connectionOrRealm</code>. If successful, it returns
+a set of tokens, as well as the user's profile (constructed from ID token claims).</p>
+<p>If using the default username and password database connection, <code>connectionOrRealm</code> should be set to <code>Username-Password-Authentication</code>.</p>
+<h2 id="endpoint-docs">Endpoint docs</h2>
+<p><a href="https://auth0.com/docs/api/authentication#login">https://auth0.com/docs/api/authentication#login</a></p>
+<h2 id="notes">Notes</h2>
+<ul>
+<li><code>audience</code> relates to the API Identifier you want to reference in your access tokens (see <a href="https://auth0.com/docs/get-started/apis/api-settings">API settings</a>)</li>
+<li><code>scopes</code> defaults to <code>openid profile email</code></li>
+<li><code>parameters</code> can be used to sent through custom parameters to the endpoint to be picked up in a Rule or Action.</li>
+</ul>
+<h2 id="usage-example">Usage example</h2>
+<pre class="language-dart"><code class="language-dart">final result = await auth0.api.login({
+  usernameOrEmail: 'my@email.com',
+  password: 'my_password'
+  connectionOrRealm: 'Username-Password-Authentication'
+});
+</code></pre>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">Future&lt;Credentials&gt; login({
+  required final String usernameOrEmail,
+  required final String password,
+  required final String connectionOrRealm,
+  final String? audience,
+  final Set&lt;String&gt; scopes = const {},
+  final Map&lt;String, String&gt; parameters = const {},
+}) =&gt;
+    Auth0FlutterAuthPlatform.instance
+        .login(_createApiRequest(AuthLoginOptions(
+      usernameOrEmail: usernameOrEmail,
+      password: password,
+      connectionOrRealm: connectionOrRealm,
+      audience: audience,
+      scopes: scopes,
+      parameters: parameters,
+    )));</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+  <li><a href="../../index.html">auth0_flutter</a></li>
+  <li><a href="../../auth0_flutter/auth0_flutter-library.html">auth0_flutter</a></li>
+  <li><a href="../../auth0_flutter/AuthenticationApi-class.html">AuthenticationApi</a></li>
+  <li class="self-crumb">login method</li>
+</ol>
+
+
+    <h5>AuthenticationApi class</h5>
+    <ol>
+
+        <li class="section-title"><a href="../../auth0_flutter/AuthenticationApi-class.html#constructors">Constructors</a></li>
+          <li><a href="../../auth0_flutter/AuthenticationApi/AuthenticationApi.html">AuthenticationApi</a></li>
+
+
+    <li class="section-title inherited">
+      <a href="../../auth0_flutter/AuthenticationApi-class.html#instance-properties">Properties</a>
+    </li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/hashCode.html">hashCode</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/runtimeType.html">runtimeType</a></li>
+
+    <li class="section-title"><a href="../../auth0_flutter/AuthenticationApi-class.html#instance-methods">Methods</a></li>
+    <li><a href="../../auth0_flutter/AuthenticationApi/login.html">login</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></li>
+    <li><a href="../../auth0_flutter/AuthenticationApi/renewCredentials.html">renewCredentials</a></li>
+    <li><a href="../../auth0_flutter/AuthenticationApi/resetPassword.html">resetPassword</a></li>
+    <li><a href="../../auth0_flutter/AuthenticationApi/signup.html">signup</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/toString.html">toString</a></li>
+    <li><a href="../../auth0_flutter/AuthenticationApi/userProfile.html">userProfile</a></li>
+
+    <li class="section-title inherited"><a href="../../auth0_flutter/AuthenticationApi-class.html#operators">Operators</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/operator_equals.html">operator ==</a></li>
+
+
+
+
+</ol>
+
+  </div><!--/.sidebar-offcanvas-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    auth0_flutter
+      1.0.0-beta.0
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/script.js?v1"></script>
+
+
+
+</body>
+
+</html>
+

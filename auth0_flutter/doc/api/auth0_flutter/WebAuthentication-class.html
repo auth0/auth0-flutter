@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the WebAuthentication class from the auth0_flutter library, for the Dart programming language.">
+  <title>WebAuthentication class - auth0_flutter library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../"
+      data-using-base-href="false">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">auth0_flutter</a></li>
+    <li><a href="../auth0_flutter/auth0_flutter-library.html">auth0_flutter</a></li>
+    <li class="self-crumb">WebAuthentication class</li>
+  </ol>
+  <div class="self-name">WebAuthentication</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<main>
+
+
+  <div id="dartdoc-main-content" class="main-content">
+      <div>
+<h1><span class="kind-class">WebAuthentication</span> class 
+    <a href="https://dart.dev/null-safety" class="feature feature-null-safety" title="Supports the null safety language feature.">Null safety</a>
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>An interface for authenticating users using the <a href="https://auth0.com/docs/authenticate/login/auth0-universal-login">Auth0 Universal Login page</a>.</p>
+<p>Authentication using Universal Login works by redirecting your user to a login page hosted on Auth0's servers. To achieve this on a native device,
+this class uses the <a href="https://github.com/auth0/Auth0.Android">Auth0.Android</a> and <a href="https://github.com/auth0/Auth0.swift">Auth0.Swift</a> SDKs on Android and iOS respectively to
+perform interactions with Universal Login.</p>
+<p>It is not intended for you to instantiate this class yourself, as an instance of it is already exposed as <a href="../auth0_flutter/Auth0/webAuthentication.html">Auth0.webAuthentication</a>.</p>
+<p>Usage example:</p>
+<pre class="language-dart"><code class="language-dart">final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
+final result = await auth0.webAuthentication.login();
+final accessToken = result.accessToken;
+</code></pre>
+</section>
+
+
+
+    
+  <section class="summary offset-anchor" id="constructors">
+    <h2>Constructors</h2>
+
+    <dl class="constructor-summary-list">
+        <dt id="WebAuthentication" class="callable">
+          <span class="name"><a href="../auth0_flutter/WebAuthentication/WebAuthentication.html">WebAuthentication</a></span><span class="signature">(<span class="parameter" id="-param-_account"><span class="type-annotation">Account</span> <span class="parameter-name">_account</span>, </span><span class="parameter" id="-param-_userAgent"><span class="type-annotation">UserAgent</span> <span class="parameter-name">_userAgent</span></span>)</span>
+        </dt>
+        <dd>
+          
+        </dd>
+    </dl>
+  </section>
+
+    <section class="summary offset-anchor inherited" id="instance-properties">
+      <h2>Properties</h2>
+
+      <dl class="properties">
+        <dt id="hashCode" class="property inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> 
+
+</dt>
+<dd class="inherited">
+  The hash code for this object.
+  <div class="features">read-only, inherited</div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Type-class.html">Type</a></span> 
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features">read-only, inherited</div>
+
+</dd>
+
+      </dl>
+    </section>
+
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="login" class="callable">
+  <span class="name"><a href="../auth0_flutter/WebAuthentication/login.html">login</a></span><span class="signature">(<wbr><span class="parameter" id="login-param-audience">{<span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">audience</span>, </span><span class="parameter" id="login-param-scopes"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Set-class.html">Set</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>&gt;</span></span> <span class="parameter-name">scopes</span> = <span class="default-value">const {}</span>, </span><span class="parameter" id="login-param-redirectUrl"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">redirectUrl</span>, </span><span class="parameter" id="login-param-organizationId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">organizationId</span>, </span><span class="parameter" id="login-param-invitationUrl"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">invitationUrl</span>, </span><span class="parameter" id="login-param-scheme"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">scheme</span>, </span><span class="parameter" id="login-param-useEphemeralSession"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">useEphemeralSession</span> = <span class="default-value">false</span>, </span><span class="parameter" id="login-param-parameters"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>, <span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>&gt;</span></span> <span class="parameter-name">parameters</span> = <span class="default-value">const {}</span>, </span><span class="parameter" id="login-param-idTokenValidationConfig"><span class="type-annotation"><a href="../auth0_flutter/IdTokenValidationConfig-class.html">IdTokenValidationConfig</a></span> <span class="parameter-name">idTokenValidationConfig</span> = <span class="default-value">const IdTokenValidationConfig()</span>}</span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../auth0_flutter/Credentials-class.html">Credentials</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Redirects the user to the <a href="https://auth0.com/docs/authenticate/login/auth0-universal-login">Auth0 Universal Login page</a> for authentication. If successful, it returns
+a set of tokens, as well as the user's profile (constructed from ID token claims).
+  
+
+</dd>
+
+        <dt id="logout" class="callable">
+  <span class="name"><a href="../auth0_flutter/WebAuthentication/logout.html">logout</a></span><span class="signature">(<wbr><span class="parameter" id="logout-param-returnTo">{<span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">returnTo</span>, </span><span class="parameter" id="logout-param-scheme"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">scheme</span>}</span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Redirects the user to the Auth0 Logout endpoint to remove their authentication session, and log out. The user is immediately redirected back to the application
+once logout is complete.
+  
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Invocation-class.html">Invocation</a></span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a non-existent method or property is accessed.
+  <div class="features">inherited</div>
+
+</dd>
+
+        <dt id="toString" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  A string representation of this object.
+  <div class="features">inherited</div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  The equality operator.
+  <div class="features">inherited</div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+    
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+  <li><a href="../index.html">auth0_flutter</a></li>
+  <li><a href="../auth0_flutter/auth0_flutter-library.html">auth0_flutter</a></li>
+  <li class="self-crumb">WebAuthentication class</li>
+</ol>
+
+
+    <h5>auth0_flutter library</h5>
+    <ol>
+  <li class="section-title"><a href="../auth0_flutter/auth0_flutter-library.html#classes">Classes</a></li>
+  <li><a href="../auth0_flutter/Auth0-class.html">Auth0</a></li>
+  <li><a href="../auth0_flutter/AuthenticationApi-class.html">AuthenticationApi</a></li>
+  <li><a href="../auth0_flutter/Credentials-class.html">Credentials</a></li>
+  <li><a href="../auth0_flutter/IdTokenValidationConfig-class.html">IdTokenValidationConfig</a></li>
+  <li><a href="../auth0_flutter/UserProfile-class.html">UserProfile</a></li>
+  <li><a href="../auth0_flutter/WebAuthentication-class.html">WebAuthentication</a></li>
+
+
+
+
+
+
+
+
+  <li class="section-title"><a href="../auth0_flutter/auth0_flutter-library.html#exceptions">Exceptions</a></li>
+  <li><a href="../auth0_flutter/ApiException-class.html">ApiException</a></li>
+  <li><a href="../auth0_flutter/WebAuthException-class.html">WebAuthException</a></li>
+</ol>
+
+  </div>
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+    <ol>
+
+        <li class="section-title"><a href="../auth0_flutter/WebAuthentication-class.html#constructors">Constructors</a></li>
+          <li><a href="../auth0_flutter/WebAuthentication/WebAuthentication.html">WebAuthentication</a></li>
+
+
+    <li class="section-title inherited">
+      <a href="../auth0_flutter/WebAuthentication-class.html#instance-properties">Properties</a>
+    </li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/hashCode.html">hashCode</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/runtimeType.html">runtimeType</a></li>
+
+    <li class="section-title"><a href="../auth0_flutter/WebAuthentication-class.html#instance-methods">Methods</a></li>
+    <li><a href="../auth0_flutter/WebAuthentication/login.html">login</a></li>
+    <li><a href="../auth0_flutter/WebAuthentication/logout.html">logout</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/toString.html">toString</a></li>
+
+    <li class="section-title inherited"><a href="../auth0_flutter/WebAuthentication-class.html#operators">Operators</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/operator_equals.html">operator ==</a></li>
+
+
+
+
+</ol>
+
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    auth0_flutter
+      1.0.0-beta.0
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/script.js?v1"></script>
+
+
+
+</body>
+
+</html>
+
