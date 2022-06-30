@@ -58,10 +58,10 @@ class ClearCredentialsRequestHandlerTest {
             mockResult
         );
 
-        val captor = argumentCaptor<() -> Map<String, *>>()
+        val captor = argumentCaptor<Boolean>()
         verify(mockResult).success(captor.capture())
 
-        assert(captor.firstValue == null)
+        assert(captor.firstValue)
 
     }
 }
