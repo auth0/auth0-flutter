@@ -18,12 +18,11 @@ class ApiException extends Auth0Exception {
   const ApiException.unknown(final String message)
       : _errorFlags = const {},
         statusCode = 0,
-        super.unknown(message);
+        super.unknown(message); // coverage:ignore-line
 
   factory ApiException.fromPlatformException(final PlatformException e) {
     final Map<String, dynamic> errorDetails = e.detailsMap;
-    final statusCode =
-        errorDetails.getOrDefault(_statusCodeKey, 0);
+    final statusCode = errorDetails.getOrDefault(_statusCodeKey, 0);
     final errorFlags =
         errorDetails.getOrDefault(_errorFlagsKey, <dynamic, dynamic>{});
 

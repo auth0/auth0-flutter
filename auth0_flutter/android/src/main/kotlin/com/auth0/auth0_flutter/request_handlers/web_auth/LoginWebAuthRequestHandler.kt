@@ -89,7 +89,8 @@ class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest
                         "refreshToken" to credentials.refreshToken,
                         "userProfile" to userProfile.toMap(),
                         "expiresAt" to formattedDate,
-                        "scopes" to scopes
+                        "scopes" to scopes,
+                        "tokenType" to credentials.type
                     )
                 )
             }
