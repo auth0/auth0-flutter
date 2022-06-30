@@ -443,7 +443,7 @@ void main() {
 
       Future<bool> actual() async {
         final result = await MethodChannelCredentialsManager().clearCredentials(
-            CredentialsManagerRequest<SaveCredentialsOptions>(
+            CredentialsManagerRequest(
                 account: const Account('', ''),
                 userAgent:
                     UserAgent(name: 'test-name', version: 'test-version')));

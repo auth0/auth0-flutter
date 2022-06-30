@@ -97,17 +97,17 @@ class MockCredentialsManager extends _i1.Mock
               returnValue: Future<_i2.Credentials>.value(_FakeCredentials_0()))
           as _i4.Future<_i2.Credentials>);
   @override
-  _i4.Future<void> set(_i2.Credentials? credentials) =>
+  _i4.Future<bool> set(_i2.Credentials? credentials) =>
       (super.noSuchMethod(Invocation.method(#set, [credentials]),
-          returnValue: Future<void>.value(),
-          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+          returnValue: Future<bool>.value(true),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<bool>);
   @override
   _i4.Future<bool> hasValidCredentials({int? minTtl = 0}) =>
       (super.noSuchMethod(
           Invocation.method(#hasValidCredentials, [], {#minTtl: minTtl}),
           returnValue: Future<bool>.value(false)) as _i4.Future<bool>);
   @override
-  _i4.Future<void> clear() => (super.noSuchMethod(Invocation.method(#clear, []),
-      returnValue: Future<void>.value(),
-      returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  _i4.Future<bool> clear() => (super.noSuchMethod(Invocation.method(#clear, []),
+      returnValue: Future<bool>.value(true),
+      returnValueForMissingStub: Future<void>.value()) as _i4.Future<bool>);
 }

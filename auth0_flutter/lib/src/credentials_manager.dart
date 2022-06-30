@@ -8,13 +8,13 @@ abstract class CredentialsManager {
     final Map<String, String> parameters = const {},
   });
 
-  Future<void> set(final Credentials credentials);
+  Future<bool> set(final Credentials credentials);
 
   Future<bool> hasValidCredentials({
     final int minTtl = 0,
   });
 
-  Future<void> clear();
+  Future<bool> clear();
 }
 
 /// Default [CredentialsManager] implementation that passes calls to

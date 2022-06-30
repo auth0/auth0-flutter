@@ -63,7 +63,7 @@ class Auth0 {
   /// Uses the [DefaultCredentialsManager] by default. If you want to use your own implementation to handle credential storage, provide your own [CredentialsManager] implementation
   /// by setting [customCredentialsManager].
   /// In case you want to opt-out of using any [CredentialsManager] alltogether, set [useCredentialsManager] to `false`.
-  /// If you want to use biometrics or pass-phrase when using the [DefaultCredentialsManager], set [useLocalAuthentication]` to `true`.
+  /// If you want to use biometrics or pass-phrase when using the [DefaultCredentialsManager], set [localAuthentication]` to an instance of [LocalAuthenticationOptions].
   /// Note however that this settings has no effect when specifying a [customCredentialsManager]
   WebAuthentication webAuthentication({
     final bool useCredentialsManager = true,
