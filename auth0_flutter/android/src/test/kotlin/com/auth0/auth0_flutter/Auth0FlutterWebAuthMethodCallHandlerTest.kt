@@ -33,7 +33,7 @@ class Auth0FlutterWebAuthMethodCallHandlerTest {
         val handler = Auth0FlutterWebAuthMethodCallHandler(handlers)
         val mockResult = mock<Result>()
 
-        handler.context = mock()
+        handler.activity = mock()
 
         handler.onMethodCall(MethodCall(method, arguments), mockResult)
         onResult(mockResult)
