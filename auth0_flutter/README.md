@@ -82,7 +82,7 @@ The callback and logout URLs are the URLs that Auth0 invokes to redirect back to
 
 Since callback and logout URLs can be manipulated, you will need to add your URLs to the **Allowed Callback URLs** and **Allowed Logout URLs** fields in the settings page of your Auth0 application. This will enable Auth0 to recognize these URLs as valid. If the callback and logout URLs are not set, users will be unable to log in and out of the app and will get an error.
 
-Go to the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/) and add the corresponding URLs to **Allowed Callback URLs** and **Allowed Logout URLs**, according to the platforms used by your app. If you are using a [Custom Domain](https://auth0.com/docs/brand-and-customize/custom-domains), replace `YOUR_AUTH0_DOMAIN` with the value of your custom domain instead of the value from the settings page.
+Go to the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/) and add the corresponding URLs to **Allowed Callback URLs** and **Allowed Logout URLs**, according to the platforms used by your app. If you are using a [custom domain](https://auth0.com/docs/brand-and-customize/custom-domains), replace `YOUR_AUTH0_DOMAIN` with the value of your custom domain instead of the value from the settings page.
 
 ##### Android
 
@@ -90,7 +90,7 @@ Go to the settings page of your [Auth0 application](https://manage.auth0.com/#/a
 https://YOUR_AUTH0_DOMAIN/android/YOUR_APP_PACKAGE_NAME/callback
 ```
 
-E.g. if your Auth0 Domain was `company.us.auth0.com` and your Android app package name was `com.company.myapp`, then this value would be:
+E.g. if your Auth0 domain was `company.us.auth0.com` and your Android app package name was `com.company.myapp`, then this value would be:
 
 ```text
 https://company.us.auth0.com/android/com.company.myapp/callback
@@ -102,7 +102,7 @@ https://company.us.auth0.com/android/com.company.myapp/callback
 YOUR_BUNDLE_IDENTIFIER://YOUR_AUTH0_DOMAIN/ios/YOUR_BUNDLE_IDENTIFIER/callback
 ```
 
-E.g. if your iOS bundle identifier was `com.company.myapp` and your Auth0 Domain was `company.us.auth0.com`, then this value would be:
+E.g. if your iOS bundle identifier was `com.company.myapp` and your Auth0 domain was `company.us.auth0.com`, then this value would be:
 
 ```text
 com.company.myapp://company.us.auth0.com/ios/com.company.myapp/callback
@@ -126,7 +126,7 @@ android {
 }
 ```
 
-E.g. if your Auth0 Domain was `company.us.auth0.com`, then the manifest placeholders line would be:
+E.g. if your Auth0 domain was `company.us.auth0.com`, then the manifest placeholders line would be:
 
 ```groovy
 manifestPlaceholders = [auth0Domain: "company.us.auth0.com", auth0Scheme: "${applicationId}"]
@@ -216,7 +216,7 @@ final result = await auth0.webAuthentication.login();
 <details>
   <summary>Add an audience value</summary>
 
-Specify an [audience](https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#control-access-token-audience) to obtain an Access Token that can be used to make authenticated requests to a backend. The audience value is the **API Identifier** of your [Auth0 API](https://auth0.com/docs/get-started/apis), e.g. `https://example.com/api`.
+Specify an [audience](https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#control-access-token-audience) to obtain an access token that can be used to make authenticated requests to a backend. The audience value is the **API Identifier** of your [Auth0 API](https://auth0.com/docs/get-started/apis), e.g. `https://example.com/api`.
 
 ```dart
 final result = await auth0.webAuthentication
@@ -285,7 +285,7 @@ TBD
 <!-- **See all the available features in the API documentation ↗** [link to API documentation] -->
 
 - [Web Auth signup](#web-auth-signup)
-- [ID Token validation](#id-token-validation)
+- [ID token validation](#id-token-validation)
 - [Web Auth errors](#web-auth-errors)
 
 #### Web Auth signup
@@ -306,13 +306,13 @@ final result = await auth0.webAuthentication
 
 > ⚠️ The `screen_hint` parameter will work with the **New Universal Login Experience** without any further configuration. If you are using the **Classic Universal Login Experience**, you need to customize the [login template](https://manage.auth0.com/#/login_page) to look for this parameter and set the `initialScreen` [option](https://github.com/auth0/lock#database-options) of the `Auth0Lock` constructor.
 
-#### ID Token validation
+#### ID token validation
 
-auth0_flutter automatically [validates](https://auth0.com/docs/secure/tokens/id-tokens/validate-id-tokens) the ID Token obtained from Web Auth login, following the [OpenID Connect specification](https://openid.net/specs/openid-connect-core-1_0.html). This ensures the contents of the ID Token have not been tampered with and can be safely used.
+auth0_flutter automatically [validates](https://auth0.com/docs/secure/tokens/id-tokens/validate-id-tokens) the ID token obtained from Web Auth login, following the [OpenID Connect specification](https://openid.net/specs/openid-connect-core-1_0.html). This ensures the contents of the ID token have not been tampered with and can be safely used.
 
-##### Custom Domains
+##### Custom domains
 
-Users of Auth0 Private Cloud with custom domains still on the [legacy behavior](https://auth0.com/docs/deploy/private-cloud/private-cloud-migrations/migrate-private-cloud-custom-domains) need to specify a custom issuer to match the Auth0 Domain when performing Web Auth login. Otherwise, the ID Token validation will fail.
+Users of Auth0 Private Cloud with custom domains still on the [legacy behavior](https://auth0.com/docs/deploy/private-cloud/private-cloud-migrations/migrate-private-cloud-custom-domains) need to specify a custom issuer to match the Auth0 domain when performing Web Auth login. Otherwise, the ID token validation will fail.
 
 ```dart
 final config = IdTokenValidationConfig(issuer: 'https://YOUR_AUTH0_DOMAIN/');
@@ -350,7 +350,7 @@ To log in or sign up with a username and password, the `Password` grant type nee
 
 > 💡 If your Auth0 account has the **Bot Detection** feature enabled, your requests might be flagged for verification. Check how to handle this scenario in the [Bot Detection](#bot-detection) section.
 
-> ⚠️ The ID Tokens obtained from Web Auth login are automatically validated by auth0_flutter, ensuring their contents have not been tampered with. **This is not the case for the ID Tokens obtained from the Authentication API client.** You must [validate](https://auth0.com/docs/security/tokens/id-tokens/validate-id-tokens) any ID Tokens received from the Authentication API client before using the information they contain.
+> ⚠️ The ID tokens obtained from Web Auth login are automatically validated by `auth0_flutter`, ensuring their contents have not been tampered with. **This is not the case for the ID tokens obtained from the Authentication API client.** You must [validate](https://auth0.com/docs/security/tokens/id-tokens/validate-id-tokens) any ID tokens received from the Authentication API client before using the information they contain.
 
 #### Login with database connection
 
@@ -364,7 +364,7 @@ final result = await auth0.api.login(
 <details>
   <summary>Add an audience value</summary>
 
-Specify an [audience](https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#control-access-token-audience) to obtain an Access Token that can be used to make authenticated requests to a backend. The audience value is the **API Identifier** of your [Auth0 API](https://auth0.com/docs/get-started/apis), e.g. `https://example.com/api`.
+Specify an [audience](https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#control-access-token-audience) to obtain an access token that can be used to make authenticated requests to a backend. The audience value is the **API Identifier** of your [Auth0 API](https://auth0.com/docs/get-started/apis), e.g. `https://example.com/api`.
 
 ```dart
 final result = await auth0.api.login(
@@ -415,13 +415,13 @@ final userProfile = await auth0.api.userInfo(accessToken: accessToken);
 
 #### Renew credentials
 
-Use a [Refresh Token](https://auth0.com/docs/secure/tokens/refresh-tokens) to renew the user's credentials. It's recommended that you read and understand the Refresh Token process beforehand.
+Use a [refresh token](https://auth0.com/docs/secure/tokens/refresh-tokens) to renew the user's credentials. It's recommended that you read and understand the refresh token process beforehand.
 
 ```dart
 final result = await auth0.api.renewCredentials(refreshToken: refreshToken);
 ```
 
-> 💡 To obtain a Refresh Token, make sure your Auth0 application has the **Refresh Token** [grant enabled](https://auth0.com/docs/get-started/applications/update-grant-types). If you are also specifying an audience value, make sure that the corresponding Auth0 API has the **Allow Offline Access** [setting enabled](https://auth0.com/docs/get-started/apis/api-settings#access-settings).
+> 💡 To obtain a refresh token, make sure your Auth0 application has the **Refresh Token** [grant enabled](https://auth0.com/docs/get-started/applications/update-grant-types). If you are also specifying an audience value, make sure that the corresponding Auth0 API has the **Allow Offline Access** [setting enabled](https://auth0.com/docs/get-started/apis/api-settings#access-settings).
 
 #### API client errors
 
