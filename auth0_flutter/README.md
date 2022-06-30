@@ -47,7 +47,7 @@ TBD
 
 ## Installation
 
-During the Beta stage the SDK will not be published to Pub.dev, but you can install it as a [path package](https://dart.dev/tools/pub/dependencies#path-packages).
+During the Beta stage, the SDK will not be published to Pub.dev, but you can install it as a [path package](https://dart.dev/tools/pub/dependencies#path-packages).
 
 Download the [latest release](https://github.com/auth0/auth0-flutter/releases/latest) as a zip file, extract, and then add the following dependency in your `pubspec.yaml` file:
 
@@ -62,7 +62,7 @@ Then, run `flutter pub get`.
 
 ### Configuration
 
-auth0_flutter needs the **Client ID** and **Domain** of the Auth0 application to communicate with Auth0. You can find these details on the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/). If you are using a [Custom Domain](https://auth0.com/docs/brand-and-customize/custom-domains), use the value of your Custom Domain instead of the value from the settings page.
+`auth0_flutter` needs the **Client ID** and **Domain** of the Auth0 application to communicate with Auth0. You can find these details on the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/). If you are using a [custom domain](https://auth0.com/docs/brand-and-customize/custom-domains), use the value of your custom domain instead of the value from the settings page.
 
 > ⚠️ Make sure that the [application type](https://auth0.com/docs/configure/applications) of the Auth0 application is **Native**. If you don’t have a Native Auth0 application already, [create one](https://auth0.com/docs/get-started/create-apps/native-apps) before continuing.
 
@@ -80,9 +80,9 @@ final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID');
 
 The callback and logout URLs are the URLs that Auth0 invokes to redirect back to your app. Auth0 invokes the callback URL after authenticating the user, and the logout URL after removing the session cookie.
 
-Since callback and logout URLs can be manipulated, you will need to add your URLs to the **Allowed Callback URLs** and **Allowed Logout URLs** fields in the settings page of your Auth0 application. This will enable Auth0 to recognize these URLs as valid. If the callback and logout URLs are not set, users will be unable to log in and out of the app and will get an error.
+Since callback and logout URLs can be manipulated, you will need to add your URLs to the **Allowed Callback URLs** and **Allowed Logout URLs** fields in the settings page of your Auth0 application. This will enable Auth0 to recognize these URLs as valid. If the callback and logout URLs are not set, users will be unable to log in and out of the app and will get an error.
 
-Go to the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/) and add the corresponding URLs to **Allowed Callback URLs** and **Allowed Logout URLs**, according to the platforms used by your app. If you are using a [Custom Domain](https://auth0.com/docs/brand-and-customize/custom-domains), replace `YOUR_AUTH0_DOMAIN` with the value of your Custom Domain instead of the value from the settings page.
+Go to the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/) and add the corresponding URLs to **Allowed Callback URLs** and **Allowed Logout URLs**, according to the platforms used by your app. If you are using a [Custom Domain](https://auth0.com/docs/brand-and-customize/custom-domains), replace `YOUR_AUTH0_DOMAIN` with the value of your custom domain instead of the value from the settings page.
 
 ##### Android
 
@@ -228,7 +228,7 @@ final result = await auth0.webAuthentication
 <details>
   <summary>Add scope values</summary>
 
-Specify [scopes](https://auth0.com/docs/get-started/apis/scopes) to request permission to access protected resources, like the user profile. The default scope values are `openid`, `profile` and `email`. Regardless of the values specified, `openid` is always included.
+Specify [scopes](https://auth0.com/docs/get-started/apis/scopes) to request permission to access protected resources, like the user profile. The default scope values are `openid`, `profile`, and `email`. Regardless of the values specified, `openid` is always included.
 
 ```dart
 final result = await auth0.webAuthentication
@@ -240,7 +240,7 @@ final result = await auth0.webAuthentication
 <details>
   <summary>Add a custom scheme value (Android-only)</summary>
 
-On Android, auth0*flutter uses `https` by default as the callback URL scheme. This works best for Android API 23+ if you're using [Android App Links](https://auth0.com/docs/get-started/applications/enable-android-app-links-support), but in previous Android versions this \_may* show the intent chooser dialog prompting the user to choose either your app or the browser. You can change this behavior by using a custom unique scheme so that Android opens the link directly with your app. Note that schemes [can only have lowercase letters](https://developer.android.com/guide/topics/manifest/data-element).
+On Android, `https` is used by default as the callback URL scheme. This works best for Android API 23+ if you're using [Android App Links](https://auth0.com/docs/get-started/applications/enable-android-app-links-support), but in previous Android versions, this \_may show the intent chooser dialog prompting the user to choose either your app or the browser. You can change this behavior by using a custom unique scheme so that Android opens the link directly with your app. Note that schemes [can only have lowercase letters](https://developer.android.com/guide/topics/manifest/data-element).
 
 1. Update the `auth0Scheme` manifest placeholder on the `android/build.gradle` file.
 2. Update the **Allowed Callback URLs** in the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/).
@@ -256,7 +256,7 @@ final result = await auth0.webAuthentication.login(scheme: {'demo'});
 
 Logging the user out involves clearing the Universal Login session cookie and then deleting the user's credentials from your app.
 
-Call the `logout()` method in the in the `onPressed` callback of your **Logout** button. Once the session cookie has been cleared, delete the user's credentials.<!--  link to the section on deleting the stored credentials -->
+Call the `logout()` method in the `onPressed` callback of your **Logout** button. Once the session cookie has been cleared, delete the user's credentials.<!--  link to the section on deleting the stored credentials -->
 
 ```dart
 await auth0.webAuthentication.logout();
@@ -294,8 +294,8 @@ You can make users land directly on the Signup page instead of the Login page by
 
 | Parameters                                   | No existing session   | Existing session              |
 | :------------------------------------------- | :-------------------- | :---------------------------- |
-| No extra parameters                          | Shows the login page  | Redirects to the callback url |
-| `'screen_hint': 'signup'`                    | Shows the signup page | Redirects to the callback url |
+| No extra parameters                          | Shows the login page  | Redirects to the callback URL |
+| `'screen_hint': 'signup'`                    | Shows the signup page | Redirects to the callback URL |
 | `'prompt': 'login'`                          | Shows the login page  | Shows the login page          |
 | `'prompt': 'login', 'screen_hint': 'signup'` | Shows the signup page | Shows the signup page         |
 
@@ -312,7 +312,7 @@ auth0_flutter automatically [validates](https://auth0.com/docs/secure/tokens/id-
 
 ##### Custom Domains
 
-Users of Auth0 Private Cloud with Custom Domains still on the [legacy behavior](https://auth0.com/docs/deploy/private-cloud/private-cloud-migrations/migrate-private-cloud-custom-domains) need to specify a custom issuer to match the Auth0 Domain when performing Web Auth login. Otherwise, the ID Token validation will fail.
+Users of Auth0 Private Cloud with custom domains still on the [legacy behavior](https://auth0.com/docs/deploy/private-cloud/private-cloud-migrations/migrate-private-cloud-custom-domains) need to specify a custom issuer to match the Auth0 Domain when performing Web Auth login. Otherwise, the ID Token validation will fail.
 
 ```dart
 final config = IdTokenValidationConfig(issuer: 'https://YOUR_AUTH0_DOMAIN/');
@@ -344,9 +344,9 @@ try {
 - [API client errors](#api-client-errors)
 
 The Authentication API exposes the AuthN/AuthZ functionality of Auth0, as well as the supported identity protocols like OpenID Connect, OAuth 2.0, and SAML.
-We recommend using [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login), but if you prefer to build your own UI you can use our API endpoints to do so. However, some Auth flows (grant types) are disabled by default so you must enable them in the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/), as explained in [Update Grant Types](https://auth0.com/docs/get-started/applications/update-grant-types).
+We recommend using [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login), but if you prefer to build your own UI you can use our API endpoints to do so. However, some Auth flows (grant types) are disabled by default so you must enable them on the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/), as explained in [Update Grant Types](https://auth0.com/docs/get-started/applications/update-grant-types).
 
-For login or signup with username/password, the `Password` grant type needs to be enabled in your app. If you set the grants via the Management API you should activate both `http://auth0.com/oauth/grant-type/password-realm` and `Password`. Otherwise, the Auth0 Dashboard will take care of activating both when enabling `Password`.
+To log in or sign up with a username and password, the `Password` grant type needs to be enabled in your app. If you set the grants via the Management API you should activate both `http://auth0.com/oauth/grant-type/password-realm` and `Password`. Otherwise, the Auth0 Dashboard will take care of activating both when enabling `Password`.
 
 > 💡 If your Auth0 account has the **Bot Detection** feature enabled, your requests might be flagged for verification. Check how to handle this scenario in the [Bot Detection](#bot-detection) section.
 
@@ -379,7 +379,7 @@ final result = await auth0.api.login(
 <details>
   <summary>Add scope values</summary>
 
-Specify [scopes](https://auth0.com/docs/get-started/apis/scopes) to request permission to access protected resources, like the user profile. The default scope values are `openid`, `profile` and `email`. Regardless of the values specified, `openid` is always included.
+Specify [scopes](https://auth0.com/docs/get-started/apis/scopes) to request permission to access protected resources, like the user profile. The default scope values are `openid`, `profile`, and `email`. Regardless of the values specified, `openid` is always included.
 
 ```dart
 final result = await auth0.api.login(
@@ -446,14 +446,6 @@ try {
 ### Organizations
 
 [Organizations](https://auth0.com/docs/manage-users/organizations) is a set of features that provide better support for developers who build and maintain SaaS and Business-to-Business (B2B) applications.
-
-Using Organizations, you can:
-
-- Represent teams, business customers, partner companies, or any logical grouping of users that should have different ways of accessing your applications, as organizations.
-- Manage their membership in a variety of ways, including user invitation.
-- Configure branded, federated login flows for each organization.
-- Implement role-based access control, such that users can have different roles when authenticating in the context of different organizations.
-- Build administration capabilities into your products, using Organizations APIs, so that those businesses can manage their own organizations.
 
 > 💡 Organizations is currently only available to customers on our Enterprise and Startup subscription plans.
 
