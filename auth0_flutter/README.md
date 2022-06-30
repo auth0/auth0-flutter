@@ -62,7 +62,7 @@ Then, run `flutter pub get`.
 
 ### Configuration
 
-`auth0_flutter` needs the **Client ID** and **Domain** of the Auth0 application to communicate with Auth0. You can find these details on the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/). If you are using a [custom domain](https://auth0.com/docs/brand-and-customize/custom-domains), use the value of your custom domain instead of the value from the settings page.
+`auth0_flutter` needs the **client ID** and **domain** of the Auth0 application to communicate with Auth0. You can find these details on the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/). If you are using a [custom domain](https://auth0.com/docs/brand-and-customize/custom-domains), use the value of your custom domain instead of the value from the settings page.
 
 > ⚠️ Make sure that the [application type](https://auth0.com/docs/configure/applications) of the Auth0 application is **Native**. If you don’t have a Native Auth0 application already, [create one](https://auth0.com/docs/get-started/create-apps/native-apps) before continuing.
 
@@ -201,7 +201,7 @@ Open the `ios/Runner/Info.plist` file and add the following snippet inside the t
 
 ### Web Auth Login
 
-Import auth0_flutter in the file where you want to present the login page.
+Import `auth0_flutter` in the file where you want to present the login page.
 
 ```dart
 import 'package:auth0_flutter/auth0_flutter.dart';
@@ -308,7 +308,7 @@ final result = await auth0.webAuthentication
 
 #### ID token validation
 
-auth0_flutter automatically [validates](https://auth0.com/docs/secure/tokens/id-tokens/validate-id-tokens) the ID token obtained from Web Auth login, following the [OpenID Connect specification](https://openid.net/specs/openid-connect-core-1_0.html). This ensures the contents of the ID token have not been tampered with and can be safely used.
+`auth0_flutter` automatically [validates](https://auth0.com/docs/secure/tokens/id-tokens/validate-id-tokens) the ID token obtained from Web Auth login, following the [OpenID Connect specification](https://openid.net/specs/openid-connect-core-1_0.html). This ensures the contents of the ID token have not been tampered with and can be safely used.
 
 ##### Custom domains
 
