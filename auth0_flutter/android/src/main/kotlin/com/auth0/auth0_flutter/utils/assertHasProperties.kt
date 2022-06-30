@@ -8,12 +8,14 @@ fun tryGetByKey(data: Any?, key: String): Any? {
     return null;
 }
 
-fun assertHasProperties(requiredProperties: List<String>, data: Map<*, *>) {
+fun assertHasProperties(requiredProperties: List<String>, data: Map<*, *>, prefix: String? = null) {
     var missingProperties =
         requiredProperties.filter {
             it.split('.')
                 .fold(data) { acc: Any?, key: String -> tryGetByKey(acc, key) } == null
         };
 
-    missingProperties.forEach { throw IllegalArgumentException("Required property '$it' is not provided.") }
+    missingProperties
+        .map { if (prefix != null) "$prefix.$it" else it }
+        .forEach { throw IllegalArgumentException("Required property '$it' is not provided.") }
 }

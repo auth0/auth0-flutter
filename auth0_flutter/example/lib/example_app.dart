@@ -20,11 +20,13 @@ class _ExampleAppState extends State<ExampleApp> {
   String _output = '';
 
   late Auth0 auth0;
+  late WebAuthentication webAuth;
 
   @override
   void initState() {
     super.initState();
     auth0 = Auth0(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
+    webAuth = auth0.webAuthentication(useCredentialsManager: false);
   }
 
   Future<void> webAuthLogin() async {
@@ -33,7 +35,7 @@ class _ExampleAppState extends State<ExampleApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      final result = await auth0.webAuthentication
+      final result = await webAuth
           .login(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
 
       output = result.idToken;
@@ -60,7 +62,7 @@ class _ExampleAppState extends State<ExampleApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      await auth0.webAuthentication
+      await webAuth
           .logout(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
 
       output = 'Logged out.';

@@ -5,6 +5,7 @@ enum CredentialsProperty: String, CaseIterable {
     case refreshToken
     case expiresAt
     case scopes
+    case tokenType
 }
 
 enum UserInfoProperty: String, CaseIterable {

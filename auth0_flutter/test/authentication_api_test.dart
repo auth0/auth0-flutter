@@ -22,7 +22,8 @@ class TestPlatform extends Mock
     'refreshToken': 'refreshToken',
     'expiresAt': DateTime.now().toIso8601String(),
     'scopes': ['a'],
-    'userProfile': {'sub': '123', 'name': 'John Doe'}
+    'userProfile': {'sub': '123', 'name': 'John Doe'},
+    'tokenType': 'Bearer'
   });
 
   static Credentials renewResult = Credentials.fromMap({
@@ -31,7 +32,8 @@ class TestPlatform extends Mock
     'refreshToken': 'refreshToken',
     'expiresAt': DateTime.now().toIso8601String(),
     'scopes': ['a'],
-    'userProfile': {'sub': '123', 'name': 'John Doe'}
+    'userProfile': {'sub': '123', 'name': 'John Doe'},
+    'tokenType': 'Bearer'
   });
 }
 

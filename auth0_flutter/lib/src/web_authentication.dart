@@ -1,5 +1,7 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 
+import '../auth0_flutter.dart';
+
 /// An interface for authenticating users using the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login).
 ///
 /// Authentication using Universal Login works by redirecting your user to a login page hosted on Auth0's servers. To achieve this on a native device,
@@ -18,8 +20,11 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 class WebAuthentication {
   final Account _account;
   final UserAgent _userAgent;
+  final CredentialsManager? _credentialsManager;
 
-  WebAuthentication(this._account, this._userAgent);
+  CredentialsManager? credentialsManager() => _credentialsManager;
+
+  WebAuthentication(this._account, this._userAgent, this._credentialsManager);
 
   /// Redirects the user to the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login) for authentication. If successful, it returns
   /// a set of tokens, as well as the user's profile (constructed from ID token claims).
@@ -49,18 +54,23 @@ class WebAuthentication {
     final Map<String, String> parameters = const {},
     final IdTokenValidationConfig idTokenValidationConfig =
         const IdTokenValidationConfig(),
-  }) =>
-      Auth0FlutterWebAuthPlatform.instance.login(_createWebAuthRequest(
-          WebAuthLoginOptions(
-              audience: audience,
-              scopes: scopes,
-              redirectUrl: redirectUrl,
-              organizationId: organizationId,
-              invitationUrl: invitationUrl,
-              parameters: parameters,
-              idTokenValidationConfig: idTokenValidationConfig,
-              scheme: scheme,
-              useEphemeralSession: useEphemeralSession)));
+  }) async {
+    final credentials = await Auth0FlutterWebAuthPlatform.instance.login(
+        _createWebAuthRequest(WebAuthLoginOptions(
+            audience: audience,
+            scopes: scopes,
+            redirectUrl: redirectUrl,
+            organizationId: organizationId,
+            invitationUrl: invitationUrl,
+            parameters: parameters,
+            idTokenValidationConfig: idTokenValidationConfig,
+            scheme: scheme,
+            useEphemeralSession: useEphemeralSession)));
+
+    await _credentialsManager?.set(credentials);
+
+    return credentials;
+  }
 
   /// Redirects the user to the Auth0 Logout endpoint to remove their authentication session, and log out. The user is immediately redirected back to the application
   /// once logout is complete.
@@ -69,10 +79,31 @@ class WebAuthentication {
   /// bundle identifier in iOS. [returnTo] must appear in your **Allowed Logout URLs** list for the Auth0 app. [Read more about redirecting users after logout](https://auth0.com/docs/authenticate/login/logout#redirect-users-after-logout).
   ///
   /// (Android only): [scheme] must match the scheme that was used to configure the `auth0Scheme` manifest placeholder
-  Future<void> logout({final String? returnTo, final String? scheme}) =>
-      Auth0FlutterWebAuthPlatform.instance.logout(_createWebAuthRequest(
-        WebAuthLogoutOptions(returnTo: returnTo, scheme: scheme),
-      ));
+  Future<void> logout({final String? returnTo, final String? scheme}) async {
+    await Auth0FlutterWebAuthPlatform.instance.logout(_createWebAuthRequest(
+      WebAuthLogoutOptions(returnTo: returnTo, scheme: scheme),
+    ));
+    await _credentialsManager?.clear();
+  }
+
+  /// Retrieves the Credentials for the current user. Calls the [CredentialsManager] when available, returns `null` if not.
+  ///
+  /// Change the minimum time in seconds that the access token should last before expiration by setting the [minTtl].
+  /// Use the [scopes] parameter to set the scope to request for the access token. If `null` is passed, the previous scope will be kept.
+  /// Use the [parameters] parameter to send additional parameters in the request to refresh expired credentials.
+  Future<Credentials?> credentials({
+    final int minTtl = 0,
+    final Set<String> scopes = const {},
+    final Map<String, String> parameters = const {},
+  }) async {
+    final credentials = await _credentialsManager?.get(
+      minTtl: minTtl,
+      scopes: scopes,
+      parameters: parameters,
+    );
+
+    return credentials;
+  }
 
   WebAuthRequest<TOptions>
       _createWebAuthRequest<TOptions extends RequestOptions>(

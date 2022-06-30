@@ -71,7 +71,8 @@ extension Credentials {
             CredentialsProperty.idToken.rawValue: idToken,
             CredentialsProperty.expiresAt.rawValue: expiresIn.asISO8601String,
             CredentialsProperty.scopes.rawValue: scope?.split(separator: " ").map(String.init) ?? [],
-            CredentialsProperty.userProfile.rawValue: UserInfo(json: jwt.body)?.asDictionary() ?? [:]
+            CredentialsProperty.userProfile.rawValue: UserInfo(json: jwt.body)?.asDictionary() ?? [:],
+            CredentialsProperty.tokenType.rawValue: tokenType,
         ]
         data[CredentialsProperty.refreshToken] = refreshToken
         return data

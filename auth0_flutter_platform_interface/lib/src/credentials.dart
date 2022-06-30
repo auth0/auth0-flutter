@@ -38,6 +38,7 @@ class Credentials {
   ///
   /// [Read more about Auth0 User Profiles](https://auth0.com/docs/manage-users/user-accounts/user-profiles)
   final UserProfile user;
+  final String tokenType;
 
   Credentials({
     required this.idToken,
@@ -46,6 +47,7 @@ class Credentials {
     required this.expiresAt,
     this.scopes = const {},
     required this.user,
+    required this.tokenType,
   });
 
   factory Credentials.fromMap(final Map<dynamic, dynamic> result) =>
@@ -57,5 +59,15 @@ class Credentials {
         scopes: Set<String>.from(result['scopes'] as List<Object?>),
         user: UserProfile.fromMap(Map<String, dynamic>.from(
             result['userProfile'] as Map<dynamic, dynamic>)),
+        tokenType: result['tokenType'] as String,
       );
+
+  Map<String, dynamic> toMap() => {
+        'idToken': idToken,
+        'accessToken': accessToken,
+        'refreshToken': refreshToken,
+        'expiresAt': expiresAt.toIso8601String(),
+        'scopes': scopes.toList(),
+        'tokenType': tokenType,
+      };
 }

@@ -73,7 +73,8 @@ class LoginApiRequestHandler : ApiRequestHandler {
                         "refreshToken" to credentials.refreshToken,
                         "userProfile" to userProfile.toMap(),
                         "expiresAt" to formattedDate,
-                        "scopes" to scope
+                        "scopes" to scope,
+                        "type" to credentials.type
                     )
                 )
             }
