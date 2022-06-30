@@ -335,7 +335,7 @@ void main() {
       expect(result.scopes, MethodCallHandler.loginResult['scopes']);
       expect(
           result.refreshToken, MethodCallHandler.loginResult['refreshToken']);
-      expect(result.userProfile.name,
+      expect(result.user.name,
           MethodCallHandler.loginResult['userProfile']['name']);
     });
 
@@ -558,7 +558,7 @@ void main() {
           result.expiresAt,
           DateTime.parse(
               MethodCallHandler.renewResult['expiresAt'] as String));
-      expect(result.userProfile.name,
+      expect(result.user.name,
           MethodCallHandler.renewResult['userProfile']['name']);
     });
 
