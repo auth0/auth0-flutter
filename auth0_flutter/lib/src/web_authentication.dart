@@ -53,7 +53,7 @@ class WebAuthentication {
   /// Use the [scopes] parameter to set the scope to request for the access token. If `null` is passed, the previous scope will be kept.
   /// Use the [parameters] parameter to send additional parameters in the request to refresh expired credentials.
   Future<Credentials?> credentials({
-    final int? minTtl,
+    final int minTtl = 0,
     final Set<String> scopes = const {},
     final Map<String, String> parameters = const {},
   }) async {

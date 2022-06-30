@@ -3,7 +3,7 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 /// Abstract CredentialsManager that can be used to provide a custom CredentialManager.
 abstract class CredentialsManager {
   Future<Credentials> get({
-    final int? minTtl,
+    final int minTtl = 0,
     final Set<String> scopes = const {},
     final Map<String, String> parameters = const {},
   });
@@ -11,7 +11,7 @@ abstract class CredentialsManager {
   Future<void> set(final Credentials credentials);
 
   Future<bool> hasValidCredentials({
-    final int? minTtl,
+    final int minTtl = 0,
   });
 
   Future<void> clear();
@@ -39,7 +39,7 @@ class DefaultCredentialsManager extends CredentialsManager {
   /// Use the [parameters] parameter to send additional parameters in the request to refresh expired credentials.
   @override
   Future<Credentials> get({
-    final int? minTtl,
+    final int minTtl = 0,
     final Set<String> scopes = const {},
     final Map<String, String> parameters = const {},
   }) =>
@@ -52,7 +52,7 @@ class DefaultCredentialsManager extends CredentialsManager {
 
   /// Stores the given credentials in the storage. Must have an `access_token` or `id_token` and a `expires_in` value.
   @override
-  Future<void> set(final Credentials credentials) =>
+  Future<bool> set(final Credentials credentials) =>
       CredentialsManagerPlatform.instance.saveCredentials(
           _createApiRequest(SaveCredentialsOptions(credentials: credentials)));
 
@@ -61,14 +61,14 @@ class DefaultCredentialsManager extends CredentialsManager {
   /// Change the minimum time in seconds that the access token should last before expiration by setting the [minTtl].
   @override
   Future<bool> hasValidCredentials({
-    final int? minTtl,
+    final int minTtl = 0,
   }) =>
       CredentialsManagerPlatform.instance.hasValidCredentials(
           _createApiRequest(HasValidCredentialsOptions(minTtl: minTtl)));
 
   /// Removes the credentials from the storage if present.
   @override
-  Future<void> clear() => CredentialsManagerPlatform.instance
+  Future<bool> clear() => CredentialsManagerPlatform.instance
       .clearCredentials(_createApiRequest(null));
 
   CredentialsManagerRequest<TOptions>

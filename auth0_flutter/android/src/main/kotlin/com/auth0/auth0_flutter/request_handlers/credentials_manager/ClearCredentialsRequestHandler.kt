@@ -15,6 +15,6 @@ class ClearCredentialsRequestHandler : CredentialsManagerRequestHandler {
         result: MethodChannel.Result
     ) {
         credentialsManager.clearCredentials();
-        result.success(null);
+        result.success(true);
     }
 }

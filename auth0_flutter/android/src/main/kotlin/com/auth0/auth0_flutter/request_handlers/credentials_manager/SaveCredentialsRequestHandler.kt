@@ -42,6 +42,6 @@ class SaveCredentialsRequestHandler : CredentialsManagerRequestHandler {
             date,
             scope,
         ));
-        result.success(null);
+        result.success(true);
     }
 }

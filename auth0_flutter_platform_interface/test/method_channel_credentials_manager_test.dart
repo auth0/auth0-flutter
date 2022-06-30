@@ -38,8 +38,6 @@ void main() {
     channel.setMockMethodCallHandler(null);
   });
 
-
-
   group('getCredentials', () {
     test('calls the correct MethodChannel method', () async {
       when(mocked.methodCallHandler(any))
@@ -98,7 +96,7 @@ void main() {
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
-      expect(verificationResult.arguments['minTtl'], isNull);
+      expect(verificationResult.arguments['minTtl'], 0);
       expect(verificationResult.arguments['scopes'], isEmpty);
       expect(verificationResult.arguments['parameters'], isEmpty);
     });
@@ -175,7 +173,7 @@ void main() {
 
   group('saveCredentials', () {
     test('calls the correct MethodChannel method', () async {
-      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => true);
 
       final credentials = Credentials.fromMap({
         'accessToken': 'accessToken',
@@ -199,7 +197,7 @@ void main() {
     });
 
     test('correctly maps all properties', () async {
-      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => true);
 
       final credentials = Credentials.fromMap({
         'accessToken': 'accessToken',
@@ -235,7 +233,8 @@ void main() {
       expect(verificationResult.arguments['credentials']['expiresAt'],
           credentials.expiresAt.toIso8601String());
       expect(verificationResult.arguments['credentials']['scopes'], ['a']);
-      expect(verificationResult.arguments['credentials']['tokenType'], 'Bearer');
+      expect(
+          verificationResult.arguments['credentials']['tokenType'], 'Bearer');
       expect(
           verificationResult.arguments['credentials']['userProfile'], isNull);
     });
@@ -256,7 +255,7 @@ void main() {
         'tokenType': 'Bearer',
       });
 
-      Future<void> actual() async {
+      Future<bool> actual() async {
         final result = await MethodChannelCredentialsManager().saveCredentials(
             CredentialsManagerRequest<SaveCredentialsOptions>(
                 account: const Account('', ''),
@@ -268,6 +267,39 @@ void main() {
       }
 
       await expectLater(actual, throwsA(isA<CredentialsManagerException>()));
+    });
+
+    test(
+        'throws a CredentialsManagerException when method channel returns null',
+        () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      final credentials = Credentials.fromMap({
+        'accessToken': 'accessToken',
+        'idToken': 'idToken',
+        'refreshToken': 'refreshToken',
+        'expiresAt': DateTime.now().toIso8601String(),
+        'scopes': ['a'],
+        'userProfile': {'sub': '123', 'name': 'John Doe'},
+        'tokenType': 'Bearer',
+      });
+
+      Future<bool> actual() async {
+        final result = await MethodChannelCredentialsManager().saveCredentials(
+            CredentialsManagerRequest<SaveCredentialsOptions>(
+                account: const Account('', ''),
+                userAgent:
+                    UserAgent(name: 'test-name', version: 'test-version'),
+                options: SaveCredentialsOptions(credentials: credentials)));
+
+        return result;
+      }
+
+      expectLater(
+          actual,
+          throwsA(predicate((e) =>
+              e is CredentialsManagerException &&
+              e.message == 'Channel returned null.')));
     });
   });
 
@@ -350,7 +382,8 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
       Future<bool> actual() async {
-        final result = await MethodChannelCredentialsManager().hasValidCredentials(
+        final result = await MethodChannelCredentialsManager()
+            .hasValidCredentials(
                 CredentialsManagerRequest<HasValidCredentialsOptions>(
                     account: const Account('', ''),
                     userAgent:
@@ -370,7 +403,7 @@ void main() {
 
   group('clearCredentials', () {
     test('calls the correct MethodChannel method', () async {
-      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => true);
 
       await MethodChannelCredentialsManager().clearCredentials(
           CredentialsManagerRequest(
@@ -384,7 +417,7 @@ void main() {
     });
 
     test('correctly maps all properties', () async {
-      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => true);
 
       await MethodChannelCredentialsManager().clearCredentials(
           CredentialsManagerRequest(
@@ -408,7 +441,7 @@ void main() {
       when(mocked.methodCallHandler(any))
           .thenThrow(PlatformException(code: '123'));
 
-      Future<void> actual() async {
+      Future<bool> actual() async {
         final result = await MethodChannelCredentialsManager().clearCredentials(
             CredentialsManagerRequest<SaveCredentialsOptions>(
                 account: const Account('', ''),
@@ -419,6 +452,28 @@ void main() {
       }
 
       await expectLater(actual, throwsA(isA<CredentialsManagerException>()));
+    });
+
+    test(
+        'throws a CredentialsManagerException when method channel returns null',
+        () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      Future<bool> actual() async {
+        final result = await MethodChannelCredentialsManager().clearCredentials(
+            CredentialsManagerRequest(
+                account: const Account('', ''),
+                userAgent:
+                    UserAgent(name: 'test-name', version: 'test-version')));
+
+        return result;
+      }
+
+      expectLater(
+          actual,
+          throwsA(predicate((e) =>
+              e is CredentialsManagerException &&
+              e.message == 'Channel returned null.')));
     });
   });
 }

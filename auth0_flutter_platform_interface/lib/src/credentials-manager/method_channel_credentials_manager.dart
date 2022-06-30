@@ -33,16 +33,18 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
   ///
   /// Uses the [MethodChannel] to communicate with the Native platforms.
   @override
-  Future<void> saveCredentials(final CredentialsManagerRequest<SaveCredentialsOptions> request) async {
-    await _invokeRequest<void, RequestOptions?>(method: credentialsManagerSaveCredentialsMethod, request: request, throwOnNull: false);
+  Future<bool> saveCredentials(final CredentialsManagerRequest<SaveCredentialsOptions> request) async {
+    final bool? result = await _invokeRequest<bool, RequestOptions?>(method: credentialsManagerSaveCredentialsMethod, request: request);
+    return result ?? true;
   }
 
   /// Removes the credentials from the native storage if present.
   ///
   /// Uses the [MethodChannel] to communicate with the Native platforms.
   @override
-  Future<void> clearCredentials(final CredentialsManagerRequest request) async {
-    await _invokeRequest<void, RequestOptions?>(method: credentialsManagerClearCredentialsMethod, request: request, throwOnNull: false);
+  Future<bool> clearCredentials(final CredentialsManagerRequest request) async {
+    final bool? result = await _invokeRequest<bool, RequestOptions?>(method: credentialsManagerClearCredentialsMethod, request: request);
+    return result ?? true;
   }
 
   /// Checks if a non-expired pair of credentials can be obtained from the native storage.

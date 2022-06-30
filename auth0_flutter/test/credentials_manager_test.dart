@@ -65,7 +65,7 @@ void main() {
       final verificationResult =
           verify(mockedPlatform.getCredentials(captureAny)).captured.single
               as CredentialsManagerRequest<GetCredentialsOptions>;
-      expect(verificationResult.options?.minTtl, isNull);
+      expect(verificationResult.options?.minTtl, 0);
       // ignore: inference_failure_on_collection_literal
       expect(verificationResult.options?.scopes, isEmpty);
       expect(verificationResult.options?.parameters, isEmpty);
@@ -75,7 +75,7 @@ void main() {
   group('set', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.saveCredentials(any))
-          .thenAnswer((final _) async => {});
+          .thenAnswer((final _) async => true);
 
       await DefaultCredentialsManager(account, userAgent).set(TestPlatform.credentials);
 
@@ -114,7 +114,7 @@ void main() {
       expect(verificationResult.options?.minTtl, 30);
     });
 
-    test('does not use a default value for minTtl when omitted', () async {
+    test('uses a default value for minTtl when omitted', () async {
       when(mockedPlatform.hasValidCredentials(any))
           .thenAnswer((final _) async => true);
 
@@ -125,7 +125,7 @@ void main() {
               as CredentialsManagerRequest<HasValidCredentialsOptions>;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
-      expect(verificationResult.options?.minTtl, null);
+      expect(verificationResult.options?.minTtl, 0);
     });
 
     test('returns the value from the platform when true', () async {
@@ -150,7 +150,7 @@ void main() {
   group('clear', () {
     test('calls the platform', () async {
       when(mockedPlatform.clearCredentials(any))
-          .thenAnswer((final _) async => {});
+          .thenAnswer((final _) async => true);
 
       await DefaultCredentialsManager(account, userAgent).clear();
 

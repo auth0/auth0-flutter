@@ -50,7 +50,7 @@ void main() {
       when(mockedPlatform.login(any))
           .thenAnswer((final _) async => TestPlatform.loginResult);
       when(mockedCMPlatform.saveCredentials(any))
-          .thenAnswer((final _) async => {});
+          .thenAnswer((final _) async => true);
 
       final result = await Auth0('test-domain', 'test-clientId')
           .webAuthentication()
@@ -80,7 +80,7 @@ void main() {
       when(mockedPlatform.login(any))
           .thenAnswer((final _) async => TestPlatform.loginResult);
       when(mockedCMPlatform.saveCredentials(any))
-          .thenAnswer((final _) async => {});
+          .thenAnswer((final _) async => true);
 
       await Auth0('test-domain', 'test-clientId').webAuthentication().login(
           audience: 'test-audience',
@@ -103,7 +103,7 @@ void main() {
       when(mockedPlatform.login(any))
           .thenAnswer((final _) async => TestPlatform.loginResult);
       when(mockedCMPlatform.saveCredentials(any))
-          .thenAnswer((final _) async => {});
+          .thenAnswer((final _) async => true);
 
       await Auth0('test-domain', 'test-clientId')
           .webAuthentication(useCredentialsManager: false)
@@ -122,7 +122,7 @@ void main() {
       when(mockedPlatform.login(any))
           .thenAnswer((final _) async => TestPlatform.loginResult);
       when(mockedCMPlatform.saveCredentials(any))
-          .thenAnswer((final _) async => {});
+          .thenAnswer((final _) async => true);
       final mockCm = MockCredentialsManager();
 
       await Auth0('test-domain', 'test-clientId')
@@ -148,6 +148,8 @@ void main() {
     test('does not use EphemeralSession by default', () async {
       when(mockedPlatform.login(any))
           .thenAnswer((final _) async => TestPlatform.loginResult);
+      when(mockedCMPlatform.saveCredentials(any))
+          .thenAnswer((final _) async => true);
 
       final result = await Auth0('test-domain', 'test-clientId')
           .webAuthentication()
@@ -229,7 +231,7 @@ void main() {
     test('calls the platform to logout', () async {
       when(mockedPlatform.logout(any)).thenAnswer((final _) async => {});
       when(mockedCMPlatform.clearCredentials(any))
-          .thenAnswer((final _) async => {});
+          .thenAnswer((final _) async => true);
 
       await Auth0('test-domain', 'test-clientId')
           .webAuthentication()
@@ -246,7 +248,7 @@ void main() {
     test('clears the credentials on success', () async {
       when(mockedPlatform.logout(any)).thenAnswer((final _) async => {});
       when(mockedCMPlatform.clearCredentials(any))
-          .thenAnswer((final _) async => {});
+          .thenAnswer((final _) async => true);
 
       await Auth0('test-domain', 'test-clientId')
           .webAuthentication()
@@ -263,7 +265,7 @@ void main() {
       when(mockedPlatform.login(any))
           .thenAnswer((final _) async => TestPlatform.loginResult);
       when(mockedCMPlatform.clearCredentials(any))
-          .thenAnswer((final _) async => {});
+          .thenAnswer((final _) async => true);
 
       await Auth0('test-domain', 'test-clientId')
           .webAuthentication(useCredentialsManager: false)
@@ -276,7 +278,7 @@ void main() {
       when(mockedPlatform.login(any))
           .thenAnswer((final _) async => TestPlatform.loginResult);
       when(mockedCMPlatform.clearCredentials(any))
-          .thenAnswer((final _) async => {});
+          .thenAnswer((final _) async => true);
       final mockCm = MockCredentialsManager();
 
       await Auth0('test-domain', 'test-clientId')

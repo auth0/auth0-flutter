@@ -36,12 +36,12 @@ abstract class CredentialsManagerPlatform extends PlatformInterface {
   }
 
   /// Removes the credentials from the native storage if present.
-  Future<void> clearCredentials(final CredentialsManagerRequest request) {
+  Future<bool> clearCredentials(final CredentialsManagerRequest request) {
     throw UnimplementedError('clearCredentials() has not been implemented');
   }
 
   /// Stores the given credentials in the native storage. Must have an access_token or id_token and a expires_in value.
-  Future<void> saveCredentials(
+  Future<bool> saveCredentials(
       final CredentialsManagerRequest<SaveCredentialsOptions> request) {
     throw UnimplementedError('saveCredentials() has not been implemented');
   }
