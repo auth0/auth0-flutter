@@ -25,7 +25,7 @@ extension AuthAPIHandlerTests {
 
 extension AuthAPIHandlerTests {
     func testProducesErrorWhenArgumentsAreMissing() {
-        let expectation = expectation(description: "arguments are missing")
+        let expectation = self.expectation(description: "Arguments are missing")
         sut.handle(FlutterMethodCall(methodName: "", arguments: nil)) { result in
             assert(result: result, isError: .argumentsMissing)
             expectation.fulfill()
@@ -34,7 +34,7 @@ extension AuthAPIHandlerTests {
     }
 
     func testProducesErrorWhenAccountIsMissing() {
-        let expectation = expectation(description: "account is missing")
+        let expectation = self.expectation(description: "account is missing")
         sut.handle(FlutterMethodCall(methodName: "", arguments: arguments(without: Account.key))) { result in
             assert(result: result, isError: .accountMissing)
             expectation.fulfill()
@@ -43,7 +43,7 @@ extension AuthAPIHandlerTests {
     }
 
     func testProducesErrorWhenUserAgentIsMissing() {
-        let expectation = expectation(description: "userAgent is missing")
+        let expectation = self.expectation(description: "userAgent is missing")
         sut.handle(FlutterMethodCall(methodName: "", arguments: arguments(without: UserAgent.key))) { result in
             assert(result: result, isError: .userAgentMissing)
             expectation.fulfill()
