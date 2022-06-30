@@ -18,17 +18,28 @@ abstract class BaseRequest<TOptions extends RequestOptions?> {
 
 class CredentialsManagerRequest<TOptions extends RequestOptions?>
     extends BaseRequest<TOptions?> {
-  bool useLocalAuthentication;
+  late LocalAuthenticationOptions? localAuthentication;
   CredentialsManagerRequest({
     required final Account account,
     final TOptions? options,
     required final UserAgent userAgent,
-    final this.useLocalAuthentication = false,
+    final this.localAuthentication,
   }) : super(account: account, options: options, userAgent: userAgent);
 
   @override
-  Map<String, dynamic> toMap() => (super.toMap())
-    ..addAll({'useLocalAuthentication': useLocalAuthentication});
+  Map<String, dynamic> toMap() {
+    if (localAuthentication != null) {
+      return (super.toMap())
+      ..addAll({
+        'localAuthentication': {
+          'title': localAuthentication?.title,
+          'description': localAuthentication?.description
+        }
+      });
+    } else {
+      return super.toMap();
+    }
+  }
 }
 
 class ApiRequest<TOptions extends RequestOptions>

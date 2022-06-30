@@ -22,10 +22,14 @@ abstract class CredentialsManager {
 class DefaultCredentialsManager extends CredentialsManager {
   final Account _account;
   final UserAgent _userAgent;
-  late bool _useLocalAuthentication;
+  late LocalAuthenticationOptions? _localAuthentication;
 
-  DefaultCredentialsManager(this._account, this._userAgent, {final bool useLocalAuthentication = false}) {
-    _useLocalAuthentication = useLocalAuthentication;
+  DefaultCredentialsManager(
+    this._account,
+    this._userAgent, {
+    final LocalAuthenticationOptions? localAuthentication
+  }) {
+    _localAuthentication = localAuthentication;
   }
 
   /// Retrieves the credentials from the storage and refreshes them if they have already expired.
@@ -71,5 +75,8 @@ class DefaultCredentialsManager extends CredentialsManager {
       _createApiRequest<TOptions extends RequestOptions>(
               final TOptions? options) =>
           CredentialsManagerRequest<TOptions>(
-              account: _account, options: options, userAgent: _userAgent, useLocalAuthentication: _useLocalAuthentication);
+              account: _account,
+              options: options,
+              userAgent: _userAgent,
+              localAuthentication: _localAuthentication);
 }

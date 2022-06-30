@@ -11,7 +11,8 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         ApiException,
         IdTokenValidationConfig,
         Credentials,
-        CredentialsManagerException;
+        CredentialsManagerException,
+        LocalAuthenticationOptions;
 
 export 'src/credentials_manager.dart';
 export 'src/web_authentication.dart';
@@ -22,7 +23,7 @@ class Auth0 {
       UserAgent(name: 'auth0-flutter', version: version);
 
   Auth0(final String domain, final String clientId)
-      : _account = Account(domain, clientId) {}
+      : _account = Account(domain, clientId);
 
   AuthenticationApi get api => AuthenticationApi(_account, _userAgent);
 
@@ -35,13 +36,16 @@ class Auth0 {
   /// Note however that this settings has no effect when specifying a [customCredentialsManager]
   WebAuthentication webAuthentication({
     final bool useCredentialsManager = true,
-    final bool useLocalAuthentication = false,
+    final LocalAuthenticationOptions? localAuthentication,
     final CredentialsManager? customCredentialsManager,
   }) {
     final credentialsManager = useCredentialsManager
         ? (customCredentialsManager ??
-            (DefaultCredentialsManager(_account, _userAgent,
-                useLocalAuthentication: useLocalAuthentication)))
+            (DefaultCredentialsManager(
+              _account,
+              _userAgent,
+              localAuthentication: localAuthentication,
+            )))
         : null;
     return WebAuthentication(_account, _userAgent, credentialsManager);
   }

@@ -24,9 +24,13 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
             val api = AuthenticationAPIClient(request.account);
             val storage = SharedPreferencesStorage(context);
             val credentialsManager = SecureCredentialsManager(context, api, storage);
-            val useLocalAuthentication = request.data["useLocalAuthentication"] as Boolean? ?: false;
-            if (useLocalAuthentication) {
-                credentialsManager.requireAuthentication(context as Activity, 111, null, null)
+
+            var localAuthentication = request.data.get("localAuthentication") as Map<String, String>?;
+
+            if (localAuthentication != null) {
+                val title = localAuthentication["title"] as String?;
+                val description = localAuthentication["description"] as String?;
+                // credentialsManager.requireAuthentication(context as Activity, 111, title, description);
             }
             requestHandler.handle(credentialsManager, context, request, result);
         } else {
