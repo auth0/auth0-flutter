@@ -125,6 +125,9 @@ void main() {
           .thenAnswer((final _) async => true);
       final mockCm = MockCredentialsManager();
 
+      when(mockCm.set(any))
+          .thenAnswer((final _) async => true);
+
       await Auth0('test-domain', 'test-clientId')
           .webAuthentication(customCredentialsManager: mockCm)
           .login(
@@ -280,6 +283,8 @@ void main() {
       when(mockedCMPlatform.clearCredentials(any))
           .thenAnswer((final _) async => true);
       final mockCm = MockCredentialsManager();
+      when(mockCm.clear())
+          .thenAnswer((final _) async => true);
 
       await Auth0('test-domain', 'test-clientId')
           .webAuthentication(customCredentialsManager: mockCm)
