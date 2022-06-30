@@ -26,7 +26,7 @@ class _ExampleAppState extends State<ExampleApp> {
   void initState() {
     super.initState();
     auth0 = Auth0(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
-    webAuth = auth0.webAuthentication();
+    webAuth = auth0.webAuthentication(useCredentialsManager: false);
   }
 
   Future<void> webAuthLogin() async {
