@@ -37,7 +37,7 @@ class Credentials {
   /// Properties and attributes relating to the authenticated user.
   ///
   /// [Read more about Auth0 User Profiles](https://auth0.com/docs/manage-users/user-accounts/user-profiles)
-  final UserProfile userProfile;
+  final UserProfile user;
 
   Credentials({
     required this.idToken,
@@ -45,7 +45,7 @@ class Credentials {
     this.refreshToken,
     required this.expiresAt,
     this.scopes = const {},
-    required this.userProfile,
+    required this.user,
   });
 
   factory Credentials.fromMap(final Map<dynamic, dynamic> result) =>
@@ -55,7 +55,7 @@ class Credentials {
         refreshToken: result['refreshToken'] as String?,
         expiresAt: DateTime.parse(result['expiresAt'] as String),
         scopes: Set<String>.from(result['scopes'] as List<Object?>),
-        userProfile: UserProfile.fromMap(Map<String, dynamic>.from(
+        user: UserProfile.fromMap(Map<String, dynamic>.from(
             result['userProfile'] as Map<dynamic, dynamic>)),
       );
 }

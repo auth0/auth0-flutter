@@ -148,7 +148,7 @@ void main() {
       expect(result.scopes, MethodCallHandler.loginResult['scopes']);
       expect(
           result.refreshToken, MethodCallHandler.loginResult['refreshToken']);
-      expect(result.userProfile.name,
+      expect(result.user.name,
           MethodCallHandler.loginResult['userProfile']['name']);
     });
   
