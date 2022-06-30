@@ -47,7 +47,7 @@ TBD
 
 ## Installation
 
-During the Beta stage the SDK will not be published to Pub.dev, but you can install it as a [path package](https://dart.dev/tools/pub/dependencies#path-packages). Download the [latest release](/releases/latest) as a zip file, extract, and then add the following dependency in your `pubspec.yaml` file:
+During the Beta stage the SDK will not be published to Pub.dev, but you can install it as a [path package](https://dart.dev/tools/pub/dependencies#path-packages). Download the [latest release](https://github.com/auth0/auth0-flutter/releases/latest) as a zip file, extract, and then add the following dependency in your `pubspec.yaml` file:
 
 ```yaml
 auth0_flutter:
