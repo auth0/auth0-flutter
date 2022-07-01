@@ -1,6 +1,6 @@
 import XCTest
-import Auth0
 
+@testable import Auth0
 @testable import auth0_flutter
 
 class CredentialsManagerHandlerTests: XCTestCase {
@@ -25,7 +25,7 @@ extension CredentialsManagerHandlerTests {
 
 extension CredentialsManagerHandlerTests {
     func testProducesErrorWhenArgumentsAreMissing() {
-        let expectation = expectation(description: "arguments are missing")
+        let expectation = expectation(description: "Arguments are missing")
         sut.handle(FlutterMethodCall(methodName: "", arguments: nil)) { result in
             assert(result: result, isError: .argumentsMissing)
             expectation.fulfill()
@@ -46,6 +46,127 @@ extension CredentialsManagerHandlerTests {
         let expectation = expectation(description: "userAgent is missing")
         sut.handle(FlutterMethodCall(methodName: "", arguments: arguments(without: UserAgent.key))) { result in
             assert(result: result, isError: .userAgentMissing)
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
+    }
+
+    func testProducesErrorWhenLocalAuthenticationTitleIsMissing() {
+        let expectation = expectation(description: "Local authentication title is missing")
+        let method = CredentialsManagerHandler.Method.save.rawValue
+        let key = LocalAuthentication.key
+        let value: [String: String] = [:]
+        let methodCall = FlutterMethodCall(methodName: method, arguments: arguments(withKey: key, value: value))
+        sut.handle(methodCall) { result in
+            assert(result: result, isError: .requiredArgumentsMissing([LocalAuthenticationProperty.title.rawValue]))
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
+    }
+
+    func testSetsLocalAuthenticationTitle() {
+        let expectation = expectation(description: "Local authentication title is set")
+        var credentialsManager: CredentialsManager?
+        let title = "foo"
+        let method = CredentialsManagerHandler.Method.save.rawValue
+        let key = LocalAuthentication.key
+        let value: [String: String] = [LocalAuthenticationProperty.title.rawValue: title]
+        let methodCall = FlutterMethodCall(methodName: method, arguments: arguments(withKey: key, value: value))
+        sut.methodHandlerProvider = { _, instance in
+            credentialsManager = instance
+            return SpyMethodHandler()
+        }
+        sut.handle(methodCall) { result in
+            XCTAssertEqual(credentialsManager?.bioAuth?.title, title)
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
+    }
+}
+
+// MARK: - Arguments
+
+extension CredentialsManagerHandlerTests {
+
+    // MARK: cancelTitle (local authentication)
+
+    func testAddsCancelTitle() {
+        let expectation = expectation(description: "Local authentication cancelTitle is added")
+        var credentialsManager: CredentialsManager?
+        let cancelTitle = "foo"
+        let method = CredentialsManagerHandler.Method.save.rawValue
+        let key = LocalAuthentication.key
+        let value: [String: String] = [
+            LocalAuthenticationProperty.title.rawValue: "",
+            LocalAuthenticationProperty.cancelTitle.rawValue: cancelTitle
+        ]
+        let methodCall = FlutterMethodCall(methodName: method, arguments: arguments(withKey: key, value: value))
+        sut.methodHandlerProvider = { _, instance in
+            credentialsManager = instance
+            return SpyMethodHandler()
+        }
+        sut.handle(methodCall) { result in
+            XCTAssertEqual(credentialsManager?.bioAuth?.cancelTitle, cancelTitle)
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
+    }
+
+    func testDoesNotAddCancelTitleWhenNil() {
+        let expectation = expectation(description: "Local authentication cancelTitle is not added")
+        var credentialsManager: CredentialsManager?
+        let method = CredentialsManagerHandler.Method.save.rawValue
+        let key = LocalAuthentication.key
+        let value: [String: String] = [LocalAuthenticationProperty.title.rawValue: ""]
+        let methodCall = FlutterMethodCall(methodName: method, arguments: arguments(withKey: key, value: value))
+        sut.methodHandlerProvider = { _, instance in
+            credentialsManager = instance
+            return SpyMethodHandler()
+        }
+        sut.handle(methodCall) { result in
+            XCTAssertNil(credentialsManager?.bioAuth?.cancelTitle)
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
+    }
+
+    // MARK: fallbackTitle (local authentication)
+
+    func testAddsFallbackTitle() {
+        let expectation = expectation(description: "Local authentication fallbackTitle is added")
+        var credentialsManager: CredentialsManager?
+        let fallbackTitle = "foo"
+        let method = CredentialsManagerHandler.Method.save.rawValue
+        let key = LocalAuthentication.key
+        let value: [String: String] = [
+            LocalAuthenticationProperty.title.rawValue: "",
+            LocalAuthenticationProperty.fallbackTitle.rawValue: fallbackTitle
+        ]
+        let methodCall = FlutterMethodCall(methodName: method, arguments: arguments(withKey: key, value: value))
+        sut.methodHandlerProvider = { _, instance in
+            credentialsManager = instance
+            return SpyMethodHandler()
+        }
+        sut.handle(methodCall) { result in
+            XCTAssertEqual(credentialsManager?.bioAuth?.fallbackTitle, fallbackTitle)
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
+    }
+
+    func testDoesNotAddFallbackTitleWhenNil() {
+        let expectation = expectation(description: "Local authentication fallbackTitle is not added")
+        var credentialsManager: CredentialsManager?
+        let method = CredentialsManagerHandler.Method.save.rawValue
+        let key = LocalAuthentication.key
+        let value: [String: String] = [LocalAuthenticationProperty.title.rawValue: ""]
+        let methodCall = FlutterMethodCall(methodName: method, arguments: arguments(withKey: key, value: value))
+        sut.methodHandlerProvider = { _, instance in
+            credentialsManager = instance
+            return SpyMethodHandler()
+        }
+        sut.handle(methodCall) { result in
+            XCTAssertNil(credentialsManager?.bioAuth?.fallbackTitle)
             expectation.fulfill()
         }
         wait(for: [expectation])
@@ -102,7 +223,11 @@ extension CredentialsManagerHandlerTests {
         }
         wait(for: [expectation])
     }
+}
 
+// MARK: - Method Handlers
+
+extension CredentialsManagerHandlerTests {
     func testReturnsMethodHandlers() {
         var expectations: [XCTestExpectation] = []
         let methodHandlers: [CredentialsManagerHandler.Method: MethodHandler.Type] = [
@@ -125,11 +250,7 @@ extension CredentialsManagerHandlerTests {
         }
         wait(for: expectations)
     }
-}
 
-// MARK: - Method Handlers
-
-extension CredentialsManagerHandlerTests {
     func testCallsMethodHandlers() {
         var expectations: [XCTestExpectation] = []
         CredentialsManagerHandler.Method.allCases.forEach { method in

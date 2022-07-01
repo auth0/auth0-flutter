@@ -1,6 +1,6 @@
 /// Configuration settings for ID token validation.
 class IdTokenValidationConfig {
-  /// The value in seconds used to account for clock skew in JWT expirations. Typically, this value is no more than a minute or two at maximum. This defaults to 60 seconds on native platforms.
+  /// The value in seconds used to account for clock skew in JWT expirations. Typically, this value is no more than a minute or two at maximum. Defaults to 60 seconds.
   final int? leeway;
 
   /// The issuer to be used for validation of JWTs. Defaults to the domain used to when calling [Auth0.new].

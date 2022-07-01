@@ -18,7 +18,8 @@ abstract class BaseRequest<TOptions extends RequestOptions?> {
 
 class CredentialsManagerRequest<TOptions extends RequestOptions?>
     extends BaseRequest<TOptions?> {
-  late LocalAuthenticationOptions? localAuthentication;
+  final LocalAuthenticationOptions? localAuthentication;
+
   CredentialsManagerRequest({
     required final Account account,
     final TOptions? options,
@@ -33,9 +34,11 @@ class CredentialsManagerRequest<TOptions extends RequestOptions?>
       ..addAll({
         'localAuthentication': {
           'title': localAuthentication?.title,
-          'description': localAuthentication?.description
-        }
-      });
+            'description': localAuthentication?.description,
+            'cancelTitle': localAuthentication?.cancelTitle,
+            'fallbackTitle': localAuthentication?.fallbackTitle
+          }
+        });
     } else {
       return super.toMap();
     }

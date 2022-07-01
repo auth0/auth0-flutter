@@ -3,7 +3,6 @@ import Auth0
 
 // MARK: - Providers
 
-// typealias CredentialsManagerProvider = (_ authentication: Authentication) -> CredentialsManager
 typealias CredentialsManagerMethodHandlerProvider = (_ method: CredentialsManagerHandler.Method,
                                                      _ credentialsManager: CredentialsManager) -> MethodHandler
 
@@ -32,12 +31,6 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         return client
     }
 
-    /*
-    var credentialsManagerProvider: CredentialsManagerProvider = { apiClient in
-        return CredentialsManager(authentication: apiClient)
-    }
-     */
-
     var methodHandlerProvider: CredentialsManagerMethodHandlerProvider = { method, credentialsManager in
         switch method {
         case .save: return CredentialsManagerSaveMethodHandler(credentialsManager: credentialsManager)
@@ -64,9 +57,19 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         }
 
         let apiClient = apiClientProvider(account, userAgent)
-        let credentialsManager = CredentialsManager(authentication: apiClient)
-        let methodHandler = methodHandlerProvider(method, credentialsManager)
+        var credentialsManager = CredentialsManager(authentication: apiClient)
 
+        if let localAuthenticationDictionary = arguments[LocalAuthentication.key] as? [String: String] {
+            guard let localAuthentication = LocalAuthentication(from: localAuthenticationDictionary) else {
+                return result(FlutterError(from: .requiredArgumentsMissing(LocalAuthentication.requiredProperties)))
+            }
+
+            credentialsManager.enableBiometrics(withTitle: localAuthentication.title,
+                                                cancelTitle: localAuthentication.cancelTitle,
+                                                fallbackTitle: localAuthentication.fallbackTitle)
+        }
+
+        let methodHandler = methodHandlerProvider(method, credentialsManager)
         methodHandler.handle(with: arguments, callback: result)
     }
 }
