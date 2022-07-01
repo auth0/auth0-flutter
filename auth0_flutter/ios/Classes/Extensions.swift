@@ -20,8 +20,14 @@ extension Dictionary where Key == String {
 }
 
 extension Date {
+    static var iso8601Formatter: ISO8601DateFormatter {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter
+    }
+
     var asISO8601String: String {
-        return ISO8601DateFormatter().string(from: self)
+        return Date.iso8601Formatter.string(from: self)
     }
 }
 
@@ -68,7 +74,7 @@ extension Credentials {
         guard let accessToken = dictionary[CredentialsProperty.accessToken] as? String,
               let idToken = dictionary[CredentialsProperty.idToken] as? String,
               let expiresAt = dictionary[CredentialsProperty.expiresAt] as? String,
-              let expiresIn = ISO8601DateFormatter().date(from: expiresAt),
+              let expiresIn = Date.iso8601Formatter.date(from: expiresAt),
               let scopes = dictionary[CredentialsProperty.scopes] as? [String],
               let tokenType = dictionary[CredentialsProperty.tokenType] as? String else {
             return nil
