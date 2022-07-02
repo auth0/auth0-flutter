@@ -21,7 +21,7 @@ struct LocalAuthentication {
     let fallbackTitle: String?
 
     static let key = "localAuthentication"
-    static let requiredProperties = LocalAuthenticationProperty.requiredCases.rawValues
+    static let requiredProperties = LocalAuthenticationProperty.allCases.filter({ $0.isRequired }).map(\.rawValue)
 
     init?(from dictionary: [String: String]) {
         guard let title = dictionary[LocalAuthenticationProperty.title] else { return nil }

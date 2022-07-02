@@ -1,24 +1,6 @@
 import Flutter
 import Auth0
 
-extension Array where Element == String {
-    var asCommaSeparatedString: String {
-        return self.joined(separator: ", ")
-    }
-}
-
-extension Array where Element: RawRepresentable, Element.RawValue == String {
-    var rawValues: [String] {
-        return self.map(\.rawValue)
-    }
-}
-
-extension CaseIterable where Self: RawRepresentable & Requireable, Self.RawValue == String {
-    static var requiredCases: [Self] {
-        return self.allCases.filter { $0.isRequired }
-    }
-}
-
 extension FlutterError {
     convenience init(from credentialsManagerError: CredentialsManagerError) {
         var code: String

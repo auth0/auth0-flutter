@@ -25,7 +25,7 @@ enum HandlerError: Error {
         case let .requiredArgumentMissing(argument):
             return "The required argument '\(argument)' is missing."
         case let .requiredArgumentsMissing(arguments):
-            return "At least one of the following required arguments [\(arguments.asCommaSeparatedString)] is missing."
+            return "At least one of the following required arguments [\(arguments.joined(separator: ", "))] is missing."
         case .idTokenDecodingFailed: return "Unable to decode the ID Token."
         }
     }
