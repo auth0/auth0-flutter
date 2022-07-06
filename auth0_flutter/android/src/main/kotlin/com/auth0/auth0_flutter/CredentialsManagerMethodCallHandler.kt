@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import androidx.annotation.NonNull
 import com.auth0.android.authentication.AuthenticationAPIClient
-import com.auth0.android.authentication.storage.CredentialsManager
 import com.auth0.android.authentication.storage.SecureCredentialsManager
 import com.auth0.android.authentication.storage.SharedPreferencesStorage
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
