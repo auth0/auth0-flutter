@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import androidx.annotation.NonNull
 import com.auth0.android.authentication.AuthenticationAPIClient
+import com.auth0.android.authentication.storage.CredentialsManager
 import com.auth0.android.authentication.storage.SecureCredentialsManager
 import com.auth0.android.authentication.storage.SharedPreferencesStorage
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
@@ -27,7 +28,9 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
 
             val api = AuthenticationAPIClient(request.account);
             val storage = SharedPreferencesStorage(activity);
-            val credentialsManager = credentialsManager ?: SecureCredentialsManager(activity, api, storage);
+            credentialsManager = credentialsManager ?: SecureCredentialsManager(activity, api, storage);
+
+            val credentialsManager = credentialsManager as SecureCredentialsManager;
 
             var localAuthentication = request.data.get("localAuthentication") as Map<String, String>?;
 
