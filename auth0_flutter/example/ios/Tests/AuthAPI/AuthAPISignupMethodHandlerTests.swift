@@ -6,10 +6,11 @@ import Auth0
 fileprivate typealias Argument = AuthAPISignupMethodHandler.Argument
 
 class AuthAPISignupMethodHandlerTests: XCTestCase {
-    let spy = SpyAuthentication()
+    var spy: SpyAuthentication!
     var sut: AuthAPISignupMethodHandler!
 
     override func setUpWithError() throws {
+        spy = SpyAuthentication()
         sut = AuthAPISignupMethodHandler(client: spy)
     }
 }

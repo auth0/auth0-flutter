@@ -6,10 +6,11 @@ import Auth0
 fileprivate typealias Argument = AuthAPIRenewMethodHandler.Argument
 
 class AuthAPIRenewMethodHandlerTests: XCTestCase {
-    let spy = SpyAuthentication()
+    var spy: SpyAuthentication!
     var sut: AuthAPIRenewMethodHandler!
 
     override func setUpWithError() throws {
+        spy = SpyAuthentication()
         sut = AuthAPIRenewMethodHandler(client: spy)
     }
 }
@@ -82,6 +83,7 @@ extension AuthAPIRenewMethodHandlerTests {
 
     func testProducesCredentials() {
         let credentials = Credentials(accessToken: "accessToken",
+                                      tokenType: "tokenType",
                                       idToken: testIdToken,
                                       refreshToken: "refreshToken",
                                       expiresIn: Date(),

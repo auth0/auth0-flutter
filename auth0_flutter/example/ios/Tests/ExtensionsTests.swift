@@ -44,22 +44,87 @@ extension ExtensionsTests {
     }
 }
 
+// MARK: - Credentials+initFromDictionary
+
+extension ExtensionsTests {
+    func testMapsRequiredPropertiesFromDictionary() {
+        let values: [String: Any] = [
+            CredentialsProperty.accessToken.rawValue: "accessToken",
+            CredentialsProperty.idToken.rawValue: testIdToken,
+            CredentialsProperty.expiresAt.rawValue: Date().asISO8601String,
+            CredentialsProperty.scopes.rawValue: [],
+            CredentialsProperty.tokenType.rawValue: "tokenType"
+        ]
+        let credentials = Credentials(from: values)
+        XCTAssertNotNil(credentials)
+        XCTAssertEqual(values[CredentialsProperty.accessToken] as? String, credentials?.accessToken)
+        XCTAssertEqual(values[CredentialsProperty.idToken] as? String, credentials?.idToken)
+        XCTAssertEqual(values[CredentialsProperty.expiresAt] as? String, credentials?.expiresIn.asISO8601String)
+        XCTAssertEqual(values[CredentialsProperty.tokenType] as? String, credentials?.tokenType)
+        XCTAssertNil(credentials?.scope)
+    }
+
+    func testMapsRefreshTokenFromDictionary() {
+        let values: [String: Any] = [
+            CredentialsProperty.accessToken.rawValue: "",
+            CredentialsProperty.idToken.rawValue: testIdToken,
+            CredentialsProperty.refreshToken.rawValue: "refreshToken",
+            CredentialsProperty.expiresAt.rawValue: Date().asISO8601String,
+            CredentialsProperty.scopes.rawValue: [],
+            CredentialsProperty.tokenType.rawValue: ""
+        ]
+        let credentials = Credentials(from: values)
+        XCTAssertNotNil(credentials?.refreshToken)
+        XCTAssertEqual(values[CredentialsProperty.refreshToken] as? String, credentials?.refreshToken)
+    }
+
+    func testMapsScopeFromDictionary() {
+        let values: [String: Any] = [
+            CredentialsProperty.accessToken.rawValue: "",
+            CredentialsProperty.idToken.rawValue: testIdToken,
+            CredentialsProperty.expiresAt.rawValue: Date().asISO8601String,
+            CredentialsProperty.scopes.rawValue: ["foo", "bar"],
+            CredentialsProperty.tokenType.rawValue: ""
+        ]
+        let credentials = Credentials(from: values)
+        XCTAssertNotNil(credentials?.scope)
+        XCTAssertEqual(values[CredentialsProperty.scopes] as? [String],
+                       credentials?.scope?.split(separator: " ").map(String.init))
+    }
+
+    func testFailsToMapCredentialsFromDictionaryWithInvalidExpiresAt() {
+        let values: [String: Any] = [
+            CredentialsProperty.accessToken.rawValue: "",
+            CredentialsProperty.idToken.rawValue: testIdToken,
+            CredentialsProperty.scopes.rawValue: [],
+            CredentialsProperty.tokenType.rawValue: ""
+        ]
+        let credentials = Credentials(from: values)
+        XCTAssertNil(credentials?.scope)
+    }
+}
+
 // MARK: - Credentials+asDictionary
 
 extension ExtensionsTests {
-    func testMapsRequiredCredentialsProperties() {
+    func testMapsRequiredPropertiesToDictionary() {
         let idToken = "eyJhbGciOiJIUzI1NiJ9.e30.ZRrHA1JJJW8opsbCGfG_HACGpVUMN_a9IV7pAx_Zmeo"
-        let credentials = Credentials(accessToken: "accessToken", idToken: idToken, expiresIn: Date())
+        let credentials = Credentials(accessToken: "accessToken",
+                                      tokenType: "tokenType",
+                                      idToken: idToken,
+                                      expiresIn: Date())
         let values = try! credentials.asDictionary()
         XCTAssertEqual(credentials.accessToken, values[CredentialsProperty.accessToken] as? String)
         XCTAssertEqual(credentials.idToken, values[CredentialsProperty.idToken] as? String)
         XCTAssertEqual(credentials.expiresIn.asISO8601String, values[CredentialsProperty.expiresAt] as? String)
+        XCTAssertEqual(credentials.tokenType, values[CredentialsProperty.tokenType] as? String)
         XCTAssertTrue([] == values[CredentialsProperty.scopes] as? [String])
         XCTAssertTrue([:] == values[CredentialsProperty.userProfile] as? [String: Any])
     }
 
-    func testMapsCredentialsRefreshToken() {
+    func testMapsRefreshTokenIntoDictionary() {
         let credentials = Credentials(accessToken: "",
+                                      tokenType: "",
                                       idToken: testIdToken,
                                       refreshToken: "refreshToken",
                                       expiresIn: Date())
@@ -68,16 +133,26 @@ extension ExtensionsTests {
         XCTAssertEqual(credentials.refreshToken, values[CredentialsProperty.refreshToken] as? String)
     }
 
-    func testMapsCredentialsScope() {
-        let credentials = Credentials(accessToken: "", idToken: testIdToken, expiresIn: Date(), scope: "foo bar")
+    func testMapsCredentialsScopeIntoDictionary() {
+        let credentials = Credentials(accessToken: "",
+                                      tokenType: "",
+                                      idToken: testIdToken,
+                                      expiresIn: Date(),
+                                      scope: "foo bar")
         let values = try! credentials.asDictionary()
         XCTAssertNotNil(credentials.scope)
         XCTAssertEqual(credentials.scope?.split(separator: " ").map(String.init),
                        values[CredentialsProperty.scopes] as? [String])
     }
 
-    func testMapsUserProfile() {
-        let credentials = Credentials(accessToken: "", idToken: testIdToken, expiresIn: Date())
+    func testFailsToMapCredentialsWithMalformedIdTokenToDictionary() {
+        let idToken = "foo"
+        let credentials = Credentials(accessToken: "", tokenType: "", idToken: idToken, expiresIn: Date())
+        XCTAssertThrowsError(try credentials.asDictionary(), HandlerError.idTokenDecodingFailed.message)
+    }
+
+    func testMapsUserProfileToDictionary() {
+        let credentials = Credentials(accessToken: "", tokenType: "", idToken: testIdToken, expiresIn: Date())
         let values = try! credentials.asDictionary()
         let jwt = try! decode(jwt: credentials.idToken)
         let userProfile = UserInfo(json: jwt.body)?.asDictionary()

@@ -3,14 +3,20 @@ import Auth0
 
 // MARK: - Providers
 
-typealias CredentialsManagerMethodHandlerProvider = (_ method: CredentialsManagerHandler.Method) -> MethodHandler
+// typealias CredentialsManagerProvider = (_ authentication: Authentication) -> CredentialsManager
+typealias CredentialsManagerMethodHandlerProvider = (_ method: CredentialsManagerHandler.Method,
+                                                     _ credentialsManager: CredentialsManager) -> MethodHandler
 
 // MARK: - Credentials Manager Handler
 
 public class CredentialsManagerHandler: NSObject, FlutterPlugin {
     enum Method: String, CaseIterable {
+        case save = "credentialsManager#saveCredentials"
+        case hasValid = "credentialsManager#hasValidCredentials"
+        case get = "credentialsManager#getCredentials"
         case clear = "credentialsManager#clearCredentials"
     }
+
     private static let channelName = "auth0.com/auth0_flutter/credentials_manager"
 
     public static func register(with registrar: FlutterPluginRegistrar) {
@@ -20,9 +26,24 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         registrar.addMethodCallDelegate(handler, channel: channel)
     }
 
-    var methodHandlerProvider: CredentialsManagerMethodHandlerProvider = { method in
+    var apiClientProvider: AuthAPIClientProvider = { account, userAgent in
+        var client = Auth0.authentication(clientId: account.clientId, domain: account.domain)
+        client.using(inLibrary: userAgent.name, version: userAgent.version)
+        return client
+    }
+
+    /*
+    var credentialsManagerProvider: CredentialsManagerProvider = { apiClient in
+        return CredentialsManager(authentication: apiClient)
+    }
+     */
+
+    var methodHandlerProvider: CredentialsManagerMethodHandlerProvider = { method, credentialsManager in
         switch method {
-        case .clear: return CredentialsManagerClearMethodHandler()
+        case .save: return CredentialsManagerSaveMethodHandler(credentialsManager: credentialsManager)
+        case .hasValid: return CredentialsManagerHasValidMethodHandler(credentialsManager: credentialsManager)
+        case .get: return CredentialsManagerGetMethodHandler(credentialsManager: credentialsManager)
+        case .clear: return CredentialsManagerClearMethodHandler(credentialsManager: credentialsManager)
         }
     }
 
@@ -42,7 +63,9 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
             return result(FlutterMethodNotImplemented)
         }
 
-        let methodHandler = methodHandlerProvider(method)
+        let apiClient = apiClientProvider(account, userAgent)
+        let credentialsManager = CredentialsManager(authentication: apiClient)
+        let methodHandler = methodHandlerProvider(method, credentialsManager)
 
         methodHandler.handle(with: arguments, callback: result)
     }
