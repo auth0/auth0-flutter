@@ -1,8 +1,4 @@
-protocol Requireable {
-    var isRequired: Bool { get }
-}
-
-enum LocalAuthenticationProperty: String, CaseIterable, Requireable {
+enum LocalAuthenticationProperty: String, CaseIterable {
     case title
     case cancelTitle
     case fallbackTitle
