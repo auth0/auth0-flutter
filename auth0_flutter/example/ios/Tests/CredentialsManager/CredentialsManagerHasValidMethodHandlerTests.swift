@@ -30,7 +30,7 @@ extension CredentialsManagerHasValidMethodHandlerTests {
     }
 }
 
-// MARK: - Logout Result
+// MARK: - Has Valid Result
 
 extension CredentialsManagerHasValidMethodHandlerTests {
     func testCallsSDKGetMethod() {
