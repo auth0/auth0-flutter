@@ -65,7 +65,6 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
     final TResult? result;
     try {
       result = await _channel.invokeMethod<TResult>(method, request.toMap());
-
     } on PlatformException catch (e) {
       throw CredentialsManagerException.fromPlatformException(e);
     }
