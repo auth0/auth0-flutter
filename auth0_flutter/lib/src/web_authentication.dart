@@ -22,7 +22,7 @@ class WebAuthentication {
   final UserAgent _userAgent;
   final CredentialsManager? _credentialsManager;
 
-  CredentialsManager? credentialsManager() => _credentialsManager;
+  CredentialsManager? get credentialsManager => _credentialsManager;
 
   WebAuthentication(this._account, this._userAgent, this._credentialsManager);
 
