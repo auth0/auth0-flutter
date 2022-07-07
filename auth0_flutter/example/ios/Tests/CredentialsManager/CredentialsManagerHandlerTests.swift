@@ -50,15 +50,26 @@ extension CredentialsManagerHandlerTests {
         }
         wait(for: [expectation])
     }
+}
 
-    func testProducesErrorWhenLocalAuthenticationTitleIsMissing() {
-        let expectation = expectation(description: "Local authentication title is missing")
+// MARK: - Arguments
+
+extension CredentialsManagerHandlerTests {
+
+    // MARK: title (local authentication)
+
+    func testUsesDefaultLocalAuthenticationTitle() {
+        let expectation = expectation(description: "Default local authentication title is used")
+        var credentialsManager: CredentialsManager?
         let method = CredentialsManagerHandler.Method.save.rawValue
         let key = LocalAuthentication.key
         let value: [String: String] = [:]
-        let methodCall = FlutterMethodCall(methodName: method, arguments: arguments(withKey: key, value: value))
-        sut.handle(methodCall) { result in
-            assert(result: result, isError: .requiredArgumentsMissing([LocalAuthenticationProperty.title.rawValue]))
+        sut.methodHandlerProvider = { _, instance in
+            credentialsManager = instance
+            return SpyMethodHandler()
+        }
+        sut.handle(FlutterMethodCall(methodName: method, arguments: arguments(withKey: key, value: value))) { _ in
+            XCTAssertEqual(credentialsManager?.bioAuth?.title, "Please authenticate to continue")
             expectation.fulfill()
         }
         wait(for: [expectation])
@@ -76,17 +87,12 @@ extension CredentialsManagerHandlerTests {
             credentialsManager = instance
             return SpyMethodHandler()
         }
-        sut.handle(methodCall) { result in
+        sut.handle(methodCall) { _ in
             XCTAssertEqual(credentialsManager?.bioAuth?.title, title)
             expectation.fulfill()
         }
         wait(for: [expectation])
     }
-}
-
-// MARK: - Arguments
-
-extension CredentialsManagerHandlerTests {
 
     // MARK: cancelTitle (local authentication)
 
@@ -105,7 +111,7 @@ extension CredentialsManagerHandlerTests {
             credentialsManager = instance
             return SpyMethodHandler()
         }
-        sut.handle(methodCall) { result in
+        sut.handle(methodCall) { _ in
             XCTAssertEqual(credentialsManager?.bioAuth?.cancelTitle, cancelTitle)
             expectation.fulfill()
         }
@@ -123,7 +129,7 @@ extension CredentialsManagerHandlerTests {
             credentialsManager = instance
             return SpyMethodHandler()
         }
-        sut.handle(methodCall) { result in
+        sut.handle(methodCall) { _ in
             XCTAssertNil(credentialsManager?.bioAuth?.cancelTitle)
             expectation.fulfill()
         }
@@ -147,7 +153,7 @@ extension CredentialsManagerHandlerTests {
             credentialsManager = instance
             return SpyMethodHandler()
         }
-        sut.handle(methodCall) { result in
+        sut.handle(methodCall) { _ in
             XCTAssertEqual(credentialsManager?.bioAuth?.fallbackTitle, fallbackTitle)
             expectation.fulfill()
         }
@@ -165,7 +171,7 @@ extension CredentialsManagerHandlerTests {
             credentialsManager = instance
             return SpyMethodHandler()
         }
-        sut.handle(methodCall) { result in
+        sut.handle(methodCall) { _ in
             XCTAssertNil(credentialsManager?.bioAuth?.fallbackTitle)
             expectation.fulfill()
         }

@@ -60,10 +60,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         var credentialsManager = CredentialsManager(authentication: apiClient)
 
         if let localAuthenticationDictionary = arguments[LocalAuthentication.key] as? [String: String] {
-            guard let localAuthentication = LocalAuthentication(from: localAuthenticationDictionary) else {
-                return result(FlutterError(from: .requiredArgumentsMissing(LocalAuthentication.requiredProperties)))
-            }
-
+            let localAuthentication = LocalAuthentication(from: localAuthenticationDictionary)
             credentialsManager.enableBiometrics(withTitle: localAuthentication.title,
                                                 cancelTitle: localAuthentication.cancelTitle,
                                                 fallbackTitle: localAuthentication.fallbackTitle)

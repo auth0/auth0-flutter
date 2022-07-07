@@ -2,13 +2,6 @@ enum LocalAuthenticationProperty: String, CaseIterable {
     case title
     case cancelTitle
     case fallbackTitle
-
-    var isRequired: Bool {
-        switch self {
-        case .title: return true
-        default: return false
-        }
-    }
 }
 
 struct LocalAuthentication {
@@ -17,11 +10,9 @@ struct LocalAuthentication {
     let fallbackTitle: String?
 
     static let key = "localAuthentication"
-    static let requiredProperties = LocalAuthenticationProperty.allCases.filter({ $0.isRequired }).map(\.rawValue)
 
-    init?(from dictionary: [String: String]) {
-        guard let title = dictionary[LocalAuthenticationProperty.title] else { return nil }
-        self.title = title
+    init(from dictionary: [String: String]) {
+        self.title = dictionary[LocalAuthenticationProperty.title] ?? "Please authenticate to continue"
         self.cancelTitle = dictionary[LocalAuthenticationProperty.cancelTitle]
         self.fallbackTitle = dictionary[LocalAuthenticationProperty.fallbackTitle]
     }

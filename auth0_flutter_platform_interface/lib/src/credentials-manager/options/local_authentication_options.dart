@@ -1,6 +1,6 @@
 /// Configuration settings for local authentication prompts.
 class LocalAuthenticationOptions {
-  /// Title to display on the local authentication prompt. **This is required on iOS**.
+  /// Title to display on the local authentication prompt. Defaults to **Please authenticate to continue** on iOS, `null` on Android.
   final String? title;
 
   /// (Android only): Description to display on the local authentication prompt.
