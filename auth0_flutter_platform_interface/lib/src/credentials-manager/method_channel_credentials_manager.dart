@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
 
-import '../auth/api_exception.dart';
 import '../credentials.dart';
 import '../request/request.dart';
 import '../request/request_options.dart';
