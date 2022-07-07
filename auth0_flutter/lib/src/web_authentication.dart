@@ -86,25 +86,6 @@ class WebAuthentication {
     await _credentialsManager?.clear();
   }
 
-  /// Retrieves the Credentials for the current user. Calls the [CredentialsManager] when available, returns `null` if not.
-  ///
-  /// Change the minimum time in seconds that the access token should last before expiration by setting the [minTtl].
-  /// Use the [scopes] parameter to set the scope to request for the access token. If `null` is passed, the previous scope will be kept.
-  /// Use the [parameters] parameter to send additional parameters in the request to refresh expired credentials.
-  Future<Credentials?> credentials({
-    final int minTtl = 0,
-    final Set<String> scopes = const {},
-    final Map<String, String> parameters = const {},
-  }) async {
-    final credentials = await _credentialsManager?.get(
-      minTtl: minTtl,
-      scopes: scopes,
-      parameters: parameters,
-    );
-
-    return credentials;
-  }
-
   WebAuthRequest<TOptions>
       _createWebAuthRequest<TOptions extends RequestOptions>(
               final TOptions options) =>
