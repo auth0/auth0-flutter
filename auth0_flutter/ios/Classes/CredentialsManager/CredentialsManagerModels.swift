@@ -11,9 +11,9 @@ struct LocalAuthentication {
 
     static let key = "localAuthentication"
 
-    init(from dictionary: [String: String]) {
-        self.title = dictionary[LocalAuthenticationProperty.title] ?? "Please authenticate to continue"
-        self.cancelTitle = dictionary[LocalAuthenticationProperty.cancelTitle]
-        self.fallbackTitle = dictionary[LocalAuthenticationProperty.fallbackTitle]
+    init(from dictionary: [String: String?]) {
+        self.title = dictionary[LocalAuthenticationProperty.title] as? String ?? "Please authenticate to continue"
+        self.cancelTitle = dictionary[LocalAuthenticationProperty.cancelTitle] as? String
+        self.fallbackTitle = dictionary[LocalAuthenticationProperty.fallbackTitle] as? String
     }
 }

@@ -63,7 +63,7 @@ extension CredentialsManagerHandlerTests {
         var credentialsManager: CredentialsManager?
         let method = CredentialsManagerHandler.Method.save.rawValue
         let key = LocalAuthentication.key
-        let value: [String: String] = [:]
+        let value: [String: String?] = [:]
         sut.methodHandlerProvider = { _, instance in
             credentialsManager = instance
             return SpyMethodHandler()
@@ -81,7 +81,7 @@ extension CredentialsManagerHandlerTests {
         let title = "foo"
         let method = CredentialsManagerHandler.Method.save.rawValue
         let key = LocalAuthentication.key
-        let value: [String: String] = [LocalAuthenticationProperty.title.rawValue: title]
+        let value: [String: String?] = [LocalAuthenticationProperty.title.rawValue: title]
         let methodCall = FlutterMethodCall(methodName: method, arguments: arguments(withKey: key, value: value))
         sut.methodHandlerProvider = { _, instance in
             credentialsManager = instance
@@ -102,7 +102,7 @@ extension CredentialsManagerHandlerTests {
         let cancelTitle = "foo"
         let method = CredentialsManagerHandler.Method.save.rawValue
         let key = LocalAuthentication.key
-        let value: [String: String] = [
+        let value: [String: String?] = [
             LocalAuthenticationProperty.title.rawValue: "",
             LocalAuthenticationProperty.cancelTitle.rawValue: cancelTitle
         ]
@@ -123,7 +123,7 @@ extension CredentialsManagerHandlerTests {
         var credentialsManager: CredentialsManager?
         let method = CredentialsManagerHandler.Method.save.rawValue
         let key = LocalAuthentication.key
-        let value: [String: String] = [LocalAuthenticationProperty.title.rawValue: ""]
+        let value: [String: String?] = [LocalAuthenticationProperty.title.rawValue: ""]
         let methodCall = FlutterMethodCall(methodName: method, arguments: arguments(withKey: key, value: value))
         sut.methodHandlerProvider = { _, instance in
             credentialsManager = instance
@@ -144,7 +144,7 @@ extension CredentialsManagerHandlerTests {
         let fallbackTitle = "foo"
         let method = CredentialsManagerHandler.Method.save.rawValue
         let key = LocalAuthentication.key
-        let value: [String: String] = [
+        let value: [String: String?] = [
             LocalAuthenticationProperty.title.rawValue: "",
             LocalAuthenticationProperty.fallbackTitle.rawValue: fallbackTitle
         ]
@@ -165,7 +165,7 @@ extension CredentialsManagerHandlerTests {
         var credentialsManager: CredentialsManager?
         let method = CredentialsManagerHandler.Method.save.rawValue
         let key = LocalAuthentication.key
-        let value: [String: String] = [LocalAuthenticationProperty.title.rawValue: ""]
+        let value: [String: String?] = [LocalAuthenticationProperty.title.rawValue: ""]
         let methodCall = FlutterMethodCall(methodName: method, arguments: arguments(withKey: key, value: value))
         sut.methodHandlerProvider = { _, instance in
             credentialsManager = instance
