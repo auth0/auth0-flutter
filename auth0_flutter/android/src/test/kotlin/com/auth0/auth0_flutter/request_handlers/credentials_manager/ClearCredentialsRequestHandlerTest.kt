@@ -61,7 +61,6 @@ class ClearCredentialsRequestHandlerTest {
         val captor = argumentCaptor<Boolean>()
         verify(mockResult).success(captor.capture())
 
-        assert(captor.firstValue)
-
+        assertThat(captor.firstValue, equalTo(true))
     }
 }
