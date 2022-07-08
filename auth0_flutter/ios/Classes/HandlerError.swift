@@ -1,4 +1,4 @@
-enum HandlerError: Error {
+enum HandlerError {
     case argumentsMissing
     case accountMissing
     case userAgentMissing

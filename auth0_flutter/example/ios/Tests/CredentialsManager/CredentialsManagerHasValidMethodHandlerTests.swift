@@ -30,10 +30,10 @@ extension CredentialsManagerHasValidMethodHandlerTests {
     }
 }
 
-// MARK: - Logout Result
+// MARK: - Has Valid Result
 
 extension CredentialsManagerHasValidMethodHandlerTests {
-    func testCallsSDKHasValidMethod() {
+    func testCallsSDKGetMethod() {
         sut.handle(with: arguments()) { _ in }
         XCTAssertTrue(spy.calledGetEntry)
     }

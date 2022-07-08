@@ -14,7 +14,7 @@ class CredentialsManagerClearMethodHandlerTests: XCTestCase {
     }
 }
 
-// MARK: - Logout Result
+// MARK: - Clear Result
 
 extension CredentialsManagerClearMethodHandlerTests {
     func testCallsSDKClearMethod() {

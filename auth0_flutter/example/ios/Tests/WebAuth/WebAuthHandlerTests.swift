@@ -102,7 +102,11 @@ extension WebAuthHandlerTests {
         }
         wait(for: [expectation])
     }
+}
 
+// MARK: - Method Handlers
+
+extension WebAuthHandlerTests {
     func testReturnsMethodHandlers() {
         var expectations: [XCTestExpectation] = []
         let methodHandlers: [WebAuthHandler.Method: MethodHandler.Type] = [
@@ -123,11 +127,7 @@ extension WebAuthHandlerTests {
         }
         wait(for: expectations)
     }
-}
 
-// MARK: - Method Handlers
-
-extension WebAuthHandlerTests {
     func testCallsMethodHandlers() {
         var expectations: [XCTestExpectation] = []
         WebAuthHandler.Method.allCases.forEach { method in
