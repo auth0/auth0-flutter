@@ -25,9 +25,7 @@ class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest
         val args = request.data
         val scopes = args.getOrDefault("scopes", arrayListOf<String>()) as ArrayList<*>
 
-        if (scopes.isNotEmpty()) {
-            builder.withScope(scopes.joinToString(separator = " "))
-        }
+        builder.withScope(scopes.joinToString(separator = " "))
 
         if (args.getOrDefault("audience", null) is String) {
             builder.withAudience(args["audience"] as String)
