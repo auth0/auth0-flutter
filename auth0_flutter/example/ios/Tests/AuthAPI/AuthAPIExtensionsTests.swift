@@ -4,7 +4,7 @@ import Auth0
 @testable import auth0_flutter
 
 class AuthAPIExtensionsTests: XCTestCase {
-    func testInitializesFlutterErrorFromAuthAPIError() {
+    func testInitializesFlutterErrorFromAuthAPIError() throws {
         let errors: [AuthAPIErrorFlag: [String: Any]] = [
             .isMultifactorRequired: ["code": "mfa_required"],
             .isMultifactorEnrollRequired: ["code": "unsupported_challenge_type"],
@@ -27,9 +27,10 @@ class AuthAPIExtensionsTests: XCTestCase {
         for (flag, info) in errors {
             let error = AuthenticationError(info: info, statusCode: 400)
             let flutterError = FlutterError(from: error)
-            let flags = (flutterError.details as? [String: Any])?[AuthAPIErrorKey.errorFlags] as? [String: Bool]
+            let details = try XCTUnwrap(flutterError.details as? [String: Any])
+            let flags = try XCTUnwrap(details[AuthAPIErrorKey.errorFlags] as? [String: Bool])
             assert(flutterError: flutterError, is: error)
-            XCTAssertEqual(flags?[flag], true)
+            XCTAssertEqual(flags[flag], true)
         }
     }
 }
