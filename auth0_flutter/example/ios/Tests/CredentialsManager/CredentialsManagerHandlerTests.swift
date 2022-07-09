@@ -130,6 +130,7 @@ extension CredentialsManagerHandlerTests {
             return SpyMethodHandler()
         }
         sut.handle(methodCall) { _ in
+            XCTAssertNotNil(credentialsManager?.bioAuth)
             XCTAssertNil(credentialsManager?.bioAuth?.cancelTitle)
             expectation.fulfill()
         }
@@ -154,6 +155,7 @@ extension CredentialsManagerHandlerTests {
             return SpyMethodHandler()
         }
         sut.handle(methodCall) { _ in
+            XCTAssertNotNil(credentialsManager?.bioAuth)
             XCTAssertEqual(credentialsManager?.bioAuth?.fallbackTitle, fallbackTitle)
             expectation.fulfill()
         }
@@ -172,6 +174,7 @@ extension CredentialsManagerHandlerTests {
             return SpyMethodHandler()
         }
         sut.handle(methodCall) { _ in
+            XCTAssertNotNil(credentialsManager?.bioAuth)
             XCTAssertNil(credentialsManager?.bioAuth?.fallbackTitle)
             expectation.fulfill()
         }
