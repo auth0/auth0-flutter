@@ -79,9 +79,9 @@ extension WebAuthLoginHandlerTests {
         XCTAssertEqual(spy.scopeValue, value.asSpaceSeparatedString)
     }
 
-    func testDoesNotAddScopesWhenEmpty() {
+    func testAddsEmptyScopeWhenEmpty() {
         sut.handle(with: arguments(withKey: Argument.scopes, value:  [])) { _ in }
-        XCTAssertNil(spy.scopeValue)
+        XCTAssertEqual(spy.scopeValue, "")
     }
 
     // MARK: audience

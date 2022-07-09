@@ -148,6 +148,27 @@ void main() {
           verificationResult.accessToken, TestPlatform.loginResult.accessToken);
     });
 
+    test('set scope and parameters to default value when omitted', () async {
+      when(mockedPlatform.login(any))
+          .thenAnswer((final _) async => TestPlatform.loginResult);
+      when(mockedCMPlatform.saveCredentials(any))
+          .thenAnswer((final _) async => true);
+
+      final result = await Auth0('test-domain', 'test-clientId')
+          .webAuthentication()
+          .login();
+
+      final verificationResult = verify(mockedPlatform.login(captureAny))
+          .captured
+          .single as WebAuthRequest<WebAuthLoginOptions>;
+      // ignore: inference_failure_on_collection_literal
+      expect(verificationResult.options.scopes,
+          ['openid', 'profile', 'email', 'offline_access']);
+      // ignore: inference_failure_on_collection_literal
+      expect(verificationResult.options.parameters, {});
+      expect(result, TestPlatform.loginResult);
+    });
+  
     test('does not use EphemeralSession by default', () async {
       when(mockedPlatform.login(any))
           .thenAnswer((final _) async => TestPlatform.loginResult);

@@ -85,9 +85,9 @@ extension AuthAPILoginUsernameOrEmailMethodHandlerTests {
         XCTAssertEqual(spy.arguments["scope"] as? String, value.asSpaceSeparatedString)
     }
 
-    func testAddsDefaultScopesWhenEmpty() {
+    func testAddsEmptyScopeWhenEmpty() {
         sut.handle(with: arguments(withKey: Argument.scopes, value: [])) { _ in }
-        XCTAssertEqual(spy.arguments["scope"] as? String, Auth0.defaultScope)
+        XCTAssertEqual(spy.arguments["scope"] as? String, "")
     }
 
     // MARK: audience

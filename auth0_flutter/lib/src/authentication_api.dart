@@ -38,7 +38,7 @@ class AuthenticationApi {
   /// ## Notes
   ///
   /// * [audience] relates to the API Identifier you want to reference in your access tokens (see [API settings](https://auth0.com/docs/get-started/apis/api-settings))
-  /// * [scopes] defaults to `openid profile email`
+  /// * [scopes] defaults to `openid profile email offline_access`
   /// * [parameters] can be used to sent through custom parameters to the endpoint to be picked up in a Rule or Action.
   ///
   /// ## Usage example
@@ -55,7 +55,12 @@ class AuthenticationApi {
     required final String password,
     required final String connectionOrRealm,
     final String? audience,
-    final Set<String> scopes = const {},
+    final Set<String> scopes = const {
+      'openid',
+      'profile',
+      'email',
+      'offline_access'
+    },
     final Map<String, String> parameters = const {},
   }) =>
       Auth0FlutterAuthPlatform.instance
@@ -134,7 +139,7 @@ class AuthenticationApi {
   ///   usernameOrEmail: 'my@email.com',
   ///   password: 'my_password'
   ///   connectionOrRealm: 'Username-Password-Authentication',
-  ///   scopes: {'openid', 'profile', 'email', 'offline_access'}
+  ///   scopes: {'openid', 'profile', 'email', 'phone', 'offline_access'}
   /// });
   ///
   /// if (result.refreshToken != null) {

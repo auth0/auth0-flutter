@@ -37,7 +37,7 @@ struct AuthAPILoginUsernameOrEmailMethodHandler: MethodHandler {
                    password: password,
                    realmOrConnection: connectionOrRealm,
                    audience: audience,
-                   scope: scopes.isEmpty ? Auth0.defaultScope : scopes.asSpaceSeparatedString)
+                   scope: scopes.asSpaceSeparatedString)
             .parameters(parameters)
             .start {
                 switch $0 {
