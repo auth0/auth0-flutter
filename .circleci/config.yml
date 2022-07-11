@@ -11,7 +11,7 @@ parameters:
 jobs:
   test_flutter_package:
     docker:
-      - image: cimg/base:2022.04
+      - image: cimg/base:current
     steps:
       - checkout
       - flutter/install_sdk_and_pub:
