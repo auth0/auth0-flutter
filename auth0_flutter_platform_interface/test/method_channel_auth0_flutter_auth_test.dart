@@ -215,7 +215,7 @@ void main() {
 
       expectLater(
           actual,
-          throwsA(predicate((e) =>
+          throwsA(predicate((final e) =>
               e is ApiException && e.message == 'Channel returned null.')));
     });
 

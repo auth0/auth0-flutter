@@ -3,10 +3,10 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 /// An interface for calling some of the endpoints in [Auth0's Authentication API](https://auth0.com/docs/api/authentication).
 ///
 /// This class presents building blocks for doing more fine-grained authentication with Auth0 using Username and Password login. Unlike
-/// [WebAuthentication], these do **not** use [Auth0 Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login) (the recommended way of doing authentication),
+/// `WebAuthentication`, these do **not** use [Auth0 Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login) (the recommended way of doing authentication),
 /// and thus users are not redirected to Auth0 for authentication.
 ///
-/// It is not intended for you to instantiate this class yourself, as an instance of it is already exposed as [Auth0.api].
+/// It is not intended for you to instantiate this class yourself, as an instance of it is already exposed as `Auth0.api`.
 ///
 /// Usage example:
 ///
