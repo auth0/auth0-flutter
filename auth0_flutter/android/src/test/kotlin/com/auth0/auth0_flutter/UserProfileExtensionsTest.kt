@@ -1,5 +1,6 @@
 package com.auth0.auth0_flutter
 
+import com.auth0.android.jwt.Claim
 import com.auth0.android.jwt.JWT
 import com.auth0.android.result.UserProfile
 

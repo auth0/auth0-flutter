@@ -1,10 +1,13 @@
 package com.auth0.auth0_flutter
 
+import android.app.Activity
 import com.auth0.auth0_flutter.request_handlers.api.ApiRequestHandler
 import com.auth0.auth0_flutter.request_handlers.api.LoginApiRequestHandler
 import com.auth0.auth0_flutter.request_handlers.api.SignupApiRequestHandler
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel.Result
+import org.hamcrest.CoreMatchers
+import org.hamcrest.MatcherAssert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.`when`
@@ -32,8 +35,6 @@ class Auth0FlutterAuthMethodCallHandlerTest {
     ) {
         val handler = Auth0FlutterAuthMethodCallHandler(requestHandlers)
         val mockResult = mock<Result>()
-
-        handler.activity = mock()
 
         handler.onMethodCall(MethodCall(method, arguments), mockResult)
         onResult(mockResult)

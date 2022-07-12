@@ -63,7 +63,6 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     webAuthCallHandler.activity = binding.activity
-    authCallHandler.activity = binding.activity
     credentialsManagerCallHandler.activity = binding.activity
 
     binding.addActivityResultListener(credentialsManagerCallHandler);

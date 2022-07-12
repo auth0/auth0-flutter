@@ -11,8 +11,6 @@ import io.flutter.plugin.common.MethodChannel.Result
 
 
 class Auth0FlutterAuthMethodCallHandler(private val requestHandlers: List<ApiRequestHandler>) : MethodCallHandler {
-    lateinit var activity: Activity;
-
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         var requestHandler = requestHandlers.find { it.method == call.method };
 

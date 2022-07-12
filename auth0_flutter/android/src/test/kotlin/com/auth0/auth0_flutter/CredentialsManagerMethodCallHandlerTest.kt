@@ -11,6 +11,8 @@ import com.auth0.auth0_flutter.request_handlers.credentials_manager.CredentialsM
 import com.auth0.auth0_flutter.request_handlers.credentials_manager.HasValidCredentialsRequestHandler
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel.Result
+import org.hamcrest.CoreMatchers
+import org.hamcrest.MatcherAssert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.`when`
@@ -151,5 +153,28 @@ class CredentialsManagerMethodCallHandlerTest {
             verify(clearCredentialsHandler).handle(any(), eq(activity), any(), any())
             verify(hasValidCredentialsHandler, times(0)).handle(any(), eq(activity), any(), any())
         }
+    }
+
+    @Test
+    fun `should call checkAuthenticationResult in onActivityResult`() {
+        val handler = CredentialsManagerMethodCallHandler(listOf())
+
+        handler.credentialsManager = mock();
+
+        handler.onActivityResult(1, 2, null);
+
+        verify(handler.credentialsManager)?.checkAuthenticationResult(1, 2);
+    }
+
+    @Test
+    fun `should return true in onActivityResult when no credentialsManager`() {
+        val handler = CredentialsManagerMethodCallHandler(listOf())
+
+        val result = handler.onActivityResult(1, 2, null);
+
+        MatcherAssert.assertThat(
+            result,
+            CoreMatchers.equalTo(true)
+        );
     }
 }

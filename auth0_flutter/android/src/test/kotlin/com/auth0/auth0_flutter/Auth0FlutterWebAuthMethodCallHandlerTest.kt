@@ -1,10 +1,14 @@
 package com.auth0.auth0_flutter
 
+import android.app.Activity
+import com.auth0.auth0_flutter.request_handlers.api.SignupApiRequestHandler
 import com.auth0.auth0_flutter.request_handlers.web_auth.LoginWebAuthRequestHandler
 import com.auth0.auth0_flutter.request_handlers.web_auth.LogoutWebAuthRequestHandler
 import com.auth0.auth0_flutter.request_handlers.web_auth.WebAuthRequestHandler
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel.Result
+import org.hamcrest.CoreMatchers
+import org.hamcrest.MatcherAssert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.`when`
@@ -42,6 +46,17 @@ class Auth0FlutterWebAuthMethodCallHandlerTest {
     @Test
     fun `handler should result in 'notImplemented' if no handler`() {
         runCallHandler("random#method", handlers = emptyList()) { result ->
+            verify(result).notImplemented()
+        }
+    }
+
+    @Test
+    fun `handler should result in 'notImplemented' if no matching handler`() {
+        val loginHandlerMock = mock<LoginWebAuthRequestHandler>()
+
+        `when`(loginHandlerMock.method).thenReturn("webAuth#login");
+
+        runCallHandler("webAuth#logout", handlers = listOf(loginHandlerMock)) { result ->
             verify(result).notImplemented()
         }
     }
