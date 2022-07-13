@@ -3,10 +3,28 @@ orbs:
   android: circleci/android@2
   macos: circleci/macos@2
   flutter: circleci/flutter@1
+  local-android:
+    commands:
+      prepare-config:
+        description: "Prepares the environment configuration files"
+        steps:
+          - run:
+              name: Prepare Environment Configuration
+              command: |
+                cp .env.example .env
+                sed -i "s/YOUR_AUTH0_DOMAIN/$AUTH0_DOMAIN/" .env
+                sed -i "s/YOUR_AUTH0_CLIENT_ID/$AUTH0_CLIENT_ID/" .env
+                sed -i "s/YOUR_AUTH0_CUSTOM_SCHEME/$AUTH0_CUSTOM_SCHEME/" .env
+
+                mv android/app/src/main/res/values/strings.xml.example android/app/src/main/res/values/strings.xml
+                sed -i "s/YOUR_AUTH0_DOMAIN/$AUTH0_DOMAIN/" android/app/src/main/res/values/strings.xml
+
+                mv android/local.properties.ci android/local.properties
+              working_directory: ./auth0_flutter/example
 parameters:
   flutter_version:
     type: string
-    default: 2.10.5
+    default: 3.0.5
 jobs:
   test_flutter_package:
     docker:
@@ -50,18 +68,14 @@ jobs:
           flutter_version: << pipeline.parameters.flutter_version >>
       - android/restore-gradle-cache
       - android/restore-build-cache
+      - local-android/prepare-config
       - run:
           name: Build Android Example App
-          command: |
-            cp .env.example .env
-            flutter build apk
+          command: flutter build apk
           working_directory: ./auth0_flutter/example
       - run:
-          name: Run tests
-          command: |
-            mv local.properties.ci local.properties
-            mv ../.env.example ../.env
-            gradle clean test
+          name: Run Unit tests
+          command: gradle clean test
           working_directory: ./auth0_flutter/example/android
       - android/save-gradle-cache
       - android/save-build-cache
@@ -75,6 +89,57 @@ jobs:
           path: ~/test-results
       - store_artifacts:
           path: ~/test-results/junit
+  smoke_test_android:
+    executor:
+      name: android/android-machine
+      resource-class: xlarge
+      tag: 2021.10.1
+    steps:
+      - checkout
+      - flutter/install_sdk_and_pub:
+          app-dir: ./auth0_flutter
+          flutter_version: << pipeline.parameters.flutter_version >>
+      - run:
+          name: Ensure Screenshots folder exists
+          command: |
+            mkdir android-screenshots
+      - local-android/prepare-config
+      - run:
+          name: Build Android app
+          command: flutter build apk
+          working_directory: ./auth0_flutter/example
+      - android/accept-licenses
+      - android/create-avd:
+          avd-name: myavd
+          system-image: system-images;android-29;google_apis;x86
+          install: true
+      - android/start-emulator:
+          avd-name: myavd
+          no-window: true
+          restore-gradle-cache-prefix: v1a
+          post-emulator-launch-assemble-command: ""
+          post-emulator-wait-steps:
+            - run:
+                name: Disable Chrome welcome prompt
+                command: |
+                  adb shell 'echo "chrome --disable-fre --no-default-browser-check --no-first-run" > /data/local/tmp/chrome-command-line'
+                  adb root
+      - android/run-tests:
+          max-tries: 1
+          working-directory: ./auth0_flutter/example/android
+      - run:
+          name: Copy files from device
+          command: |
+            adb pull /sdcard/Pictures android-screenshots
+          when: always
+      - store_artifacts:
+          path: android-screenshots/Pictures
+      - android/save-gradle-cache:
+          cache-prefix: v1a
+      - run:
+          name: Delay shutdown
+          command: sleep 120
+          when: always
   test_ios:
     parameters:
         ios_simulator:
@@ -109,6 +174,9 @@ workflows:
     jobs:
       - test_flutter_package
       - test_android:
+          requires:
+            - test_flutter_package
+      - smoke_test_android:
           requires:
             - test_flutter_package
       - test_ios:

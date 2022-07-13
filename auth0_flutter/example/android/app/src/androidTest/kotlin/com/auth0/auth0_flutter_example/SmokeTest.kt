@@ -1,7 +1,11 @@
 package com.auth0.auth0_flutter_example
 
+import android.app.UiAutomation
 import android.content.Context
 import android.content.Intent
+import android.os.Environment
+import android.os.Environment.DIRECTORY_PICTURES
+import android.os.ParcelFileDescriptor
 import android.widget.Button
 import android.widget.EditText
 import androidx.test.core.app.ApplicationProvider
@@ -12,20 +16,26 @@ import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
 import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.io.File
+import java.io.FileInputStream
+
 
 @RunWith(AndroidJUnit4::class)
 class SmokeTest {
 
     private val device: UiDevice
+    private var externalsDir: File? = null
     private val PACKAGE_NAME = "com.auth0.auth0_flutter_example"
+    private val CLASSIC_UL = true;
     private val APP_TITLE = "Auth0 Example"
     private val LOGIN_BUTTON = "Web Auth Login"
     private val LOGOUT_BUTTON = "Web Auth Logout"
-    private val UL_BUTTON = "Log In"
-    private val TIMEOUT = 10000L
+    private val UL_BUTTON = if (CLASSIC_UL) "Log In" else "Continue"
+    private val TIMEOUT = 15000L
 
     init {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
@@ -47,6 +57,7 @@ class SmokeTest {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }
         context.startActivity(intent)
+        externalsDir = Environment.getExternalStoragePublicDirectory(DIRECTORY_PICTURES);
 
         // Wait for the app to appear
         device.wait(Until.hasObject(By.pkg(PACKAGE_NAME).depth(0)), TIMEOUT)
@@ -58,25 +69,46 @@ class SmokeTest {
         // Start login
         val loginButton = By.clazz(Button::class.qualifiedName).descContains(LOGIN_BUTTON)
         device.wait(Until.hasObject(loginButton), TIMEOUT)
+
+        if (externalsDir != null) {
+            device.takeScreenshot(File(externalsDir?.absolutePath, "test0.png"));
+        }
+
         device.findObject(loginButton).click()
 
         // Fill login form
         val ulButton = By.clazz(Button::class.qualifiedName).textContains(UL_BUTTON)
         device.wait(Until.hasObject(ulButton), TIMEOUT)
+        // We should be on Auth0
+        if (externalsDir != null) {
+            device.takeScreenshot(File(externalsDir?.absolutePath, "test1.png"));
+        }
         val textInputs = By.clazz(EditText::class.qualifiedName)
         device.wait(Until.hasObject(textInputs), TIMEOUT)
         val emailInput = device.findObjects(textInputs).first()
         emailInput.text = BuildConfig.USER_EMAIL
         val passwordInput = device.findObjects(textInputs).last()
         passwordInput.text = BuildConfig.USER_PASSWORD
-        device.pressEnter()
+        //device.pressEnter()
         device.findObject(ulButton).click()
 
         // Logout
         val logoutButton = By.clazz(Button::class.qualifiedName).descContains(LOGOUT_BUTTON)
         device.wait(Until.hasObject(logoutButton), TIMEOUT)
+
+        // We should be on our App, logged in
+        if (externalsDir != null) {
+           device.takeScreenshot(File(externalsDir?.absolutePath, "test2.png"));
+        }
+
         device.findObject(logoutButton).click()
         device.wait(Until.hasObject(loginButton), TIMEOUT)
+
+        // We should be on our App, logged out
+        if (externalsDir != null) {
+            device.takeScreenshot(File(externalsDir?.absolutePath, "test3.png"));
+        }
+
         assertThat(device.findObject(loginButton), notNullValue())
     }
 
