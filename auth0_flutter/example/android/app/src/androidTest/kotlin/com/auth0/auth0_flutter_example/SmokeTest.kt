@@ -21,8 +21,10 @@ class SmokeTest {
 
     private val device: UiDevice
     private val PACKAGE_NAME = "com.auth0.auth0_flutter_example"
+    private val APP_TITLE = "Auth0 Example"
     private val LOGIN_BUTTON = "Web Auth Login"
     private val LOGOUT_BUTTON = "Web Auth Logout"
+    private val UL_BUTTON = "Log In"
     private val TIMEOUT = 10000L
 
     init {
@@ -48,30 +50,34 @@ class SmokeTest {
 
         // Wait for the app to appear
         device.wait(Until.hasObject(By.pkg(PACKAGE_NAME).depth(0)), TIMEOUT)
+        device.wait(Until.hasObject(By.textContains(APP_TITLE)), TIMEOUT)
     }
 
     @Test
     fun loginAndLogout() {
         // Start login
-        val loginButtonCondition = By.descContains(LOGIN_BUTTON)
-        device.wait(Until.hasObject(loginButtonCondition), TIMEOUT)
-        device.findObject(loginButtonCondition).click()
+        val loginButton = By.clazz(Button::class.qualifiedName).descContains(LOGIN_BUTTON)
+        device.wait(Until.hasObject(loginButton), TIMEOUT)
+        device.findObject(loginButton).click()
 
         // Fill login form
-        val textInputCondition = By.clazz(EditText::class.qualifiedName)
-        device.wait(Until.hasObject(textInputCondition), TIMEOUT)
-        val emailInput = device.findObjects(textInputCondition)[0]
+        val ulButton = By.clazz(Button::class.qualifiedName).textContains(UL_BUTTON)
+        device.wait(Until.hasObject(ulButton), TIMEOUT)
+        val textInputs = By.clazz(EditText::class.qualifiedName)
+        device.wait(Until.hasObject(textInputs), TIMEOUT)
+        val emailInput = device.findObjects(textInputs).first()
         emailInput.text = BuildConfig.USER_EMAIL
-        val passwordInput = device.findObjects(textInputCondition)[1]
+        val passwordInput = device.findObjects(textInputs).last()
         passwordInput.text = BuildConfig.USER_PASSWORD
-        device.findObject(By.clazz(Button::class.qualifiedName)).click()
+        device.pressEnter()
+        device.findObject(ulButton).click()
 
         // Logout
-        val logoutButtonCondition = By.descContains(LOGOUT_BUTTON)
-        device.wait(Until.hasObject(logoutButtonCondition), TIMEOUT)
-        device.findObject(logoutButtonCondition).click()
-        device.wait(Until.hasObject(loginButtonCondition), TIMEOUT)
-        assertThat(device.findObject(loginButtonCondition), notNullValue())
+        val logoutButton = By.clazz(Button::class.qualifiedName).descContains(LOGOUT_BUTTON)
+        device.wait(Until.hasObject(logoutButton), TIMEOUT)
+        device.findObject(logoutButton).click()
+        device.wait(Until.hasObject(loginButton), TIMEOUT)
+        assertThat(device.findObject(loginButton), notNullValue())
     }
 
 }
