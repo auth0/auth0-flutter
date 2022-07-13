@@ -15,9 +15,9 @@ class HasValidCredentialsRequestHandler : CredentialsManagerRequestHandler {
         request: MethodCallRequest,
         result: MethodChannel.Result
     ) {
-        var minTtl = request.data.get("minTtl") as Long? ?: 0;
+        val minTtl = request.data.get("minTtl") as Int? ?: 0;
 
-        result.success(credentialsManager.hasValidCredentials(minTtl));
+        result.success(credentialsManager.hasValidCredentials(minTtl.toLong()));
     }
 
 }

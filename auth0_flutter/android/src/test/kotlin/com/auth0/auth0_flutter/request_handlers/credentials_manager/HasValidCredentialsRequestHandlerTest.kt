@@ -17,13 +17,13 @@ class HasValidCredentialsRequestHandlerTest {
     @Test
     fun `should call hasValidCredentials with the correct parameters`() {
         val handler = HasValidCredentialsRequestHandler();
-        var minTtl: Long = 30;
+        val minTtl = 30;
         val options = hashMapOf(
             "minTtl" to minTtl,
         );
         val mockResult = mock<Result>();
         val mockAccount = mock<Auth0>();
-        var mockCredentialsManager = mock<SecureCredentialsManager>();
+        val mockCredentialsManager = mock<SecureCredentialsManager>();
         val request = MethodCallRequest(account = mockAccount, options);
 
         handler.handle(
@@ -33,7 +33,7 @@ class HasValidCredentialsRequestHandlerTest {
             mockResult
         );
 
-        verify(mockCredentialsManager).hasValidCredentials(minTtl);
+        verify(mockCredentialsManager).hasValidCredentials(minTtl.toLong());
     }
 
     @Test
@@ -41,7 +41,7 @@ class HasValidCredentialsRequestHandlerTest {
         val handler = HasValidCredentialsRequestHandler();
         val mockResult = mock<Result>();
         val mockAccount = mock<Auth0>();
-        var mockCredentialsManager = mock<SecureCredentialsManager>();
+        val mockCredentialsManager = mock<SecureCredentialsManager>();
         val request = MethodCallRequest(account = mockAccount, mock());
 
         handler.handle(
@@ -57,13 +57,13 @@ class HasValidCredentialsRequestHandlerTest {
     @Test
     fun `should call result success on success`() {
         val handler = HasValidCredentialsRequestHandler();
-        var minTtl: Long = 30;
+        val minTtl = 30;
         val options = hashMapOf(
             "minTtl" to minTtl,
         );
         val mockResult = mock<Result>();
         val mockAccount = mock<Auth0>();
-        var mockCredentialsManager = mock<SecureCredentialsManager>();
+        val mockCredentialsManager = mock<SecureCredentialsManager>();
         val request = MethodCallRequest(account = mockAccount, options);
 
 
