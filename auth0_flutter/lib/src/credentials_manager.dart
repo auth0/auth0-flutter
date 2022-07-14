@@ -2,7 +2,7 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 
 /// Abstract CredentialsManager that can be used to provide a custom CredentialManager.
 abstract class CredentialsManager {
-  Future<Credentials> get({
+  Future<Credentials> credentials({
     final int minTtl = 0,
     final Set<String> scopes = const {},
     final Map<String, String> parameters = const {},
@@ -37,7 +37,7 @@ class DefaultCredentialsManager extends CredentialsManager {
   /// Use the [scopes] parameter to set the scope to request for the access token. If `null` is passed, the previous scope will be kept.
   /// Use the [parameters] parameter to send additional parameters in the request to refresh expired credentials.
   @override
-  Future<Credentials> get({
+  Future<Credentials> credentials({
     final int minTtl = 0,
     final Set<String> scopes = const {},
     final Map<String, String> parameters = const {},

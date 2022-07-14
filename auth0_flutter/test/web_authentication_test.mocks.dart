@@ -87,7 +87,7 @@ class MockCredentialsManager extends _i1.Mock
   }
 
   @override
-  _i4.Future<_i2.Credentials> get(
+  _i4.Future<_i2.Credentials> credentials(
           {int? minTtl = 0,
           Set<String>? scopes = const {},
           Map<String, String>? parameters = const {}}) =>
