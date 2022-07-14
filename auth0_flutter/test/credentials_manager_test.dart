@@ -43,7 +43,7 @@ void main() {
           .thenAnswer((final _) async => TestPlatform.credentials);
 
       await DefaultCredentialsManager(account, userAgent)
-          .get(minTtl: 30, scopes: {'a', 'b'}, parameters: {'a': 'b'});
+          .credentials(minTtl: 30, scopes: {'a', 'b'}, parameters: {'a': 'b'});
 
       final verificationResult =
           verify(mockedPlatform.getCredentials(captureAny)).captured.single
@@ -60,7 +60,7 @@ void main() {
       when(mockedPlatform.getCredentials(any))
           .thenAnswer((final _) async => TestPlatform.credentials);
 
-      await DefaultCredentialsManager(account, userAgent).get();
+      await DefaultCredentialsManager(account, userAgent).credentials();
 
       final verificationResult =
           verify(mockedPlatform.getCredentials(captureAny)).captured.single
@@ -77,7 +77,8 @@ void main() {
       when(mockedPlatform.saveCredentials(any))
           .thenAnswer((final _) async => true);
 
-      await DefaultCredentialsManager(account, userAgent).set(TestPlatform.credentials);
+      await DefaultCredentialsManager(account, userAgent)
+          .storeCredentials(TestPlatform.credentials);
 
       final verificationResult =
           verify(mockedPlatform.saveCredentials(captureAny)).captured.single
@@ -152,7 +153,7 @@ void main() {
       when(mockedPlatform.clearCredentials(any))
           .thenAnswer((final _) async => true);
 
-      await DefaultCredentialsManager(account, userAgent).clear();
+      await DefaultCredentialsManager(account, userAgent).clearCredentials();
 
       final verificationResult =
           verify(mockedPlatform.clearCredentials(captureAny)).captured.single
