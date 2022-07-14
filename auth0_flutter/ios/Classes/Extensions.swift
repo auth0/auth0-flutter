@@ -55,20 +55,6 @@ extension Auth0APIError {
     }
 }
 
-extension Auth0APIError {
-    var isPasswordLeaked: Bool {
-        return self.code == "password_leaked"
-    }
-
-    var isLoginRequired: Bool {
-        return self.code == "login_required"
-    }
-
-    var isNetworkError: Bool {
-        return (self.cause as? URLError)?.code == URLError.Code.notConnectedToInternet
-    }
-}
-
 extension Credentials {
     convenience init?(from dictionary: [String: Any]) {
         guard let accessToken = dictionary[CredentialsProperty.accessToken] as? String,
