@@ -77,7 +77,8 @@ void main() {
       when(mockedPlatform.saveCredentials(any))
           .thenAnswer((final _) async => true);
 
-      await DefaultCredentialsManager(account, userAgent).set(TestPlatform.credentials);
+      await DefaultCredentialsManager(account, userAgent)
+          .storeCredentials(TestPlatform.credentials);
 
       final verificationResult =
           verify(mockedPlatform.saveCredentials(captureAny)).captured.single

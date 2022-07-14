@@ -125,7 +125,7 @@ void main() {
           .thenAnswer((final _) async => true);
       final mockCm = MockCredentialsManager();
 
-      when(mockCm.set(any))
+      when(mockCm.storeCredentials(any))
           .thenAnswer((final _) async => true);
 
       await Auth0('test-domain', 'test-clientId')
@@ -142,7 +142,9 @@ void main() {
       verifyNever(mockedCMPlatform.saveCredentials(any));
 
       final verificationResult =
-          verify(mockCm.set(captureAny)).captured.single as Credentials;
+          verify(mockCm.storeCredentials(captureAny))
+          .captured
+          .single as Credentials;
 
       expect(
           verificationResult.accessToken, TestPlatform.loginResult.accessToken);

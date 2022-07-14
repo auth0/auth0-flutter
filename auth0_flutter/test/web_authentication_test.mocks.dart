@@ -97,7 +97,7 @@ class MockCredentialsManager extends _i1.Mock
               returnValue: Future<_i2.Credentials>.value(_FakeCredentials_0()))
           as _i4.Future<_i2.Credentials>);
   @override
-  _i4.Future<bool> set(_i2.Credentials? credentials) =>
+  _i4.Future<bool> storeCredentials(_i2.Credentials? credentials) =>
       (super.noSuchMethod(Invocation.method(#set, [credentials]),
           returnValue: Future<bool>.value(true),
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<bool>);

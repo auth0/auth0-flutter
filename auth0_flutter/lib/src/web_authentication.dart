@@ -72,7 +72,7 @@ class WebAuthentication {
             scheme: scheme,
             useEphemeralSession: useEphemeralSession)));
 
-    await _credentialsManager?.set(credentials);
+    await _credentialsManager?.storeCredentials(credentials);
 
     return credentials;
   }

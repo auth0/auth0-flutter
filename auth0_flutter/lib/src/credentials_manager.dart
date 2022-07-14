@@ -8,7 +8,7 @@ abstract class CredentialsManager {
     final Map<String, String> parameters = const {},
   });
 
-  Future<bool> set(final Credentials credentials);
+  Future<bool> storeCredentials(final Credentials credentials);
 
   Future<bool> hasValidCredentials({
     final int minTtl = 0,
@@ -51,7 +51,7 @@ class DefaultCredentialsManager extends CredentialsManager {
 
   /// Stores the given credentials in the storage. Must have an `access_token` or `id_token` and a `expires_in` value.
   @override
-  Future<bool> set(final Credentials credentials) =>
+  Future<bool> storeCredentials(final Credentials credentials) =>
       CredentialsManagerPlatform.instance.saveCredentials(
           _createApiRequest(SaveCredentialsOptions(credentials: credentials)));
 
