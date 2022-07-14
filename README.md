@@ -48,4 +48,4 @@ Auth0 helps you to:
 
 ## License
 
-This project is licensed under the MIT license. See the [LICENSE](LICENSE) file for more information.
+This project is licensed under the Apache License 2.0 license. See the [LICENSE](LICENSE) file for more information.
