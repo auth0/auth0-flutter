@@ -242,7 +242,7 @@ void main() {
       when(mockedCMPlatform.clearCredentials(any))
           .thenAnswer((final _) async => true);
       final mockCm = MockCredentialsManager();
-      when(mockCm.clear())
+      when(mockCm.clearCredentials())
           .thenAnswer((final _) async => true);
 
       await Auth0('test-domain', 'test-clientId')
@@ -252,7 +252,7 @@ void main() {
       // Verify it doesn't call our own Platform Interface when providing a custom CredentialsManager
       verifyNever(mockedCMPlatform.clearCredentials(any));
 
-      verify(mockCm.clear()).called(1);
+      verify(mockCm.clearCredentials()).called(1);
     });
   });
 }

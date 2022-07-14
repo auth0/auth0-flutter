@@ -88,7 +88,7 @@ class WebAuthentication {
     await Auth0FlutterWebAuthPlatform.instance.logout(_createWebAuthRequest(
       WebAuthLogoutOptions(returnTo: returnTo, scheme: scheme),
     ));
-    await _credentialsManager?.clear();
+    await _credentialsManager?.clearCredentials();
   }
 
   WebAuthRequest<TOptions>

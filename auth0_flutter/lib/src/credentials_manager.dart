@@ -14,7 +14,7 @@ abstract class CredentialsManager {
     final int minTtl = 0,
   });
 
-  Future<bool> clear();
+  Future<bool> clearCredentials();
 }
 
 /// Default [CredentialsManager] implementation that passes calls to
@@ -67,7 +67,7 @@ class DefaultCredentialsManager extends CredentialsManager {
 
   /// Removes the credentials from the storage if present.
   @override
-  Future<bool> clear() => CredentialsManagerPlatform.instance
+  Future<bool> clearCredentials() => CredentialsManagerPlatform.instance
       .clearCredentials(_createApiRequest(null));
 
   CredentialsManagerRequest<TOptions>

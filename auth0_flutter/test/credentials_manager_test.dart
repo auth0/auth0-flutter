@@ -153,7 +153,7 @@ void main() {
       when(mockedPlatform.clearCredentials(any))
           .thenAnswer((final _) async => true);
 
-      await DefaultCredentialsManager(account, userAgent).clear();
+      await DefaultCredentialsManager(account, userAgent).clearCredentials();
 
       final verificationResult =
           verify(mockedPlatform.clearCredentials(captureAny)).captured.single
