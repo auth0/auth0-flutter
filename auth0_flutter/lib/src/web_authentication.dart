@@ -22,8 +22,6 @@ class WebAuthentication {
   final UserAgent _userAgent;
   final CredentialsManager? _credentialsManager;
 
-  CredentialsManager? get credentialsManager => _credentialsManager;
-
   WebAuthentication(this._account, this._userAgent, this._credentialsManager);
 
   /// Redirects the user to the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login) for authentication. If successful, it returns

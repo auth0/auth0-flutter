@@ -26,11 +26,29 @@ class Auth0 {
   final UserAgent _userAgent =
       UserAgent(name: 'auth0-flutter', version: version);
 
+  late final CredentialsManager _credentialsManager;
+
+  /// Secure [Credentials] store.
+  CredentialsManager get credentialsManager => _credentialsManager;
+
   /// Creates an intance of an Auth0 client with the provided [domain] and [clientId] properties.
   ///
   /// [domain] and [clientId] are both values that can be retrieved from the application in your [Auth0 Dashboard](https://manage.auth0.com).
-  Auth0(final String domain, final String clientId)
-      : _account = Account(domain, clientId);
+  /// Uses the [DefaultCredentialsManager] by default. If you want to use your own implementation to handle credential storage, provide your own [CredentialsManager] implementation
+  /// by setting [credentialsManager].
+  /// If you want to use biometrics or pass-phrase when using the [DefaultCredentialsManager], set [localAuthentication]` to an instance of [LocalAuthenticationOptions].
+  /// Note however that this setting has no effect when specifying a custom [credentialsManager].
+  Auth0(final String domain, final String clientId,
+      {final LocalAuthenticationOptions? localAuthentication,
+      final CredentialsManager? credentialsManager})
+      : _account = Account(domain, clientId) {
+    _credentialsManager = credentialsManager ??
+        DefaultCredentialsManager(
+          _account,
+          _userAgent,
+          localAuthentication: localAuthentication,
+        );
+  }
 
   /// An instance of [AuthenticationApi], the primary interface for interacting with the Auth0 Authentication API
   ///
@@ -59,25 +77,10 @@ class Auth0 {
   /// final result = await auth0.webAuthentication().login();
   /// final accessToken = result.accessToken;
   /// ```
-  ///
-  /// Uses the [DefaultCredentialsManager] by default. If you want to use your own implementation to handle credential storage, provide your own [CredentialsManager] implementation
-  /// by setting [customCredentialsManager].
-  /// In case you want to opt-out of using any [CredentialsManager] alltogether, set [useCredentialsManager] to `false`.
-  /// If you want to use biometrics or pass-phrase when using the [DefaultCredentialsManager], set [localAuthentication]` to an instance of [LocalAuthenticationOptions].
-  /// Note however that this setting has no effect when specifying a [customCredentialsManager].
-  WebAuthentication webAuthentication({
-    final bool useCredentialsManager = true,
-    final LocalAuthenticationOptions? localAuthentication,
-    final CredentialsManager? customCredentialsManager,
-  }) {
-    final credentialsManager = useCredentialsManager
-        ? (customCredentialsManager ??
-            (DefaultCredentialsManager(
-              _account,
-              _userAgent,
-              localAuthentication: localAuthentication,
-            )))
-        : null;
-    return WebAuthentication(_account, _userAgent, credentialsManager);
-  }
+  /// By default, the credentials will be stored in the [CredentialsManager].
+  /// In case you want to opt-out of using the [CredentialsManager], set [useCredentialsManager] to `false`.
+  WebAuthentication webAuthentication(
+          {final bool useCredentialsManager = true}) =>
+      WebAuthentication(_account, _userAgent,
+          useCredentialsManager ? credentialsManager : null);
 }
