@@ -34,8 +34,8 @@ class Auth0 {
   /// Creates an intance of an Auth0 client with the provided [domain] and [clientId] properties.
   ///
   /// [domain] and [clientId] are both values that can be retrieved from the application in your [Auth0 Dashboard](https://manage.auth0.com).
-  /// Uses the [DefaultCredentialsManager] by default. If you want to use your own implementation to handle credential storage, provide your own [CredentialsManager] implementation
-  /// by setting [credentialsManager].
+  /// If you want to use your own implementation to handle credential storage, provide your own [CredentialsManager] implementation
+  /// by setting [credentialsManager]. A [DefaultCredentialsManager] instance is used by default.
   /// If you want to use biometrics or pass-phrase when using the [DefaultCredentialsManager], set [localAuthentication]` to an instance of [LocalAuthenticationOptions].
   /// Note however that this setting has no effect when specifying a custom [credentialsManager].
   Auth0(final String domain, final String clientId,
