@@ -50,6 +50,22 @@ extension CredentialsManagerHasValidMethodHandlerTests {
         wait(for: [expectation])
     }
 
+    func testProducesTrueWithRefreshToken() {
+        let credentials = Credentials(refreshToken: "foo")
+        let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
+        let expectation = self.expectation(description: "Produced true")
+        let emptyStorage = SpyCredentialsStorage()
+        emptyStorage.getEntryReturnValue = nil
+        let credentialsManager = CredentialsManager(authentication: SpyAuthentication(), storage: emptyStorage)
+        sut = CredentialsManagerHasValidMethodHandler(credentialsManager: credentialsManager, credentialsStorage: spy)
+        spy.getEntryReturnValue = data
+        sut.handle(with: arguments()) { result in
+            XCTAssertEqual(result as? Bool, true)
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
+    }
+
     func testProducesFalseWithNoValidCredentials() {
         let expectation = self.expectation(description: "Produced false")
         spy.getEntryReturnValue = nil
