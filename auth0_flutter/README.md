@@ -308,6 +308,7 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 
 - [Web Auth signup](#web-auth-signup)
 - [ID token validation](#id-token-validation)
+- [Disable credentials storage](#disable-credentials-storage)
 - [Web Auth errors](#web-auth-errors)
 
 #### Web Auth signup
@@ -350,6 +351,15 @@ const config =
     IdTokenValidationConfig(issuer: 'https://YOUR_AUTH0_DOMAIN/');
 final credentials =
     await auth0.webAuthentication().login(idTokenValidationConfig: config);
+```
+
+#### Disable credentials storage
+
+By default, auth0_flutter will automatically store the user's credentials after login and delete them after logout, using the built-in [Credentials Manager](#credentials-manager) instance. If you prefer to use your own credentials storage, you need to disable the built-in Credentials Manager.
+
+```dart
+final credentials =
+          await auth0.webAuthentication(useCredentialsManager: false).login();
 ```
 
 #### Web Auth errors
