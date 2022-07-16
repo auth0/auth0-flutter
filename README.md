@@ -1,27 +1,17 @@
-![Stage: Beta Release](https://img.shields.io/badge/stage-beta-orange)
+![Stage: First Availability Release](https://img.shields.io/badge/stage-fa-yellow)
 [![CircleCI](https://img.shields.io/circleci/build/github/auth0/auth0-flutter)](https://circleci.com/gh/auth0/auth0-flutter)
-[![Codecov](https://img.shields.io/codecov/c/github/auth0/auth0-flutter)](https://codecov.io/gh/auth0/auth0-flutter)
+[![Codecov](https://codecov.io/gh/auth0/auth0-flutter/branch/main/graph/badge.svg)](https://codecov.io/gh/auth0/auth0-flutter)
 
-# Auth0 SDK for Flutter (Beta)
+# Auth0 SDK for Flutter (First Availability)
 
 Auth0 SDK for Android / iOS Flutter apps.
 
-> ⚠️ This library is currently in Beta. We do not recommend using this library in production yet. As we move towards First Availaibility, please be aware that releases may contain breaking changes.
+> ⚠️ This library is currently in First Availability. We do not recommend using this library in production yet. As we move toward General Availability, please be aware that releases may contain breaking changes.
 
 | Package                                                                 | Description                                   |
 |:------------------------------------------------------------------------|:----------------------------------------------|
 | [auth0_flutter](./auth0_flutter/)                                       | SDK for Android / iOS Flutter applications    |
 | [auth0_flutter_platform_interface](./auth0_flutter_platform_interface/) | Common interface for platform implementations |
-
-## Features
-
-- Web Auth login and logout
-- Authentication API operations:
-  + Login with username/email and password
-  + Signup
-  + Get user information from `/userinfo`
-  + Renew credentials
-  + Reset password
 
 ## Getting Started
 
