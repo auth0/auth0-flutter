@@ -90,6 +90,9 @@ jobs:
       - store_artifacts:
           path: ~/test-results/junit
   smoke_test_android:
+    parameters:
+        android_simulator:
+          type: string
     executor:
       name: android/android-machine
       resource-class: xlarge
@@ -101,8 +104,7 @@ jobs:
           flutter_version: << pipeline.parameters.flutter_version >>
       - run:
           name: Ensure Screenshots folder exists
-          command: |
-            mkdir android-screenshots
+          command: mkdir android-screenshots
       - local-android/prepare-config
       - run:
           name: Build Android app
@@ -110,27 +112,27 @@ jobs:
           working_directory: ./auth0_flutter/example
       - android/accept-licenses
       - android/create-avd:
-          avd-name: myavd
-          system-image: system-images;android-29;google_apis;x86
+          avd-name: auth0_sample_avd
+          system-image: << parameters.android_simulator >>
           install: true
       - android/start-emulator:
-          avd-name: myavd
+          avd-name: auth0_sample_avd
           no-window: true
           restore-gradle-cache-prefix: v1a
           post-emulator-launch-assemble-command: ""
           post-emulator-wait-steps:
             - run:
                 name: Disable Chrome welcome prompt
-                command: |
-                  adb shell 'echo "chrome --disable-fre --no-default-browser-check --no-first-run" > /data/local/tmp/chrome-command-line'
-                  adb root
+                command: adb shell 'echo "chrome --disable-fre --no-default-browser-check --no-first-run" > /data/local/tmp/chrome-command-line'
+            - run:
+                name: Enable ADB root
+                command: adb root
       - android/run-tests:
           max-tries: 1
           working-directory: ./auth0_flutter/example/android
       - run:
           name: Copy files from device
-          command: |
-            adb pull /sdcard/Pictures android-screenshots
+          command: adb pull /sdcard/Pictures android-screenshots
           when: always
       - store_artifacts:
           path: android-screenshots/Pictures
@@ -138,7 +140,7 @@ jobs:
           cache-prefix: v1a
       - run:
           name: Delay shutdown
-          command: sleep 120
+          command: sleep 60
           when: always
   test_ios:
     parameters:
@@ -177,6 +179,7 @@ workflows:
           requires:
             - test_flutter_package
       - smoke_test_android:
+          android_simulator: system-images;android-29;google_apis;x86
           requires:
             - test_flutter_package
       - test_ios:
