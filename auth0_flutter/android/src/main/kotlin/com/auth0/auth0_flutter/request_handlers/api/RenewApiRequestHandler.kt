@@ -62,7 +62,8 @@ class RenewApiRequestHandler : ApiRequestHandler {
                         "refreshToken" to credentials.refreshToken,
                         "userProfile" to userProfile.toMap(),
                         "expiresAt" to formattedDate,
-                        "scopes" to scope
+                        "scopes" to scope,
+                        "tokenType" to credentials.type
                     )
                 )
             }

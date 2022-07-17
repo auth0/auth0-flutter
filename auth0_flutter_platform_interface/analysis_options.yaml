@@ -91,5 +91,4 @@ linter:
     sort_pub_dependencies: true
 
     # Specific rules
-    public_member_api_docs: false # 'true' after EA
-    package_api_docs: false # 'true' after EA
+    package_api_docs: true

@@ -1,4 +1,4 @@
-# auth0_flutter (Beta)
+# Auth0 SDK for Flutter (Beta)
 
 [![CircleCI](https://img.shields.io/circleci/project/github/auth0/auth0-flutter.svg?style=flat-square)](https://circleci.com/gh/auth0/auth0-flutter/tree/main)
 
@@ -40,8 +40,8 @@ TBD
 
 | Flutter    | Android         |iOS                |
 |:-----------|:----------------|:------------------|
-| SDK 2.10+  | Android API 21+ | iOS 12+           |
-| Dart 2.16+ | Java 8+         | Swift 5.3+        |
+| SDK 3.0+   | Android API 21+ | iOS 12+           |
+| Dart 2.17+ | Java 8+         | Swift 5.3+        |
 |            |                 | Xcode 12.x / 13.x |
 
 ## Installation
@@ -53,7 +53,7 @@ auth0_flutter:
     path: path/to/auth0_flutter
 ```
 
-Then run `flutter pub get`.
+Then, run `flutter pub get`.
 
 ## Getting Started
 
@@ -132,7 +132,7 @@ manifestPlaceholders = [auth0Domain: "company.us.auth0.com", auth0Scheme: "${app
 > 💡 If your Android app is using [product flavors](https://developer.android.com/studio/build/build-variants#product-flavors), you might need to specify different manifest placeholders for each flavor.
 
 <details>
-  <summary>Skipping the Web Auth configuration</summary>
+  <summary>Skipping the Android Web Auth configuration</summary>
 
   If you don't plan to use Web Auth, you will notice that the compiler will still prompt you to provide the `manifestPlaceholders` values, since the `RedirectActivity` included in this library will require them, and the Gradle tasks won't be able to run without them.
 
@@ -163,7 +163,7 @@ manifestPlaceholders = [auth0Domain: "company.us.auth0.com", auth0Scheme: "${app
 
 #### iOS configuration: custom URL scheme
 
-Open the `ios/Runner/Info.plist` file and add the following snippet inside the top-level `<dict>` tag. This registers your iOS Bundle Identifer as a custom URL scheme, so the callback and logout URLs can reach your app.
+Open the `ios/Runner/Info.plist` file and add the following snippet inside the top-level `<dict>` tag. This registers your iOS Bundle Identifier as a custom URL scheme, so the callback and logout URLs can reach your app.
 
 ```xml
 <!-- ios/Runner/Info.plist -->
@@ -223,7 +223,7 @@ final result = await auth0.webAuthentication.login();
 <details>
   <summary>Add scope values</summary>
 
-  Specify [scopes](https://auth0.com/docs/get-started/apis/scopes) to request permission to access protected resources, like the user profile. The default scope values are `openid`, `profile` and `email`. Regardless of the values specified, `openid` is always included.
+  Specify [scopes](https://auth0.com/docs/get-started/apis/scopes) to request permission to access protected resources, like the user profile. The default scope values are `openid`, `profile`, `email`, and `offline_access`. Regardless of the values specified, `openid` is always included.
 
   ```dart
   final result = await auth0.webAuthentication
@@ -257,7 +257,7 @@ await auth0.webAuthentication.logout();
 
 ### SSO Alert Box (iOS)
 
-![ios-sso-alert](assets/ios-sso-alert.png)
+![ios-sso-alert](../assets/ios-sso-alert.png)
 
 Check the [FAQ](FAQ.md) for more information about the alert box that pops up **by default** when using Web Auth on iOS.
 
@@ -371,7 +371,7 @@ final result = await auth0.api.login(
 <details>
   <summary>Add scope values</summary>
 
-  Specify [scopes](https://auth0.com/docs/get-started/apis/scopes) to request permission to access protected resources, like the user profile. The default scope values are `openid`, `profile` and `email`. Regardless of the values specified, `openid` is always included.
+  Specify [scopes](https://auth0.com/docs/get-started/apis/scopes) to request permission to access protected resources, like the user profile. The default scope values are `openid`, `profile`, `email`, and `offline_access`. Regardless of the values specified, `openid` is always included.
 
   ```dart
   final result = await auth0.api.login(

@@ -6,10 +6,11 @@ import Auth0
 fileprivate typealias Argument = WebAuthLoginMethodHandler.Argument
 
 class WebAuthLoginHandlerTests: XCTestCase {
-    let spy = SpyWebAuth()
+    var spy: SpyWebAuth!
     var sut: WebAuthLoginMethodHandler!
 
     override func setUpWithError() throws {
+        spy = SpyWebAuth()
         sut = WebAuthLoginMethodHandler(client: spy)
     }
 }
@@ -78,9 +79,9 @@ extension WebAuthLoginHandlerTests {
         XCTAssertEqual(spy.scopeValue, value.asSpaceSeparatedString)
     }
 
-    func testDoesNotAddScopesWhenEmpty() {
+    func testAddsEmptyScopeWhenEmpty() {
         sut.handle(with: arguments(withKey: Argument.scopes, value:  [])) { _ in }
-        XCTAssertNil(spy.scopeValue)
+        XCTAssertEqual(spy.scopeValue, "")
     }
 
     // MARK: audience
@@ -185,6 +186,7 @@ extension WebAuthLoginHandlerTests {
 
     func testProducesCredentials() {
         let credentials = Credentials(accessToken: "accessToken",
+                                      tokenType: "tokenType",
                                       idToken: testIdToken,
                                       refreshToken: "refreshToken",
                                       expiresIn: Date(),

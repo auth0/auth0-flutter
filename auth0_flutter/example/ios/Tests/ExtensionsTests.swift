@@ -44,43 +44,118 @@ extension ExtensionsTests {
     }
 }
 
+// MARK: - Credentials+initFromDictionary
+
+extension ExtensionsTests {
+    func testMapsRequiredPropertiesFromDictionary() throws {
+        let values: [String: Any] = [
+            CredentialsProperty.accessToken.rawValue: "accessToken",
+            CredentialsProperty.idToken.rawValue: testIdToken,
+            CredentialsProperty.expiresAt.rawValue: Date().asISO8601String,
+            CredentialsProperty.scopes.rawValue: [],
+            CredentialsProperty.tokenType.rawValue: "tokenType"
+        ]
+        let credentials = try XCTUnwrap(Credentials(from: values))
+        XCTAssertEqual(values[CredentialsProperty.accessToken] as? String, credentials.accessToken)
+        XCTAssertEqual(values[CredentialsProperty.idToken] as? String, credentials.idToken)
+        XCTAssertEqual(values[CredentialsProperty.expiresAt] as? String, credentials.expiresIn.asISO8601String)
+        XCTAssertEqual(values[CredentialsProperty.tokenType] as? String, credentials.tokenType)
+        XCTAssertNil(credentials.scope)
+    }
+
+    func testMapsRefreshTokenFromDictionary() throws {
+        let values: [String: Any] = [
+            CredentialsProperty.accessToken.rawValue: "",
+            CredentialsProperty.idToken.rawValue: testIdToken,
+            CredentialsProperty.refreshToken.rawValue: "refreshToken",
+            CredentialsProperty.expiresAt.rawValue: Date().asISO8601String,
+            CredentialsProperty.scopes.rawValue: [],
+            CredentialsProperty.tokenType.rawValue: ""
+        ]
+        let credentials = try XCTUnwrap(Credentials(from: values))
+        XCTAssertNotNil(credentials.refreshToken)
+        XCTAssertEqual(values[CredentialsProperty.refreshToken] as? String, credentials.refreshToken)
+    }
+
+    func testMapsScopeFromDictionary() throws {
+        let values: [String: Any] = [
+            CredentialsProperty.accessToken.rawValue: "",
+            CredentialsProperty.idToken.rawValue: testIdToken,
+            CredentialsProperty.expiresAt.rawValue: Date().asISO8601String,
+            CredentialsProperty.scopes.rawValue: ["foo", "bar"],
+            CredentialsProperty.tokenType.rawValue: ""
+        ]
+        let credentials = try XCTUnwrap(Credentials(from: values))
+        XCTAssertNotNil(credentials.scope)
+        XCTAssertEqual(values[CredentialsProperty.scopes] as? [String],
+                       credentials.scope?.split(separator: " ").map(String.init))
+    }
+
+    func testFailsToMapCredentialsFromDictionaryWithInvalidExpiresAt() throws {
+        let values: [String: Any] = [
+            CredentialsProperty.accessToken.rawValue: "",
+            CredentialsProperty.idToken.rawValue: testIdToken,
+            CredentialsProperty.expiresAt.rawValue: Date().asISO8601String,
+            CredentialsProperty.scopes.rawValue: [],
+            CredentialsProperty.tokenType.rawValue: ""
+        ]
+        let credentials = try XCTUnwrap(Credentials(from: values))
+        XCTAssertNil(credentials.scope)
+    }
+}
+
 // MARK: - Credentials+asDictionary
 
 extension ExtensionsTests {
-    func testMapsRequiredCredentialsProperties() {
+    func testMapsRequiredPropertiesToDictionary() throws {
         let idToken = "eyJhbGciOiJIUzI1NiJ9.e30.ZRrHA1JJJW8opsbCGfG_HACGpVUMN_a9IV7pAx_Zmeo"
-        let credentials = Credentials(accessToken: "accessToken", idToken: idToken, expiresIn: Date())
-        let values = try! credentials.asDictionary()
+        let credentials = Credentials(accessToken: "accessToken",
+                                      tokenType: "tokenType",
+                                      idToken: idToken,
+                                      expiresIn: Date())
+        let values = try credentials.asDictionary()
         XCTAssertEqual(credentials.accessToken, values[CredentialsProperty.accessToken] as? String)
         XCTAssertEqual(credentials.idToken, values[CredentialsProperty.idToken] as? String)
         XCTAssertEqual(credentials.expiresIn.asISO8601String, values[CredentialsProperty.expiresAt] as? String)
+        XCTAssertEqual(credentials.tokenType, values[CredentialsProperty.tokenType] as? String)
         XCTAssertTrue([] == values[CredentialsProperty.scopes] as? [String])
         XCTAssertTrue([:] == values[CredentialsProperty.userProfile] as? [String: Any])
     }
 
-    func testMapsCredentialsRefreshToken() {
+    func testMapsRefreshTokenIntoDictionary() throws {
         let credentials = Credentials(accessToken: "",
+                                      tokenType: "",
                                       idToken: testIdToken,
                                       refreshToken: "refreshToken",
                                       expiresIn: Date())
-        let values = try! credentials.asDictionary()
+        let values = try credentials.asDictionary()
         XCTAssertNotNil(credentials.refreshToken)
         XCTAssertEqual(credentials.refreshToken, values[CredentialsProperty.refreshToken] as? String)
     }
 
-    func testMapsCredentialsScope() {
-        let credentials = Credentials(accessToken: "", idToken: testIdToken, expiresIn: Date(), scope: "foo bar")
-        let values = try! credentials.asDictionary()
+    func testMapsCredentialsScopeIntoDictionary() throws {
+        let credentials = Credentials(accessToken: "",
+                                      tokenType: "",
+                                      idToken: testIdToken,
+                                      expiresIn: Date(),
+                                      scope: "foo bar")
+        let values = try credentials.asDictionary()
         XCTAssertNotNil(credentials.scope)
         XCTAssertEqual(credentials.scope?.split(separator: " ").map(String.init),
                        values[CredentialsProperty.scopes] as? [String])
     }
 
-    func testMapsUserProfile() {
-        let credentials = Credentials(accessToken: "", idToken: testIdToken, expiresIn: Date())
-        let values = try! credentials.asDictionary()
-        let jwt = try! decode(jwt: credentials.idToken)
-        let userProfile = UserInfo(json: jwt.body)?.asDictionary()
+    func testFailsToMapCredentialsWithMalformedIdTokenToDictionary() {
+        let idToken = "foo"
+        let credentials = Credentials(accessToken: "", tokenType: "", idToken: idToken, expiresIn: Date())
+        XCTAssertThrowsError(try credentials.asDictionary(), HandlerError.idTokenDecodingFailed.message)
+    }
+
+    func testMapsUserProfileToDictionary() throws {
+        let credentials = Credentials(accessToken: "", tokenType: "", idToken: testIdToken, expiresIn: Date())
+        let values = try credentials.asDictionary()
+        let jwt = try decode(jwt: credentials.idToken)
+        let userProfile = try XCTUnwrap(UserInfo(json: jwt.body)?.asDictionary())
         XCTAssertTrue(userProfile == values[CredentialsProperty.userProfile] as? [String: Any])
     }
 }
@@ -88,234 +163,234 @@ extension ExtensionsTests {
 // MARK: - UserInfo+asDictionary
 
 extension ExtensionsTests {
-    func testMapsRequiredUserInfoProperties() {
-        let userInfo = UserInfo(json: [UserInfoProperty.sub.rawValue: "foo"])!
+    func testMapsRequiredUserInfoProperties() throws {
+        let userInfo = try XCTUnwrap(UserInfo(json: [UserInfoProperty.sub.rawValue: "foo"]))
         let values = userInfo.asDictionary()
         XCTAssertEqual(userInfo.sub, values[UserInfoProperty.sub] as? String)
         XCTAssertTrue(values[UserInfoProperty.customClaims] as? [String: Any] == [:])
     }
 
-    func testMapsUserInfoName() {
+    func testMapsUserInfoName() throws {
         let data: [String: Any] = [
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.name.rawValue: "name"
         ]
-        let userInfo = UserInfo(json: data)!
+        let userInfo = try XCTUnwrap(UserInfo(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.name)
         XCTAssertEqual(userInfo.name, values[UserInfoProperty.name] as? String)
     }
 
-    func testMapsUserInfoGivenName() {
+    func testMapsUserInfoGivenName() throws {
         let data: [String: Any] = [
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.givenName.rawValue: "givenName"
         ]
-        let userInfo = UserInfo(json: data)!
+        let userInfo = try XCTUnwrap(UserInfo(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.givenName)
         XCTAssertEqual(userInfo.givenName, values[UserInfoProperty.givenName] as? String)
     }
 
-    func testMapsUserInfoFamilyName() {
+    func testMapsUserInfoFamilyName() throws {
         let data: [String: Any] = [
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.familyName.rawValue: "familyName"
         ]
-        let userInfo = UserInfo(json: data)!
+        let userInfo = try XCTUnwrap(UserInfo(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.familyName)
         XCTAssertEqual(userInfo.familyName, values[UserInfoProperty.familyName] as? String)
     }
 
-    func testMapsUserInfoMiddleName() {
+    func testMapsUserInfoMiddleName() throws {
         let data: [String: Any] = [
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.middleName.rawValue: "middleName"
         ]
-        let userInfo = UserInfo(json: data)!
+        let userInfo = try XCTUnwrap(UserInfo(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.middleName)
         XCTAssertEqual(userInfo.middleName, values[UserInfoProperty.middleName] as? String)
     }
 
-    func testMapsUserInfoNickname() {
+    func testMapsUserInfoNickname() throws {
         let data: [String: Any] = [
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.nickname.rawValue: "nickname"
         ]
-        let userInfo = UserInfo(json: data)!
+        let userInfo = try XCTUnwrap(UserInfo(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.nickname)
         XCTAssertEqual(userInfo.nickname, values[UserInfoProperty.nickname] as? String)
     }
 
-    func testMapsUserInfoPreferredUsername() {
+    func testMapsUserInfoPreferredUsername() throws {
         let data: [String: Any] = [
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.preferredUsername.rawValue: "preferredUsername"
         ]
-        let userInfo = UserInfo(json: data)!
+        let userInfo = try XCTUnwrap(UserInfo(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.preferredUsername)
         XCTAssertEqual(userInfo.preferredUsername, values[UserInfoProperty.preferredUsername] as? String)
     }
 
-    func testMapsUserInfoProfile() {
+    func testMapsUserInfoProfile() throws {
         let data: [String: Any] = [
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.profile.rawValue: "https://example.com/profile"
         ]
-        let userInfo = UserInfo(json: data)!
+        let userInfo = try XCTUnwrap(UserInfo(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.profile)
         XCTAssertEqual(userInfo.profile?.absoluteString, values[UserInfoProperty.profile] as? String)
     }
 
-    func testMapsUserInfoPicture() {
+    func testMapsUserInfoPicture() throws {
         let data: [String: Any] = [
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.picture.rawValue: "https://example.com/picture"
         ]
-        let userInfo = UserInfo(json: data)!
+        let userInfo = try XCTUnwrap(UserInfo(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.picture)
         XCTAssertEqual(userInfo.picture?.absoluteString, values[UserInfoProperty.picture] as? String)
     }
 
-    func testMapsUserInfoWebsite() {
+    func testMapsUserInfoWebsite() throws {
         let data: [String: Any] = [
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.website.rawValue: "https://example.com/website"
         ]
-        let userInfo = UserInfo(json: data)!
+        let userInfo = try XCTUnwrap(UserInfo(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.website)
         XCTAssertEqual(userInfo.website?.absoluteString, values[UserInfoProperty.website] as? String)
     }
 
-    func testMapsUserInfoEmail() {
+    func testMapsUserInfoEmail() throws {
         let data: [String: Any] = [
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.email.rawValue: "email"
         ]
-        let userInfo = UserInfo(json: data)!
+        let userInfo = try XCTUnwrap(UserInfo(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.email)
         XCTAssertEqual(userInfo.email, values[UserInfoProperty.email] as? String)
     }
 
-    func testMapsUserInfoEmailVerified() {
+    func testMapsUserInfoEmailVerified() throws {
         let data: [String: Any] = [
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.emailVerified.rawValue: true
         ]
-        let userInfo = UserInfo(json: data)!
+        let userInfo = try XCTUnwrap(UserInfo(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.emailVerified)
         XCTAssertEqual(userInfo.emailVerified, values[UserInfoProperty.emailVerified] as? Bool)
     }
 
-    func testMapsUserInfoGender() {
+    func testMapsUserInfoGender() throws {
         let data: [String: Any] = [
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.gender.rawValue: "gender"
         ]
-        let userInfo = UserInfo(json: data)!
+        let userInfo = try XCTUnwrap(UserInfo(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.gender)
         XCTAssertEqual(userInfo.gender, values[UserInfoProperty.gender] as? String)
     }
 
-    func testMapsUserInfoBirthdate() {
+    func testMapsUserInfoBirthdate() throws {
         let data: [String: Any] = [
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.birthdate.rawValue: "birthdate"
         ]
-        let userInfo = UserInfo(json: data)!
+        let userInfo = try XCTUnwrap(UserInfo(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.birthdate)
         XCTAssertEqual(userInfo.birthdate, values[UserInfoProperty.birthdate] as? String)
     }
 
-    func testMapsUserInfoZoneinfo() {
+    func testMapsUserInfoZoneinfo() throws {
         let data: [String: Any] = [
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.zoneinfo.rawValue: "America/Los_Angeles"
         ]
-        let userInfo = UserInfo(json: data)!
+        let userInfo = try XCTUnwrap(UserInfo(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.zoneinfo)
         XCTAssertEqual(userInfo.zoneinfo?.identifier, values[UserInfoProperty.zoneinfo] as? String)
     }
 
-    func testMapsUserInfoLocale() {
+    func testMapsUserInfoLocale() throws {
         let data: [String: Any] = [
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.locale.rawValue: "en_US"
         ]
-        let userInfo = UserInfo(json: data)!
+        let userInfo = try XCTUnwrap(UserInfo(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.locale)
         XCTAssertEqual(userInfo.locale?.identifier, values[UserInfoProperty.locale] as? String)
     }
 
-    func testMapsUserInfoPhoneNumber() {
+    func testMapsUserInfoPhoneNumber() throws {
         let data: [String: Any] = [
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.phoneNumber.rawValue: "phoneNumber"
         ]
-        let userInfo = UserInfo(json: data)!
+        let userInfo = try XCTUnwrap(UserInfo(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.phoneNumber)
         XCTAssertEqual(userInfo.phoneNumber, values[UserInfoProperty.phoneNumber] as? String)
     }
 
-    func testMapsUserInfoPhoneNumberVerified() {
+    func testMapsUserInfoPhoneNumberVerified() throws {
         let data: [String: Any] = [
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.phoneNumberVerified.rawValue: true
         ]
-        let userInfo = UserInfo(json: data)!
+        let userInfo = try XCTUnwrap(UserInfo(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.phoneNumberVerified)
         XCTAssertEqual(userInfo.phoneNumberVerified, values[UserInfoProperty.phoneNumberVerified] as? Bool)
     }
 
-    func testMapsUserInfoAddress() {
+    func testMapsUserInfoAddress() throws {
         let data: [String: Any] = [
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.address.rawValue: ["foo": "bar"] as [String: String]
         ]
-        let userInfo = UserInfo(json: data)!
+        let userInfo = try XCTUnwrap(UserInfo(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.address)
         XCTAssertEqual(userInfo.address, values[UserInfoProperty.address] as? [String: String])
     }
 
-    func testMapsUserInfoUpdatedAt() {
+    func testMapsUserInfoUpdatedAt() throws {
         let data: [String: Any] = [
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.updatedAt.rawValue: "2022-04-15T03:15:51.787Z"
         ]
-        let userInfo = UserInfo(json: data)!
+        let userInfo = try XCTUnwrap(UserInfo(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.updatedAt)
         XCTAssertEqual(userInfo.updatedAt?.asISO8601String, values[UserInfoProperty.updatedAt] as? String)
     }
 
-    func testMapsUserInfoCustomClaims() {
+    func testMapsUserInfoCustomClaims() throws {
         let data: [String: Any] = [
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.customClaims.rawValue: ["foo": "bar"]
         ]
-        let userInfo = UserInfo(json: data)!
+        let userInfo = try XCTUnwrap(UserInfo(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.customClaims)
         XCTAssertTrue(userInfo.customClaims == values[UserInfoProperty.customClaims] as? [String: Any])
     }
 
-    func testFiltersUserInfoCustomClaims() {
+    func testFiltersUserInfoCustomClaims() throws {
         let customClaims: [String: Any] = ["foo": "bar"]
         let claims: [String: Any] = [
             "sub": "sub", // Required
@@ -332,7 +407,7 @@ extension ExtensionsTests {
             "c_hash": "cHash"
         ]
         let data = customClaims.merging(claims) { (first, _) in first }
-        let userInfo = UserInfo(json: data)!
+        let userInfo = try XCTUnwrap(UserInfo(json: data))
         let values = userInfo.asDictionary()
         XCTAssertTrue(values[UserInfoProperty.customClaims] as? [String: Any] == customClaims)
     }

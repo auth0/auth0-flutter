@@ -29,11 +29,9 @@ struct WebAuthLoginMethodHandler: MethodHandler {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.parameters.rawValue)))
         }
 
-        var webAuth = client.parameters(parameters)
-
-        if !scopes.isEmpty {
-            webAuth = webAuth.scope(scopes.asSpaceSeparatedString)
-        }
+        var webAuth = client
+            .scope(scopes.asSpaceSeparatedString)
+            .parameters(parameters)
 
         if useEphemeralSession {
             webAuth = webAuth.useEphemeralSession()

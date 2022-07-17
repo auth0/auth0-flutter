@@ -20,8 +20,14 @@ extension Dictionary where Key == String {
 }
 
 extension Date {
+    static var iso8601Formatter: ISO8601DateFormatter {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter
+    }
+
     var asISO8601String: String {
-        return ISO8601DateFormatter().string(from: self)
+        return Date.iso8601Formatter.string(from: self)
     }
 }
 
@@ -49,21 +55,26 @@ extension Auth0APIError {
     }
 }
 
-extension Auth0APIError {
-    var isPasswordLeaked: Bool {
-        return self.code == "password_leaked"
-    }
-
-    var isLoginRequired: Bool {
-        return self.code == "login_required"
-    }
-
-    var isNetworkError: Bool {
-        return (self.cause as? URLError)?.code == URLError.Code.notConnectedToInternet
-    }
-}
-
 extension Credentials {
+    convenience init?(from dictionary: [String: Any]) {
+        guard let accessToken = dictionary[CredentialsProperty.accessToken] as? String,
+              let idToken = dictionary[CredentialsProperty.idToken] as? String,
+              let expiresAt = dictionary[CredentialsProperty.expiresAt] as? String,
+              let expiresIn = Date.iso8601Formatter.date(from: expiresAt),
+              let scopes = dictionary[CredentialsProperty.scopes] as? [String],
+              let tokenType = dictionary[CredentialsProperty.tokenType] as? String else {
+            return nil
+        }
+
+        self.init(accessToken: accessToken,
+                  tokenType: tokenType,
+                  idToken: idToken,
+                  refreshToken: dictionary[CredentialsProperty.refreshToken] as? String,
+                  expiresIn: expiresIn,
+                  scope: scopes.isEmpty ? nil : scopes.asSpaceSeparatedString,
+                  recoveryCode: nil)
+    }
+
     func asDictionary() throws -> [String: Any] {
         let jwt = try decode(jwt: idToken)
         var data: [String: Any] = [
@@ -71,7 +82,8 @@ extension Credentials {
             CredentialsProperty.idToken.rawValue: idToken,
             CredentialsProperty.expiresAt.rawValue: expiresIn.asISO8601String,
             CredentialsProperty.scopes.rawValue: scope?.split(separator: " ").map(String.init) ?? [],
-            CredentialsProperty.userProfile.rawValue: UserInfo(json: jwt.body)?.asDictionary() ?? [:]
+            CredentialsProperty.userProfile.rawValue: UserInfo(json: jwt.body)?.asDictionary() ?? [:],
+            CredentialsProperty.tokenType.rawValue: tokenType
         ]
         data[CredentialsProperty.refreshToken] = refreshToken
         return data

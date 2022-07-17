@@ -21,8 +21,9 @@ class TestPlatform extends Mock
     'idToken': 'idToken',
     'refreshToken': 'refreshToken',
     'expiresAt': DateTime.now().toIso8601String(),
-    'scopes': ['a'],
-    'userProfile': {'sub': '123', 'name': 'John Doe'}
+    'scopes': ['a', 'b'],
+    'userProfile': {'sub': '123', 'name': 'John Doe'},
+    'tokenType': 'Bearer'
   });
 
   static Credentials renewResult = Credentials.fromMap({
@@ -30,8 +31,9 @@ class TestPlatform extends Mock
     'idToken': 'idToken',
     'refreshToken': 'refreshToken',
     'expiresAt': DateTime.now().toIso8601String(),
-    'scopes': ['a'],
-    'userProfile': {'sub': '123', 'name': 'John Doe'}
+    'scopes': ['a', 'b'],
+    'userProfile': {'sub': '123', 'name': 'John Doe'},
+    'tokenType': 'Bearer'
   });
 }
 
@@ -129,7 +131,8 @@ void main() {
           .captured
           .single as ApiRequest<AuthLoginOptions>;
       // ignore: inference_failure_on_collection_literal
-      expect(verificationResult.options.scopes, []);
+      expect(verificationResult.options.scopes,
+          ['openid', 'profile', 'email', 'offline_access']);
       // ignore: inference_failure_on_collection_literal
       expect(verificationResult.options.parameters, {});
       expect(result, TestPlatform.loginResult);

@@ -1,4 +1,10 @@
+![Stage: Beta Release](https://img.shields.io/badge/stage-beta-orange)
+[![CircleCI](https://img.shields.io/circleci/build/github/auth0/auth0-flutter)](https://circleci.com/gh/auth0/auth0-flutter)
+[![Codecov](https://img.shields.io/codecov/c/github/auth0/auth0-flutter)](https://codecov.io/gh/auth0/auth0-flutter)
+
 # Auth0 SDK for Flutter (Beta)
+
+Auth0 SDK for Android / iOS Flutter apps.
 
 > ⚠️ This library is currently in Beta. We do not recommend using this library in production yet. As we move towards First Availaibility, please be aware that releases may contain breaking changes.
 
@@ -7,9 +13,25 @@
 | [auth0_flutter](./auth0_flutter/)                                       | SDK for Android / iOS Flutter applications    |
 | [auth0_flutter_platform_interface](./auth0_flutter_platform_interface/) | Common interface for platform implementations |
 
+## Features
+
+- Web Auth login and logout
+- Authentication API operations:
+  + Login with username/email and password
+  + Signup
+  + Get user information from `/userinfo`
+  + Renew credentials
+  + Reset password
+
 ## Getting Started
 
 See the README of the [auth0_flutter](./auth0_flutter#readme) package.
+
+## Issue Reporting
+
+For general support or usage questions, use the [Auth0 Community](https://community.auth0.com/c/sdks/5) forums or raise a [support ticket](https://support.auth0.com/). Only [raise an issue](https://github.com/auth0/auth0_flutter/issues) if you have found a bug or want to request a feature.
+
+**Do not report security vulnerabilities on the public GitHub issue tracker.** The [Responsible Disclosure Program](https://auth0.com/responsible-disclosure-policy) details the procedure for disclosing security issues.
 
 ## What is Auth0?
 

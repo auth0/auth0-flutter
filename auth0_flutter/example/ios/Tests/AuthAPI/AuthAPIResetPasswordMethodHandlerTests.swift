@@ -6,10 +6,11 @@ import Auth0
 fileprivate typealias Argument = AuthAPIResetPasswordMethodHandler.Argument
 
 class AuthAPIResetPasswordMethodHandlerTests: XCTestCase {
-    let spy = SpyAuthentication()
+    var spy: SpyAuthentication!
     var sut: AuthAPIResetPasswordMethodHandler!
 
     override func setUpWithError() throws {
+        spy = SpyAuthentication()
         sut = AuthAPIResetPasswordMethodHandler(client: spy)
     }
 }
