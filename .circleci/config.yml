@@ -22,6 +22,41 @@ orbs:
 
                 mv android/local.properties.ci android/local.properties
               working_directory: ./auth0_flutter/example
+      run-smoke-tests:
+        description: "Runs the Android smoke tests"
+        parameters:
+          android_simulator:
+            type: string
+        steps:
+          - run:
+              name: Create screenshots artifact directory
+              command: mkdir android-screenshots
+          - android/accept-licenses
+          - android/create-avd:
+              avd-name: auth0_sample_avd
+              system-image: << parameters.android_simulator >>
+              install: true
+          - android/start-emulator:
+              avd-name: auth0_sample_avd
+              no-window: true
+              restore-gradle-cache-prefix: v1a
+              post-emulator-launch-assemble-command: ""
+              post-emulator-wait-steps:
+                - run:
+                    name: Disable Chrome welcome prompt
+                    command: adb shell 'echo "chrome --disable-fre --no-default-browser-check --no-first-run" > /data/local/tmp/chrome-command-line'
+                - run:
+                    name: Enable ADB root
+                    command: adb root
+          - android/run-tests:
+              max-tries: 1
+              working-directory: ./auth0_flutter/example/android
+          - run:
+              name: Copy screenshort from device
+              command: adb pull /sdcard/Pictures android-screenshots
+              when: always
+          - store_artifacts:
+              path: android-screenshots/Pictures
 parameters:
   flutter_version:
     type: string
@@ -115,40 +150,13 @@ jobs:
       - flutter/install_sdk_and_pub:
           app-dir: ./auth0_flutter
           flutter_version: << pipeline.parameters.flutter_version >>
-      - run:
-          name: Ensure Screenshots folder exists
-          command: mkdir android-screenshots
       - local-android/prepare-config
       - run:
           name: Build Android app
           command: flutter build apk
           working_directory: ./auth0_flutter/example
-      - android/accept-licenses
-      - android/create-avd:
-          avd-name: auth0_sample_avd
-          system-image: << parameters.android_simulator >>
-          install: true
-      - android/start-emulator:
-          avd-name: auth0_sample_avd
-          no-window: true
-          restore-gradle-cache-prefix: v1a
-          post-emulator-launch-assemble-command: ""
-          post-emulator-wait-steps:
-            - run:
-                name: Disable Chrome welcome prompt
-                command: adb shell 'echo "chrome --disable-fre --no-default-browser-check --no-first-run" > /data/local/tmp/chrome-command-line'
-            - run:
-                name: Enable ADB root
-                command: adb root
-      - android/run-tests:
-          max-tries: 1
-          working-directory: ./auth0_flutter/example/android
-      - run:
-          name: Copy files from device
-          command: adb pull /sdcard/Pictures android-screenshots
-          when: always
-      - store_artifacts:
-          path: android-screenshots/Pictures
+      - local-android/sun-smoke-tests:
+          android_simulator: << parameters.android_simulator >>
       - android/save-gradle-cache:
           cache-prefix: v1a
       - run:
