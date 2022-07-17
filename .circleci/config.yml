@@ -5,6 +5,8 @@ orbs:
   flutter: circleci/flutter@1
   codecov: codecov/codecov@3
   local-android:
+    orbs:
+      android: circleci/android@2
     commands:
       prepare-config:
         description: "Prepares the environment configuration files"
