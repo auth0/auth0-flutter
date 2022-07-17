@@ -155,7 +155,7 @@ jobs:
           name: Build Android app
           command: flutter build apk
           working_directory: ./auth0_flutter/example
-      - local-android/sun-smoke-tests:
+      - local-android/run-smoke-tests:
           android_simulator: << parameters.android_simulator >>
       - android/save-gradle-cache:
           cache-prefix: v1a
