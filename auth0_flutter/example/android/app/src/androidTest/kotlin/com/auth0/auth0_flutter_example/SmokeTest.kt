@@ -35,7 +35,7 @@ class SmokeTest {
     private val LOGIN_BUTTON = "Web Auth Login"
     private val LOGOUT_BUTTON = "Web Auth Logout"
     private val UL_BUTTON = if (CLASSIC_UL) "Log In" else "Continue"
-    private val TIMEOUT = 15000L
+    private val TIMEOUT = 30000L
 
     init {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
