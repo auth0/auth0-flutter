@@ -1,6 +1,14 @@
 # auth0_flutter_platform_interface
 
+[![CircleCI](https://img.shields.io/circleci/project/github/auth0/auth0-flutter.svg)](https://circleci.com/gh/auth0/auth0-flutter/tree/main)
+[![Codecov](https://codecov.io/gh/auth0/auth0-flutter/branch/main/graph/badge.svg?flag=auth0_flutter_platform_interface)](https://codecov.io/gh/auth0/auth0-flutter)
+[![Package](https://img.shields.io/pub/v/auth0_flutter_platform_interface.svg)](https://pub.dartlang.org/packages/auth0_flutter_platform_interface)
+
 This package provides the common interface for platform implementations.
+
+**[API documentation ↗](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/)**
+
+> ⚠️ This library is currently in First Availability. We do not recommend using this library in production yet. As we move toward General Availability, please be aware that releases may contain breaking changes.
 
 ## Issue Reporting
 
