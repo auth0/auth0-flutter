@@ -1,6 +1,6 @@
 name: auth0_flutter
-description: A new flutter plugin project.
-version: 1.0.0-beta.0
+description: Auth0 SDK for Flutter
+version: 1.0.0-beta.1 
 homepage: https://github.com/auth0/auth0-flutter
 publish_to: none
 
