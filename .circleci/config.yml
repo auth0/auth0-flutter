@@ -30,9 +30,6 @@ orbs:
           android_simulator:
             type: string
         steps:
-          - run:
-              name: Create screenshots artifact directory
-              command: mkdir android-screenshots
           - android/accept-licenses
           - android/create-avd:
               avd-name: auth0_sample_avd
@@ -53,12 +50,6 @@ orbs:
           - android/run-tests:
               max-tries: 1
               working-directory: ./auth0_flutter/example/android
-          - run:
-              name: Copy screenshort from device
-              command: adb pull /sdcard/Pictures android-screenshots
-              when: always
-          - store_artifacts:
-              path: android-screenshots/Pictures
 parameters:
   flutter_version:
     type: string
@@ -161,10 +152,6 @@ jobs:
           android_simulator: << parameters.android_simulator >>
       - android/save-gradle-cache:
           cache-prefix: v1a
-      - run:
-          name: Delay shutdown
-          command: sleep 60
-          when: always
   test_ios:
     parameters:
       ios_simulator:
