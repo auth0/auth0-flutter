@@ -125,11 +125,10 @@ void main() {
           .thenAnswer((final _) async => true);
       final mockCm = MockCredentialsManager();
 
-      when(mockCm.storeCredentials(any))
-          .thenAnswer((final _) async => true);
+      when(mockCm.storeCredentials(any)).thenAnswer((final _) async => true);
 
-      await Auth0('test-domain', 'test-clientId')
-          .webAuthentication(customCredentialsManager: mockCm)
+      await Auth0('test-domain', 'test-clientId', credentialsManager: mockCm)
+          .webAuthentication()
           .login(
               audience: 'test-audience',
               scopes: {'a', 'b'},
@@ -141,8 +140,7 @@ void main() {
       // Verify it doesn't call our own Platform Interface when providing a custom CredentialsManager
       verifyNever(mockedCMPlatform.saveCredentials(any));
 
-      final verificationResult =
-          verify(mockCm.storeCredentials(captureAny))
+      final verificationResult = verify(mockCm.storeCredentials(captureAny))
           .captured
           .single as Credentials;
 
@@ -170,7 +168,7 @@ void main() {
       expect(verificationResult.options.parameters, {});
       expect(result, TestPlatform.loginResult);
     });
-  
+
     test('does not use EphemeralSession by default', () async {
       when(mockedPlatform.login(any))
           .thenAnswer((final _) async => TestPlatform.loginResult);
@@ -242,11 +240,10 @@ void main() {
       when(mockedCMPlatform.clearCredentials(any))
           .thenAnswer((final _) async => true);
       final mockCm = MockCredentialsManager();
-      when(mockCm.clearCredentials())
-          .thenAnswer((final _) async => true);
+      when(mockCm.clearCredentials()).thenAnswer((final _) async => true);
 
-      await Auth0('test-domain', 'test-clientId')
-          .webAuthentication(customCredentialsManager: mockCm)
+      await Auth0('test-domain', 'test-clientId', credentialsManager: mockCm)
+          .webAuthentication()
           .logout(returnTo: 'abc');
 
       // Verify it doesn't call our own Platform Interface when providing a custom CredentialsManager

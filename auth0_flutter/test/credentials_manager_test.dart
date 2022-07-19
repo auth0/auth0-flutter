@@ -37,7 +37,7 @@ void main() {
     reset(mockedPlatform);
   });
 
-  group('get', () {
+  group('credentials', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.getCredentials(any))
           .thenAnswer((final _) async => TestPlatform.credentials);
@@ -72,7 +72,7 @@ void main() {
     });
   });
 
-  group('set', () {
+  group('storeCredentials', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.saveCredentials(any))
           .thenAnswer((final _) async => true);
@@ -148,7 +148,7 @@ void main() {
     });
   });
 
-  group('clear', () {
+  group('clearCredentials', () {
     test('calls the platform', () async {
       when(mockedPlatform.clearCredentials(any))
           .thenAnswer((final _) async => true);
