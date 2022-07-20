@@ -139,6 +139,12 @@ jobs:
       resource-class: xlarge
       tag: 2021.10.1
     steps:
+      - run:
+          name: Guard Smoke Tests
+          command: |
+            if ! [[ -z "$CIRCLE_PR_NUMBER" ]]; then
+                circleci-agent step halt
+            fi
       - checkout
       - flutter/install_sdk_and_pub:
           app-dir: ./auth0_flutter
