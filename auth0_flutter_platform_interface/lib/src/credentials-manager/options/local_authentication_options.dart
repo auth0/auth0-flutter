@@ -12,6 +12,6 @@ class LocalAuthenticationOptions {
   /// (iOS only): Fallback message to display on the local authentication prompt after a failed match.
   final String? fallbackTitle;
 
-  LocalAuthenticationOptions(
+  const LocalAuthenticationOptions(
       {this.title, this.description, this.cancelTitle, this.fallbackTitle});
 }
