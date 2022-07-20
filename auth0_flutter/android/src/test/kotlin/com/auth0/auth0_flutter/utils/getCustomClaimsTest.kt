@@ -4,20 +4,17 @@ import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.nullValue
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.MatcherAssert.assertThat
-import org.junit.Assert.assertThrows
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
-import java.util.*
 
 @RunWith(RobolectricTestRunner::class)
 class GetCustomClaimsTest {
     @Test
     fun `should return an empty map when no claims`() {
-        val customClaims = getCustomClaims(mapOf());
+        val customClaims = getCustomClaims(mapOf())
 
-        assertThat(customClaims, equalTo(mapOf()));
+        assertThat(customClaims, equalTo(mapOf()))
     }
 
     @Test
@@ -39,13 +36,13 @@ class GetCustomClaimsTest {
         val claims = claimsToFilter.associateWith { "test-value" }
 
         claimsToFilter.forEach {
-            assertThat(claims[it], not(nullValue()));
+            assertThat(claims[it], not(nullValue()))
         }
 
-        val customClaims = getCustomClaims(claims);
+        val customClaims = getCustomClaims(claims)
 
         claimsToFilter.forEach {
-            assertThat(customClaims[it], nullValue());
+            assertThat(customClaims[it], nullValue())
         }
     }
 
@@ -77,21 +74,21 @@ class GetCustomClaimsTest {
         val claims = standardClaims.associateWith { "test-value" }
 
         standardClaims.forEach {
-            assertThat(claims[it], not(nullValue()));
+            assertThat(claims[it], not(nullValue()))
         }
 
-        val customClaims = getCustomClaims(claims);
+        val customClaims = getCustomClaims(claims)
 
         standardClaims.forEach {
-            assertThat(customClaims[it], nullValue());
+            assertThat(customClaims[it], nullValue())
         }
     }
 
     @Test
     fun `should return an empty map when no custom claims`() {
-        val customClaims = getCustomClaims(mapOf("name" to "test", "given_name" to "test2"));
+        val customClaims = getCustomClaims(mapOf("name" to "test", "given_name" to "test2"))
 
-        assertThat(customClaims, equalTo(mapOf()));
+        assertThat(customClaims, equalTo(mapOf()))
     }
 
     @Test
@@ -103,8 +100,8 @@ class GetCustomClaimsTest {
                 "aud" to "test-aud",
                 "custom" to "custom value"
             )
-        );
+        )
 
-        assertThat(customClaims, equalTo(mapOf("custom" to "custom value")));
+        assertThat(customClaims, equalTo(mapOf("custom" to "custom value")))
     }
 }

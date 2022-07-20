@@ -23,12 +23,12 @@ class SaveCredentialsRequestHandlerTest {
     @Test
     fun `should throw when missing credentials`() {
         val options =
-            hashMapOf<String, Any>();
-        val handler = SaveCredentialsRequestHandler();
-        val mockResult = mock<Result>();
-        val mockAccount = mock<Auth0>();
-        var mockCredentialsManager = mock<SecureCredentialsManager>();
-        val request = MethodCallRequest(account = mockAccount, options);
+            hashMapOf<String, Any>()
+        val handler = SaveCredentialsRequestHandler()
+        val mockResult = mock<Result>()
+        val mockAccount = mock<Auth0>()
+        val mockCredentialsManager = mock<SecureCredentialsManager>()
+        val request = MethodCallRequest(account = mockAccount, options)
 
         val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
             handler.handle(
@@ -36,13 +36,13 @@ class SaveCredentialsRequestHandlerTest {
                 mock(),
                 request,
                 mockResult
-            );
+            )
         }
 
         assertThat(
             exception.message,
             equalTo("Required property 'credentials' is not provided.")
-        );
+        )
     }
 
     @Test
@@ -52,12 +52,12 @@ class SaveCredentialsRequestHandlerTest {
                 "idToken" to "test-id-token",
                 "tokenType" to "Bearer",
                 "expiresAt" to "2022-01-01"
-            ));
-        val handler = SaveCredentialsRequestHandler();
-        val mockResult = mock<Result>();
-        val mockAccount = mock<Auth0>();
-        var mockCredentialsManager = mock<SecureCredentialsManager>();
-        val request = MethodCallRequest(account = mockAccount, options);
+            ))
+        val handler = SaveCredentialsRequestHandler()
+        val mockResult = mock<Result>()
+        val mockAccount = mock<Auth0>()
+        val mockCredentialsManager = mock<SecureCredentialsManager>()
+        val request = MethodCallRequest(account = mockAccount, options)
 
         val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
             handler.handle(
@@ -65,13 +65,13 @@ class SaveCredentialsRequestHandlerTest {
                 mock(),
                 request,
                 mockResult
-            );
+            )
         }
 
         assertThat(
             exception.message,
             equalTo("Required property 'credentials.accessToken' is not provided.")
-        );
+        )
     }
 
     @Test
@@ -81,12 +81,12 @@ class SaveCredentialsRequestHandlerTest {
                 "accessToken" to "test-access-token",
                 "tokenType" to "Bearer",
                 "expiresAt" to "2022-01-01"
-            ));
-        val handler = SaveCredentialsRequestHandler();
-        val mockResult = mock<Result>();
-        val mockAccount = mock<Auth0>();
-        var mockCredentialsManager = mock<SecureCredentialsManager>();
-        val request = MethodCallRequest(account = mockAccount, options);
+            ))
+        val handler = SaveCredentialsRequestHandler()
+        val mockResult = mock<Result>()
+        val mockAccount = mock<Auth0>()
+        val mockCredentialsManager = mock<SecureCredentialsManager>()
+        val request = MethodCallRequest(account = mockAccount, options)
 
         val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
             handler.handle(
@@ -94,13 +94,13 @@ class SaveCredentialsRequestHandlerTest {
                 mock(),
                 request,
                 mockResult
-            );
+            )
         }
 
         assertThat(
             exception.message,
             equalTo("Required property 'credentials.idToken' is not provided.")
-        );
+        )
     }
 
     @Test
@@ -110,12 +110,12 @@ class SaveCredentialsRequestHandlerTest {
                 "accessToken" to "test-access-token",
                 "idToken" to "test-id-token",
                 "expiresAt" to "2022-01-01"
-            ));
-        val handler = SaveCredentialsRequestHandler();
-        val mockResult = mock<Result>();
-        val mockAccount = mock<Auth0>();
-        var mockCredentialsManager = mock<SecureCredentialsManager>();
-        val request = MethodCallRequest(account = mockAccount, options);
+            ))
+        val handler = SaveCredentialsRequestHandler()
+        val mockResult = mock<Result>()
+        val mockAccount = mock<Auth0>()
+        val mockCredentialsManager = mock<SecureCredentialsManager>()
+        val request = MethodCallRequest(account = mockAccount, options)
 
         val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
             handler.handle(
@@ -123,13 +123,13 @@ class SaveCredentialsRequestHandlerTest {
                 mock(),
                 request,
                 mockResult
-            );
+            )
         }
 
         assertThat(
             exception.message,
             equalTo("Required property 'credentials.tokenType' is not provided.")
-        );
+        )
     }
 
     @Test
@@ -139,12 +139,12 @@ class SaveCredentialsRequestHandlerTest {
                 "accessToken" to "test-access-token",
                 "idToken" to "test-id-token",
                 "tokenType" to "Bearer",
-            ));
-        val handler = SaveCredentialsRequestHandler();
-        val mockResult = mock<Result>();
-        val mockAccount = mock<Auth0>();
-        var mockCredentialsManager = mock<SecureCredentialsManager>();
-        val request = MethodCallRequest(account = mockAccount, options);
+            ))
+        val handler = SaveCredentialsRequestHandler()
+        val mockResult = mock<Result>()
+        val mockAccount = mock<Auth0>()
+        val mockCredentialsManager = mock<SecureCredentialsManager>()
+        val request = MethodCallRequest(account = mockAccount, options)
 
         val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
             handler.handle(
@@ -152,111 +152,106 @@ class SaveCredentialsRequestHandlerTest {
                 mock(),
                 request,
                 mockResult
-            );
+            )
         }
 
         assertThat(
             exception.message,
             equalTo("Required property 'credentials.expiresAt' is not provided.")
-        );
+        )
     }
 
     @Test
     fun `should call saveCredentials with the correct parameters`() {
-        val handler = SaveCredentialsRequestHandler();
-        var credentialsMap = hashMapOf(
+        val handler = SaveCredentialsRequestHandler()
+        val credentialsMap = hashMapOf(
             "accessToken" to "test-access-token",
             "idToken" to "test-access-token",
             "tokenType" to "Bearer",
             "expiresAt" to "2022-01-01T00:00:00.000Z",
             "scopes" to arrayListOf("a", "b")
-        );
-        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        var date = format.parse(credentialsMap.get("expiresAt") as String);
-        var scope: String? = null;
+        )
+        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val date = format.parse(credentialsMap["expiresAt"] as String) as Date
+        var scope: String? = null
         val scopes = credentialsMap.getOrDefault("scopes", arrayListOf<String>()) as ArrayList<*>
         if (scopes.isNotEmpty()) {
-            scope = scopes.joinToString(separator = " ");
+            scope = scopes.joinToString(separator = " ")
         }
 
-
-        var credentials = Credentials(
-            credentialsMap.get("idToken") as String,
-            credentialsMap.get("accessToken") as String,
-            credentialsMap.get("tokenType") as String,
-            credentialsMap.get("refreshToken") as String?,
+        val credentials = Credentials(
+            credentialsMap["idToken"] as String,
+            credentialsMap["accessToken"] as String,
+            credentialsMap["tokenType"] as String,
+            credentialsMap["refreshToken"] as String?,
             date,
             scope,
         )
         val options = hashMapOf(
             "credentials" to credentialsMap,
-        );
-        val mockResult = mock<Result>();
-        val mockAccount = mock<Auth0>();
-        var mockCredentialsManager = mock<SecureCredentialsManager>();
-        val request = MethodCallRequest(account = mockAccount, options);
+        )
+        val mockResult = mock<Result>()
+        val mockAccount = mock<Auth0>()
+        val mockCredentialsManager = mock<SecureCredentialsManager>()
+        val request = MethodCallRequest(account = mockAccount, options)
 
         handler.handle(
             mockCredentialsManager,
             mock(),
             request,
             mockResult
-        );
-
+        )
 
         val captor = argumentCaptor<Credentials>()
-        verify(mockCredentialsManager).saveCredentials(captor.capture());
+        verify(mockCredentialsManager).saveCredentials(captor.capture())
 
-        assertThat((captor.firstValue as Credentials).accessToken, equalTo(credentials.accessToken))
-
+        assertThat((captor.firstValue).accessToken, equalTo(credentials.accessToken))
     }
 
     @Test
     fun `should call saveCredentials with the correct parameters without scopes`() {
-        val handler = SaveCredentialsRequestHandler();
-        var credentialsMap = hashMapOf(
+        val handler = SaveCredentialsRequestHandler()
+        val credentialsMap = hashMapOf(
             "accessToken" to "test-access-token",
             "idToken" to "test-access-token",
             "tokenType" to "Bearer",
             "expiresAt" to "2022-01-01T00:00:00.000Z"
-        );
-        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        var date = format.parse(credentialsMap.get("expiresAt") as String);
-        var scope: String? = null;
+        )
+        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val date = format.parse(credentialsMap["expiresAt"] as String) as Date
+        var scope: String? = null
         val scopes = credentialsMap.getOrDefault("scopes", arrayListOf<String>()) as ArrayList<*>
         if (scopes.isNotEmpty()) {
-            scope = scopes.joinToString(separator = " ");
+            scope = scopes.joinToString(separator = " ")
         }
 
-
-        var credentials = Credentials(
-            credentialsMap.get("idToken") as String,
-            credentialsMap.get("accessToken") as String,
-            credentialsMap.get("tokenType") as String,
-            credentialsMap.get("refreshToken"),
+        val credentials = Credentials(
+            credentialsMap["idToken"] as String,
+            credentialsMap["accessToken"] as String,
+            credentialsMap["tokenType"] as String,
+            credentialsMap["refreshToken"],
             date,
             scope,
         )
         val options = hashMapOf(
             "credentials" to credentialsMap,
-        );
-        val mockResult = mock<Result>();
-        val mockAccount = mock<Auth0>();
-        var mockCredentialsManager = mock<SecureCredentialsManager>();
-        val request = MethodCallRequest(account = mockAccount, options);
+        )
+        val mockResult = mock<Result>()
+        val mockAccount = mock<Auth0>()
+        val mockCredentialsManager = mock<SecureCredentialsManager>()
+        val request = MethodCallRequest(account = mockAccount, options)
 
         handler.handle(
             mockCredentialsManager,
             mock(),
             request,
             mockResult
-        );
-
+        )
 
         val captor = argumentCaptor<Credentials>()
-        verify(mockCredentialsManager).saveCredentials(captor.capture());
+        verify(mockCredentialsManager).saveCredentials(captor.capture())
 
-        assertThat((captor.firstValue as Credentials).accessToken, equalTo(credentials.accessToken))
-
+        assertThat((captor.firstValue).accessToken, equalTo(credentials.accessToken))
     }
+
 }

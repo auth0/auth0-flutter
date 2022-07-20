@@ -1,11 +1,7 @@
 package com.auth0.auth0_flutter
 
 import android.app.Activity
-import android.content.Context
 import android.content.SharedPreferences
-import com.auth0.auth0_flutter.request_handlers.api.ApiRequestHandler
-import com.auth0.auth0_flutter.request_handlers.api.LoginApiRequestHandler
-import com.auth0.auth0_flutter.request_handlers.api.SignupApiRequestHandler
 import com.auth0.auth0_flutter.request_handlers.credentials_manager.ClearCredentialsRequestHandler
 import com.auth0.auth0_flutter.request_handlers.credentials_manager.CredentialsManagerRequestHandler
 import com.auth0.auth0_flutter.request_handlers.credentials_manager.HasValidCredentialsRequestHandler
@@ -42,7 +38,7 @@ class CredentialsManagerMethodCallHandlerTest {
         val handler = CredentialsManagerMethodCallHandler(requestHandlers)
         val mockResult = mock<Result>()
 
-        handler.activity = if (activity === null)  mock() else activity;
+        handler.activity = if (activity === null)  mock() else activity
 
         handler.onMethodCall(MethodCall(method, arguments), mockResult)
         onResult(mockResult)
@@ -57,9 +53,9 @@ class CredentialsManagerMethodCallHandlerTest {
 
     @Test
     fun `handler should result in 'notImplemented' if no matching handler`() {
-        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>();
+        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
 
-        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials");
+        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
 
         runCallHandler("credentialsManager#saveCredentials", requestHandlers = listOf(clearCredentialsHandler)) { result ->
             verify(result).notImplemented()
@@ -68,21 +64,21 @@ class CredentialsManagerMethodCallHandlerTest {
 
     @Test
     fun `handler should not call credentialsManager requireAuthentication`() {
-        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>();
+        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
 
-        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials");
+        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
 
-        val activity: Activity = mock();
+        val activity: Activity = mock()
         val mockPrefs: SharedPreferences = mock()
 
         `when`(activity.getSharedPreferences(any(), any()))
-            .thenReturn(mockPrefs);
+            .thenReturn(mockPrefs)
 
         val handler = CredentialsManagerMethodCallHandler(listOf(clearCredentialsHandler))
         val mockResult = mock<Result>()
 
-        handler.activity = activity;
-        handler.credentialsManager = mock();
+        handler.activity = activity
+        handler.credentialsManager = mock()
 
         handler.onMethodCall(MethodCall(clearCredentialsHandler.method, defaultArguments), mockResult)
 
@@ -91,21 +87,21 @@ class CredentialsManagerMethodCallHandlerTest {
 
     @Test
     fun `handler should call credentialsManager requireAuthentication`() {
-        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>();
+        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
 
-        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials");
+        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
 
-        val activity: Activity = mock();
+        val activity: Activity = mock()
         val mockPrefs: SharedPreferences = mock()
 
         `when`(activity.getSharedPreferences(any(), any()))
-            .thenReturn(mockPrefs);
+            .thenReturn(mockPrefs)
 
         val handler = CredentialsManagerMethodCallHandler(listOf(clearCredentialsHandler))
         val mockResult = mock<Result>()
 
-        handler.activity = activity;
-        handler.credentialsManager = mock();
+        handler.activity = activity
+        handler.credentialsManager = mock()
 
         handler.onMethodCall(MethodCall(clearCredentialsHandler.method, defaultArguments + hashMapOf("localAuthentication" to hashMapOf("title" to "test", "description" to "test description"))), mockResult)
 
@@ -114,21 +110,21 @@ class CredentialsManagerMethodCallHandlerTest {
 
     @Test
     fun `handler should call credentialsManager requireAuthentication with default values`() {
-        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>();
+        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
 
-        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials");
+        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
 
-        val activity: Activity = mock();
+        val activity: Activity = mock()
         val mockPrefs: SharedPreferences = mock()
 
         `when`(activity.getSharedPreferences(any(), any()))
-            .thenReturn(mockPrefs);
+            .thenReturn(mockPrefs)
 
         val handler = CredentialsManagerMethodCallHandler(listOf(clearCredentialsHandler))
         val mockResult = mock<Result>()
 
-        handler.activity = activity;
-        handler.credentialsManager = mock();
+        handler.activity = activity
+        handler.credentialsManager = mock()
 
         handler.onMethodCall(MethodCall(clearCredentialsHandler.method, defaultArguments + hashMapOf("localAuthentication" to hashMapOf<String, String>())), mockResult)
 
@@ -137,19 +133,19 @@ class CredentialsManagerMethodCallHandlerTest {
 
     @Test
     fun `handler should only run the correct handler`() {
-        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>();
-        val hasValidCredentialsHandler = mock<HasValidCredentialsRequestHandler>();
+        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
+        val hasValidCredentialsHandler = mock<HasValidCredentialsRequestHandler>()
 
-        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials");
-        `when`(hasValidCredentialsHandler.method).thenReturn("credentialsManager#hasValidCredentials");
+        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
+        `when`(hasValidCredentialsHandler.method).thenReturn("credentialsManager#hasValidCredentials")
 
-        val activity: Activity = mock();
-        val mockPrefs: SharedPreferences = mock();
+        val activity: Activity = mock()
+        val mockPrefs: SharedPreferences = mock()
 
         `when`(activity.getSharedPreferences(any(), any()))
-            .thenReturn(mockPrefs);
+            .thenReturn(mockPrefs)
 
-        runCallHandler(clearCredentialsHandler.method, activity = activity, requestHandlers = listOf(clearCredentialsHandler, hasValidCredentialsHandler)) { _ ->
+        runCallHandler(clearCredentialsHandler.method, activity = activity, requestHandlers = listOf(clearCredentialsHandler, hasValidCredentialsHandler)) {
             verify(clearCredentialsHandler).handle(any(), eq(activity), any(), any())
             verify(hasValidCredentialsHandler, times(0)).handle(any(), eq(activity), any(), any())
         }
@@ -159,22 +155,22 @@ class CredentialsManagerMethodCallHandlerTest {
     fun `should call checkAuthenticationResult in onActivityResult`() {
         val handler = CredentialsManagerMethodCallHandler(listOf())
 
-        handler.credentialsManager = mock();
+        handler.credentialsManager = mock()
 
-        handler.onActivityResult(1, 2, null);
+        handler.onActivityResult(1, 2, null)
 
-        verify(handler.credentialsManager)?.checkAuthenticationResult(1, 2);
+        verify(handler.credentialsManager)?.checkAuthenticationResult(1, 2)
     }
 
     @Test
     fun `should return true in onActivityResult when no credentialsManager`() {
         val handler = CredentialsManagerMethodCallHandler(listOf())
 
-        val result = handler.onActivityResult(1, 2, null);
+        val result = handler.onActivityResult(1, 2, null)
 
         MatcherAssert.assertThat(
             result,
             CoreMatchers.equalTo(true)
-        );
+        )
     }
 }
