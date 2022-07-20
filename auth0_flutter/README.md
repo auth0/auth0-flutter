@@ -38,6 +38,7 @@ Auth0 SDK for Android / iOS Flutter apps.
 
 - Web Auth login and logout
 - Automatic storage and renewal of user's credentials
+- Support for custom Credentials Manager implementations
 - Support for the following Authentication API operations:
   + Login with username or email and password
   + Signup
@@ -232,8 +233,7 @@ final credentials = await auth0.webAuthentication().login();
 auth0_flutter will automatically store the user's credentials using the built-in [Credentials Manager](#credentials-manager) instance. You can access this instance through the `credentialsManager` property.
 
 ```dart
-final credentials =
-        await auth0.webAuthentication().credentialsManager?.credentials();
+final credentials = await auth0.credentialsManager.credentials();
 ```
 
 <details>
@@ -338,7 +338,6 @@ You can configure the ID token validation by passing an `IdTokenValidationConfig
 
 ```dart
 const config = IdTokenValidationConfig(leeway: 10);
-
 final credentials =
     await auth0.webAuthentication().login(idTokenValidationConfig: config);
 ```
@@ -350,7 +349,6 @@ Users of Auth0 Private Cloud with custom domains still on the [legacy behavior](
 ```dart
 const config =
     IdTokenValidationConfig(issuer: 'https://YOUR_AUTH0_DOMAIN/');
-
 final credentials =
     await auth0.webAuthentication().login(idTokenValidationConfig: config);
 ```
@@ -361,7 +359,7 @@ By default, `auth0_flutter` will automatically store the user's credentials afte
 
 ```dart
 final credentials =
-          await auth0.webAuthentication(useCredentialsManager: false).login();
+    await auth0.webAuthentication(useCredentialsManager: false).login();
 ```
 
 #### Web Auth errors
@@ -373,7 +371,7 @@ try {
   final credentials = await auth0.webAuthentication().login();
   // ...
 } on WebAuthException catch (e) {
-  print(e.toString());
+  print(e);
 }
 ```
 
@@ -383,6 +381,7 @@ try {
 
 - [Check for stored credentials](#check-for-stored-credentials)
 - [Retrieve stored credentials](#retrieve-stored-credentials)
+- [Custom implementations](#custom-implementations)
 - [Local authentication](#local-authentication)
 - [Credentials Manager errors](#credentials-manager-errors)
 
@@ -395,11 +394,7 @@ The Credentials Manager utility allows you to securely store and retrieve the us
 When the users open your app, check for valid credentials. If they exist, you can retrieve them and redirect the users to the app's main flow without any additional login steps.
 
 ```dart
-final isLoggedIn = await auth0
-        .webAuthentication()
-        .credentialsManager
-        ?.hasValidCredentials() ??
-    false;
+final isLoggedIn = await auth0.credentialsManager.hasValidCredentials();
 
 if (isLoggedIn) {
   // Retrieve the credentials and redirect to the main flow
@@ -413,26 +408,37 @@ if (isLoggedIn) {
 The credentials will be automatically renewed (if expired) using the [refresh token](https://auth0.com/docs/secure/tokens/refresh-tokens). **This method is thread-safe.**
 
 ```dart
-final credentials =
-        await auth0.webAuthentication().credentialsManager?.credentials();
+final credentials = await auth0.credentialsManager.credentials();
 ```
 
-> 💡 You do not need to call `credentialsManager?.storeCredentials()` afterward. The Credentials Manager automatically persists the renewed credentials.
+> 💡 You do not need to call `credentialsManager.storeCredentials()` afterward. The Credentials Manager automatically persists the renewed credentials.
+
+#### Custom implementations
+
+flutter_auth0 exposes a built-in, default Credentials Manager implementation through the `credentialsManager` property. You can pass your own implementation to the `Auth0` constructor. If you're using Web Auth, this implementation will be used to store the user's credentials after login and delete them after logout.
+
+```dart
+final customCredentialsManager = CustomCredentialsManager();
+final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID',
+    credentialsManager: customCredentialsManager);
+// auth0.credentialsManager is now your CustomCredentialsManager instance
+```
 
 #### Local authentication
 
 You can enable an additional level of user authentication before retrieving credentials using the local authentication supported by the device, for example PIN or fingerprint on Android, and Face ID or Touch ID on iOS.
 
 ```dart
-final localAuthentication =
-        LocalAuthenticationOptions(title: 'Please authenticate to continue');
-    final credentials = await auth0
-        .webAuthentication(localAuthentication: localAuthentication)
-        .credentialsManager
-        ?.credentials();
+const options =
+    LocalAuthenticationOptions(title: 'Please authenticate to continue');
+final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID',
+    localAuthentication: options);
+final credentials = await auth0.credentialsManager.credentials();
 ```
 
 Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/LocalAuthenticationOptions-class.html) to learn more about the available `LocalAuthenticationOptions` properties.
+
+> ⚠️ Enabling local authentication will not work if you're using a custom Credentials Manager implementation. In that case, you will need to build support for local authentication into your custom implementation.
 
 #### Credentials Manager errors
 
@@ -440,11 +446,10 @@ The Credentials Manager will only throw `CredentialsManagerException` exceptions
 
 ```dart
 try {
-  final credentials =
-      await auth0.webAuthentication().credentialsManager?.credentials();
+  final credentials = await auth0.credentialsManager.credentials();
   // ...
 } on CredentialsManagerException catch (e) {
-  print(e.toString());
+  print(e);
 }
 ```
 
@@ -474,6 +479,10 @@ final credentials = await auth0.api.login(
     usernameOrEmail: 'jane.smith@example.com',
     password: 'secret-password',
     connectionOrRealm: 'Username-Password-Authentication');
+
+// Store the credentials afterward
+final success =
+    await auth0.credentialsManager.storeCredentials(credentials);
 ```
 
 <details>
@@ -507,7 +516,7 @@ final credentials = await auth0.api.login(
 #### Sign up with database connection
 
 ```dart
-final credentials = await auth0.api.signup(
+final databaseUser = await auth0.api.signup(
     email: 'jane.smith@example.com',
     password: 'secret-password',
     connection: 'Username-Password-Authentication',
@@ -531,8 +540,12 @@ final userProfile = await auth0.api.userInfo(accessToken: accessToken);
 Use a [refresh token](https://auth0.com/docs/secure/tokens/refresh-tokens) to renew the user's credentials. It's recommended that you read and understand the refresh token process beforehand.
 
 ```dart
-final credentials =
+final newCredentials =
     await auth0.api.renewCredentials(refreshToken: refreshToken);
+
+// Store the credentials afterward
+final success =
+    await auth0.credentialsManager.storeCredentials(newCredentials);
 ```
 
 > 💡 To obtain a refresh token, make sure your Auth0 application has the **refresh token** [grant enabled](https://auth0.com/docs/get-started/applications/update-grant-types). If you are also specifying an audience value, make sure that the corresponding Auth0 API has the **Allow Offline Access** [setting enabled](https://auth0.com/docs/get-started/apis/api-settings#access-settings).
@@ -549,7 +562,7 @@ try {
       connectionOrRealm: connection);
   // ...
 } on ApiException catch (e) {
-  print(e.toString());
+  print(e);
 }
 ```
 
@@ -619,10 +632,10 @@ For general support or usage questions, use the [Auth0 Community](https://commun
 
 Auth0 helps you to:
 
-- Add authentication with [multiple sources](https://auth0.com/docs/authenticate/identity-providers), either social identity providers such as **Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter, Box, Salesforce** (amongst others), or enterprise identity systems like **Windows Azure AD, Google Apps, Active Directory, ADFS, or any SAML Identity Provider**.
+- Add authentication with [multiple sources](https://auth0.com/docs/authenticate/identity-providers), either social identity providers such as **Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter, Box, Salesforce** (amongst others), or enterprise identity systems like **Windows Azure AD, Google Apps, Active Directory, ADFS, or any SAML identity provider**.
 - Add authentication through more traditional **[username/password databases](https://auth0.com/docs/authenticate/database-connections/custom-db)**.
 - Add support for **[linking different user accounts](https://auth0.com/docs/manage-users/user-accounts/user-account-linking)** with the same user.
-- Support for generating signed [JSON Web Tokens](https://auth0.com/docs/secure/tokens/json-web-tokens) to call your APIs and **flow the user identity** securely.
+- Support for generating signed [JSON web tokens](https://auth0.com/docs/secure/tokens/json-web-tokens) to call your APIs and **flow the user identity** securely.
 - Analytics of how, when, and where users are logging in.
 - Pull data from other sources and add it to the user profile through [JavaScript Actions](https://auth0.com/docs/customize/actions).
 

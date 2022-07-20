@@ -61,7 +61,8 @@ That alert box is displayed and managed by `ASWebAuthenticationSession`, not by 
 If you don't need SSO, you can disable this behavior by adding `useEphemeralSession: true` to the login call. This will configure `ASWebAuthenticationSession` to not store the session cookie in the shared cookie jar, as if using an incognito browser window. With no shared cookie, `ASWebAuthenticationSession` will not prompt the user for consent.
 
 ```dart
-final result = await auth0.webAuthentication
+final credentials = await auth0
+    .webAuthentication()
     .login(useEphemeralSession: true); // No SSO, therefore no alert box
 ```
 
@@ -78,16 +79,16 @@ You still need to call `logout()` on Android, though, as `useEphemeralSession` i
 If you need SSO and/or are willing to tolerate the alert box on the login call, but would prefer to get rid of it when calling `logout()`, you can simply not call `logout()` and just clear the credentials from the app. This means that the shared session cookie will not be removed, so to get the user to log in again you need to add the `'prompt': 'login'` parameter to the _login_ call.
 
 ```dart
-final result = await auth0.webAuthentication.login(
+final credentials = await auth0.webAuthentication().login(
     useEphemeralSession: true,
     parameters: {
-      'prompt': 'login'
+        'prompt': 'login'
     }); // Ignore the cookie (if present) and show the login page
 ```
 
 Otherwise, the browser modal will close right away and the user will be automatically logged in again, as the cookie will still be there.
 
-> ⚠️ Keeping the shared session cookie may not be an option if you have strong privacy and/or security requirements, e.g. for a banking app.
+> ⚠️ Keeping the shared session cookie may not be an option if you have strong privacy and/or security requirements, for example in the case of a banking app.
 
 ## 4. Is there a way to disable the iOS _login_ alert box without `useEphemeralSession`?
 
