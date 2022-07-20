@@ -43,6 +43,7 @@ android {
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+        androidTest.java.srcDirs += 'src/androidTest/kotlin'
     }
 
     defaultConfig {
@@ -52,8 +53,15 @@ android {
         targetSdkVersion 31
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-        manifestPlaceholders = [auth0Domain: "@string/com_auth0_domain", auth0Scheme: "@string/com_auth0_scheme"]
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders = [auth0Domain: "$System.env.AUTH0_DOMAIN",
+                                auth0Scheme: "$System.env.AUTH0_CUSTOM_SCHEME"]
 
+        testOptions {
+            animationsDisabled = true
+            buildConfigField "String", "USER_EMAIL", "\"$System.env.USER_EMAIL\""
+            buildConfigField "String", "USER_PASSWORD", "\"$System.env.USER_PASSWORD\""
+        }
     }
 
     buildTypes {
@@ -74,4 +82,8 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test:runner:1.4.0'
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
 }
