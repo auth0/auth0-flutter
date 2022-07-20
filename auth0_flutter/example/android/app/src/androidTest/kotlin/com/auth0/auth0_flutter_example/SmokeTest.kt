@@ -3,8 +3,6 @@ package com.auth0.auth0_flutter_example
 import android.app.UiAutomation
 import android.content.Context
 import android.content.Intent
-import android.os.Environment
-import android.os.Environment.DIRECTORY_PICTURES
 import android.widget.Button
 import android.widget.EditText
 import androidx.test.core.app.ApplicationProvider
