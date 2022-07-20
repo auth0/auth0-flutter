@@ -130,7 +130,7 @@ class AuthenticationApi {
   /// * [scopes] can be specified if a reduced set of scopes is desired.
   ///
   /// ## Further reading
-  /// [Refresh Tokens on Auth0 docs](https://auth0.com/docs/secure/tokens/refresh-tokens)
+  /// [Refresh tokens on Auth0 docs](https://auth0.com/docs/secure/tokens/refresh-tokens)
   ///
   /// ## Usage example
   ///
