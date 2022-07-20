@@ -481,7 +481,7 @@ final credentials = await auth0.api.login(
     connectionOrRealm: 'Username-Password-Authentication');
 
 // Store the credentials afterward
-final success =
+final didStore =
     await auth0.credentialsManager.storeCredentials(credentials);
 ```
 
@@ -544,7 +544,7 @@ final newCredentials =
     await auth0.api.renewCredentials(refreshToken: refreshToken);
 
 // Store the credentials afterward
-final success =
+final didStore =
     await auth0.credentialsManager.storeCredentials(newCredentials);
 ```
 
