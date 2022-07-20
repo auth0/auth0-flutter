@@ -12,7 +12,7 @@ The example app can be run by executing `flutter run` in **/auth0_flutter/exampl
 
 ## Android Integration tests
 
-UIAutomator interacts with device emulators, ensure an emulator for Android or iOS is running and accessible before running the tests.
+UIAutomator interacts with device emulators, ensure an emulator for Android is running and accessible before running the tests.
 
 ### Environment Variables
 
