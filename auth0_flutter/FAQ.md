@@ -82,7 +82,7 @@ If you need SSO and/or are willing to tolerate the alert box on the login call, 
 final credentials = await auth0.webAuthentication().login(
     useEphemeralSession: true,
     parameters: {
-        'prompt': 'login'
+      'prompt': 'login'
     }); // Ignore the cookie (if present) and show the login page
 ```
 
