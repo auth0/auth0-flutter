@@ -3,7 +3,8 @@
 [![Codecov](https://img.shields.io/codecov/c/github/auth0/auth0-flutter)](https://codecov.io/gh/auth0/auth0-flutter)
 
 # Auth0 SDK for Flutter (Beta)
-TEST DO NOT MERGE
+TEST DO NOT MERGE!!
+
 Auth0 SDK for Android / iOS Flutter apps.
 
 > ⚠️ This library is currently in Beta. We do not recommend using this library in production yet. As we move towards First Availaibility, please be aware that releases may contain breaking changes.
