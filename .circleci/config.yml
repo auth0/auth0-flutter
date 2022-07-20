@@ -137,7 +137,6 @@ jobs:
     executor:
       name: android/android-machine
       resource-class: xlarge
-      tag: 2021.10.1
     steps:
       - run:
           name: Guard Smoke Tests
