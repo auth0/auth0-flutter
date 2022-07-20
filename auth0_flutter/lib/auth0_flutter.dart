@@ -12,6 +12,7 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         IdTokenValidationConfig,
         Credentials,
         UserProfile,
+        DatabaseUser,
         CredentialsManagerException,
         LocalAuthenticationOptions;
 
