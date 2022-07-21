@@ -19,9 +19,9 @@ class UserInfoApiRequestHandler : ApiRequestHandler {
         request: MethodCallRequest,
         result: MethodChannel.Result
     ) {
-        assertHasProperties(listOf("accessToken"), request.data);
+        assertHasProperties(listOf("accessToken"), request.data)
 
-        val builder = api.userInfo(request.data["accessToken"] as String);
+        val builder = api.userInfo(request.data["accessToken"] as String)
 
         if (request.data.getOrDefault("parameters", null) is HashMap<*, *>) {
             builder.addParameters(request.data["parameters"] as Map<String, String>)
@@ -34,12 +34,12 @@ class UserInfoApiRequestHandler : ApiRequestHandler {
                         exception.getCode(),
                         exception.getDescription(),
                         exception.toMap()
-                    );
+                    )
                 }
 
                 override fun onSuccess(res: UserProfile) {
                     result.success(res.toMap())
                 }
-            });
+            })
     }
 }

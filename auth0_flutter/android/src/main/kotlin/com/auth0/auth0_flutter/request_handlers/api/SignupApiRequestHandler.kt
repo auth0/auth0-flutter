@@ -15,7 +15,7 @@ class SignupApiRequestHandler : ApiRequestHandler {
     override val method: String = AUTH_SIGNUP_METHOD
 
     override fun handle(api: AuthenticationAPIClient, request: MethodCallRequest, result: MethodChannel.Result) {
-        assertHasProperties(listOf("email", "password", "connection"), request.data);
+        assertHasProperties(listOf("email", "password", "connection"), request.data)
 
         val builder = api.createUser(
                 email = request.data["email"] as String,
@@ -23,7 +23,7 @@ class SignupApiRequestHandler : ApiRequestHandler {
                 username = request.data["username"] as String?,
                 connection = request.data["connection"] as String,
                 userMetadata = request.data["userMetadata"] as Map<String, String>?
-            );
+            )
 
         if (request.data.getOrDefault("parameters", null) is HashMap<*, *>) {
             builder.addParameters(request.data["parameters"] as Map<String, String>)
@@ -35,7 +35,7 @@ class SignupApiRequestHandler : ApiRequestHandler {
                     exception.getCode(),
                     exception.getDescription(),
                     exception.toMap()
-                );
+                )
             }
 
             override fun onSuccess(user: DatabaseUser) {
@@ -47,6 +47,6 @@ class SignupApiRequestHandler : ApiRequestHandler {
                     )
                 )
             }
-        });
+        })
     }
 }

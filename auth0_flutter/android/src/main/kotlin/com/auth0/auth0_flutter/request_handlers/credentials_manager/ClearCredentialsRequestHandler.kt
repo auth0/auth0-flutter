@@ -6,7 +6,7 @@ import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodChannel
 
 class ClearCredentialsRequestHandler : CredentialsManagerRequestHandler {
-    override val method: String = "credentialsManager#clearCredentials";
+    override val method: String = "credentialsManager#clearCredentials"
 
     override fun handle(
         credentialsManager: SecureCredentialsManager,
@@ -14,7 +14,7 @@ class ClearCredentialsRequestHandler : CredentialsManagerRequestHandler {
         request: MethodCallRequest,
         result: MethodChannel.Result
     ) {
-        credentialsManager.clearCredentials();
-        result.success(true);
+        credentialsManager.clearCredentials()
+        result.success(true)
     }
 }

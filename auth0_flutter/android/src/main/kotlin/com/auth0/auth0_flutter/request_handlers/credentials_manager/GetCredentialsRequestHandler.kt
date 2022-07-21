@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class GetCredentialsRequestHandler : CredentialsManagerRequestHandler {
-    override val method: String = "credentialsManager#getCredentials";
+    override val method: String = "credentialsManager#getCredentials"
 
     override fun handle(
         credentialsManager: SecureCredentialsManager,
@@ -22,20 +22,20 @@ class GetCredentialsRequestHandler : CredentialsManagerRequestHandler {
         request: MethodCallRequest,
         result: MethodChannel.Result
     ) {
-        var scope: String? = null;
+        var scope: String? = null
 
         val scopes = request.data.getOrDefault("scopes", arrayListOf<String>()) as ArrayList<*>
         if (scopes.isNotEmpty()) {
-            scope = scopes.joinToString(separator = " ");
+            scope = scopes.joinToString(separator = " ")
         }
 
-        var minTtl = request.data.get("minTtl") as Int? ?: 0;
-        var parameters = request.data.get("parameters") as Map<String, String>? ?: mapOf();
+        val minTtl = request.data.get("minTtl") as Int? ?: 0
+        val parameters = request.data.get("parameters") as Map<String, String>? ?: mapOf()
 
         credentialsManager.getCredentials(scope, minTtl, parameters, object:
             Callback<Credentials, CredentialsManagerException> {
             override fun onFailure(exception: CredentialsManagerException) {
-                result.error(exception.message ?: "UNKNOWN ERROR", exception.message, exception);
+                result.error(exception.message ?: "UNKNOWN ERROR", exception.message, exception)
             }
 
             override fun onSuccess(credentials: Credentials) {
@@ -59,6 +59,6 @@ class GetCredentialsRequestHandler : CredentialsManagerRequestHandler {
                     )
                 )
             }
-        });
+        })
     }
 }
