@@ -338,6 +338,7 @@ You can configure the ID token validation by passing an `IdTokenValidationConfig
 
 ```dart
 const config = IdTokenValidationConfig(leeway: 10);
+
 final credentials =
     await auth0.webAuthentication().login(idTokenValidationConfig: config);
 ```
