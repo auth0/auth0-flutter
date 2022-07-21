@@ -33,8 +33,6 @@ class Auth0FlutterAuthMethodCallHandlerTest {
         val handler = Auth0FlutterAuthMethodCallHandler(requestHandlers)
         val mockResult = mock<Result>()
 
-        handler.activity = mock()
-
         handler.onMethodCall(MethodCall(method, arguments), mockResult)
         onResult(mockResult)
     }
@@ -48,9 +46,9 @@ class Auth0FlutterAuthMethodCallHandlerTest {
 
     @Test
     fun `handler should result in 'notImplemented' if no matching handler`() {
-        val signupHandler = mock<SignupApiRequestHandler>();
+        val signupHandler = mock<SignupApiRequestHandler>()
 
-        `when`(signupHandler.method).thenReturn("auth#signup");
+        `when`(signupHandler.method).thenReturn("auth#signup")
 
         runCallHandler("auth#login", requestHandlers = listOf(signupHandler)) { result ->
             verify(result).notImplemented()
@@ -59,13 +57,13 @@ class Auth0FlutterAuthMethodCallHandlerTest {
 
     @Test
     fun `handler should only run the correct handler`() {
-        val loginHandler = mock<LoginApiRequestHandler>();
-        val signupHandler = mock<SignupApiRequestHandler>();
+        val loginHandler = mock<LoginApiRequestHandler>()
+        val signupHandler = mock<SignupApiRequestHandler>()
 
-        `when`(loginHandler.method).thenReturn("auth#login");
-        `when`(signupHandler.method).thenReturn("auth#signup");
+        `when`(loginHandler.method).thenReturn("auth#login")
+        `when`(signupHandler.method).thenReturn("auth#signup")
 
-        runCallHandler(loginHandler.method, requestHandlers = listOf(loginHandler, signupHandler)) { _ ->
+        runCallHandler(loginHandler.method, requestHandlers = listOf(loginHandler, signupHandler)) {
             verify(loginHandler).handle(any(), any(), any())
             verify(signupHandler, times(0)).handle(any(), any(), any())
         }

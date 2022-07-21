@@ -13,8 +13,15 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
+import kotlin.annotation.AnnotationRetention
+import kotlin.annotation.AnnotationTarget
+import java.lang.annotation.ElementType
+import java.lang.annotation.RetentionPolicy
 
 class CredentialsManagerMethodCallHandler(private val requestHandlers: List<CredentialsManagerRequestHandler>) : MethodCallHandler, PluginRegistry.ActivityResultListener {
+    // Coverage disabled because of an issue with Jacoco when using lateinit in kotlin.
+    // GitHub issue: https://github.com/jacoco/jacoco/issues/1182
+    @Generated
     lateinit var activity: Activity
 
     var credentialsManager: SecureCredentialsManager? = null
@@ -47,3 +54,9 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
         return credentialsManager?.checkAuthenticationResult(requestCode, resultCode) ?: true
     }
 }
+
+
+@MustBeDocumented
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.TYPE, AnnotationTarget.FIELD)
+annotation class Generated
