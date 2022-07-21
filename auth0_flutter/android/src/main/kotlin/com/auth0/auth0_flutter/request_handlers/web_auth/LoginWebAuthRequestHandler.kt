@@ -14,14 +14,14 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest) -> WebAuthProvider.Builder) : WebAuthRequestHandler {
-    override val method: String = "webAuth#login";
+    override val method: String = "webAuth#login"
 
     override fun handle(
         context: Context,
         request: MethodCallRequest,
         result: MethodChannel.Result
     ) {
-        val builder = builderResolver(request);
+        val builder = builderResolver(request)
         val args = request.data
         val scopes = args.getOrDefault("scopes", arrayListOf<String>()) as ArrayList<*>
 

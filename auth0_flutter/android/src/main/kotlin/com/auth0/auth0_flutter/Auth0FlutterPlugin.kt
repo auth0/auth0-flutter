@@ -65,7 +65,7 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     webAuthCallHandler.activity = binding.activity
     credentialsManagerCallHandler.activity = binding.activity
 
-    binding.addActivityResultListener(credentialsManagerCallHandler);
+    binding.addActivityResultListener(credentialsManagerCallHandler)
   }
 
   override fun onDetachedFromActivityForConfigChanges() {

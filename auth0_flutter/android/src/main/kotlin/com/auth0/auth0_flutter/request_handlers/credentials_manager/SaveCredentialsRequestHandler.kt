@@ -11,7 +11,7 @@ import java.util.*
 
 
 class SaveCredentialsRequestHandler : CredentialsManagerRequestHandler {
-    override val method: String = "credentialsManager#saveCredentials";
+    override val method: String = "credentialsManager#saveCredentials"
 
     override fun handle(
         credentialsManager: SecureCredentialsManager,
@@ -19,20 +19,20 @@ class SaveCredentialsRequestHandler : CredentialsManagerRequestHandler {
         request: MethodCallRequest,
         result: MethodChannel.Result
     ) {
-        assertHasProperties(listOf("credentials"), request.data);
+        assertHasProperties(listOf("credentials"), request.data)
 
-        val credentials = request.data.get("credentials") as HashMap<*, *>;
+        val credentials = request.data.get("credentials") as HashMap<*, *>
 
-        assertHasProperties(listOf("accessToken", "idToken" , "tokenType", "expiresAt"), credentials, "credentials");
+        assertHasProperties(listOf("accessToken", "idToken" , "tokenType", "expiresAt"), credentials, "credentials")
 
-        var scope: String? = null;
+        var scope: String? = null
         val scopes = credentials.getOrDefault("scopes", arrayListOf<String>()) as ArrayList<*>
         if (scopes.isNotEmpty()) {
-            scope = scopes.joinToString(separator = " ");
+            scope = scopes.joinToString(separator = " ")
         }
 
-        val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
-        var date = format.parse(credentials.get("expiresAt") as String);
+        val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+        val date = format.parse(credentials.get("expiresAt") as String)
 
         credentialsManager.saveCredentials(Credentials(
             credentials.get("idToken") as String,
@@ -41,7 +41,7 @@ class SaveCredentialsRequestHandler : CredentialsManagerRequestHandler {
             credentials.get("refreshToken") as String?,
             date,
             scope,
-        ));
-        result.success(true);
+        ))
+        result.success(true)
     }
 }

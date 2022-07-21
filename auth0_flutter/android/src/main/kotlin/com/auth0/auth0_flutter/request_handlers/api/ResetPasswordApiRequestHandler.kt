@@ -19,7 +19,7 @@ class ResetPasswordApiRequestHandler : ApiRequestHandler {
         request: MethodCallRequest,
         result: MethodChannel.Result
     ) {
-        assertHasProperties(listOf("email", "connection"), request.data);
+        assertHasProperties(listOf("email", "connection"), request.data)
 
         val builder = api.resetPassword(
             email = request.data["email"] as String,
@@ -36,12 +36,12 @@ class ResetPasswordApiRequestHandler : ApiRequestHandler {
                     exception.getCode(),
                     exception.getDescription(),
                     exception.toMap()
-                );
+                )
             }
 
             override fun onSuccess(res: Void?) {
-                result.success(null);
+                result.success(null)
             }
-        });
+        })
     }
 }
