@@ -156,7 +156,6 @@ class CredentialsManagerMethodCallHandlerTest {
         val handler = CredentialsManagerMethodCallHandler(listOf())
 
         handler.credentialsManager = mock()
-
         handler.onActivityResult(1, 2, null)
 
         verify(handler.credentialsManager)?.checkAuthenticationResult(1, 2)
@@ -165,7 +164,6 @@ class CredentialsManagerMethodCallHandlerTest {
     @Test
     fun `should return true in onActivityResult when no credentialsManager`() {
         val handler = CredentialsManagerMethodCallHandler(listOf())
-
         val result = handler.onActivityResult(1, 2, null)
 
         MatcherAssert.assertThat(
