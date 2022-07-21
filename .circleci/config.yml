@@ -201,12 +201,11 @@ jobs:
             mkdir -p ~/test-results/cobertura
             bundle exec slather
           working_directory: ./auth0_flutter/example/ios
-      - store_artifacts:
-          path: ~/test-results/cobertura
       - codecov/upload:
           file: ~/test-results/cobertura/cobertura.xml
           upload_name: Auth0 Flutter iOS
           flags: auth0_flutter_ios
+          xtra_args: -s ~/test-results/cobertura
 workflows:
   build_and_test:
     jobs:
