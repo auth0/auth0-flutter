@@ -23,9 +23,9 @@ class RenewApiRequestHandler : ApiRequestHandler {
         request: MethodCallRequest,
         result: MethodChannel.Result
     ) {
-        assertHasProperties(listOf("refreshToken"), request.data);
+        assertHasProperties(listOf("refreshToken"), request.data)
 
-        var renewAuthBuilder = api.renewAuth(request.data["refreshToken"] as String);
+        val renewAuthBuilder = api.renewAuth(request.data["refreshToken"] as String)
 
         val scopes = request.data.getOrDefault("scopes", arrayListOf<String>()) as ArrayList<*>
         if (scopes.isNotEmpty()) {
@@ -43,7 +43,7 @@ class RenewApiRequestHandler : ApiRequestHandler {
                     exception.getCode(),
                     exception.getDescription(),
                     exception.toMap()
-                );
+                )
             }
 
             override fun onSuccess(credentials: Credentials) {
@@ -67,6 +67,6 @@ class RenewApiRequestHandler : ApiRequestHandler {
                     )
                 )
             }
-        });
+        })
     }
 }

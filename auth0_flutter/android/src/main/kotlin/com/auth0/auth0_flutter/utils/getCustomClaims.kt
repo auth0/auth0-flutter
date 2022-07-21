@@ -42,5 +42,5 @@ fun getCustomClaims(claims: Map<String, Any>): Map<String, Any> {
 
     return filteredClaims.filterNot {
         standardClaims.contains(it.key)
-    };
+    }
 }

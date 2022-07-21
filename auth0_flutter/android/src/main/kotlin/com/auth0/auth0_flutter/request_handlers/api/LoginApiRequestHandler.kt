@@ -1,6 +1,5 @@
 package com.auth0.auth0_flutter.request_handlers.api
 
-import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
@@ -13,7 +12,6 @@ import com.auth0.auth0_flutter.utils.assertHasProperties
 import io.flutter.plugin.common.MethodChannel
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.HashMap
 
 private const val AUTH_LOGIN_METHOD = "auth#login"
 
@@ -25,16 +23,16 @@ class LoginApiRequestHandler : ApiRequestHandler {
         request: MethodCallRequest,
         result: MethodChannel.Result
     ) {
-        val args = request.data;
+        val args = request.data
 
-        assertHasProperties(listOf("usernameOrEmail", "password", "connectionOrRealm"), args);
+        assertHasProperties(listOf("usernameOrEmail", "password", "connectionOrRealm"), args)
 
         val loginBuilder = api
             .login(
                 args["usernameOrEmail"] as String,
                 args["password"] as String,
                 args["connectionOrRealm"] as String
-            );
+            )
 
         val scopes = args.getOrDefault("scopes", arrayListOf<String>()) as ArrayList<*>
         loginBuilder.setScope(scopes.joinToString(separator = " "))
@@ -53,7 +51,7 @@ class LoginApiRequestHandler : ApiRequestHandler {
                     exception.getCode(),
                     exception.getDescription(),
                     exception.toMap()
-                );
+                )
             }
 
             override fun onSuccess(credentials: Credentials) {
@@ -76,6 +74,6 @@ class LoginApiRequestHandler : ApiRequestHandler {
                     )
                 )
             }
-        });
+        })
     }
 }

@@ -12,10 +12,10 @@ class Auth0FlutterWebAuthMethodCallHandler(private val requestHandlers: List<Web
     lateinit var activity: Activity
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-        var requestHandler = requestHandlers.find { it.method == call.method };
+        val requestHandler = requestHandlers.find { it.method == call.method }
 
         if (requestHandler != null) {
-            val request = MethodCallRequest.fromCall(call);
+            val request = MethodCallRequest.fromCall(call)
 
             requestHandler.handle(activity, request, result)
         } else {
