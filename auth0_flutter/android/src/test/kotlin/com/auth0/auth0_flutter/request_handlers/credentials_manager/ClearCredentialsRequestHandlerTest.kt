@@ -5,6 +5,8 @@ import com.auth0.android.authentication.storage.SecureCredentialsManager
 
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodChannel.Result
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.*
