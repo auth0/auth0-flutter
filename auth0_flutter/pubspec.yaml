@@ -2,15 +2,13 @@ name: auth0_flutter
 description: Auth0 SDK for Flutter
 version: 1.0.0-beta.1 
 homepage: https://github.com/auth0/auth0-flutter
-publish_to: none
 
 environment:
   sdk: ">=2.17.0 <3.0.0"
   flutter: ">=3.0.0"
 
 dependencies:
-  auth0_flutter_platform_interface:
-    path: ../auth0_flutter_platform_interface
+  auth0_flutter_platform_interface: 1.0.0-beta.1
   flutter:
     sdk: flutter
 
