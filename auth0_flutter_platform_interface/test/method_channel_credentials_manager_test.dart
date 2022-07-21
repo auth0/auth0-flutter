@@ -1,5 +1,4 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
-import 'package:auth0_flutter_platform_interface/src/credentials-manager/credentials_manager_exception.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -145,7 +144,7 @@ void main() {
 
       expectLater(
           actual,
-          throwsA(predicate((e) =>
+          throwsA(predicate((final e) =>
               e is CredentialsManagerException &&
               e.message == 'Channel returned null.')));
     });
@@ -297,7 +296,7 @@ void main() {
 
       expectLater(
           actual,
-          throwsA(predicate((e) =>
+          throwsA(predicate((final e) =>
               e is CredentialsManagerException &&
               e.message == 'Channel returned null.')));
     });
@@ -395,7 +394,7 @@ void main() {
 
       expectLater(
           actual,
-          throwsA(predicate((e) =>
+          throwsA(predicate((final e) =>
               e is CredentialsManagerException &&
               e.message == 'Channel returned null.')));
     });
@@ -471,7 +470,7 @@ void main() {
 
       expectLater(
           actual,
-          throwsA(predicate((e) =>
+          throwsA(predicate((final e) =>
               e is CredentialsManagerException &&
               e.message == 'Channel returned null.')));
     });

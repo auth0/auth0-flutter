@@ -2,7 +2,7 @@ import '../auth0_flutter_platform_interface.dart';
 
 /// A collection of authentication artifacts obtained from Auth0 when a user logs in.
 class Credentials {
-  /// A [JSON Web Token](https://jwt.io/introduction) that contains the user information.
+  /// A [JSON web token](https://jwt.io/introduction) that contains the user information.
   ///
   /// **Important**: The [ID tokens](https://auth0.com/docs/security/tokens/id-tokens) obtained from Web Auth login are automatically validated by the underlying native SDK, ensuring their
   /// contents have not been tampered with.

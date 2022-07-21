@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
 
-import '../auth/api_exception.dart';
 import '../credentials.dart';
 import '../request/request.dart';
 import '../request/request_options.dart';
@@ -66,7 +65,6 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
     final TResult? result;
     try {
       result = await _channel.invokeMethod<TResult>(method, request.toMap());
-
     } on PlatformException catch (e) {
       throw CredentialsManagerException.fromPlatformException(e);
     }

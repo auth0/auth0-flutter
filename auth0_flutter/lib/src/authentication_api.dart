@@ -3,10 +3,10 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 /// An interface for calling some of the endpoints in [Auth0's Authentication API](https://auth0.com/docs/api/authentication).
 ///
 /// This class presents building blocks for doing more fine-grained authentication with Auth0 using Username and Password login. Unlike
-/// [WebAuthentication], these do **not** use [Auth0 Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login) (the recommended way of doing authentication),
+/// `WebAuthentication`, these do **not** use [Auth0 Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login) (the recommended way of doing authentication),
 /// and thus users are not redirected to Auth0 for authentication.
 ///
-/// It is not intended for you to instantiate this class yourself, as an instance of it is already exposed as [Auth0.api].
+/// It is not intended for you to instantiate this class yourself, as an instance of it is already exposed as `Auth0.api`.
 ///
 /// Usage example:
 ///
@@ -38,7 +38,7 @@ class AuthenticationApi {
   /// ## Notes
   ///
   /// * [audience] relates to the API Identifier you want to reference in your access tokens (see [API settings](https://auth0.com/docs/get-started/apis/api-settings))
-  /// * [scopes] defaults to `openid profile email`
+  /// * [scopes] defaults to `openid profile email offline_access`
   /// * [parameters] can be used to sent through custom parameters to the endpoint to be picked up in a Rule or Action.
   ///
   /// ## Usage example
@@ -55,7 +55,12 @@ class AuthenticationApi {
     required final String password,
     required final String connectionOrRealm,
     final String? audience,
-    final Set<String> scopes = const {},
+    final Set<String> scopes = const {
+      'openid',
+      'profile',
+      'email',
+      'offline_access'
+    },
     final Map<String, String> parameters = const {},
   }) =>
       Auth0FlutterAuthPlatform.instance
@@ -125,7 +130,7 @@ class AuthenticationApi {
   /// * [scopes] can be specified if a reduced set of scopes is desired.
   ///
   /// ## Further reading
-  /// [Refresh Tokens on Auth0 docs](https://auth0.com/docs/secure/tokens/refresh-tokens)
+  /// [Refresh tokens on Auth0 docs](https://auth0.com/docs/secure/tokens/refresh-tokens)
   ///
   /// ## Usage example
   ///
@@ -134,7 +139,7 @@ class AuthenticationApi {
   ///   usernameOrEmail: 'my@email.com',
   ///   password: 'my_password'
   ///   connectionOrRealm: 'Username-Password-Authentication',
-  ///   scopes: {'openid', 'profile', 'email', 'offline_access'}
+  ///   scopes: {'openid', 'profile', 'email', 'phone', 'offline_access'}
   /// });
   ///
   /// if (result.refreshToken != null) {

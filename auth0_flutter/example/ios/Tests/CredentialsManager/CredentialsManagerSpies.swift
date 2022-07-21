@@ -13,7 +13,6 @@ class SpyCredentialsStorage: CredentialsStorage {
 
     func getEntry(forKey key: String) -> Data? {
         self.calledGetEntry = true
-        print("called get entry: \(self.calledGetEntry)")
         return self.getEntryReturnValue
     }
 

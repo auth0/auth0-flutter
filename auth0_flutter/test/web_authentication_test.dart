@@ -125,11 +125,10 @@ void main() {
           .thenAnswer((final _) async => true);
       final mockCm = MockCredentialsManager();
 
-      when(mockCm.set(any))
-          .thenAnswer((final _) async => true);
+      when(mockCm.storeCredentials(any)).thenAnswer((final _) async => true);
 
-      await Auth0('test-domain', 'test-clientId')
-          .webAuthentication(customCredentialsManager: mockCm)
+      await Auth0('test-domain', 'test-clientId', credentialsManager: mockCm)
+          .webAuthentication()
           .login(
               audience: 'test-audience',
               scopes: {'a', 'b'},
@@ -141,11 +140,33 @@ void main() {
       // Verify it doesn't call our own Platform Interface when providing a custom CredentialsManager
       verifyNever(mockedCMPlatform.saveCredentials(any));
 
-      final verificationResult =
-          verify(mockCm.set(captureAny)).captured.single as Credentials;
+      final verificationResult = verify(mockCm.storeCredentials(captureAny))
+          .captured
+          .single as Credentials;
 
       expect(
           verificationResult.accessToken, TestPlatform.loginResult.accessToken);
+    });
+
+    test('set scope and parameters to default value when omitted', () async {
+      when(mockedPlatform.login(any))
+          .thenAnswer((final _) async => TestPlatform.loginResult);
+      when(mockedCMPlatform.saveCredentials(any))
+          .thenAnswer((final _) async => true);
+
+      final result = await Auth0('test-domain', 'test-clientId')
+          .webAuthentication()
+          .login();
+
+      final verificationResult = verify(mockedPlatform.login(captureAny))
+          .captured
+          .single as WebAuthRequest<WebAuthLoginOptions>;
+      // ignore: inference_failure_on_collection_literal
+      expect(verificationResult.options.scopes,
+          ['openid', 'profile', 'email', 'offline_access']);
+      // ignore: inference_failure_on_collection_literal
+      expect(verificationResult.options.parameters, {});
+      expect(result, TestPlatform.loginResult);
     });
 
     test('does not use EphemeralSession by default', () async {
@@ -163,70 +184,6 @@ void main() {
           .single as WebAuthRequest<WebAuthLoginOptions>;
       expect(verificationResult.options.useEphemeralSession, false);
       expect(result, TestPlatform.loginResult);
-    });
-  });
-
-  group('credentials', () {
-    test('calls the credentials manager', () async {
-      when(mockedCMPlatform.getCredentials(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
-
-      await Auth0('test-domain', 'test-clientId')
-          .webAuthentication()
-          .credentials(
-              minTtl: 30,
-              scopes: {'a', 'b'},
-              parameters: {'test': 'test-value'});
-
-      final verificationResult =
-          verify(mockedCMPlatform.getCredentials(captureAny)).captured.single
-              as CredentialsManagerRequest<GetCredentialsOptions>;
-      expect(verificationResult.account.domain, 'test-domain');
-      expect(verificationResult.account.clientId, 'test-clientId');
-      expect(verificationResult.options?.minTtl, 30);
-      expect(verificationResult.options?.scopes, {'a', 'b'});
-      expect(verificationResult.options?.parameters['test'], 'test-value');
-    });
-
-    test('returns null when opted out of credential manager', () async {
-      when(mockedCMPlatform.getCredentials(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
-
-      final result = await Auth0('test-domain', 'test-clientId')
-          .webAuthentication(useCredentialsManager: false)
-          .credentials(
-              minTtl: 30,
-              scopes: {'a', 'b'},
-              parameters: {'test': 'test-value'});
-
-      expect(result, null);
-    });
-
-    test('uses custom Credential Manager on success', () async {
-      when(mockedCMPlatform.getCredentials(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
-      final mockCm = MockCredentialsManager();
-      when(mockCm.get(
-              minTtl: anyNamed('minTtl'),
-              scopes: anyNamed('scopes'),
-              parameters: anyNamed('parameters')))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
-
-      await Auth0('test-domain', 'test-clientId')
-          .webAuthentication(customCredentialsManager: mockCm)
-          .credentials(
-              minTtl: 30,
-              scopes: {'a', 'b'},
-              parameters: {'test': 'test-value'});
-
-      // Verify it doesn't call our own Platform Interface when providing a custom CredentialsManager
-      verifyNever(mockedCMPlatform.getCredentials(any));
-
-      verify(mockCm.get(
-              minTtl: anyNamed('minTtl'),
-              scopes: anyNamed('scopes'),
-              parameters: anyNamed('parameters')))
-          .called(1);
     });
   });
 
@@ -283,17 +240,16 @@ void main() {
       when(mockedCMPlatform.clearCredentials(any))
           .thenAnswer((final _) async => true);
       final mockCm = MockCredentialsManager();
-      when(mockCm.clear())
-          .thenAnswer((final _) async => true);
+      when(mockCm.clearCredentials()).thenAnswer((final _) async => true);
 
-      await Auth0('test-domain', 'test-clientId')
-          .webAuthentication(customCredentialsManager: mockCm)
+      await Auth0('test-domain', 'test-clientId', credentialsManager: mockCm)
+          .webAuthentication()
           .logout(returnTo: 'abc');
 
       // Verify it doesn't call our own Platform Interface when providing a custom CredentialsManager
       verifyNever(mockedCMPlatform.clearCredentials(any));
 
-      verify(mockCm.clear()).called(1);
+      verify(mockCm.clearCredentials()).called(1);
     });
   });
 }

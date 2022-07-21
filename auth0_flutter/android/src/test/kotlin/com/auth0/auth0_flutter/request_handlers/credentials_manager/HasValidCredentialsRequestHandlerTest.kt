@@ -17,7 +17,7 @@ class HasValidCredentialsRequestHandlerTest {
     @Test
     fun `should call hasValidCredentials with the correct parameters`() {
         val handler = HasValidCredentialsRequestHandler()
-        val minTtl: Long = 30
+        val minTtl = 30
         val options = hashMapOf(
             "minTtl" to minTtl,
         )
@@ -33,7 +33,7 @@ class HasValidCredentialsRequestHandlerTest {
             mockResult
         )
 
-        verify(mockCredentialsManager).hasValidCredentials(minTtl)
+        verify(mockCredentialsManager).hasValidCredentials(minTtl.toLong())
     }
 
     @Test
@@ -57,7 +57,7 @@ class HasValidCredentialsRequestHandlerTest {
     @Test
     fun `should call result success on success`() {
         val handler = HasValidCredentialsRequestHandler()
-        val minTtl: Long = 30
+        val minTtl = 30
         val options = hashMapOf(
             "minTtl" to minTtl,
         )

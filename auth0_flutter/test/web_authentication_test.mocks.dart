@@ -87,7 +87,7 @@ class MockCredentialsManager extends _i1.Mock
   }
 
   @override
-  _i4.Future<_i2.Credentials> get(
+  _i4.Future<_i2.Credentials> credentials(
           {int? minTtl = 0,
           Set<String>? scopes = const {},
           Map<String, String>? parameters = const {}}) =>
@@ -97,7 +97,7 @@ class MockCredentialsManager extends _i1.Mock
               returnValue: Future<_i2.Credentials>.value(_FakeCredentials_0()))
           as _i4.Future<_i2.Credentials>);
   @override
-  _i4.Future<bool> set(_i2.Credentials? credentials) =>
+  _i4.Future<bool> storeCredentials(_i2.Credentials? credentials) =>
       (super.noSuchMethod(Invocation.method(#set, [credentials]),
           returnValue: Future<bool>.value(true),
           returnValueForMissingStub: Future<void>.value()) as _i4.Future<bool>);
@@ -107,7 +107,8 @@ class MockCredentialsManager extends _i1.Mock
           Invocation.method(#hasValidCredentials, [], {#minTtl: minTtl}),
           returnValue: Future<bool>.value(false)) as _i4.Future<bool>);
   @override
-  _i4.Future<bool> clear() => (super.noSuchMethod(Invocation.method(#clear, []),
+  _i4.Future<bool> clearCredentials() =>
+      (super.noSuchMethod(Invocation.method(#clear, []),
       returnValue: Future<bool>.value(true),
       returnValueForMissingStub: Future<void>.value()) as _i4.Future<bool>);
 }

@@ -32,7 +32,7 @@ extension CredentialsManagerGetMethodHandlerTests {
     }
 }
 
-// MARK: - Logout Result
+// MARK: - Get Result
 
 extension CredentialsManagerGetMethodHandlerTests {
     func testCallsSDKGetMethod() {

@@ -200,7 +200,7 @@ class LoginApiRequestHandlerTest {
     }
 
     @Test
-    fun `should not configure the scopes when not provided`() {
+    fun `should configure an empty scope when not provided`() {
         val options = hashMapOf(
             "usernameOrEmail" to "test-email",
             "password" to "test-pass",
@@ -222,7 +222,7 @@ class LoginApiRequestHandlerTest {
             mockResult
         )
 
-        verify(mockLoginBuilder, times(0)).setScope(any())
+        verify(mockLoginBuilder).setScope("");
     }
 
     @Test

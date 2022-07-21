@@ -37,9 +37,7 @@ class LoginApiRequestHandler : ApiRequestHandler {
             );
 
         val scopes = args.getOrDefault("scopes", arrayListOf<String>()) as ArrayList<*>
-        if (scopes.isNotEmpty()) {
-            loginBuilder.setScope(scopes.joinToString(separator = " "))
-        }
+        loginBuilder.setScope(scopes.joinToString(separator = " "))
 
         if (args.getOrDefault("audience", null) is String) {
             loginBuilder.setAudience(args["audience"] as String)
@@ -74,7 +72,7 @@ class LoginApiRequestHandler : ApiRequestHandler {
                         "userProfile" to userProfile.toMap(),
                         "expiresAt" to formattedDate,
                         "scopes" to scope,
-                        "type" to credentials.type
+                        "tokenType" to credentials.type
                     )
                 )
             }

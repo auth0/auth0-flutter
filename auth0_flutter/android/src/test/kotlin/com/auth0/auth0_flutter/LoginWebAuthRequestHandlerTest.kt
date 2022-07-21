@@ -21,7 +21,7 @@ import java.util.*
 @RunWith(RobolectricTestRunner::class)
 class LoginWebAuthRequestHandlerTest {
     private val defaultCredentials =
-        Credentials(JwtTestUtils.createJwt(), "test", "", null, Date(), "openid profile email")
+        Credentials(JwtTestUtils.createJwt(), "test", "", null, Date(), "openid profile email offline_access")
 
     private fun runRequestHandler(
         args: HashMap<String, Any?> = hashMapOf(),
@@ -58,11 +58,11 @@ class LoginWebAuthRequestHandlerTest {
                 assertThat(map["idToken"], equalTo(defaultCredentials.idToken))
                 assertThat(map["accessToken"], equalTo(defaultCredentials.accessToken))
                 assertThat(map["expiresAt"], equalTo(formattedDate))
-                assertThat(map["scopes"], equalTo(listOf("openid", "profile", "email")))
+                assertThat(map["scopes"], equalTo(listOf("openid", "profile", "email", "offline_access")))
                 assertThat(map["refreshToken"], nullValue())
             })
 
-            verify(builder, never()).withScope(any())
+            verify(builder).withScope("")
             verify(builder, never()).withAudience(any())
             verify(builder, never()).withOrganization(any())
             verify(builder, never()).withInvitationUrl(any())
@@ -78,31 +78,31 @@ class LoginWebAuthRequestHandlerTest {
     @Test
     fun `handler should request scopes from the SDK when specified`() {
         val args = hashMapOf<String, Any?>(
-            "scopes" to arrayListOf("openid", "profile", "email")
+            "scopes" to arrayListOf("openid", "profile", "email", "offline_access")
         )
 
         runRequestHandler(args) { _, builder ->
-            verify(builder).withScope("openid profile email")
+            verify(builder).withScope("openid profile email offline_access")
         }
     }
 
     @Test
-    fun `handler should not add scopes when given an empty array`() {
+    fun `handler should add an empty scope when given an empty array`() {
         val args = hashMapOf<String, Any?>(
             "scopes" to arrayListOf<String>()
         )
 
         runRequestHandler(args) { _, builder ->
-            verify(builder, never()).withScope(anyOrNull())
+            verify(builder).withScope("")
         }
     }
 
     @Test
-    fun `handler should not add scopes when not specified`() {
+    fun `handler should add an empty scope when not specified`() {
         val args = hashMapOf<String, Any?>()
 
         runRequestHandler(args) { _, builder ->
-            verify(builder, never()).withScope(anyOrNull())
+            verify(builder).withScope("")
         }
     }
 

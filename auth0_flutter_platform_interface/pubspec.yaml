@@ -1,6 +1,6 @@
 name: auth0_flutter_platform_interface
 description: A common platform interface for the auth0_flutter plugin.
-version: 1.0.0-beta.0
+version: 1.0.0-beta.1
 homepage: https://github.com/auth0/auth0-flutter
 
 environment:
@@ -14,7 +14,7 @@ dependencies:
 
 dev_dependencies:
   build_runner: ^2.1.8
-  flutter_lints: ^1.0.0
+  flutter_lints: ^2.0.1
   flutter_test:
     sdk: flutter
   mockito: ^5.1.0

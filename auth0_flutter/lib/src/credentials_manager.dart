@@ -2,19 +2,19 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 
 /// Abstract CredentialsManager that can be used to provide a custom CredentialManager.
 abstract class CredentialsManager {
-  Future<Credentials> get({
+  Future<Credentials> credentials({
     final int minTtl = 0,
     final Set<String> scopes = const {},
     final Map<String, String> parameters = const {},
   });
 
-  Future<bool> set(final Credentials credentials);
+  Future<bool> storeCredentials(final Credentials credentials);
 
   Future<bool> hasValidCredentials({
     final int minTtl = 0,
   });
 
-  Future<bool> clear();
+  Future<bool> clearCredentials();
 }
 
 /// Default [CredentialsManager] implementation that passes calls to
@@ -22,15 +22,14 @@ abstract class CredentialsManager {
 class DefaultCredentialsManager extends CredentialsManager {
   final Account _account;
   final UserAgent _userAgent;
-  late LocalAuthenticationOptions? _localAuthentication;
+  final LocalAuthenticationOptions? _localAuthentication;
 
   DefaultCredentialsManager(
     this._account,
     this._userAgent, {
     final LocalAuthenticationOptions? localAuthentication
-  }) {
-    _localAuthentication = localAuthentication;
-  }
+  })
+      : _localAuthentication = localAuthentication;
 
   /// Retrieves the credentials from the storage and refreshes them if they have already expired.
   ///
@@ -38,7 +37,7 @@ class DefaultCredentialsManager extends CredentialsManager {
   /// Use the [scopes] parameter to set the scope to request for the access token. If `null` is passed, the previous scope will be kept.
   /// Use the [parameters] parameter to send additional parameters in the request to refresh expired credentials.
   @override
-  Future<Credentials> get({
+  Future<Credentials> credentials({
     final int minTtl = 0,
     final Set<String> scopes = const {},
     final Map<String, String> parameters = const {},
@@ -52,7 +51,7 @@ class DefaultCredentialsManager extends CredentialsManager {
 
   /// Stores the given credentials in the storage. Must have an `access_token` or `id_token` and a `expires_in` value.
   @override
-  Future<bool> set(final Credentials credentials) =>
+  Future<bool> storeCredentials(final Credentials credentials) =>
       CredentialsManagerPlatform.instance.saveCredentials(
           _createApiRequest(SaveCredentialsOptions(credentials: credentials)));
 
@@ -68,7 +67,7 @@ class DefaultCredentialsManager extends CredentialsManager {
 
   /// Removes the credentials from the storage if present.
   @override
-  Future<bool> clear() => CredentialsManagerPlatform.instance
+  Future<bool> clearCredentials() => CredentialsManagerPlatform.instance
       .clearCredentials(_createApiRequest(null));
 
   CredentialsManagerRequest<TOptions>

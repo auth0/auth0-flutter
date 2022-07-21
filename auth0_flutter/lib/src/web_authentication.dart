@@ -22,8 +22,6 @@ class WebAuthentication {
   final UserAgent _userAgent;
   final CredentialsManager? _credentialsManager;
 
-  CredentialsManager? credentialsManager() => _credentialsManager;
-
   WebAuthentication(this._account, this._userAgent, this._credentialsManager);
 
   /// Redirects the user to the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login) for authentication. If successful, it returns
@@ -39,13 +37,18 @@ class WebAuthentication {
   /// * (iOS only): [useEphemeralSession] controls whether shared persistent storage is used for cookies. [Read more on the effects this setting has](https://github.com/auth0/Auth0.swift/blob/master/FAQ.md#1-how-can-i-disable-the-login-alert-box)
   /// * (Android only): specify [scheme] if you're using a custom URL scheme for your app. This value must match the value used to configure the `auth0Scheme` manifest placeholder, for the Redirect intent filter to work
   /// * [audience] relates to the API Identifier you want to reference in your access tokens (see [API settings](https://auth0.com/docs/get-started/apis/api-settings))
-  /// * [scopes] defaults to `openid profile email`. You can override these scopes, but `openid` is always requested regardless of this setting.
+  /// * [scopes] defaults to `openid profile email offline_access`. You can override these scopes, but `openid` is always requested regardless of this setting.
   /// * Arbitrary [parameters] can be specified and then picked up in a custom Auth0 [Action](https://auth0.com/docs/customize/actions) or [Rule](https://auth0.com/docs/customize/rules).
   /// * If you want to log into a specific organization, provide the [organizationId]. Provide [invitationUrl] if a user has been invited to
   ///   join an organization.
   Future<Credentials> login({
     final String? audience,
-    final Set<String> scopes = const {},
+    final Set<String> scopes = const {
+      'openid',
+      'profile',
+      'email',
+      'offline_access'
+    },
     final String? redirectUrl,
     final String? organizationId,
     final String? invitationUrl,
@@ -67,7 +70,7 @@ class WebAuthentication {
             scheme: scheme,
             useEphemeralSession: useEphemeralSession)));
 
-    await _credentialsManager?.set(credentials);
+    await _credentialsManager?.storeCredentials(credentials);
 
     return credentials;
   }
@@ -83,26 +86,7 @@ class WebAuthentication {
     await Auth0FlutterWebAuthPlatform.instance.logout(_createWebAuthRequest(
       WebAuthLogoutOptions(returnTo: returnTo, scheme: scheme),
     ));
-    await _credentialsManager?.clear();
-  }
-
-  /// Retrieves the Credentials for the current user. Calls the [CredentialsManager] when available, returns `null` if not.
-  ///
-  /// Change the minimum time in seconds that the access token should last before expiration by setting the [minTtl].
-  /// Use the [scopes] parameter to set the scope to request for the access token. If `null` is passed, the previous scope will be kept.
-  /// Use the [parameters] parameter to send additional parameters in the request to refresh expired credentials.
-  Future<Credentials?> credentials({
-    final int minTtl = 0,
-    final Set<String> scopes = const {},
-    final Map<String, String> parameters = const {},
-  }) async {
-    final credentials = await _credentialsManager?.get(
-      minTtl: minTtl,
-      scopes: scopes,
-      parameters: parameters,
-    );
-
-    return credentials;
+    await _credentialsManager?.clearCredentials();
   }
 
   WebAuthRequest<TOptions>

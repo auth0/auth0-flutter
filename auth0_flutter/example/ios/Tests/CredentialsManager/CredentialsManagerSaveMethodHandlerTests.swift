@@ -30,7 +30,7 @@ extension CredentialsManagerSaveMethodHandlerTests {
     }
 }
 
-// MARK: - Logout Result
+// MARK: - Save Result
 
 extension CredentialsManagerSaveMethodHandlerTests {
     func testCallsSDKSaveMethod() {
