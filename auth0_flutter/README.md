@@ -1,17 +1,19 @@
-# Auth0 SDK for Flutter (Beta)
+# Auth0 SDK for Flutter (First Availability)
 
-[![CircleCI](https://img.shields.io/circleci/project/github/auth0/auth0-flutter.svg?style=flat-square)](https://circleci.com/gh/auth0/auth0-flutter/tree/main)
+[![CircleCI](https://img.shields.io/circleci/project/github/auth0/auth0-flutter.svg)](https://circleci.com/gh/auth0/auth0-flutter/tree/main)
+[![Codecov](https://codecov.io/gh/auth0/auth0-flutter/branch/main/graph/badge.svg)](https://codecov.io/gh/auth0/auth0-flutter)
+[![Package](https://img.shields.io/pub/v/auth0_flutter.svg)](https://pub.dartlang.org/packages/auth0_flutter)
 
 Auth0 SDK for Android / iOS Flutter apps.
 
-> ⚠️ This library is currently in Beta. We do not recommend using this library in production yet. As we move towards First Availability, please be aware that releases may contain breaking changes.
+> ⚠️ This library is currently in First Availability. We do not recommend using this library in production yet. As we move toward General Availability, please be aware that releases may contain breaking changes.
 
 ---
 
 ## Table of Contents
 
-<!-- - [**Documentation**](#documentation) -->
-
+- [**Features**](#features)
+- [**Documentation**](#documentation)
 - [**Requirements**](#requirements)
 - [**Installation**](#installation)
 - [**Getting Started**](#getting-started)
@@ -21,9 +23,10 @@ Auth0 SDK for Android / iOS Flutter apps.
   - [Web Auth Logout](#web-auth-logout)
   - [SSO Alert Box (iOS)](#sso-alert-box-ios)
 - [**Next Steps**](#next-steps)
-  <!-- + [Common Tasks](#common-tasks) -->
-  - [Web Auth](#web-auth)
-  - [API](#api)
+  + [Common Tasks](#common-tasks)
+  + [Web Auth](#web-auth)
+  + [Credentials Manager](#credentials-manager)
+  + [API](#api)
 - [**Advanced Features**](#advanced-features)
   - [Organizations](#organizations)
   - [Bot Detection](#bot-detection)
@@ -31,11 +34,28 @@ Auth0 SDK for Android / iOS Flutter apps.
 - [**What is Auth0?**](#what-is-auth0)
 - [**License**](#license)
 
-<!--
+## Features
+
+- Web Auth login and logout
+- Automatic storage and renewal of user's credentials
+- Support for custom Credentials Manager implementations
+- Support for the following Authentication API operations:
+  + Login with username or email and password
+  + Signup
+  + Get user information from `/userinfo`
+  + Renew user's credentials
+  + Reset password
+
 ## Documentation
 
-TBD
--->
+- [**Quickstart**](https://auth0.com/docs/quickstart/native/flutter/interactive)
+  <br>Shows how to integrate auth0_flutter into an Android / iOS Flutter app from scratch.
+- [**Sample app**](https://github.com/auth0-samples/auth0-flutter-samples/tree/main/sample)
+  <br>A complete, running Android / iOS Flutter app you can try.
+- [**API documentation**](https://pub.dev/documentation/auth0_flutter/latest/)
+  <br>Documentation auto-generated from the code comments that explains all the available features.
+- [**FAQ**](FAQ.md)
+  <br> Answers some common questions about flutter_auth0.
 
 ## Requirements
 
@@ -47,16 +67,11 @@ TBD
 
 ## Installation
 
-During the Beta stage, the SDK will not be published to Pub.dev, but you can install it as a [path package](https://dart.dev/tools/pub/dependencies#path-packages).
+Add auth0_flutter into your project:
 
-Download the [latest release](https://github.com/auth0/auth0-flutter/releases/latest) as a zip file, extract, and then add the following dependency in your `pubspec.yaml` file:
-
-```yaml
-auth0_flutter:
-  path: path/to/auth0_flutter
+```sh
+flutter pub add auth0_flutter
 ```
-
-Then, run `flutter pub get`.
 
 ## Getting Started
 
@@ -90,7 +105,7 @@ Go to the settings page of your [Auth0 application](https://manage.auth0.com/#/a
 https://YOUR_AUTH0_DOMAIN/android/YOUR_APP_PACKAGE_NAME/callback
 ```
 
-E.g. if your Auth0 domain was `company.us.auth0.com` and your Android app package name was `com.company.myapp`, then this value would be:
+For example, if your Auth0 domain was `company.us.auth0.com` and your Android app package name was `com.company.myapp`, then this value would be:
 
 ```text
 https://company.us.auth0.com/android/com.company.myapp/callback
@@ -102,7 +117,7 @@ https://company.us.auth0.com/android/com.company.myapp/callback
 YOUR_BUNDLE_IDENTIFIER://YOUR_AUTH0_DOMAIN/ios/YOUR_BUNDLE_IDENTIFIER/callback
 ```
 
-E.g. if your iOS bundle identifier was `com.company.myapp` and your Auth0 domain was `company.us.auth0.com`, then this value would be:
+For example, if your iOS bundle identifier was `com.company.myapp` and your Auth0 domain was `company.us.auth0.com`, then this value would be:
 
 ```text
 com.company.myapp://company.us.auth0.com/ios/com.company.myapp/callback
@@ -117,16 +132,18 @@ Open the `android/build.gradle` file and add the following manifest placeholders
 
 android {
     // ...
+
     defaultConfig {
         // ...
         // Add the following line
         manifestPlaceholders = [auth0Domain: "YOUR_AUTH0_DOMAIN", auth0Scheme: "${applicationId}"]
     }
+
     // ...
 }
 ```
 
-E.g. if your Auth0 domain was `company.us.auth0.com`, then the manifest placeholders line would be:
+For example, if your Auth0 domain was `company.us.auth0.com`, then the manifest placeholders line would be:
 
 ```groovy
 manifestPlaceholders = [auth0Domain: "company.us.auth0.com", auth0Scheme: "${applicationId}"]
@@ -167,7 +184,7 @@ Re-declare the activity manually using `tools:node="remove"` in the `android/src
 
 #### iOS configuration: custom URL scheme
 
-Open the `ios/Runner/Info.plist` file and add the following snippet inside the top-level `<dict>` tag. This registers your iOS Bundle Identifier as a custom URL scheme, so the callback and logout URLs can reach your app.
+Open the `ios/Runner/Info.plist` file and add the following snippet inside the top-level `<dict>` tag. This registers your iOS bundle identifier as a custom URL scheme, so the callback and logout URLs can reach your app.
 
 ```xml
 <!-- ios/Runner/Info.plist -->
@@ -210,31 +227,37 @@ import 'package:auth0_flutter/auth0_flutter.dart';
 Then, present the [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login) page in the `onPressed` callback of your **Login** button.
 
 ```dart
-final result = await auth0.webAuthentication.login();
+final credentials = await auth0.webAuthentication().login();
+```
+
+auth0_flutter will automatically store the user's credentials using the built-in [Credentials Manager](#credentials-manager) instance. You can access this instance through the `credentialsManager` property.
+
+```dart
+final credentials = await auth0.credentialsManager.credentials();
 ```
 
 <details>
   <summary>Add an audience value</summary>
 
-Specify an [audience](https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#control-access-token-audience) to obtain an access token that can be used to make authenticated requests to a backend. The audience value is the **API Identifier** of your [Auth0 API](https://auth0.com/docs/get-started/apis), e.g. `https://example.com/api`.
+  Specify an [audience](https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#control-access-token-audience) to obtain an access token that can be used to make authenticated requests to a backend. The audience value is the **API Identifier** of your [Auth0 API](https://auth0.com/docs/get-started/apis), for example `https://example.com/api`.
 
-```dart
-final result = await auth0.webAuthentication
-    .login(audience: 'YOUR_AUTH0_API_IDENTIFIER');
-```
-
+  ```dart
+  final credentials = await auth0
+      .webAuthentication()
+      .login(audience: 'YOUR_AUTH0_API_IDENTIFIER');
+  ```
 </details>
 
 <details>
   <summary>Add scope values</summary>
 
-Specify [scopes](https://auth0.com/docs/get-started/apis/scopes) to request permission to access protected resources, like the user profile. The default scope values are `openid`, `profile`, and `email`. Regardless of the values specified, `openid` is always included.
+  Specify [scopes](https://auth0.com/docs/get-started/apis/scopes) to request permission to access protected resources, like the user profile. The default scope values are `openid`, `profile`, `email`, and `offline_access`. Regardless of the values specified, `openid` is always included.
 
-```dart
-final result = await auth0.webAuthentication
-    .login(scopes: {'profile', 'email', 'offline_access', 'read:todos'});
-```
-
+  ```dart
+  final credentials = await auth0
+      .webAuthentication()
+      .login(scopes: {'profile', 'email', 'offline_access', 'read:todos'});
+  ```
 </details>
 
 <details>
@@ -247,19 +270,18 @@ On Android, `https` is used by default as the callback URL scheme. This works be
 3. Pass the scheme value to the `login()` method.
 
 ```dart
-final result = await auth0.webAuthentication.login(scheme: {'demo'});
+final credentials = await auth0.webAuthentication().login(scheme: 'demo');
 ```
-
 </details>
 
 ### Web Auth Logout
 
 Logging the user out involves clearing the Universal Login session cookie and then deleting the user's credentials from your app.
 
-Call the `logout()` method in the `onPressed` callback of your **Logout** button. Once the session cookie has been cleared, delete the user's credentials.<!--  link to the section on deleting the stored credentials -->
+Call the `logout()` method in the `onPressed` callback of your **Logout** button. Once the session cookie has been cleared, `auth0_flutter` will automatically delete the user's credentials. If you're using your own credentials storage, make sure to delete the credentials afterward.
 
 ```dart
-await auth0.webAuthentication.logout();
+await auth0.webAuthentication().logout();
 ```
 
 ### SSO Alert Box (iOS)
@@ -272,13 +294,14 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 
 [Go up ⤴](#table-of-contents)
 
-## Next Steps
-
-<!--
 ### Common Tasks
 
-TBD
--->
+- [**Retrieve user information**](#retrieve-user-information)
+  <br>Fetch the latest user information from the `/userinfo` endpoint.
+- [**Check for stored credentials**](#check-for-stored-credentials)
+  <br>Check if the user is already logged in when your app starts up.
+- [**Retrieve stored credentials**](#retrieve-stored-credentials)
+  <br>Fetch the user's credentials from the storage, automatically renewing them if they have expired.
 
 ### Web Auth
 
@@ -300,7 +323,8 @@ You can make users land directly on the Signup page instead of the Login page by
 | `'prompt': 'login', 'screen_hint': 'signup'` | Shows the signup page | Shows the signup page         |
 
 ```dart
-final result = await auth0.webAuthentication
+final credentials = await auth0
+    .webAuthentication()
     .login(parameters: {'screen_hint': 'signup'});
 ```
 
@@ -310,26 +334,123 @@ final result = await auth0.webAuthentication
 
 `auth0_flutter` automatically [validates](https://auth0.com/docs/secure/tokens/id-tokens/validate-id-tokens) the ID token obtained from Web Auth login, following the [OpenID Connect specification](https://openid.net/specs/openid-connect-core-1_0.html). This ensures the contents of the ID token have not been tampered with and can be safely used.
 
+You can configure the ID token validation by passing an `IdTokenValidationConfig` instance. Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/IdTokenValidationConfig-class.html) to learn more about the available configuration options.
+
+```dart
+const config = IdTokenValidationConfig(leeway: 10);
+
+final credentials =
+    await auth0.webAuthentication().login(idTokenValidationConfig: config);
+```
+
 ##### Custom domains
 
 Users of Auth0 Private Cloud with custom domains still on the [legacy behavior](https://auth0.com/docs/deploy/private-cloud/private-cloud-migrations/migrate-private-cloud-custom-domains) need to specify a custom issuer to match the Auth0 domain when performing Web Auth login. Otherwise, the ID token validation will fail.
 
 ```dart
-final config = IdTokenValidationConfig(issuer: 'https://YOUR_AUTH0_DOMAIN/');
-final result =
-    await auth0.webAuthentication.login(idTokenValidationConfig: config);
+const config =
+    IdTokenValidationConfig(issuer: 'https://YOUR_AUTH0_DOMAIN/');
+final credentials =
+    await auth0.webAuthentication().login(idTokenValidationConfig: config);
+```
+
+#### Disable credentials storage
+
+By default, `auth0_flutter` will automatically store the user's credentials after login and delete them after logout, using the built-in [Credentials Manager](#credentials-manager) instance. If you prefer to use your own credentials storage, you need to disable the built-in Credentials Manager.
+
+```dart
+final credentials =
+    await auth0.webAuthentication(useCredentialsManager: false).login();
 ```
 
 #### Web Auth errors
 
-Web Auth will only throw `WebAuthException` exceptions.<!-- Check the API documentation [link to API documentation] to learn more about the available `WebAuthException` properties. -->
+Web Auth will only throw `WebAuthException` exceptions. Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/WebAuthException-class.html) to learn more about the available `WebAuthException` properties.
 
 ```dart
 try {
-  final result = await auth0.webAuthentication.login();
+  final credentials = await auth0.webAuthentication().login();
   // ...
 } on WebAuthException catch (e) {
-  print(e.toString())
+  print(e);
+}
+```
+
+### Credentials Manager
+
+<!-- **See all the available features in the API documentation ↗** [link to API documentation] -->
+
+- [Check for stored credentials](#check-for-stored-credentials)
+- [Retrieve stored credentials](#retrieve-stored-credentials)
+- [Custom implementations](#custom-implementations)
+- [Local authentication](#local-authentication)
+- [Credentials Manager errors](#credentials-manager-errors)
+
+The Credentials Manager utility allows you to securely store and retrieve the user's credentials. The credentials will be stored encrypted in Shared Preferences on Android, and in the Keychain on iOS. 
+
+> 💡 If you're using Web Auth, you do not need to manually store the credentials after login and delete them after logout; auth0_flutter does it automatically.
+
+#### Check for stored credentials
+
+When the users open your app, check for valid credentials. If they exist, you can retrieve them and redirect the users to the app's main flow without any additional login steps.
+
+```dart
+final isLoggedIn = await auth0.credentialsManager.hasValidCredentials();
+
+if (isLoggedIn) {
+  // Retrieve the credentials and redirect to the main flow
+} else {
+  // No valid credentials exist, present the login page
+}
+```
+
+#### Retrieve stored credentials 
+
+The credentials will be automatically renewed (if expired) using the [refresh token](https://auth0.com/docs/secure/tokens/refresh-tokens). **This method is thread-safe.**
+
+```dart
+final credentials = await auth0.credentialsManager.credentials();
+```
+
+> 💡 You do not need to call `credentialsManager.storeCredentials()` afterward. The Credentials Manager automatically persists the renewed credentials.
+
+#### Custom implementations
+
+flutter_auth0 exposes a built-in, default Credentials Manager implementation through the `credentialsManager` property. You can pass your own implementation to the `Auth0` constructor. If you're using Web Auth, this implementation will be used to store the user's credentials after login and delete them after logout.
+
+```dart
+final customCredentialsManager = CustomCredentialsManager();
+final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID',
+    credentialsManager: customCredentialsManager);
+// auth0.credentialsManager is now your CustomCredentialsManager instance
+```
+
+#### Local authentication
+
+You can enable an additional level of user authentication before retrieving credentials using the local authentication supported by the device, for example PIN or fingerprint on Android, and Face ID or Touch ID on iOS.
+
+```dart
+const options =
+    LocalAuthenticationOptions(title: 'Please authenticate to continue');
+final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID',
+    localAuthentication: options);
+final credentials = await auth0.credentialsManager.credentials();
+```
+
+Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/LocalAuthenticationOptions-class.html) to learn more about the available `LocalAuthenticationOptions` properties.
+
+> ⚠️ Enabling local authentication will not work if you're using a custom Credentials Manager implementation. In that case, you will need to build support for local authentication into your custom implementation.
+
+#### Credentials Manager errors
+
+The Credentials Manager will only throw `CredentialsManagerException` exceptions. You can find more information in the `details` property of the exception. Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/CredentialsManagerException-class.html) to learn more about the available `CredentialsManagerException` properties.
+
+```dart
+try {
+  final credentials = await auth0.credentialsManager.credentials();
+  // ...
+} on CredentialsManagerException catch (e) {
+  print(e);
 }
 ```
 
@@ -355,46 +476,48 @@ To log in or sign up with a username and password, the `Password` grant type nee
 #### Login with database connection
 
 ```dart
-final result = await auth0.api.login(
+final credentials = await auth0.api.login(
     usernameOrEmail: 'jane.smith@example.com',
     password: 'secret-password',
     connectionOrRealm: 'Username-Password-Authentication');
+
+// Store the credentials afterward
+final didStore =
+    await auth0.credentialsManager.storeCredentials(credentials);
 ```
 
 <details>
   <summary>Add an audience value</summary>
 
-Specify an [audience](https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#control-access-token-audience) to obtain an access token that can be used to make authenticated requests to a backend. The audience value is the **API Identifier** of your [Auth0 API](https://auth0.com/docs/get-started/apis), e.g. `https://example.com/api`.
+  Specify an [audience](https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#control-access-token-audience) to obtain an access token that can be used to make authenticated requests to a backend. The audience value is the **API Identifier** of your [Auth0 API](https://auth0.com/docs/get-started/apis), for example `https://example.com/api`.
 
-```dart
-final result = await auth0.api.login(
-    usernameOrEmail: 'jane.smith@example.com',
-    password: 'secret-password',
-    connectionOrRealm: 'Username-Password-Authentication',
-    audience: 'YOUR_AUTH0_API_IDENTIFIER');
-```
-
+  ```dart
+  final credentials = await auth0.api.login(
+      usernameOrEmail: 'jane.smith@example.com',
+      password: 'secret-password',
+      connectionOrRealm: 'Username-Password-Authentication',
+      audience: 'YOUR_AUTH0_API_IDENTIFIER');
+  ```
 </details>
 
 <details>
   <summary>Add scope values</summary>
 
-Specify [scopes](https://auth0.com/docs/get-started/apis/scopes) to request permission to access protected resources, like the user profile. The default scope values are `openid`, `profile`, and `email`. Regardless of the values specified, `openid` is always included.
+  Specify [scopes](https://auth0.com/docs/get-started/apis/scopes) to request permission to access protected resources, like the user profile. The default scope values are `openid`, `profile`, `email`, and `offline_access`. Regardless of the values specified, `openid` is always included.
 
-```dart
-final result = await auth0.api.login(
-    usernameOrEmail: 'jane.smith@example.com',
-    password: 'secret-password',
-    connectionOrRealm: 'Username-Password-Authentication',
-    scopes: {'profile', 'email', 'offline_access', 'read:todos'});
-```
-
+  ```dart
+  final credentials = await auth0.api.login(
+      usernameOrEmail: 'jane.smith@example.com',
+      password: 'secret-password',
+      connectionOrRealm: 'Username-Password-Authentication',
+      scopes: {'profile', 'email', 'offline_access', 'read:todos'});
+  ```
 </details>
 
 #### Sign up with database connection
 
 ```dart
-final user = await auth0.api.signup(
+final databaseUser = await auth0.api.signup(
     email: 'jane.smith@example.com',
     password: 'secret-password',
     connection: 'Username-Password-Authentication',
@@ -407,7 +530,7 @@ final user = await auth0.api.signup(
 
 Fetch the latest user information from the `/userinfo` endpoint.
 
-This method will yield a `UserProfile` instance.<!--Check the API documentation [link to API documentation] to learn more about its available properties. -->
+This method will yield a `UserProfile` instance. Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/UserProfile-class.html) to learn more about its available properties.
 
 ```dart
 final userProfile = await auth0.api.userInfo(accessToken: accessToken);
@@ -418,24 +541,29 @@ final userProfile = await auth0.api.userInfo(accessToken: accessToken);
 Use a [refresh token](https://auth0.com/docs/secure/tokens/refresh-tokens) to renew the user's credentials. It's recommended that you read and understand the refresh token process beforehand.
 
 ```dart
-final result = await auth0.api.renewCredentials(refreshToken: refreshToken);
+final newCredentials =
+    await auth0.api.renewCredentials(refreshToken: refreshToken);
+
+// Store the credentials afterward
+final didStore =
+    await auth0.credentialsManager.storeCredentials(newCredentials);
 ```
 
-> 💡 To obtain a refresh token, make sure your Auth0 application has the **Refresh Token** [grant enabled](https://auth0.com/docs/get-started/applications/update-grant-types). If you are also specifying an audience value, make sure that the corresponding Auth0 API has the **Allow Offline Access** [setting enabled](https://auth0.com/docs/get-started/apis/api-settings#access-settings).
+> 💡 To obtain a refresh token, make sure your Auth0 application has the **refresh token** [grant enabled](https://auth0.com/docs/get-started/applications/update-grant-types). If you are also specifying an audience value, make sure that the corresponding Auth0 API has the **Allow Offline Access** [setting enabled](https://auth0.com/docs/get-started/apis/api-settings#access-settings).
 
 #### API client errors
 
-The Authentication API client will only throw `ApiException` exceptions. You can find more information in the `details` property of the exception.<!--Check the API documentation [link to API documentation] to learn more about the available `ApiException` properties. -->
+The Authentication API client will only throw `ApiException` exceptions. You can find more information in the `details` property of the exception. Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/ApiException-class.html) to learn more about the available `ApiException` properties.
 
 ```dart
 try {
-  final result = await auth0.api.login(
-    usernameOrEmail: email,
-    password: password,
-    connectionOrRealm: connection);
+  final credentials = await auth0.api.login(
+      usernameOrEmail: email,
+      password: password,
+      connectionOrRealm: connection);
   // ...
 } on ApiException catch (e) {
-  print(e.toString())
+  print(e);
 }
 ```
 
@@ -452,7 +580,8 @@ try {
 #### Log in to an organization
 
 ```dart
-final result = await auth0.webAuthentication
+final credentials = await auth0
+    .webAuthentication()
     .login(organizationId: 'YOUR_AUTH0_ORGANIZATION_ID');
 ```
 
@@ -463,7 +592,8 @@ To accept organization invitations your app needs to support [deep linking](http
 When your app gets opened by an invitation link, grab the invitation URL and pass it to the `login()` method.
 
 ```dart
-final result = await auth0.webAuthentication.login(invitationUrl: url);
+final credentials =
+    await auth0.webAuthentication().login(invitationUrl: url);
 ```
 
 ### Bot Detection
@@ -472,7 +602,7 @@ If you are performing database login/signup via the Authentication API and would
 
 ```dart
 try {
-  final result = await auth0.api.login(
+  final credentials = await auth0.api.login(
       usernameOrEmail: email,
       password: password,
       connectionOrRealm: connection,
@@ -480,9 +610,10 @@ try {
   // ...
 } on ApiException catch (e) {
   if (e.isVerificationRequired) {
-    final result = await auth0.webAuthentication.login(
+    final credentials = await auth0.webAuthentication().login(
         scopes: scopes,
-        useEphemeralSession: true, // Otherwise a session cookie will remain (iOS-only)
+        useEphemeralSession:
+            true, // Otherwise a session cookie will remain (iOS-only)
         parameters: {
           'connection': connection,
           'login_hint': email // So the user doesn't have to type it again
@@ -502,10 +633,10 @@ For general support or usage questions, use the [Auth0 Community](https://commun
 
 Auth0 helps you to:
 
-- Add authentication with [multiple sources](https://auth0.com/docs/authenticate/identity-providers), either social identity providers such as **Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter, Box, Salesforce** (amongst others), or enterprise identity systems like **Windows Azure AD, Google Apps, Active Directory, ADFS, or any SAML Identity Provider**.
+- Add authentication with [multiple sources](https://auth0.com/docs/authenticate/identity-providers), either social identity providers such as **Google, Facebook, Microsoft Account, LinkedIn, GitHub, Twitter, Box, Salesforce** (amongst others), or enterprise identity systems like **Windows Azure AD, Google Apps, Active Directory, ADFS, or any SAML identity provider**.
 - Add authentication through more traditional **[username/password databases](https://auth0.com/docs/authenticate/database-connections/custom-db)**.
 - Add support for **[linking different user accounts](https://auth0.com/docs/manage-users/user-accounts/user-account-linking)** with the same user.
-- Support for generating signed [JSON Web Tokens](https://auth0.com/docs/secure/tokens/json-web-tokens) to call your APIs and **flow the user identity** securely.
+- Support for generating signed [JSON web tokens](https://auth0.com/docs/secure/tokens/json-web-tokens) to call your APIs and **flow the user identity** securely.
 - Analytics of how, when, and where users are logging in.
 - Pull data from other sources and add it to the user profile through [JavaScript Actions](https://auth0.com/docs/customize/actions).
 

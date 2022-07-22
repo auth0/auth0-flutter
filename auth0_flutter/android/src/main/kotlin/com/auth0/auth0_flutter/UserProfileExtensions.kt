@@ -3,7 +3,6 @@ package com.auth0.auth0_flutter
 import com.auth0.android.jwt.Claim
 import com.auth0.android.result.UserProfile
 import com.auth0.auth0_flutter.utils.getCustomClaims
-import com.auth0.android.jwt.JWT
 
 fun UserProfile.toMap(): Map<String, Any?> {
     return mapOf(
@@ -51,7 +50,7 @@ fun createUserProfileFromClaims(claims: Map<String, Claim>): UserProfile {
         appMetadata = mapOf(),
         userMetadata = mapOf(),
         createdAt = null
-    );
+    )
 }
 
 val UserProfile.sub: String

@@ -8,4 +8,3 @@ interface ApiRequestHandler {
     val method: String
     fun handle(api: AuthenticationAPIClient, request: MethodCallRequest, result: MethodChannel.Result)
 }
-

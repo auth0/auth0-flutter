@@ -1,14 +1,11 @@
 package com.auth0.auth0_flutter
 
 import com.auth0.android.Auth0
-import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
 import com.auth0.android.provider.WebAuthProvider
-import com.auth0.android.request.AuthenticationRequest
 import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
-import com.auth0.auth0_flutter.request_handlers.api.LoginApiRequestHandler
 import com.auth0.auth0_flutter.request_handlers.web_auth.LoginWebAuthRequestHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import org.hamcrest.CoreMatchers.equalTo
@@ -24,9 +21,9 @@ import java.util.*
 @RunWith(RobolectricTestRunner::class)
 class LoginWebAuthRequestHandlerTest {
     private val defaultCredentials =
-        Credentials(JwtTestUtils.createJwt(), "test", "", null, Date(), "openid profile email")
+        Credentials(JwtTestUtils.createJwt(), "test", "", null, Date(), "openid profile email offline_access")
 
-    fun runRequestHandler(
+    private fun runRequestHandler(
         args: HashMap<String, Any?> = hashMapOf(),
         credentials: Credentials = defaultCredentials,
         callback: (Result, WebAuthProvider.Builder) -> Unit
@@ -61,11 +58,11 @@ class LoginWebAuthRequestHandlerTest {
                 assertThat(map["idToken"], equalTo(defaultCredentials.idToken))
                 assertThat(map["accessToken"], equalTo(defaultCredentials.accessToken))
                 assertThat(map["expiresAt"], equalTo(formattedDate))
-                assertThat(map["scopes"], equalTo(listOf("openid", "profile", "email")))
+                assertThat(map["scopes"], equalTo(listOf("openid", "profile", "email", "offline_access")))
                 assertThat(map["refreshToken"], nullValue())
             })
 
-            verify(builder, never()).withScope(any())
+            verify(builder).withScope("")
             verify(builder, never()).withAudience(any())
             verify(builder, never()).withOrganization(any())
             verify(builder, never()).withInvitationUrl(any())
@@ -81,31 +78,31 @@ class LoginWebAuthRequestHandlerTest {
     @Test
     fun `handler should request scopes from the SDK when specified`() {
         val args = hashMapOf<String, Any?>(
-            "scopes" to arrayListOf("openid", "profile", "email")
+            "scopes" to arrayListOf("openid", "profile", "email", "offline_access")
         )
 
         runRequestHandler(args) { _, builder ->
-            verify(builder).withScope("openid profile email")
+            verify(builder).withScope("openid profile email offline_access")
         }
     }
 
     @Test
-    fun `handler should not add scopes when given an empty array`() {
+    fun `handler should add an empty scope when given an empty array`() {
         val args = hashMapOf<String, Any?>(
             "scopes" to arrayListOf<String>()
         )
 
         runRequestHandler(args) { _, builder ->
-            verify(builder, never()).withScope(anyOrNull())
+            verify(builder).withScope("")
         }
     }
 
     @Test
-    fun `handler should not add scopes when not specified`() {
+    fun `handler should add an empty scope when not specified`() {
         val args = hashMapOf<String, Any?>()
 
         runRequestHandler(args) { _, builder ->
-            verify(builder, never()).withScope(anyOrNull())
+            verify(builder).withScope("")
         }
     }
 
@@ -284,8 +281,6 @@ class LoginWebAuthRequestHandlerTest {
 
     @Test
     fun `handler should not set the parameters on the SDK when not specified`() {
-        val parameters = hashMapOf("hello" to "world")
-
         val args = hashMapOf<String, Any?>()
 
         runRequestHandler(args) { _, builder ->
@@ -338,11 +333,11 @@ class LoginWebAuthRequestHandlerTest {
 
         val formattedDate = sdf.format(credentials.expiresAt)
 
-        assertThat((captor.firstValue as Map<String, *>)["accessToken"], equalTo(credentials.accessToken))
-        assertThat((captor.firstValue as Map<String, *>)["idToken"], equalTo(credentials.idToken))
-        assertThat((captor.firstValue as Map<String, *>)["refreshToken"], equalTo(credentials.refreshToken))
-        assertThat((captor.firstValue as Map<String, *>)["expiresAt"] as String, equalTo(formattedDate))
-        assertThat((captor.firstValue as Map<String, *>)["scopes"], equalTo(listOf("scope1", "scope2")))
-        assertThat(((captor.firstValue as Map<String, *>)["userProfile"] as Map<String, Any>)["name"], equalTo("John Doe"))
+        assertThat((captor.firstValue as Map<*, *>)["accessToken"], equalTo(credentials.accessToken))
+        assertThat((captor.firstValue as Map<*, *>)["idToken"], equalTo(credentials.idToken))
+        assertThat((captor.firstValue as Map<*, *>)["refreshToken"], equalTo(credentials.refreshToken))
+        assertThat((captor.firstValue as Map<*, *>)["expiresAt"] as String, equalTo(formattedDate))
+        assertThat((captor.firstValue as Map<*, *>)["scopes"], equalTo(listOf("scope1", "scope2")))
+        assertThat(((captor.firstValue as Map<*, *>)["userProfile"] as Map<*, *>)["name"], equalTo("John Doe"))
     }
 }

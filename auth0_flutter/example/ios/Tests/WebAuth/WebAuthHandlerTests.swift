@@ -25,7 +25,7 @@ extension WebAuthHandlerTests {
 
 extension WebAuthHandlerTests {
     func testProducesErrorWhenArgumentsAreMissing() {
-        let expectation = expectation(description: "arguments are missing")
+        let expectation = self.expectation(description: "Arguments are missing")
         sut.handle(FlutterMethodCall(methodName: "", arguments: nil)) { result in
             assert(result: result, isError: .argumentsMissing)
             expectation.fulfill()
@@ -34,7 +34,7 @@ extension WebAuthHandlerTests {
     }
 
     func testProducesErrorWhenAccountIsMissing() {
-        let expectation = expectation(description: "account is missing")
+        let expectation = self.expectation(description: "account is missing")
         sut.handle(FlutterMethodCall(methodName: "", arguments: arguments(without: Account.key))) { result in
             assert(result: result, isError: .accountMissing)
             expectation.fulfill()
@@ -43,7 +43,7 @@ extension WebAuthHandlerTests {
     }
 
     func testProducesErrorWhenUserAgentIsMissing() {
-        let expectation = expectation(description: "userAgent is missing")
+        let expectation = self.expectation(description: "userAgent is missing")
         sut.handle(FlutterMethodCall(methodName: "", arguments: arguments(without: UserAgent.key))) { result in
             assert(result: result, isError: .userAgentMissing)
             expectation.fulfill()
@@ -63,7 +63,7 @@ extension WebAuthHandlerTests {
         let accountDictionary = [AccountProperty.clientId.rawValue: "foo", AccountProperty.domain.rawValue: "bar"]
         let userAgentDictionary = [UserAgentProperty.name.rawValue: "baz", UserAgentProperty.version.rawValue: "qux"]
         let argumentsDictionary = [Account.key: accountDictionary, UserAgent.key: userAgentDictionary]
-        let expectation = self.expectation(description: "called client provider")
+        let expectation = self.expectation(description: "Called client provider")
         sut.clientProvider = { account, userAgent in
             XCTAssertEqual(account.clientId, accountDictionary[AccountProperty.clientId])
             XCTAssertEqual(account.domain, accountDictionary[AccountProperty.domain])
@@ -80,7 +80,7 @@ extension WebAuthHandlerTests {
 
     func testCallsMethodHandlerProvider() {
         let methodName = WebAuthHandler.Method.login.rawValue
-        let expectation = self.expectation(description: "called method handler provider")
+        let expectation = self.expectation(description: "Called method handler provider")
         sut.methodHandlerProvider = { method, _ in
             XCTAssertTrue(method.rawValue == methodName)
             expectation.fulfill()
@@ -91,7 +91,7 @@ extension WebAuthHandlerTests {
     }
 
     func testDoesNotCallMethodHandlerProviderWhenMethodIsUnsupported() {
-        let expectation = self.expectation(description: "did not call method handler provider")
+        let expectation = self.expectation(description: "Did not call method handler provider")
         sut.methodHandlerProvider = { _, _ in
             XCTFail("called method handler provider")
             return SpyMethodHandler()
@@ -102,7 +102,11 @@ extension WebAuthHandlerTests {
         }
         wait(for: [expectation])
     }
+}
 
+// MARK: - Method Handlers
+
+extension WebAuthHandlerTests {
     func testReturnsMethodHandlers() {
         var expectations: [XCTestExpectation] = []
         let methodHandlers: [WebAuthHandler.Method: MethodHandler.Type] = [
@@ -111,7 +115,7 @@ extension WebAuthHandlerTests {
         ]
         methodHandlers.forEach { method, methodHandler in
             let methodCall = FlutterMethodCall(methodName: method.rawValue, arguments: arguments())
-            let expectation = self.expectation(description: "returned \(methodHandler)")
+            let expectation = self.expectation(description: "Returned \(methodHandler)")
             expectations.append(expectation)
             sut.methodHandlerProvider = { method, client in
                 let result = WebAuthHandler().methodHandlerProvider(method, client)
@@ -123,11 +127,7 @@ extension WebAuthHandlerTests {
         }
         wait(for: expectations)
     }
-}
 
-// MARK: - Method Handlers
-
-extension WebAuthHandlerTests {
     func testCallsMethodHandlers() {
         var expectations: [XCTestExpectation] = []
         WebAuthHandler.Method.allCases.forEach { method in

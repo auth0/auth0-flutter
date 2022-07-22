@@ -32,10 +32,10 @@ packages:
   auth0_flutter_platform_interface:
     dependency: "direct main"
     description:
-      path: "../auth0_flutter_platform_interface"
-      relative: true
-    source: path
-    version: "1.0.0-beta.0"
+      name: auth0_flutter_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0-fa.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -201,7 +201,7 @@ packages:
       name: flutter_lints
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.4"
+    version: "2.0.1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -283,7 +283,7 @@ packages:
       name: lints
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.1"
+    version: "2.0.0"
   logging:
     dependency: transitive
     description:
