@@ -21,7 +21,7 @@ struct CredentialsManagerGetMethodHandler: MethodHandler {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.parameters.rawValue)))
         }
 
-        credentialsManager.credentials(withScope: scopes.isEmpty ? nil : scopes.asSpaceSeparatedString,
+        self.credentialsManager.credentials(withScope: scopes.isEmpty ? nil : scopes.asSpaceSeparatedString,
                                        minTTL: minTTL,
                                        parameters: parameters) {
             switch $0 {

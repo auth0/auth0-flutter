@@ -1,6 +1,5 @@
 import Flutter
 import Auth0
-import SimpleKeychain
 
 struct CredentialsManagerHasValidMethodHandler: MethodHandler {
     enum Argument: String {
@@ -8,13 +7,6 @@ struct CredentialsManagerHasValidMethodHandler: MethodHandler {
     }
 
     let credentialsManager: CredentialsManager
-    let credentialsStorage: CredentialsStorage
-    let credentialsKey = "credentials"
-
-    init(credentialsManager: CredentialsManager, credentialsStorage: CredentialsStorage = A0SimpleKeychain()) {
-        self.credentialsManager = credentialsManager
-        self.credentialsStorage = credentialsStorage
-    }
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
         guard let minTTL = arguments[Argument.minTtl] as? Int else {
@@ -22,12 +14,6 @@ struct CredentialsManagerHasValidMethodHandler: MethodHandler {
         }
 
         // So it behaves the same as the Credentials Manager from Auth0.Android
-        if let data = self.credentialsStorage.getEntry(forKey: credentialsKey),
-           let credentials = try? NSKeyedUnarchiver.unarchivedObject(ofClass: Credentials.self, from: data),
-           credentials.refreshToken != nil {
-            return callback(true)
-        }
-
-        callback(credentialsManager.hasValid(minTTL: minTTL))
+        callback(self.credentialsManager.canRenew() || self.credentialsManager.hasValid(minTTL: minTTL))
     }
 }
