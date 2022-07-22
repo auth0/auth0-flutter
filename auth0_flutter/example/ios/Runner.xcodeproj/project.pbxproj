@@ -10,6 +10,7 @@
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		3F1B396BCCAD9DA04D4998A2 /* Pods_Runner_RunnerUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52FDC1B88C21EFE2421C98FA /* Pods_Runner_RunnerUITests.framework */; };
+		5C08DBC8288A7646000D2F37 /* CredentialsManagerExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C08DBC7288A7646000D2F37 /* CredentialsManagerExtensionsTests.swift */; };
 		5C328B4827F7822600451E70 /* WebAuthHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C328B4727F7822600451E70 /* WebAuthHandlerTests.swift */; };
 		5C328B5027F7B0E700451E70 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C328B4F27F7B0E600451E70 /* Utilities.swift */; };
 		5C328B5327F7B12F00451E70 /* WebAuthSpies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C328B5227F7B12F00451E70 /* WebAuthSpies.swift */; };
@@ -82,6 +83,7 @@
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		3DA3F79738DB2CDFBC131B5E /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		52FDC1B88C21EFE2421C98FA /* Pods_Runner_RunnerUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner_RunnerUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5C08DBC7288A7646000D2F37 /* CredentialsManagerExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerExtensionsTests.swift; sourceTree = "<group>"; };
 		5C328B4527F7822600451E70 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C328B4727F7822600451E70 /* WebAuthHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthHandlerTests.swift; sourceTree = "<group>"; };
 		5C328B4F27F7B0E600451E70 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
@@ -220,6 +222,7 @@
 				5C4E65C4286D1CFB00141449 /* CredentialsManagerHasValidMethodHandlerTests.swift */,
 				5C4E65C8286D26D800141449 /* CredentialsManagerGetMethodHandlerTests.swift */,
 				5C4E65BD286D151400141449 /* CredentialsManagerClearMethodHandlerTests.swift */,
+				5C08DBC7288A7646000D2F37 /* CredentialsManagerExtensionsTests.swift */,
 			);
 			path = CredentialsManager;
 			sourceTree = "<group>";
@@ -592,6 +595,7 @@
 				5C4E65C9286D26D800141449 /* CredentialsManagerGetMethodHandlerTests.swift in Sources */,
 				5C328B5727F7BFEA00451E70 /* Mocks.swift in Sources */,
 				5C335E3D27FBBC2300EDDE3A /* WebAuthLogoutMethodHandlerTests.swift in Sources */,
+				5C08DBC8288A7646000D2F37 /* CredentialsManagerExtensionsTests.swift in Sources */,
 				5C335E4127FBD2FE00EDDE3A /* ExtensionsTests.swift in Sources */,
 				5C59DA732807B1A300365CDB /* AuthAPIResetPasswordMethodHandlerTests.swift in Sources */,
 				5C59DA832809214200365CDB /* AuthAPIUserInfoMethodHandlerTests.swift in Sources */,

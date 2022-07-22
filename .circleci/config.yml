@@ -9,7 +9,7 @@ orbs:
       android: circleci/android@2
     commands:
       prepare-config:
-        description: "Prepares the environment configuration files"
+        description: Prepares the environment configuration files
         steps:
           - run:
               name: Prepare Environment Configuration
@@ -25,7 +25,7 @@ orbs:
                 mv android/local.properties.ci android/local.properties
               working_directory: ./auth0_flutter/example
       run-smoke-tests:
-        description: "Runs the Android smoke tests"
+        description: Runs the Android smoke tests
         parameters:
           android_simulator:
             type: string
@@ -97,7 +97,7 @@ jobs:
     executor:
       name: android/android-machine
       resource-class: medium
-      tag: 2021.10.1
+      tag: 2022.06.1
     steps:
       - checkout
       - flutter/install_sdk_and_pub:
@@ -137,7 +137,7 @@ jobs:
     executor:
       name: android/android-machine
       resource-class: xlarge
-      tag: "2022.06.1"
+      tag: 2022.06.1
     steps:
       - run:
           name: Guard Smoke Tests
@@ -198,15 +198,14 @@ jobs:
       - run:
           name: Generate iOS test coverage report
           command: |
-            mkdir -p ~/test-results/cobertura
+            mkdir cobertura
             bundle exec slather
           working_directory: ./auth0_flutter/example/ios
-      - store_artifacts:
-          path: ~/test-results/cobertura
       - codecov/upload:
-          file: ~/test-results/cobertura/cobertura.xml
+          file: ./auth0_flutter/example/ios/cobertura/cobertura.xml
           upload_name: Auth0 Flutter iOS
           flags: auth0_flutter_ios
+          xtra_args: -s ./auth0_flutter/example/ios/cobertura
 workflows:
   build_and_test:
     jobs:

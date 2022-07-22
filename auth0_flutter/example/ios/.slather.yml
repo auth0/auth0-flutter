@@ -4,4 +4,4 @@ scheme: Runner
 workspace: Runner.xcworkspace
 binary_basename: auth0_flutter
 arch: x86_64
-output_directory: ~/test-results/cobertura
+output_directory: cobertura
