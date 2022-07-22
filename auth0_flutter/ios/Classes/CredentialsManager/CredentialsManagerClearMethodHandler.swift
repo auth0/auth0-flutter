@@ -5,6 +5,6 @@ struct CredentialsManagerClearMethodHandler: MethodHandler {
     let credentialsManager: CredentialsManager
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
-        callback(credentialsManager.clear())
+        callback(self.credentialsManager.clear())
     }
 }

@@ -14,6 +14,6 @@ struct CredentialsManagerSaveMethodHandler: MethodHandler {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.credentials.rawValue)))
         }
 
-        callback(credentialsManager.store(credentials: credentials))
+        callback(self.credentialsManager.store(credentials: credentials))
     }
 }

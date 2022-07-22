@@ -9,6 +9,7 @@ class CredentialsManagerExtensionsTests: XCTestCase {
             "NO_CREDENTIALS": .noCredentials,
             "NO_REFRESH_TOKEN": .noRefreshToken,
             "RENEW_FAILED": .renewFailed,
+            "STORE_FAILED": .storeFailed,
             "BIOMETRICS_FAILED": .biometricsFailed,
             "REVOKE_FAILED": .revokeFailed,
             "LARGE_MIN_TTL": .largeMinTTL

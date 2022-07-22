@@ -8,6 +8,7 @@ extension FlutterError {
         case .noCredentials: code = "NO_CREDENTIALS"
         case .noRefreshToken: code = "NO_REFRESH_TOKEN"
         case .renewFailed: code = "RENEW_FAILED"
+        case .storeFailed: code = "STORE_FAILED"
         case .biometricsFailed: code = "BIOMETRICS_FAILED"
         case .revokeFailed: code = "REVOKE_FAILED"
         case .largeMinTTL: code = "LARGE_MIN_TTL"
