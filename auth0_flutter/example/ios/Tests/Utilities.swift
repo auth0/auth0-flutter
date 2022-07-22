@@ -132,3 +132,8 @@ func assert(flutterError: FlutterError, is authenticationError: AuthenticationEr
     XCTAssertEqual(flags[AuthAPIErrorFlag.isLoginRequired], authenticationError.isLoginRequired)
     XCTAssertEqual(flags[AuthAPIErrorFlag.isNetworkError], authenticationError.isNetworkError)
 }
+
+func assert(flutterError: FlutterError, is credentialsManagerError: CredentialsManagerError, with code: String) {
+    XCTAssertEqual(flutterError.code, code)
+    XCTAssertEqual(flutterError.message, String(describing: credentialsManagerError))
+}
