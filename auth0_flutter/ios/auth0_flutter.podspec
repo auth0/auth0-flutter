@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'auth0_flutter'
-  s.version          = ' 1.0.0-beta.0'
+  s.version          = ' 1.0.0-fa.0'
   s.summary          = 'A new flutter plugin project.'
   s.description      = <<-DESC
 A new flutter plugin project.
