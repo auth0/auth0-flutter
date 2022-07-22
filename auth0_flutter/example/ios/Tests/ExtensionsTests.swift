@@ -91,16 +91,20 @@ extension ExtensionsTests {
                        credentials.scope?.split(separator: " ").map(String.init))
     }
 
+    func testFailsToMapCredentialsWithMissingRequiredProperties() throws {
+        let values: [String: Any] = [:]
+        XCTAssertNil(Credentials(from: values))
+    }
+
     func testFailsToMapCredentialsFromDictionaryWithInvalidExpiresAt() throws {
         let values: [String: Any] = [
             CredentialsProperty.accessToken.rawValue: "",
             CredentialsProperty.idToken.rawValue: testIdToken,
-            CredentialsProperty.expiresAt.rawValue: Date().asISO8601String,
+            CredentialsProperty.expiresAt.rawValue: "foo",
             CredentialsProperty.scopes.rawValue: [],
             CredentialsProperty.tokenType.rawValue: ""
         ]
-        let credentials = try XCTUnwrap(Credentials(from: values))
-        XCTAssertNil(credentials.scope)
+        XCTAssertNil(Credentials(from: values))
     }
 }
 
@@ -145,18 +149,18 @@ extension ExtensionsTests {
                        values[CredentialsProperty.scopes] as? [String])
     }
 
-    func testFailsToMapCredentialsWithMalformedIdTokenToDictionary() {
-        let idToken = "foo"
-        let credentials = Credentials(accessToken: "", tokenType: "", idToken: idToken, expiresIn: Date())
-        XCTAssertThrowsError(try credentials.asDictionary(), HandlerError.idTokenDecodingFailed.message)
-    }
-
     func testMapsUserProfileToDictionary() throws {
         let credentials = Credentials(accessToken: "", tokenType: "", idToken: testIdToken, expiresIn: Date())
         let values = try credentials.asDictionary()
         let jwt = try decode(jwt: credentials.idToken)
         let userProfile = try XCTUnwrap(UserInfo(json: jwt.body)?.asDictionary())
         XCTAssertTrue(userProfile == values[CredentialsProperty.userProfile] as? [String: Any])
+    }
+
+    func testFailsToMapCredentialsWithMalformedIdTokenToDictionary() {
+        let idToken = "foo"
+        let credentials = Credentials(accessToken: "", tokenType: "", idToken: idToken, expiresIn: Date())
+        XCTAssertThrowsError(try credentials.asDictionary(), HandlerError.idTokenDecodingFailed.message)
     }
 }
 
