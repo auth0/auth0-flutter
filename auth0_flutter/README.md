@@ -1,4 +1,4 @@
-# Auth0 SDK for Flutter (Beta)
+# Auth0 SDK for Flutter (First Availability)
 
 [![CircleCI](https://img.shields.io/circleci/project/github/auth0/auth0-flutter.svg)](https://circleci.com/gh/auth0/auth0-flutter/tree/main)
 [![Codecov](https://codecov.io/gh/auth0/auth0-flutter/branch/main/graph/badge.svg)](https://codecov.io/gh/auth0/auth0-flutter)
