@@ -3,6 +3,7 @@ import Auth0
 
 // MARK: - Providers
 
+typealias CredentialsManagerProvider = (_ apiClient: Authentication, _ arguments: [String: Any]) -> CredentialsManager
 typealias CredentialsManagerMethodHandlerProvider = (_ method: CredentialsManagerHandler.Method,
                                                      _ credentialsManager: CredentialsManager) -> MethodHandler
 
@@ -17,6 +18,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
     }
 
     private static let channelName = "auth0.com/auth0_flutter/credentials_manager"
+    private static var credentialsManager: CredentialsManager?
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let handler = CredentialsManagerHandler()
@@ -29,6 +31,20 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         var client = Auth0.authentication(clientId: account.clientId, domain: account.domain)
         client.using(inLibrary: userAgent.name, version: userAgent.version)
         return client
+    }
+
+    var credentialsManagerProvider: CredentialsManagerProvider = { apiClient, arguments in
+        var instance = CredentialsManagerHandler.credentialsManager ?? CredentialsManager(authentication: apiClient)
+
+        if let localAuthenticationDictionary = arguments[LocalAuthentication.key] as? [String: String?] {
+            let localAuthentication = LocalAuthentication(from: localAuthenticationDictionary)
+            instance.enableBiometrics(withTitle: localAuthentication.title,
+                                      cancelTitle: localAuthentication.cancelTitle,
+                                      fallbackTitle: localAuthentication.fallbackTitle)
+        }
+
+        CredentialsManagerHandler.credentialsManager = instance
+        return instance
     }
 
     var methodHandlerProvider: CredentialsManagerMethodHandlerProvider = { method, credentialsManager in
@@ -57,15 +73,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         }
 
         let apiClient = apiClientProvider(account, userAgent)
-        var credentialsManager = CredentialsManager(authentication: apiClient)
-
-        if let localAuthenticationDictionary = arguments[LocalAuthentication.key] as? [String: String?] {
-            let localAuthentication = LocalAuthentication(from: localAuthenticationDictionary)
-            credentialsManager.enableBiometrics(withTitle: localAuthentication.title,
-                                                cancelTitle: localAuthentication.cancelTitle,
-                                                fallbackTitle: localAuthentication.fallbackTitle)
-        }
-
+        let credentialsManager = credentialsManagerProvider(apiClient, arguments)
         let methodHandler = methodHandlerProvider(method, credentialsManager)
         methodHandler.handle(with: arguments, callback: result)
     }

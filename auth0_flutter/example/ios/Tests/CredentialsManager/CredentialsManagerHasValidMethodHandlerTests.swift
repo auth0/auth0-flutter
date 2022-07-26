@@ -38,8 +38,8 @@ extension CredentialsManagerHasValidMethodHandlerTests {
         XCTAssertTrue(spy.calledGetEntry)
     }
 
-    func testProducesTrueWithValidCredentials() {
-        let credentials = Credentials(expiresIn: Date(timeIntervalSinceNow: 3600))
+    func testProducesTrueWithValidCredentialsAndNoRefreshToken() {
+        let credentials = Credentials(refreshToken: nil, expiresIn: Date(timeIntervalSinceNow: 3600))
         let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
         let expectation = self.expectation(description: "Produced true")
         spy.getEntryReturnValue = data
@@ -50,8 +50,8 @@ extension CredentialsManagerHasValidMethodHandlerTests {
         wait(for: [expectation])
     }
 
-    func testProducesTrueWithRefreshToken() {
-        let credentials = Credentials(refreshToken: "foo")
+    func testProducesTrueWithRefreshTokenAndInvalidCredentials() {
+        let credentials = Credentials(refreshToken: "foo", expiresIn: Date(timeIntervalSinceNow: -3600))
         let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
         let expectation = self.expectation(description: "Produced true")
         let credentialsManager = CredentialsManager(authentication: SpyAuthentication(), storage: spy)
@@ -64,9 +64,35 @@ extension CredentialsManagerHasValidMethodHandlerTests {
         wait(for: [expectation])
     }
 
-    func testProducesFalseWithNoValidCredentials() {
+    func testProducesTrueWithRefreshTokenAndValidCredentials() {
+        let credentials = Credentials(refreshToken: "foo", expiresIn: Date(timeIntervalSinceNow: 3600))
+        let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
+        let expectation = self.expectation(description: "Produced true")
+        let credentialsManager = CredentialsManager(authentication: SpyAuthentication(), storage: spy)
+        sut = CredentialsManagerHasValidMethodHandler(credentialsManager: credentialsManager)
+        spy.getEntryReturnValue = data
+        sut.handle(with: arguments()) { result in
+            XCTAssertEqual(result as? Bool, true)
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
+    }
+
+    func testProducesFalseWithNoCredentials() {
         let expectation = self.expectation(description: "Produced false")
         spy.getEntryReturnValue = nil
+        sut.handle(with: arguments()) { result in
+            XCTAssertEqual(result as? Bool, false)
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
+    }
+
+    func testProducesFalseWithInvalidCredentialsAndNoRefreshToken() {
+        let credentials = Credentials(refreshToken: nil, expiresIn: Date(timeIntervalSinceNow: -3600))
+        let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
+        let expectation = self.expectation(description: "Produced false")
+        spy.getEntryReturnValue = data
         sut.handle(with: arguments()) { result in
             XCTAssertEqual(result as? Bool, false)
             expectation.fulfill()

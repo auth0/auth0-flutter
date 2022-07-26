@@ -8,7 +8,7 @@ This package provides the common interface for platform implementations.
 
 **[API documentation ↗](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/)**
 
-> ⚠️ This library is currently in First Availability. We do not recommend using this library in production yet. As we move toward General Availability, please be aware that releases may contain breaking changes.
+> ⚠️ This library is currently in [**First Availability**](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages). We do not recommend using this library in production yet. As we move toward General Availability, please be aware that releases may contain breaking changes.
 
 ## Issue Reporting
 

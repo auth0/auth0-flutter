@@ -6,7 +6,7 @@
 
 Auth0 SDK for Android / iOS Flutter apps.
 
-> ⚠️ This library is currently in First Availability. We do not recommend using this library in production yet. As we move toward General Availability, please be aware that releases may contain breaking changes.
+> ⚠️ This library is currently in [**First Availability**](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages). We do not recommend using this library in production yet. As we move toward General Availability, please be aware that releases may contain breaking changes.
 
 ---
 
@@ -63,7 +63,7 @@ Auth0 SDK for Android / iOS Flutter apps.
 | :--------- | :-------------- | :---------------- |
 | SDK 3.0+   | Android API 21+ | iOS 12+           |
 | Dart 2.17+ | Java 8+         | Swift 5.3+        |
-|            |                 | Xcode 12.x / 13.x |
+|            |                 | Xcode 13.x / 14.x |
 
 ## Installation
 
@@ -263,7 +263,7 @@ final credentials = await auth0.credentialsManager.credentials();
 <details>
   <summary>Add a custom scheme value (Android-only)</summary>
 
-On Android, `https` is used by default as the callback URL scheme. This works best for Android API 23+ if you're using [Android App Links](https://auth0.com/docs/get-started/applications/enable-android-app-links-support), but in previous Android versions, this \_may show the intent chooser dialog prompting the user to choose either your app or the browser. You can change this behavior by using a custom unique scheme so that Android opens the link directly with your app. Note that schemes [can only have lowercase letters](https://developer.android.com/guide/topics/manifest/data-element).
+On Android, `https` is used by default as the callback URL scheme. This works best for Android API 23+ if you're using [Android App Links](https://auth0.com/docs/get-started/applications/enable-android-app-links-support), but in previous Android versions, this may show the intent chooser dialog prompting the user to choose either your app or the browser. You can change this behavior by using a custom unique scheme so that Android opens the link directly with your app. Note that schemes [can only have lowercase letters](https://developer.android.com/guide/topics/manifest/data-element).
 
 1. Update the `auth0Scheme` manifest placeholder on the `android/build.gradle` file.
 2. Update the **Allowed Callback URLs** in the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/).
