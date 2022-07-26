@@ -206,6 +206,22 @@ extension CredentialsManagerHandlerTests {
         wait(for: [expectation])
     }
 
+    // MARK: CredentialsManagerProvider
+
+    func testCallsCredentialsManagerProvider() {
+        let methodName = CredentialsManagerHandler.Method.save.rawValue
+        let expectation = self.expectation(description: "Called credentials manager provider")
+        sut.apiClientProvider = { _, _ in
+            return SpyAuthentication()
+        }
+        sut.credentialsManagerProvider = { _, _ in
+            expectation.fulfill()
+            return CredentialsManager(authentication: SpyAuthentication())
+        }
+        sut.handle(FlutterMethodCall(methodName: methodName, arguments: arguments())) { _ in }
+        wait(for: [expectation])
+    }
+
     // MARK: CredentialsManagerMethodHandlerProvider
 
     func testCallsMethodHandlerProvider() {

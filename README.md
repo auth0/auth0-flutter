@@ -6,7 +6,7 @@
 
 Auth0 SDK for Android / iOS Flutter apps.
 
-> ⚠️ This library is currently in First Availability. We do not recommend using this library in production yet. As we move toward General Availability, please be aware that releases may contain breaking changes.
+> ⚠️ This library is currently in [**First Availability**](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages). We do not recommend using this library in production yet. As we move toward General Availability, please be aware that releases may contain breaking changes.
 
 | Package                                                                 | Description                                   |
 |:------------------------------------------------------------------------|:----------------------------------------------|
