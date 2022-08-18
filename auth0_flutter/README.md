@@ -365,13 +365,13 @@ final credentials =
 
 #### Web Auth errors
 
-Web Auth will only throw `WebAuthException` exceptions. Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/WebAuthException-class.html) to learn more about the available `WebAuthException` properties.
+Web Auth will only throw `WebAuthenticationException` exceptions. Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/WebAuthenticationException-class.html) to learn more about the available `WebAuthenticationException` properties.
 
 ```dart
 try {
   final credentials = await auth0.webAuthentication().login();
   // ...
-} on WebAuthException catch (e) {
+} on WebAuthenticationException catch (e) {
   print(e);
 }
 ```

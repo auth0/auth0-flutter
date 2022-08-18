@@ -170,7 +170,8 @@ void main() {
       expect(result.refreshToken, isNull);
     });
 
-    test('throws an WebAuthException when method channel returns null',
+    test(
+        'throws an WebAuthenticationException when method channel returns null',
         () async {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
@@ -184,11 +185,11 @@ void main() {
         return result;
       }
 
-      await expectLater(actual, throwsA(isA<WebAuthException>()));
+      await expectLater(actual, throwsA(isA<WebAuthenticationException>()));
     });
 
     test(
-        'throws an WebAuthException when method channel throws a PlatformException',
+        'throws an WebAuthenticationException when method channel throws a PlatformException',
         () async {
       when(mocked.methodCallHandler(any))
           .thenThrow(PlatformException(code: '123'));
@@ -204,7 +205,7 @@ void main() {
         return result;
       }
 
-      await expectLater(actual, throwsA(isA<WebAuthException>()));
+      await expectLater(actual, throwsA(isA<WebAuthenticationException>()));
     });
   });
 
@@ -264,7 +265,7 @@ void main() {
     });
 
     test(
-        'throws an WebAuthException when method channel throws a PlatformException',
+        'throws an WebAuthenticationException when method channel throws a PlatformException',
         () async {
       when(mocked.methodCallHandler(any))
           .thenThrow(PlatformException(code: '123'));
@@ -278,7 +279,7 @@ void main() {
                 options: WebAuthLogoutOptions()));
       }
 
-      await expectLater(actual, throwsA(isA<WebAuthException>()));
+      await expectLater(actual, throwsA(isA<WebAuthenticationException>()));
     });
   });
 }

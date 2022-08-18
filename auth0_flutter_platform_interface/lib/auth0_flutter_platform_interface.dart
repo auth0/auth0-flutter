@@ -24,6 +24,6 @@ export 'src/request/request_options.dart';
 export 'src/user_agent.dart';
 export 'src/user_profile.dart';
 export 'src/web-auth/id_token_validation_config.dart';
-export 'src/web-auth/web_auth_exception.dart';
 export 'src/web-auth/web_auth_login_options.dart';
 export 'src/web-auth/web_auth_logout_options.dart';
+export 'src/web-auth/web_authentication_exception.dart';
