@@ -43,7 +43,7 @@ class _ExampleAppState extends State<ExampleApp> {
       setState(() {
         _isLoggedIn = true;
       });
-    } on WebAuthException catch (e) {
+    } on WebAuthenticationException catch (e) {
       output = e.toString();
     }
 
@@ -70,7 +70,7 @@ class _ExampleAppState extends State<ExampleApp> {
       setState(() {
         _isLoggedIn = false;
       });
-    } on WebAuthException catch (e) {
+    } on WebAuthenticationException catch (e) {
       output = e.toString();
     }
 
