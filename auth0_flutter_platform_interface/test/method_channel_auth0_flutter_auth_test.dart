@@ -681,9 +681,9 @@ void main() {
       expect(result.middleName, 'test-middle-name');
       expect(result.nickname, 'test-nickname');
       expect(result.preferredUsername, 'test-preferred-username');
-      expect(result.profileURL, Uri.parse('https://www.google.com'));
-      expect(result.pictureURL, Uri.parse('https://www.okta.com'));
-      expect(result.websiteURL, Uri.parse('https://www.auth0.com'));
+      expect(result.profileUrl, Uri.parse('https://www.google.com'));
+      expect(result.pictureUrl, Uri.parse('https://www.okta.com'));
+      expect(result.websiteUrl, Uri.parse('https://www.auth0.com'));
       expect(result.email, 'test-email');
       expect(result.isEmailVerified, true);
       expect(result.gender, 'test-gender');

@@ -5,13 +5,14 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('WebAuthException', () {
+  group('WebAuthenticationException', () {
     test('correctly maps from a PlatformException', () async {
       final details = {'details-prop': 'details-value'};
       final platformException = PlatformException(
           code: 'test-code', message: 'test-message', details: details);
 
-      final exception = WebAuthException.fromPlatformException(platformException);
+      final exception =
+          WebAuthenticationException.fromPlatformException(platformException);
 
       expect(exception.code, 'test-code');
       expect(exception.message, 'test-message');

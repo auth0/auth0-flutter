@@ -117,8 +117,8 @@ void main() {
       expect(exception.isVerificationRequired, true);
       expect(exception.isNetworkError, true);
       expect(exception.isBrowserAppNotAvailable, true);
-      expect(exception.isPKCENotAvailable, true);
-      expect(exception.isInvalidAuthorizeURL, true);
+      expect(exception.isPkceNotAvailable, true);
+      expect(exception.isInvalidAuthorizeUrl, true);
       expect(exception.isInvalidConfiguration, true);
       expect(exception.isCanceled, true);
       expect(exception.isLoginRequired, true);
@@ -170,8 +170,8 @@ void main() {
       expect(exception.isVerificationRequired, false);
       expect(exception.isNetworkError, false);
       expect(exception.isBrowserAppNotAvailable, false);
-      expect(exception.isPKCENotAvailable, false);
-      expect(exception.isInvalidAuthorizeURL, false);
+      expect(exception.isPkceNotAvailable, false);
+      expect(exception.isInvalidAuthorizeUrl, false);
       expect(exception.isInvalidConfiguration, false);
       expect(exception.isCanceled, false);
       expect(exception.isLoginRequired, false);
@@ -204,8 +204,8 @@ void main() {
     expect(exception.isVerificationRequired, false);
     expect(exception.isNetworkError, false);
     expect(exception.isBrowserAppNotAvailable, false);
-    expect(exception.isPKCENotAvailable, false);
-    expect(exception.isInvalidAuthorizeURL, false);
+    expect(exception.isPkceNotAvailable, false);
+    expect(exception.isInvalidAuthorizeUrl, false);
     expect(exception.isInvalidConfiguration, false);
     expect(exception.isCanceled, false);
     expect(exception.isLoginRequired, false);
@@ -235,8 +235,8 @@ void main() {
     expect(exception.isVerificationRequired, false);
     expect(exception.isNetworkError, false);
     expect(exception.isBrowserAppNotAvailable, false);
-    expect(exception.isPKCENotAvailable, false);
-    expect(exception.isInvalidAuthorizeURL, false);
+    expect(exception.isPkceNotAvailable, false);
+    expect(exception.isInvalidAuthorizeUrl, false);
     expect(exception.isInvalidConfiguration, false);
     expect(exception.isCanceled, false);
     expect(exception.isLoginRequired, false);
