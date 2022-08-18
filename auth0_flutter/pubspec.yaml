@@ -8,7 +8,8 @@ environment:
   flutter: ">=3.0.0"
 
 dependencies:
-  auth0_flutter_platform_interface: 1.0.0-fa.0
+  auth0_flutter_platform_interface:
+    path: ../auth0_flutter_platform_interface
   flutter:
     sdk: flutter
 
