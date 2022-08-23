@@ -3,7 +3,6 @@ import 'package:auth0_flutter_platform_interface/src/auth0_exception.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class TestAuth0Exception extends Auth0Exception {
-
   TestAuth0Exception(final String code, final String message,
       final Map<String, dynamic> details)
       : super(code, message, details);
@@ -17,7 +16,8 @@ void main() {
   group('Auth0Exception', () {
     test('correctly shows the string representation', () async {
       final details = {'details-prop': 'details-value'};
-      final exception = TestAuth0Exception('test-code', 'test-message', details);
+      final exception =
+          TestAuth0Exception('test-code', 'test-message', details);
 
       expect(exception.toString(), 'test-code: test-message');
     });

@@ -12,9 +12,6 @@ class AuthResetPasswordOptions implements RequestOptions {
   });
 
   @override
-  Map<String, dynamic> toMap() => {
-        'email': email,
-        'connection': connection,
-        'parameters': parameters
-      };
+  Map<String, dynamic> toMap() =>
+      {'email': email, 'connection': connection, 'parameters': parameters};
 }

@@ -35,8 +35,8 @@ class _ExampleAppState extends State<ExampleApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      final result = await webAuth
-          .login(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
+      final result =
+          await webAuth.login(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
 
       output = result.idToken;
 
@@ -62,8 +62,7 @@ class _ExampleAppState extends State<ExampleApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      await webAuth
-          .logout(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
+      await webAuth.logout(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
 
       output = 'Logged out.';
 

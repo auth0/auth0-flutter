@@ -199,8 +199,7 @@ void main() {
               scopes: {'test-scope1', 'test-scope2'},
               parameters: {'test': 'test-123'});
 
-      final verificationResult =
-          verify(mockedPlatform.renew(captureAny))
+      final verificationResult = verify(mockedPlatform.renew(captureAny))
           .captured
           .single as ApiRequest<AuthRenewOptions>;
       expect(verificationResult.account.domain, 'test-domain');
@@ -219,8 +218,7 @@ void main() {
           .api
           .renewCredentials(refreshToken: 'test-refresh-token');
 
-      final verificationResult =
-          verify(mockedPlatform.renew(captureAny))
+      final verificationResult = verify(mockedPlatform.renew(captureAny))
           .captured
           .single as ApiRequest<AuthRenewOptions>;
       // ignore: inference_failure_on_collection_literal
@@ -248,7 +246,8 @@ void main() {
     });
 
     test('set parameters to default value when omitted', () async {
-      when(mockedPlatform.userInfo(any)).thenAnswer((final _) async => const UserProfile(sub: 'sub'));
+      when(mockedPlatform.userInfo(any))
+          .thenAnswer((final _) async => const UserProfile(sub: 'sub'));
 
       await Auth0('test-domain', 'test-clientId')
           .api
