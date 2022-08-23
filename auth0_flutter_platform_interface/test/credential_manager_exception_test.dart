@@ -11,7 +11,8 @@ void main() {
       final platformException = PlatformException(
           code: 'test-code', message: 'test-message', details: details);
 
-      final exception = CredentialsManagerException.fromPlatformException(platformException);
+      final exception =
+          CredentialsManagerException.fromPlatformException(platformException);
 
       expect(exception.code, 'test-code');
       expect(exception.message, 'test-message');

@@ -19,10 +19,7 @@ void main() {
     });
 
     test('removes _statusCode from details', () async {
-      final details = {
-        'details-prop': 'details-value',
-        '_statusCode': 50
-      };
+      final details = {'details-prop': 'details-value', '_statusCode': 50};
       final platformException =
           PlatformException(code: 'test-code', details: details);
 
@@ -32,11 +29,8 @@ void main() {
       expect(exception.details['_statusCode'], null);
     });
 
-     test('correctly maps statusCode', () async {
-      final details = {
-        'details-prop': 'details-value',
-        '_statusCode': 50
-      };
+    test('correctly maps statusCode', () async {
+      final details = {'details-prop': 'details-value', '_statusCode': 50};
       final platformException =
           PlatformException(code: 'test-code', details: details);
 
@@ -56,7 +50,6 @@ void main() {
 
       expect(exception.statusCode, 0);
     });
-
 
     test('removes _errorFlags from details', () async {
       final details = {
@@ -213,9 +206,7 @@ void main() {
   });
 
   test('correctly maps _errorFlags when not present', () async {
-    final details = {
-      'details-prop': 'details-value'
-    };
+    final details = {'details-prop': 'details-value'};
     final platformException =
         PlatformException(code: 'test-code', details: details);
 

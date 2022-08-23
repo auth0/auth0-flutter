@@ -168,8 +168,7 @@ void main() {
     });
 
     test('correctly returns emailVerified when true', () async {
-      when(mocked.methodCallHandler(any)).thenAnswer(
-          (final _) async =>
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async =>
           {...MethodCallHandler.signupResult, 'emailVerified': true});
 
       final result = await MethodChannelAuth0FlutterAuth().signup(
@@ -184,8 +183,7 @@ void main() {
     });
 
     test('correctly returns emailVerified when false', () async {
-      when(mocked.methodCallHandler(any)).thenAnswer(
-          (final _) async =>
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async =>
           {...MethodCallHandler.signupResult, 'emailVerified': false});
 
       final result = await MethodChannelAuth0FlutterAuth().signup(
@@ -483,13 +481,12 @@ void main() {
 
   group('renew', () {
     test('calls the correct MethodChannel method', () async {
-      when(mocked.methodCallHandler(any)).thenAnswer(
-          (final _) async => MethodCallHandler.renewResult);
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.renewResult);
 
-      await MethodChannelAuth0FlutterAuth()
-          .renew(ApiRequest<AuthRenewOptions>(
-              account: const Account('test-domain', 'test-clientId'),
-              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+      await MethodChannelAuth0FlutterAuth().renew(ApiRequest<AuthRenewOptions>(
+          account: const Account('test-domain', 'test-clientId'),
+          userAgent: UserAgent(name: 'test-name', version: 'test-version'),
           options: AuthRenewOptions(refreshToken: 'test-refresh-token')));
 
       expect(
@@ -498,16 +495,16 @@ void main() {
     });
 
     test('correctly maps all properties', () async {
-      when(mocked.methodCallHandler(any)).thenAnswer(
-          (final _) async => MethodCallHandler.renewResult);
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.renewResult);
 
       await MethodChannelAuth0FlutterAuth().renew(ApiRequest<AuthRenewOptions>(
-              account: const Account('test-domain', 'test-clientId'),
-              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+          account: const Account('test-domain', 'test-clientId'),
+          userAgent: UserAgent(name: 'test-name', version: 'test-version'),
           options: AuthRenewOptions(
-                  refreshToken: 'test-refresh-token',
-                  scopes: {'a', 'b'},
-                  parameters: {'test': 'test-123'})));
+              refreshToken: 'test-refresh-token',
+              scopes: {'a', 'b'},
+              parameters: {'test': 'test-123'})));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -526,12 +523,12 @@ void main() {
     test(
         'correctly assigns default values to all non-required properties when missing',
         () async {
-      when(mocked.methodCallHandler(any)).thenAnswer(
-          (final _) async => MethodCallHandler.renewResult);
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.renewResult);
 
       await MethodChannelAuth0FlutterAuth().renew(ApiRequest<AuthRenewOptions>(
-              account: const Account('', ''),
-              userAgent: UserAgent(name: '', version: ''),
+          account: const Account('', ''),
+          userAgent: UserAgent(name: '', version: ''),
           options: AuthRenewOptions(refreshToken: '')));
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -540,26 +537,22 @@ void main() {
     });
 
     test('correctly returns the response from the Method Channel', () async {
-      when(mocked.methodCallHandler(any)).thenAnswer(
-          (final _) async => MethodCallHandler.renewResult);
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.renewResult);
 
-      final result = await MethodChannelAuth0FlutterAuth()
-          .renew(ApiRequest<AuthRenewOptions>(
+      final result = await MethodChannelAuth0FlutterAuth().renew(
+          ApiRequest<AuthRenewOptions>(
               account: const Account('test-domain', 'test-clientId'),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
               options: AuthRenewOptions(refreshToken: 'test-refresh-token')));
 
-      expect(result.accessToken,
-          MethodCallHandler.renewResult['accessToken']);
+      expect(result.accessToken, MethodCallHandler.renewResult['accessToken']);
+      expect(result.idToken, MethodCallHandler.renewResult['idToken']);
       expect(
-          result.idToken, MethodCallHandler.renewResult['idToken']);
-      expect(result.refreshToken,
-          MethodCallHandler.renewResult['refreshToken']);
+          result.refreshToken, MethodCallHandler.renewResult['refreshToken']);
       expect(result.scopes, MethodCallHandler.renewResult['scopes']);
-      expect(
-          result.expiresAt,
-          DateTime.parse(
-              MethodCallHandler.renewResult['expiresAt'] as String));
+      expect(result.expiresAt,
+          DateTime.parse(MethodCallHandler.renewResult['expiresAt'] as String));
       expect(result.user.name,
           MethodCallHandler.renewResult['userProfile']['name']);
     });
@@ -610,7 +603,8 @@ void main() {
       await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
           account: const Account('test-domain', 'test-clientId'),
           userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-          options: AuthUserInfoOptions(accessToken: 'test-token', parameters: {'test': 'test-123'})));
+          options: AuthUserInfoOptions(
+              accessToken: 'test-token', parameters: {'test': 'test-123'})));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -628,7 +622,8 @@ void main() {
       await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
           account: const Account('test-domain', 'test-clientId'),
           userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-          options: AuthUserInfoOptions(accessToken: 'test-token', parameters: {'test': 'test-123'})));
+          options: AuthUserInfoOptions(
+              accessToken: 'test-token', parameters: {'test': 'test-123'})));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;

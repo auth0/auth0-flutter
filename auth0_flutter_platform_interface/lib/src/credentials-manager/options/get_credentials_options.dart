@@ -1,6 +1,5 @@
 import '../../request/request_options.dart';
 
-
 // ignore: comment_references
 /// Options used to retrieve [Credentials] using the [CredentialsManagerPlatform].
 class GetCredentialsOptions implements RequestOptions {
