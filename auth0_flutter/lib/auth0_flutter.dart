@@ -78,10 +78,10 @@ class Auth0 {
   /// final result = await auth0.webAuthentication().login();
   /// final accessToken = result.accessToken;
   /// ```
-  /// By default, the credentials will be stored in the [CredentialsManager].
-  /// In case you want to opt-out of using the [CredentialsManager], set [useCredentialsManager] to `false`.
+  /// By default, the credentials will be stored in the [CredentialsManager]. In case you want to opt-out of using the [CredentialsManager], set [useCredentialsManager] to `false`.
+  /// (Android only): specify [scheme] if you're using a custom URL scheme for your app. This value must match the value used to configure the `auth0Scheme` manifest placeholder, for the Redirect intent filter to work
   WebAuthentication webAuthentication(
-          {final bool useCredentialsManager = true}) =>
-      WebAuthentication(_account, _userAgent,
+          {final String? scheme, final bool useCredentialsManager = true}) =>
+      WebAuthentication(_account, _userAgent, scheme,
           useCredentialsManager ? credentialsManager : null);
 }
