@@ -20,9 +20,11 @@ import '../auth0_flutter.dart';
 class WebAuthentication {
   final Account _account;
   final UserAgent _userAgent;
+  final String? _scheme;
   final CredentialsManager? _credentialsManager;
 
-  WebAuthentication(this._account, this._userAgent, this._credentialsManager);
+  WebAuthentication(
+      this._account, this._userAgent, this._scheme, this._credentialsManager);
 
   /// Redirects the user to the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login) for authentication. If successful, it returns
   /// a set of tokens, as well as the user's profile (constructed from ID token claims).
@@ -35,7 +37,6 @@ class WebAuthentication {
   /// Additonal notes:
   ///
   /// * (iOS only): [useEphemeralSession] controls whether shared persistent storage is used for cookies. [Read more on the effects this setting has](https://github.com/auth0/Auth0.swift/blob/master/FAQ.md#1-how-can-i-disable-the-login-alert-box)
-  /// * (Android only): specify [scheme] if you're using a custom URL scheme for your app. This value must match the value used to configure the `auth0Scheme` manifest placeholder, for the Redirect intent filter to work
   /// * [audience] relates to the API Identifier you want to reference in your access tokens (see [API settings](https://auth0.com/docs/get-started/apis/api-settings))
   /// * [scopes] defaults to `openid profile email offline_access`. You can override these scopes, but `openid` is always requested regardless of this setting.
   /// * Arbitrary [parameters] can be specified and then picked up in a custom Auth0 [Action](https://auth0.com/docs/customize/actions) or [Rule](https://auth0.com/docs/customize/rules).
@@ -52,7 +53,6 @@ class WebAuthentication {
     final String? redirectUrl,
     final String? organizationId,
     final String? invitationUrl,
-    final String? scheme,
     final bool useEphemeralSession = false,
     final Map<String, String> parameters = const {},
     final IdTokenValidationConfig idTokenValidationConfig =
@@ -67,7 +67,7 @@ class WebAuthentication {
             invitationUrl: invitationUrl,
             parameters: parameters,
             idTokenValidationConfig: idTokenValidationConfig,
-            scheme: scheme,
+            scheme: _scheme,
             useEphemeralSession: useEphemeralSession)));
 
     await _credentialsManager?.storeCredentials(credentials);
@@ -78,13 +78,11 @@ class WebAuthentication {
   /// Redirects the user to the Auth0 Logout endpoint to remove their authentication session, and log out. The user is immediately redirected back to the application
   /// once logout is complete.
   ///
-  /// If [returnTo] is not specified, a default URL is used that incorporates the `domain` value specified to [Auth0.new], and [scheme] on Android, or the
+  /// If [returnTo] is not specified, a default URL is used that incorporates the `domain` value specified to [Auth0.new], and the custom scheme on Android, or the
   /// bundle identifier in iOS. [returnTo] must appear in your **Allowed Logout URLs** list for the Auth0 app. [Read more about redirecting users after logout](https://auth0.com/docs/authenticate/login/logout#redirect-users-after-logout).
-  ///
-  /// (Android only): [scheme] must match the scheme that was used to configure the `auth0Scheme` manifest placeholder
-  Future<void> logout({final String? returnTo, final String? scheme}) async {
+  Future<void> logout({final String? returnTo}) async {
     await Auth0FlutterWebAuthPlatform.instance.logout(_createWebAuthRequest(
-      WebAuthLogoutOptions(returnTo: returnTo, scheme: scheme),
+      WebAuthLogoutOptions(returnTo: returnTo, scheme: _scheme),
     ));
     await _credentialsManager?.clearCredentials();
   }
