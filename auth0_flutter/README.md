@@ -1,12 +1,10 @@
-# Auth0 SDK for Flutter (First Availability)
+# Auth0 SDK for Flutter
 
 [![CircleCI](https://img.shields.io/circleci/project/github/auth0/auth0-flutter.svg)](https://circleci.com/gh/auth0/auth0-flutter/tree/main)
 [![Codecov](https://codecov.io/gh/auth0/auth0-flutter/branch/main/graph/badge.svg)](https://codecov.io/gh/auth0/auth0-flutter)
 [![Package](https://img.shields.io/pub/v/auth0_flutter.svg)](https://pub.dartlang.org/packages/auth0_flutter)
 
 Auth0 SDK for Android / iOS Flutter apps.
-
-> ⚠️ This library is currently in [**First Availability**](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages). We do not recommend using this library in production yet. As we move toward General Availability, please be aware that releases may contain breaking changes.
 
 ---
 
@@ -21,6 +19,7 @@ Auth0 SDK for Android / iOS Flutter apps.
   - [Web Auth Configuration](#web-auth-configuration)
   - [Web Auth Login](#web-auth-login)
   - [Web Auth Logout](#web-auth-logout)
+  - [Custom Scheme (Android)](#custom-scheme-android)
   - [SSO Alert Box (iOS)](#sso-alert-box-ios)
 - [**Next Steps**](#next-steps)
   + [Common Tasks](#common-tasks)
@@ -36,15 +35,18 @@ Auth0 SDK for Android / iOS Flutter apps.
 
 ## Features
 
-- Web Auth login and logout
-- Automatic storage and renewal of user's credentials
-- Support for custom Credentials Manager implementations
-- Support for the following Authentication API operations:
+- **Web Auth**
+  + Login
+  + Logout
+  + Automatic storage and renewal of user's credentials
+- **Authentication API**
   + Login with username or email and password
   + Signup
   + Get user information from `/userinfo`
   + Renew user's credentials
   + Reset password
+- **Credentials manager**
+- **Support for custom credentials manager implementations**
 
 ## Documentation
 
@@ -79,7 +81,7 @@ flutter pub add auth0_flutter
 
 `auth0_flutter` needs the **client ID** and **domain** of the Auth0 application to communicate with Auth0. You can find these details on the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/). If you are using a [custom domain](https://auth0.com/docs/brand-and-customize/custom-domains), use the value of your custom domain instead of the value from the settings page.
 
-> ⚠️ Make sure that the [application type](https://auth0.com/docs/configure/applications) of the Auth0 application is **Native**. If you don’t have a Native Auth0 application already, [create one](https://auth0.com/docs/get-started/create-apps/native-apps) before continuing.
+> ⚠️ Make sure that the [application type](https://auth0.com/docs/configure/applications) of the Auth0 application is **Native**, and has the **Token Endpoint Authentication Method** set to `None`. If you don’t have a Native Auth0 application already, [create one](https://auth0.com/docs/get-started/create-apps/native-apps) before continuing.
 
 ```dart
 final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID');
@@ -125,7 +127,7 @@ com.company.myapp://company.us.auth0.com/ios/com.company.myapp/callback
 
 #### Android configuration: manifest placeholders
 
-Open the `android/build.gradle` file and add the following manifest placeholders inside `android > defaultConfig`. The `applicationId` value will be auto-replaced at runtime with your Android app package name.
+Open the `android/build.gradle` file and add the following manifest placeholders inside `android > defaultConfig`.
 
 ```groovy
 // android/build.gradle
@@ -136,7 +138,7 @@ android {
     defaultConfig {
         // ...
         // Add the following line
-        manifestPlaceholders = [auth0Domain: "YOUR_AUTH0_DOMAIN", auth0Scheme: "${applicationId}"]
+        manifestPlaceholders = [auth0Domain: "YOUR_AUTH0_DOMAIN", auth0Scheme: "https"]
     }
 
     // ...
@@ -146,7 +148,7 @@ android {
 For example, if your Auth0 domain was `company.us.auth0.com`, then the manifest placeholders line would be:
 
 ```groovy
-manifestPlaceholders = [auth0Domain: "company.us.auth0.com", auth0Scheme: "${applicationId}"]
+manifestPlaceholders = [auth0Domain: "company.us.auth0.com", auth0Scheme: "https"]
 ```
 
 > 💡 If your Android app is using [product flavors](https://developer.android.com/studio/build/build-variants#product-flavors), you might need to specify different manifest placeholders for each flavor.
@@ -228,6 +230,8 @@ Then, present the [Universal Login](https://auth0.com/docs/authenticate/login/au
 
 ```dart
 final credentials = await auth0.webAuthentication().login();
+// Access token -> credentials.accessToken
+// User profile -> credentials.user
 ```
 
 auth0_flutter will automatically store the user's credentials using the built-in [Credentials Manager](#credentials-manager) instance. You can access this instance through the `credentialsManager` property.
@@ -261,17 +265,15 @@ final credentials = await auth0.credentialsManager.credentials();
 </details>
 
 <details>
-  <summary>Add a custom scheme value (Android-only)</summary>
+  <summary>Add custom parameters</summary>
 
-On Android, `https` is used by default as the callback URL scheme. This works best for Android API 23+ if you're using [Android App Links](https://auth0.com/docs/get-started/applications/enable-android-app-links-support), but in previous Android versions, this may show the intent chooser dialog prompting the user to choose either your app or the browser. You can change this behavior by using a custom unique scheme so that Android opens the link directly with your app. Note that schemes [can only have lowercase letters](https://developer.android.com/guide/topics/manifest/data-element).
+  Specify additional parameters by passing a `parameters` map.
 
-1. Update the `auth0Scheme` manifest placeholder on the `android/build.gradle` file.
-2. Update the **Allowed Callback URLs** in the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/).
-3. Pass the scheme value to the `login()` method.
-
-```dart
-final credentials = await auth0.webAuthentication().login(scheme: 'demo');
-```
+  ```dart
+  final credentials = await auth0
+      .webAuthentication()
+      .login(parameters: {'connection': 'github'});
+  ```
 </details>
 
 ### Web Auth Logout
@@ -283,6 +285,25 @@ Call the `logout()` method in the `onPressed` callback of your **Logout** button
 ```dart
 await auth0.webAuthentication().logout();
 ```
+
+### Custom Scheme (Android)
+
+On Android, `https` is used by default as the callback URL scheme. This works best for Android API 23+ if you're using [Android App Links](https://auth0.com/docs/get-started/applications/enable-android-app-links-support), but in previous Android versions, this may show the intent chooser dialog prompting the user to choose either your app or the browser. You can change this behavior by using a custom unique scheme so that Android opens the link directly with your app.
+
+1. Update the `auth0Scheme` manifest placeholder on the `android/build.gradle` file.
+2. Update the **Allowed Callback URLs** in the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/).
+3. Pass the scheme value to the `webAuthentication()` method.
+
+```dart
+final webAuth = auth0.webAuthentication(scheme: 'YOUR_CUSTOM_SCHEME');
+
+// Login
+final credentials = await webAuth.login();
+// Logout
+await webAuth.logout();
+```
+
+> 💡 Note that custom schemes [can only have](https://developer.android.com/guide/topics/manifest/data-element) lowercase letters.
 
 ### SSO Alert Box (iOS)
 
@@ -296,12 +317,12 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 
 ### Common Tasks
 
-- [**Retrieve user information**](#retrieve-user-information)
-  <br>Fetch the latest user information from the `/userinfo` endpoint.
 - [**Check for stored credentials**](#check-for-stored-credentials)
   <br>Check if the user is already logged in when your app starts up.
 - [**Retrieve stored credentials**](#retrieve-stored-credentials)
   <br>Fetch the user's credentials from the storage, automatically renewing them if they have expired.
+- [**Retrieve user information**](#retrieve-user-information)
+  <br>Fetch the latest user information from the `/userinfo` endpoint.
 
 ### Web Auth
 
@@ -338,7 +359,6 @@ You can configure the ID token validation by passing an `IdTokenValidationConfig
 
 ```dart
 const config = IdTokenValidationConfig(leeway: 10);
-
 final credentials =
     await auth0.webAuthentication().login(idTokenValidationConfig: config);
 ```
@@ -430,14 +450,14 @@ final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID',
 You can enable an additional level of user authentication before retrieving credentials using the local authentication supported by the device, for example PIN or fingerprint on Android, and Face ID or Touch ID on iOS.
 
 ```dart
-const options =
-    LocalAuthenticationOptions(title: 'Please authenticate to continue');
+const localAuthentication =
+    LocalAuthentication(title: 'Please authenticate to continue');
 final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID',
-    localAuthentication: options);
+    localAuthentication: localAuthentication);
 final credentials = await auth0.credentialsManager.credentials();
 ```
 
-Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/LocalAuthenticationOptions-class.html) to learn more about the available `LocalAuthenticationOptions` properties.
+Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/LocalAuthentication-class.html) to learn more about the available `LocalAuthentication` properties.
 
 > ⚠️ Enabling local authentication will not work if you're using a custom Credentials Manager implementation. In that case, you will need to build support for local authentication into your custom implementation.
 
@@ -612,8 +632,7 @@ try {
   if (e.isVerificationRequired) {
     final credentials = await auth0.webAuthentication().login(
         scopes: scopes,
-        useEphemeralSession:
-            true, // Otherwise a session cookie will remain (iOS-only)
+        useEphemeralSession: true, // Otherwise a session cookie will remain (iOS-only)
         parameters: {
           'connection': connection,
           'login_hint': email // So the user doesn't have to type it again
