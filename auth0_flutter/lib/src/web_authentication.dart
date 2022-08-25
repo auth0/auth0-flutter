@@ -29,7 +29,7 @@ class WebAuthentication {
   /// Redirects the user to the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login) for authentication. If successful, it returns
   /// a set of tokens, as well as the user's profile (constructed from ID token claims).
   ///
-  /// If [redirectUrl] is not specified, a default URL is used that incorporates the `domain` value specified to [Auth0.new], and [scheme] on Android, or the
+  /// If [redirectUrl] is not specified, a default URL is used that incorporates the `domain` value specified to [Auth0.new], and scheme on Android, or the
   /// bundle identifier in iOS. [redirectUrl] must appear in your **Allowed Callback URLs** list for the Auth0 app. [Read more about redirecting users](https://auth0.com/docs/authenticate/login/redirect-users-after-login).
   ///
   /// How the ID token is validated can be configured using [idTokenValidationConfig], but in general the defaults for this are adequate.

@@ -1,5 +1,5 @@
-/// Configuration settings for local authentication prompts.
-class LocalAuthenticationOptions {
+/// Settings for local authentication prompts.
+class LocalAuthentication {
   /// Title to display on the local authentication prompt. Defaults to **Please authenticate to continue** on iOS, `null` on Android.
   final String? title;
 
@@ -12,6 +12,6 @@ class LocalAuthenticationOptions {
   /// (iOS only): Fallback message to display on the local authentication prompt after a failed match.
   final String? fallbackTitle;
 
-  const LocalAuthenticationOptions(
+  const LocalAuthentication(
       {this.title, this.description, this.cancelTitle, this.fallbackTitle});
 }

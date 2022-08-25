@@ -14,7 +14,7 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         UserProfile,
         DatabaseUser,
         CredentialsManagerException,
-        LocalAuthenticationOptions;
+        LocalAuthentication;
 
 export 'src/authentication_api.dart';
 export 'src/credentials_manager.dart';
@@ -37,10 +37,10 @@ class Auth0 {
   /// [domain] and [clientId] are both values that can be retrieved from the application in your [Auth0 Dashboard](https://manage.auth0.com).
   /// If you want to use your own implementation to handle credential storage, provide your own [CredentialsManager] implementation
   /// by setting [credentialsManager]. A [DefaultCredentialsManager] instance is used by default.
-  /// If you want to use biometrics or pass-phrase when using the [DefaultCredentialsManager], set [localAuthentication]` to an instance of [LocalAuthenticationOptions].
+  /// If you want to use biometrics or pass-phrase when using the [DefaultCredentialsManager], set [localAuthentication]` to an instance of [LocalAuthentication].
   /// Note however that this setting has no effect when specifying a custom [credentialsManager].
   Auth0(final String domain, final String clientId,
-      {final LocalAuthenticationOptions? localAuthentication,
+      {final LocalAuthentication? localAuthentication,
       final CredentialsManager? credentialsManager})
       : _account = Account(domain, clientId) {
     _credentialsManager = credentialsManager ??

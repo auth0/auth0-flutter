@@ -100,7 +100,7 @@ void main() {
       expect(verificationResult.arguments['parameters'], isEmpty);
     });
 
-    test('correctly includes the local authentication options', () async {
+    test('correctly includes the local authentication settings', () async {
       when(mocked.methodCallHandler(any))
           .thenAnswer((final _) async => MethodCallHandler.credentials);
 
@@ -109,7 +109,7 @@ void main() {
               account: const Account('', ''),
               userAgent: UserAgent(name: '', version: ''),
               options: GetCredentialsOptions(),
-              localAuthentication: const LocalAuthenticationOptions(
+              localAuthentication: const LocalAuthentication(
                   title: 'test-title',
                   description: 'test-description',
                   cancelTitle: 'test-cancel-title',
