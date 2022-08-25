@@ -1,6 +1,6 @@
 # Change Log
 
-## [1.0.0](https://github.com/auth0/auth0-flutter/tree/1.0.0) (2022-08-25)
+## [1.0.1](https://github.com/auth0/auth0-flutter/tree/1.0.1) (2022-08-25)
 
 This is the [General Availability] release of the **Auth0 Flutter SDK**! 🎉
 

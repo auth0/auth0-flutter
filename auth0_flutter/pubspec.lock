@@ -35,7 +35,7 @@ packages:
       path: "../auth0_flutter_platform_interface"
       relative: true
     source: path
-    version: "1.0.0-fa.0"
+    version: "1.0.0"
   boolean_selector:
     dependency: transitive
     description:
