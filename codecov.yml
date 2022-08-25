@@ -13,4 +13,3 @@ coverage:
         target: auto
         threshold: 2
         if_no_uploads: error
-comment: false
