@@ -35,7 +35,7 @@ packages:
       name: auth0_flutter_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0-fa.0"
+    version: "1.0.0"
   boolean_selector:
     dependency: transitive
     description:
