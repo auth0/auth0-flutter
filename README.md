@@ -1,12 +1,9 @@
-![Stage: First Availability Release](https://img.shields.io/badge/stage-fa-yellow)
 [![CircleCI](https://img.shields.io/circleci/build/github/auth0/auth0-flutter)](https://circleci.com/gh/auth0/auth0-flutter)
 [![Codecov](https://codecov.io/gh/auth0/auth0-flutter/branch/main/graph/badge.svg)](https://codecov.io/gh/auth0/auth0-flutter)
 
-# Auth0 SDK for Flutter (First Availability)
+# Auth0 SDK for Flutter
 
 Auth0 SDK for Android / iOS Flutter apps.
-
-> ⚠️ This library is currently in [**First Availability**](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages). We do not recommend using this library in production yet. As we move toward General Availability, please be aware that releases may contain breaking changes.
 
 | Package                                                                 | Description                                   |
 |:------------------------------------------------------------------------|:----------------------------------------------|
