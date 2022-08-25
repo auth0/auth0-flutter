@@ -9,11 +9,16 @@ import 'options/get_credentials_options.dart';
 import 'options/has_valid_credentials_options.dart';
 import 'options/save_credentials_options.dart';
 
-const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter/credentials_manager');
-const String credentialsManagerSaveCredentialsMethod = 'credentialsManager#saveCredentials';
-const String credentialsManagerGetCredentialsMethod = 'credentialsManager#getCredentials';
-const String credentialsManagerClearCredentialsMethod = 'credentialsManager#clearCredentials';
-const String credentialsManagerHasValidCredentialsMethod = 'credentialsManager#hasValidCredentials';
+const MethodChannel _channel =
+    MethodChannel('auth0.com/auth0_flutter/credentials_manager');
+const String credentialsManagerSaveCredentialsMethod =
+    'credentialsManager#saveCredentials';
+const String credentialsManagerGetCredentialsMethod =
+    'credentialsManager#getCredentials';
+const String credentialsManagerClearCredentialsMethod =
+    'credentialsManager#clearCredentials';
+const String credentialsManagerHasValidCredentialsMethod =
+    'credentialsManager#hasValidCredentials';
 
 /// Method Channel implementation to communicate with the Native CredentialsManager
 class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
@@ -21,9 +26,10 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
   ///
   /// Uses the [MethodChannel] to communicate with the Native platforms.
   @override
-  Future<Credentials> getCredentials(final CredentialsManagerRequest<GetCredentialsOptions> request) async {
-    final Map<String, dynamic> result =
-        await _invokeMapRequest(method: credentialsManagerGetCredentialsMethod, request: request);
+  Future<Credentials> getCredentials(
+      final CredentialsManagerRequest<GetCredentialsOptions> request) async {
+    final Map<String, dynamic> result = await _invokeMapRequest(
+        method: credentialsManagerGetCredentialsMethod, request: request);
 
     return Credentials.fromMap(result);
   }
@@ -32,8 +38,10 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
   ///
   /// Uses the [MethodChannel] to communicate with the Native platforms.
   @override
-  Future<bool> saveCredentials(final CredentialsManagerRequest<SaveCredentialsOptions> request) async {
-    final bool? result = await _invokeRequest<bool, RequestOptions?>(method: credentialsManagerSaveCredentialsMethod, request: request);
+  Future<bool> saveCredentials(
+      final CredentialsManagerRequest<SaveCredentialsOptions> request) async {
+    final bool? result = await _invokeRequest<bool, RequestOptions?>(
+        method: credentialsManagerSaveCredentialsMethod, request: request);
     return result ?? true;
   }
 
@@ -42,7 +50,8 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
   /// Uses the [MethodChannel] to communicate with the Native platforms.
   @override
   Future<bool> clearCredentials(final CredentialsManagerRequest request) async {
-    final bool? result = await _invokeRequest<bool, RequestOptions?>(method: credentialsManagerClearCredentialsMethod, request: request);
+    final bool? result = await _invokeRequest<bool, RequestOptions?>(
+        method: credentialsManagerClearCredentialsMethod, request: request);
     return result ?? true;
   }
 
@@ -50,9 +59,11 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
   ///
   /// Uses the [MethodChannel] to communicate with the Native platforms.
   @override
-  Future<bool> hasValidCredentials(final CredentialsManagerRequest<HasValidCredentialsOptions> request) async {
-    final bool? result =
-        await _invokeRequest(method: credentialsManagerHasValidCredentialsMethod, request: request);
+  Future<bool> hasValidCredentials(
+      final CredentialsManagerRequest<HasValidCredentialsOptions>
+          request) async {
+    final bool? result = await _invokeRequest(
+        method: credentialsManagerHasValidCredentialsMethod, request: request);
 
     return result ?? false;
   }
@@ -76,7 +87,8 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
     return result;
   }
 
-  Future<Map<String, dynamic>> _invokeMapRequest<TOptions extends RequestOptions?>({
+  Future<Map<String, dynamic>>
+      _invokeMapRequest<TOptions extends RequestOptions?>({
     required final String method,
     required final CredentialsManagerRequest<TOptions> request,
     final bool throwOnNull = true,

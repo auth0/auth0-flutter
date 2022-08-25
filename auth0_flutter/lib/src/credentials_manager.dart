@@ -22,13 +22,10 @@ abstract class CredentialsManager {
 class DefaultCredentialsManager extends CredentialsManager {
   final Account _account;
   final UserAgent _userAgent;
-  final LocalAuthenticationOptions? _localAuthentication;
+  final LocalAuthentication? _localAuthentication;
 
-  DefaultCredentialsManager(
-    this._account,
-    this._userAgent, {
-    final LocalAuthenticationOptions? localAuthentication
-  })
+  DefaultCredentialsManager(this._account, this._userAgent,
+      {final LocalAuthentication? localAuthentication})
       : _localAuthentication = localAuthentication;
 
   /// Retrieves the credentials from the storage and refreshes them if they have already expired.

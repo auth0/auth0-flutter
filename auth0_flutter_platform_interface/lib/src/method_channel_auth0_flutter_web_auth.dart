@@ -4,9 +4,9 @@ import 'auth0_flutter_web_auth_platform.dart';
 import 'credentials.dart';
 import 'request/request.dart';
 import 'request/request_options.dart';
-import 'web-auth/web_auth_exception.dart';
 import 'web-auth/web_auth_login_options.dart';
 import 'web-auth/web_auth_logout_options.dart';
+import 'web-auth/web_authentication_exception.dart';
 
 const MethodChannel _channel =
     MethodChannel('auth0.com/auth0_flutter/web_auth');
@@ -42,11 +42,11 @@ class MethodChannelAuth0FlutterWebAuth extends Auth0FlutterWebAuthPlatform {
     try {
       result = await _channel.invokeMapMethod(method, request.toMap());
     } on PlatformException catch (e) {
-      throw WebAuthException.fromPlatformException(e);
+      throw WebAuthenticationException.fromPlatformException(e);
     }
 
     if (result == null && throwOnNull == true) {
-      throw const WebAuthException.unknown('Channel returned null.');
+      throw const WebAuthenticationException.unknown('Channel returned null.');
     }
 
     return result ?? {};

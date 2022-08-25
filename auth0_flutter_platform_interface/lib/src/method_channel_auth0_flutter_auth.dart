@@ -32,13 +32,15 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   @override
   Future<UserProfile> userInfo(
       final ApiRequest<AuthUserInfoOptions> request) async {
-    final Map<String, dynamic> result = await invokeRequest(method: authUserInfoMethod, request: request);
+    final Map<String, dynamic> result =
+        await invokeRequest(method: authUserInfoMethod, request: request);
 
     return UserProfile.fromMap(result);
   }
 
   @override
-  Future<DatabaseUser> signup(final ApiRequest<AuthSignupOptions> request) async {
+  Future<DatabaseUser> signup(
+      final ApiRequest<AuthSignupOptions> request) async {
     final Map<String, dynamic> result =
         await invokeRequest(method: authSignUpMethod, request: request);
 

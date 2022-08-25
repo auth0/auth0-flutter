@@ -100,6 +100,34 @@ void main() {
       expect(verificationResult.arguments['parameters'], isEmpty);
     });
 
+    test('correctly includes the local authentication settings', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.credentials);
+
+      await MethodChannelCredentialsManager().getCredentials(
+          CredentialsManagerRequest<GetCredentialsOptions>(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: '', version: ''),
+              options: GetCredentialsOptions(),
+              localAuthentication: const LocalAuthentication(
+                  title: 'test-title',
+                  description: 'test-description',
+                  cancelTitle: 'test-cancel-title',
+                  fallbackTitle: 'test-fallback-title')));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['localAuthentication']['title'],
+          'test-title');
+      expect(verificationResult.arguments['localAuthentication']['description'],
+          'test-description');
+      expect(verificationResult.arguments['localAuthentication']['cancelTitle'],
+          'test-cancel-title');
+      expect(
+          verificationResult.arguments['localAuthentication']['fallbackTitle'],
+          'test-fallback-title');
+    });
+
     test('correctly returns the response from the Method Channel', () async {
       when(mocked.methodCallHandler(any))
           .thenAnswer((final _) async => MethodCallHandler.credentials);

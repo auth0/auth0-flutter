@@ -58,9 +58,9 @@ class ApiException extends Auth0Exception {
   bool get isNetworkError => _errorFlags.getBooleanOrFalse('isNetworkError');
   bool get isBrowserAppNotAvailable =>
       _errorFlags.getBooleanOrFalse('isBrowserAppNotAvailable');
-  bool get isPKCENotAvailable =>
+  bool get isPkceNotAvailable =>
       _errorFlags.getBooleanOrFalse('isPKCENotAvailable');
-  bool get isInvalidAuthorizeURL =>
+  bool get isInvalidAuthorizeUrl =>
       _errorFlags.getBooleanOrFalse('isInvalidAuthorizeURL');
   bool get isInvalidConfiguration =>
       _errorFlags.getBooleanOrFalse('isInvalidConfiguration');

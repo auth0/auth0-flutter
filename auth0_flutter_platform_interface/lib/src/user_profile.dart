@@ -41,17 +41,17 @@ class UserProfile {
   /// The URL of the user's profile page.
   ///
   /// Requires the `profile` scope.
-  final Uri? profileURL;
+  final Uri? profileUrl;
 
   /// The URL of the user's picture.
   ///
   /// Requires the `profile` scope.
-  final Uri? pictureURL;
+  final Uri? pictureUrl;
 
   /// The URL of the user's website.
   ///
   /// Requires the `profile` scope.
-  final Uri? websiteURL;
+  final Uri? websiteUrl;
 
   /// The middle name of the user.
   ///
@@ -109,9 +109,9 @@ class UserProfile {
     final this.middleName,
     final this.nickname,
     final this.preferredUsername,
-    final this.profileURL,
-    final this.pictureURL,
-    final this.websiteURL,
+    final this.profileUrl,
+    final this.pictureUrl,
+    final this.websiteUrl,
     final this.email,
     final this.isEmailVerified,
     final this.gender,
@@ -133,13 +133,13 @@ class UserProfile {
         middleName: result['middle_name'] as String?,
         nickname: result['nickname'] as String?,
         preferredUsername: result['preferred_username'] as String?,
-        profileURL: result['profile'] != null
+        profileUrl: result['profile'] != null
             ? Uri.parse(result['profile'] as String)
             : null,
-        pictureURL: result['picture'] != null
+        pictureUrl: result['picture'] != null
             ? Uri.parse(result['picture'] as String)
             : null,
-        websiteURL: result['website'] != null
+        websiteUrl: result['website'] != null
             ? Uri.parse(result['website'] as String)
             : null,
         email: result['email'] as String?,

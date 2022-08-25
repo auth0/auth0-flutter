@@ -7,14 +7,14 @@ import 'src/web_authentication.dart';
 
 export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
     show
-        WebAuthException,
+        WebAuthenticationException,
         ApiException,
         IdTokenValidationConfig,
         Credentials,
         UserProfile,
         DatabaseUser,
         CredentialsManagerException,
-        LocalAuthenticationOptions;
+        LocalAuthentication;
 
 export 'src/authentication_api.dart';
 export 'src/credentials_manager.dart';
@@ -37,10 +37,10 @@ class Auth0 {
   /// [domain] and [clientId] are both values that can be retrieved from the application in your [Auth0 Dashboard](https://manage.auth0.com).
   /// If you want to use your own implementation to handle credential storage, provide your own [CredentialsManager] implementation
   /// by setting [credentialsManager]. A [DefaultCredentialsManager] instance is used by default.
-  /// If you want to use biometrics or pass-phrase when using the [DefaultCredentialsManager], set [localAuthentication]` to an instance of [LocalAuthenticationOptions].
+  /// If you want to use biometrics or pass-phrase when using the [DefaultCredentialsManager], set [localAuthentication]` to an instance of [LocalAuthentication].
   /// Note however that this setting has no effect when specifying a custom [credentialsManager].
   Auth0(final String domain, final String clientId,
-      {final LocalAuthenticationOptions? localAuthentication,
+      {final LocalAuthentication? localAuthentication,
       final CredentialsManager? credentialsManager})
       : _account = Account(domain, clientId) {
     _credentialsManager = credentialsManager ??
@@ -78,10 +78,10 @@ class Auth0 {
   /// final result = await auth0.webAuthentication().login();
   /// final accessToken = result.accessToken;
   /// ```
-  /// By default, the credentials will be stored in the [CredentialsManager].
-  /// In case you want to opt-out of using the [CredentialsManager], set [useCredentialsManager] to `false`.
+  /// By default, the credentials will be stored in the [CredentialsManager]. In case you want to opt-out of using the [CredentialsManager], set [useCredentialsManager] to `false`.
+  /// (Android only): specify [scheme] if you're using a custom URL scheme for your app. This value must match the value used to configure the `auth0Scheme` manifest placeholder, for the Redirect intent filter to work
   WebAuthentication webAuthentication(
-          {final bool useCredentialsManager = true}) =>
-      WebAuthentication(_account, _userAgent,
+          {final String? scheme, final bool useCredentialsManager = true}) =>
+      WebAuthentication(_account, _userAgent, scheme,
           useCredentialsManager ? credentialsManager : null);
 }

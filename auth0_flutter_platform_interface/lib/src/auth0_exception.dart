@@ -9,7 +9,7 @@ abstract class Auth0Exception implements Exception {
 
   const Auth0Exception.unknown(final String message)
       : this(Auth0Exception._unknownError, message, const {});
-  
+
   @override
   String toString() => '$code: $message';
 }

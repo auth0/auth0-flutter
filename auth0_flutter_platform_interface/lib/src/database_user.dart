@@ -4,9 +4,7 @@ class DatabaseUser {
   final String? username;
 
   DatabaseUser(
-      {required this.email,
-      required this.isEmailVerified,
-      this.username});
+      {required this.email, required this.isEmailVerified, this.username});
 
   factory DatabaseUser.fromMap(final Map<dynamic, dynamic> result) =>
       DatabaseUser(

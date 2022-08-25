@@ -88,8 +88,7 @@ void main() {
       expect(verificationResult.arguments['_account']['clientId'],
           'test-clientId');
       expect(verificationResult.arguments['_userAgent']['name'], 'test-name');
-      expect(
-          verificationResult.arguments['_userAgent']['version'],
+      expect(verificationResult.arguments['_userAgent']['version'],
           'test-version');
       expect(verificationResult.arguments['scopes'], ['a', 'b']);
       expect(verificationResult.arguments['audience'], 'test-audience');
@@ -170,7 +169,8 @@ void main() {
       expect(result.refreshToken, isNull);
     });
 
-    test('throws an WebAuthException when method channel returns null',
+    test(
+        'throws an WebAuthenticationException when method channel returns null',
         () async {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
@@ -184,11 +184,11 @@ void main() {
         return result;
       }
 
-      await expectLater(actual, throwsA(isA<WebAuthException>()));
+      await expectLater(actual, throwsA(isA<WebAuthenticationException>()));
     });
 
     test(
-        'throws an WebAuthException when method channel throws a PlatformException',
+        'throws an WebAuthenticationException when method channel throws a PlatformException',
         () async {
       when(mocked.methodCallHandler(any))
           .thenThrow(PlatformException(code: '123'));
@@ -204,7 +204,7 @@ void main() {
         return result;
       }
 
-      await expectLater(actual, throwsA(isA<WebAuthException>()));
+      await expectLater(actual, throwsA(isA<WebAuthenticationException>()));
     });
   });
 
@@ -239,8 +239,7 @@ void main() {
       expect(verificationResult.arguments['_account']['clientId'],
           'test-clientId');
       expect(verificationResult.arguments['_userAgent']['name'], 'test-name');
-      expect(
-          verificationResult.arguments['_userAgent']['version'],
+      expect(verificationResult.arguments['_userAgent']['version'],
           'test-version');
       expect(verificationResult.arguments['returnTo'], 'http://localhost:1234');
       expect(verificationResult.arguments['scheme'], 'test-scheme');
@@ -264,7 +263,7 @@ void main() {
     });
 
     test(
-        'throws an WebAuthException when method channel throws a PlatformException',
+        'throws an WebAuthenticationException when method channel throws a PlatformException',
         () async {
       when(mocked.methodCallHandler(any))
           .thenThrow(PlatformException(code: '123'));
@@ -278,7 +277,7 @@ void main() {
                 options: WebAuthLogoutOptions()));
       }
 
-      await expectLater(actual, throwsA(isA<WebAuthException>()));
+      await expectLater(actual, throwsA(isA<WebAuthenticationException>()));
     });
   });
 }

@@ -18,7 +18,7 @@ abstract class BaseRequest<TOptions extends RequestOptions?> {
 
 class CredentialsManagerRequest<TOptions extends RequestOptions?>
     extends BaseRequest<TOptions?> {
-  final LocalAuthenticationOptions? localAuthentication;
+  final LocalAuthentication? localAuthentication;
 
   CredentialsManagerRequest({
     required final Account account,
@@ -31,9 +31,9 @@ class CredentialsManagerRequest<TOptions extends RequestOptions?>
   Map<String, dynamic> toMap() {
     if (localAuthentication != null) {
       return (super.toMap())
-      ..addAll({
-        'localAuthentication': {
-          'title': localAuthentication?.title,
+        ..addAll({
+          'localAuthentication': {
+            'title': localAuthentication?.title,
             'description': localAuthentication?.description,
             'cancelTitle': localAuthentication?.cancelTitle,
             'fallbackTitle': localAuthentication?.fallbackTitle

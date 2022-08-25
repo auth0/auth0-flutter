@@ -105,7 +105,8 @@ void main() {
       when(mockedPlatform.hasValidCredentials(any))
           .thenAnswer((final _) async => true);
 
-      await DefaultCredentialsManager(account, userAgent).hasValidCredentials(minTtl: 30);
+      await DefaultCredentialsManager(account, userAgent)
+          .hasValidCredentials(minTtl: 30);
 
       final verificationResult =
           verify(mockedPlatform.hasValidCredentials(captureAny)).captured.single
@@ -133,7 +134,8 @@ void main() {
       when(mockedPlatform.hasValidCredentials(any))
           .thenAnswer((final _) async => true);
 
-      final result = await DefaultCredentialsManager(account, userAgent).hasValidCredentials();
+      final result = await DefaultCredentialsManager(account, userAgent)
+          .hasValidCredentials();
 
       expect(result, true);
     });
@@ -142,7 +144,8 @@ void main() {
       when(mockedPlatform.hasValidCredentials(any))
           .thenAnswer((final _) async => false);
 
-      final result = await DefaultCredentialsManager(account, userAgent).hasValidCredentials();
+      final result = await DefaultCredentialsManager(account, userAgent)
+          .hasValidCredentials();
 
       expect(result, false);
     });
