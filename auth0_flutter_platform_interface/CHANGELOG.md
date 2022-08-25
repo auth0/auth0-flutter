@@ -1,5 +1,52 @@
 # Change Log
 
+## [1.0.0](https://github.com/auth0/auth0-flutter/tree/1.0.0) (2022-08-25)
+
+This is the [General Availability] release of the **Auth0 Flutter SDK**! 🎉
+
+This release marks the first stable release of the SDK and is fully supported for use in production environments.
+
+## :warning: Breaking changes
+
+There are a small number of breaking changes from `1.0.0-fa.0` in this release:
+
+**Renamed properties**
+The following properties were renamed to comply with [Dart's API guidelines](https://dart.dev/guides/language/effective-dart/style#do-capitalize-acronyms-and-abbreviations-longer-than-two-letters-like-words).
+
+See #146
+
+- `UserProfile.profileURL` to `UserProfile.profileUrl`
+- `UserProfile.pictureURL` to `UserProfile.pictureUrl`
+- `UserProfile.websiteURL` to `UserProfile.websiteUrl`
+- `ApiException.isInvalidAuthorizeURL` to `ApiException.isInvalidAuthorizeUrl`
+- `ApiException.isPKCENotAvailable` to `ApiException.isPkceNotAvailable`
+
+**Scheme registration**
+
+The `scheme` option of `webAuthentication().login` and `webAuthentication().logout()` was moved up a level to become an option of `webAuthentication()` instead.
+
+Before:
+
+```dart
+auth0.webAuthentication().login(scheme: 'custom-scheme');
+auth0.webAuthentication().logout(scheme: 'custom-scheme');
+```
+
+After:
+
+```dart
+auth0.webAuthentication(scheme: 'custom-scheme').login();
+auth0.webAuthentication(scheme: 'custom-scheme').logout();
+```
+
+See #150
+
+**Renamed `LocalAuthenticationOptions`**
+
+`LocalAuthenticationOptions` was renamed to `LocalAuthentication` to fix up some confusion about how the class was to be used.
+
+See #152 for details.
+
 ## [1.0.0-fa.0](https://github.com/auth0/auth0-flutter/tree/1.0.0-fa.0) (2022-07-21)
 
 This is a [First Availability](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#first-availability) release of the **Auth0 Flutter SDK**! 🎉 
