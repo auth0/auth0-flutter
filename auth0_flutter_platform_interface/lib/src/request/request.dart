@@ -18,7 +18,7 @@ abstract class BaseRequest<TOptions extends RequestOptions?> {
 
 class CredentialsManagerRequest<TOptions extends RequestOptions?>
     extends BaseRequest<TOptions?> {
-  final LocalAuthenticationOptions? localAuthentication;
+  final LocalAuthentication? localAuthentication;
 
   CredentialsManagerRequest({
     required final Account account,
