@@ -171,7 +171,8 @@ class SaveCredentialsRequestHandlerTest {
             "expiresAt" to "2022-01-01T00:00:00.000Z",
             "scopes" to arrayListOf("a", "b")
         )
-        val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+        format.timeZone = TimeZone.getTimeZone("UTC")
         val date = format.parse(credentialsMap["expiresAt"] as String) as Date
         var scope: String? = null
         val scopes = credentialsMap.getOrDefault("scopes", arrayListOf<String>()) as ArrayList<*>
@@ -206,6 +207,11 @@ class SaveCredentialsRequestHandlerTest {
         verify(mockCredentialsManager).saveCredentials(captor.capture())
 
         assertThat((captor.firstValue).accessToken, equalTo(credentials.accessToken))
+        assertThat((captor.firstValue).idToken, equalTo(credentials.idToken))
+        assertThat((captor.firstValue).refreshToken, equalTo(credentials.refreshToken))
+        assertThat((captor.firstValue).type, equalTo(credentials.type))
+        assertThat((captor.firstValue).expiresAt, equalTo(credentials.expiresAt))
+        assertThat((captor.firstValue).scope, equalTo(credentials.scope))
     }
 
     @Test
