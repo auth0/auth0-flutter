@@ -1,0 +1,15 @@
+{
+  "LABEL": {
+    "name": "check title",
+    "color": "EEEEEE"
+  },
+  "CHECKS": {
+    "prefixes": ["af:", "afpi:"],
+    "ignoreLabels" : ["ignore title check", "dependencies"]
+  },
+  "MESSAGES": {
+    "success": "All OK",
+    "failure": "Failing CI test",
+    "notice": ""
+  }
+}
