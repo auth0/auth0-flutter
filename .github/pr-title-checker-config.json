@@ -5,7 +5,8 @@
   },
   "CHECKS": {
     "prefixes": ["af:", "afpi:"],
-    "ignoreLabels" : ["ignore title check", "dependencies"]
+    "ignoreLabels" : ["ignore title check", "dependencies"],
+    "alwaysPassCI": true
   },
   "MESSAGES": {
     "success": "All OK",
