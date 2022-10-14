@@ -42,6 +42,12 @@ class MockTestPlatform extends _i1.Mock implements _i4.TestPlatform {
               returnValue: Future<_i2.Credentials>.value(_FakeCredentials_0()))
           as _i5.Future<_i2.Credentials>);
   @override
+  _i5.Future<_i2.Credentials> loginWithOtp(
+          _i3.ApiRequest<_i3.AuthLoginWithOtpOptions>? request) =>
+      (super.noSuchMethod(Invocation.method(#login, [request]),
+              returnValue: Future<_i2.Credentials>.value(_FakeCredentials_0()))
+          as _i5.Future<_i2.Credentials>);
+  @override
   _i5.Future<_i3.UserProfile> userInfo(
           _i3.ApiRequest<_i3.AuthUserInfoOptions>? request) =>
       (super.noSuchMethod(Invocation.method(#userInfo, [request]),

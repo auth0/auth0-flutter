@@ -13,10 +13,10 @@ import io.flutter.plugin.common.MethodChannel
 import java.text.SimpleDateFormat
 import java.util.*
 
-private const val AUTH_LOGIN_METHOD = "auth#login"
+private const val AUTH_LOGIN_OTP_METHOD = "auth#login_otp"
 
-class LoginApiRequestHandler : ApiRequestHandler {
-    override val method: String = AUTH_LOGIN_METHOD
+class LoginOtpApiRequestHandler: ApiRequestHandler {
+    override val method: String = AUTH_LOGIN_OTP_METHOD
 
     override fun handle(
         api: AuthenticationAPIClient,
@@ -25,25 +25,13 @@ class LoginApiRequestHandler : ApiRequestHandler {
     ) {
         val args = request.data
 
-        assertHasProperties(listOf("usernameOrEmail", "password", "connectionOrRealm"), args)
+        assertHasProperties(listOf("mfaToken", "otp"), args)
 
         val loginBuilder = api
-            .login(
-                args["usernameOrEmail"] as String,
-                args["password"] as String,
-                args["connectionOrRealm"] as String
+            .loginWithOTP(
+                args["mfaToken"] as String,
+                args["otp"] as String,
             )
-
-        val scopes = args.getOrDefault("scopes", arrayListOf<String>()) as ArrayList<*>
-        loginBuilder.setScope(scopes.joinToString(separator = " "))
-
-        if (args.getOrDefault("audience", null) is String) {
-            loginBuilder.setAudience(args["audience"] as String)
-        }
-
-        if (args.getOrDefault("parameters", null) is HashMap<*, *>) {
-            loginBuilder.addParameters(args["parameters"] as Map<String, String>)
-        }
         loginBuilder.validateClaims();
 
         loginBuilder.start(object : Callback<Credentials, AuthenticationException> {
@@ -77,4 +65,5 @@ class LoginApiRequestHandler : ApiRequestHandler {
             }
         })
     }
+
 }

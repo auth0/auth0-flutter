@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 
 import 'auth/api_exception.dart';
 import 'auth/auth_login_options.dart';
+import 'auth/auth_login_with_otp_options.dart';
 import 'auth/auth_renew_access_token_options.dart';
 import 'auth/auth_reset_password_options.dart';
 import 'auth/auth_signup_options.dart';
@@ -15,6 +16,7 @@ import 'user_profile.dart';
 
 const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter/auth');
 const String authLoginMethod = 'auth#login';
+const String authLoginWithOtpMethod = 'auth#login_otp';
 const String authUserInfoMethod = 'auth#userInfo';
 const String authSignUpMethod = 'auth#signUp';
 const String authRenewMethod = 'auth#renew';
@@ -25,6 +27,15 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   Future<Credentials> login(final ApiRequest<AuthLoginOptions> request) async {
     final Map<String, dynamic> result =
         await invokeRequest(method: authLoginMethod, request: request);
+
+    return Credentials.fromMap(result);
+  }
+
+  @override
+  Future<Credentials> loginWithOtp(
+      final ApiRequest<AuthLoginWithOtpOptions> request) async {
+    final Map<String, dynamic> result =
+        await invokeRequest(method: authLoginWithOtpMethod, request: request);
 
     return Credentials.fromMap(result);
   }

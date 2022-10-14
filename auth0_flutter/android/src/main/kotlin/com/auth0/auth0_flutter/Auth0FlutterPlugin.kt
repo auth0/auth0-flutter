@@ -30,6 +30,7 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   ))
   private val authCallHandler = Auth0FlutterAuthMethodCallHandler(listOf(
     LoginApiRequestHandler(),
+    LoginOtpApiRequestHandler(),
     SignupApiRequestHandler(),
     UserInfoApiRequestHandler(),
     RenewApiRequestHandler(),

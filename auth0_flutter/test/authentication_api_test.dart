@@ -155,6 +155,26 @@ void main() {
     });
   });
 
+  group('loginWithOtp', () {
+    test('passes through properties to the platform', () async {
+      when(mockedPlatform.loginWithOtp(any))
+          .thenAnswer((final _) async => TestPlatform.loginResult);
+
+      final result = await Auth0('test-domain', 'test-clientId')
+          .api
+          .loginWithOtp(otp: 'test-otp', mfaToken: 'test-mfa-token');
+
+      final verificationResult = verify(mockedPlatform.loginWithOtp(captureAny))
+          .captured
+          .single as ApiRequest<AuthLoginWithOtpOptions>;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.account.clientId, 'test-clientId');
+      expect(verificationResult.options.mfaToken, 'test-mfa-token');
+      expect(verificationResult.options.otp, 'test-otp');
+      expect(result, TestPlatform.loginResult);
+    });
+  });
+
   group('resetPassword', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.resetPassword(any)).thenAnswer((final _) async => {});

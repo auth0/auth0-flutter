@@ -26,6 +26,7 @@ fun AuthenticationException.toMap(): Map<String, Any> {
             "isCanceled" to this.isCanceled,
             "isPasswordLeaked" to this.isPasswordLeaked,
             "isLoginRequired" to this.isLoginRequired,
+            "mfaToken" to this.getValue("mfa_token"),
         )
     )
 }
