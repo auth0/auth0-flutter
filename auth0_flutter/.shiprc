@@ -1,0 +1,18 @@
+{
+  "files": {
+    "lib/src/version.dart": [],
+    "pubspec.yaml": [
+      "version: {MAJOR}.{MINOR}.{PATCH}"
+    ]
+  },
+  "prebump": "flutter analyze",
+  "prFilters": [
+    {
+      "type": "title",
+      "args": [
+        "^afpi:"
+      ],
+      "invert": true
+    }
+  ]
+}
