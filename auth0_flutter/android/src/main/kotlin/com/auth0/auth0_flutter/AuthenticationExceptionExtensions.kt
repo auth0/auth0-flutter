@@ -3,32 +3,33 @@ package com.auth0.auth0_flutter
 import com.auth0.android.authentication.AuthenticationException
 
 fun AuthenticationException.toMap(): Map<String, Any> {
-    return mapOf(
-        "_statusCode" to this.statusCode,
-        "_errorFlags" to mapOf(
-            "isMultifactorRequired" to this.isMultifactorRequired,
-            "isMultifactorEnrollRequired" to this.isMultifactorEnrollRequired,
-            "isMultifactorCodeInvalid" to this.isMultifactorCodeInvalid,
-            "isMultifactorTokenInvalid" to this.isMultifactorTokenInvalid,
-            "isPasswordNotStrongEnough" to this.isPasswordNotStrongEnough,
-            "isPasswordAlreadyUsed" to this.isPasswordAlreadyUsed,
-            "isRuleError" to this.isRuleError,
-            "isInvalidCredentials" to this.isInvalidCredentials,
-            "isRefreshTokenDeleted" to this.isRefreshTokenDeleted,
-            "isAccessDenied" to this.isAccessDenied,
-            "isTooManyAttempts" to this.isTooManyAttempts,
-            "isVerificationRequired" to this.isVerificationRequired,
-            "isNetworkError" to this.isNetworkError,
-            "isBrowserAppNotAvailable" to this.isBrowserAppNotAvailable,
-            "isPKCENotAvailable" to this.isPKCENotAvailable,
-            "isInvalidAuthorizeURL" to this.isInvalidAuthorizeURL,
-            "isInvalidConfiguration" to this.isInvalidConfiguration,
-            "isCanceled" to this.isCanceled,
-            "isPasswordLeaked" to this.isPasswordLeaked,
-            "isLoginRequired" to this.isLoginRequired,
-            "mfaToken" to this.getValue("mfa_token"),
-        )
-    )
+    var ex = this;
+    return buildMap<String, Any> {
+        put("_statusCode", ex.statusCode)
+        put("_errorFlags", mapOf(
+            "isMultifactorRequired" to ex.isMultifactorRequired,
+            "isMultifactorEnrollRequired" to ex.isMultifactorEnrollRequired,
+            "isMultifactorCodeInvalid" to ex.isMultifactorCodeInvalid,
+            "isMultifactorTokenInvalid" to ex.isMultifactorTokenInvalid,
+            "isPasswordNotStrongEnough" to ex.isPasswordNotStrongEnough,
+            "isPasswordAlreadyUsed" to ex.isPasswordAlreadyUsed,
+            "isRuleError" to ex.isRuleError,
+            "isInvalidCredentials" to ex.isInvalidCredentials,
+            "isRefreshTokenDeleted" to ex.isRefreshTokenDeleted,
+            "isAccessDenied" to ex.isAccessDenied,
+            "isTooManyAttempts" to ex.isTooManyAttempts,
+            "isVerificationRequired" to ex.isVerificationRequired,
+            "isNetworkError" to ex.isNetworkError,
+            "isBrowserAppNotAvailable" to ex.isBrowserAppNotAvailable,
+            "isPKCENotAvailable" to ex.isPKCENotAvailable,
+            "isInvalidAuthorizeURL" to ex.isInvalidAuthorizeURL,
+            "isInvalidConfiguration" to ex.isInvalidConfiguration,
+            "isCanceled" to ex.isCanceled,
+            "isPasswordLeaked" to ex.isPasswordLeaked,
+            "isLoginRequired" to ex.isLoginRequired,
+        ))
+        if (ex.getValue("mfa_token") != null) { put("mfa_token", ex.getValue("mfa_token")!!) }
+    }
 }
 
 val AuthenticationException.isTooManyAttempts: Boolean
