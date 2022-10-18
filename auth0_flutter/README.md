@@ -187,6 +187,8 @@ auth0_flutter will automatically store the user's credentials using the built-in
 final credentials = await auth0.credentialsManager.credentials();
 ```
 
+For other comprehensive examples, see the [EXAMPLES.md](EXAMPLES.md) document.
+
 ### SSO Alert Box (iOS)
 
 ![ios-sso-alert](../assets/ios-sso-alert.png)
