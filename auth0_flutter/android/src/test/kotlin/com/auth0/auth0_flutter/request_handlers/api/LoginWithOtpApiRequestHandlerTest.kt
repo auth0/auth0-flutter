@@ -83,7 +83,7 @@ class LoginWithOtpApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        doReturn(mockLoginBuilder).`when`(mockApi).login(any(), any(), any())
+        doReturn(mockLoginBuilder).`when`(mockApi).loginWithOTP(any(), any())
 
         handler.handle(
             mockApi,
@@ -91,7 +91,7 @@ class LoginWithOtpApiRequestHandlerTest {
             mockResult
         )
 
-        verify(mockApi).login("test-otp", "test-mfaToken")
+        verify(mockApi).loginWithOTP("test-otp", "test-mfaToken")
         verify(mockLoginBuilder).start(any())
     }
 
@@ -110,8 +110,7 @@ class LoginWithOtpApiRequestHandlerTest {
         val exception =
             AuthenticationException(code = "test-code", description = "test-description")
 
-        doReturn(mockLoginBuilder).`when`(mockApi).login(any(), any(), any())
-        doReturn(mockLoginBuilder).`when`(mockLoginBuilder).addParameters(any())
+        doReturn(mockLoginBuilder).`when`(mockApi).loginWithOTP(any(), any())
         doAnswer {
             val ob = it.getArgument<Callback<Credentials, AuthenticationException>>(0)
             ob.onFailure(exception)
@@ -141,8 +140,7 @@ class LoginWithOtpApiRequestHandlerTest {
         val idToken = JwtTestUtils.createJwt(claims = mapOf("name" to "John Doe"))
         val credentials = Credentials(idToken, "test", "", null, Date(), "scope1 scope2")
 
-        doReturn(mockLoginBuilder).`when`(mockApi).login(any(), any(), any())
-        doReturn(mockLoginBuilder).`when`(mockLoginBuilder).addParameters(any())
+        doReturn(mockLoginBuilder).`when`(mockApi).loginWithOTP(any(), any())
         doAnswer {
             val ob = it.getArgument<Callback<Credentials, AuthenticationException>>(0)
             ob.onSuccess(credentials)
