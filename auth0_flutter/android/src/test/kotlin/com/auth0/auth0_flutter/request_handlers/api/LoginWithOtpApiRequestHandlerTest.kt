@@ -9,6 +9,7 @@ import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.JwtTestUtils
 
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
+import io.flutter.plugin.common.MethodChannel.Result
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Assert
