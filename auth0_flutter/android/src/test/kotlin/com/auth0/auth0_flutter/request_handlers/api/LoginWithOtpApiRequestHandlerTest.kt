@@ -91,7 +91,7 @@ class LoginWithOtpApiRequestHandlerTest {
             mockResult
         )
 
-        verify(mockApi).loginWithOTP("test-otp", "test-mfaToken")
+        verify(mockApi).loginWithOTP("test-mfaToken", "test-otp")
         verify(mockLoginBuilder).start(any())
     }
 
