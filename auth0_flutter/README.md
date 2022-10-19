@@ -5,7 +5,9 @@
 [![License](https://img.shields.io/github/license/auth0/auth0-flutter)](https://www.apache.org/licenses/LICENSE-2.0)
 [![CircleCI](https://img.shields.io/circleci/project/github/auth0/auth0-flutter.svg)](https://circleci.com/gh/auth0/auth0-flutter/tree/main)
 
-:books: [Documentation](#documentation) - :rocket: [Getting Started](#getting-started) - :computer: [API Reference](#api-reference) - :speech_balloon: [Feedback](#feedback)
+<div>
+📚 <a href="#documentation">Documentation</a> - 🚀 <a href="#getting-started">Getting started</a> - 💻 <a href="#api-reference">API reference</a> - 💬 <a href="#feedback">Feedback</a>
+</div>
 
 ## Documentation
 
