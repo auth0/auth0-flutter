@@ -15,7 +15,7 @@ import java.util.*
 
 private const val AUTH_LOGIN_OTP_METHOD = "auth#loginOtp"
 
-class LoginOtpApiRequestHandler: ApiRequestHandler {
+class LoginWithOtpApiRequestHandler: ApiRequestHandler {
     override val method: String = AUTH_LOGIN_OTP_METHOD
 
     override fun handle(

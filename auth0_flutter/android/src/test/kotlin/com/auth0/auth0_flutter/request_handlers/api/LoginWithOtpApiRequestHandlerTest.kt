@@ -9,7 +9,6 @@ import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.JwtTestUtils
 
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
-import io.flutter.plugin.common.MethodChannel.Result
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Assert
@@ -26,7 +25,7 @@ class LoginWithOtpApiRequestHandlerTest {
     fun `should throw when missing otp`() {
         val options =
             hashMapOf("mfaToken" to "test-mfa-token")
-        val handler = LoginApiWithOtpRequestHandler()
+        val handler = LoginWithOtpApiRequestHandler()
         val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
@@ -128,7 +127,10 @@ class LoginWithOtpApiRequestHandlerTest {
 
     @Test
     fun `should call result success on success`() {
-        otp
+        val options = hashMapOf(
+            "otp" to "test-otp",
+            "mfaToken" to "test-mfaToken"
+        )
         val handler = LoginWithOtpApiRequestHandler()
         val mockLoginBuilder = mock<AuthenticationRequest>()
         val mockApi = mock<AuthenticationAPIClient>()
