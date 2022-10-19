@@ -44,7 +44,6 @@ class LoginApiRequestHandler : ApiRequestHandler {
         if (args.getOrDefault("parameters", null) is HashMap<*, *>) {
             loginBuilder.addParameters(args["parameters"] as Map<String, String>)
         }
-        loginBuilder.validateClaims();
 
         loginBuilder.start(object : Callback<Credentials, AuthenticationException> {
             override fun onFailure(exception: AuthenticationException) {

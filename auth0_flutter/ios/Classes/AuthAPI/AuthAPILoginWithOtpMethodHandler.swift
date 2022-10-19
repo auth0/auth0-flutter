@@ -18,8 +18,7 @@ struct AuthAPILoginWithOtpMethodHandler: MethodHandler {
         }
 
         client
-            .login(withOTP: otp,
-                  mfaToken: mfaToken)
+            .login(withOTP: otp, mfaToken: mfaToken)
             .start {
                 switch $0 {
                 case let .success(credentials): callback(result(from: credentials))

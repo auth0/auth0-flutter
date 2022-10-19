@@ -420,7 +420,7 @@ void main() {
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
-          'auth#login_otp');
+          'auth#loginOtp');
     });
 
     test('correctly maps all properties', () async {

@@ -16,7 +16,7 @@ import 'user_profile.dart';
 
 const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter/auth');
 const String authLoginMethod = 'auth#login';
-const String authLoginWithOtpMethod = 'auth#login_otp';
+const String authLoginWithOtpMethod = 'auth#loginOtp';
 const String authUserInfoMethod = 'auth#userInfo';
 const String authSignUpMethod = 'auth#signUp';
 const String authRenewMethod = 'auth#renew';

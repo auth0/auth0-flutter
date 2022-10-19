@@ -3,32 +3,32 @@ package com.auth0.auth0_flutter
 import com.auth0.android.authentication.AuthenticationException
 
 fun AuthenticationException.toMap(): Map<String, Any> {
-    var ex = this;
+    val exception = this
     return buildMap<String, Any> {
-        put("_statusCode", ex.statusCode)
+        put("_statusCode", exception.statusCode)
         put("_errorFlags", mapOf(
-            "isMultifactorRequired" to ex.isMultifactorRequired,
-            "isMultifactorEnrollRequired" to ex.isMultifactorEnrollRequired,
-            "isMultifactorCodeInvalid" to ex.isMultifactorCodeInvalid,
-            "isMultifactorTokenInvalid" to ex.isMultifactorTokenInvalid,
-            "isPasswordNotStrongEnough" to ex.isPasswordNotStrongEnough,
-            "isPasswordAlreadyUsed" to ex.isPasswordAlreadyUsed,
-            "isRuleError" to ex.isRuleError,
-            "isInvalidCredentials" to ex.isInvalidCredentials,
-            "isRefreshTokenDeleted" to ex.isRefreshTokenDeleted,
-            "isAccessDenied" to ex.isAccessDenied,
-            "isTooManyAttempts" to ex.isTooManyAttempts,
-            "isVerificationRequired" to ex.isVerificationRequired,
-            "isNetworkError" to ex.isNetworkError,
-            "isBrowserAppNotAvailable" to ex.isBrowserAppNotAvailable,
-            "isPKCENotAvailable" to ex.isPKCENotAvailable,
-            "isInvalidAuthorizeURL" to ex.isInvalidAuthorizeURL,
-            "isInvalidConfiguration" to ex.isInvalidConfiguration,
-            "isCanceled" to ex.isCanceled,
-            "isPasswordLeaked" to ex.isPasswordLeaked,
-            "isLoginRequired" to ex.isLoginRequired,
+            "isMultifactorRequired" to exception.isMultifactorRequired,
+            "isMultifactorEnrollRequired" to exception.isMultifactorEnrollRequired,
+            "isMultifactorCodeInvalid" to exception.isMultifactorCodeInvalid,
+            "isMultifactorTokenInvalid" to exception.isMultifactorTokenInvalid,
+            "isPasswordNotStrongEnough" to exception.isPasswordNotStrongEnough,
+            "isPasswordAlreadyUsed" to exception.isPasswordAlreadyUsed,
+            "isRuleError" to exception.isRuleError,
+            "isInvalidCredentials" to exception.isInvalidCredentials,
+            "isRefreshTokenDeleted" to exception.isRefreshTokenDeleted,
+            "isAccessDenied" to exception.isAccessDenied,
+            "isTooManyAttempts" to exception.isTooManyAttempts,
+            "isVerificationRequired" to exception.isVerificationRequired,
+            "isNetworkError" to exception.isNetworkError,
+            "isBrowserAppNotAvailable" to exception.isBrowserAppNotAvailable,
+            "isPKCENotAvailable" to exception.isPKCENotAvailable,
+            "isInvalidAuthorizeURL" to exception.isInvalidAuthorizeURL,
+            "isInvalidConfiguration" to exception.isInvalidConfiguration,
+            "isCanceled" to exception.isCanceled,
+            "isPasswordLeaked" to exception.isPasswordLeaked,
+            "isLoginRequired" to exception.isLoginRequired,
         ))
-        if (ex.getValue("mfa_token") != null) { put("mfa_token", ex.getValue("mfa_token")!!) }
+        if (exception.getValue("mfa_token") != null) { put("mfa_token", exception.getValue("mfa_token")!!) }
     }
 }
 

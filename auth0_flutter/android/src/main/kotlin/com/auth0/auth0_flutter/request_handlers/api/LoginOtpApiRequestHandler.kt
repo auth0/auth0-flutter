@@ -13,7 +13,7 @@ import io.flutter.plugin.common.MethodChannel
 import java.text.SimpleDateFormat
 import java.util.*
 
-private const val AUTH_LOGIN_OTP_METHOD = "auth#login_otp"
+private const val AUTH_LOGIN_OTP_METHOD = "auth#loginOtp"
 
 class LoginOtpApiRequestHandler: ApiRequestHandler {
     override val method: String = AUTH_LOGIN_OTP_METHOD
@@ -32,7 +32,6 @@ class LoginOtpApiRequestHandler: ApiRequestHandler {
                 args["mfaToken"] as String,
                 args["otp"] as String,
             )
-        loginBuilder.validateClaims();
 
         loginBuilder.start(object : Callback<Credentials, AuthenticationException> {
             override fun onFailure(exception: AuthenticationException) {
