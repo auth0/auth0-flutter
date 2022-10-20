@@ -1,5 +1,3 @@
-# Auth0 SDK for Flutter
-
 ![Auth0 Flutter SDK](https://cdn.auth0.com/website/sdks/banners/flutter-banner.png)
 
 [![Package](https://img.shields.io/pub/v/auth0_flutter.svg)](https://pub.dartlang.org/packages/auth0_flutter)

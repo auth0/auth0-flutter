@@ -1,12 +1,12 @@
+![Auth0 Flutter SDK](https://cdn.auth0.com/website/sdks/banners/flutter-banner.png)
+
 [![CircleCI](https://img.shields.io/circleci/build/github/auth0/auth0-flutter)](https://circleci.com/gh/auth0/auth0-flutter)
 [![Codecov](https://codecov.io/gh/auth0/auth0-flutter/branch/main/graph/badge.svg)](https://codecov.io/gh/auth0/auth0-flutter)
-
-# Auth0 SDK for Flutter
 
 Auth0 SDK for Android / iOS Flutter apps.
 
 | Package                                                                 | Description                                   |
-|:------------------------------------------------------------------------|:----------------------------------------------|
+| :---------------------------------------------------------------------- | :-------------------------------------------- |
 | [auth0_flutter](./auth0_flutter/)                                       | SDK for Android / iOS Flutter applications    |
 | [auth0_flutter_platform_interface](./auth0_flutter_platform_interface/) | Common interface for platform implementations |
 
