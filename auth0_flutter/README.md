@@ -16,8 +16,8 @@
 - [Quickstart](https://auth0.com/docs/quickstart/native/flutter/interactive) - our interactive guide for quickly adding login, logout and user information to your app using Auth0
 - [Sample app](https://github.com/auth0-samples/auth0-flutter-samples/tree/main/sample) - a full-fledged sample app integrated with Auth0
 - [API documentation](https://pub.dev/documentation/auth0_flutter/latest/) - documentation auto-generated from the code comments that explains all the available features
-- [Examples](EXAMPLES.md) - examples that demonstrate the different ways in which this SDK can be used
-- [FAQ](FAQ.md) - frequently asked questions about the SDK
+- [Examples](https://github.com/auth0/auth0-flutter/blob/main/EXAMPLES.md) - examples that demonstrate the different ways in which this SDK can be used
+- [FAQ](https://github.com/auth0/auth0-flutter/blob/main/FAQ.md) - frequently asked questions about the SDK
 - [Docs Site](https://auth0.com/docs) - explore our Docs site and learn more about Auth0
 
 ## Getting Started
@@ -207,9 +207,9 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 - [Retrieve stored credentials](EXAMPLES.md#retrieve-stored-credentials) - fetch the user's credentials from the storage, automatically renewing them if they have expired.
 - [Retrieve user information](EXAMPLES.md#retrieve-user-information) - fetch the latest user information from the `/userinfo` endpoint.
 
-## API Reference
+## API reference
 
-### Web Authetication
+### Web authentication
 
 - [login](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/WebAuthentication/login.html)
 - [logout](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/WebAuthentication/logout.html)
@@ -237,7 +237,6 @@ We appreciate feedback and contribution to this repo! Before you get started, pl
 
 - [Auth0's general contribution guidelines](https://github.com/auth0/open-source-template/blob/master/GENERAL-CONTRIBUTING.md)
 - [Auth0's code of conduct guidelines](https://github.com/auth0/open-source-template/blob/master/CODE-OF-CONDUCT.md)
-- [The contribution guide](https://github.com/auth0/open-source-template/blob/master/GENERAL-CONTRIBUTING.md)
 
 ### Raise an issue
 
@@ -260,5 +259,5 @@ Please do not report security vulnerabilities on the public GitHub issue tracker
   Auth0 is an easy to implement, adaptable authentication and authorization platform. To learn more checkout <a href="https://auth0.com/why-auth0">Why Auth0?</a>
 </p>
 <p align="center">
-  This project is licensed under the Apache 2.0 license. See the <a href="./LICENSE"> LICENSE</a> file for more info.
+  This project is licensed under the Apache 2.0 license. See the <a href="https://github.com/auth0/auth0-flutter/blob/main/LICENSE"> LICENSE</a> file for more info.
 </p>
