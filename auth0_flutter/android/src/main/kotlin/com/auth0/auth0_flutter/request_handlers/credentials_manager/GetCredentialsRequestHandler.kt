@@ -24,7 +24,7 @@ class GetCredentialsRequestHandler : CredentialsManagerRequestHandler {
     ) {
         var scope: String? = null
 
-        val scopes = request.data.getOrDefault("scopes", arrayListOf<String>()) as ArrayList<*>
+        val scopes = (request.data["scopes"] ?: arrayListOf<String>()) as ArrayList<*>
         if (scopes.isNotEmpty()) {
             scope = scopes.joinToString(separator = " ")
         }

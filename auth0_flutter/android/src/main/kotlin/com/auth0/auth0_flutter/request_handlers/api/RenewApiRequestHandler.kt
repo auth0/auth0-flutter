@@ -27,12 +27,12 @@ class RenewApiRequestHandler : ApiRequestHandler {
 
         val renewAuthBuilder = api.renewAuth(request.data["refreshToken"] as String)
 
-        val scopes = request.data.getOrDefault("scopes", arrayListOf<String>()) as ArrayList<*>
+        val scopes = (request.data["scopes"] ?: arrayListOf<String>()) as ArrayList<*>
         if (scopes.isNotEmpty()) {
             renewAuthBuilder.addParameter("scope", scopes.joinToString(separator = " "))
         }
 
-        if (request.data.getOrDefault("parameters", null) is HashMap<*, *>) {
+        if (request.data["parameters"] is HashMap<*, *>) {
             renewAuthBuilder.addParameters(request.data["parameters"] as Map<String, String>)
         }
 

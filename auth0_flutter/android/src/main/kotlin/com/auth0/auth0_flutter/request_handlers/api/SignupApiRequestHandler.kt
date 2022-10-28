@@ -25,7 +25,7 @@ class SignupApiRequestHandler : ApiRequestHandler {
                 userMetadata = request.data["userMetadata"] as Map<String, String>?
             )
 
-        if (request.data.getOrDefault("parameters", null) is HashMap<*, *>) {
+        if (request.data["parameters"] is HashMap<*, *>) {
             builder.addParameters(request.data["parameters"] as Map<String, String>)
         }
 

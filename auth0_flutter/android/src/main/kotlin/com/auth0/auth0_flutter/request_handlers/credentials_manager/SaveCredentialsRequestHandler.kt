@@ -26,7 +26,7 @@ class SaveCredentialsRequestHandler : CredentialsManagerRequestHandler {
         assertHasProperties(listOf("accessToken", "idToken" , "tokenType", "expiresAt"), credentials, "credentials")
 
         var scope: String? = null
-        val scopes = credentials.getOrDefault("scopes", arrayListOf<String>()) as ArrayList<*>
+        val scopes = (credentials["scopes"] ?: arrayListOf<String>()) as ArrayList<*>
         if (scopes.isNotEmpty()) {
             scope = scopes.joinToString(separator = " ")
         }

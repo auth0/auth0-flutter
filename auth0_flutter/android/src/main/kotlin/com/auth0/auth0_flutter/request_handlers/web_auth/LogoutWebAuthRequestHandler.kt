@@ -14,11 +14,11 @@ class LogoutWebAuthRequestHandler(private val builderResolver: (MethodCallReques
         val builder = builderResolver(request)
         val args = request.data
 
-        if (args.getOrDefault("scheme", null) is String) {
+        if (args["scheme"] is String) {
             builder.withScheme(args["scheme"] as String)
         }
 
-        if (args.getOrDefault("returnTo", null) is String) {
+        if (args["returnTo"] is String) {
             builder.withReturnToUrl(args["returnTo"] as String)
         }
 
