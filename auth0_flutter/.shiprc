@@ -3,6 +3,9 @@
     "lib/src/version.dart": [],
     "pubspec.yaml": [
       "version: {MAJOR}.{MINOR}.{PATCH}"
+    ],
+    "ios/auth0_flutter.podspec": [
+      "= '{MAJOR}.{MINOR}.{PATCH}'"
     ]
   },
   "prebump": "flutter analyze",
