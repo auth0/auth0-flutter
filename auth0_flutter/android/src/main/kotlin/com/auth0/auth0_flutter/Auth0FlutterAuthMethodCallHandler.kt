@@ -1,6 +1,5 @@
 package com.auth0.auth0_flutter
 
-import android.app.Activity
 import androidx.annotation.NonNull
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.auth0_flutter.request_handlers.api.*

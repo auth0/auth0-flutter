@@ -23,7 +23,7 @@ class UserInfoApiRequestHandler : ApiRequestHandler {
 
         val builder = api.userInfo(request.data["accessToken"] as String)
 
-        if (request.data.getOrDefault("parameters", null) is HashMap<*, *>) {
+        if (request.data["parameters"] is HashMap<*, *>) {
             builder.addParameters(request.data["parameters"] as Map<String, String>)
         }
 

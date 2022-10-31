@@ -175,7 +175,7 @@ class SaveCredentialsRequestHandlerTest {
         format.timeZone = TimeZone.getTimeZone("UTC")
         val date = format.parse(credentialsMap["expiresAt"] as String) as Date
         var scope: String? = null
-        val scopes = credentialsMap.getOrDefault("scopes", arrayListOf<String>()) as ArrayList<*>
+        val scopes = (credentialsMap["scopes"] ?: arrayListOf<String>()) as ArrayList<*>
         if (scopes.isNotEmpty()) {
             scope = scopes.joinToString(separator = " ")
         }
@@ -226,7 +226,7 @@ class SaveCredentialsRequestHandlerTest {
         val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         val date = format.parse(credentialsMap["expiresAt"] as String) as Date
         var scope: String? = null
-        val scopes = credentialsMap.getOrDefault("scopes", arrayListOf<String>()) as ArrayList<*>
+        val scopes = (credentialsMap["scopes"] ?: arrayListOf<String>()) as ArrayList<*>
         if (scopes.isNotEmpty()) {
             scope = scopes.joinToString(separator = " ")
         }
