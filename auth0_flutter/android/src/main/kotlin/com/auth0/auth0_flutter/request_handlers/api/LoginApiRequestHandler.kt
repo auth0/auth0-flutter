@@ -34,14 +34,14 @@ class LoginApiRequestHandler : ApiRequestHandler {
                 args["connectionOrRealm"] as String
             )
 
-        val scopes = args.getOrDefault("scopes", arrayListOf<String>()) as ArrayList<*>
+        val scopes = (args["scopes"] ?: arrayListOf<String>()) as ArrayList<*>
         loginBuilder.setScope(scopes.joinToString(separator = " "))
 
-        if (args.getOrDefault("audience", null) is String) {
+        if (args["audience"] is String) {
             loginBuilder.setAudience(args["audience"] as String)
         }
 
-        if (args.getOrDefault("parameters", null) is HashMap<*, *>) {
+        if (args["parameters"] is HashMap<*, *>) {
             loginBuilder.addParameters(args["parameters"] as Map<String, String>)
         }
 

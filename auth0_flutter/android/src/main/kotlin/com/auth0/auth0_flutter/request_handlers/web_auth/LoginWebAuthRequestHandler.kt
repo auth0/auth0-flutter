@@ -23,43 +23,43 @@ class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest
     ) {
         val builder = builderResolver(request)
         val args = request.data
-        val scopes = args.getOrDefault("scopes", arrayListOf<String>()) as ArrayList<*>
+        val scopes = (args["scopes"] ?: arrayListOf<String>()) as ArrayList<*>
 
         builder.withScope(scopes.joinToString(separator = " "))
 
-        if (args.getOrDefault("audience", null) is String) {
+        if (args["audience"] is String) {
             builder.withAudience(args["audience"] as String)
         }
 
-        if (args.getOrDefault("redirectUrl", null) is String) {
+        if (args["redirectUrl"] is String) {
             builder.withRedirectUri(args["redirectUrl"] as String)
         }
 
-        if (args.getOrDefault("organizationId", null) is String) {
+        if (args["organizationId"] is String) {
             builder.withOrganization(args["organizationId"] as String)
         }
 
-        if (args.getOrDefault("invitationUrl", null) is String) {
+        if (args["invitationUrl"] is String) {
             builder.withInvitationUrl(args["invitationUrl"] as String)
         }
 
-        if (args.getOrDefault("leeway", null) is Int) {
+        if (args["leeway"] is Int) {
             builder.withIdTokenVerificationLeeway(args["leeway"] as Int)
         }
 
-        if (args.getOrDefault("maxAge", null) is Int) {
+        if (args["maxAge"] is Int) {
             builder.withMaxAge(args["maxAge"] as Int)
         }
 
-        if (args.getOrDefault("issuer", null) is String) {
+        if (args["issuer"] is String) {
             builder.withIdTokenVerificationIssuer(args["issuer"] as String)
         }
 
-        if (args.getOrDefault("scheme", null) is String) {
+        if (args["scheme"] is String) {
             builder.withScheme(args["scheme"] as String)
         }
 
-        if (args.getOrDefault("parameters", null) is Map<*, *>) {
+        if (args["parameters"] is Map<*, *>) {
             builder.withParameters(args["parameters"] as Map<String, *>)
         }
 
