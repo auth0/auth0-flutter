@@ -1,5 +1,15 @@
 # Change Log
 
+## [v1.0.2](https://github.com/auth0/auth0-flutter/tree/v1.0.2) (2022-11-03)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/v1.0.1...v1.0.2)
+
+**Changed**
+- af: Replace usages of `getOrDefault()` [\#179](https://github.com/auth0/auth0-flutter/pull/179) ([Widcket](https://github.com/Widcket))
+- af: Update Podspec [\#180](https://github.com/auth0/auth0-flutter/pull/180) ([Widcket](https://github.com/Widcket))
+
+**Security**
+- [Snyk] Security upgrade slather from 2.7.2 to 2.7.2 [\#176](https://github.com/auth0/auth0-flutter/pull/176) ([crew-security](https://github.com/crew-security))
+
 ## [1.0.1](https://github.com/auth0/auth0-flutter/tree/v1.0.1) (2022-09-14)
 
 [Full changelog](https://github.com/auth0/auth0-flutter/compare/v1.0.0...v1.0.1)

@@ -1,6 +1,6 @@
 name: auth0_flutter
 description: Auth0 SDK for Flutter. Easily integrate Auth0 into Android / iOS Flutter apps.
-version: 1.0.1
+version: 1.0.2
 homepage: https://github.com/auth0/auth0-flutter
 
 environment:
