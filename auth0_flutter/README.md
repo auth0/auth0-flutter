@@ -14,8 +14,8 @@
 - [Quickstart](https://auth0.com/docs/quickstart/native/flutter/interactive) - our interactive guide for quickly adding login, logout and user information to your app using Auth0
 - [Sample app](https://github.com/auth0-samples/auth0-flutter-samples/tree/main/sample) - a full-fledged sample app integrated with Auth0
 - [API documentation](https://pub.dev/documentation/auth0_flutter/latest/) - documentation auto-generated from the code comments that explains all the available features
-- [Examples](https://github.com/auth0/auth0-flutter/blob/main/EXAMPLES.md) - examples that demonstrate the different ways in which this SDK can be used
-- [FAQ](https://github.com/auth0/auth0-flutter/blob/main/FAQ.md) - frequently asked questions about the SDK
+- [Examples](https://github.com/auth0/auth0-flutter/blob/main/auth0_flutter/EXAMPLES.md) - examples that demonstrate the different ways in which this SDK can be used
+- [FAQ](https://github.com/auth0/auth0-flutter/blob/main/auth0_flutter/FAQ.md) - frequently asked questions about the SDK
 - [Docs Site](https://auth0.com/docs) - explore our Docs site and learn more about Auth0
 
 ## Getting Started
