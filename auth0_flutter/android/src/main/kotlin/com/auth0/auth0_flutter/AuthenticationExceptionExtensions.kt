@@ -4,7 +4,7 @@ import com.auth0.android.authentication.AuthenticationException
 
 fun AuthenticationException.toMap(): Map<String, Any> {
     val exception = this
-    return buildMap<String, Any> {
+    return buildMap {
         put("_statusCode", exception.statusCode)
         put("_errorFlags", mapOf(
             "isMultifactorRequired" to exception.isMultifactorRequired,
