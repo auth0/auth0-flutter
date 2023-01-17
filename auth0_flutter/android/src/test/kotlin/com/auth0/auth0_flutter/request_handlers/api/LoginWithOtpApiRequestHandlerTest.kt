@@ -47,8 +47,7 @@ class LoginWithOtpApiRequestHandlerTest {
 
     @Test
     fun `should throw when missing mfaToken`() {
-        val options =
-            hashMapOf("otp" to "test-otp")
+        val options = hashMapOf("otp" to "test-otp")
         val handler = LoginWithOtpApiRequestHandler()
         val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
