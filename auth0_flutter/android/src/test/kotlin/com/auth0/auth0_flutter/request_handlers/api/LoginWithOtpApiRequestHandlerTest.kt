@@ -24,8 +24,7 @@ import java.util.*
 class LoginWithOtpApiRequestHandlerTest {
     @Test
     fun `should throw when missing otp`() {
-        val options =
-            hashMapOf("mfaToken" to "test-mfa-token")
+        val options = hashMapOf("mfaToken" to "test-mfa-token")
         val handler = LoginWithOtpApiRequestHandler()
         val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
