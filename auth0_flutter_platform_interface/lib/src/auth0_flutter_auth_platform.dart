@@ -33,7 +33,7 @@ abstract class Auth0FlutterAuthPlatform extends PlatformInterface {
 
   Future<Credentials> loginWithOtp(
       final ApiRequest<AuthLoginWithOtpOptions> request) {
-    throw UnimplementedError('authLogin() has not been implemented');
+    throw UnimplementedError('authLoginWithOtp() has not been implemented');
   }
 
   Future<UserProfile> userInfo(final ApiRequest<AuthUserInfoOptions> request) {
