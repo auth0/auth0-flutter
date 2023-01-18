@@ -405,6 +405,128 @@ void main() {
     });
   });
 
+  group('loginWithOtp', () {
+    test('calls the correct MethodChannel method', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      await MethodChannelAuth0FlutterAuth().loginWithOtp(
+        ApiRequest<AuthLoginWithOtpOptions>(
+            account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthLoginWithOtpOptions(
+                otp: 'test-otp', mfaToken: 'test-mfa-token')),
+      );
+
+      expect(
+          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          'auth#loginOtp');
+    });
+
+    test('correctly maps all properties', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      await MethodChannelAuth0FlutterAuth().loginWithOtp(
+        ApiRequest<AuthLoginWithOtpOptions>(
+            account: const Account('test-domain', 'test-clientId'),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthLoginWithOtpOptions(
+                otp: 'test-otp', mfaToken: 'test-mfa-token')),
+      );
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['_account']['domain'], 'test-domain');
+      expect(verificationResult.arguments['_account']['clientId'],
+          'test-clientId');
+      expect(verificationResult.arguments['_userAgent']['name'], 'test-name');
+      expect(verificationResult.arguments['_userAgent']['version'],
+          'test-version');
+      expect(verificationResult.arguments['otp'], 'test-otp');
+      expect(verificationResult.arguments['mfaToken'], 'test-mfa-token');
+    });
+
+    test('correctly returns the response from the Method Channel', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      final result = await MethodChannelAuth0FlutterAuth().loginWithOtp(
+        ApiRequest<AuthLoginWithOtpOptions>(
+            account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthLoginWithOtpOptions(
+                mfaToken: 'test-mfa-token', otp: 'test-otp')),
+      );
+
+      verify(mocked.methodCallHandler(captureAny));
+
+      expect(result.accessToken, MethodCallHandler.loginResult['accessToken']);
+      expect(result.idToken, MethodCallHandler.loginResult['idToken']);
+      expect(result.expiresAt,
+          DateTime.parse(MethodCallHandler.loginResult['expiresAt'] as String));
+      expect(result.scopes, MethodCallHandler.loginResult['scopes']);
+      expect(
+          result.refreshToken, MethodCallHandler.loginResult['refreshToken']);
+      expect(result.user.name,
+          MethodCallHandler.loginResult['userProfile']['name']);
+    });
+
+    test(
+        'correctly returns the response from the Method Channel when properties missing',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResultRequired);
+
+      final result = await MethodChannelAuth0FlutterAuth().loginWithOtp(
+          ApiRequest<AuthLoginWithOtpOptions>(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: '', version: ''),
+              options: AuthLoginWithOtpOptions(otp: '', mfaToken: '')));
+
+      verify(mocked.methodCallHandler(captureAny));
+
+      expect(result.refreshToken, isNull);
+    });
+
+    test('throws an ApiException when method channel returns null', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      Future<Credentials> actual() async {
+        final result = await MethodChannelAuth0FlutterAuth().loginWithOtp(
+          ApiRequest<AuthLoginWithOtpOptions>(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: AuthLoginWithOtpOptions(otp: '', mfaToken: '')),
+        );
+
+        return result;
+      }
+
+      await expectLater(actual, throwsA(isA<ApiException>()));
+    });
+
+    test(
+        'throws an ApiException when method channel throws a PlatformException',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenThrow(PlatformException(code: '123'));
+
+      Future<Credentials> actual() async {
+        final result = await MethodChannelAuth0FlutterAuth().loginWithOtp(
+          ApiRequest<AuthLoginWithOtpOptions>(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: AuthLoginWithOtpOptions(otp: '', mfaToken: '')),
+        );
+
+        return result;
+      }
+
+      await expectLater(actual, throwsA(isA<ApiException>()));
+    });
+  });
+
   group('resetPassword', () {
     test('calls the correct MethodChannel method', () async {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);

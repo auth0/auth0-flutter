@@ -233,4 +233,22 @@ void main() {
     expect(exception.isLoginRequired, false);
     expect(exception.isPasswordLeaked, false);
   });
+
+  test('correctly gets mfaToken when present', () async {
+    final details = {'mfa_token': 'test-mfaToken'};
+    final platformException =
+    PlatformException(code: 'test-code', details: details);
+
+    final exception = ApiException.fromPlatformException(platformException);
+    expect(exception.mfaToken, 'test-mfaToken');
+  });
+
+  test('correctly returns null when mfaToken is not present', () async {
+    const details = <String, dynamic>{};
+    final platformException =
+    PlatformException(code: 'test-code', details: details);
+
+    final exception = ApiException.fromPlatformException(platformException);
+    expect(exception.mfaToken, null);
+  });
 }

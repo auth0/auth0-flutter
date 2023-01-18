@@ -2,6 +2,7 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'auth/auth_login_options.dart';
+import 'auth/auth_login_with_otp_options.dart';
 import 'auth/auth_renew_access_token_options.dart';
 import 'auth/auth_reset_password_options.dart';
 import 'auth/auth_signup_options.dart';
@@ -28,6 +29,11 @@ abstract class Auth0FlutterAuthPlatform extends PlatformInterface {
 
   Future<Credentials> login(final ApiRequest<AuthLoginOptions> request) {
     throw UnimplementedError('authLogin() has not been implemented');
+  }
+
+  Future<Credentials> loginWithOtp(
+      final ApiRequest<AuthLoginWithOtpOptions> request) {
+    throw UnimplementedError('authLoginWithOtp() has not been implemented');
   }
 
   Future<UserProfile> userInfo(final ApiRequest<AuthUserInfoOptions> request) {

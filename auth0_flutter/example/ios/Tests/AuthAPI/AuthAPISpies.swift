@@ -11,6 +11,7 @@ class SpyAuthentication: Authentication {
     var userInfoResult: AuthenticationResult<UserInfo> = .success(UserInfo(json: ["sub": ""])!)
     var voidResult: AuthenticationResult<Void> = .success(())
     var calledLoginWithUsernameOrEmail = false
+    var calledLoginWithOtp = false
     var calledSignup = false
     var calledUserInfo = false
     var calledRenew = false
@@ -34,6 +35,9 @@ class SpyAuthentication: Authentication {
     }
 
     func login(withOTP otp: String, mfaToken: String) -> Request<Credentials, AuthenticationError> {
+        arguments["otp"] = otp
+        arguments["mfaToken"] = mfaToken
+        calledLoginWithOtp = true
         return request(credentialsResult)
     }
 

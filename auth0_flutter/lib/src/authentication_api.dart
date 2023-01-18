@@ -73,6 +73,31 @@ class AuthenticationApi {
         parameters: parameters,
       )));
 
+  /// Authenticates the user using a [mfaToken] and an [otp], after [login] returned with an [ApiException] with [ApiException.isMultifactorRequired] set to `true`.
+  /// If successful, it returns a set of tokens, as well as the user's profile (constructed from ID token claims).
+  ///
+  ///
+  /// ## Endpoint docs
+  /// https://auth0.com/docs/api/authentication#verify-with-one-time-password-otp-
+  ///
+  /// ## Usage example
+  ///
+  /// ```dart
+  /// final result = await auth0.api.loginWithOtp({
+  ///   otp: '123456',
+  ///   mfaToken: 'received_mfa_token'
+  /// });
+  /// ```
+  Future<Credentials> loginWithOtp({
+    required final String otp,
+    required final String mfaToken,
+  }) =>
+      Auth0FlutterAuthPlatform.instance
+          .loginWithOtp(_createApiRequest(AuthLoginWithOtpOptions(
+        otp: otp,
+        mfaToken: mfaToken,
+      )));
+
   /// Fetches the user's profile from the /userinfo endpoint. An [accessToken] from a successful authentication call must be supplied.
   ///
   /// ## Endpoint

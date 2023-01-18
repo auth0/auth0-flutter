@@ -35,6 +35,10 @@ class ApiException extends Auth0Exception {
 
   bool get isMultifactorRequired =>
       _errorFlags.getBooleanOrFalse('isMultifactorRequired');
+  String? get mfaToken =>
+      details.containsKey('mfa_token') && details['mfa_token'] is String
+          ? details['mfa_token'] as String
+          : null;
   bool get isMultifactorEnrollRequired =>
       _errorFlags.getBooleanOrFalse('isMultifactorEnrollRequired');
   bool get isMultifactorCodeInvalid =>

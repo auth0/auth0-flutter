@@ -185,4 +185,28 @@ class AuthenticationExceptionExtensionsTest {
 
         assertThat(statusCode, equalTo(50))
     }
+
+    @Test
+    fun `should set mfa_token when calling toMap()`() {
+        val exception = AuthenticationException(mapOf(
+            "mfa_token" to "test-mfaToken"
+        ))
+
+        val map = exception.toMap()
+        val mfaToken = map["mfa_token"] as String
+
+        assertThat(mfaToken, equalTo("test-mfaToken"))
+    }
+
+    @Test
+    fun `should not set mfa_token when calling toMap()`() {
+        val exception = AuthenticationException(mapOf(
+            "code" to "some-code"
+        ))
+
+        val map = exception.toMap()
+        val mfaToken = map["mfa_token"] as String?
+
+        assertThat(mfaToken, equalTo(null))
+    }
 }

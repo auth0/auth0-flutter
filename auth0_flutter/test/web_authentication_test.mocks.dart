@@ -109,6 +109,6 @@ class MockCredentialsManager extends _i1.Mock
   @override
   _i4.Future<bool> clearCredentials() =>
       (super.noSuchMethod(Invocation.method(#clear, []),
-      returnValue: Future<bool>.value(true),
-      returnValueForMissingStub: Future<void>.value()) as _i4.Future<bool>);
+          returnValue: Future<bool>.value(true),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<bool>);
 }
