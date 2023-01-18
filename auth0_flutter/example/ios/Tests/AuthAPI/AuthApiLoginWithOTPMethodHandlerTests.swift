@@ -3,21 +3,21 @@ import Auth0
 
 @testable import auth0_flutter
 
-fileprivate typealias Argument = AuthAPILoginWithOtpMethodHandler.Argument
+fileprivate typealias Argument = AuthAPILoginWithOTPMethodHandler.Argument
 
-class AuthAPILoginWithOtpMethodHandlerTests: XCTestCase {
+class AuthAPILoginWithOTPMethodHandlerTests: XCTestCase {
     var spy: SpyAuthentication!
-    var sut: AuthAPILoginWithOtpMethodHandler!
+    var sut: AuthAPILoginWithOTPMethodHandler!
 
     override func setUpWithError() throws {
         spy = SpyAuthentication()
-        sut = AuthAPILoginWithOtpMethodHandler(client: spy)
+        sut = AuthAPILoginWithOTPMethodHandler(client: spy)
     }
 }
 
 // MARK: - Required Arguments Error
 
-extension AuthAPILoginWithOtpMethodHandlerTests {
+extension AuthAPILoginWithOTPMethodHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
         let keys: [Argument] = [.otp, .mfaToken]
         let expectations = keys.map { expectation(description: "\($0.rawValue) is missing") }
@@ -33,7 +33,7 @@ extension AuthAPILoginWithOtpMethodHandlerTests {
 
 // MARK: - ID Token Decoding Failed Error
 
-extension AuthAPILoginWithOtpMethodHandlerTests {
+extension AuthAPILoginWithOTPMethodHandlerTests {
     func testProducesErrorWithInvalidIDToken() {
         let credentials = Credentials(idToken: "foo")
         let expectation = self.expectation(description: "ID Token cannot be decoded")
@@ -48,11 +48,11 @@ extension AuthAPILoginWithOtpMethodHandlerTests {
 
 // MARK: - Arguments
 
-extension AuthAPILoginWithOtpMethodHandlerTests {
+extension AuthAPILoginWithOTPMethodHandlerTests {
 
     // MARK: otp
 
-    func testAddsOtp() {
+    func testAddsOTP() {
         let key = Argument.otp
         let value = "foo"
         sut.handle(with: arguments(withKey: key, value: value)) { _ in }
@@ -61,7 +61,7 @@ extension AuthAPILoginWithOtpMethodHandlerTests {
 
     // MARK: mfaToken
 
-    func testAddsMfaToken() {
+    func testAddsMFAToken() {
         let key = Argument.mfaToken
         let value = "foo"
         sut.handle(with: arguments(withKey: key, value: value)) { _ in }
@@ -71,10 +71,10 @@ extension AuthAPILoginWithOtpMethodHandlerTests {
 
 // MARK: - Login Result
 
-extension AuthAPILoginWithOtpMethodHandlerTests {
-    func testCallsSDKLoginWithOtpMethod() {
+extension AuthAPILoginWithOTPMethodHandlerTests {
+    func testCallsSDKLoginWithOTPMethod() {
         sut.handle(with: arguments()) { _ in }
-        XCTAssertTrue(spy.calledLoginWithOtp)
+        XCTAssertTrue(spy.calledLoginWithOTP)
     }
 
     func testProducesCredentials() {
@@ -107,7 +107,7 @@ extension AuthAPILoginWithOtpMethodHandlerTests {
 
 // MARK: - Helpers
 
-extension AuthAPILoginWithOtpMethodHandlerTests {
+extension AuthAPILoginWithOTPMethodHandlerTests {
     override func arguments() -> [String: Any] {
         return [
             Argument.otp.rawValue: "",
