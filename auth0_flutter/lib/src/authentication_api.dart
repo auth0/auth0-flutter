@@ -73,7 +73,7 @@ class AuthenticationApi {
         parameters: parameters,
       )));
 
-  /// Authenticates the user using a [mfaToken] and an [otp], after [login] returned with an [ApiException] with [ApiException.isMultifactorRequired] set to true.
+  /// Authenticates the user using a [mfaToken] and an [otp], after [login] returned with an [ApiException] with [ApiException.isMultifactorRequired] set to `true`.
   /// If successful, it returns a set of tokens, as well as the user's profile (constructed from ID token claims).
   ///
   ///
