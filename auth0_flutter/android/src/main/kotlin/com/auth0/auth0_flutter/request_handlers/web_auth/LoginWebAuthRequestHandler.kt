@@ -6,7 +6,6 @@ import com.auth0.android.callback.Callback
 import com.auth0.android.jwt.JWT
 import com.auth0.android.provider.WebAuthProvider
 import com.auth0.android.result.Credentials
-import com.auth0.auth0_flutter.createUserProfileFromClaims
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.toMap
 import io.flutter.plugin.common.MethodChannel
@@ -71,10 +70,6 @@ class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest
             override fun onSuccess(credentials: Credentials) {
                 // Success! Access token and ID token are presents
                 val scopes = credentials.scope?.split(" ") ?: listOf()
-                val jwt = JWT(credentials.idToken)
-
-                // Map all claim values to their underlying type as Any
-                val userProfile = createUserProfileFromClaims(jwt.claims)
                 val sdf =
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
 
@@ -85,7 +80,7 @@ class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest
                         "accessToken" to credentials.accessToken,
                         "idToken" to credentials.idToken,
                         "refreshToken" to credentials.refreshToken,
-                        "userProfile" to userProfile.toMap(),
+                        "userProfile" to credentials.user.toMap(),
                         "expiresAt" to formattedDate,
                         "scopes" to scopes,
                         "tokenType" to credentials.type

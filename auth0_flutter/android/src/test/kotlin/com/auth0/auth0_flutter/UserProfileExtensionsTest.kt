@@ -112,12 +112,4 @@ class UserProfileExtensionsTest {
         assertThat(user.updatedAt, equalTo("2022-04-22"))
         assertThat(user.address?.get("street"), equalTo("test-street"))
     }
-
-    @Test
-    fun `should create an instance when calling createUserProfileFromClaims`() {
-        val jwt = JWT(JwtTestUtils.createJwt(claims = mapOf("name" to "test-name")))
-        val user = createUserProfileFromClaims(jwt.claims)
-
-        assertThat(user.name, equalTo("test-name"))
-    }
 }

@@ -4,9 +4,7 @@ import android.content.Context
 import com.auth0.android.authentication.storage.CredentialsManagerException
 import com.auth0.android.authentication.storage.SecureCredentialsManager
 import com.auth0.android.callback.Callback
-import com.auth0.android.jwt.JWT
 import com.auth0.android.result.Credentials
-import com.auth0.auth0_flutter.createUserProfileFromClaims
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.toMap
 import io.flutter.plugin.common.MethodChannel
@@ -40,8 +38,6 @@ class GetCredentialsRequestHandler : CredentialsManagerRequestHandler {
 
             override fun onSuccess(credentials: Credentials) {
                 val scopes = credentials.scope?.split(" ") ?: listOf()
-                val jwt = JWT(credentials.idToken)
-                val userProfile = createUserProfileFromClaims(jwt.claims)
                 val sdf =
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
 
@@ -52,7 +48,7 @@ class GetCredentialsRequestHandler : CredentialsManagerRequestHandler {
                         "accessToken" to credentials.accessToken,
                         "idToken" to credentials.idToken,
                         "refreshToken" to credentials.refreshToken,
-                        "userProfile" to userProfile.toMap(),
+                        "userProfile" to credentials.user.toMap(),
                         "expiresAt" to formattedDate,
                         "scopes" to scopes,
                         "tokenType" to credentials.type
