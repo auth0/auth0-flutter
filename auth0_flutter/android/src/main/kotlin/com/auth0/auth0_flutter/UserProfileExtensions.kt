@@ -1,6 +1,5 @@
 package com.auth0.auth0_flutter
 
-import com.auth0.android.jwt.Claim
 import com.auth0.android.result.UserProfile
 import com.auth0.auth0_flutter.utils.getCustomClaims
 
@@ -27,29 +26,6 @@ fun UserProfile.toMap(): Map<String, Any?> {
         "address" to this.address,
         "updated_at" to this.updatedAt,
         "custom_claims" to this.customClaims,
-    )
-}
-
-fun createUserProfileFromClaims(claims: Map<String, Claim>): UserProfile {
-    // Map all claim values to their underlying type as Any
-    val claims = claims.mapValues { it.value.asObject(Any::class.java) }
-        .filter { it.value != null } as Map<String, Any>
-
-    return UserProfile(
-        id = claims["sub"] as String?,
-        name = claims["name"] as String?,
-        givenName = claims["given_name"] as String?,
-        familyName = claims["family_name"] as String?,
-        nickname = claims["nickname"] as String?,
-        pictureURL = claims["picture"] as String?,
-        email = claims["email"] as String?,
-        isEmailVerified = claims["email_verified"] as Boolean?,
-        extraInfo = claims,
-        // The following properties are required by Auth0.Android but would never be part of the claims Map.
-        identities = listOf(),
-        appMetadata = mapOf(),
-        userMetadata = mapOf(),
-        createdAt = null
     )
 }
 

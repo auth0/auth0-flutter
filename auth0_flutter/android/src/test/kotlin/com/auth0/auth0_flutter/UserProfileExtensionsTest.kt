@@ -1,6 +1,5 @@
 package com.auth0.auth0_flutter
 
-import com.auth0.android.jwt.JWT
 import com.auth0.android.result.UserProfile
 
 import org.hamcrest.CoreMatchers.equalTo
@@ -111,13 +110,5 @@ class UserProfileExtensionsTest {
         assertThat(user.isPhoneNumberVerified, equalTo(true))
         assertThat(user.updatedAt, equalTo("2022-04-22"))
         assertThat(user.address?.get("street"), equalTo("test-street"))
-    }
-
-    @Test
-    fun `should create an instance when calling createUserProfileFromClaims`() {
-        val jwt = JWT(JwtTestUtils.createJwt(claims = mapOf("name" to "test-name")))
-        val user = createUserProfileFromClaims(jwt.claims)
-
-        assertThat(user.name, equalTo("test-name"))
     }
 }

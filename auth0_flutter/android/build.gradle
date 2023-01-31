@@ -65,8 +65,6 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     //noinspection GradleDynamicVersion
     implementation 'com.auth0.android:auth0:2.+'
-    //noinspection GradleDynamicVersion
-    implementation 'com.auth0.android:jwtdecode:2.+'
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.hamcrest:java-hamcrest:2.0.0.0'
