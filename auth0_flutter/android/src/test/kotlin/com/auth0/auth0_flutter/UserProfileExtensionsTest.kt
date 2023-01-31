@@ -1,6 +1,5 @@
 package com.auth0.auth0_flutter
 
-import com.auth0.android.jwt.JWT
 import com.auth0.android.result.UserProfile
 
 import org.hamcrest.CoreMatchers.equalTo
