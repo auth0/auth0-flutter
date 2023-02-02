@@ -20,6 +20,12 @@ export 'src/authentication_api.dart';
 export 'src/credentials_manager.dart';
 export 'src/web_authentication.dart';
 
+class Auth0Web {
+  void slugify(String str) {
+    Auth0FlutterWebPlatform.instance.slugify(str);
+  }
+}
+
 /// Primary interface for interacting with Auth0 using web authentication, or the authentication API.
 class Auth0 {
   final Account _account;
