@@ -16,6 +16,7 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         CredentialsManagerException,
         LocalAuthentication;
 
+export 'src/auth0_flutter_web.dart';
 export 'src/authentication_api.dart';
 export 'src/credentials_manager.dart';
 export 'src/web_authentication.dart';
