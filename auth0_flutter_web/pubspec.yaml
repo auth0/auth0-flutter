@@ -1,0 +1,19 @@
+name: auth0_flutter_web
+description: A common platform interface for the auth0_flutter federated plugin.
+version: 1.0.1
+homepage: https://github.com/auth0/auth0-flutter
+
+publish_to: none
+
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  js: ^0.6.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter

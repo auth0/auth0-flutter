@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:auth0_flutter/auth0_flutter.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -25,6 +26,9 @@ class _ExampleAppState extends State<ExampleApp> {
   @override
   void initState() {
     super.initState();
+    if (kIsWeb) {
+      Auth0Web().slugify('lorem ipsum dolor sit amet');
+    }
     auth0 = Auth0(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
     webAuth =
         auth0.webAuthentication(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
