@@ -1,9 +1,9 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 
-import 'src/authentication_api.dart';
-import 'src/credentials_manager.dart';
+import 'src/mobile/authentication_api.dart';
+import 'src/mobile/credentials_manager.dart';
+import 'src/mobile/web_authentication.dart';
 import 'src/version.dart';
-import 'src/web_authentication.dart';
 
 export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
     show
@@ -16,9 +16,9 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         CredentialsManagerException,
         LocalAuthentication;
 
-export 'src/authentication_api.dart';
-export 'src/credentials_manager.dart';
-export 'src/web_authentication.dart';
+export 'src/mobile/authentication_api.dart';
+export 'src/mobile/credentials_manager.dart';
+export 'src/mobile/web_authentication.dart';
 
 /// Primary interface for interacting with Auth0 using web authentication, or the authentication API.
 class Auth0 {
