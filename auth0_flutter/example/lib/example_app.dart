@@ -26,6 +26,7 @@ class _ExampleAppState extends State<ExampleApp> {
   void initState() {
     super.initState();
     auth0 = Auth0(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
+
     webAuth =
         auth0.webAuthentication(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
   }
@@ -36,7 +37,11 @@ class _ExampleAppState extends State<ExampleApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      final result = await webAuth.login();
+      final result = await webAuth.login(
+          safariViewController: const SafariViewController(
+              presentationStyle:
+                  SafariViewControllerPresentationStyle.formSheet));
+
       output = result.idToken;
 
       setState(() {

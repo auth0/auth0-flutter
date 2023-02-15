@@ -1,5 +1,8 @@
+import 'package:flutter/foundation.dart';
+
 import '../request/request_options.dart';
 import 'id_token_validation_config.dart';
+import 'safariviewcontroller.dart';
 
 class WebAuthLoginOptions implements RequestOptions {
   final IdTokenValidationConfig? idTokenValidationConfig;
@@ -11,6 +14,7 @@ class WebAuthLoginOptions implements RequestOptions {
   final bool useEphemeralSession;
   final Map<String, String> parameters;
   final String? scheme;
+  final SafariViewController? safariViewController;
 
   WebAuthLoginOptions(
       {this.idTokenValidationConfig,
@@ -21,7 +25,8 @@ class WebAuthLoginOptions implements RequestOptions {
       this.invitationUrl,
       this.scheme,
       this.useEphemeralSession = false,
-      this.parameters = const {}});
+      this.parameters = const {},
+      this.safariViewController});
 
   @override
   Map<String, dynamic> toMap() => {
@@ -35,6 +40,11 @@ class WebAuthLoginOptions implements RequestOptions {
         'invitationUrl': invitationUrl,
         'useEphemeralSession': useEphemeralSession,
         'parameters': parameters,
-        'scheme': scheme
+        'scheme': scheme,
+        'useSafariViewController': safariViewController != null,
+        'safariViewControllerPresentationStyle':
+            safariViewController?.presentationStyle != null
+                ? safariViewController!.presentationStyle!.value
+                : null
       };
 }
