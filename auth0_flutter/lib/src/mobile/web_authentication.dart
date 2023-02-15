@@ -1,6 +1,6 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 
-import '../auth0_flutter.dart';
+import '../../auth0_flutter.dart';
 
 /// An interface for authenticating users using the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login).
 ///
