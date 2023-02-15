@@ -11,6 +11,9 @@ dependencies:
   auth0_flutter_platform_interface: 1.0.1
   flutter:
     sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+  js: ^0.6.4
 
 dependency_overrides:
   auth0_flutter_platform_interface:
