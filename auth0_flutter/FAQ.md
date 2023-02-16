@@ -72,6 +72,57 @@ You still need to call `logout()` on Android, though, as `useEphemeralSession` i
 
 > ⚠️ `useEphemeralSession` relies on the `prefersEphemeralWebBrowserSession` configuration option of `ASWebAuthenticationSession`. This option is only available on [iOS 13+](https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession/3237231-prefersephemeralwebbrowsersessio), so `useEphemeralSession` will have no effect on iOS 12. To improve the experience for iOS 12 users, see the approach described below.
 
+### Use `SFSafariViewController`
+
+An alternative is to use `SFSafariViewController` instead of `ASWebAuthenticationSession`. You can do so by setting the `safariViewController` property during login:
+
+```dart
+await webAuth.login(safariViewController: const SafariViewController();
+```
+
+> **Note**
+> Since `SFSafariViewController` does not share cookies with the Safari app, SSO will not work either. But it will keep its own cookies, so you can use it to perform SSO between your app and your website as long as you open it inside your app using `SFSafariViewController`. This also means that any feature that relies on the persistence of cookies will work as expected.
+
+If you choose to use `SFSafariViewController`, you need to perform an additional bit of setup. Unlike `ASWebAuthenticationSession`, `SFSafariViewController` will not automatically capture the callback URL when Auth0 redirects back to your app, so it's necessary to manually resume the Web Auth operation.
+
+<details>
+  <summary>Using the UIKit app lifecycle</summary>
+
+```swift
+// AppDelegate.swift
+
+func application(_ app: UIApplication,
+                 open url: URL,
+                 options: [UIApplication.OpenURLOptionsKey: Any]) -> Bool {
+    return WebAuthentication.resume(with: url)
+}
+```
+</details>
+
+<details>
+  <summary>Using the UIKit app lifecycle with Scenes</summary>
+
+```swift
+// SceneDelegate.swift
+
+func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+    guard let url = URLContexts.first?.url else { return }
+    WebAuthentication.resume(with: url)
+}
+```
+</details>
+
+<details>
+  <summary>Using the SwiftUI app lifecycle</summary>
+
+```swift
+SomeView()
+    .onOpenURL { url in
+        WebAuthentication.resume(with: url)
+    }
+```
+</details>
+
 ## 3. How can I disable the iOS _logout_ alert box?
 
 ![ios-sso-alert](assets/ios-sso-alert.png)
