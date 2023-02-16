@@ -14,7 +14,6 @@ struct WebAuthLoginMethodHandler: MethodHandler {
         case leeway
         case issuer
         case maxAge
-        case safariViewControllerPresentationStyle
         case useSafariViewController
     }
 
@@ -68,9 +67,10 @@ struct WebAuthLoginMethodHandler: MethodHandler {
             webAuth = webAuth.maxAge(maxAge)
         }
         
-        if arguments[Argument.useSafariViewController] as? Bool == true,
-           let presentationStyle = UIModalPresentationStyle.init(rawValue: arguments[Argument.safariViewControllerPresentationStyle] as? Int ?? 0) {
-            webAuth = webAuth.provider(WebAuthentication.safariProvider(style: presentationStyle))
+        if let safariViewControllerDictionary = arguments[SafariViewController.key] as? [String: Any?] {
+            let safariViewController = SafariViewController(from: safariViewControllerDictionary)
+            
+            webAuth = webAuth.provider(WebAuthentication.safariProvider(style: safariViewController.presentationStyle ?? UIModalPresentationStyle.fullScreen))
         }
 
         webAuth.start {

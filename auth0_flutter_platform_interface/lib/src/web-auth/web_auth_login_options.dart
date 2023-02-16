@@ -29,22 +29,33 @@ class WebAuthLoginOptions implements RequestOptions {
       this.safariViewController});
 
   @override
-  Map<String, dynamic> toMap() => {
-        'leeway': idTokenValidationConfig?.leeway,
-        'issuer': idTokenValidationConfig?.issuer,
-        'maxAge': idTokenValidationConfig?.maxAge,
-        'audience': audience,
-        'scopes': scopes.toList(),
-        'redirectUrl': redirectUrl,
-        'organizationId': organizationId,
-        'invitationUrl': invitationUrl,
-        'useEphemeralSession': useEphemeralSession,
-        'parameters': parameters,
-        'scheme': scheme,
-        'useSafariViewController': safariViewController != null,
-        'safariViewControllerPresentationStyle':
-            safariViewController?.presentationStyle != null
-                ? safariViewController!.presentationStyle!.value
-                : null
-      };
+  Map<String, dynamic> toMap() {
+    final map = {
+      'leeway': idTokenValidationConfig?.leeway,
+      'issuer': idTokenValidationConfig?.issuer,
+      'maxAge': idTokenValidationConfig?.maxAge,
+      'audience': audience,
+      'scopes': scopes.toList(),
+      'redirectUrl': redirectUrl,
+      'organizationId': organizationId,
+      'invitationUrl': invitationUrl,
+      'useEphemeralSession': useEphemeralSession,
+      'parameters': parameters,
+      'scheme': scheme,
+      ...safariViewController != null
+          ? {
+              'safariViewController': {
+                ...safariViewController?.presentationStyle != null
+                    ? {
+                        'presentationStyle':
+                            safariViewController?.presentationStyle?.value
+                      }
+                    : <String, dynamic>{}
+              }
+            }
+          : <String, dynamic>{}
+    };
+
+    return map;
+  }
 }
