@@ -37,10 +37,7 @@ class _ExampleAppState extends State<ExampleApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      final result = await webAuth.login(
-          safariViewController: const SafariViewController(
-              presentationStyle:
-                  SafariViewControllerPresentationStyle.formSheet));
+      final result = await webAuth.login();
 
       output = result.idToken;
 
