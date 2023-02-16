@@ -169,6 +169,30 @@ void main() {
       expect(result.refreshToken, isNull);
     });
 
+    test('correctly includes SafariViewController options when specified',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      await MethodChannelAuth0FlutterWebAuth().login(
+          WebAuthRequest<WebAuthLoginOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: WebAuthLoginOptions(
+                  useEphemeralSession: true,
+                  safariViewController: const SafariViewController(
+                      presentationStyle:
+                          SafariViewControllerPresentationStyle.formSheet))));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+
+      expect(
+          verificationResult.arguments['safariViewController']
+              ['presentationStyle'],
+          2);
+    });
+
     test(
         'throws an WebAuthenticationException when method channel returns null',
         () async {
