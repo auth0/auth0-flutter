@@ -4,6 +4,7 @@ import 'src/mobile/authentication_api.dart';
 import 'src/mobile/credentials_manager.dart';
 import 'src/mobile/web_authentication.dart';
 import 'src/version.dart';
+import 'src/web/auth0_flutter_plugin_real.dart';
 
 export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
     show
@@ -21,8 +22,20 @@ export 'src/mobile/credentials_manager.dart';
 export 'src/mobile/web_authentication.dart';
 
 class Auth0Web {
+  final Account _account;
+
+  final UserAgent _userAgent =
+      UserAgent(name: 'auth0-flutter', version: version);
+
+  Auth0Web(final String domain, final String clientId)
+      : _account = Account(domain, clientId) {
+    Auth0FlutterWebPlatform.instance.initialize(_account);
+  }
+
   // methods, e.g. loginWithRedirect()
   // that call the ones in Auth0FlutterWebPlatform.instance
+  Future<void> loginWithRedirect() =>
+      Auth0FlutterWebPlatform.instance.loginWithRedirect();
 }
 
 /// Primary interface for interacting with Auth0 using web authentication, or the authentication API.
