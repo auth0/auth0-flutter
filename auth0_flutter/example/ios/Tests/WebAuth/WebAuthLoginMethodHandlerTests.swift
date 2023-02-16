@@ -174,6 +174,18 @@ extension WebAuthLoginHandlerTests {
         sut.handle(with: arguments(without: Argument.maxAge)) { _ in }
         XCTAssertNil(spy.maxAgeValue)
     }
+    
+    // MARK: safariViewController
+    
+    func testAddsSafariViewController() {
+        sut.handle(with: arguments(withKey: SafariViewController.key, value: [String: Any]())) { _ in }
+        XCTAssertNotNil(spy.provider)
+    }
+    
+    func testDoesNotAddSafariViewController() {
+        sut.handle(with: arguments(without: SafariViewController.key)) { _ in }
+        XCTAssertNil(spy.provider)
+    }
 }
 
 // MARK: - Login Result

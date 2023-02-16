@@ -38,6 +38,7 @@ class SpyWebAuth: WebAuth {
     private(set) var useEmphemeralSessionValue: Bool?
     private(set) var invitationURLValue: URL?
     private(set) var organizationValue: String?
+    private(set) var provider: WebAuthProvider?
 
     init() {}
 
@@ -108,6 +109,7 @@ class SpyWebAuth: WebAuth {
     }
 
     func provider(_ provider: @escaping WebAuthProvider) -> Self {
+        self.provider = provider
         return self
     }
 
