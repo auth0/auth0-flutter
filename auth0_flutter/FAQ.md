@@ -112,17 +112,6 @@ func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>)
 ```
 </details>
 
-<details>
-  <summary>Using the SwiftUI app lifecycle</summary>
-
-```swift
-SomeView()
-    .onOpenURL { url in
-        WebAuthentication.resume(with: url)
-    }
-```
-</details>
-
 ## 3. How can I disable the iOS _logout_ alert box?
 
 ![ios-sso-alert](assets/ios-sso-alert.png)
