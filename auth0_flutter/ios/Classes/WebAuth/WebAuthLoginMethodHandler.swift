@@ -68,7 +68,7 @@ struct WebAuthLoginMethodHandler: MethodHandler {
         
         if let safariViewControllerDictionary = arguments[SafariViewController.key] as? [String: Any?] {
             let safariViewController = SafariViewController(from: safariViewControllerDictionary)
-            webAuth = webAuth.provider(WebAuthentication.safariProvider(style: safariViewController.presentationStyle ?? UIModalPresentationStyle.fullScreen))
+            webAuth = webAuth.provider(WebAuthentication.safariProvider(style: safariViewController.presentationStyle))
         }
 
         webAuth.start {
