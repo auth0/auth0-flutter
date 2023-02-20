@@ -1,4 +1,3 @@
-
 enum SafariViewControllerPresentationStyle {
   automatic(-2),
   none(-1),
@@ -19,4 +18,10 @@ class SafariViewController {
   final SafariViewControllerPresentationStyle? presentationStyle;
 
   const SafariViewController({this.presentationStyle});
+
+  Map<String, dynamic> toMap() => {
+        ...presentationStyle != null
+            ? {'presentationStyle': presentationStyle?.value}
+            : <String, dynamic>{}
+      };
 }

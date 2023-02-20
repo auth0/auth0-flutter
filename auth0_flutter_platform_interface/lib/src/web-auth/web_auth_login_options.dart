@@ -43,16 +43,7 @@ class WebAuthLoginOptions implements RequestOptions {
       'parameters': parameters,
       'scheme': scheme,
       ...safariViewController != null
-          ? {
-              'safariViewController': {
-                ...safariViewController?.presentationStyle != null
-                    ? {
-                        'presentationStyle':
-                            safariViewController?.presentationStyle?.value
-                      }
-                    : <String, dynamic>{}
-              }
-            }
+          ? {'safariViewController': safariViewController?.toMap()}
           : <String, dynamic>{}
     };
 
