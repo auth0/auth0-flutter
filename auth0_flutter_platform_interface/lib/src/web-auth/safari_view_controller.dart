@@ -1,3 +1,4 @@
+
 enum SafariViewControllerPresentationStyle {
   automatic(-2),
   none(-1),
