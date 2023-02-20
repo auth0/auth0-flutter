@@ -72,12 +72,23 @@ You still need to call `logout()` on Android, though, as `useEphemeralSession` i
 
 > ⚠️ `useEphemeralSession` relies on the `prefersEphemeralWebBrowserSession` configuration option of `ASWebAuthenticationSession`. This option is only available on [iOS 13+](https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession/3237231-prefersephemeralwebbrowsersessio), so `useEphemeralSession` will have no effect on iOS 12. To improve the experience for iOS 12 users, see the approach described below.
 
+### Use ephemeral sessions
+
+If you don't need SSO, you can disable this behavior by using the `useEphemeralSession` option in the login call. This will configure `ASWebAuthenticationSession` to not store the session cookie in the shared cookie jar, as if using an incognito browser window. With no shared cookie, `ASWebAuthenticationSession` will not prompt the user for consent.
+
+```dart
+await webAuth.login(useEphemeralSession: true);
+```
+
+> **Note**
+> `useEphemeralSession` relies on the `prefersEphemeralWebBrowserSession` configuration option of `ASWebAuthenticationSession`. This option is only available on [iOS 13+ and macOS](https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession/3237231-prefersephemeralwebbrowsersessio), so `useEphemeralSession()` will have no effect on iOS 12. To improve the experience for iOS 12 users, see the approach described below.
+
 ### Use `SFSafariViewController`
 
 An alternative is to use `SFSafariViewController` instead of `ASWebAuthenticationSession`. You can do so by setting the `safariViewController` property during login:
 
 ```dart
-await webAuth.login(safariViewController: const SafariViewController();
+await webAuth.login(safariViewController: const SafariViewController());
 ```
 
 > **Note**
