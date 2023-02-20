@@ -9,7 +9,7 @@ struct SafariViewController {
     
     init(from dictionary: [String: Any?]) {
         if let presentationStyle = dictionary[SafariViewControllerProperty.presentationStyle] as? Int {
-           self.presentationStyle = UIModalPresentationStyle.init(rawValue: presentationStyle)
+           self.presentationStyle = UIModalPresentationStyle(rawValue: presentationStyle)
         }
     }
 }
