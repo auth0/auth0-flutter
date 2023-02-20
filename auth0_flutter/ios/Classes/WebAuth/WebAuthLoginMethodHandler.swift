@@ -2,6 +2,8 @@ import Foundation
 import Flutter
 import Auth0
 
+typealias WebAuthProviderFunction = (UIModalPresentationStyle) -> WebAuthProvider
+
 struct WebAuthLoginMethodHandler: MethodHandler {
     enum Argument: String {
         case scopes
@@ -18,6 +20,12 @@ struct WebAuthLoginMethodHandler: MethodHandler {
     }
 
     let client: WebAuth
+    let safariProvider: (UIModalPresentationStyle) -> WebAuthProvider
+        
+    init(client: WebAuth, safariProvider: @escaping WebAuthProviderFunction = WebAuthentication.safariProvider) {
+        self.client = client
+        self.safariProvider = safariProvider
+    }
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
         guard let useEphemeralSession = arguments[Argument.useEphemeralSession] as? Bool else {
@@ -69,7 +77,7 @@ struct WebAuthLoginMethodHandler: MethodHandler {
         
         if let safariViewControllerDictionary = arguments[SafariViewController.key] as? [String: Any?] {
             let safariViewController = SafariViewController(from: safariViewControllerDictionary)
-            webAuth = webAuth.provider(WebAuthentication.safariProvider(style: safariViewController.presentationStyle))
+            webAuth = webAuth.provider(self.safariProvider(safariViewController.presentationStyle))
         }
 
         webAuth.start {

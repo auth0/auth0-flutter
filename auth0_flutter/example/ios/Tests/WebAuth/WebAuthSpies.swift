@@ -142,3 +142,26 @@ class SpyWebAuth: WebAuth {
         callback(logoutResult)
     }
 }
+
+class SpyWebAuthUserAgent: WebAuthUserAgent {
+    func start() {
+    }
+    
+    func finish(with result: Auth0.WebAuthResult<Void>) {
+    }
+}
+
+
+class SpySafariProvider {
+    var presentationStyle: UIModalPresentationStyle? = nil
+    
+    init() {}
+    
+    func provider(_ style: UIModalPresentationStyle) -> WebAuthProvider {
+        self.presentationStyle = style
+        
+        return { (_: URL, _: @escaping (WebAuthResult<Void>) -> Void) -> (WebAuthUserAgent) in
+            return SpyWebAuthUserAgent()
+        }
+    }
+}
