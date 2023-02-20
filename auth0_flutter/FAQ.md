@@ -91,7 +91,7 @@ If you choose to use `SFSafariViewController`, you need to perform an additional
 ```swift
 // AppDelegate.swift
 
-func application(_ app: UIApplication,
+override func application(_ app: UIApplication,
                  open url: URL,
                  options: [UIApplication.OpenURLOptionsKey: Any]) -> Bool {
     return WebAuthentication.resume(with: url)
