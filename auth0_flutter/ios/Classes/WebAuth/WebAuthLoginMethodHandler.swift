@@ -14,6 +14,7 @@ struct WebAuthLoginMethodHandler: MethodHandler {
         case leeway
         case issuer
         case maxAge
+        case safariViewController
     }
 
     let client: WebAuth

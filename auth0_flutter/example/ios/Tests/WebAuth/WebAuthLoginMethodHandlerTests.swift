@@ -178,7 +178,7 @@ extension WebAuthLoginHandlerTests {
     // MARK: safariViewController
     
     func testAddsSafariViewController() {
-        sut.handle(with: arguments(withKey: SafariViewController.key, value: [String: Any]())) { _ in }
+        sut.handle(with: arguments()) { _ in }
         XCTAssertNotNil(spy.provider)
     }
     
@@ -238,7 +238,8 @@ extension WebAuthLoginHandlerTests {
             Argument.invitationUrl.rawValue: "https://example.com",
             Argument.leeway.rawValue: 1,
             Argument.issuer.rawValue: "",
-            Argument.maxAge.rawValue: 1
+            Argument.maxAge.rawValue: 1,
+            Argument.safariViewController.rawValue: [:],
         ]
     }
 }
