@@ -20,7 +20,7 @@ struct WebAuthLoginMethodHandler: MethodHandler {
     }
 
     let client: WebAuth
-    let safariProvider: (UIModalPresentationStyle) -> WebAuthProvider
+    let safariProvider: WebAuthProviderFunction
         
     init(client: WebAuth, safariProvider: @escaping WebAuthProviderFunction = WebAuthentication.safariProvider) {
         self.client = client
