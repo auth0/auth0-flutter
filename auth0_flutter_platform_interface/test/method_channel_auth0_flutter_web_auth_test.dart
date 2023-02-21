@@ -127,6 +127,7 @@ void main() {
       expect(verificationResult.arguments['scheme'], isNull);
       expect(verificationResult.arguments['useEphemeralSession'], false);
       expect(verificationResult.arguments['idTokenValidationConfig'], isNull);
+      expect(verificationResult.arguments['safariViewController'], isNull);
     });
 
     test('correctly returns the response from the Method Channel', () async {
@@ -169,7 +170,7 @@ void main() {
       expect(result.refreshToken, isNull);
     });
 
-    test('correctly includes SafariViewController options when specified',
+    test('correctly includes safariViewController options when specified',
         () async {
       when(mocked.methodCallHandler(any))
           .thenAnswer((final _) async => MethodCallHandler.loginResult);
@@ -179,7 +180,6 @@ void main() {
               account: const Account('test-domain', 'test-clientId'),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
               options: WebAuthLoginOptions(
-                  useEphemeralSession: true,
                   safariViewController: const SafariViewController(
                       presentationStyle:
                           SafariViewControllerPresentationStyle.formSheet))));
@@ -191,6 +191,24 @@ void main() {
           verificationResult.arguments['safariViewController']
               ['presentationStyle'],
           2);
+    });
+
+    test('excludes safariViewController from the map when not specified',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      await MethodChannelAuth0FlutterWebAuth().login(
+          WebAuthRequest<WebAuthLoginOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: WebAuthLoginOptions()));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+
+      expect(verificationResult.arguments.containsKey('safariViewController'),
+          false);
     });
 
     test(
