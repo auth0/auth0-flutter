@@ -80,6 +80,9 @@ If you don't need SSO, you can disable this behavior by using the `useEphemeralS
 await webAuth.login(useEphemeralSession: true);
 ```
 
+Note that with `useEphemeralSession` you don't need to call `logout()` at all. Just clearing the credentials from the app will suffice. What `logout` does is clear the shared session cookie, so that in the next login call the user gets asked to log in again. But with `useEphemeralSession` there will be no shared cookie to remove.
+
+
 > **Note**
 > `useEphemeralSession` relies on the `prefersEphemeralWebBrowserSession` configuration option of `ASWebAuthenticationSession`. This option is only available on [iOS 13+ and macOS](https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession/3237231-prefersephemeralwebbrowsersessio), so `useEphemeralSession()` will have no effect on iOS 12. To improve the experience for iOS 12 users, see the approach described below.
 
