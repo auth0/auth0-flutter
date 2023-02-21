@@ -24,9 +24,6 @@ class SafariViewController {
 
   const SafariViewController({this.presentationStyle});
 
-  Map<String, dynamic> toMap() => {
-        ...presentationStyle != null
-            ? {'presentationStyle': presentationStyle?.value}
-            : <String, dynamic>{}
-      };
+  Map<String, dynamic> toMap() =>
+      {'presentationStyle': presentationStyle?.value};
 }
