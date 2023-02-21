@@ -143,7 +143,7 @@ class SpyWebAuth: WebAuth {
     }
 }
 
-class SpyWebAuthUserAgent: WebAuthUserAgent {
+class MockWebAuthUserAgent: WebAuthUserAgent {
     func start() {
     }
     
@@ -161,7 +161,7 @@ class SpySafariProvider {
         self.presentationStyle = style
         
         return { (_: URL, _: @escaping (WebAuthResult<Void>) -> Void) -> (WebAuthUserAgent) in
-            return SpyWebAuthUserAgent()
+            return MockWebAuthUserAgent()
         }
     }
 }
