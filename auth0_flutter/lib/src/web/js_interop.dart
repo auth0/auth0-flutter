@@ -82,4 +82,5 @@ class Auth0Client {
   external Auth0Client(final Auth0ClientOptions options);
   external Future<void> loginWithRedirect([final RedirectLoginOptions options]);
   external Future<void> handleRedirectCallback([final String? url]);
+  external Future<void> checkSession();
 }

@@ -45,8 +45,7 @@ class _ExampleAppState extends State<ExampleApp> {
     String output = '';
 
     if (kIsWeb) {
-      auth0Web.loginWithRedirect(
-          audience: 'js-quickstart', redirectUri: 'http://localhost:3000');
+      auth0Web.loginWithRedirect(redirectUri: 'http://localhost:3000');
     } else {
       // Platform messages may fail, so we use a try/catch PlatformException.
       // We also handle the message potentially returning null.

@@ -1,4 +1,5 @@
 import 'dart:html';
+import 'dart:js_util';
 
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
     show Account, Auth0FlutterWebPlatform, LoginOptions;
@@ -25,7 +26,9 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     if (search?.contains('state=') == true &&
         (search?.contains('code=') == true ||
             search?.contains('error=') == true)) {
-      await client.handleRedirectCallback();
+      await promiseToFuture<void>(client.handleRedirectCallback());
+    } else {
+      await promiseToFuture<void>(client.checkSession());
     }
   }
 
