@@ -12,7 +12,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   // methods, e.g. loginWithRedirect()
   // here they should throw an UnsupportedError
   @override
-  Future<void> loginWithRedirect() {
+  Future<void> loginWithRedirect(final LoginOptions? options) {
     throw UnsupportedError(
         'loginWithRedirect is only supported on the web platform');
   }

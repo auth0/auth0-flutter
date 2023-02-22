@@ -17,10 +17,10 @@ abstract class Auth0FlutterWebPlatform extends PlatformInterface {
   }
 
   void initialize(final Account account) {
-    throw UnimplementedError();
+    throw UnimplementedError('web.initialize has not been implemented');
   }
 
-  Future<void> loginWithRedirect() {
+  Future<void> loginWithRedirect(final LoginOptions? options) {
     throw UnimplementedError('web.loginWithRedirect has not been implemented');
   }
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:auth0_flutter/auth0_flutter.dart';
+import 'package:auth0_flutter/auth0_flutter_web.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -40,7 +41,8 @@ class _ExampleAppState extends State<ExampleApp> {
     String output = '';
 
     if (kIsWeb) {
-      auth0Web.loginWithRedirect();
+      auth0Web.loginWithRedirect(
+          audience: 'js-quickstart', redirectUri: 'http://localhost:56058');
     } else {
       // Platform messages may fail, so we use a try/catch PlatformException.
       // We also handle the message potentially returning null.
