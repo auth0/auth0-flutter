@@ -36,9 +36,7 @@ class _ExampleAppState extends State<ExampleApp> {
     webAuth =
         auth0.webAuthentication(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
 
-    auth0Web.onLoad().then((creds) {
-      print(creds);
-    });
+    auth0Web.onLoad();
   }
 
   Future<void> webAuthLogin() async {
