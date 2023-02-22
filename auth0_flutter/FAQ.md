@@ -108,7 +108,8 @@ If you choose to use `SFSafariViewController`, you need to perform an additional
 override func application(_ app: UIApplication,
                  open url: URL,
                  options: [UIApplication.OpenURLOptionsKey: Any]) -> Bool {
-    return WebAuthentication.resume(with: url)
+    WebAuthentication.resume(with: url)
+    return super.application(application, open: url, options: options);
 }
 ```
 </details>
