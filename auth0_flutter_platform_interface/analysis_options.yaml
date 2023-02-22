@@ -52,7 +52,7 @@ linter:
     join_return_with_assignment: true
     leading_newlines_in_multiline_strings: true
     library_private_types_in_public_api: true
-    lines_longer_than_80_chars -> packages only: true
+    lines_longer_than_80_chars: true
     missing_whitespace_between_adjacent_strings: true
     no_leading_underscores_for_library_prefixes: true
     no_leading_underscores_for_local_identifiers: true
