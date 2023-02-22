@@ -8,8 +8,9 @@ struct SafariViewController {
     static let key = "safariViewController";
     
     init(from dictionary: [String: Any?]) {
-        if let presentationStyle = dictionary[SafariViewControllerProperty.presentationStyle] as? Int {
-            self.presentationStyle = UIModalPresentationStyle(rawValue: presentationStyle) ?? UIModalPresentationStyle.fullScreen
+        if let presentationStyle = dictionary[SafariViewControllerProperty.presentationStyle] as? Int,
+            let uiModelPresentationStyle = UIModalPresentationStyle(rawValue: presentationStyle) {
+            self.presentationStyle = uiModelPresentationStyle
         }
     }
 }
