@@ -190,7 +190,7 @@ void main() {
       expect(
           verificationResult.arguments['safariViewController']
               ['presentationStyle'],
-          2);
+          SafariViewControllerPresentationStyle.formSheet.value);
     });
 
     test('excludes safariViewController from the map when not specified',
