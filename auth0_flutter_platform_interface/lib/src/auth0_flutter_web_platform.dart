@@ -16,7 +16,7 @@ abstract class Auth0FlutterWebPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  void initialize(final Account account) {
+  Future<void> initialize(final Account account) {
     throw UnimplementedError('web.initialize has not been implemented');
   }
 

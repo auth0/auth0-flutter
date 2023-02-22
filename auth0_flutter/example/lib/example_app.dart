@@ -35,6 +35,10 @@ class _ExampleAppState extends State<ExampleApp> {
 
     webAuth =
         auth0.webAuthentication(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
+
+    auth0Web.onLoad().then((creds) {
+      print(creds);
+    });
   }
 
   Future<void> webAuthLogin() async {
@@ -42,7 +46,7 @@ class _ExampleAppState extends State<ExampleApp> {
 
     if (kIsWeb) {
       auth0Web.loginWithRedirect(
-          audience: 'js-quickstart', redirectUri: 'http://localhost:56058');
+          audience: 'js-quickstart', redirectUri: 'http://localhost:3000');
     } else {
       // Platform messages may fail, so we use a try/catch PlatformException.
       // We also handle the message potentially returning null.

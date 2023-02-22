@@ -9,12 +9,16 @@ class Auth0Web {
       UserAgent(name: 'auth0-flutter', version: version);
 
   Auth0Web(final String domain, final String clientId)
-      : _account = Account(domain, clientId) {
+      : _account = Account(domain, clientId);
+
+  Future<Credentials?> onLoad() async {
     Auth0FlutterWebPlatform.instance.initialize(_account);
+
+    // Get credentials here and return them?
+
+    return null;
   }
 
-  // methods, e.g. loginWithRedirect()
-  // that call the ones in Auth0FlutterWebPlatform.instance
   Future<void> loginWithRedirect(
           {final String? audience, final String? redirectUri}) =>
       Auth0FlutterWebPlatform.instance.loginWithRedirect(
