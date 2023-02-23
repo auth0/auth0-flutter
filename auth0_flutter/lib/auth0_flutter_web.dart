@@ -19,7 +19,7 @@ class Auth0Web {
   }
 
   Future<void> loginWithRedirect(
-          {final String? audience, final String? redirectUri}) =>
+          {final String? audience, final String? redirectUrl}) =>
       Auth0FlutterWebPlatform.instance.loginWithRedirect(
-          LoginOptions(audience: audience, redirectUrl: redirectUri));
+          LoginOptions(audience: audience, redirectUrl: redirectUrl));
 }
