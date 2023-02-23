@@ -7,7 +7,6 @@
 library auth0;
 
 import 'dart:js_util';
-
 import 'package:js/js.dart';
 
 @JS()
@@ -32,7 +31,6 @@ extension on AuthorizationParams {
 }
 
 /// Rebuilds the input object, omitting values that are null
-@JS()
 T stripNulls<T extends Object>(final T obj) {
   final keys = objectKeys(obj);
   final output = newObject<Object>();
