@@ -35,7 +35,24 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   @override
   Future<void> loginWithRedirect(final LoginOptions? options) =>
       client.loginWithRedirect(RedirectLoginOptions(
-          authorizationParams: stripNulls(AuthorizationParams(
+          authorizationParams: _stripNulls(AuthorizationParams(
               audience: options?.audience,
               redirect_uri: options?.redirectUrl))));
+
+  /// Rebuilds the input object, omitting values that are null
+  T _stripNulls<T extends Object>(final T obj) {
+    final keys = objectKeys(obj);
+    final output = newObject<Object>();
+
+    for (var i = 0; i < keys.length; i++) {
+      final key = keys[i] as String;
+      final value = getProperty(obj, key) as dynamic;
+
+      if (value != null) {
+        setProperty(output, key, value);
+      }
+    }
+
+    return output as T;
+  }
 }
