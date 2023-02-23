@@ -1,6 +1,5 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'src/version.dart';
-import 'src/web/js_interop.dart';
 
 class Auth0Web {
   final Account _account;
