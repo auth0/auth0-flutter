@@ -1,5 +1,15 @@
 # Change Log
 
+## [v1.1.0](https://github.com/auth0/auth0-flutter/tree/v1.1.0) (2023-02-23)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/v1.0.2...v1.1.0)
+
+**Added**
+- afpi: Added support for `loginWithOtp`  [\#172](https://github.com/auth0/auth0-flutter/pull/172) ([wferem1](https://github.com/wferem1))
+
+**Fixed**
+- Upgrade Flutter used for build, and fix linter warnings [\#199](https://github.com/auth0/auth0-flutter/pull/199) ([stevehobbsdev](https://github.com/stevehobbsdev))
+- Fix README links [\#184](https://github.com/auth0/auth0-flutter/pull/184) ([Widcket](https://github.com/Widcket))
+
 ## [1.0.1](https://github.com/auth0/auth0-flutter/tree/1.0.1) (2022-08-25)
 
 This is the General Availability release of the **Auth0 Flutter SDK**! 🎉
