@@ -1,18 +1,21 @@
 import '../auth0_flutter_platform_interface.dart';
 
-/// A collection of authentication artifacts obtained from Auth0 when a user logs in.
+/// A collection of authentication artifacts obtained from Auth0 when a user
+/// logs in.
 class Credentials {
   /// A [JSON web token](https://jwt.io/introduction) that contains the user information.
   ///
   /// **Important**: The [ID tokens](https://auth0.com/docs/security/tokens/id-tokens) obtained from Web Auth login are automatically validated by the underlying native SDK, ensuring their
   /// contents have not been tampered with.
   ///
-  /// **This is not the case for the ID tokens obtained when using the authentication API directly.**
+  /// **This is not the case for the ID tokens obtained when using the
+  /// authentication API directly.**
   ///
   /// You must [validate ID tokens](https://auth0.com/docs/security/tokens/id-tokens/validate-id-tokens) received from the Authentication API client before using the information they contain.
   final String idToken;
 
-  /// Token that can be used to make authenticated requests to the specified API (the **audience** value used on login).
+  /// Token that can be used to make authenticated requests to the specified API
+  ///  (the **audience** value used on login).
   ///
   /// ## Futher reading
   /// - [Access tokens](https://auth0.com/docs/security/tokens/access-tokens)
@@ -21,7 +24,8 @@ class Credentials {
 
   /// Token that can be used to request a new access token.
   ///
-  /// The scope `offline_access` must have been requested on login for a refresh token to be returned.
+  /// The scope `offline_access` must have been requested on login for a refresh
+  ///  token to be returned.
   ///
   /// [Read more about refresh tokens](https://auth0.com/docs/secure/tokens/refresh-tokens).
   final String? refreshToken;

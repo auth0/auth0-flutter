@@ -1,6 +1,7 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 
-/// Abstract CredentialsManager that can be used to provide a custom CredentialManager.
+/// Abstract CredentialsManager that can be used to provide a custom
+/// CredentialManager.
 abstract class CredentialsManager {
   Future<Credentials> credentials({
     final int minTtl = 0,
@@ -18,7 +19,8 @@ abstract class CredentialsManager {
 }
 
 /// Default [CredentialsManager] implementation that passes calls to
-/// the Native CredentialManagers provided by Auth0.Android or Auth0.Swift, depending on the platform.
+/// the Native CredentialManagers provided by Auth0.Android or Auth0.Swift,
+/// depending on the platform.
 class DefaultCredentialsManager extends CredentialsManager {
   final Account _account;
   final UserAgent _userAgent;
@@ -28,11 +30,15 @@ class DefaultCredentialsManager extends CredentialsManager {
       {final LocalAuthentication? localAuthentication})
       : _localAuthentication = localAuthentication;
 
-  /// Retrieves the credentials from the storage and refreshes them if they have already expired.
+  /// Retrieves the credentials from the storage and refreshes them if they have
+  ///  already expired.
   ///
-  /// Change the minimum time in seconds that the access token should last before expiration by setting the [minTtl].
-  /// Use the [scopes] parameter to set the scope to request for the access token. If `null` is passed, the previous scope will be kept.
-  /// Use the [parameters] parameter to send additional parameters in the request to refresh expired credentials.
+  /// Change the minimum time in seconds that the access token should last
+  /// before expiration by setting the [minTtl].
+  /// Use the [scopes] parameter to set the scope to request for the access
+  /// token. If `null` is passed, the previous scope will be kept.
+  /// Use the [parameters] parameter to send additional parameters in the
+  /// request to refresh expired credentials.
   @override
   Future<Credentials> credentials({
     final int minTtl = 0,
@@ -46,15 +52,18 @@ class DefaultCredentialsManager extends CredentialsManager {
         parameters: parameters,
       )));
 
-  /// Stores the given credentials in the storage. Must have an `access_token` or `id_token` and a `expires_in` value.
+  /// Stores the given credentials in the storage. Must have an `access_token`
+  /// or `id_token` and a `expires_in` value.
   @override
   Future<bool> storeCredentials(final Credentials credentials) =>
       CredentialsManagerPlatform.instance.saveCredentials(
           _createApiRequest(SaveCredentialsOptions(credentials: credentials)));
 
-  /// Checks if a non-expired pair of credentials can be obtained from this manager.
+  /// Checks if a non-expired pair of credentials can be obtained from this
+  /// manager.
   ///
-  /// Change the minimum time in seconds that the access token should last before expiration by setting the [minTtl].
+  /// Change the minimum time in seconds that the access token should last
+  /// before expiration by setting the [minTtl].
   @override
   Future<bool> hasValidCredentials({
     final int minTtl = 0,
