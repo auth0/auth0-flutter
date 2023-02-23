@@ -42,22 +42,24 @@ class WebAuthentication {
   /// * Arbitrary [parameters] can be specified and then picked up in a custom Auth0 [Action](https://auth0.com/docs/customize/actions) or [Rule](https://auth0.com/docs/customize/rules).
   /// * If you want to log into a specific organization, provide the [organizationId]. Provide [invitationUrl] if a user has been invited to
   ///   join an organization.
-  Future<Credentials> login({
-    final String? audience,
-    final Set<String> scopes = const {
-      'openid',
-      'profile',
-      'email',
-      'offline_access'
-    },
-    final String? redirectUrl,
-    final String? organizationId,
-    final String? invitationUrl,
-    final bool useEphemeralSession = false,
-    final Map<String, String> parameters = const {},
-    final IdTokenValidationConfig idTokenValidationConfig =
-        const IdTokenValidationConfig(),
-  }) async {
+  /// * (iOS only): [safariViewController] causes [`SFSafariViewController`](https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller) to be used when opening the
+  /// Universal Login page, as an alternative to the default `ASWebAuthenticationSession`. You will also need to [configure your iOS app to automatically resume](https://github.com/auth0/auth0-flutter/blob/main/auth0_flutter/FAQ.md#use-sfsafariviewcontroller) the Web Auth operation after login.
+  Future<Credentials> login(
+      {final String? audience,
+      final Set<String> scopes = const {
+        'openid',
+        'profile',
+        'email',
+        'offline_access'
+      },
+      final String? redirectUrl,
+      final String? organizationId,
+      final String? invitationUrl,
+      final bool useEphemeralSession = false,
+      final Map<String, String> parameters = const {},
+      final IdTokenValidationConfig idTokenValidationConfig =
+          const IdTokenValidationConfig(),
+      final SafariViewController? safariViewController}) async {
     final credentials = await Auth0FlutterWebAuthPlatform.instance.login(
         _createWebAuthRequest(WebAuthLoginOptions(
             audience: audience,
@@ -68,7 +70,8 @@ class WebAuthentication {
             parameters: parameters,
             idTokenValidationConfig: idTokenValidationConfig,
             scheme: _scheme,
-            useEphemeralSession: useEphemeralSession)));
+            useEphemeralSession: useEphemeralSession,
+            safariViewController: safariViewController)));
 
     await _credentialsManager?.storeCredentials(credentials);
 

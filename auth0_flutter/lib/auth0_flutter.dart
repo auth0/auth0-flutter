@@ -10,6 +10,8 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         WebAuthenticationException,
         ApiException,
         IdTokenValidationConfig,
+        SafariViewController,
+        SafariViewControllerPresentationStyle,
         Credentials,
         UserProfile,
         DatabaseUser,
