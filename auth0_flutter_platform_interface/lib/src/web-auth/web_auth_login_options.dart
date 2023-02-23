@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-
 import '../request/request_options.dart';
 import 'id_token_validation_config.dart';
 import 'safari_view_controller.dart';
