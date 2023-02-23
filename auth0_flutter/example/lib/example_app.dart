@@ -49,6 +49,7 @@ class _ExampleAppState extends State<ExampleApp> {
       // We also handle the message potentially returning null.
       try {
         final result = await webAuth.login();
+
         output = result.idToken;
 
         setState(() {

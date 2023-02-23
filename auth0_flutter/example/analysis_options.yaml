@@ -26,7 +26,7 @@ analyzer:
     unawaited_futures: error
     parameter_assignments: warning
     included_file_warning: warning
-    todo: ignore # 'warning' after EA
+    todo: warning
 
 linter:
   # The lint rules applied to this project can be customized in the

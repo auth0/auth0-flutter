@@ -1,4 +1,5 @@
-/// A collection of properties that represents the authenticated user, extracted from ID token claims.
+/// A collection of properties that represents the authenticated user, extracted
+///  from ID token claims.
 class UserProfile {
   /// The Auth0 user identifier.
   final String sub;
@@ -102,27 +103,27 @@ class UserProfile {
   final Map<String, dynamic>? customClaims;
 
   const UserProfile({
-    required final this.sub,
-    final this.name,
-    final this.givenName,
-    final this.familyName,
-    final this.middleName,
-    final this.nickname,
-    final this.preferredUsername,
-    final this.profileUrl,
-    final this.pictureUrl,
-    final this.websiteUrl,
-    final this.email,
-    final this.isEmailVerified,
-    final this.gender,
-    final this.birthdate,
-    final this.zoneinfo,
-    final this.locale,
-    final this.phoneNumber,
-    final this.isPhoneNumberVerified,
-    final this.address,
-    final this.updatedAt,
-    final this.customClaims,
+    required this.sub,
+    this.name,
+    this.givenName,
+    this.familyName,
+    this.middleName,
+    this.nickname,
+    this.preferredUsername,
+    this.profileUrl,
+    this.pictureUrl,
+    this.websiteUrl,
+    this.email,
+    this.isEmailVerified,
+    this.gender,
+    this.birthdate,
+    this.zoneinfo,
+    this.locale,
+    this.phoneNumber,
+    this.isPhoneNumberVerified,
+    this.address,
+    this.updatedAt,
+    this.customClaims,
   });
 
   factory UserProfile.fromMap(final Map<String, dynamic> result) => UserProfile(

@@ -60,7 +60,10 @@ void main() {
               invitationUrl: 'invitation_url',
               organizationId: 'org_123',
               redirectUrl: 'redirect_url',
-              useEphemeralSession: true);
+              useEphemeralSession: true,
+              safariViewController: const SafariViewController(
+                  presentationStyle:
+                      SafariViewControllerPresentationStyle.formSheet));
 
       final verificationResult = verify(mockedPlatform.login(captureAny))
           .captured
@@ -73,6 +76,12 @@ void main() {
       expect(verificationResult.options.organizationId, 'org_123');
       expect(verificationResult.options.redirectUrl, 'redirect_url');
       expect(verificationResult.options.useEphemeralSession, true);
+      expect(
+          verificationResult.options.safariViewController,
+          const SafariViewController(
+              presentationStyle:
+                  SafariViewControllerPresentationStyle.formSheet));
+
       expect(result, TestPlatform.loginResult);
     });
 
@@ -137,7 +146,8 @@ void main() {
               redirectUrl: 'redirect_url',
               useEphemeralSession: true);
 
-      // Verify it doesn't call our own Platform Interface when providing a custom CredentialsManager
+      // Verify it doesn't call our own Platform Interface when providing a
+      // custom CredentialsManager
       verifyNever(mockedCMPlatform.saveCredentials(any));
 
       final verificationResult = verify(mockCm.storeCredentials(captureAny))
@@ -246,7 +256,8 @@ void main() {
           .webAuthentication()
           .logout(returnTo: 'abc');
 
-      // Verify it doesn't call our own Platform Interface when providing a custom CredentialsManager
+      // Verify it doesn't call our own Platform Interface when providing a
+      //custom CredentialsManager
       verifyNever(mockedCMPlatform.clearCredentials(any));
 
       verify(mockCm.clearCredentials()).called(1);

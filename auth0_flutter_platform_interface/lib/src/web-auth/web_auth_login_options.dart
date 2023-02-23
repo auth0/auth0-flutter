@@ -1,33 +1,34 @@
-import '../id_token_validation_config.dart';
 import '../login_options.dart';
+import 'safari_view_controller.dart';
 
 class WebAuthLoginOptions extends LoginOptions {
   final bool useEphemeralSession;
   final String? scheme;
+  final SafariViewController? safariViewController;
 
   WebAuthLoginOptions(
-      {final IdTokenValidationConfig? idTokenValidationConfig,
-      final String? audience,
-      final Set<String>? scopes,
-      final String? redirectUrl,
-      final String? organizationId,
-      final String? invitationUrl,
+      {super.audience,
+      super.idTokenValidationConfig,
+      super.organizationId,
+      super.invitationUrl,
+      super.redirectUrl,
+      super.scopes,
+      super.parameters,
       this.scheme,
       this.useEphemeralSession = false,
-      final Map<String, String>? parameters})
-      : super(
-            idTokenValidationConfig: idTokenValidationConfig,
-            audience: audience,
-            scopes: scopes ?? {},
-            redirectUrl: redirectUrl,
-            organizationId: organizationId,
-            invitationUrl: invitationUrl,
-            parameters: parameters ?? {});
+      this.safariViewController});
 
   @override
-  Map<String, dynamic> toMap() => {
-        ...super.toMap(),
-        'useEphemeralSession': useEphemeralSession,
-        'scheme': scheme,
-      };
+  Map<String, dynamic> toMap() {
+    final map = {
+      ...super.toMap(),
+      'useEphemeralSession': useEphemeralSession,
+      'scheme': scheme,
+      ...safariViewController != null
+          ? {'safariViewController': safariViewController?.toMap()}
+          : <String, dynamic>{}
+    };
+
+    return map;
+  }
 }

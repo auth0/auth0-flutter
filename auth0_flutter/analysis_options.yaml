@@ -17,7 +17,7 @@ analyzer:
     unawaited_futures: error
     parameter_assignments: warning
     included_file_warning: warning
-    todo: ignore # 'warning' after EA
+    todo: warning
 
 linter:
   rules:

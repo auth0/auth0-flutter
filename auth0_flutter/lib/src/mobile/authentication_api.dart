@@ -1,12 +1,15 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 
-/// An interface for calling some of the endpoints in [Auth0's Authentication API](https://auth0.com/docs/api/authentication).
+/// An interface for calling some of the endpoints in
+/// [Auth0's Authentication API](https://auth0.com/docs/api/authentication).
 ///
-/// This class presents building blocks for doing more fine-grained authentication with Auth0 using Username and Password login. Unlike
+/// This class presents building blocks for doing more fine-grained
+/// authentication with Auth0 using Username and Password login. Unlike
 /// `WebAuthentication`, these do **not** use [Auth0 Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login) (the recommended way of doing authentication),
 /// and thus users are not redirected to Auth0 for authentication.
 ///
-/// It is not intended for you to instantiate this class yourself, as an instance of it is already exposed as `Auth0.api`.
+/// It is not intended for you to instantiate this class yourself, as an
+/// instance of it is already exposed as `Auth0.api`.
 ///
 /// Usage example:
 ///
@@ -27,10 +30,13 @@ class AuthenticationApi {
 
   AuthenticationApi(this._account, this._userAgent);
 
-  /// Authenticates the user using a [usernameOrEmail] and a [password], with the specified [connectionOrRealm]. If successful, it returns
-  /// a set of tokens, as well as the user's profile (constructed from ID token claims).
+  /// Authenticates the user using a [usernameOrEmail] and a [password], with
+  /// the specified [connectionOrRealm]. If successful, it returns
+  /// a set of tokens, as well as the user's profile (constructed from ID token
+  /// claims).
   ///
-  /// If using the default username and password database connection, [connectionOrRealm] should be set to `Username-Password-Authentication`.
+  /// If using the default username and password database connection,
+  /// [connectionOrRealm] should be set to `Username-Password-Authentication`.
   ///
   /// ## Endpoint docs
   /// https://auth0.com/docs/api/authentication#login
@@ -39,7 +45,8 @@ class AuthenticationApi {
   ///
   /// * [audience] relates to the API Identifier you want to reference in your access tokens (see [API settings](https://auth0.com/docs/get-started/apis/api-settings))
   /// * [scopes] defaults to `openid profile email offline_access`
-  /// * [parameters] can be used to sent through custom parameters to the endpoint to be picked up in a Rule or Action.
+  /// * [parameters] can be used to sent through custom parameters to the
+  /// endpoint to be picked up in a Rule or Action.
   ///
   /// ## Usage example
   ///
@@ -73,8 +80,11 @@ class AuthenticationApi {
         parameters: parameters,
       )));
 
-  /// Authenticates the user using a [mfaToken] and an [otp], after [login] returned with an [ApiException] with [ApiException.isMultifactorRequired] set to `true`.
-  /// If successful, it returns a set of tokens, as well as the user's profile (constructed from ID token claims).
+  /// Authenticates the user using a [mfaToken] and an [otp], after [login]
+  /// returned with an [ApiException] with [ApiException.isMultifactorRequired]
+  /// set to `true`.
+  /// If successful, it returns a set of tokens, as well as the user's profile
+  /// (constructed from ID token claims).
   ///
   ///
   /// ## Endpoint docs
@@ -112,7 +122,9 @@ class AuthenticationApi {
   ///   connectionOrRealm: 'Username-Password-Authentication'
   /// });
   ///
-  /// final profile = await auth0.api.userProfile({ accessToken: result.accessToken });
+  /// final profile = await auth0.api.userProfile({
+  ///   accessToken: result.accessToken
+  /// });
   /// ```
   Future<UserProfile> userProfile(
           {required final String accessToken,
@@ -121,7 +133,8 @@ class AuthenticationApi {
           AuthUserInfoOptions(
               accessToken: accessToken, parameters: parameters)));
 
-  /// Registers a new user with the specified [email] address and [password] in the specified [connection].
+  /// Registers a new user with the specified [email] address and [password] in
+  /// the specified [connection].
   ///
   /// Endpoint
   /// https://auth0.com/docs/api/authentication#signup
@@ -151,7 +164,8 @@ class AuthenticationApi {
   /// https://auth0.com/docs/api/authentication#refresh-token
   ///
   /// ## Notes
-  /// * Refresh tokens can be retrieved by specifying the `offline_access` scope during authentication.
+  /// * Refresh tokens can be retrieved by specifying the `offline_access`
+  /// scope during authentication.
   /// * [scopes] can be specified if a reduced set of scopes is desired.
   ///
   /// ## Further reading
@@ -182,17 +196,20 @@ class AuthenticationApi {
               scopes: scopes,
               parameters: parameters)));
 
-  /// Initiates a reset of password of the user with the specific [email] address in the specific [connection].
+  /// Initiates a reset of password of the user with the specific [email]
+  /// address in the specific [connection].
   ///
   /// ## Endpoint
   /// https://auth0.com/docs/api/authentication#change-password
   ///
   /// ## Notes
   ///
-  /// Calling this endpoint does not reset the user's password in itself, but it asks Auth0 to send the user
+  /// Calling this endpoint does not reset the user's password in itself, but it
+  ///  asks Auth0 to send the user
   /// an email with a link they can use to reset their password on the web.
   ///
-  /// Arbitrary [parameters] can be specified and then picked up in a custom Auth0 [Action](https://auth0.com/docs/customize/actions) or
+  /// Arbitrary [parameters] can be specified and then picked up in a custom
+  /// Auth0 [Action](https://auth0.com/docs/customize/actions) or
   ///  [Rule](https://auth0.com/docs/customize/rules).
   Future<void> resetPassword(
           {required final String email,

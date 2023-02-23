@@ -8,10 +8,12 @@ fileprivate typealias Argument = WebAuthLoginMethodHandler.Argument
 class WebAuthLoginHandlerTests: XCTestCase {
     var spy: SpyWebAuth!
     var sut: WebAuthLoginMethodHandler!
+    var spySafariProvider: SpySafariProvider!
 
     override func setUpWithError() throws {
         spy = SpyWebAuth()
-        sut = WebAuthLoginMethodHandler(client: spy)
+        spySafariProvider = SpySafariProvider()
+        sut = WebAuthLoginMethodHandler(client: spy, safariProvider: spySafariProvider.provider)
     }
 }
 
@@ -174,6 +176,24 @@ extension WebAuthLoginHandlerTests {
         sut.handle(with: arguments(without: Argument.maxAge)) { _ in }
         XCTAssertNil(spy.maxAgeValue)
     }
+    
+    // MARK: safariViewController
+    
+    func testAddsSafariViewController() {
+        sut.handle(with: arguments()) { _ in }
+        XCTAssertNotNil(spy.provider)
+    }
+    
+    func testDoesNotAddSafariViewController() {
+        sut.handle(with: arguments(without: SafariViewController.key)) { _ in }
+        XCTAssertNil(spy.provider)
+    }
+    
+    func testAddSafariViewControllerWithStyle() {
+        let value = [SafariViewControllerProperty.presentationStyle.rawValue: 2]
+        sut.handle(with: arguments(withKey: SafariViewController.key, value: value)) { _ in }
+        XCTAssertEqual(spySafariProvider.presentationStyle, UIModalPresentationStyle.formSheet)
+    }
 }
 
 // MARK: - Login Result
@@ -226,7 +246,8 @@ extension WebAuthLoginHandlerTests {
             Argument.invitationUrl.rawValue: "https://example.com",
             Argument.leeway.rawValue: 1,
             Argument.issuer.rawValue: "",
-            Argument.maxAge.rawValue: 1
+            Argument.maxAge.rawValue: 1,
+            Argument.safariViewController.rawValue: [:],
         ]
     }
 }
