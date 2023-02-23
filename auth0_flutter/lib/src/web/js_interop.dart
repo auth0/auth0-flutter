@@ -9,27 +9,6 @@ library auth0;
 import 'dart:js_util';
 import 'package:js/js.dart';
 
-@JS()
-@staticInterop
-@anonymous
-abstract class AuthorizationParams {
-  external factory AuthorizationParams(
-      {final String? audience, final String? redirect_uri});
-}
-
-extension on AuthorizationParams {
-  external String? audience;
-  external String? redirect_uri;
-
-  // https://github.com/dart-lang/sdk/issues/38445
-  // Workaround of setting property names doesn't seem to work. Tried:
-  // @JS('redirect_uri')
-  // external String? get redirectUri;
-
-  // @JS('redirect_uri')
-  // external set redirectUri(final String? redirectUri);
-}
-
 /// Rebuilds the input object, omitting values that are null
 T stripNulls<T extends Object>(final T obj) {
   final keys = objectKeys(obj);
@@ -48,20 +27,26 @@ T stripNulls<T extends Object>(final T obj) {
 }
 
 @JS()
-@staticInterop
+@anonymous
+abstract class AuthorizationParams {
+  external String? get audience;
+  external String? get redirect_uri;
+
+  external factory AuthorizationParams(
+      {final String? audience, final String? redirect_uri});
+}
+
+@JS()
 @anonymous
 class RedirectLoginOptions {
+  external AuthorizationParams? get authorizationParams;
+  external String? get fragment;
+
   external factory RedirectLoginOptions(
       {final AuthorizationParams authorizationParams, final String fragment});
 }
 
-extension on RedirectLoginOptions {
-  external AuthorizationParams? authorizationParams;
-  external String? fragment;
-}
-
 @JS()
-@staticInterop
 @anonymous
 class Auth0ClientOptions {
   external factory Auth0ClientOptions(
