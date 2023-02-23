@@ -4,7 +4,8 @@
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/v1.0.2...v1.1.0)
 
 **Added**
-- afpi: Added support for `loginWithOtp`  [\#172](https://github.com/auth0/auth0-flutter/pull/172) ([wferem1](https://github.com/wferem1))
+- Added support for `loginWithOtp`  [\#172](https://github.com/auth0/auth0-flutter/pull/172) ([wferem1](https://github.com/wferem1))
+- Added support for SafariViewController [\#198](https://github.com/auth0/auth0-flutter/pull/198) ([stevehobbsdev](https://github.com/stevehobbsdev))
 
 **Fixed**
 - Upgrade Flutter used for build, and fix linter warnings [\#199](https://github.com/auth0/auth0-flutter/pull/199) ([stevehobbsdev](https://github.com/stevehobbsdev))
