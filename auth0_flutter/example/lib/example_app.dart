@@ -42,12 +42,12 @@ class _ExampleAppState extends State<ExampleApp> {
   Future<void> webAuthLogin() async {
     String output = '';
 
-    if (kIsWeb) {
-      auth0Web.loginWithRedirect(redirectUri: 'http://localhost:3000');
-    } else {
-      // Platform messages may fail, so we use a try/catch PlatformException.
-      // We also handle the message potentially returning null.
-      try {
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    // We also handle the message potentially returning null.
+    try {
+      if (kIsWeb) {
+        await auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
+      } else {
         final result = await webAuth.login();
 
         output = result.idToken;
@@ -55,9 +55,9 @@ class _ExampleAppState extends State<ExampleApp> {
         setState(() {
           _isLoggedIn = true;
         });
-      } on WebAuthenticationException catch (e) {
-        output = e.toString();
       }
+    } on WebAuthenticationException catch (e) {
+      output = e.toString();
     }
 
     // If the widget was removed from the tree while the asynchronous platform
