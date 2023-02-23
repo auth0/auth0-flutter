@@ -18,3 +18,4 @@ extension FlutterError {
         self.init(code: code, message: String(describing: webAuthError), details: webAuthError.details)
     }
 }
+

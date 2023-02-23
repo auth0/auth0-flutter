@@ -1,3 +1,5 @@
+// ignore_for_file: lines_longer_than_80_chars
+
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -127,6 +129,7 @@ void main() {
       expect(verificationResult.arguments['scheme'], isNull);
       expect(verificationResult.arguments['useEphemeralSession'], false);
       expect(verificationResult.arguments['idTokenValidationConfig'], isNull);
+      expect(verificationResult.arguments['safariViewController'], isNull);
     });
 
     test('correctly returns the response from the Method Channel', () async {
@@ -167,6 +170,47 @@ void main() {
       verify(mocked.methodCallHandler(captureAny));
 
       expect(result.refreshToken, isNull);
+    });
+
+    test('correctly includes safariViewController options when specified',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      await MethodChannelAuth0FlutterWebAuth().login(
+          WebAuthRequest<WebAuthLoginOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: WebAuthLoginOptions(
+                  safariViewController: const SafariViewController(
+                      presentationStyle:
+                          SafariViewControllerPresentationStyle.formSheet))));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+
+      expect(
+          verificationResult.arguments['safariViewController']
+              ['presentationStyle'],
+          SafariViewControllerPresentationStyle.formSheet.value);
+    });
+
+    test('excludes safariViewController from the map when not specified',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      await MethodChannelAuth0FlutterWebAuth().login(
+          WebAuthRequest<WebAuthLoginOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: WebAuthLoginOptions()));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+
+      expect(verificationResult.arguments.containsKey('safariViewController'),
+          false);
     });
 
     test(

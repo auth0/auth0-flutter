@@ -20,9 +20,11 @@ const String credentialsManagerClearCredentialsMethod =
 const String credentialsManagerHasValidCredentialsMethod =
     'credentialsManager#hasValidCredentials';
 
-/// Method Channel implementation to communicate with the Native CredentialsManager
+/// Method Channel implementation to communicate with the Native
+/// CredentialsManager
 class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
-  /// Retrieves the credentials from the native storage and refresh them if they have already expired.
+  /// Retrieves the credentials from the native storage and refresh them if
+  /// they have already expired.
   ///
   /// Uses the [MethodChannel] to communicate with the Native platforms.
   @override
@@ -34,7 +36,8 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
     return Credentials.fromMap(result);
   }
 
-  /// Stores the given credentials in the native storage. Must have an access_token or id_token and a expires_in value.
+  /// Stores the given credentials in the native storage. Must have an
+  /// access_token or id_token and a expires_in value.
   ///
   /// Uses the [MethodChannel] to communicate with the Native platforms.
   @override
@@ -55,7 +58,8 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
     return result ?? true;
   }
 
-  /// Checks if a non-expired pair of credentials can be obtained from the native storage.
+  /// Checks if a non-expired pair of credentials can be obtained from the
+  /// native storage.
   ///
   /// Uses the [MethodChannel] to communicate with the Native platforms.
   @override
