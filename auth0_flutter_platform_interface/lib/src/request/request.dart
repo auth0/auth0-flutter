@@ -24,7 +24,7 @@ class CredentialsManagerRequest<TOptions extends RequestOptions?>
     required final Account account,
     final TOptions? options,
     required final UserAgent userAgent,
-    final this.localAuthentication,
+    this.localAuthentication,
   }) : super(account: account, options: options, userAgent: userAgent);
 
   @override

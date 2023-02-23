@@ -8,8 +8,7 @@ class WebAuthCard extends StatelessWidget {
   final String label;
   final Future<void> Function() action;
 
-  const WebAuthCard(
-      {required final this.label, required final this.action, final Key? key})
+  const WebAuthCard({required this.label, required this.action, final Key? key})
       : super(key: key);
 
   @override

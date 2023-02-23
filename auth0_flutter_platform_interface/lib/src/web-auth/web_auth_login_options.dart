@@ -1,5 +1,6 @@
 import '../request/request_options.dart';
 import 'id_token_validation_config.dart';
+import 'safari_view_controller.dart';
 
 class WebAuthLoginOptions implements RequestOptions {
   final IdTokenValidationConfig? idTokenValidationConfig;
@@ -11,6 +12,7 @@ class WebAuthLoginOptions implements RequestOptions {
   final bool useEphemeralSession;
   final Map<String, String> parameters;
   final String? scheme;
+  final SafariViewController? safariViewController;
 
   WebAuthLoginOptions(
       {this.idTokenValidationConfig,
@@ -21,20 +23,28 @@ class WebAuthLoginOptions implements RequestOptions {
       this.invitationUrl,
       this.scheme,
       this.useEphemeralSession = false,
-      this.parameters = const {}});
+      this.parameters = const {},
+      this.safariViewController});
 
   @override
-  Map<String, dynamic> toMap() => {
-        'leeway': idTokenValidationConfig?.leeway,
-        'issuer': idTokenValidationConfig?.issuer,
-        'maxAge': idTokenValidationConfig?.maxAge,
-        'audience': audience,
-        'scopes': scopes.toList(),
-        'redirectUrl': redirectUrl,
-        'organizationId': organizationId,
-        'invitationUrl': invitationUrl,
-        'useEphemeralSession': useEphemeralSession,
-        'parameters': parameters,
-        'scheme': scheme
-      };
+  Map<String, dynamic> toMap() {
+    final map = {
+      'leeway': idTokenValidationConfig?.leeway,
+      'issuer': idTokenValidationConfig?.issuer,
+      'maxAge': idTokenValidationConfig?.maxAge,
+      'audience': audience,
+      'scopes': scopes.toList(),
+      'redirectUrl': redirectUrl,
+      'organizationId': organizationId,
+      'invitationUrl': invitationUrl,
+      'useEphemeralSession': useEphemeralSession,
+      'parameters': parameters,
+      'scheme': scheme,
+      ...safariViewController != null
+          ? {'safariViewController': safariViewController?.toMap()}
+          : <String, dynamic>{}
+    };
+
+    return map;
+  }
 }

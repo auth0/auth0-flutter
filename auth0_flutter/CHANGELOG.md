@@ -1,5 +1,14 @@
 # Change Log
 
+## [v1.1.0](https://github.com/auth0/auth0-flutter/tree/v1.1.0) (2023-02-23)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/v1.0.2...v1.1.0)
+
+**Added**
+- Support SFSafariViewController [\#198](https://github.com/auth0/auth0-flutter/pull/198) ([stevehobbsdev](https://github.com/stevehobbsdev))
+
+**Fixed**
+- Fix Apple login connection crash in Android [\#195](https://github.com/auth0/auth0-flutter/pull/195) ([poovamraj](https://github.com/poovamraj))
+
 ## [v1.0.2](https://github.com/auth0/auth0-flutter/tree/v1.0.2) (2022-11-03)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/v1.0.1...v1.0.2)
 

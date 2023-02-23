@@ -2,6 +2,8 @@ import Foundation
 import Flutter
 import Auth0
 
+typealias WebAuthProviderFunction = (UIModalPresentationStyle) -> WebAuthProvider
+
 struct WebAuthLoginMethodHandler: MethodHandler {
     enum Argument: String {
         case scopes
@@ -14,9 +16,16 @@ struct WebAuthLoginMethodHandler: MethodHandler {
         case leeway
         case issuer
         case maxAge
+        case safariViewController
     }
 
     let client: WebAuth
+    let safariProvider: WebAuthProviderFunction
+        
+    init(client: WebAuth, safariProvider: @escaping WebAuthProviderFunction = WebAuthentication.safariProvider) {
+        self.client = client
+        self.safariProvider = safariProvider
+    }
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
         guard let useEphemeralSession = arguments[Argument.useEphemeralSession] as? Bool else {
@@ -64,6 +73,11 @@ struct WebAuthLoginMethodHandler: MethodHandler {
 
         if let maxAge = arguments[Argument.maxAge] as? Int {
             webAuth = webAuth.maxAge(maxAge)
+        }
+        
+        if let safariViewControllerDictionary = arguments[SafariViewController.key] as? [String: Any?] {
+            let safariViewController = SafariViewController(from: safariViewControllerDictionary)
+            webAuth = webAuth.provider(self.safariProvider(safariViewController.presentationStyle))
         }
 
         webAuth.start {

@@ -23,7 +23,8 @@ abstract class CredentialsManagerPlatform extends PlatformInterface {
       MethodChannelCredentialsManager();
 
   /// Platform-specific plugins should set this with their own platform-specific
-  /// class that extends [CredentialsManagerPlatform] when they register themselves.
+  /// class that extends [CredentialsManagerPlatform] when they register
+  /// themselves.
   static set instance(final CredentialsManagerPlatform instance) {
     PlatformInterface.verifyToken(instance, _token);
     _instance = instance;
@@ -40,13 +41,15 @@ abstract class CredentialsManagerPlatform extends PlatformInterface {
     throw UnimplementedError('clearCredentials() has not been implemented');
   }
 
-  /// Stores the given credentials in the native storage. Must have an access_token or id_token and a expires_in value.
+  /// Stores the given credentials in the native storage. Must have an
+  /// access_token or id_token and a expires_in value.
   Future<bool> saveCredentials(
       final CredentialsManagerRequest<SaveCredentialsOptions> request) {
     throw UnimplementedError('saveCredentials() has not been implemented');
   }
 
-  /// Checks if a non-expired pair of credentials can be obtained from the native storage.
+  /// Checks if a non-expired pair of credentials can be obtained from the
+  /// native storage.
   Future<bool> hasValidCredentials(
       final CredentialsManagerRequest<HasValidCredentialsOptions> request) {
     throw UnimplementedError('hasValidCredentials() has not been implemented');

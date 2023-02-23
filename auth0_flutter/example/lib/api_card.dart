@@ -6,7 +6,7 @@ import 'constants.dart';
 
 class ApiCard extends StatefulWidget {
   final Future<void> Function(String usernameOrEmail, String password) action;
-  const ApiCard({required final this.action, final Key? key}) : super(key: key);
+  const ApiCard({required this.action, final Key? key}) : super(key: key);
 
   @override
   ApiCardState createState() {

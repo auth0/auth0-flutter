@@ -38,6 +38,7 @@ class SpyWebAuth: WebAuth {
     private(set) var useEmphemeralSessionValue: Bool?
     private(set) var invitationURLValue: URL?
     private(set) var organizationValue: String?
+    private(set) var provider: WebAuthProvider?
 
     init() {}
 
@@ -108,6 +109,7 @@ class SpyWebAuth: WebAuth {
     }
 
     func provider(_ provider: @escaping WebAuthProvider) -> Self {
+        self.provider = provider
         return self
     }
 
@@ -138,5 +140,28 @@ class SpyWebAuth: WebAuth {
     func clearSession(federated: Bool, callback: @escaping (WebAuthResult<Void>) -> Void) {
         calledLogout = true
         callback(logoutResult)
+    }
+}
+
+class MockWebAuthUserAgent: WebAuthUserAgent {
+    func start() {
+    }
+    
+    func finish(with result: Auth0.WebAuthResult<Void>) {
+    }
+}
+
+
+class SpySafariProvider {
+    var presentationStyle: UIModalPresentationStyle? = nil
+    
+    init() {}
+    
+    func provider(_ style: UIModalPresentationStyle) -> WebAuthProvider {
+        self.presentationStyle = style
+        
+        return { (_: URL, _: @escaping (WebAuthResult<Void>) -> Void) -> (WebAuthUserAgent) in
+            return MockWebAuthUserAgent()
+        }
     }
 }
