@@ -50,13 +50,6 @@ T stripNulls<T extends Object>(final T obj) {
 }
 
 @JS()
-Map<String, dynamic> mapAuthorizationParams(
-        final AuthorizationParams? params) =>
-    {
-      ...params?.audience != null ? {'audience': params?.audience} : {}
-    };
-
-@JS()
 @staticInterop
 @anonymous
 class RedirectLoginOptions {
