@@ -1,3 +1,4 @@
+
 /// Configuration settings for ID token validation.
 class IdTokenValidationConfig {
   /// The value in seconds used to account for clock skew in JWT expirations.

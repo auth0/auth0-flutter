@@ -22,13 +22,7 @@ export 'src/mobile/authentication_api.dart';
 export 'src/mobile/credentials_manager.dart';
 export 'src/mobile/web_authentication.dart';
 
-class Auth0Web {
-  // methods, e.g. loginWithRedirect()
-  // that call the ones in Auth0FlutterWebPlatform.instance
-}
-
-/// Primary interface for interacting with Auth0 using web authentication, or
-/// the authentication API.
+/// Primary interface for interacting with Auth0 using web authentication, or the authentication API.
 class Auth0 {
   final Account _account;
 

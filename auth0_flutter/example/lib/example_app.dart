@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:auth0_flutter/auth0_flutter.dart';
+import 'package:auth0_flutter/auth0_flutter_web.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -21,29 +23,39 @@ class _ExampleAppState extends State<ExampleApp> {
 
   late Auth0 auth0;
   late WebAuthentication webAuth;
+  late Auth0Web auth0Web;
 
   @override
   void initState() {
     super.initState();
     auth0 = Auth0(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
 
+    auth0Web =
+        Auth0Web(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
+
     webAuth =
         auth0.webAuthentication(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
+
+    auth0Web.onLoad();
   }
 
   Future<void> webAuthLogin() async {
-    String output;
+    String output = '';
 
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      final result = await webAuth.login();
+      if (kIsWeb) {
+        await auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
+      } else {
+        final result = await webAuth.login();
 
-      output = result.idToken;
+        output = result.idToken;
 
-      setState(() {
-        _isLoggedIn = true;
-      });
+        setState(() {
+          _isLoggedIn = true;
+        });
+      }
     } on WebAuthenticationException catch (e) {
       output = e.toString();
     }
