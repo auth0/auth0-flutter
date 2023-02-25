@@ -330,6 +330,18 @@ void main() {
               e is CredentialsManagerException &&
               e.message == 'Channel returned null.')));
     });
+
+    test('parseArabicDate should parse a valid Arabic date string', () {
+      // Arrange
+      const arabicDateString = '٢٠٢٣-٠٢-٢٥T٠٦:٤٣:٤٣+0200';
+      final expectedDate = DateTime.parse('2023-02-25T06:43:43+0200');
+
+      // Act
+      final result = Credentials.parseArabicDate(arabicDateString);
+
+      // Assert
+      expect(result, expectedDate);
+    });
   });
 
   group('hasValidCredentials', () {
