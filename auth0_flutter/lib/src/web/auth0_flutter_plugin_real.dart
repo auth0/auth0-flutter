@@ -2,10 +2,10 @@ import 'dart:html';
 import 'dart:js_util';
 
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
-    show Account, Auth0FlutterWebPlatform, LoginOptions;
-
+    show Account, Auth0FlutterWebPlatform, Credentials, LoginOptions;
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
+import 'credentials_extension.dart';
 import 'js_interop.dart';
 
 class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
@@ -17,7 +17,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
 
   @override
   Future<void> initialize(final Account account,
-      {final AuthorizationParams? authorizationParams}) async {
+      {final AuthorizationParams? authorizationParams}) {
     client = Auth0Client(
         Auth0ClientOptions(domain: account.domain, clientId: account.clientId));
 
@@ -26,18 +26,33 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     if (search?.contains('state=') == true &&
         (search?.contains('code=') == true ||
             search?.contains('error=') == true)) {
-      await promiseToFuture<void>(client.handleRedirectCallback());
-    } else {
-      await promiseToFuture<void>(client.checkSession());
+      return promiseToFuture<void>(client.handleRedirectCallback());
     }
+
+    return promiseToFuture<void>(client.checkSession());
   }
 
   @override
-  Future<void> loginWithRedirect(final LoginOptions? options) =>
-      client.loginWithRedirect(RedirectLoginOptions(
-          authorizationParams: _stripNulls(AuthorizationParams(
-              audience: options?.audience,
-              redirect_uri: options?.redirectUrl))));
+  Future<void> loginWithRedirect(final LoginOptions? options) {
+    final authParams = _stripNulls(AuthorizationParams(
+        audience: options?.audience, redirect_uri: options?.redirectUrl));
+    final loginOptions = RedirectLoginOptions(authorizationParams: authParams);
+
+    return promiseToFuture<void>(client.loginWithRedirect(loginOptions));
+  }
+
+  @override
+  Future<Credentials> credentials() async {
+    final options = GetTokenSilentlyOptions(detailedResponse: true);
+    final result =
+        await promiseToFuture<WebCredentials>(client.getTokenSilently(options));
+
+    return CredentialsExtension.fromWeb(result);
+  }
+
+  @override
+  Future<bool> hasValidCredentials() =>
+      promiseToFuture<bool>(client.isAuthenticated());
 
   /// Rebuilds the input object, omitting values that are null
   T _stripNulls<T extends Object>(final T obj) {

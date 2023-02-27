@@ -10,16 +10,19 @@ class Auth0Web {
   Auth0Web(final String domain, final String clientId)
       : _account = Account(domain, clientId);
 
-  Future<Credentials?> onLoad() async {
+  Future<Credentials> onLoad() async {
     await Auth0FlutterWebPlatform.instance.initialize(_account);
-
-    // Get credentials here and return them on load?
-
-    return null;
+    return credentials();
   }
 
   Future<void> loginWithRedirect(
           {final String? audience, final String? redirectUrl}) =>
       Auth0FlutterWebPlatform.instance.loginWithRedirect(
           LoginOptions(audience: audience, redirectUrl: redirectUrl));
+
+  Future<Credentials> credentials() =>
+      Auth0FlutterWebPlatform.instance.credentials();
+
+  Future<bool> hasValidCredentials() =>
+      Auth0FlutterWebPlatform.instance.hasValidCredentials();
 }
