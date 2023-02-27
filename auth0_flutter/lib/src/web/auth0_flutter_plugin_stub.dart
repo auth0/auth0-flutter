@@ -9,8 +9,6 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     throw UnsupportedError('initialize is only supported on the web platform');
   }
 
-  // methods, e.g. loginWithRedirect()
-  // here they should throw an UnsupportedError
   @override
   Future<void> loginWithRedirect(final LoginOptions? options) {
     throw UnsupportedError(
@@ -18,8 +16,13 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   }
 
   @override
-  Future<Credentials?> handleRedirectCallback() {
+  Future<Credentials> credentials() {
+    throw UnsupportedError('credentials is only supported on the web platform');
+  }
+
+  @override
+  Future<bool> hasValidCredentials() {
     throw UnsupportedError(
-        'handleRedirectCallback is only supported on the web platform');
+        'hasValidCredentials is only supported on the web platform');
   }
 }

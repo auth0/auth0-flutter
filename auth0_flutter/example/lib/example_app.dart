@@ -28,15 +28,17 @@ class _ExampleAppState extends State<ExampleApp> {
   @override
   void initState() {
     super.initState();
-    auth0 = Auth0(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
 
+    auth0 = Auth0(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
     auth0Web =
         Auth0Web(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
-
     webAuth =
         auth0.webAuthentication(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
 
-    auth0Web.onLoad();
+    auth0Web.onLoad().then((final credentials) => setState(() {
+          _output = credentials.idToken;
+          _isLoggedIn = true;
+        }));
   }
 
   Future<void> webAuthLogin() async {
@@ -46,19 +48,18 @@ class _ExampleAppState extends State<ExampleApp> {
     // We also handle the message potentially returning null.
     try {
       if (kIsWeb) {
-        await auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
-      } else {
-        final result = await webAuth.login();
-
-        output = result.idToken;
-
-        setState(() {
-          _isLoggedIn = true;
-        });
+        return auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
       }
-    } on WebAuthenticationException catch (e) {
+
+      final result = await webAuth.login();
+      output = result.idToken;
+    } catch (e) {
       output = e.toString();
     }
+
+    setState(() {
+      _isLoggedIn = true;
+    });
 
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
