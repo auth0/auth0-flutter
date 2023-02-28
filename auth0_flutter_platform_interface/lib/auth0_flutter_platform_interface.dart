@@ -25,6 +25,7 @@ export 'src/method_channel_auth0_flutter_auth.dart';
 export 'src/method_channel_auth0_flutter_web_auth.dart';
 export 'src/request/request.dart';
 export 'src/request/request_options.dart';
+export 'src/testing/auth0_exception_matcher.dart';
 export 'src/user_agent.dart';
 export 'src/user_profile.dart';
 export 'src/web-auth/safari_view_controller.dart';
