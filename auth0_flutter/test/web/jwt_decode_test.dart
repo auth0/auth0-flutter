@@ -27,7 +27,7 @@ void main() {
       final payload = base64Url.encode(utf8.encode(jsonEncode(data)));
       final result = JWT.decode(testJWT(payload));
 
-      expect(result, equals(data));
+      expect(result, data);
     });
 
     test('throws an exception with an invalid Base64URL payload', () async {
