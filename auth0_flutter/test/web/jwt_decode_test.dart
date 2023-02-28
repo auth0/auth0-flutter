@@ -16,7 +16,7 @@ void main() {
     });
 
     test('decodes an empty JWT payload', () async {
-      const payload = 'e30'; // Valid Base64, invalid Base64URL
+      const payload = 'e30';
       const jwt = 'HEADER.$payload.SIGNATURE';
       final result = JWT.decode(jwt);
 
