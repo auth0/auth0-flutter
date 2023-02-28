@@ -1,3 +1,5 @@
+// coverage: ignore-file
+
 import 'package:flutter_test/flutter_test.dart';
 
 import '../auth0_exception.dart';
