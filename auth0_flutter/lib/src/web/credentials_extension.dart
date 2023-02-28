@@ -1,5 +1,6 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 
+import '../utils/string_extension.dart';
 import 'js_interop.dart';
 import 'jwt_decode.dart';
 import 'user_profile_extension.dart';
@@ -16,6 +17,8 @@ extension CredentialsExtension on Credentials {
         accessToken: webCredentials.access_token,
         expiresAt: expiresAt,
         user: user,
+        refreshToken: webCredentials.refresh_token,
+        scopes: {...webCredentials.scope?.splitBySingleSpace() ?? {}},
         tokenType: 'Bearer');
   }
 }
