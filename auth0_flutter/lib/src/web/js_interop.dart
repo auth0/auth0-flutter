@@ -5,6 +5,22 @@ library auth0;
 
 import 'package:js/js.dart';
 
+typedef Resolver<T> = void Function(T);
+typedef Rejecter = void Function(dynamic);
+
+@JS()
+class Promise<T> extends Thenable<T> {
+  external Promise(
+      final void Function(Resolver<T> resolve, Rejecter reject) callback);
+  external static Promise<T> resolve<T>([final T value]);
+  external static Promise<T> reject<T>(final dynamic error);
+}
+
+@JS()
+class Thenable<T> {
+  external Thenable<T> then(final Resolver<T> resolve, [final Rejecter reject]);
+}
+
 @JS()
 @anonymous
 class AuthorizationParams {
@@ -67,10 +83,11 @@ class WebCredentials {
 @JS()
 class Auth0Client {
   external Auth0Client(final Auth0ClientOptions options);
-  external Future<void> loginWithRedirect([final RedirectLoginOptions options]);
-  external Future<void> handleRedirectCallback([final String? url]);
-  external Future<void> checkSession();
-  external Future<WebCredentials> getTokenSilently(
-      [final GetTokenSilentlyOptions options]);
-  external Future<bool> isAuthenticated();
+  external Promise<void> loginWithRedirect(
+      [final RedirectLoginOptions options]);
+  external Promise<void> handleRedirectCallback([final String? url]);
+  external Promise<void> checkSession();
+  external Promise<WebCredentials> getTokenSilently(
+      [final GetTokenSilentlyOptions? options]);
+  external Promise<bool> isAuthenticated();
 }

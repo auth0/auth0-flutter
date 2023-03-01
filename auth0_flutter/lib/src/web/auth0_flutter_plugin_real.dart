@@ -1,10 +1,13 @@
+import 'dart:async';
 import 'dart:html';
+import 'dart:js';
 import 'dart:js_util';
 
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
     show Account, Auth0FlutterWebPlatform, Credentials, LoginOptions;
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
+import 'auth0_flutter_web_platform_proxy.dart';
 import 'credentials_extension.dart';
 import 'js_interop.dart';
 
@@ -13,46 +16,49 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     Auth0FlutterWebPlatform.instance = Auth0FlutterPlugin();
   }
 
-  late Auth0Client client;
+  late Auth0FlutterWebClientProxy? clientProxy;
 
   @override
   Future<void> initialize(final Account account,
       {final AuthorizationParams? authorizationParams}) {
-    client = Auth0Client(
-        Auth0ClientOptions(domain: account.domain, clientId: account.clientId));
+    clientProxy ??= Auth0FlutterWebClientProxy(
+        client: Auth0Client(Auth0ClientOptions(
+            domain: account.domain, clientId: account.clientId)));
 
     final search = window.location.search;
 
     if (search?.contains('state=') == true &&
         (search?.contains('code=') == true ||
             search?.contains('error=') == true)) {
-      return promiseToFuture<void>(client.handleRedirectCallback());
+      return clientProxy!.handleRedirectCallback();
     }
 
-    return promiseToFuture<void>(client.checkSession());
+    return clientProxy!.checkSession();
   }
 
   @override
   Future<void> loginWithRedirect(final LoginOptions? options) {
+    final client = _ensureClient();
     final authParams = _stripNulls(AuthorizationParams(
         audience: options?.audience, redirect_uri: options?.redirectUrl));
+
     final loginOptions = RedirectLoginOptions(authorizationParams: authParams);
 
-    return promiseToFuture<void>(client.loginWithRedirect(loginOptions));
+    return client.loginWithRedirect(loginOptions);
   }
 
   @override
   Future<Credentials> credentials() async {
+    final clientProxy = _ensureClient();
     final options = GetTokenSilentlyOptions(detailedResponse: true);
-    final result =
-        await promiseToFuture<WebCredentials>(client.getTokenSilently(options));
+
+    final result = await clientProxy.getTokenSilently(options);
 
     return CredentialsExtension.fromWeb(result);
   }
 
   @override
-  Future<bool> hasValidCredentials() =>
-      promiseToFuture<bool>(client.isAuthenticated());
+  Future<bool> hasValidCredentials() => clientProxy!.isAuthenticated();
 
   /// Rebuilds the input object, omitting values that are null
   T _stripNulls<T extends Object>(final T obj) {
@@ -69,5 +75,13 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     }
 
     return output as T;
+  }
+
+  Auth0FlutterWebClientProxy _ensureClient() {
+    if (clientProxy == null) {
+      throw ArgumentError('Auth0Client has not been initialized');
+    }
+
+    return clientProxy!;
   }
 }

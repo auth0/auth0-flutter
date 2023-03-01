@@ -36,7 +36,7 @@ class _ExampleAppState extends State<ExampleApp> {
         auth0.webAuthentication(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
 
     auth0Web.onLoad().then((final credentials) => setState(() {
-          _output = credentials.idToken;
+          _output = credentials?.idToken ?? '';
           _isLoggedIn = true;
         }));
   }
