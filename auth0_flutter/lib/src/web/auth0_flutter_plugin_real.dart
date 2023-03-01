@@ -5,7 +5,7 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
     show Account, Auth0FlutterWebPlatform, Credentials, LoginOptions;
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
-import 'credentials_extension.dart';
+import 'extensions/credentials_extension.dart';
 import 'js_interop.dart';
 
 class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
