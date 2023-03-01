@@ -9,16 +9,18 @@ import 'credentials_extension.dart';
 import 'js_interop.dart';
 
 class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
+  Auth0FlutterPlugin({this.client});
+
   static void registerWith(final Registrar registrar) {
     Auth0FlutterWebPlatform.instance = Auth0FlutterPlugin();
   }
 
-  late Auth0Client client;
+  late Auth0Client? client;
 
   @override
   Future<void> initialize(final Account account,
       {final AuthorizationParams? authorizationParams}) {
-    client = Auth0Client(
+    client ??= Auth0Client(
         Auth0ClientOptions(domain: account.domain, clientId: account.clientId));
 
     final search = window.location.search;
@@ -26,16 +28,18 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     if (search?.contains('state=') == true &&
         (search?.contains('code=') == true ||
             search?.contains('error=') == true)) {
-      return promiseToFuture<void>(client.handleRedirectCallback());
+      return promiseToFuture<void>(client!.handleRedirectCallback());
     }
 
-    return promiseToFuture<void>(client.checkSession());
+    return promiseToFuture(client!.checkSession());
   }
 
   @override
   Future<void> loginWithRedirect(final LoginOptions? options) {
+    final client = _ensureClient();
     final authParams = _stripNulls(AuthorizationParams(
         audience: options?.audience, redirect_uri: options?.redirectUrl));
+
     final loginOptions = RedirectLoginOptions(authorizationParams: authParams);
 
     return promiseToFuture<void>(client.loginWithRedirect(loginOptions));
@@ -43,7 +47,9 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
 
   @override
   Future<Credentials> credentials() async {
+    final client = _ensureClient();
     final options = GetTokenSilentlyOptions(detailedResponse: true);
+
     final result =
         await promiseToFuture<WebCredentials>(client.getTokenSilently(options));
 
@@ -52,7 +58,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
 
   @override
   Future<bool> hasValidCredentials() =>
-      promiseToFuture<bool>(client.isAuthenticated());
+      promiseToFuture<bool>(client!.isAuthenticated());
 
   /// Rebuilds the input object, omitting values that are null
   T _stripNulls<T extends Object>(final T obj) {
@@ -69,5 +75,13 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     }
 
     return output as T;
+  }
+
+  Auth0Client _ensureClient() {
+    if (client == null) {
+      throw ArgumentError('Auth0Client has not been initialized');
+    }
+
+    return client!;
   }
 }
