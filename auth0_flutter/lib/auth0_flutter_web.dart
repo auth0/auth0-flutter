@@ -11,7 +11,7 @@ class Auth0Web {
       : _account = Account(domain, clientId);
 
   Future<Credentials> onLoad() async {
-    await Auth0FlutterWebPlatform.instance.initialize(_account);
+    await Auth0FlutterWebPlatform.instance.initialize(_account, _userAgent);
     return credentials();
   }
 

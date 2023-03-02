@@ -5,7 +5,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   static void registerWith(final Registrar registrar) {}
 
   @override
-  Future<void> initialize(final Account account) {
+  Future<void> initialize(final Account account, final UserAgent userAgent) {
     throw UnsupportedError('initialize is only supported on the web platform');
   }
 

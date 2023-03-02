@@ -2,7 +2,7 @@ import 'dart:html';
 import 'dart:js_util';
 
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
-    show Account, Auth0FlutterWebPlatform, Credentials, LoginOptions;
+    show Account, Auth0FlutterWebPlatform, Credentials, LoginOptions, UserAgent;
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 import 'extensions/credentials_extension.dart';
@@ -16,10 +16,13 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   late Auth0Client client;
 
   @override
-  Future<void> initialize(final Account account,
+  Future<void> initialize(final Account account, final UserAgent userAgent,
       {final AuthorizationParams? authorizationParams}) {
-    client = Auth0Client(
-        Auth0ClientOptions(domain: account.domain, clientId: account.clientId));
+    client = Auth0Client(Auth0ClientOptions(
+        clientInfo:
+            Auth0ClientInfo(name: userAgent.name, version: userAgent.version),
+        domain: account.domain,
+        clientId: account.clientId));
 
     final search = window.location.search;
 

@@ -63,9 +63,23 @@ abstract class Cache {
 
 @JS()
 @anonymous
+class Auth0ClientInfo {
+  external Map<String, String>? get env;
+  external String get name;
+  external String get version;
+
+  external factory Auth0ClientInfo(
+      {final Map<String, String> env,
+      required final String name,
+      required final String version});
+}
+
+@JS()
+@anonymous
 class Auth0ClientOptions {
   external factory Auth0ClientOptions(
-      {required final String domain,
+      {required final Auth0ClientInfo clientInfo,
+      required final String domain,
       required final String clientId,
       final int authorizeTimeoutInSeconds,
       final Cache cache,
