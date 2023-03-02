@@ -50,11 +50,37 @@ class RedirectLoginOptions {
       {final AuthorizationParams authorizationParams, final String fragment});
 }
 
+typedef NowProviderFunc = Future<int> Function();
+
+@JS()
+@anonymous
+abstract class Cache {
+  T get<T>(final String key);
+  void remove(final String key);
+  void set<T>(final String key, final T entry);
+  Future<List<String>> allKeys();
+}
+
 @JS()
 @anonymous
 class Auth0ClientOptions {
   external factory Auth0ClientOptions(
-      {final String domain, final String clientId});
+      {required final String domain,
+      required final String clientId,
+      final int authorizeTimeoutInSeconds,
+      final Cache cache,
+      final String cacheLocation,
+      final String cookieDomain,
+      final int httpTimeoutInSeconds,
+      final String issuer,
+      final int leeway,
+      final bool legacySameSiteCookie,
+      final NowProviderFunc nowProvider,
+      final int sessionCheckExpiryDays,
+      final bool useCookiesForTransactions,
+      final bool useFormData,
+      final bool useRefreshTokens,
+      final bool useRefreshTokensFallback});
 }
 
 @JS()
