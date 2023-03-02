@@ -10,9 +10,34 @@ import 'package:js/js.dart';
 class AuthorizationParams {
   external String? get audience;
   external String? get redirect_uri;
+  external String? get acr_values;
+  external String? get display;
+  external String? get login_hint;
+  external String? get prompt;
+  external String? get screen_hint;
+  external String? get id_token_hint;
+  external int? get max_age;
+  external String? get ui_locales;
+  external String? get connection;
+  external String? get invitation;
+  external String? get organization;
+  external String? get scope;
 
   external factory AuthorizationParams(
-      {final String? audience, final String? redirect_uri});
+      {final String? audience,
+      final String? redirect_uri,
+      final String? acr_values,
+      final String? display,
+      final String? login_hint,
+      final String? prompt,
+      final String? screen_hint,
+      final String? id_token_hint,
+      final int? max_age,
+      final String? ui_locales,
+      final String? connection,
+      final String? invitation,
+      final String? organization,
+      final String? scope});
 }
 
 @JS()
