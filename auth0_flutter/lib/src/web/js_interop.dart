@@ -81,20 +81,18 @@ class Auth0ClientOptions {
       {required final Auth0ClientInfo clientInfo,
       required final String domain,
       required final String clientId,
-      final int authorizeTimeoutInSeconds,
-      final Cache cache,
-      final String cacheLocation,
-      final String cookieDomain,
-      final int httpTimeoutInSeconds,
-      final String issuer,
-      final int leeway,
-      final bool legacySameSiteCookie,
-      final NowProviderFunc nowProvider,
-      final int sessionCheckExpiryDays,
-      final bool useCookiesForTransactions,
-      final bool useFormData,
-      final bool useRefreshTokens,
-      final bool useRefreshTokensFallback});
+      final int? authorizeTimeoutInSeconds,
+      final String? cacheLocation,
+      final String? cookieDomain,
+      final int? httpTimeoutInSeconds,
+      final String? issuer,
+      final int? leeway,
+      final bool? legacySameSiteCookie,
+      final int? sessionCheckExpiryDays,
+      final bool? useCookiesForTransactions,
+      final bool? useFormData,
+      final bool? useRefreshTokens,
+      final bool? useRefreshTokensFallback});
 }
 
 @JS()

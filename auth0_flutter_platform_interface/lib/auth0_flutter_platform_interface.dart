@@ -32,3 +32,5 @@ export 'src/web-auth/safari_view_controller.dart';
 export 'src/web-auth/web_auth_login_options.dart';
 export 'src/web-auth/web_auth_logout_options.dart';
 export 'src/web-auth/web_authentication_exception.dart';
+export 'src/web/cache_location.dart';
+export 'src/web/client_options.dart';

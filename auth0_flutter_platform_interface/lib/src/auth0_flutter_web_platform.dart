@@ -1,6 +1,7 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import '../auth0_flutter_platform_interface.dart';
+import 'web/client_options.dart';
 
 class StubAuth0FlutterWeb extends Auth0FlutterWebPlatform {}
 
@@ -16,7 +17,8 @@ abstract class Auth0FlutterWebPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<void> initialize(final Account account, final UserAgent userAgent) {
+  Future<void> initialize(
+      final ClientOptions clientOptions, final UserAgent userAgent) {
     throw UnimplementedError('web.initialize has not been implemented');
   }
 
