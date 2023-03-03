@@ -50,8 +50,6 @@ class RedirectLoginOptions {
       {final AuthorizationParams authorizationParams, final String fragment});
 }
 
-typedef NowProviderFunc = Future<int> Function();
-
 @JS()
 @anonymous
 abstract class Cache {
