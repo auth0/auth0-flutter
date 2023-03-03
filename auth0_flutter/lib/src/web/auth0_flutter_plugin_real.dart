@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:html';
 import 'dart:js_util';
 
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
     show Account, Auth0FlutterWebPlatform, Credentials, LoginOptions;
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:js/js.dart';
 
 import 'credentials_extension.dart';
 import 'js_interop.dart';
@@ -28,10 +30,10 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     if (search?.contains('state=') == true &&
         (search?.contains('code=') == true ||
             search?.contains('error=') == true)) {
-      return promiseToFuture<void>(client!.handleRedirectCallback());
-    }
+      return _fromPromise(client!.handleRedirectCallback());
+    } 
 
-    return promiseToFuture(client!.checkSession());
+    return _fromPromise(client!.checkSession());
   }
 
   @override
@@ -39,10 +41,9 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     final client = _ensureClient();
     final authParams = _stripNulls(AuthorizationParams(
         audience: options?.audience, redirect_uri: options?.redirectUrl));
-
     final loginOptions = RedirectLoginOptions(authorizationParams: authParams);
 
-    return promiseToFuture<void>(client.loginWithRedirect(loginOptions));
+    return _fromPromise(client.loginWithRedirect(loginOptions));
   }
 
   @override
@@ -50,15 +51,12 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     final client = _ensureClient();
     final options = GetTokenSilentlyOptions(detailedResponse: true);
 
-    final result =
-        await promiseToFuture<WebCredentials>(client.getTokenSilently(options));
-
-    return CredentialsExtension.fromWeb(result);
+    return _fromPromise(client.getTokenSilently(options))
+        .then(CredentialsExtension.fromWeb);
   }
 
   @override
-  Future<bool> hasValidCredentials() =>
-      promiseToFuture<bool>(client!.isAuthenticated());
+  Future<bool> hasValidCredentials() => _fromPromise(client!.isAuthenticated());
 
   /// Rebuilds the input object, omitting values that are null
   T _stripNulls<T extends Object>(final T obj) {
@@ -83,5 +81,16 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     }
 
     return client!;
+  }
+
+  Future<T> _fromPromise<T>(final Promise<T> promise) {
+    final completer = Completer<T>();
+
+    promise.then(
+        allowInterop(completer.complete),
+        allowInterop(
+            (final error) => completer.completeError(error as Object)));
+
+    return completer.future;
   }
 }
