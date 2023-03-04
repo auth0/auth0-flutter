@@ -27,7 +27,7 @@ class ClientOptions {
 
   /// The timeout for HTTP calls using fetch.
   ///
-  /// The default is 10 seconds.
+  /// Defaults to 10 seconds.
   final int? httpTimeoutInSeconds;
 
   /// Whether an additional cookie with no SameSite attribute is set.
