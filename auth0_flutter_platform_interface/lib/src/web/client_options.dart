@@ -44,7 +44,7 @@ class ClientOptions {
   /// Defaults to `true`.
   final bool? legacySameSiteCookie;
 
-  /// The number of days until the cookie auth0.is.authenticated will expire.
+  /// The number of days until the cookie `auth0.is.authenticated` will expire.
   ///
   /// Defaults to `1`.
   final int? sessionCheckExpiryDays;
