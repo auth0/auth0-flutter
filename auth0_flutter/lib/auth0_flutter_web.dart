@@ -67,7 +67,7 @@ class Auth0Web {
   /// * Use [redirectUrl] to tell Auth0 where to redirect back to once the user
   /// has logged in. This URL must be registered in your Auth0 client settings
   /// under **Allowed Callback URLs** - [read more at Auth0 docs](https://auth0.com/docs/authenticate/login/redirect-users-after-login).
-  /// * [audience] relates to the API Identifier you want to reference in your access tokens (see [API settings](https://auth0.com/docs/get-started/apis/api-settings))
+  /// * [audience] relates to the API Identifier you want to reference in your access tokens (see [API settings](https://auth0.com/docs/get-started/apis/api-settings)).
   /// * [scopes] defaults to `openid profile email`. You can
   /// override these scopes, but `openid` is always requested regardless of
   /// this setting.
