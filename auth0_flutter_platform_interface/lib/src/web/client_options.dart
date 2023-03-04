@@ -22,7 +22,7 @@ class ClientOptions {
   /// working on page load.
   ///
   /// To keep a user logged in across multiple subdomains set this to your
-  /// top-level domain and prefixed with a . (eg: .example.com).
+  /// top-level domain and prefixed with a `.` (for instance: `.example.com`).
   final String? cookieDomain;
 
   /// The timeout for HTTP calls using fetch.
