@@ -37,7 +37,7 @@ class ClientOptions {
   ///
   /// This will log a warning on modern browsers, you can disable the
   /// warning by setting this to false but be aware that some older
-  /// useragents will not work.
+  /// user agents will not work.
   ///
   /// See https://www.chromium.org/updates/same-site/incompatible-clients
   ///
