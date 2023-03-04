@@ -86,8 +86,8 @@ class ClientOptions {
   /// and the authorization code grant with `prompt=none` when unable to use
   /// refresh tokens.
   ///
-  /// If `false`, the iframe fallback is not used and errors relating to a f
-  /// ailed refresh token grant should be handled appropriately.
+  /// If `false`, the iframe fallback is not used and errors relating to a
+  /// failed refresh token grant should be handled appropriately.
   ///
   /// The default setting is `false`.
   final bool? useRefreshTokensFallback;
