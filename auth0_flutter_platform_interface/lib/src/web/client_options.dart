@@ -10,7 +10,7 @@ class ClientOptions {
   final int? authorizeTimeoutInSeconds;
 
   /// The location to use when storing cache data. Valid values are `memory` or
-  /// `localstorage`. The default setting is `memory`.
+  /// `localstorage`. Defaults to `memory`.
   final CacheLocation? cacheLocation;
 
   /// The domain the cookie is accessible from.
