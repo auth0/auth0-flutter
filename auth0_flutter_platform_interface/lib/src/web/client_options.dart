@@ -6,7 +6,7 @@ class ClientOptions {
   final Account account;
 
   /// A maximum number of seconds to wait before declaring background calls to
-  /// /authorize as failed for timeout. Defaults to 60s.
+  /// `/authorize` as failed for timeout. Defaults to 60s.
   final int? authorizeTimeoutInSeconds;
 
   /// The location to use when storing cache data. Valid values are `memory` or
