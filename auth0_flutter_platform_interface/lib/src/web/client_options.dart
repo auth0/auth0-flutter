@@ -36,7 +36,7 @@ class ClientOptions {
   /// latest SameSite changes.
   ///
   /// This will log a warning on modern browsers, you can disable the
-  /// warning by setting this to false but be aware that some older
+  /// warning by setting this to `false` but be aware that some older
   /// user agents will not work.
   ///
   /// See https://www.chromium.org/updates/same-site/incompatible-clients
