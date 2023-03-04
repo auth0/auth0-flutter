@@ -16,7 +16,6 @@ class Auth0Web {
   ///
   /// [domain] and [clientId] are both values that can be retrieved from the
   /// application in your [Auth0 Dashboard](https://manage.auth0.com).
-  /// If you want to use your own implementation to handle credential storage,
   Auth0Web(final String domain, final String clientId)
       : _account = Account(domain, clientId);
 
