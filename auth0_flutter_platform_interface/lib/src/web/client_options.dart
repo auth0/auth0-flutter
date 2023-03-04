@@ -77,9 +77,9 @@ class ClientOptions {
   ///
   /// Defaults to `true`.
   ///
-  /// **Note**: Setting this to false may affect you if you use Auth0 Rules and
+  /// **Note**: Setting this to false may affect you if you use Auth0 Actions and
   ///  are sending custom, non-primitive data. If you disable this, please
-  /// verify that your Auth0 Rules continue to work as intended.
+  /// verify that your Auth0 Actions continue to work as intended.
   final bool? useFormData;
 
   /// Whether the client falls back to the technique of using a hidden iframe
