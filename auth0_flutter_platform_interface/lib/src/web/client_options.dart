@@ -56,7 +56,7 @@ class ClientOptions {
   ///
   /// A use case for this is if you rely on your users being able to
   /// authenticate using flows that may end up spanning across multiple
-  /// tabs (e.g. magic links) or you cannot otherwise rely on session storage
+  /// tabs (like magic links) or you cannot otherwise rely on session storage
   /// being available.
   final bool? useCookiesForTransactions;
 
