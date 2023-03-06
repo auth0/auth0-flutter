@@ -42,7 +42,7 @@ class ClientOptions {
   /// See https://www.chromium.org/updates/same-site/incompatible-clients
   ///
   /// Defaults to `true`.
-  final bool? legacySameSiteCookie;
+  final bool? useLegacySameSiteCookie;
 
   /// The number of days until the cookie `auth0.is.authenticated` will expire.
   ///
@@ -101,7 +101,7 @@ class ClientOptions {
       this.cacheLocation,
       this.cookieDomain,
       this.httpTimeoutInSeconds,
-      this.legacySameSiteCookie,
+      this.useLegacySameSiteCookie,
       this.sessionCheckExpiryDays,
       this.useCookiesForTransactions,
       this.useFormData,
