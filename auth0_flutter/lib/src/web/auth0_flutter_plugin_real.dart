@@ -1,10 +1,8 @@
 import 'dart:html';
 import 'dart:js_util';
-
-import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
-    show Account, Auth0FlutterWebPlatform, Credentials, LoginOptions;
+import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-
+import 'extensions/client_options_extensions.dart';
 import 'extensions/credentials_extension.dart';
 import 'js_interop.dart';
 
@@ -16,10 +14,9 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   late Auth0Client client;
 
   @override
-  Future<void> initialize(final Account account,
-      {final AuthorizationParams? authorizationParams}) {
-    client = Auth0Client(
-        Auth0ClientOptions(domain: account.domain, clientId: account.clientId));
+  Future<void> initialize(
+      final ClientOptions clientOptions, final UserAgent userAgent) {
+    client = Auth0Client(clientOptions.toAuth0ClientOptions(userAgent));
 
     final search = window.location.search;
 
@@ -35,7 +32,13 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   @override
   Future<void> loginWithRedirect(final LoginOptions? options) {
     final authParams = _stripNulls(AuthorizationParams(
-        audience: options?.audience, redirect_uri: options?.redirectUrl));
+        audience: options?.audience,
+        redirect_uri: options?.redirectUrl,
+        organization: options?.organizationId,
+        invitation: options?.invitationUrl,
+        max_age: options?.idTokenValidationConfig?.maxAge,
+        scope: options?.scopes.join(' ')));
+
     final loginOptions = RedirectLoginOptions(authorizationParams: authParams);
 
     return promiseToFuture<void>(client.loginWithRedirect(loginOptions));

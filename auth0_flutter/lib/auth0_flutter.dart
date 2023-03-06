@@ -22,7 +22,8 @@ export 'src/mobile/authentication_api.dart';
 export 'src/mobile/credentials_manager.dart';
 export 'src/mobile/web_authentication.dart';
 
-/// Primary interface for interacting with Auth0 using web authentication, or the authentication API.
+/// Primary interface for interacting with Auth0 using web authentication,
+/// or the authentication API.
 class Auth0 {
   final Account _account;
 
