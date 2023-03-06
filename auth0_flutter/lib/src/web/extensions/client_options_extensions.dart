@@ -15,7 +15,7 @@ extension ClientOptionsExtension on ClientOptions {
           leeway: idTokenValidationConfig?.leeway,
           httpTimeoutInSeconds: httpTimeoutInSeconds,
           legacySameSiteCookie: useLegacySameSiteCookie,
-          sessionCheckExpiryDays: sessionCheckExpiryDays,
+          sessionCheckExpiryDays: sessionCheckExpiryInDays,
           useCookiesForTransactions: useCookiesForTransactions,
           useFormData: useFormData,
           useRefreshTokens: useRefreshTokens,

@@ -47,7 +47,7 @@ class ClientOptions {
   /// The number of days until the cookie `auth0.is.authenticated` will expire.
   ///
   /// Defaults to `1`.
-  final int? sessionCheckExpiryDays;
+  final int? sessionCheckExpiryInDays;
 
   /// Whether the SDK will use a cookie for transaction storage, instead of
   /// session storage.
@@ -102,7 +102,7 @@ class ClientOptions {
       this.cookieDomain,
       this.httpTimeoutInSeconds,
       this.useLegacySameSiteCookie,
-      this.sessionCheckExpiryDays,
+      this.sessionCheckExpiryInDays,
       this.useCookiesForTransactions,
       this.useFormData,
       this.useRefreshTokens,
