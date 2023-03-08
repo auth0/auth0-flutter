@@ -15,14 +15,15 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     Auth0FlutterWebPlatform.instance = Auth0FlutterPlugin();
   }
 
-  late Auth0FlutterWebClientProxy? clientProxy;
+  Auth0FlutterWebClientProxy? clientProxy;
   UrlSearchProvider urlSearchProvider = () => window.location.search;
 
   @override
   Future<void> initialize(
       final ClientOptions clientOptions, final UserAgent userAgent) {
     clientProxy ??= Auth0FlutterWebClientProxy(
-        client: Auth0Client(clientOptions.toAuth0ClientOptions(userAgent)));
+        client: Auth0Client(
+            _stripNulls(clientOptions.toAuth0ClientOptions(userAgent))));
 
     final search = urlSearchProvider();
 
