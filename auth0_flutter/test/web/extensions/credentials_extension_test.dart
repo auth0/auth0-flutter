@@ -1,7 +1,7 @@
 @Tags(['browser'])
 
-import 'package:auth0_flutter/src/utils/string_extension.dart';
-import 'package:auth0_flutter/src/web/credentials_extension.dart';
+import 'package:auth0_flutter/src/web/extensions/credentials_extension.dart';
+import 'package:auth0_flutter/src/web/extensions/string_extension.dart';
 import 'package:auth0_flutter/src/web/js_interop.dart';
 import 'package:auth0_flutter/src/web/jwt_decode.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -28,6 +28,8 @@ void main() {
           lessThan(const Duration(seconds: 1)));
       expect(result.user.sub, JWT.decode(idToken)['sub']);
       expect(result.tokenType, expectedTokenType);
+      expect(result.refreshToken, isNull);
+      expect(result.scopes, isEmpty);
     });
 
     test('creates Credentials from WebCredentials with optional values', () {
