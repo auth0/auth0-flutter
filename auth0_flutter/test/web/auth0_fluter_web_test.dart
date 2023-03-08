@@ -11,7 +11,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'auth0_fluter_web_test.mocks.dart';
 
-@GenerateMocks([Auth0FlutterWebClientProxy, Auth0FlutterPlugin])
+@GenerateMocks([Auth0FlutterWebClientProxy])
 void main() {
   final auth0 = Auth0Web('test-domain', 'test-client-id');
   final mockClientProxy = MockAuth0FlutterWebClientProxy();
