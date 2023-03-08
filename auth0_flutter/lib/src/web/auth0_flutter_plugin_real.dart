@@ -8,12 +8,15 @@ import 'extensions/client_options_extensions.dart';
 import 'extensions/credentials_extension.dart';
 import 'js_interop.dart';
 
+typedef UrlSearchProvider = String? Function();
+
 class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   static void registerWith(final Registrar registrar) {
     Auth0FlutterWebPlatform.instance = Auth0FlutterPlugin();
   }
 
   late Auth0FlutterWebClientProxy? clientProxy;
+  UrlSearchProvider urlSearchProvider = () => window.location.search;
 
   @override
   Future<void> initialize(
@@ -21,7 +24,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     clientProxy ??= Auth0FlutterWebClientProxy(
         client: Auth0Client(clientOptions.toAuth0ClientOptions(userAgent)));
 
-    final search = window.location.search;
+    final search = urlSearchProvider();
 
     if (search?.contains('state=') == true &&
         (search?.contains('code=') == true ||
@@ -42,7 +45,9 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
         organization: options?.organizationId,
         invitation: options?.invitationUrl,
         max_age: options?.idTokenValidationConfig?.maxAge,
-        scope: options?.scopes.join(' ')));
+        scope: options?.scopes.isNotEmpty == true
+            ? options?.scopes.join(' ')
+            : null));
 
     final loginOptions = RedirectLoginOptions(authorizationParams: authParams);
 

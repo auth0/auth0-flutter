@@ -84,13 +84,15 @@ class Auth0Web {
           final String? redirectUrl,
           final String? organizationId,
           final String? invitationUrl,
+          final int? maxAge,
           final Set<String>? scopes}) =>
       Auth0FlutterWebPlatform.instance.loginWithRedirect(LoginOptions(
           audience: audience,
           redirectUrl: redirectUrl,
           organizationId: organizationId,
           invitationUrl: invitationUrl,
-          scopes: scopes ?? {}));
+          scopes: scopes ?? {},
+          idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge)));
 
   Future<Credentials> credentials() =>
       Auth0FlutterWebPlatform.instance.credentials();
