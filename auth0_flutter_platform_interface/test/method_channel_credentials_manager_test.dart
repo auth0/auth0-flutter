@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
+import '../lib/src/date_utils.dart';
 import 'method_channel_credentials_manager_test.mocks.dart';
 
 class MethodCallHandler {
@@ -337,7 +338,7 @@ void main() {
       final expectedDate = DateTime.parse('2023-02-25T06:43:43+0200');
 
       // Act
-      final result = Credentials.parseArabicDate(arabicDateString);
+      final result = DateUtils.parseArabicDate(arabicDateString);
 
       // Assert
       expect(result, expectedDate);

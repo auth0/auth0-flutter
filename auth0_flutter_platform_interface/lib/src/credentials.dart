@@ -1,4 +1,5 @@
 import '../auth0_flutter_platform_interface.dart';
+import 'date_utils.dart';
 
 /// A collection of authentication artifacts obtained from Auth0 when a user
 /// logs in.
@@ -54,23 +55,13 @@ class Credentials {
     required this.tokenType,
   });
 
-  static DateTime parseArabicDate(final String arabicDateString) {
-    final String englishDateString = arabicDateString.replaceAllMapped(
-      RegExp('[٠١٢٣٤٥٦٧٨٩]'),
-      (final match) =>
-          String.fromCharCode(match.group(0)!.codeUnitAt(0) - 1632 + 48),
-    );
-
-    final DateTime date = DateTime.parse(englishDateString);
-    return date;
-  }
 
   factory Credentials.fromMap(final Map<dynamic, dynamic> result) =>
       Credentials(
         idToken: result['idToken'] as String,
         accessToken: result['accessToken'] as String,
         refreshToken: result['refreshToken'] as String?,
-        expiresAt: Credentials.parseArabicDate(result['expiresAt'] as String),
+        expiresAt: DateUtils.parseArabicDate(result['expiresAt'] as String),
         scopes: Set<String>.from(result['scopes'] as List<Object?>),
         user: UserProfile.fromMap(Map<String, dynamic>.from(
             result['userProfile'] as Map<dynamic, dynamic>)),
