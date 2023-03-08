@@ -37,7 +37,7 @@ class _ExampleAppState extends State<ExampleApp> {
 
     auth0Web.onLoad().then((final credentials) => setState(() {
           _output = credentials?.idToken ?? '';
-          _isLoggedIn = true;
+          _isLoggedIn = credentials != null;
         }));
   }
 
