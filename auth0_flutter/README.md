@@ -169,7 +169,6 @@ Re-declare the activity manually using `tools:node="remove"` in the `android/src
     package="com.company.myapp">
     <application android:theme="@style/AppTheme">
         <!-- ... -->
-
         <activity
             android:name="com.auth0.android.provider.AuthenticationActivity"
             tools:node="remove"/>
@@ -177,7 +176,6 @@ Re-declare the activity manually using `tools:node="remove"` in the `android/src
         <activity
             android:name="com.auth0.android.provider.RedirectActivity"
             tools:node="remove"/>
-
         <!-- ... -->
     </application>
 </manifest>
