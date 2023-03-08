@@ -195,7 +195,6 @@ Open the `ios/Runner/Info.plist` file and add the following snippet inside the t
 <plist version="1.0">
 <dict>
 <!-- ... -->
-
     <key>CFBundleURLTypes</key>
     <array>
         <dict>
@@ -209,7 +208,6 @@ Open the `ios/Runner/Info.plist` file and add the following snippet inside the t
             </array>
         </dict>
     </array>
-
 <!-- ... -->
 </dict>
 </plist>
