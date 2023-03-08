@@ -155,9 +155,9 @@ manifestPlaceholders = [auth0Domain: "company.us.auth0.com", auth0Scheme: "https
 </details>
 
 <details>
-  <summary>Not using web-based authentication?</summary>
+  <summary>Not using web authentication?</summary>
 
-If you don't plan to use web-based authentication, you will notice that the compiler will still prompt you to provide the `manifestPlaceholders` values, since the `RedirectActivity` included in this library will require them, and the Gradle tasks won't be able to run without them.
+If you don't plan to use web authentication, you will notice that the compiler will still prompt you to provide the `manifestPlaceholders` values, since the `RedirectActivity` included in this library will require them, and the Gradle tasks won't be able to run without them.
 
 Re-declare the activity manually using `tools:node="remove"` in the `android/src/main/AndroidManifest.xml` file to make the [manifest merger](https://developer.android.com/studio/build/manage-manifests/#merge-manifests) remove it from the final manifest file. Additionally, one more unused activity can be removed from the final APK by using the same process. A complete snippet to achieve this is:
 
@@ -294,7 +294,7 @@ For other comprehensive examples, see the [EXAMPLES.md](EXAMPLES.md) document.
 
 ![ios-sso-alert](https://user-images.githubusercontent.com/5055789/198689762-8f3459a7-fdde-4c14-a13b-68933ef675e6.png)
 
-Check the [FAQ](FAQ.md) for more information about the alert box that pops up **by default** when using Web Auth on iOS.
+Check the [FAQ](FAQ.md) for more information about the alert box that pops up **by default** when using web authentication on iOS.
 
 > 💡 See also [this blog post](https://developer.okta.com/blog/2022/01/13/mobile-sso) for a detailed overview of Single Sign-On (SSO) on iOS.
 
