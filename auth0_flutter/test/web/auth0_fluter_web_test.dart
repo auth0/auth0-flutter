@@ -10,7 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
-import 'auth0_flutter_plugin_real_test.mocks.dart';
+import 'auth0_fluter_web_test.mocks.dart';
 
 @GenerateMocks([Auth0FlutterWebClientProxy])
 void main() {
