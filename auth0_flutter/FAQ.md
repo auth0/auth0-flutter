@@ -74,7 +74,8 @@ If you don't need SSO, you can disable this behavior by adding `useEphemeralSess
 
 ```dart
 // No SSO, therefore no alert box
-final credentials = await webAuth.login(useEphemeralSession: true);
+final credentials =
+      await auth0.webAuthentication().login(useEphemeralSession: true);
 ```
 
 Note that with `useEphemeralSession: true` you don't need to call `logout()` at all. Just clearing the credentials from the app will suffice. What `logout()` does is clear the shared session cookie, so that in the next login call the user gets asked to log in again. But with `useEphemeralSession: true` there will be no shared cookie to remove.
@@ -88,7 +89,9 @@ You still need to call `logout()` on Android, though, as `useEphemeralSession` i
 An alternative is to use `SFSafariViewController` instead of `ASWebAuthenticationSession`. You can do so by setting the `safariViewController` property during login:
 
 ```dart
-await webAuth.login(safariViewController: const SafariViewController());
+await auth0
+    .webAuthentication()
+    .login(safariViewController: const SafariViewController());
 ```
 
 > **Note**
@@ -133,7 +136,7 @@ Since `logout()` on iOS also needs to use `ASWebAuthenticationSession` to clear 
 If you need SSO and/or are willing to tolerate the alert box on the login call, but would prefer to get rid of it when calling `logout()`, you can simply not call `logout()` and just clear the credentials from the app. This means that the shared session cookie will not be removed, so to get the user to log in again you need to add the `'prompt': 'login'` parameter to the _login_ call.
 
 ```dart
-final credentials = await webAuth.login(
+final credentials = await auth0.webAuthentication().login(
     useEphemeralSession: true,
     parameters: {
       'prompt': 'login'
