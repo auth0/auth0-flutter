@@ -184,14 +184,14 @@ If silent auth is being used and Auth0 needs interaction from the user to comple
 
 To resolve this:
 
-- Use a Rule to [configure the MFA step](https://auth0.com/docs/secure/multi-factor-authentication/customize-mfa#change-authentication-request-frequency) to allow the user to remember the browser for up to 30 days
+- Use a Rule to [configure the MFA step](https://auth0.com/docs/secure/multi-factor-authentication/customize-mfa#change-authentication-request-frequency) to allow the user to remember the browser for up to 30 days.
 - Use refresh tokens + local storage so that the auto-login on page refresh does not depend on the user's session. Please [read the docs on storage options](https://auth0.com/docs/libraries/auth0-single-page-app-sdk#change-storage-options) and [rotating refresh tokens](https://auth0.com/docs/libraries/auth0-single-page-app-sdk#use-rotating-refresh-tokens) as these change the security profile of your application.
 
 ### 2. Why do I get `auth0-spa-js must run on a secure origin`?
 
 Internally, the SPA SDK uses [Web Cryptography API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API) to create [SHA-256 digest](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest).
 
-According to the spec ([via Github issues](https://github.com/w3c/webcrypto/issues/28)), Web Cryptography API requires a secure origin, so that accessing `Crypto.subtle` in a not secure context return undefined.
+According to the spec ([via Github issues](https://github.com/w3c/webcrypto/issues/28)), Web Cryptography API requires a secure origin, so that accessing `Crypto.subtle` in a not secure context returns `undefined`.
 
 In most browsers, secure origins are origins that match at least one of the following (scheme, host, port) patterns:
 
@@ -204,4 +204,4 @@ In most browsers, secure origins are origins that match at least one of the foll
 (file, *, —)
 ```
 
-If you're running your application from a secure origin, it's possible that your browser doesn't support the Web Crypto API. For a compatibility table, please check https://caniuse.com/#feat=mdn-api_subtlecrypto
+If you're running your application from a secure origin, it's possible that your browser doesn't support the Web Crypto API. For a compatibility table, please check https://caniuse.com/#feat=mdn-api_subtlecrypto.
