@@ -9,7 +9,7 @@ extension ClientOptionsExtension on ClientOptions {
           domain: account.domain,
           clientId: account.clientId,
           authorizeTimeoutInSeconds: authorizeTimeoutInSeconds,
-          cacheLocation: cacheLocation.toString(),
+          cacheLocation: cacheLocation?.toString(),
           cookieDomain: cookieDomain,
           issuer: idTokenValidationConfig?.issuer,
           leeway: idTokenValidationConfig?.leeway,
