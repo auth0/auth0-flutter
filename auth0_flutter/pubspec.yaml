@@ -21,6 +21,7 @@ dependency_overrides:
 
 dev_dependencies:
   build_runner: ^2.1.8
+  dart_jsonwebtoken: ^2.7.1
   flutter_lints: ^2.0.1
   flutter_test:
     sdk: flutter

@@ -132,6 +132,6 @@ class Auth0Client {
   external Future<void> handleRedirectCallback([final String? url]);
   external Future<void> checkSession();
   external Future<WebCredentials> getTokenSilently(
-      [final GetTokenSilentlyOptions options]);
+      [final GetTokenSilentlyOptions? options]);
   external Future<bool> isAuthenticated();
 }
