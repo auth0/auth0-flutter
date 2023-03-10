@@ -15,7 +15,14 @@ import 'auth0_fluter_web_test.mocks.dart';
 void main() {
   final auth0 = Auth0Web('test-domain', 'test-client-id');
   final mockClientProxy = MockAuth0FlutterWebClientProxy();
-  final jwt = JWT({'sub': 'auth0:1'}).sign(SecretKey('secret'));
+  final jwtPayload = {'sub': 'auth0:1'};
+  final jwt = JWT(jwtPayload).sign(SecretKey('secret'));
+  final WebCredentials webCredentials = WebCredentials(
+      access_token: jwt,
+      id_token: jwt,
+      refresh_token: jwt,
+      scope: 'openid read_messages',
+      expires_in: 0);
   late Auth0FlutterPlugin plugin;
 
   setUp(() {
@@ -39,20 +46,15 @@ void main() {
   test('onLoad is called with an authenticated user and no callback', () async {
     when(mockClientProxy.isAuthenticated()).thenAnswer((final _) async => true);
 
-    when(mockClientProxy.getTokenSilently(any)).thenAnswer((final _) =>
-        Future.value(WebCredentials(
-            access_token: jwt,
-            id_token: jwt,
-            refresh_token: jwt,
-            scope: 'openid read_messages',
-            expires_in: 0)));
+    when(mockClientProxy.getTokenSilently(any))
+        .thenAnswer((final _) => Future.value(webCredentials));
 
     final result = await auth0.onLoad();
 
     expect(result?.accessToken, jwt);
     expect(result?.idToken, jwt);
     expect(result?.refreshToken, jwt);
-    expect(result?.user.sub, 'auth0:1');
+    expect(result?.user.sub, jwtPayload['sub']);
     expect(result?.scopes, {'openid', 'read_messages'});
 
     verify(mockClientProxy.checkSession());
@@ -113,5 +115,42 @@ void main() {
     expect(params.redirect_uri, null);
     expect(params.scope, null);
     expect(params.max_age, null);
+  });
+
+  test('hasValidCredentials is called without authenticated user', () async {
+    when(mockClientProxy.isAuthenticated())
+        .thenAnswer((final _) => Future.value(false));
+
+    final result = await auth0.hasValidCredentials();
+
+    expect(result, false);
+  });
+
+  test('hasValidCredentials is called with an authenticated user', () async {
+    when(mockClientProxy.isAuthenticated())
+        .thenAnswer((final _) => Future.value(true));
+
+    final result = await auth0.hasValidCredentials();
+
+    expect(result, true);
+  });
+
+  test('credentials is called and succeeds', () async {
+    when(mockClientProxy.getTokenSilently(any))
+        .thenAnswer((final _) => Future.value(webCredentials));
+
+    final result = await auth0.credentials();
+
+    expect(result.accessToken, jwt);
+    expect(result.idToken, jwt);
+    expect(result.refreshToken, jwt);
+    expect(result.user.sub, jwtPayload['sub']);
+    expect(result.scopes, {'openid', 'read_messages'});
+  });
+
+  test('credentials is called and throws', () async {
+    when(mockClientProxy.getTokenSilently(any)).thenThrow(Exception());
+
+    expect(() async => auth0.credentials(), throwsException);
   });
 }
