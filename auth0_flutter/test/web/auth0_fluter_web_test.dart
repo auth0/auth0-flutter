@@ -164,4 +164,10 @@ void main() {
     expect(params.federated, true);
     expect(params.returnTo, 'http://returnto.url');
   });
+
+  test('logout is called and throws', () async {
+    when(mockClientProxy.logout(any)).thenThrow(Exception());
+
+    expect(() async => auth0.logout(), throwsException);
+  });
 }
