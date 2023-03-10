@@ -1,51 +1,56 @@
 # Auth0 Flutter SDK: Example
 
-Flutter app for Android / iOS that demonstrates how to use the Auth0 Flutter SDK.
+Flutter app for Android, iOS, and the web that demonstrates how to use the Auth0 Flutter SDK.
 
 ## Configuration
 
 ### 1. Configure Auth0 Application
 
-Go to the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/) and add the corresponding URLs to **Allowed Callback URLs** and **Allowed Logout URLs**, according to the platforms used by your app. If you are using a [Custom Domain](https://auth0.com/docs/brand-and-customize/custom-domains), replace `YOUR_AUTH0_DOMAIN` with the value of your Custom Domain instead of the value from the settings page.
+#### 📱 Mobile
 
-#### Android
+Go to the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/) and configure the following URLs under the **Application URIs** section of the **Settings** page, for both **Allowed Callback URLs** and **Allowed Logout URLs**:
 
-```text
-https://YOUR_AUTH0_DOMAIN/android/YOUR_APP_PACKAGE_NAME/callback
-```
+- Android: `SCHEME://YOUR_DOMAIN/android/YOUR_PACKAGE_NAME/callback`
+- iOS: `YOUR_BUNDLE_ID://YOUR_DOMAIN/ios/YOUR_BUNDLE_ID/callback`
 
-E.g. if your Auth0 Domain was `company.us.auth0.com` and your Android app package name was `com.company.myapp`, then this value would be:
+If you are using a [Custom Domain](https://auth0.com/docs/customize/custom-domains), replace `YOUR_AUTH0_DOMAIN` with the value of your Custom Domain instead of the value from the settings page.
 
-```text
-https://company.us.auth0.com/android/com.company.myapp/callback
-```
+<details>
+  <summary>Example</summary>
 
-#### iOS
+If your Auth0 domain was `company.us.auth0.com` and your package name (Android) or bundle ID (iOS) was `com.company.myapp`, then these values would be:
 
-```text
-YOUR_BUNDLE_IDENTIFIER://YOUR_AUTH0_DOMAIN/ios/YOUR_BUNDLE_IDENTIFIER/callback
-```
+- Android: `https://company.us.auth0.com/android/com.company.myapp/callback`
+- iOS: `com.company.myapp://company.us.auth0.com/ios/com.company.myapp/callback`
 
-E.g. if your iOS bundle identifier was `com.company.myapp` and your Auth0 Domain was `company.us.auth0.com`, then this value would be:
+</details>
 
-```text
-com.company.myapp://company.us.auth0.com/ios/com.company.myapp/callback
-```
+Take note of the **client ID** and **domain** values under the **Basic Information** section. You'll need these values in the next step.
+
+#### 🖥️ Web
+
+Go to the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/) and configure the following URLs under the **Application URIs** section of the **Settings** page:
+
+- Allowed Callback URLs: `http://localhost:3000`
+- Allowed Logout URLs: `http://localhost:3000`
+- Allowed Web Origins: `http://localhost:3000`
+
+Take note of the **client ID** and **domain** values under the **Basic Information** section. You'll need these values in the next step.
 
 ### 2. Configure Flutter app
 
 Rename the `.env.example` file to `.env`. Then, open it and fill in the values:
 
-- `AUTH0_DOMAIN`: your Auth0 Domain, e.g. `company.us.auth0.com`.
-- `AUTH0_CLIENT_ID`: the Client Id of your Auth0 application, available in its [settings page](https://manage.auth0.com/#/applications/).
+- `AUTH0_DOMAIN`: your Auth0 domain, for example `company.us.auth0.com`
+- `AUTH0_CLIENT_ID`: the client ID of your Auth0 application
 
 ### 3. Configure Android project
 
 Copy the `android/app/src/main/res/values/strings.xml.example` file into a new file called `strings.xml` in the same folder. This new file is ignored by Git.
 
-Open the `strings.xml` file and replace `YOUR_AUTH0_DOMAIN` with your own value, e.g. `company.us.auth0.com`. This value will be passed to the respective manifest placeholder.
+Then, open the `strings.xml` file and replace `YOUR_AUTH0_DOMAIN` with your own value, for instance `company.us.auth0.com`. This value will be passed to the respective manifest placeholder.
 
-Configure the `com_auth0_scheme` entry with the correct value, if you require a custom scheme.
+If you prefer to use a custom scheme, configure the `com_auth0_scheme` entry with the correct value.
 
 ## What is Auth0?
 
