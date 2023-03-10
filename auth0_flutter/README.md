@@ -76,7 +76,7 @@ If your Auth0 domain was `company.us.auth0.com` and your package name (Android) 
 
 Take note of the **client ID** and **domain** values under the **Basic Information** section. You'll need these values in the next step.
 
-#### 💻 Web
+#### 🖥️ Web
 
 Head to the [Auth0 Dashboard](https://manage.auth0.com/#/applications/) and create a new **Single Page** application.
 
@@ -215,7 +215,7 @@ Open the `ios/Runner/Info.plist` file and add the following snippet inside the t
 
 > 💡 If you're opening the `Info.plist` file in Xcode and it is not being shown in this format, you can **Right Click** on `Info.plist` in the Xcode [project navigator](https://developer.apple.com/library/archive/documentation/ToolsLanguages/Conceptual/Xcode_Overview/NavigatingYourWorkspace.html) and then select **Open As > Source Code**.
 
-#### 💻 Web
+#### 🖥️ Web
 
 Start by importing `auth0_flutter/auth0_flutter_web.dart`.
 
@@ -243,7 +243,7 @@ final credentials = await auth0.webAuthentication().login();
 // User profile -> credentials.user
 ```
 
-auth0_flutter stores the user's credentials using the built-in [Credentials Manager](#credentials-manager) instance. You can access this instance through the `credentialsManager` property.
+auth0_flutter automatically stores the user's credentials using the built-in [Credentials Manager](#credentials-manager) instance. You can access this instance through the `credentialsManager` property.
 
 ```dart
 final credentials = await auth0.credentialsManager.credentials();
@@ -260,17 +260,20 @@ Start by calling the `onLoad()` method in your app's `initState()`.
   void initState() {
     super.initState();
 
-    auth0Web.onLoad().then((final credentials) => {
-      if (credentials != null) {
+    if (kIsWeb) {
+      auth0Web.onLoad().then((final credentials) => {
+        if (credentials != null) {
           // Logged in!
-          // The user's credentials are stored in the built-in cache.
+          // auth0_flutter automatically stores the user's credentials in the
+          // built-in cache.
           //
           // Access token -> credentials.accessToken
           // User profile -> credentials.user
-      } else {
-        // Not logged in
-      }
-    });
+        } else {
+          // Not logged in
+        }
+      });
+    }
   }
 ```
 
@@ -302,7 +305,7 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 - [Retrieve stored credentials](EXAMPLES.md#retrieve-stored-credentials) - fetch the user's credentials from the storage, automatically renewing them if they have expired.
 - [Retrieve user information](EXAMPLES.md#retrieve-user-information) - fetch the latest user information from the `/userinfo` endpoint.
 
-#### 💻 Web
+#### 🖥️ Web
 
 TBC
 
@@ -330,7 +333,7 @@ TBC
 - [storeCredentials](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/DefaultCredentialsManager/storeCredentials.html)
 - [clearCredentials](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/DefaultCredentialsManager/clearCredentials.html)
 
-### 💻 Web
+### 🖥️ Web
 
 TBC
 
