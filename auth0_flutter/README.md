@@ -260,18 +260,20 @@ Start by calling the `onLoad()` method in your app's `initState()`.
   void initState() {
     super.initState();
 
-    auth0Web.onLoad().then((final credentials) => {
-      if (credentials != null) {
-          // Logged in!
-          // auth0_flutter automatically stores the user's credentials in the
-          // built-in cache.
-          //
-          // Access token -> credentials.accessToken
-          // User profile -> credentials.user
-      } else {
-        // Not logged in
-      }
-    });
+    if (kIsWeb) {
+      auth0Web.onLoad().then((final credentials) => {
+        if (credentials != null) {
+            // Logged in!
+            // auth0_flutter automatically stores the user's credentials in the
+            // built-in cache.
+            //
+            // Access token -> credentials.accessToken
+            // User profile -> credentials.user
+        } else {
+          // Not logged in
+        }
+      });
+    }
   }
 ```
 
