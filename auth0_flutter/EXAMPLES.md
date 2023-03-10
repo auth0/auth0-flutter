@@ -1,23 +1,23 @@
 # Examples
 
-- [Specifying an audience value](#specifying-an-audience-value)
-- [Specifying scopes](#specifying-scopes)
-- [Adding custom parameters to the login request](#adding-custom-parameters-to-the-login-request)
-- [Logging out](#logging-out)
-- [Custom schemes (Android only)](#custom-schemes-android-only)
 - [Web Authentication](#web-authentication)
+  - [Log out](#log-out)
   - [Sign up](#sign-up)
+  - [Adding an audience](#adding-an-audience)
+  - [Adding scopes](#adding-scopes)
+  - [Adding custom parameters](#adding-custom-parameters)
   - [ID token validation](#id-token-validation)
     - [Custom domains](#custom-domains)
-  - [Web Auth errors](#web-auth-errors)
-- [Credentials Manager](#credentials-manager)
+  - [Errors](#errors)
+  - [Android: Custom schemes](#android-custom-schemes)
+- [Mobile: Credentials Manager](#mobile-credentials-manager)
   - [Check for stored credentials](#check-for-stored-credentials)
   - [Retrieve stored credentials](#retrieve-stored-credentials)
   - [Custom implementations](#custom-implementations)
   - [Local authentication](#local-authentication)
   - [Credentials Manager errors](#credentials-manager-errors)
   - [Disable credentials storage](#disable-credentials-storage)
-- [Authentication API](#authentication-api)
+- [Mobile: Authentication API](#mobile-authentication-api)
   - [Login with database connection](#login-with-database-connection)
   - [Sign up with database connection](#sign-up-with-database-connection)
   - [Retrieve user information](#retrieve-user-information)
@@ -26,11 +26,80 @@
 - [Organizations](#organizations)
   - [Log in to an organization](#log-in-to-an-organization)
   - [Accept user invitations](#accept-user-invitations)
-- [Bot Detection](#bot-detection)
+- [Mobile: Bot detection](#mobile-bot-detection)
 
-## Specifying an audience value
+## Web Authentication
 
-Specify an [audience](https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#control-access-token-audience) to obtain an access token that can be used to make authenticated requests to a backend. The audience value is the **API Identifier** of your [Auth0 API](https://auth0.com/docs/get-started/apis), for example `https://example.com/api`.
+  - [Log out](#log-out)
+  - [Sign up](#sign-up)
+  - [Adding an audience](#adding-an-audience)
+  - [Adding scopes](#adding-scopes)
+  - [Adding custom parameters](#adding-custom-parameters)
+  - [ID token validation](#id-token-validation)
+  - [Errors](#errors)
+  - [Android: Custom schemes](#android-custom-schemes)
+
+### Log out
+
+Logging the user out involves clearing the Universal Login session cookie and then deleting the user's credentials from your app.
+
+Call the `logout()` method in the `onPressed` callback of your **Logout** button. Once the session cookie has been cleared, `auth0_flutter` will automatically delete the user's credentials.
+
+<details>
+  <summary>Mobile</summary>
+
+If you're using your own credentials storage, make sure to delete the credentials afterward.
+
+```dart
+await auth0.webAuthentication().logout();
+```
+
+</details>
+
+<details>
+  <summary>Web</summary>
+
+TBC
+
+</details>
+
+### Sign up
+
+You can make users land directly on the Signup page instead of the Login page by specifying the `'screen_hint': 'signup'` parameter. Note that this can be combined with `'prompt': 'login'`, which indicates whether you want to always show the authentication page or you want to skip if there's an existing session.
+
+| Parameters                                   | No existing session   | Existing session              |
+| :------------------------------------------- | :-------------------- | :---------------------------- |
+| No extra parameters                          | Shows the login page  | Redirects to the callback URL |
+| `'screen_hint': 'signup'`                    | Shows the signup page | Redirects to the callback URL |
+| `'prompt': 'login'`                          | Shows the login page  | Shows the login page          |
+| `'prompt': 'login', 'screen_hint': 'signup'` | Shows the signup page | Shows the signup page         |
+
+<details>
+  <summary>Mobile</summary>
+
+```dart
+final credentials = await auth0
+    .webAuthentication()
+    .login(parameters: {'screen_hint': 'signup'});
+```
+
+</details>
+
+<details>
+  <summary>Web</summary>
+
+TBC
+
+</details>
+
+> ⚠️ The `screen_hint` parameter will work with the **New Universal Login Experience** without any further configuration. If you are using the **Classic Universal Login Experience**, you need to customize the [login template](https://manage.auth0.com/#/login_page) to look for this parameter and set the `initialScreen` [option](https://github.com/auth0/lock#database-options) of the `Auth0Lock` constructor.
+
+### Adding an audience
+
+Specify an [audience](https://auth0.com/docs/secure/tokens/access-tokens/get-access-tokens#control-access-token-audience) value to obtain an access token that can be used to make authenticated requests to a backend. The audience value is the **API Identifier** of your [Auth0 API](https://auth0.com/docs/get-started/apis), for example `https://example.com/api`.
+
+<details>
+  <summary>Mobile</summary>
 
 ```dart
 final credentials = await auth0
@@ -38,9 +107,27 @@ final credentials = await auth0
     .login(audience: 'YOUR_AUTH0_API_IDENTIFIER');
 ```
 
-## Specifying scopes
+</details>
 
-Specify [scopes](https://auth0.com/docs/get-started/apis/scopes) to request permission to access protected resources, like the user profile. The default scope values are `openid`, `profile`, `email`, and `offline_access`. Regardless of the values specified, `openid` is always included.
+<details>
+  <summary>Web</summary>
+
+```dart
+await auth0Web.loginWithRedirect(
+    redirectUrl: 'http://localhost:3000',
+    audience: 'YOUR_AUTH0_API_IDENTIFIER');
+```
+
+</details>
+
+### Adding scopes
+
+Specify [scopes](https://auth0.com/docs/get-started/apis/scopes) to request permission to access protected resources, like the user profile.
+
+<details>
+  <summary>Mobile</summary>
+
+The default scope values are  `openid`, `profile`, `email`, and `offline_access`. Regardless of the values specified, `openid` is always included.
 
 ```dart
 final credentials = await auth0
@@ -48,9 +135,27 @@ final credentials = await auth0
     .login(scopes: {'profile', 'email', 'offline_access', 'read:todos'});
 ```
 
-## Adding custom parameters to the login request
+</details>
+
+<details>
+  <summary>Web</summary>
+
+The default scope values are  `openid`, `profile`, and `email`. Regardless of the values specified, `openid` is always included.
+
+```dart
+await auth0Web.loginWithRedirect(
+    redirectUrl: 'http://localhost:3000',
+    scopes: {'profile', 'email', 'read:todos'});
+```
+
+</details>
+
+### Adding custom parameters
 
 Specify additional parameters by passing a `parameters` map.
+
+<details>
+  <summary>Mobile</summary>
 
 ```dart
 final credentials = await auth0
@@ -58,17 +163,111 @@ final credentials = await auth0
     .login(parameters: {'connection': 'github'});
 ```
 
-## Logging out
+</details>
 
-Logging the user out involves clearing the Universal Login session cookie and then deleting the user's credentials from your app.
+<details>
+  <summary>Web</summary>
 
-Call the `logout()` method in the `onPressed` callback of your **Logout** button. Once the session cookie has been cleared, `auth0_flutter` will automatically delete the user's credentials. If you're using your own credentials storage, make sure to delete the credentials afterward.
+TBC
+
+</details>
+
+
+### ID token validation
+
+`auth0_flutter` automatically [validates](https://auth0.com/docs/secure/tokens/id-tokens/validate-id-tokens) the ID token obtained from Web Auth login, following the [OpenID Connect specification](https://openid.net/specs/openid-connect-core-1_0.html). This ensures the contents of the ID token have not been tampered with and can be safely used.
+
+<details>
+  <summary>Mobile</summary>
+
+You can configure the ID token validation by passing an `IdTokenValidationConfig` instance. Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/IdTokenValidationConfig-class.html) to learn more about the available configuration options.
 
 ```dart
-await auth0.webAuthentication().logout();
+const config = IdTokenValidationConfig(leeway: 180);
+final credentials =
+    await auth0.webAuthentication().login(idTokenValidationConfig: config);
 ```
 
-## Custom schemes (Android only)
+</details>
+
+<details>
+  <summary>Web</summary>
+
+You can configure `issuer` and `leeway` values through the `onLoad()` method.
+
+```dart
+auth0Web
+    .onLoad(issuer: 'https://example.com/', leeway: 180)
+    .then((final credentials) {
+  // ...
+});
+```
+
+The `max_age` value can be configured through `loginWithRedirect()`.
+
+```dart
+await auth0Web.loginWithRedirect(
+    redirectUrl: 'http://localhost:3000',
+    maxAge: 7200);
+```
+
+</details>
+
+#### Custom domains
+
+Users of Auth0 Private Cloud with custom domains still on the [legacy behavior](https://auth0.com/docs/deploy/private-cloud/private-cloud-migrations/migrate-private-cloud-custom-domains) need to specify a custom issuer to match the Auth0 domain when performing Web Auth login. Otherwise, the ID token validation will fail.
+
+<details>
+  <summary>Mobile</summary>
+
+```dart
+const config =
+    IdTokenValidationConfig(issuer: 'https://YOUR_AUTH0_DOMAIN/');
+final credentials =
+    await auth0.webAuthentication().login(idTokenValidationConfig: config);
+```
+
+</details>
+
+<details>
+  <summary>Web</summary>
+
+```dart
+auth0Web
+    .onLoad(issuer: 'https://example.com/')
+    .then((final credentials) {
+  // ...
+});
+```
+
+</details>
+
+### Errors
+
+<details>
+  <summary>Mobile</summary>
+
+Web Auth will only throw `WebAuthenticationException` exceptions. Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/WebAuthenticationException-class.html) to learn more about the available `WebAuthenticationException` properties.
+
+```dart
+try {
+  final credentials = await auth0.webAuthentication().login();
+  // ...
+} on WebAuthenticationException catch (e) {
+  print(e);
+}
+```
+
+</details>
+
+<details>
+  <summary>Web</summary>
+
+TBC
+
+</details>
+
+### Android: Custom schemes
 
 On Android, `https` is used by default as the callback URL scheme. This works best for Android API 23+ if you're using [Android App Links](https://auth0.com/docs/get-started/applications/enable-android-app-links-support), but in previous Android versions, this may show the intent chooser dialog prompting the user to choose either your app or the browser. You can change this behavior by using a custom unique scheme so that Android opens the link directly with your app.
 
@@ -88,68 +287,9 @@ await webAuth.logout();
 
 > 💡 Note that custom schemes [can only have](https://developer.android.com/guide/topics/manifest/data-element) lowercase letters.
 
-## Web Authentication
+## Mobile: Credentials Manager
 
-- [Web Auth signup](#web-auth-signup)
-- [ID token validation](#id-token-validation)
-- [Web Auth errors](#web-auth-errors)
-
-### Sign up
-
-You can make users land directly on the Signup page instead of the Login page by specifying the `'screen_hint': 'signup'` parameter. Note that this can be combined with `'prompt': 'login'`, which indicates whether you want to always show the authentication page or you want to skip if there's an existing session.
-
-| Parameters                                   | No existing session   | Existing session              |
-| :------------------------------------------- | :-------------------- | :---------------------------- |
-| No extra parameters                          | Shows the login page  | Redirects to the callback URL |
-| `'screen_hint': 'signup'`                    | Shows the signup page | Redirects to the callback URL |
-| `'prompt': 'login'`                          | Shows the login page  | Shows the login page          |
-| `'prompt': 'login', 'screen_hint': 'signup'` | Shows the signup page | Shows the signup page         |
-
-```dart
-final credentials = await auth0
-    .webAuthentication()
-    .login(parameters: {'screen_hint': 'signup'});
-```
-
-> ⚠️ The `screen_hint` parameter will work with the **New Universal Login Experience** without any further configuration. If you are using the **Classic Universal Login Experience**, you need to customize the [login template](https://manage.auth0.com/#/login_page) to look for this parameter and set the `initialScreen` [option](https://github.com/auth0/lock#database-options) of the `Auth0Lock` constructor.
-
-### ID token validation
-
-`auth0_flutter` automatically [validates](https://auth0.com/docs/secure/tokens/id-tokens/validate-id-tokens) the ID token obtained from Web Auth login, following the [OpenID Connect specification](https://openid.net/specs/openid-connect-core-1_0.html). This ensures the contents of the ID token have not been tampered with and can be safely used.
-
-You can configure the ID token validation by passing an `IdTokenValidationConfig` instance. Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/IdTokenValidationConfig-class.html) to learn more about the available configuration options.
-
-```dart
-const config = IdTokenValidationConfig(leeway: 10);
-final credentials =
-    await auth0.webAuthentication().login(idTokenValidationConfig: config);
-```
-
-#### Custom domains
-
-Users of Auth0 Private Cloud with custom domains still on the [legacy behavior](https://auth0.com/docs/deploy/private-cloud/private-cloud-migrations/migrate-private-cloud-custom-domains) need to specify a custom issuer to match the Auth0 domain when performing Web Auth login. Otherwise, the ID token validation will fail.
-
-```dart
-const config =
-    IdTokenValidationConfig(issuer: 'https://YOUR_AUTH0_DOMAIN/');
-final credentials =
-    await auth0.webAuthentication().login(idTokenValidationConfig: config);
-```
-
-### Web Auth errors
-
-Web Auth will only throw `WebAuthenticationException` exceptions. Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/WebAuthenticationException-class.html) to learn more about the available `WebAuthenticationException` properties.
-
-```dart
-try {
-  final credentials = await auth0.webAuthentication().login();
-  // ...
-} on WebAuthenticationException catch (e) {
-  print(e);
-}
-```
-
-## Credentials Manager
+> 📱 This feature is mobile-only; on web, the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter keeps its own cache.
 
 - [Check for stored credentials](#check-for-stored-credentials)
 - [Retrieve stored credentials](#retrieve-stored-credentials)
@@ -235,7 +375,9 @@ final credentials =
     await auth0.webAuthentication(useCredentialsManager: false).login();
 ```
 
-## Authentication API
+## Mobile: Authentication API
+
+> 📱 This feature is mobile-only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
 
 - [Login with database connection](#login-with-database-connection)
 - [Sign up with database connection](#sign-up-with-database-connection)
@@ -356,24 +498,58 @@ try {
 
 ### Log in to an organization
 
+<details>
+  <summary>Mobile</summary>
+
 ```dart
 final credentials = await auth0
     .webAuthentication()
     .login(organizationId: 'YOUR_AUTH0_ORGANIZATION_ID');
 ```
 
+</details>
+
+<details>
+  <summary>Web</summary>
+
+```dart
+await auth0Web.loginWithRedirect(
+    redirectUrl: 'http://localhost:3000',
+    organizationId: 'YOUR_AUTH0_ORGANIZATION_ID');
+```
+
+</details>
+
 ### Accept user invitations
 
 To accept organization invitations your app needs to support [deep linking](https://docs.flutter.dev/development/ui/navigation/deep-linking), as invitation links are HTTPS-only. Tapping on the invitation link should open your app.
 
-When your app gets opened by an invitation link, grab the invitation URL and pass it to the `login()` method.
+When your app gets opened by an invitation link, grab the invitation URL and pass it to the login method.
+
+<details>
+  <summary>Mobile</summary>
 
 ```dart
 final credentials =
     await auth0.webAuthentication().login(invitationUrl: url);
 ```
 
-## Bot Detection
+</details>
+
+<details>
+  <summary>Web</summary>
+
+```dart
+await auth0Web.loginWithRedirect(
+    redirectUrl: 'http://localhost:3000',
+    invitationUrl: url);
+```
+
+</details>
+
+## Mobile: Bot detection
+
+> 📱 This example is mobile-only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
 
 If you are performing database login/signup via the Authentication API and would like to use the [Bot Detection](https://auth0.com/docs/secure/attack-protection/bot-detection) feature, you need to handle the `isVerificationRequired` error. It indicates that the request was flagged as suspicious and an additional verification step is necessary to log the user in. That verification step is web-based, so you need to use Web Auth to complete it.
 
