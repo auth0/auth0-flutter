@@ -1,7 +1,5 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-
 import '../auth0_flutter_platform_interface.dart';
-import 'web/client_options.dart';
 
 class StubAuth0FlutterWeb extends Auth0FlutterWebPlatform {}
 
@@ -33,5 +31,9 @@ abstract class Auth0FlutterWebPlatform extends PlatformInterface {
   Future<bool> hasValidCredentials() {
     throw UnimplementedError(
         'web.hasValidCredentials has not been implemented');
+  }
+
+  Future<void> logout(final LogoutOptions? options) {
+    throw UnimplementedError('web.logout has not been implemented');
   }
 }
