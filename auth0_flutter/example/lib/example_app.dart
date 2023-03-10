@@ -79,8 +79,7 @@ class _ExampleAppState extends State<ExampleApp> {
     // We also handle the message potentially returning null.
     try {
       if (kIsWeb) {
-        await auth0Web.logout(
-            returnToUrl: 'http://localhost:3000', federated: true);
+        await auth0Web.logout(returnToUrl: 'http://localhost:3000');
       } else {
         await webAuth.logout();
       }
