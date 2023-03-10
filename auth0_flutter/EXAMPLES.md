@@ -1,6 +1,6 @@
 # Examples
 
-- [🖥️ 📱 Web Authentication](#️--web-authentication)
+- [🖥️📱 Web Authentication](#️-web-authentication)
   - [Log out](#log-out)
   - [Sign up](#sign-up)
   - [Adding an audience](#adding-an-audience)
@@ -23,12 +23,12 @@
   - [Retrieve user information](#retrieve-user-information)
   - [Renew credentials](#renew-credentials)
   - [API client errors](#api-client-errors)
-- [🖥️ 📱 Organizations](#️--organizations)
+- [🖥️📱 Organizations](#️-organizations)
   - [Log in to an organization](#log-in-to-an-organization)
   - [Accept user invitations](#accept-user-invitations)
 - [📱 Bot detection](#-bot-detection)
 
-## 🖥️ 📱 Web Authentication
+## 🖥️📱 Web Authentication
 
   - [Log out](#log-out)
   - [Sign up](#sign-up)
@@ -490,7 +490,7 @@ try {
 }
 ```
 
-## 🖥️ 📱 Organizations
+## 🖥️📱 Organizations
 
 [Organizations](https://auth0.com/docs/manage-users/organizations) is a set of features that provide better support for developers who build and maintain SaaS and Business-to-Business (B2B) applications.
 
