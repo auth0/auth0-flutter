@@ -1,6 +1,6 @@
 # Frequently Asked Questions
 
-- [Mobile](#mobile)
+- [📱 Mobile](#-mobile)
   - [1. How can I have separate Auth0 domains for each environment on Android?](#1-how-can-i-have-separate-auth0-domains-for-each-environment-on-android)
   - [2. How can I disable the iOS _login_ alert box?](#2-how-can-i-disable-the-ios-login-alert-box)
     - [Use ephemeral sessions](#use-ephemeral-sessions)
@@ -8,12 +8,12 @@
   - [3. How can I disable the iOS _logout_ alert box?](#3-how-can-i-disable-the-ios-logout-alert-box)
   - [4. How can I change the message in the iOS alert box?](#4-how-can-i-change-the-message-in-the-ios-alert-box)
   - [5. How can I programmatically close the iOS alert box?](#5-how-can-i-programmatically-close-the-ios-alert-box)
-- [Web](#web)
+- [🖥️ Web](#️-web)
   - [1. Why is the user logged out when they refresh the page in their SPA?](#1-why-is-the-user-logged-out-when-they-refresh-the-page-in-their-spa)
     - [Using Multi-factor Authentication (MFA)](#using-multi-factor-authentication-mfa)
   - [2. Why do I get `auth0-spa-js must run on a secure origin`?](#2-why-do-i-get-auth0-spa-js-must-run-on-a-secure-origin)
 
-## Mobile
+## 📱 Mobile
 
 This library uses [Auth0.Android](https://github.com/auth0/Auth0.Android) on Android, and [Auth0.swift](https://github.com/auth0/Auth0.swift) on iOS.
 
@@ -155,12 +155,12 @@ This library has no control whatsoever over the alert box. Its contents cannot b
 
 This library has no control whatsoever over the alert box. It cannot be closed programmatically. Unfortunately, that's a limitation of `ASWebAuthenticationSession`.
 
-## Web
+## 🖥️ Web
 
 This library uses the [Auth0 SPA SDK](https://github.com/auth0/auth0-spa-js) on the web platform.
 
 ### 1. Why is the user logged out when they refresh the page in their SPA?
-.
+
 After logging in, if the page is refreshed and the user appears logged out, it usually means that the silent authentication step has failed to work.
 
 This could be affected by a couple of things:
@@ -171,16 +171,16 @@ This could be affected by a couple of things:
 Please try these to see if you can get unblocked:
 
 - Try it in a browser like Chrome which does not block third-party cookies by default (yet)
-- Use the New Login Experience, if possible
+- Use the new login experience, if possible
 - Supply the social connection with your own client ID and secret in the Auth0 dashboard
 
 #### Using Multi-factor Authentication (MFA)
 
 By default, `auth0-spa-js` uses the `prompt=none` and `response_mode=web_message` flow for silent auth, which depends on the user's Auth0 session.
 
-If you have "Require Multi-factor Auth" set to "Always" in your [Auth0 Dashboard](https://manage.auth0.com/#/security/mfa), silent authentication from your SPA will fail unless:
+If you have **Require Multi-factor Auth** set to `Always` in your [Auth0 Dashboard](https://manage.auth0.com/#/security/mfa), silent authentication from your SPA will fail unless:
 
-- The user is using a one-time code and selects "Remember me for 30 days"
+- The user is using a one-time code and selects **Remember me for 30 days**
 - `allowRememberBrowser` is [configured in a Rule](https://auth0.com/docs/secure/multi-factor-authentication/customize-mfa#change-authentication-request-frequency) and `provider` is set to `google-authenticator`
 
 If silent auth is being used and Auth0 needs interaction from the user to complete the MFA step, then authentication will fail with an `mfa_required` error and the user must log in interactively.
