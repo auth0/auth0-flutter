@@ -2,7 +2,7 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 import 'src/version.dart';
 
 export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
-    show CacheLocation;
+    show CacheLocation, LogoutOptions;
 
 /// Primary interface for interacting with Auth0 on web platforms.
 class Auth0Web {
@@ -93,6 +93,19 @@ class Auth0Web {
           invitationUrl: invitationUrl,
           scopes: scopes ?? {},
           idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge)));
+
+  /// Redirects the browser to the Auth0 logout endpoint to end the user's
+  /// session.
+  ///
+  /// * Use [returnToUrl] to tell Auth0 where it should redirect back to once
+  /// the user has logged out. This URL must be registered in **Allowed
+  /// Logout URLs** in your Auth0 client settings. [Read more about how redirecting after logout works](https://auth0.com/docs/logout/guides/redirect-users-after-logout).
+  /// * Use [federated] to log the user out of their identity provider
+  ///  (e.g. Google) as well as Auth0. Only applicable if the user authenticated
+  /// using an identity provider. [Read more about how federated logout works at Auth0](https://auth0.com/docs/logout/guides/logout-idps)
+  Future<void> logout({final bool? federated, final String? returnToUrl}) =>
+      Auth0FlutterWebPlatform.instance
+          .logout(LogoutOptions(federated: federated, returnTo: returnToUrl));
 
   Future<Credentials> credentials() =>
       Auth0FlutterWebPlatform.instance.credentials();

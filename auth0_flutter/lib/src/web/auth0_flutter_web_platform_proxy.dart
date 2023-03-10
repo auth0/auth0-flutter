@@ -19,4 +19,7 @@ class Auth0FlutterWebClientProxy {
       promiseToFuture(client.handleRedirectCallback());
 
   Future<bool> isAuthenticated() => promiseToFuture(client.isAuthenticated());
+
+  Future<void> logout(final LogoutOptions? options) =>
+      promiseToFuture(client.logout(options));
 }

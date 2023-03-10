@@ -3,7 +3,7 @@
 import 'package:auth0_flutter/auth0_flutter_web.dart';
 import 'package:auth0_flutter/src/web/auth0_flutter_plugin_real.dart';
 import 'package:auth0_flutter/src/web/auth0_flutter_web_platform_proxy.dart';
-import 'package:auth0_flutter/src/web/js_interop.dart';
+import 'package:auth0_flutter/src/web/js_interop.dart' as interop;
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,7 +17,7 @@ void main() {
   final mockClientProxy = MockAuth0FlutterWebClientProxy();
   final jwtPayload = {'sub': 'auth0:1'};
   final jwt = JWT(jwtPayload).sign(SecretKey('secret'));
-  final WebCredentials webCredentials = WebCredentials(
+  final interop.WebCredentials webCredentials = interop.WebCredentials(
       access_token: jwt,
       id_token: jwt,
       refresh_token: jwt,
@@ -152,5 +152,22 @@ void main() {
     when(mockClientProxy.getTokenSilently(any)).thenThrow(Exception());
 
     expect(() async => auth0.credentials(), throwsException);
+  });
+
+  test('logout is called and succeeds', () async {
+    when(mockClientProxy.logout(any)).thenAnswer((final _) => Future.value());
+    await auth0.logout(federated: true, returnToUrl: 'http://returnto.url');
+
+    final params =
+        verify(mockClientProxy.logout(captureAny)).captured.first.logoutParams;
+
+    expect(params.federated, true);
+    expect(params.returnTo, 'http://returnto.url');
+  });
+
+  test('logout is called and throws', () async {
+    when(mockClientProxy.logout(any)).thenThrow(Exception());
+
+    expect(() async => auth0.logout(), throwsException);
   });
 }

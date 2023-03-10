@@ -126,6 +126,24 @@ class WebCredentials {
 }
 
 @JS()
+@anonymous
+class LogoutParams {
+  external String? get returnTo;
+  external bool? get federated;
+
+  external factory LogoutParams(
+      {final String? returnTo, final bool? federated});
+}
+
+@JS()
+@anonymous
+class LogoutOptions {
+  external LogoutParams? get logoutParams;
+
+  external factory LogoutOptions({final LogoutParams? logoutParams});
+}
+
+@JS()
 class Auth0Client {
   external Auth0Client(final Auth0ClientOptions options);
   external Future<void> loginWithRedirect([final RedirectLoginOptions options]);
@@ -134,4 +152,5 @@ class Auth0Client {
   external Future<WebCredentials> getTokenSilently(
       [final GetTokenSilentlyOptions? options]);
   external Future<bool> isAuthenticated();
+  external Future<void> logout([final LogoutOptions? logoutParams]);
 }
