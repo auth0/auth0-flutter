@@ -15,14 +15,14 @@
   - [Retrieve stored credentials](#retrieve-stored-credentials)
   - [Custom implementations](#custom-implementations)
   - [Local authentication](#local-authentication)
-  - [Credentials Manager errors](#credentials-manager-errors)
+  - [Errors](#errors-1)
   - [Disable credentials storage](#disable-credentials-storage)
 - [📱 Authentication API](#-authentication-api)
   - [Login with database connection](#login-with-database-connection)
   - [Sign up with database connection](#sign-up-with-database-connection)
   - [Retrieve user information](#retrieve-user-information)
   - [Renew credentials](#renew-credentials)
-  - [API client errors](#api-client-errors)
+  - [Errors](#errors-2)
 - [🖥️📱 Organizations](#️-organizations)
   - [Log in to an organization](#log-in-to-an-organization)
   - [Accept user invitations](#accept-user-invitations)
@@ -353,7 +353,7 @@ Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platfo
 
 > ⚠️ Enabling local authentication will not work if you're using a custom Credentials Manager implementation. In that case, you will need to build support for local authentication into your custom implementation.
 
-### Credentials Manager errors
+### Errors
 
 The Credentials Manager will only throw `CredentialsManagerException` exceptions. You can find more information in the `details` property of the exception. Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/CredentialsManagerException-class.html) to learn more about the available `CredentialsManagerException` properties.
 
@@ -474,7 +474,7 @@ final didStore =
 
 > 💡 To obtain a refresh token, make sure your Auth0 application has the **refresh token** [grant enabled](https://auth0.com/docs/get-started/applications/update-grant-types). If you are also specifying an audience value, make sure that the corresponding Auth0 API has the **Allow Offline Access** [setting enabled](https://auth0.com/docs/get-started/apis/api-settings#access-settings).
 
-### API client errors
+### Errors
 
 The Authentication API client will only throw `ApiException` exceptions. You can find more information in the `details` property of the exception. Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/ApiException-class.html) to learn more about the available `ApiException` properties.
 
