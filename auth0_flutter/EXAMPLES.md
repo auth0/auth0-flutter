@@ -15,8 +15,8 @@
   - [Retrieve stored credentials](#retrieve-stored-credentials)
   - [Custom implementations](#custom-implementations)
   - [Local authentication](#local-authentication)
-  - [Errors](#errors-1)
   - [Disable credentials storage](#disable-credentials-storage)
+  - [Errors](#errors-1)
 - [📱 Authentication API](#-authentication-api)
   - [Login with database connection](#login-with-database-connection)
   - [Sign up with database connection](#sign-up-with-database-connection)
@@ -353,6 +353,15 @@ Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platfo
 
 > ⚠️ Enabling local authentication will not work if you're using a custom Credentials Manager implementation. In that case, you will need to build support for local authentication into your custom implementation.
 
+### Disable credentials storage
+
+By default, `auth0_flutter` will automatically store the user's credentials after login and delete them after logout, using the built-in [Credentials Manager](#credentials-manager) instance. If you prefer to use your own credentials storage, you need to disable the built-in Credentials Manager.
+
+```dart
+final credentials =
+    await auth0.webAuthentication(useCredentialsManager: false).login();
+```
+
 ### Errors
 
 The Credentials Manager will only throw `CredentialsManagerException` exceptions. You can find more information in the `details` property of the exception. Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/CredentialsManagerException-class.html) to learn more about the available `CredentialsManagerException` properties.
@@ -364,15 +373,6 @@ try {
 } on CredentialsManagerException catch (e) {
   print(e);
 }
-```
-
-### Disable credentials storage
-
-By default, `auth0_flutter` will automatically store the user's credentials after login and delete them after logout, using the built-in [Credentials Manager](#credentials-manager) instance. If you prefer to use your own credentials storage, you need to disable the built-in Credentials Manager.
-
-```dart
-final credentials =
-    await auth0.webAuthentication(useCredentialsManager: false).login();
 ```
 
 ## 📱 Authentication API
