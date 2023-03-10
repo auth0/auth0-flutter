@@ -1,6 +1,6 @@
 # Examples
 
-- [Web Authentication](#web-authentication)
+- [🖥️ 📱 Web Authentication](#️--web-authentication)
   - [Log out](#log-out)
   - [Sign up](#sign-up)
   - [Adding an audience](#adding-an-audience)
@@ -10,25 +10,25 @@
     - [Custom domains](#custom-domains)
   - [Errors](#errors)
   - [Android: Custom schemes](#android-custom-schemes)
-- [Mobile: Credentials Manager](#mobile-credentials-manager)
+- [📱 Credentials Manager](#-credentials-manager)
   - [Check for stored credentials](#check-for-stored-credentials)
   - [Retrieve stored credentials](#retrieve-stored-credentials)
   - [Custom implementations](#custom-implementations)
   - [Local authentication](#local-authentication)
   - [Credentials Manager errors](#credentials-manager-errors)
   - [Disable credentials storage](#disable-credentials-storage)
-- [Mobile: Authentication API](#mobile-authentication-api)
+- [📱 Authentication API](#-authentication-api)
   - [Login with database connection](#login-with-database-connection)
   - [Sign up with database connection](#sign-up-with-database-connection)
   - [Retrieve user information](#retrieve-user-information)
   - [Renew credentials](#renew-credentials)
   - [API client errors](#api-client-errors)
-- [Organizations](#organizations)
+- [🖥️ 📱 Organizations](#️--organizations)
   - [Log in to an organization](#log-in-to-an-organization)
   - [Accept user invitations](#accept-user-invitations)
-- [Mobile: Bot detection](#mobile-bot-detection)
+- [📱 Bot detection](#-bot-detection)
 
-## Web Authentication
+## 🖥️ 📱 Web Authentication
 
   - [Log out](#log-out)
   - [Sign up](#sign-up)
@@ -287,9 +287,9 @@ await webAuth.logout();
 
 > 💡 Note that custom schemes [can only have](https://developer.android.com/guide/topics/manifest/data-element) lowercase letters.
 
-## Mobile: Credentials Manager
+## 📱 Credentials Manager
 
-> 📱 This feature is mobile-only; on web, the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter keeps its own cache.
+> This feature is mobile-only; on web, the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter keeps its own cache.
 
 - [Check for stored credentials](#check-for-stored-credentials)
 - [Retrieve stored credentials](#retrieve-stored-credentials)
@@ -375,9 +375,9 @@ final credentials =
     await auth0.webAuthentication(useCredentialsManager: false).login();
 ```
 
-## Mobile: Authentication API
+## 📱 Authentication API
 
-> 📱 This feature is mobile-only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
+> This feature is mobile-only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
 
 - [Login with database connection](#login-with-database-connection)
 - [Sign up with database connection](#sign-up-with-database-connection)
@@ -490,7 +490,7 @@ try {
 }
 ```
 
-## Organizations
+## 🖥️ 📱 Organizations
 
 [Organizations](https://auth0.com/docs/manage-users/organizations) is a set of features that provide better support for developers who build and maintain SaaS and Business-to-Business (B2B) applications.
 
@@ -547,9 +547,9 @@ await auth0Web.loginWithRedirect(
 
 </details>
 
-## Mobile: Bot detection
+## 📱 Bot detection
 
-> 📱 This example is mobile-only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
+> This example is mobile-only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
 
 If you are performing database login/signup via the Authentication API and would like to use the [Bot Detection](https://auth0.com/docs/secure/attack-protection/bot-detection) feature, you need to handle the `isVerificationRequired` error. It indicates that the request was flagged as suspicious and an additional verification step is necessary to log the user in. That verification step is web-based, so you need to use Web Auth to complete it.
 
