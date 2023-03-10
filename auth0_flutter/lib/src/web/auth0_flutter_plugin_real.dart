@@ -62,9 +62,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   @override
   Future<void> logout(final LogoutOptions? options) async {
     final client = _ensureClient();
-
-    final logoutOptions = JsInteropUtils.stripNulls(
-        options?.toClientLogoutOptions() ?? interop.LogoutOptions());
+    final logoutOptions = options?.toClientLogoutOptions();
 
     return client.logout(logoutOptions);
   }

@@ -152,5 +152,5 @@ class Auth0Client {
   external Future<WebCredentials> getTokenSilently(
       [final GetTokenSilentlyOptions? options]);
   external Future<bool> isAuthenticated();
-  external Future<void> logout([final LogoutOptions logoutParams]);
+  external Future<void> logout([final LogoutOptions? logoutParams]);
 }

@@ -20,6 +20,6 @@ class Auth0FlutterWebClientProxy {
 
   Future<bool> isAuthenticated() => promiseToFuture(client.isAuthenticated());
 
-  Future<void> logout(final LogoutOptions options) =>
+  Future<void> logout(final LogoutOptions? options) =>
       promiseToFuture(client.logout(options));
 }
