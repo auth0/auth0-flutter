@@ -94,6 +94,28 @@ class Auth0Web {
           scopes: scopes ?? {},
           idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge)));
 
+  /// Opens a popup with the /authorize URL using the parameters provided as
+  /// arguments.
+  ///
+  /// Random and secure state and nonce parameters will be auto-generated. If
+  /// the response is successful, results will be valid according to
+  /// their expiration times.
+  ///
+  /// **Note**: This method should be called from an event handler that was
+  /// triggered by user interaction, such as a button click. Otherwise the
+  /// popup will be blocked in most browsers.
+  ///
+  /// Additonal notes:
+  ///
+  /// * [audience] relates to the API Identifier you want to reference in your access tokens (see [API settings](https://auth0.com/docs/get-started/apis/api-settings)).
+  /// * [scopes] defaults to `openid profile email`. You can
+  /// override these scopes, but `openid` is always requested regardless of
+  /// this setting.
+  /// * If you want to log into a specific organization, provide the
+  /// [organizationId]. Provide [invitationUrl] if a user has been invited
+  /// to join an organization.
+  /// * To provide your own popup window, create it using the `window.open()`
+  /// HTML API and set [popupWindow] to the result.
   Future<Credentials?> loginWithPopup(
           {final String? audience,
           final String? organizationId,
