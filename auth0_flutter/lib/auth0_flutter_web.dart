@@ -1,5 +1,4 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
-import 'package:flutter/widgets.dart';
 import 'src/version.dart';
 
 export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
@@ -100,7 +99,9 @@ class Auth0Web {
           final String? organizationId,
           final String? invitationUrl,
           final int? maxAge,
-          final Set<String>? scopes}) =>
+          final Set<String>? scopes,
+          final dynamic popupWindow,
+          final int? timeoutInSeconds}) =>
       Auth0FlutterWebPlatform.instance.loginWithPopup(PopupLoginOptions(
           audience: audience,
           organizationId: organizationId,

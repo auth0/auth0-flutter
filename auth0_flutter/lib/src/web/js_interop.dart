@@ -3,6 +3,8 @@
 @JS('auth0')
 library auth0;
 
+import 'dart:html';
+
 import 'package:js/js.dart';
 
 @JS()
@@ -156,10 +158,10 @@ class PopupLoginOptions {
 @anonymous
 class PopupConfigOptions {
   external dynamic get popup;
-  external int get timeoutInSeconds;
+  external int? get timeoutInSeconds;
 
   external factory PopupConfigOptions(
-      {final dynamic popup, final int timeoutInSeconds});
+      {final dynamic popup, final int? timeoutInSeconds});
 }
 
 @JS()

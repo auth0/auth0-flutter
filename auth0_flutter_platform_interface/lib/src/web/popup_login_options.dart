@@ -1,7 +1,7 @@
 import '../../auth0_flutter_platform_interface.dart';
 
 class PopupLoginOptions extends LoginOptions {
-  final dynamic popup;
+  final dynamic popupWindow;
   final int? timeoutInSeconds;
 
   PopupLoginOptions(
@@ -12,6 +12,6 @@ class PopupLoginOptions extends LoginOptions {
       super.redirectUrl,
       super.scopes,
       super.parameters,
-      this.popup,
+      this.popupWindow,
       this.timeoutInSeconds});
 }

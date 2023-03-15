@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:html';
 
 import 'package:auth0_flutter/auth0_flutter.dart';
 import 'package:auth0_flutter/auth0_flutter_web.dart';
@@ -51,9 +52,9 @@ class _ExampleAppState extends State<ExampleApp> {
     try {
       if (kIsWeb) {
         // return auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
-        final creds = await auth0Web.loginWithPopup(audience: 'js-quickstart');
+        final creds = await auth0Web.loginWithPopup();
+
         output = creds?.idToken ?? '';
-        print(creds?.accessToken);
       } else {
         final result = await webAuth.login();
         output = result.idToken;

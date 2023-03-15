@@ -70,8 +70,13 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
             ? options?.scopes.join(' ')
             : null));
 
+    final popupConfig = JsInteropUtils.stripNulls(interop.PopupConfigOptions(
+        popup: options?.popupWindow,
+        timeoutInSeconds: options?.timeoutInSeconds));
+
     await client.loginWithPopup(
-        interop.PopupLoginOptions(authorizationParams: authParams));
+        interop.PopupLoginOptions(authorizationParams: authParams),
+        popupConfig);
 
     if (await client.isAuthenticated()) {
       return CredentialsExtension.fromWeb(await client.getTokenSilently(
