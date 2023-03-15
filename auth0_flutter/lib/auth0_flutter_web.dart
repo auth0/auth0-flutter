@@ -94,6 +94,9 @@ class Auth0Web {
           scopes: scopes ?? {},
           idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge)));
 
+  Future<Credentials?> loginWithPopup() =>
+      Auth0FlutterWebPlatform.instance.loginWithPopup(null);
+
   /// Redirects the browser to the Auth0 logout endpoint to end the user's
   /// session.
   ///

@@ -50,11 +50,13 @@ class _ExampleAppState extends State<ExampleApp> {
     // We also handle the message potentially returning null.
     try {
       if (kIsWeb) {
-        return auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
+        // return auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
+        final creds = await auth0Web.loginWithPopup();
+        output = creds?.idToken ?? '';
+      } else {
+        final result = await webAuth.login();
+        output = result.idToken;
       }
-
-      final result = await webAuth.login();
-      output = result.idToken;
     } catch (e) {
       output = e.toString();
     }

@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:html';
-
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-
 import 'auth0_flutter_web_platform_proxy.dart';
 import 'extensions/client_options_extensions.dart';
 import 'extensions/credentials_extension.dart';
@@ -57,6 +55,19 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
         interop.RedirectLoginOptions(authorizationParams: authParams);
 
     return client.loginWithRedirect(loginOptions);
+  }
+
+  @override
+  Future<Credentials?> loginWithPopup(final PopupLoginOptions? options) async {
+    final client = _ensureClient();
+
+    await client.loginWithPopup();
+
+    if (await hasValidCredentials()) {
+      return credentials();
+    }
+
+    return null;
   }
 
   @override

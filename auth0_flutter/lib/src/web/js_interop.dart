@@ -144,9 +144,30 @@ class LogoutOptions {
 }
 
 @JS()
+@anonymous
+class PopupLoginOptions {
+  external AuthorizationParams? get authorizationParams;
+
+  external factory PopupLoginOptions(
+      {final AuthorizationParams authorizationParams});
+}
+
+@JS()
+@anonymous
+class PopupConfigOptions {
+  external dynamic get popup;
+  external int get timeoutInSeconds;
+
+  external factory PopupConfigOptions(
+      {final dynamic popup, final int timeoutInSeconds});
+}
+
+@JS()
 class Auth0Client {
   external Auth0Client(final Auth0ClientOptions options);
   external Future<void> loginWithRedirect([final RedirectLoginOptions options]);
+  external Future<void> loginWithPopup(
+      [final PopupLoginOptions? options, final PopupConfigOptions? config]);
   external Future<void> handleRedirectCallback([final String? url]);
   external Future<void> checkSession();
   external Future<WebCredentials> getTokenSilently(

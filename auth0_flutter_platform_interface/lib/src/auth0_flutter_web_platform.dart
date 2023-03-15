@@ -24,6 +24,10 @@ abstract class Auth0FlutterWebPlatform extends PlatformInterface {
     throw UnimplementedError('web.loginWithRedirect has not been implemented');
   }
 
+  Future<Credentials?> loginWithPopup(final PopupLoginOptions? options) {
+    throw UnimplementedError('web.loginWithPopup has not been implemented');
+  }
+
   Future<Credentials> credentials() {
     throw UnimplementedError('web.credentials has not been implemented');
   }
