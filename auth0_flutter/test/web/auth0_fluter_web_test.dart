@@ -1,5 +1,7 @@
 @Tags(['browser'])
 
+import 'dart:js';
+
 import 'package:auth0_flutter/auth0_flutter_web.dart';
 import 'package:auth0_flutter/src/web/auth0_flutter_plugin_real.dart';
 import 'package:auth0_flutter/src/web/auth0_flutter_web_platform_proxy.dart';
@@ -169,5 +171,47 @@ void main() {
     when(mockClientProxy.logout(any)).thenThrow(Exception());
 
     expect(() async => auth0.logout(), throwsException);
+  });
+
+  test('loginWithPopup is called and succeeds', () async {
+    when(mockClientProxy.loginWithPopup(any, any))
+        .thenAnswer((final _) => Future.value());
+
+    when(mockClientProxy.isAuthenticated())
+        .thenAnswer((final _) => Future.value(true));
+
+    when(mockClientProxy.getTokenSilently(any))
+        .thenAnswer((final _) => Future.value(webCredentials));
+
+    final window = Object();
+
+    final credentials = await auth0.loginWithPopup(
+        audience: 'http://my.api',
+        organizationId: 'org123',
+        invitationUrl: 'http://invitation.url',
+        scopes: {'openid'},
+        maxAge: 20,
+        popupWindow: window,
+        timeoutInSeconds: 120);
+
+    expect(credentials, isNotNull);
+
+    final capture =
+        verify(mockClientProxy.loginWithPopup(captureAny, captureAny)).captured;
+
+    expect(capture.first.authorizationParams.audience, 'http://my.api');
+    expect(capture.first.authorizationParams.organization, 'org123');
+    expect(
+        capture.first.authorizationParams.invitation, 'http://invitation.url');
+    expect(capture.first.authorizationParams.scope, 'openid');
+    expect(capture.first.authorizationParams.max_age, 20);
+    expect(capture.last.popup, window);
+    expect(capture.last.timeoutInSeconds, 120);
+  });
+
+  test('loginWithPopup is called and throws', () async {
+    when(mockClientProxy.loginWithPopup(any, any)).thenThrow(Exception());
+
+    expect(() async => auth0.loginWithPopup(), throwsException);
   });
 }

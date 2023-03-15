@@ -58,7 +58,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   }
 
   @override
-  Future<Credentials?> loginWithPopup(final PopupLoginOptions? options) async {
+  Future<Credentials> loginWithPopup(final PopupLoginOptions? options) async {
     final client = _ensureClient();
 
     final authParams = JsInteropUtils.stripNulls(interop.AuthorizationParams(
@@ -78,13 +78,9 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
         interop.PopupLoginOptions(authorizationParams: authParams),
         popupConfig);
 
-    if (await client.isAuthenticated()) {
-      return CredentialsExtension.fromWeb(await client.getTokenSilently(
-          interop.GetTokenSilentlyOptions(
-              authorizationParams: authParams, detailedResponse: true)));
-    }
-
-    return null;
+    return CredentialsExtension.fromWeb(await client.getTokenSilently(
+        interop.GetTokenSilentlyOptions(
+            authorizationParams: authParams, detailedResponse: true)));
   }
 
   @override

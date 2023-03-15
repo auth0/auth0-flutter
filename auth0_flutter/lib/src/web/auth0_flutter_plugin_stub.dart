@@ -21,7 +21,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   }
 
   @override
-  Future<Credentials?> loginWithPopup(final PopupLoginOptions? options) {
+  Future<Credentials> loginWithPopup(final PopupLoginOptions? options) {
     throw UnsupportedError(
         'loginWithPopup is only supported on the web platform');
   }

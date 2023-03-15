@@ -116,7 +116,7 @@ class Auth0Web {
   /// to join an organization.
   /// * To provide your own popup window, create it using the `window.open()`
   /// HTML API and set [popupWindow] to the result.
-  Future<Credentials?> loginWithPopup(
+  Future<Credentials> loginWithPopup(
           {final String? audience,
           final String? organizationId,
           final String? invitationUrl,
@@ -129,7 +129,9 @@ class Auth0Web {
           organizationId: organizationId,
           invitationUrl: invitationUrl,
           scopes: scopes ?? {},
-          idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge)));
+          idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge),
+          popupWindow: popupWindow,
+          timeoutInSeconds: timeoutInSeconds));
 
   /// Redirects the browser to the Auth0 logout endpoint to end the user's
   /// session.

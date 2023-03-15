@@ -54,7 +54,7 @@ class _ExampleAppState extends State<ExampleApp> {
         // return auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
         final creds = await auth0Web.loginWithPopup();
 
-        output = creds?.idToken ?? '';
+        output = creds.idToken;
       } else {
         final result = await webAuth.login();
         output = result.idToken;
