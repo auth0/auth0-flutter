@@ -51,8 +51,9 @@ class _ExampleAppState extends State<ExampleApp> {
     try {
       if (kIsWeb) {
         // return auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
-        final creds = await auth0Web.loginWithPopup();
+        final creds = await auth0Web.loginWithPopup(audience: 'js-quickstart');
         output = creds?.idToken ?? '';
+        print(creds?.accessToken);
       } else {
         final result = await webAuth.login();
         output = result.idToken;

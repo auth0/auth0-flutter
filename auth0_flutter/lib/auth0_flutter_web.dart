@@ -1,4 +1,5 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
+import 'package:flutter/widgets.dart';
 import 'src/version.dart';
 
 export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
@@ -94,8 +95,18 @@ class Auth0Web {
           scopes: scopes ?? {},
           idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge)));
 
-  Future<Credentials?> loginWithPopup() =>
-      Auth0FlutterWebPlatform.instance.loginWithPopup(null);
+  Future<Credentials?> loginWithPopup(
+          {final String? audience,
+          final String? organizationId,
+          final String? invitationUrl,
+          final int? maxAge,
+          final Set<String>? scopes}) =>
+      Auth0FlutterWebPlatform.instance.loginWithPopup(PopupLoginOptions(
+          audience: audience,
+          organizationId: organizationId,
+          invitationUrl: invitationUrl,
+          scopes: scopes ?? {},
+          idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge)));
 
   /// Redirects the browser to the Auth0 logout endpoint to end the user's
   /// session.
