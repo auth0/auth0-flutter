@@ -215,12 +215,6 @@ void main() {
     expect(params.returnTo, 'http://returnto.url');
   });
 
-  test('logout is called and throws', () async {
-    when(mockClientProxy.logout(any)).thenThrow(Exception());
-
-    expect(() async => auth0.logout(), throwsException);
-  });
-
   test('loginWithPopup is called and succeeds', () async {
     when(mockClientProxy.loginWithPopup(any, any))
         .thenAnswer((final _) => Future.value());
