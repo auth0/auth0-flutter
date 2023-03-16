@@ -90,7 +90,7 @@ void main() {
         .first
         .authorizationParams;
 
-    expect(params != null, true);
+    expect(params, isNotNull);
     expect(params.audience, 'http://localhost');
     expect(params.invitation, 'https://invitation.uri');
     expect(params.organization, 'org-id');
@@ -110,7 +110,7 @@ void main() {
         .first
         .authorizationParams;
 
-    expect(params != null, true);
+    expect(params, isNotNull);
     expect(params.screen_hint, 'signup');
   });
 
@@ -125,7 +125,7 @@ void main() {
         .first
         .authorizationParams;
 
-    expect(params != null, true);
+    expect(params, isNotNull);
     expect(params.audience, null);
     expect(params.invitation, null);
     expect(params.organization, null);
