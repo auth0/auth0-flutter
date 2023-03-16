@@ -94,7 +94,7 @@ class Auth0Web {
           scopes: scopes ?? {},
           idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge)));
 
-  /// Opens a popup with the /authorize URL using the parameters provided as
+  /// Opens a popup with the `/authorize` URL using the parameters provided as
   /// arguments.
   ///
   /// Random and secure state and nonce parameters will be auto-generated. If
