@@ -108,6 +108,38 @@ class AuthenticationApi {
         mfaToken: mfaToken,
       )));
 
+  /// Requests a challenge for multi-factor authentication (MFA) based on the
+  /// challenge types supported by the application and user.
+  ///
+  /// The `type` is how the user will get the challenge and prove possession.
+  /// Supported challenge types include:
+  /// - `otp`:  for one-time password (OTP).
+  /// - `oob`:  for SMS/voice messages or out-of-band (OOB).
+  ///
+  /// ## Endpoint
+  /// https://auth0.com/docs/api/authentication#challenge-request
+  ///
+  /// ## Usage example
+  ///
+  /// ```dart
+  /// final result = await auth0.api.multifactorChallenge({
+  ///   mfaToken: 'received_mfa_token',
+  ///   types: [ChallengeType.otp],
+  ///   authenticatorId: 'authenticator_id'
+  /// });
+  /// ```
+  Future<Challenge> multifactorChallenge(
+          {required final String mfaToken,
+          final List<ChallengeType>? types,
+          final String? authenticatorId,
+          final Map<String, String> parameters = const {}}) =>
+      Auth0FlutterAuthPlatform.instance.multifactorChallenge(_createApiRequest(
+          AuthMultifactorChallengeOptions(
+              mfaToken: mfaToken,
+              types: types,
+              authenticatorId: authenticatorId,
+              parameters: parameters)));
+
   /// Fetches the user's profile from the /userinfo endpoint. An [accessToken] from a successful authentication call must be supplied.
   ///
   /// ## Endpoint

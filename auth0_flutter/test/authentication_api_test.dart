@@ -26,6 +26,9 @@ class TestPlatform extends Mock
     'tokenType': 'Bearer'
   });
 
+  static Challenge multifactorChallengeResult =
+      Challenge(challengeType: ChallengeType.otp, oobCode: 'oobCode');
+
   static Credentials renewResult = Credentials.fromMap({
     'accessToken': 'accessToken',
     'idToken': 'idToken',
@@ -85,8 +88,7 @@ void main() {
       final verificationResult = verify(mockedPlatform.signup(captureAny))
           .captured
           .single as ApiRequest<AuthSignupOptions>;
-      // ignore: inference_failure_on_collection_literal
-      expect(verificationResult.options.userMetadata, {});
+      expect(verificationResult.options.userMetadata, isEmpty);
       expect(result, TestPlatform.signupResult);
     });
   });
@@ -130,11 +132,9 @@ void main() {
       final verificationResult = verify(mockedPlatform.login(captureAny))
           .captured
           .single as ApiRequest<AuthLoginOptions>;
-      // ignore: inference_failure_on_collection_literal
       expect(verificationResult.options.scopes,
           ['openid', 'profile', 'email', 'offline_access']);
-      // ignore: inference_failure_on_collection_literal
-      expect(verificationResult.options.parameters, {});
+      expect(verificationResult.options.parameters, isEmpty);
       expect(result, TestPlatform.loginResult);
     });
 
@@ -150,7 +150,6 @@ void main() {
       final verificationResult = verify(mockedPlatform.login(captureAny))
           .captured
           .single as ApiRequest<AuthLoginOptions>;
-      // ignore: inference_failure_on_collection_literal
       expect(verificationResult.options.audience, null);
     });
   });
@@ -172,6 +171,50 @@ void main() {
       expect(verificationResult.options.mfaToken, 'test-mfa-token');
       expect(verificationResult.options.otp, 'test-otp');
       expect(result, TestPlatform.loginResult);
+    });
+  });
+
+  group('multifactorChallenge', () {
+    test('passes through properties to the platform', () async {
+      when(mockedPlatform.multifactorChallenge(any)).thenAnswer(
+          (final _) async => TestPlatform.multifactorChallengeResult);
+
+      final result = await Auth0('test-domain', 'test-clientId')
+          .api
+          .multifactorChallenge(
+              mfaToken: 'test-mfa-token',
+              types: [ChallengeType.otp, ChallengeType.oob],
+              authenticatorId: 'test-authenticatorId',
+              parameters: {'test': 'test-123'});
+
+      final verificationResult =
+          verify(mockedPlatform.multifactorChallenge(captureAny))
+              .captured
+              .single as ApiRequest<AuthMultifactorChallengeOptions>;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.account.clientId, 'test-clientId');
+      expect(verificationResult.options.mfaToken, 'test-mfa-token');
+      expect(verificationResult.options.types,
+          [ChallengeType.otp, ChallengeType.oob]);
+      expect(
+          verificationResult.options.authenticatorId, 'test-authenticatorId');
+      expect(result, TestPlatform.multifactorChallengeResult);
+    });
+
+    test('set parameters to default value when omitted', () async {
+      when(mockedPlatform.multifactorChallenge(any)).thenAnswer(
+          (final _) async => TestPlatform.multifactorChallengeResult);
+
+      final result = await Auth0('', '').api.multifactorChallenge(mfaToken: '');
+
+      final verificationResult =
+          verify(mockedPlatform.multifactorChallenge(captureAny))
+              .captured
+              .single as ApiRequest<AuthMultifactorChallengeOptions>;
+      expect(verificationResult.options.types, isNull);
+      expect(verificationResult.options.authenticatorId, isNull);
+      expect(verificationResult.options.parameters, isEmpty);
+      expect(result, TestPlatform.multifactorChallengeResult);
     });
   });
 
@@ -202,8 +245,7 @@ void main() {
 
       final verificationResult =
           verify(mockedPlatform.resetPassword(captureAny)).captured.single;
-      // ignore: inference_failure_on_collection_literal
-      expect(verificationResult.options.parameters, {});
+      expect(verificationResult.options.parameters, isEmpty);
     });
   });
 
@@ -241,10 +283,8 @@ void main() {
       final verificationResult = verify(mockedPlatform.renew(captureAny))
           .captured
           .single as ApiRequest<AuthRenewOptions>;
-      // ignore: inference_failure_on_collection_literal
-      expect(verificationResult.options.scopes, []);
-      // ignore: inference_failure_on_collection_literal
-      expect(verificationResult.options.parameters, {});
+      expect(verificationResult.options.scopes, isEmpty);
+      expect(verificationResult.options.parameters, isEmpty);
       expect(result, TestPlatform.renewResult);
     });
   });
@@ -275,8 +315,7 @@ void main() {
 
       final verificationResult =
           verify(mockedPlatform.userInfo(captureAny)).captured.single;
-      // ignore: inference_failure_on_collection_literal
-      expect(verificationResult.options.parameters, {});
+      expect(verificationResult.options.parameters, isEmpty);
     });
   });
 }
