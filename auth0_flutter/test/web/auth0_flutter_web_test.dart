@@ -1,7 +1,5 @@
 @Tags(['browser'])
 
-import 'dart:js';
-
 import 'package:auth0_flutter/auth0_flutter_web.dart';
 import 'package:auth0_flutter/src/web/auth0_flutter_plugin_real.dart';
 import 'package:auth0_flutter/src/web/auth0_flutter_web_platform_proxy.dart';
@@ -11,7 +9,7 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'auth0_fluter_web_test.mocks.dart';
+import 'auth0_flutter_web_test.mocks.dart';
 
 @GenerateMocks([Auth0FlutterWebClientProxy])
 void main() {
@@ -90,13 +88,28 @@ void main() {
         .first
         .authorizationParams;
 
-    expect(params != null, true);
+    expect(params, isNotNull);
     expect(params.audience, 'http://localhost');
     expect(params.invitation, 'https://invitation.uri');
     expect(params.organization, 'org-id');
     expect(params.redirect_uri, 'http://redirect.uri');
     expect(params.scope, 'openid read-books');
     expect(params.max_age, 10);
+  });
+
+  test('loginWithRedirect supports custom parameters', () async {
+    when(mockClientProxy.isAuthenticated())
+        .thenAnswer((final _) => Future.value(false));
+
+    await auth0.loginWithRedirect(parameters: {'screen_hint': 'signup'});
+
+    final params = verify(mockClientProxy.loginWithRedirect(captureAny))
+        .captured
+        .first
+        .authorizationParams;
+
+    expect(params, isNotNull);
+    expect(params.screen_hint, 'signup');
   });
 
   test('loginWithRedirect strips options that are null', () async {
@@ -110,7 +123,7 @@ void main() {
         .first
         .authorizationParams;
 
-    expect(params != null, true);
+    expect(params, isNotNull);
     expect(params.audience, null);
     expect(params.invitation, null);
     expect(params.organization, null);
@@ -213,5 +226,28 @@ void main() {
     when(mockClientProxy.loginWithPopup(any, any)).thenThrow(Exception());
 
     expect(() async => auth0.loginWithPopup(), throwsException);
+  });
+
+  test('loginWithPopup supports sending custom parameters', () async {
+    when(mockClientProxy.loginWithPopup(any, any))
+        .thenAnswer((final _) => Future.value());
+
+    when(mockClientProxy.isAuthenticated())
+        .thenAnswer((final _) => Future.value(true));
+
+    when(mockClientProxy.getTokenSilently(any))
+        .thenAnswer((final _) => Future.value(webCredentials));
+
+    final window = Object();
+
+    final credentials =
+        await auth0.loginWithPopup(parameters: {'screen_hint': 'signup'});
+
+    expect(credentials, isNotNull);
+
+    final capture =
+        verify(mockClientProxy.loginWithPopup(captureAny, captureAny)).captured;
+
+    expect(capture.first.authorizationParams.screen_hint, 'signup');
   });
 }

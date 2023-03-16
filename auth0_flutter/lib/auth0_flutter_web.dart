@@ -79,20 +79,25 @@ class Auth0Web {
   /// * If you want to log into a specific organization, provide the
   /// [organizationId]. Provide [invitationUrl] if a user has been invited
   /// to join an organization.
+  /// * Arbitrary [parameters] can be specified and then picked up in a custom
+  /// Auth0 [Action](https://auth0.com/docs/customize/actions) or
+  /// [Rule](https://auth0.com/docs/customize/rules).
   Future<void> loginWithRedirect(
           {final String? audience,
           final String? redirectUrl,
           final String? organizationId,
           final String? invitationUrl,
           final int? maxAge,
-          final Set<String>? scopes}) =>
+          final Set<String>? scopes,
+          final Map<String, String> parameters = const {}}) =>
       Auth0FlutterWebPlatform.instance.loginWithRedirect(LoginOptions(
           audience: audience,
           redirectUrl: redirectUrl,
           organizationId: organizationId,
           invitationUrl: invitationUrl,
           scopes: scopes ?? {},
-          idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge)));
+          idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge),
+          parameters: parameters));
 
   /// Opens a popup with the `/authorize` URL using the parameters provided as
   /// arguments.
@@ -115,7 +120,9 @@ class Auth0Web {
   /// * If you want to log into a specific organization, provide the
   /// [organizationId]. Provide [invitationUrl] if a user has been invited
   /// to join an organization.
-  ///
+  /// * Arbitrary [parameters] can be specified and then picked up in a custom
+  /// Auth0 [Action](https://auth0.com/docs/customize/actions) or
+  /// [Rule](https://auth0.com/docs/customize/rules).
   ///
   /// ### Using a custom popup
   /// To provide your own popup window, create it using the `window.open()`
@@ -138,7 +145,8 @@ class Auth0Web {
           final int? maxAge,
           final Set<String>? scopes,
           final dynamic popupWindow,
-          final int? timeoutInSeconds}) =>
+          final int? timeoutInSeconds,
+          final Map<String, String> parameters = const {}}) =>
       Auth0FlutterWebPlatform.instance.loginWithPopup(PopupLoginOptions(
           audience: audience,
           organizationId: organizationId,
@@ -146,7 +154,8 @@ class Auth0Web {
           scopes: scopes ?? {},
           idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge),
           popupWindow: popupWindow,
-          timeoutInSeconds: timeoutInSeconds));
+          timeoutInSeconds: timeoutInSeconds,
+          parameters: parameters));
 
   /// Redirects the browser to the Auth0 logout endpoint to end the user's
   /// session.
