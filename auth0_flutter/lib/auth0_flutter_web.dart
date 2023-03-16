@@ -79,6 +79,9 @@ class Auth0Web {
   /// * If you want to log into a specific organization, provide the
   /// [organizationId]. Provide [invitationUrl] if a user has been invited
   /// to join an organization.
+  /// * Arbitrary [parameters] can be specified and then picked up in a custom
+  /// Auth0 [Action](https://auth0.com/docs/customize/actions) or
+  /// [Rule](https://auth0.com/docs/customize/rules).
   Future<void> loginWithRedirect(
           {final String? audience,
           final String? redirectUrl,
