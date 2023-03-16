@@ -107,7 +107,8 @@ class Auth0Web {
   ///
   /// Additonal notes:
   ///
-  /// * [audience] relates to the API Identifier you want to reference in your access tokens (see [API settings](https://auth0.com/docs/get-started/apis/api-settings)).
+  /// * [audience] relates to the API Identifier you want to reference in
+  /// your access tokens (see [API settings](https://auth0.com/docs/get-started/apis/api-settings)).
   /// * [scopes] defaults to `openid profile email`. You can
   /// override these scopes, but `openid` is always requested regardless of
   /// this setting.
