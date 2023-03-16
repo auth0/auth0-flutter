@@ -6,6 +6,7 @@ import 'auth0_flutter_web_platform_proxy.dart';
 import 'extensions/client_options_extensions.dart';
 import 'extensions/credentials_extension.dart';
 import 'extensions/logout_options.extension.dart';
+import 'extensions/web_exception_extensions.dart';
 import 'js_interop.dart' as interop;
 import 'js_interop_utils.dart';
 
@@ -21,7 +22,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
 
   @override
   Future<void> initialize(
-      final ClientOptions clientOptions, final UserAgent userAgent) {
+      final ClientOptions clientOptions, final UserAgent userAgent) async {
     clientProxy ??= Auth0FlutterWebClientProxy(
         client: interop.Auth0Client(JsInteropUtils.stripNulls(
             clientOptions.toAuth0ClientOptions(userAgent))));
@@ -31,7 +32,11 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     if (search?.contains('state=') == true &&
         (search?.contains('code=') == true ||
             search?.contains('error=') == true)) {
-      return clientProxy!.handleRedirectCallback();
+      try {
+        return await clientProxy!.handleRedirectCallback();
+      } catch (e) {
+        throw WebExceptionExtentions.fromJsObject(e);
+      }
     }
 
     return clientProxy!.checkSession();
@@ -76,13 +81,17 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
         popup: options?.popupWindow,
         timeoutInSeconds: options?.timeoutInSeconds));
 
-    await client.loginWithPopup(
-        interop.PopupLoginOptions(authorizationParams: authParams),
-        popupConfig);
+    try {
+      await client.loginWithPopup(
+          interop.PopupLoginOptions(authorizationParams: authParams),
+          popupConfig);
 
-    return CredentialsExtension.fromWeb(await client.getTokenSilently(
-        interop.GetTokenSilentlyOptions(
-            authorizationParams: authParams, detailedResponse: true)));
+      return CredentialsExtension.fromWeb(await client.getTokenSilently(
+          interop.GetTokenSilentlyOptions(
+              authorizationParams: authParams, detailedResponse: true)));
+    } catch (e) {
+      throw WebExceptionExtentions.fromJsObject(e);
+    }
   }
 
   @override
@@ -98,9 +107,13 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     final clientProxy = _ensureClient();
     final options = interop.GetTokenSilentlyOptions(detailedResponse: true);
 
-    final result = await clientProxy.getTokenSilently(options);
+    try {
+      final result = await clientProxy.getTokenSilently(options);
 
-    return CredentialsExtension.fromWeb(result);
+      return CredentialsExtension.fromWeb(result);
+    } catch (e) {
+      throw WebExceptionExtentions.fromJsObject(e);
+    }
   }
 
   @override
