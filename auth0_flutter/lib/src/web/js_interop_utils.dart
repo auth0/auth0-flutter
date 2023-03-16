@@ -38,7 +38,7 @@ class JsInteropUtils {
 extension AuthParamsExtension on AuthorizationParams {
   // Wrapper for common use case of stripping nulls and mixing in parameters
   // on AuthorizationParams.
-  AuthorizationParams prepare(final Map<String, dynamic>? params) =>
+  AuthorizationParams prepare([final Map<String, dynamic>? params]) =>
       JsInteropUtils.stripNulls(
           JsInteropUtils.addCustomParams(this, params ?? {}));
 }
