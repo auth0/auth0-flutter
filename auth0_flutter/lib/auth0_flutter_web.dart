@@ -115,8 +115,22 @@ class Auth0Web {
   /// * If you want to log into a specific organization, provide the
   /// [organizationId]. Provide [invitationUrl] if a user has been invited
   /// to join an organization.
-  /// * To provide your own popup window, create it using the `window.open()`
-  /// HTML API and set [popupWindow] to the result.
+  ///
+  ///
+  /// ### Using a custom popup
+  /// To provide your own popup window, create it using the `window.open()`
+  /// HTML API and set [popupWindow] to the result. You may want to do this
+  /// if certain browsers (e.g. Safari) block the popup by default; in this
+  /// scenario, creating your own and passing it to `loginWithPopup` may fix it.
+  ///
+  /// ```dart
+  /// final popup = window.open('', '', 'width=400,height=800');
+  /// final creds = await auth0Web.loginWithPopup(popupWindow: popup);
+  /// ```
+  ///
+  /// **Note:** This requires that `dart:html` be imported into the plugin
+  /// package, which may generate [a warning](https://dart-lang.github.io/linter/lints/avoid_web_libraries_in_flutter.html)
+  /// 'avoid_web_libraries_in_flutter'.
   Future<Credentials> loginWithPopup(
           {final String? audience,
           final String? organizationId,
