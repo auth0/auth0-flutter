@@ -1,5 +1,7 @@
 import 'dart:js_util';
 
+import 'js_interop.dart';
+
 class JsInteropUtils {
   /// Rebuilds the input object, omitting values that are null
   static T stripNulls<T extends Object>(final T obj) {
@@ -31,4 +33,12 @@ class JsInteropUtils {
 
     return obj;
   }
+}
+
+extension AuthParamsExtension on AuthorizationParams {
+  // Wrapper for common use case of stripping nulls and mixing in parameters
+  // on AuthorizationParams.
+  AuthorizationParams prepare(final Map<String, dynamic>? params) =>
+      JsInteropUtils.stripNulls(
+          JsInteropUtils.addCustomParams(this, params ?? {}));
 }

@@ -85,14 +85,16 @@ class Auth0Web {
           final String? organizationId,
           final String? invitationUrl,
           final int? maxAge,
-          final Set<String>? scopes}) =>
+          final Set<String>? scopes,
+          final Map<String, String> parameters = const {}}) =>
       Auth0FlutterWebPlatform.instance.loginWithRedirect(LoginOptions(
           audience: audience,
           redirectUrl: redirectUrl,
           organizationId: organizationId,
           invitationUrl: invitationUrl,
           scopes: scopes ?? {},
-          idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge)));
+          idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge),
+          parameters: parameters));
 
   /// Opens a popup with the `/authorize` URL using the parameters provided as
   /// arguments.

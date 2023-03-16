@@ -99,6 +99,21 @@ void main() {
     expect(params.max_age, 10);
   });
 
+  test('loginWithRedirect supports custom parameters', () async {
+    when(mockClientProxy.isAuthenticated())
+        .thenAnswer((final _) => Future.value(false));
+
+    await auth0.loginWithRedirect(parameters: {'screen_hint': 'signup'});
+
+    final params = verify(mockClientProxy.loginWithRedirect(captureAny))
+        .captured
+        .first
+        .authorizationParams;
+
+    expect(params != null, true);
+    expect(params.screen_hint, 'signup');
+  });
+
   test('loginWithRedirect strips options that are null', () async {
     when(mockClientProxy.isAuthenticated())
         .thenAnswer((final _) => Future.value(false));
