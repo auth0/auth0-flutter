@@ -9,6 +9,11 @@ class Auth0FlutterWebClientProxy {
   Future<void> loginWithRedirect(final RedirectLoginOptions options) =>
       promiseToFuture(client.loginWithRedirect(options));
 
+  Future<void> loginWithPopup(
+          [final PopupLoginOptions? options,
+          final PopupConfigOptions? config]) =>
+      promiseToFuture(client.loginWithPopup(options, config));
+
   Future<void> checkSession() => promiseToFuture(client.checkSession());
 
   Future<WebCredentials> getTokenSilently(

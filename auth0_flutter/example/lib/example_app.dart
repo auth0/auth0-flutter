@@ -1,11 +1,9 @@
 import 'dart:async';
-
 import 'package:auth0_flutter/auth0_flutter.dart';
 import 'package:auth0_flutter/auth0_flutter_web.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
 import 'api_card.dart';
 import 'constants.dart';
 import 'web_auth_card.dart';

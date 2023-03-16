@@ -94,6 +94,60 @@ class Auth0Web {
           scopes: scopes ?? {},
           idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge)));
 
+  /// Opens a popup with the `/authorize` URL using the parameters provided as
+  /// arguments.
+  ///
+  /// Random and secure state and nonce parameters will be auto-generated. If
+  /// the response is successful, results will be valid according to
+  /// their expiration times.
+  ///
+  /// **Note**: This method should be called from an event handler that was
+  /// triggered by user interaction, such as a button click. Otherwise the
+  /// popup will be blocked in most browsers.
+  ///
+  /// Additonal notes:
+  ///
+  /// * [audience] relates to the API Identifier you want to reference in
+  /// your access tokens (see [API settings](https://auth0.com/docs/get-started/apis/api-settings)).
+  /// * [scopes] defaults to `openid profile email`. You can
+  /// override these scopes, but `openid` is always requested regardless of
+  /// this setting.
+  /// * If you want to log into a specific organization, provide the
+  /// [organizationId]. Provide [invitationUrl] if a user has been invited
+  /// to join an organization.
+  ///
+  ///
+  /// ### Using a custom popup
+  /// To provide your own popup window, create it using the `window.open()`
+  /// HTML API and set [popupWindow] to the result. You may want to do this
+  /// if certain browsers (like Safari) block the popup by default; in this
+  /// scenario, creating your own and passing it to `loginWithPopup` may fix it.
+  ///
+  /// ```dart
+  /// final popup = window.open('', '', 'width=400,height=800');
+  /// final creds = await auth0Web.loginWithPopup(popupWindow: popup);
+  /// ```
+  ///
+  /// **Note:** This requires that `dart:html` be imported into the plugin
+  /// package, which may generate [a warning](https://dart-lang.github.io/linter/lints/avoid_web_libraries_in_flutter.html)
+  /// 'avoid_web_libraries_in_flutter'.
+  Future<Credentials> loginWithPopup(
+          {final String? audience,
+          final String? organizationId,
+          final String? invitationUrl,
+          final int? maxAge,
+          final Set<String>? scopes,
+          final dynamic popupWindow,
+          final int? timeoutInSeconds}) =>
+      Auth0FlutterWebPlatform.instance.loginWithPopup(PopupLoginOptions(
+          audience: audience,
+          organizationId: organizationId,
+          invitationUrl: invitationUrl,
+          scopes: scopes ?? {},
+          idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge),
+          popupWindow: popupWindow,
+          timeoutInSeconds: timeoutInSeconds));
+
   /// Redirects the browser to the Auth0 logout endpoint to end the user's
   /// session.
   ///
