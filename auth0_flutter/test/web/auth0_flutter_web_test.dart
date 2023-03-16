@@ -1,7 +1,5 @@
 @Tags(['browser'])
 
-import 'dart:js';
-
 import 'package:auth0_flutter/auth0_flutter_web.dart';
 import 'package:auth0_flutter/src/web/auth0_flutter_plugin_real.dart';
 import 'package:auth0_flutter/src/web/auth0_flutter_web_platform_proxy.dart';
@@ -11,7 +9,7 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'auth0_fluter_web_test.mocks.dart';
+import 'auth0_flutter_web_test.mocks.dart';
 
 @GenerateMocks([Auth0FlutterWebClientProxy])
 void main() {
