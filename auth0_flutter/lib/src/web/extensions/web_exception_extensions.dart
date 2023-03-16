@@ -1,7 +1,7 @@
 import 'dart:js_util';
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 
-extension WebExceptionExtentions on WebException {
+extension WebExceptionExtension on WebException {
   static WebException fromJsObject(final Object jsException) => WebException(
       getProperty(jsException, 'error'),
       getProperty(jsException, 'error_description'));
