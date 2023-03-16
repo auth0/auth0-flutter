@@ -62,14 +62,15 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   Future<Credentials> loginWithPopup(final PopupLoginOptions? options) async {
     final client = _ensureClient();
 
-    final authParams = JsInteropUtils.stripNulls(interop.AuthorizationParams(
-        audience: options?.audience,
-        organization: options?.organizationId,
-        invitation: options?.invitationUrl,
-        max_age: options?.idTokenValidationConfig?.maxAge,
-        scope: options?.scopes.isNotEmpty == true
-            ? options?.scopes.join(' ')
-            : null));
+    final authParams = interop.AuthorizationParams(
+            audience: options?.audience,
+            organization: options?.organizationId,
+            invitation: options?.invitationUrl,
+            max_age: options?.idTokenValidationConfig?.maxAge,
+            scope: options?.scopes.isNotEmpty == true
+                ? options?.scopes.join(' ')
+                : null)
+        .prepare(options?.parameters);
 
     final popupConfig = JsInteropUtils.stripNulls(interop.PopupConfigOptions(
         popup: options?.popupWindow,

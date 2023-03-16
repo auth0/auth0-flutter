@@ -227,4 +227,27 @@ void main() {
 
     expect(() async => auth0.loginWithPopup(), throwsException);
   });
+
+  test('loginWithPopup supports sending custom parameters', () async {
+    when(mockClientProxy.loginWithPopup(any, any))
+        .thenAnswer((final _) => Future.value());
+
+    when(mockClientProxy.isAuthenticated())
+        .thenAnswer((final _) => Future.value(true));
+
+    when(mockClientProxy.getTokenSilently(any))
+        .thenAnswer((final _) => Future.value(webCredentials));
+
+    final window = Object();
+
+    final credentials =
+        await auth0.loginWithPopup(parameters: {'screen_hint': 'signup'});
+
+    expect(credentials, isNotNull);
+
+    final capture =
+        verify(mockClientProxy.loginWithPopup(captureAny, captureAny)).captured;
+
+    expect(capture.first.authorizationParams.screen_hint, 'signup');
+  });
 }
