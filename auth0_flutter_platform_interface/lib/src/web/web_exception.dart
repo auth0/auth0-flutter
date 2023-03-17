@@ -1,9 +1,7 @@
-class WebException implements Exception {
-  final String error;
-  final String errorDescription;
+import '../../auth0_flutter_platform_interface.dart';
 
-  const WebException(this.error, this.errorDescription);
-
-  @override
-  String toString() => '$error: $errorDescription';
+class WebException extends Auth0Exception {
+  const WebException(final String error, final String errorDescription,
+      final Map<String, dynamic> details)
+      : super(error, errorDescription, details);
 }

@@ -96,8 +96,8 @@ void main() {
         () async => auth0.onLoad(),
         throwsA(predicate((final e) =>
             e is WebException &&
-            e.error == 'test' &&
-            e.errorDescription == 'test exception')));
+            e.code == 'test' &&
+            e.message == 'test exception')));
   });
 
   test('loginWithRedirect with all options', () async {
@@ -200,8 +200,8 @@ void main() {
         () async => auth0.credentials(),
         throwsA(predicate((final e) =>
             e is WebException &&
-            e.error == 'test' &&
-            e.errorDescription == 'test exception')));
+            e.code == 'test' &&
+            e.message == 'test exception')));
   });
 
   test('logout is called and succeeds', () async {
@@ -281,8 +281,8 @@ void main() {
         () async => auth0.loginWithPopup(),
         throwsA(predicate((final e) =>
             e is WebException &&
-            e.error == 'test' &&
-            e.errorDescription == 'test exception')));
+            e.code == 'test' &&
+            e.message == 'test exception')));
   });
 
   test('loginWithPopup throws the correct exception from getTokenSilently',
@@ -297,7 +297,7 @@ void main() {
         () async => auth0.loginWithPopup(),
         throwsA(predicate((final e) =>
             e is WebException &&
-            e.error == 'test' &&
-            e.errorDescription == 'test exception')));
+            e.code == 'test' &&
+            e.message == 'test exception')));
   });
 }
