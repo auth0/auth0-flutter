@@ -218,7 +218,7 @@ auth0Web
 });
 ```
 
-The `max_age` value can be configured through `loginWithRedirect()`.
+The `max_age` value can be configured through `loginWithRedirect()` and `loginWithPopup()`.
 
 ```dart
 await auth0Web.loginWithRedirect(
