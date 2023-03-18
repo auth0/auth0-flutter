@@ -141,7 +141,7 @@ class Auth0Web {
   ///
   /// ```dart
   /// final popup = window.open('', '', 'width=400,height=800');
-  /// final creds = await auth0Web.loginWithPopup(popupWindow: popup);
+  /// final credentials = await auth0Web.loginWithPopup(popupWindow: popup);
   /// ```
   ///
   /// **Note:** This requires that `dart:html` be imported into the plugin
