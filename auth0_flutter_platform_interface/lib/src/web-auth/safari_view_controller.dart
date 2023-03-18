@@ -20,6 +20,7 @@ enum SafariViewControllerPresentationStyle {
 /// Configuration for using `SFSafariViewController` on iOS.
 class SafariViewController {
   /// The presentation style used when opening the browser window.
+  ///
   /// Defaults to `fullScreen`.
   final SafariViewControllerPresentationStyle? presentationStyle;
 
