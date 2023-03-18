@@ -150,7 +150,34 @@ void main() {
     expect(result, true);
   });
 
-  test('credentials is called and succeeds', () async {
+  test('credentials with all options', () async {
+    when(mockClientProxy.getTokenSilently(any))
+        .thenAnswer((final _) => Future.value(webCredentials));
+
+    final result = await auth0.credentials(
+      cacheMode: CacheMode.cacheOnly,
+      timeoutInSeconds: 120,
+      audience: 'http://localhost',
+      redirectUrl: 'http://redirect.uri',
+      scopes: {'openid', 'read-books'},
+    );
+
+    expect(result.scopes, {'openid', 'read_messages'});
+
+    final params =
+        verify(mockClientProxy.getTokenSilently(captureAny)).captured.first;
+
+    expect(params, isNotNull);
+    expect(params.detailedResponse, true);
+    expect(params.cacheMode, CacheMode.cacheOnly.toString());
+    expect(params.timeoutInSeconds, 120);
+    expect(params.authorizationParams, isNotNull);
+    expect(params.authorizationParams.audience, 'http://localhost');
+    expect(params.authorizationParams.redirect_uri, 'http://redirect.uri');
+    expect(params.authorizationParams.scope, 'openid read-books');
+  });
+
+  test('credentials strips options that are null', () async {
     when(mockClientProxy.getTokenSilently(any))
         .thenAnswer((final _) => Future.value(webCredentials));
 
@@ -161,6 +188,35 @@ void main() {
     expect(result.refreshToken, jwt);
     expect(result.user.sub, jwtPayload['sub']);
     expect(result.scopes, {'openid', 'read_messages'});
+
+    final params =
+        verify(mockClientProxy.getTokenSilently(captureAny)).captured.first;
+
+    expect(params, isNotNull);
+    expect(params.detailedResponse, true);
+    expect(params.cacheMode, null);
+    expect(params.authorizationParams, isNotNull);
+    expect(params.authorizationParams.audience, null);
+    expect(params.authorizationParams.redirect_uri, null);
+    expect(params.authorizationParams.scope, null);
+  });
+
+  test('credentials supports sending custom parameters', () async {
+    when(mockClientProxy.getTokenSilently(any))
+        .thenAnswer((final _) => Future.value(webCredentials));
+
+    final credentials =
+        await auth0.credentials(parameters: {'screen_hint': 'signup'});
+
+    expect(credentials, isNotNull);
+
+    final params = verify(mockClientProxy.getTokenSilently(captureAny))
+        .captured
+        .first
+        .authorizationParams;
+
+    expect(params, isNotNull);
+    expect(params.screen_hint, 'signup');
   });
 
   test('credentials is called and throws', () async {

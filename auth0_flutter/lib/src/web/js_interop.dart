@@ -3,8 +3,6 @@
 @JS('auth0')
 library auth0;
 
-import 'dart:html';
-
 import 'package:js/js.dart';
 
 @JS()
@@ -104,9 +102,9 @@ class GetTokenSilentlyOptions {
   external bool get detailedResponse;
 
   external factory GetTokenSilentlyOptions(
-      {final AuthorizationParams authorizationParams,
-      final String cacheMode,
-      final num timeoutInSeconds,
+      {final AuthorizationParams? authorizationParams,
+      final String? cacheMode,
+      final num? timeoutInSeconds,
       final bool detailedResponse});
 }
 

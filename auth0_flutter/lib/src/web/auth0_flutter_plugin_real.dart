@@ -94,11 +94,27 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   }
 
   @override
-  Future<Credentials> credentials() async {
+  Future<Credentials> credentials(final CredentialsOptions? options) async {
     final clientProxy = _ensureClient();
-    final options = interop.GetTokenSilentlyOptions(detailedResponse: true);
+    final authParams = interop.AuthorizationParams(
+            redirect_uri: options?.redirectUrl,
+            audience: options?.audience,
+            scope: options?.scopes.isNotEmpty == true
+                ? options?.scopes.join(' ')
+                : null)
+        .prepare(options?.parameters);
 
-    final result = await clientProxy.getTokenSilently(options);
+    final credentialsConfig = JsInteropUtils.stripNulls(
+        interop.GetTokenSilentlyOptions(
+            authorizationParams: authParams,
+            // ignore: prefer_null_aware_operators
+            cacheMode: options?.cacheMode != null
+                ? options?.cacheMode.toString()
+                : null,
+            timeoutInSeconds: options?.timeoutInSeconds,
+            detailedResponse: true));
+
+    final result = await clientProxy.getTokenSilently(credentialsConfig);
 
     return CredentialsExtension.fromWeb(result);
   }
