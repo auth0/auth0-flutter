@@ -137,7 +137,8 @@ class Auth0Web {
   /// To provide your own popup window, create it using the `window.open()`
   /// HTML API and set [popupWindow] to the result. You may want to do this
   /// if certain browsers (like Safari) block the popup by default; in this
-  /// scenario, creating your own and passing it to `loginWithPopup` may fix it.
+  /// scenario, creating your own and passing it to `loginWithPopup()` may fix
+  /// it.
   ///
   /// ```dart
   /// final popup = window.open('', '', 'width=400,height=800');
