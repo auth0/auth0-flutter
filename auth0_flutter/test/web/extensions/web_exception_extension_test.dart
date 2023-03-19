@@ -7,13 +7,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   Object createJsException(final String error, final String description,
-      {final Map<String, dynamic>? details}) {
+      {final Map<String, dynamic>? additionalProps}) {
     final jsObject = newObject<JsObject>();
     setProperty(jsObject, 'error', error);
     setProperty(jsObject, 'error_description', description);
 
-    if (details != null) {
-      for (final element in details.entries) {
+    if (additionalProps != null) {
+      for (final element in additionalProps.entries) {
         setProperty(jsObject, element.key, element.value);
       }
     }
@@ -21,9 +21,22 @@ void main() {
     return jsObject;
   }
 
+  test('additional props are added to the details collection', () {
+    final exception = createJsException(
+        'authentication_error', 'A test authentication error',
+        additionalProps: {'prop-1': 'Property 1', 'prop-2': 'Property 2'});
+
+    final webException = WebExceptionExtension.fromJsObject(exception);
+
+    expect(webException.code, 'authentication_error');
+    expect(webException.message, 'A test authentication error');
+    expect(webException.details['prop-1'], 'Property 1');
+    expect(webException.details['prop-2'], 'Property 2');
+  });
+
   test('mfa_required exception is created', () {
     final exception = createJsException('mfa_required', 'MFA is required',
-        details: {'mfaToken': 'abc123'});
+        additionalProps: {'mfaToken': 'abc123'});
 
     final webException = WebExceptionExtension.fromJsObject(exception);
 
