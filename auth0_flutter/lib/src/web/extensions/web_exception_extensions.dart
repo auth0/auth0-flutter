@@ -19,7 +19,6 @@ extension WebExceptionExtension on WebException {
             description, getProperty(jsException, 'mfaToken'));
     }
 
-    return WebException(getProperty(jsException, 'error'),
-        getProperty(jsException, 'error_description'), details);
+    return WebException(error, description, details);
   }
 }
