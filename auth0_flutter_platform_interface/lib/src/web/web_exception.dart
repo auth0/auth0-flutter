@@ -4,6 +4,7 @@ import '../../auth0_flutter_platform_interface.dart';
 /// goes wrong.
 class WebException extends Auth0Exception {
   static const String _mfaRequired = 'MFA_REQUIRED';
+  static const String _timeout = 'TIMEOUT';
 
   const WebException(final String error, final String errorDescription,
       final Map<String, dynamic> details)
@@ -11,4 +12,7 @@ class WebException extends Auth0Exception {
 
   WebException.mfaError(final String message, final String mfaToken)
       : this(WebException._mfaRequired, message, {'mfaToken': mfaToken});
+
+  WebException.timeout(final String message)
+      : this(WebException._timeout, message, const {});
 }

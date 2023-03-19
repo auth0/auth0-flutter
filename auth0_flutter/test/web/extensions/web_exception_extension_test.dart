@@ -44,4 +44,13 @@ void main() {
     expect(webException.message, 'MFA is required');
     expect(webException.details['mfaToken'], 'abc123');
   });
+
+  test('timeout error is created', () {
+    final exception = createJsException('timeout', 'Timeout');
+    final webException = WebExceptionExtension.fromJsObject(exception);
+
+    expect(webException.code, 'timeout');
+    expect(webException.message, 'Timeout');
+    expect(webException.details, <String, dynamic>{});
+  });
 }

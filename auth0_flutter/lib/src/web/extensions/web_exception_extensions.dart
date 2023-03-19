@@ -17,6 +17,9 @@ extension WebExceptionExtension on WebException {
       case 'mfa_required':
         return WebException.mfaError(
             description, getProperty(jsException, 'mfaToken'));
+
+      case 'timeout':
+        return WebException.timeout(description);
     }
 
     return WebException(error, description, details);
