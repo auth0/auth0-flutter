@@ -43,8 +43,12 @@ class AuthenticationApi {
   ///
   /// ## Notes
   ///
-  /// * [audience] relates to the API Identifier you want to reference in your access tokens (see [API settings](https://auth0.com/docs/get-started/apis/api-settings))
-  /// * [scopes] defaults to `openid profile email offline_access`
+  /// * [audience] relates to the API Identifier you want to reference in your
+  /// access tokens. See [API settings](https://auth0.com/docs/get-started/apis/api-settings)
+  /// to learn more.
+  /// * [scopes] defaults to `openid profile email offline_access`. You can
+  /// override these scopes, but `openid` is always requested regardless of this
+  /// setting.
   /// * [parameters] can be used to sent through custom parameters to the
   /// endpoint to be picked up in a Rule or Action.
   ///
