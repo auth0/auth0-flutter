@@ -141,8 +141,6 @@ android {
 }
 ```
 
-> 💡 If your Android app is using [product flavors](https://developer.android.com/studio/build/build-variants#product-flavors), you might need to specify different manifest placeholders for each flavor.
-
 <details>
   <summary>Example</summary>
 
@@ -182,6 +180,8 @@ Re-declare the activity manually using `tools:node="remove"` in the `android/src
 ```
 
 </details>
+
+> 💡 If your Android app is using [product flavors](https://developer.android.com/studio/build/build-variants#product-flavors), you might need to specify different manifest placeholders for each flavor.
 
 ##### iOS: Configure custom URL scheme
 
@@ -284,6 +284,29 @@ if (kIsWeb) {
   await auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
 }
 ```
+
+<details>
+  <summary>Using a popup</summary>
+
+Instead of redirecting to the Universal Login page, you can open it in a popup window.
+
+```dart
+if (kIsWeb) {
+  final credentials = await auth0Web.loginWithPopup();
+}
+```
+
+To provide your own popup window, create it using the `window.open()` HTML API and set `popupWindow` to the result.
+You may want to do this if certain browsers (like Safari) block the popup by default; in this scenario, creating your own and passing it to `loginWithPopup()` may fix it.
+
+```dart
+final popup = window.open('', '', 'width=400,height=800');
+final credentials = await auth0Web.loginWithPopup(popupWindow: popup);
+```
+
+> ⚠️ This requires that `dart:html` be imported into the plugin package, which may generate [the warning](https://dart-lang.github.io/linter/lints/avoid_web_libraries_in_flutter.html) 'avoid_web_libraries_in_flutter'.
+
+</details>
 
 > 💡 You need to import the `'flutter/foundation.dart'` library to access the `kIsWeb` constant. If your app does not support other platforms, you can remove this condition.
 
