@@ -15,7 +15,7 @@ class Auth0Web {
   /// and [clientId] properties.
   ///
   /// [domain] and [clientId] are both values that can be retrieved from the
-  /// application in your [Auth0 Dashboard](https://manage.auth0.com).
+  /// **Settings** page of your [Auth0 application](https://manage.auth0.com/#/applications/).
   Auth0Web(final String domain, final String clientId)
       : _account = Account(domain, clientId);
 
@@ -25,8 +25,14 @@ class Auth0Web {
   /// the current user already has a session with Auth0, an instance of
   /// [Credentials] will be returned, populated with their user data and tokens.
   ///
-  /// Please see the [ClientOptions] type for the full description of the
-  /// available arguments to this method.
+  /// Additional notes:
+  ///
+  /// * You can specify custom [leeway] and [issuer] values to be used for the
+  /// validation of the ID token. See the [IdTokenValidationConfig] type to
+  /// learn more about these parameters.
+  ///
+  /// * See the [ClientOptions] type for the full description of the remaining
+  /// parameters for this method.
   Future<Credentials?> onLoad(
       {final int? authorizeTimeoutInSeconds,
       final CacheLocation? cacheLocation,
@@ -67,15 +73,17 @@ class Auth0Web {
   /// Redirects the user to [Auth0 Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login)
   /// to log into the app.
   ///
-  /// Additonal notes:
+  /// Additional notes:
   ///
   /// * Use [redirectUrl] to tell Auth0 where to redirect back to once the user
-  /// has logged in. This URL must be registered in your Auth0 client settings
-  /// under **Allowed Callback URLs** - [read more at Auth0 docs](https://auth0.com/docs/authenticate/login/redirect-users-after-login).
-  /// * [audience] relates to the API Identifier you want to reference in your access tokens (see [API settings](https://auth0.com/docs/get-started/apis/api-settings)).
-  /// * [scopes] defaults to `openid profile email`. You can
-  /// override these scopes, but `openid` is always requested regardless of
-  /// this setting.
+  /// has logged in. This URL must be registered in your Auth0 application
+  /// settings under **Allowed Callback URLs**. See the [Auth0 docs](https://auth0.com/docs/authenticate/login/redirect-users-after-login)
+  /// to learn more.
+  /// * [audience] relates to the API Identifier you want to reference in your
+  /// access tokens. See [API settings](https://auth0.com/docs/get-started/apis/api-settings)
+  /// to learn more.
+  /// * [scopes] defaults to `openid profile email`. You can override these
+  /// scopes, but `openid` is always requested regardless of this setting.
   /// * If you want to log into a specific organization, provide the
   /// [organizationId]. Provide [invitationUrl] if a user has been invited
   /// to join an organization.
@@ -100,7 +108,7 @@ class Auth0Web {
           parameters: parameters));
 
   /// Opens a popup with the `/authorize` URL using the parameters provided as
-  /// arguments.
+  /// parameters.
   ///
   /// Random and secure state and nonce parameters will be auto-generated. If
   /// the response is successful, results will be valid according to
@@ -110,13 +118,13 @@ class Auth0Web {
   /// triggered by user interaction, such as a button click. Otherwise the
   /// popup will be blocked in most browsers.
   ///
-  /// Additonal notes:
+  /// Additional notes:
   ///
-  /// * [audience] relates to the API Identifier you want to reference in
-  /// your access tokens (see [API settings](https://auth0.com/docs/get-started/apis/api-settings)).
-  /// * [scopes] defaults to `openid profile email`. You can
-  /// override these scopes, but `openid` is always requested regardless of
-  /// this setting.
+  /// * [audience] relates to the API Identifier you want to reference in your
+  /// access tokens. See [API settings](https://auth0.com/docs/get-started/apis/api-settings)
+  /// to learn more.
+  /// * [scopes] defaults to `openid profile email`. You can override these
+  /// scopes, but `openid` is always requested regardless of this setting.
   /// * If you want to log into a specific organization, provide the
   /// [organizationId]. Provide [invitationUrl] if a user has been invited
   /// to join an organization.
@@ -125,18 +133,20 @@ class Auth0Web {
   /// [Rule](https://auth0.com/docs/customize/rules).
   ///
   /// ### Using a custom popup
+  ///
   /// To provide your own popup window, create it using the `window.open()`
   /// HTML API and set [popupWindow] to the result. You may want to do this
   /// if certain browsers (like Safari) block the popup by default; in this
-  /// scenario, creating your own and passing it to `loginWithPopup` may fix it.
+  /// scenario, creating your own and passing it to `loginWithPopup()` may fix
+  /// it.
   ///
   /// ```dart
   /// final popup = window.open('', '', 'width=400,height=800');
-  /// final creds = await auth0Web.loginWithPopup(popupWindow: popup);
+  /// final credentials = await auth0Web.loginWithPopup(popupWindow: popup);
   /// ```
   ///
   /// **Note:** This requires that `dart:html` be imported into the plugin
-  /// package, which may generate [a warning](https://dart-lang.github.io/linter/lints/avoid_web_libraries_in_flutter.html)
+  /// package, which may generate [the warning](https://dart-lang.github.io/linter/lints/avoid_web_libraries_in_flutter.html)
   /// 'avoid_web_libraries_in_flutter'.
   Future<Credentials> loginWithPopup(
           {final String? audience,
@@ -164,8 +174,8 @@ class Auth0Web {
   /// the user has logged out. This URL must be registered in **Allowed
   /// Logout URLs** in your Auth0 client settings. [Read more about how redirecting after logout works](https://auth0.com/docs/logout/guides/redirect-users-after-logout).
   /// * Use [federated] to log the user out of their identity provider
-  ///  (e.g. Google) as well as Auth0. Only applicable if the user authenticated
-  /// using an identity provider. [Read more about how federated logout works at Auth0](https://auth0.com/docs/logout/guides/logout-idps)
+  /// (such as Google) as well as Auth0. Only applicable if the user
+  /// authenticated using an identity provider. [Read more about how federated logout works at Auth0](https://auth0.com/docs/logout/guides/logout-idps).
   Future<void> logout({final bool? federated, final String? returnToUrl}) =>
       Auth0FlutterWebPlatform.instance
           .logout(LogoutOptions(federated: federated, returnTo: returnToUrl));
