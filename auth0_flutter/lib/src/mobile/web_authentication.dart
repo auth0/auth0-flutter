@@ -42,22 +42,27 @@ class WebAuthentication {
   /// [idTokenValidationConfig], but in general the defaults for this are
   /// adequate.
   ///
-  /// Additonal notes:
+  /// Additional notes:
   ///
-  /// * (iOS only): [useEphemeralSession] controls whether shared persistent storage is used for cookies. [Read more on the effects this setting has](https://github.com/auth0/Auth0.swift/blob/master/FAQ.md#1-how-can-i-disable-the-login-alert-box)
-  /// * [audience] relates to the API Identifier you want to reference in your access tokens (see [API settings](https://auth0.com/docs/get-started/apis/api-settings))
+  /// * (iOS only): [useEphemeralSession] controls whether shared persistent
+  /// storage is used for cookies. [Read more on the effects this setting has](https://github.com/auth0/auth0-flutter/blob/main/auth0_flutter/FAQ.md#2-how-can-i-disable-the-ios-login-alert-box).
+  /// * [audience] relates to the API Identifier you want to reference in your
+  /// access tokens. See [API settings](https://auth0.com/docs/get-started/apis/api-settings)
+  /// to learn more.
   /// * [scopes] defaults to `openid profile email offline_access`. You can
-  /// override these scopes, but `openid` is always requested regardless of
-  /// this setting.
+  /// override these scopes, but `openid` is always requested regardless of this
+  /// setting.
   /// * Arbitrary [parameters] can be specified and then picked up in a custom
   /// Auth0 [Action](https://auth0.com/docs/customize/actions) or
   /// [Rule](https://auth0.com/docs/customize/rules).
   /// * If you want to log into a specific organization, provide the
   /// [organizationId]. Provide [invitationUrl] if a user has been invited
   /// to join an organization.
-  /// * (iOS only): [safariViewController] causes
-  /// [`SFSafariViewController`](https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller) to be used when opening the
-  /// Universal Login page, as an alternative to the default `ASWebAuthenticationSession`. You will also need to [configure your iOS app to automatically resume](https://github.com/auth0/auth0-flutter/blob/main/auth0_flutter/FAQ.md#use-sfsafariviewcontroller) the Web Auth operation after login.
+  /// * (iOS only): [safariViewController] causes [`SFSafariViewController`](https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller)
+  /// to be used when opening the Universal Login page, as an alternative to the
+  /// default `ASWebAuthenticationSession`. You will also need to
+  /// [configure your iOS app to automatically resume](https://github.com/auth0/auth0-flutter/blob/main/auth0_flutter/FAQ.md#use-sfsafariviewcontroller)
+  /// the Web Auth operation after login.
   Future<Credentials> login(
       {final String? audience,
       final Set<String> scopes = const {

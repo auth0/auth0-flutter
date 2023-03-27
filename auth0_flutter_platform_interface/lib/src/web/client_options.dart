@@ -6,7 +6,7 @@ class ClientOptions {
   final Account account;
 
   /// A maximum number of seconds to wait before declaring background calls to
-  /// `/authorize` as failed for timeout. Defaults to 60 seconds.
+  /// `/authorize` as failed for timeout. Defaults to `60` seconds.
   final int? authorizeTimeoutInSeconds;
 
   /// The location to use when storing cache data. Valid values are `memory` or
@@ -18,7 +18,7 @@ class ClientOptions {
   /// If not set, the cookie is scoped to the current domain, including the
   /// subdomain.
   ///
-  /// Note: setting this incorrectly may cause silent authentication to stop
+  /// **Note**: setting this incorrectly may cause silent authentication to stop
   /// working on page load.
   ///
   /// To keep a user logged in across multiple subdomains set this to your
@@ -27,7 +27,7 @@ class ClientOptions {
 
   /// The timeout for HTTP calls using fetch.
   ///
-  /// Defaults to 10 seconds.
+  /// Defaults to `10` seconds.
   final int? httpTimeoutInSeconds;
 
   /// Whether an additional cookie with no SameSite attribute is set.
@@ -35,18 +35,18 @@ class ClientOptions {
   /// This is used to support legacy browsers that are not compatible with the
   /// latest SameSite changes.
   ///
-  /// This will log a warning on modern browsers, you can disable the
-  /// warning by setting this to `false` but be aware that some older
+  /// This will log a warning on modern browsers. You can disable the
+  /// warning by setting this to `false`, but be aware that some older
   /// user agents will not work.
   ///
-  /// See https://www.chromium.org/updates/same-site/incompatible-clients
+  /// See https://www.chromium.org/updates/same-site/incompatible-clients.
   ///
   /// Defaults to `true`.
   final bool? useLegacySameSiteCookie;
 
   /// The number of days until the cookie `auth0.is.authenticated` will expire.
   ///
-  /// Defaults to `1`.
+  /// Defaults to `1` day.
   final int? sessionCheckExpiryInDays;
 
   /// Whether the SDK will use a cookie for transaction storage, instead of
@@ -77,8 +77,8 @@ class ClientOptions {
   ///
   /// Defaults to `true`.
   ///
-  /// **Note**: Setting this to false may affect you if you use Auth0 Actions and
-  ///  are sending custom, non-primitive data. If you disable this, please
+  /// **Note**: Setting this to false may affect you if you use Auth0 Actions
+  /// and are sending custom, non-primitive data. If you disable this, please
   /// verify that your Auth0 Actions continue to work as intended.
   final bool? useFormData;
 
@@ -89,7 +89,7 @@ class ClientOptions {
   /// If `false`, the iframe fallback is not used and errors relating to a
   /// failed refresh token grant should be handled appropriately.
   ///
-  /// The default setting is `false`.
+  /// Defaults to `false`.
   final bool? useRefreshTokensFallback;
 
   /// The configuration for validating ID tokens.

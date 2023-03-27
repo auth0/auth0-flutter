@@ -5,10 +5,10 @@
 
 Auth0 SDK for Android, iOS, and web Flutter apps.
 
-| Package                                                                 | Description                                        |
-| :---------------------------------------------------------------------- | :------------------------------------------------- |
-| [auth0_flutter](./auth0_flutter/)                                       | SDK for Android, iOS, and web Flutter applications |
-| [auth0_flutter_platform_interface](./auth0_flutter_platform_interface/) | Common interface for platform implementations      |
+| Package                                                                       | Description                                        |
+| :---------------------------------------------------------------------------- | :------------------------------------------------- |
+| [auth0_flutter](./auth0_flutter#readme)                                       | SDK for Android, iOS, and web Flutter applications |
+| [auth0_flutter_platform_interface](./auth0_flutter_platform_interface#readme) | Common interface for platform implementations      |
 
 ## Getting Started
 
