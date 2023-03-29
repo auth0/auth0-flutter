@@ -1,4 +1,3 @@
-import 'dart:js';
 import 'dart:js_util';
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 
@@ -20,6 +19,17 @@ extension WebExceptionExtension on WebException {
 
       case 'timeout':
         return WebException.timeout(description);
+
+      case 'cancelled':
+        return WebException.popupClosed(description);
+
+      case 'missing_refresh_token':
+        return WebException.missingRefreshToken(description);
+    }
+
+    // Other rules
+    if (details.containsKey('state')) {
+      return WebException('AUTHENTICATION_ERROR', description, details);
     }
 
     return WebException(error, description, details);

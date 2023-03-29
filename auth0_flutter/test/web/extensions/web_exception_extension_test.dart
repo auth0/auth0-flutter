@@ -49,8 +49,27 @@ void main() {
     final exception = createJsException('timeout', 'Timeout');
     final webException = WebExceptionExtension.fromJsObject(exception);
 
-    expect(webException.code, 'timeout');
+    expect(webException.code, 'TIMEOUT');
     expect(webException.message, 'Timeout');
+    expect(webException.details, <String, dynamic>{});
+  });
+
+  test('missing_refresh_token is created', () {
+    final exception =
+        createJsException('missing_refresh_token', 'Missing refresh token');
+    final webException = WebExceptionExtension.fromJsObject(exception);
+
+    expect(webException.code, 'MISSING_REFRESH_TOKEN');
+    expect(webException.message, 'Missing refresh token');
+    expect(webException.details, <String, dynamic>{});
+  });
+
+  test('popup cancelled is created', () {
+    final exception = createJsException('cancelled', 'Popup was closed');
+    final webException = WebExceptionExtension.fromJsObject(exception);
+
+    expect(webException.code, 'POPUP_CLOSED');
+    expect(webException.message, 'Popup was closed');
     expect(webException.details, <String, dynamic>{});
   });
 }

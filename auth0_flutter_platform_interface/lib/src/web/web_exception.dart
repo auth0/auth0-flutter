@@ -5,6 +5,8 @@ import '../../auth0_flutter_platform_interface.dart';
 class WebException extends Auth0Exception {
   static const String _mfaRequired = 'MFA_REQUIRED';
   static const String _timeout = 'TIMEOUT';
+  static const String _missingRefreshToken = 'MISSING_REFRESH_TOKEN';
+  static const String _popupClosed = 'POPUP_CLOSED';
 
   const WebException(final String error, final String errorDescription,
       final Map<String, dynamic> details)
@@ -15,4 +17,10 @@ class WebException extends Auth0Exception {
 
   WebException.timeout(final String message)
       : this(WebException._timeout, message, const {});
+
+  WebException.missingRefreshToken(final String message)
+      : this(WebException._missingRefreshToken, message, const {});
+
+  WebException.popupClosed(final String message)
+      : this(WebException._popupClosed, message, const {});
 }
