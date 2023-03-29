@@ -13,16 +13,27 @@ extension WebExceptionExtension on WebException {
     });
 
     switch (error) {
+      case 'invalid_request':
+      case 'invalid_scope':
+      case 'invalid_client':
+      case 'requires_validation':
+      case 'unauthorized_client':
+      case 'access_denied':
+      case 'invalid_grant':
+      case 'endpoint_disabled':
+      case 'method_not_allowed':
+      case 'too_many_requests':
+      case 'unsupported_response_type':
+      case 'unsupported_grant_type':
+      case 'temporarily_unavailable':
+        return WebException.authenticationError(error, description);
       case 'mfa_required':
         return WebException.mfaError(
             description, getProperty(jsException, 'mfaToken'));
-
       case 'timeout':
         return WebException.timeout(description);
-
       case 'cancelled':
         return WebException.popupClosed(description);
-
       case 'missing_refresh_token':
         return WebException.missingRefreshToken(description);
     }

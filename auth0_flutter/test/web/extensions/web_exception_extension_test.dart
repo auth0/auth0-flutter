@@ -72,4 +72,31 @@ void main() {
     expect(webException.message, 'Popup was closed');
     expect(webException.details, <String, dynamic>{});
   });
+
+  final codes = [
+    'invalid_request',
+    'invalid_scope',
+    'invalid_client',
+    'requires_validation',
+    'unauthorized_client',
+    'access_denied',
+    'invalid_grant',
+    'endpoint_disabled',
+    'method_not_allowed',
+    'too_many_requests',
+    'unsupported_response_type',
+    'unsupported_grant_type',
+    'temporarily_unavailable'
+  ];
+
+  for (final code in codes) {
+    test('$code is captured as AUTHENTICATION_ERROR', () {
+      final exception = createJsException(code, '$code was raised');
+      final webException = WebExceptionExtension.fromJsObject(exception);
+
+      expect(webException.code, 'AUTHENTICATION_ERROR');
+      expect(webException.message, '$code was raised');
+      expect(webException.details['code'], code);
+    });
+  }
 }

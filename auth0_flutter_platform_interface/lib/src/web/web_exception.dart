@@ -7,10 +7,14 @@ class WebException extends Auth0Exception {
   static const String _timeout = 'TIMEOUT';
   static const String _missingRefreshToken = 'MISSING_REFRESH_TOKEN';
   static const String _popupClosed = 'POPUP_CLOSED';
+  static const String _authenticationError = 'AUTHENTICATION_ERROR';
 
   const WebException(final String error, final String errorDescription,
       final Map<String, dynamic> details)
       : super(error, errorDescription, details);
+
+  WebException.authenticationError(final String error, final String message)
+      : this(WebException._authenticationError, message, {'code': error});
 
   WebException.mfaError(final String message, final String mfaToken)
       : this(WebException._mfaRequired, message, {'mfaToken': mfaToken});
