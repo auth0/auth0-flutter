@@ -33,6 +33,8 @@ export 'src/web-auth/web_auth_login_options.dart';
 export 'src/web-auth/web_auth_logout_options.dart';
 export 'src/web-auth/web_authentication_exception.dart';
 export 'src/web/cache_location.dart';
+export 'src/web/cache_mode.dart';
 export 'src/web/client_options.dart';
+export 'src/web/credentials_options.dart';
 export 'src/web/logout_options.dart';
 export 'src/web/popup_login_options.dart';

@@ -41,4 +41,10 @@ extension AuthParamsExtension on AuthorizationParams {
   AuthorizationParams prepare([final Map<String, dynamic>? params]) =>
       JsInteropUtils.stripNulls(
           JsInteropUtils.addCustomParams(this, params ?? {}));
+
+  // Converts an instance of AuthorizationParams to
+  // GetTokenSilentlyAuthorizationParams.
+  GetTokenSilentlyAuthParams toGetTokenSilentlyParams() =>
+      JsInteropUtils.stripNulls(GetTokenSilentlyAuthParams(
+          redirect_uri: redirect_uri, scope: scope, audience: audience));
 }

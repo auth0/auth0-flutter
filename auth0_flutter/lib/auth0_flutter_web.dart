@@ -170,8 +170,20 @@ class Auth0Web {
       Auth0FlutterWebPlatform.instance
           .logout(LogoutOptions(federated: federated, returnTo: returnToUrl));
 
-  Future<Credentials> credentials() =>
-      Auth0FlutterWebPlatform.instance.credentials();
+  Future<Credentials> credentials(
+          {final String? redirectUrl,
+          final String? audience,
+          final num? timeoutInSeconds,
+          final Set<String>? scopes,
+          final CacheMode? cacheMode,
+          final Map<String, String> parameters = const {}}) =>
+      Auth0FlutterWebPlatform.instance.credentials(CredentialsOptions(
+          redirectUrl: redirectUrl,
+          audience: audience,
+          timeoutInSeconds: timeoutInSeconds,
+          scopes: scopes,
+          cacheMode: cacheMode,
+          parameters: parameters));
 
   Future<bool> hasValidCredentials() =>
       Auth0FlutterWebPlatform.instance.hasValidCredentials();

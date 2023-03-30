@@ -6,6 +6,7 @@ import 'auth0_flutter_web_platform_proxy.dart';
 import 'extensions/client_options_extensions.dart';
 import 'extensions/credentials_extension.dart';
 import 'extensions/logout_options.extension.dart';
+import 'extensions/credentials_options_extension.dart';
 import 'js_interop.dart' as interop;
 import 'js_interop_utils.dart';
 
@@ -82,7 +83,8 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
 
     return CredentialsExtension.fromWeb(await client.getTokenSilently(
         interop.GetTokenSilentlyOptions(
-            authorizationParams: authParams, detailedResponse: true)));
+            authorizationParams: authParams.toGetTokenSilentlyParams(),
+            detailedResponse: true)));
   }
 
   @override
@@ -94,11 +96,16 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   }
 
   @override
-  Future<Credentials> credentials() async {
+  Future<Credentials> credentials(final CredentialsOptions? options) async {
     final clientProxy = _ensureClient();
-    final options = interop.GetTokenSilentlyOptions(detailedResponse: true);
+    final tokenOptions = options?.toGetTokenSilentlyOptions() ??
+        interop.GetTokenSilentlyOptions();
 
-    final result = await clientProxy.getTokenSilently(options);
+    // Force this, as we always want the full detail back so that we can
+    // return a full Credentials instance.
+    tokenOptions.detailedResponse = true;
+
+    final result = await clientProxy.getTokenSilently(tokenOptions);
 
     return CredentialsExtension.fromWeb(result);
   }
