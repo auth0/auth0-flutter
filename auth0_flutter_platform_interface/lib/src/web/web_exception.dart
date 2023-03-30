@@ -13,8 +13,10 @@ class WebException extends Auth0Exception {
       final Map<String, dynamic> details)
       : super(error, errorDescription, details);
 
-  WebException.authenticationError(final String error, final String message)
-      : this(WebException._authenticationError, message, {'code': error});
+  WebException.authenticationError(final String error, final String message,
+      [final Map<String, dynamic>? details])
+      : this(WebException._authenticationError, message,
+            {'code': error, ...details ?? {}});
 
   WebException.mfaError(final String message, final String mfaToken)
       : this(WebException._mfaRequired, message, {'mfaToken': mfaToken});

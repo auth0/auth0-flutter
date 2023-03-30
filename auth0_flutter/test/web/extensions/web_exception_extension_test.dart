@@ -99,4 +99,17 @@ void main() {
       expect(webException.details['code'], code);
     });
   }
+
+  test('AUTHENTICATION_ERROR is captured with state only', () {
+    final exception = createJsException('invalid_grant', 'Invalid grant',
+        additionalProps: {'state': '123', 'appState': '456'});
+
+    final webException = WebExceptionExtension.fromJsObject(exception);
+
+    expect(webException.code, 'AUTHENTICATION_ERROR');
+    expect(webException.message, 'Invalid grant');
+    expect(webException.details['code'], 'invalid_grant');
+    expect(webException.details['state'], '123');
+    expect(webException.details['appState'], isNull);
+  });
 }

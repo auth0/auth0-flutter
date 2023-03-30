@@ -26,7 +26,8 @@ extension WebExceptionExtension on WebException {
       case 'unsupported_response_type':
       case 'unsupported_grant_type':
       case 'temporarily_unavailable':
-        return WebException.authenticationError(error, description);
+        return WebException.authenticationError(
+            error, description, {'state': details['state']});
       case 'mfa_required':
         return WebException.mfaError(
             description, getProperty(jsException, 'mfaToken'));
@@ -36,11 +37,6 @@ extension WebExceptionExtension on WebException {
         return WebException.popupClosed(description);
       case 'missing_refresh_token':
         return WebException.missingRefreshToken(description);
-    }
-
-    // Other rules
-    if (details.containsKey('state')) {
-      return WebException('AUTHENTICATION_ERROR', description, details);
     }
 
     return WebException(error, description, details);
