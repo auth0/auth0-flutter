@@ -192,6 +192,28 @@ void main() {
     expect(result.scopes, {'openid', 'read_messages'});
   });
 
+  test('credentials is called with options and succeeds', () async {
+    when(mockClientProxy.getTokenSilently(any))
+        .thenAnswer((final _) => Future.value(webCredentials));
+
+    await auth0.credentials(
+        scopes: {'openid', 'profile'},
+        audience: 'http://my.api',
+        cacheMode: CacheMode.cacheOnly,
+        parameters: {'prompt': 'none'},
+        timeoutInSeconds: 120);
+
+    final options =
+        verify(mockClientProxy.getTokenSilently(captureAny)).captured.first;
+
+    expect(options.authorizationParams.scope, 'openid profile');
+    expect(options.authorizationParams.audience, 'http://my.api');
+    expect(options.authorizationParams.prompt, 'none');
+    expect(options.cacheMode, 'cache-only');
+    expect(options.timeoutInSeconds, 120);
+    expect(options.detailedResponse, true);
+  });
+
   test('credentials is called and throws', () async {
     when(mockClientProxy.getTokenSilently(any))
         .thenThrow(createJsException('test', 'test exception'));

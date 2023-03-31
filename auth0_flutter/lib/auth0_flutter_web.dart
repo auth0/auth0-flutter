@@ -180,9 +180,43 @@ class Auth0Web {
       Auth0FlutterWebPlatform.instance
           .logout(LogoutOptions(federated: federated, returnTo: returnToUrl));
 
-  Future<Credentials> credentials() =>
-      Auth0FlutterWebPlatform.instance.credentials();
+  /// Retrieves a set of credentials for the user.
+  ///
+  /// By default, the credentials will be returned from an internal cache. If
+  /// the access token within 60 seconds of its expiry time, a new access token
+  /// will be retrieved from Auth0. Either an iframe will be used to fetch
+  /// this token, or a refresh token, depending on the `useRefreshTokens`
+  /// SDK configuration setting.
+  ///
+  /// **Note:** using an iframe to request tokens relies on third-party cookie
+  /// support in your browser if you are not using a [custom domains]().
+  ///
+  /// Additional notes:
+  /// * [audience] and [scopes] can be used to request an access token for a
+  /// different API than what was originally requested at login. This has
+  /// no effect when using refresh tokens.
+  /// * [cacheMode] allows you to control whether the cache is used to return
+  /// tokens or not. Please see [CacheMode] for more details.
+  /// * [timeoutInSeconds] is used to control the timeout specifically for
+  /// when an iframe is used to request new tokens, and has no effect when
+  /// using refresh tokens.
+  /// * Arbitrary [parameters] can be specified and then picked up in a custom
+  /// Auth0 [Action](https://auth0.com/docs/customize/actions) or
+  /// [Rule](https://auth0.com/docs/customize/rules).
+  Future<Credentials> credentials(
+          {final String? audience,
+          final num? timeoutInSeconds,
+          final Set<String>? scopes,
+          final CacheMode? cacheMode,
+          final Map<String, String> parameters = const {}}) =>
+      Auth0FlutterWebPlatform.instance.credentials(CredentialsOptions(
+          audience: audience,
+          timeoutInSeconds: timeoutInSeconds,
+          scopes: scopes,
+          cacheMode: cacheMode,
+          parameters: parameters));
 
+  /// Indicates whether a user is currently authenticated.
   Future<bool> hasValidCredentials() =>
       Auth0FlutterWebPlatform.instance.hasValidCredentials();
 }

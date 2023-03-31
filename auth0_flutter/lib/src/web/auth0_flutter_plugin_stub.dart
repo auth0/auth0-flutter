@@ -27,7 +27,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   }
 
   @override
-  Future<Credentials> credentials() {
+  Future<Credentials> credentials(final CredentialsOptions? options) {
     throw UnsupportedError('credentials is only supported on the web platform');
   }
 

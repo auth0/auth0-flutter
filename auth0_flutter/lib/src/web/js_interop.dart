@@ -97,17 +97,27 @@ class Auth0ClientOptions {
 
 @JS()
 @anonymous
+class GetTokenSilentlyAuthParams {
+  external String? scope;
+  external String? audience;
+
+  external factory GetTokenSilentlyAuthParams(
+      {final String? audience, final String? scope});
+}
+
+@JS()
+@anonymous
 class GetTokenSilentlyOptions {
-  external AuthorizationParams? get authorizationParams;
+  external GetTokenSilentlyAuthParams? get authorizationParams;
   external String? get cacheMode;
   external num? get timeoutInSeconds;
-  external bool get detailedResponse;
+  external bool detailedResponse;
 
   external factory GetTokenSilentlyOptions(
-      {final AuthorizationParams authorizationParams,
-      final String cacheMode,
-      final num timeoutInSeconds,
-      final bool detailedResponse});
+      {final GetTokenSilentlyAuthParams? authorizationParams,
+      final String? cacheMode,
+      final num? timeoutInSeconds,
+      final bool? detailedResponse});
 }
 
 @JS()
