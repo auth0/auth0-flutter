@@ -39,6 +39,8 @@
   - [Errors](#errors)
   - [Android: Custom schemes](#android-custom-schemes)
 
+---
+
 ### Log out
 
 Logging the user out involves clearing the Universal Login session cookie and then deleting the user's credentials from your app.
@@ -59,7 +61,13 @@ await auth0.webAuthentication().logout();
 <details>
   <summary>Web</summary>
 
-TBC
+```dart
+if (kIsWeb) {
+  await auth0Web.logout(returnToUrl: 'http://localhost:3000');
+}
+```
+
+> 💡 You need to import the `'flutter/foundation.dart'` library to access the `kIsWeb` constant. If your app does not support other platforms, you can remove this condition.
 
 </details>
 
@@ -88,7 +96,11 @@ final credentials = await auth0
 <details>
   <summary>Web</summary>
 
-TBC
+```dart
+await auth0Web.loginWithRedirect(
+    redirectUrl: 'http://localhost:3000',
+    parameters: {'screen_hint': 'signup'});
+```
 
 </details>
 
@@ -168,10 +180,13 @@ final credentials = await auth0
 <details>
   <summary>Web</summary>
 
-TBC
+```dart
+await auth0Web.loginWithRedirect(
+    redirectUrl: 'http://localhost:3000',
+    parameters: {'connection': 'github'});
+```
 
 </details>
-
 
 ### ID token validation
 
@@ -203,7 +218,7 @@ auth0Web
 });
 ```
 
-The `max_age` value can be configured through `loginWithRedirect()`.
+The `max_age` value can be configured through `loginWithRedirect()` and `loginWithPopup()`.
 
 ```dart
 await auth0Web.loginWithRedirect(
@@ -263,7 +278,15 @@ try {
 <details>
   <summary>Web</summary>
 
-TBC
+The web implementation will only throw `WebException` exceptions. Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/WebException-class.html) to learn more about the available `WebException` properties.
+
+```dart
+try {
+  await auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
+} on WebException catch (e) {
+  print(e);
+}
+```
 
 </details>
 
@@ -286,6 +309,8 @@ await webAuth.logout();
 ```
 
 > 💡 Note that custom schemes [can only have](https://developer.android.com/guide/topics/manifest/data-element) lowercase letters.
+
+[Go up ⤴](#examples)
 
 ## 📱 Credentials Manager
 
@@ -374,6 +399,8 @@ try {
   print(e);
 }
 ```
+
+[Go up ⤴](#examples)
 
 ## 📱 Authentication API
 
@@ -490,6 +517,8 @@ try {
 }
 ```
 
+[Go up ⤴](#examples)
+
 ## 🖥️📱 Organizations
 
 [Organizations](https://auth0.com/docs/manage-users/organizations) is a set of features that provide better support for developers who build and maintain SaaS and Business-to-Business (B2B) applications.
@@ -547,6 +576,8 @@ await auth0Web.loginWithRedirect(
 
 </details>
 
+[Go up ⤴](#examples)
+
 ## 📱 Bot detection
 
 > This example is mobile-only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
@@ -574,3 +605,7 @@ try {
   }
 }
 ```
+
+---
+
+[Go up ⤴](#examples)

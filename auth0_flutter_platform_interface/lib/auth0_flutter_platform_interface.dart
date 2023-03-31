@@ -38,3 +38,4 @@ export 'src/web/client_options.dart';
 export 'src/web/credentials_options.dart';
 export 'src/web/logout_options.dart';
 export 'src/web/popup_login_options.dart';
+export 'src/web/web_exception.dart';
