@@ -9,9 +9,7 @@ extension CredentialsOptionsExtension on CredentialsOptions {
           authorizationParams: JsInteropUtils.stripNulls(
               JsInteropUtils.addCustomParams(
                   GetTokenSilentlyAuthParams(
-                      redirect_uri: redirectUrl,
-                      scope: scopes?.join(' '),
-                      audience: audience),
+                      scope: scopes?.join(' '), audience: audience),
                   parameters)),
           cacheMode: cacheMode.toString(),
           timeoutInSeconds: timeoutInSeconds,

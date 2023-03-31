@@ -168,7 +168,6 @@ void main() {
         .thenAnswer((final _) => Future.value(webCredentials));
 
     await auth0.credentials(
-        redirectUrl: 'http://redirect.url',
         scopes: {'openid', 'profile'},
         audience: 'http://my.api',
         cacheMode: CacheMode.cacheOnly,
@@ -178,7 +177,6 @@ void main() {
     final options =
         verify(mockClientProxy.getTokenSilently(captureAny)).captured.first;
 
-    expect(options.authorizationParams.redirect_uri, 'http://redirect.url');
     expect(options.authorizationParams.scope, 'openid profile');
     expect(options.authorizationParams.audience, 'http://my.api');
     expect(options.authorizationParams.prompt, 'none');
