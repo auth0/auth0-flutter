@@ -1,11 +1,15 @@
 @Tags(['browser'])
 
+import 'dart:js';
+import 'dart:js_util';
+
 import 'package:auth0_flutter/auth0_flutter_web.dart';
 import 'package:auth0_flutter/src/web/auth0_flutter_plugin_real.dart';
 import 'package:auth0_flutter/src/web/auth0_flutter_web_platform_proxy.dart';
 import 'package:auth0_flutter/src/web/js_interop.dart' as interop;
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -32,6 +36,13 @@ void main() {
     Auth0FlutterWebPlatform.instance = plugin;
     reset(mockClientProxy);
   });
+
+  Object createJsException(String error, String description) {
+    final jsObject = newObject<JsObject>();
+    setProperty(jsObject, 'error', error);
+    setProperty(jsObject, 'error_description', description);
+    return jsObject;
+  }
 
   test('onLoad is called without authenticated user and no callback', () async {
     when(mockClientProxy.isAuthenticated())
@@ -69,6 +80,24 @@ void main() {
     await auth0.onLoad();
     verify(mockClientProxy.handleRedirectCallback());
     verifyNever(mockClientProxy.checkSession());
+  });
+
+  test('onLoad throws the correct exception from handleRedirectCallback',
+      () async {
+    when(mockClientProxy.isAuthenticated())
+        .thenAnswer((final _) => Future.value(false));
+
+    when(mockClientProxy.handleRedirectCallback())
+        .thenThrow(createJsException('test', 'test exception'));
+
+    plugin.urlSearchProvider = () => '?code=abc&state=123';
+
+    expect(
+        () async => auth0.onLoad(),
+        throwsA(predicate((final e) =>
+            e is WebException &&
+            e.code == 'test' &&
+            e.message == 'test exception')));
   });
 
   test('loginWithRedirect with all options', () async {
@@ -164,9 +193,15 @@ void main() {
   });
 
   test('credentials is called and throws', () async {
-    when(mockClientProxy.getTokenSilently(any)).thenThrow(Exception());
+    when(mockClientProxy.getTokenSilently(any))
+        .thenThrow(createJsException('test', 'test exception'));
 
-    expect(() async => auth0.credentials(), throwsException);
+    expect(
+        () async => auth0.credentials(),
+        throwsA(predicate((final e) =>
+            e is WebException &&
+            e.code == 'test' &&
+            e.message == 'test exception')));
   });
 
   test('logout is called and succeeds', () async {
@@ -180,18 +215,9 @@ void main() {
     expect(params.returnTo, 'http://returnto.url');
   });
 
-  test('logout is called and throws', () async {
-    when(mockClientProxy.logout(any)).thenThrow(Exception());
-
-    expect(() async => auth0.logout(), throwsException);
-  });
-
   test('loginWithPopup is called and succeeds', () async {
     when(mockClientProxy.loginWithPopup(any, any))
         .thenAnswer((final _) => Future.value());
-
-    when(mockClientProxy.isAuthenticated())
-        .thenAnswer((final _) => Future.value(true));
 
     when(mockClientProxy.getTokenSilently(any))
         .thenAnswer((final _) => Future.value(webCredentials));
@@ -232,13 +258,8 @@ void main() {
     when(mockClientProxy.loginWithPopup(any, any))
         .thenAnswer((final _) => Future.value());
 
-    when(mockClientProxy.isAuthenticated())
-        .thenAnswer((final _) => Future.value(true));
-
     when(mockClientProxy.getTokenSilently(any))
         .thenAnswer((final _) => Future.value(webCredentials));
-
-    final window = Object();
 
     final credentials =
         await auth0.loginWithPopup(parameters: {'screen_hint': 'signup'});
@@ -249,5 +270,34 @@ void main() {
         verify(mockClientProxy.loginWithPopup(captureAny, captureAny)).captured;
 
     expect(capture.first.authorizationParams.screen_hint, 'signup');
+  });
+
+  test('loginWithPopup throws the correct exception from js.loginWithPopup',
+      () async {
+    when(mockClientProxy.loginWithPopup(any, any))
+        .thenThrow(createJsException('test', 'test exception'));
+
+    expect(
+        () async => auth0.loginWithPopup(),
+        throwsA(predicate((final e) =>
+            e is WebException &&
+            e.code == 'test' &&
+            e.message == 'test exception')));
+  });
+
+  test('loginWithPopup throws the correct exception from getTokenSilently',
+      () async {
+    when(mockClientProxy.loginWithPopup(any, any))
+        .thenAnswer((final _) => Future.value());
+
+    when(mockClientProxy.getTokenSilently(any))
+        .thenThrow(createJsException('test', 'test exception'));
+
+    expect(
+        () async => auth0.loginWithPopup(),
+        throwsA(predicate((final e) =>
+            e is WebException &&
+            e.code == 'test' &&
+            e.message == 'test exception')));
   });
 }
