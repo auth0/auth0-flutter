@@ -45,6 +45,6 @@ extension AuthParamsExtension on AuthorizationParams {
   // Converts an instance of AuthorizationParams to
   // GetTokenSilentlyAuthorizationParams.
   GetTokenSilentlyAuthParams toGetTokenSilentlyParams() =>
-      JsInteropUtils.stripNulls(GetTokenSilentlyAuthParams(
-          redirect_uri: redirect_uri, scope: scope, audience: audience));
+      JsInteropUtils.stripNulls(
+          GetTokenSilentlyAuthParams(scope: scope, audience: audience));
 }

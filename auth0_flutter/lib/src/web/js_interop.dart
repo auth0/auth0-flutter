@@ -98,14 +98,11 @@ class Auth0ClientOptions {
 @JS()
 @anonymous
 class GetTokenSilentlyAuthParams {
-  external String? redirect_uri;
   external String? scope;
   external String? audience;
 
   external factory GetTokenSilentlyAuthParams(
-      {final String? redirect_uri,
-      final String? audience,
-      final String? scope});
+      {final String? audience, final String? scope});
 }
 
 @JS()
