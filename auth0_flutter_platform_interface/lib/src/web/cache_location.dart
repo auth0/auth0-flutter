@@ -1,4 +1,4 @@
-/// The location where cached data is stored by the underlying client
+/// The location where cached data is stored by the underlying SDK
 /// on the web platform.
 enum CacheLocation {
   /// Data is persisted in memory. The cache is lost on page reload.

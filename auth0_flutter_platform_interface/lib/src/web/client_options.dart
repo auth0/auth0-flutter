@@ -1,6 +1,6 @@
 import '../../auth0_flutter_platform_interface.dart';
 
-/// The options for the underlying client on the web platform.
+/// The options for the underlying SDK on the web platform.
 class ClientOptions {
   /// The account to use, including the `domain` and `clientId` values.
   final Account account;
