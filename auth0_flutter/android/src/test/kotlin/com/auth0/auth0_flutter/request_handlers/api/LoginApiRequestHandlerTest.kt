@@ -348,7 +348,7 @@ class LoginApiRequestHandlerTest {
         verify(mockResult).success(captor.capture())
 
         val sdf =
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US)
 
         val formattedDate = sdf.format(credentials.expiresAt)
 

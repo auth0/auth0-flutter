@@ -70,7 +70,7 @@ class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest
                 // Success! Access token and ID token are presents
                 val scopes = credentials.scope?.split(" ") ?: listOf()
                 val sdf =
-                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
+                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US)
 
                 val formattedDate = sdf.format(credentials.expiresAt)
 
