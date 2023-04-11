@@ -75,7 +75,6 @@ class Auth0 {
   ///
   /// final accessToken = result.accessToken;
   /// ```
-
   AuthenticationApi get api => AuthenticationApi(_account, _userAgent);
 
   /// Creates an instance of [WebAuthentication], the primary interface for interacting with the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login).

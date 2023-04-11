@@ -2,7 +2,7 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 import 'src/version.dart';
 
 export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
-    show CacheLocation;
+    show WebException, CacheLocation;
 
 /// Primary interface for interacting with Auth0 on web platforms.
 class Auth0Web {
@@ -30,7 +30,6 @@ class Auth0Web {
   /// * You can specify custom [leeway] and [issuer] values to be used for the
   /// validation of the ID token. See the [IdTokenValidationConfig] type to
   /// learn more about these parameters.
-  ///
   /// * See the [ClientOptions] type for the full description of the remaining
   /// parameters for this method.
   Future<Credentials?> onLoad(
