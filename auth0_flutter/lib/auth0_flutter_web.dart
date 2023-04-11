@@ -30,7 +30,6 @@ class Auth0Web {
   /// * You can specify custom [leeway] and [issuer] values to be used for the
   /// validation of the ID token. See the [IdTokenValidationConfig] type to
   /// learn more about these parameters.
-  ///
   /// * See the [ClientOptions] type for the full description of the remaining
   /// parameters for this method.
   Future<Credentials?> onLoad(
