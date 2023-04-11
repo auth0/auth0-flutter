@@ -2,7 +2,7 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 import 'src/version.dart';
 
 export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
-    show CacheLocation, LogoutOptions;
+    show WebException, CacheLocation, LogoutOptions;
 
 /// Primary interface for interacting with Auth0 on web platforms.
 class Auth0Web {
