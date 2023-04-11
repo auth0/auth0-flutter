@@ -3,8 +3,6 @@
 @JS('auth0')
 library auth0;
 
-import 'dart:html';
-
 import 'package:js/js.dart';
 
 @JS()
