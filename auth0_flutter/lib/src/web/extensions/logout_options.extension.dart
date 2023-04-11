@@ -1,4 +1,5 @@
-import '../../../auth0_flutter_web.dart';
+import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
+
 import '../js_interop.dart' as interop;
 import '../js_interop_utils.dart';
 
