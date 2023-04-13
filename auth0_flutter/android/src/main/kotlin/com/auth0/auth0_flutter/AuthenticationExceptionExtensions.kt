@@ -31,6 +31,3 @@ fun AuthenticationException.toMap(): Map<String, Any> {
         if (exception.getValue("mfa_token") != null) { put("mfa_token", exception.getValue("mfa_token")!!) }
     }
 }
-
-val AuthenticationException.isTooManyAttempts: Boolean
-    get() = "too_many_attempts" == this.getCode()
