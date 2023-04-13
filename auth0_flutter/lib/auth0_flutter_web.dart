@@ -77,7 +77,8 @@ class Auth0Web {
   /// * Use [redirectUrl] to tell Auth0 where to redirect back to once the user
   /// has logged in. This URL must be registered in your Auth0 application
   /// settings under **Allowed Callback URLs**. See the [Auth0 docs](https://auth0.com/docs/authenticate/login/redirect-users-after-login)
-  /// to learn more.
+  /// to learn more. **Note:** While this property is optional, you would
+  /// normally want to set this explicitly unless you have [configured a default route](https://auth0.com/docs/authenticate/login/auth0-universal-login/configure-default-login-routes).
   /// * [audience] relates to the API Identifier you want to reference in your
   /// access tokens. See [API settings](https://auth0.com/docs/get-started/apis/api-settings)
   /// to learn more.
@@ -172,6 +173,9 @@ class Auth0Web {
   /// * Use [returnToUrl] to tell Auth0 where it should redirect back to once
   /// the user has logged out. This URL must be registered in **Allowed
   /// Logout URLs** in your Auth0 client settings. [Read more about how redirecting after logout works](https://auth0.com/docs/logout/guides/redirect-users-after-logout).
+  /// **Note:** If [returnToUrl] is not explicitly set, the server will return
+  /// the user to the first Allowed Logout URL defined in the client settings
+  /// in the dashboard. [Read more](https://auth0.com/docs/authenticate/login/logout/redirect-users-after-logout).
   /// * Use [federated] to log the user out of their identity provider
   /// (such as Google) as well as Auth0. Only applicable if the user
   /// authenticated using an identity provider. [Read more about how federated logout works at Auth0](https://auth0.com/docs/logout/guides/logout-idps).
