@@ -9,7 +9,6 @@ import 'package:auth0_flutter/src/web/auth0_flutter_web_platform_proxy.dart';
 import 'package:auth0_flutter/src/web/js_interop.dart' as interop;
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -37,7 +36,7 @@ void main() {
     reset(mockClientProxy);
   });
 
-  Object createJsException(String error, String description) {
+  Object createJsException(final String error, final String description) {
     final jsObject = newObject<JsObject>();
     setProperty(jsObject, 'error', error);
     setProperty(jsObject, 'error_description', description);

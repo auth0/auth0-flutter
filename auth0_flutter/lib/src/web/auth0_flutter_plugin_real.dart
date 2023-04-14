@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:html';
+
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+
 import 'auth0_flutter_web_platform_proxy.dart';
 import 'extensions/client_options_extensions.dart';
 import 'extensions/credentials_extension.dart';
-import 'extensions/logout_options.extension.dart';
 import 'extensions/credentials_options_extension.dart';
+import 'extensions/logout_options.extension.dart';
 import 'extensions/web_exception_extensions.dart';
 import 'js_interop.dart' as interop;
 import 'js_interop_utils.dart';
