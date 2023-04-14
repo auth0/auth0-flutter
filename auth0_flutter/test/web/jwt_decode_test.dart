@@ -2,8 +2,9 @@ import 'dart:convert';
 
 import 'package:auth0_flutter/src/web/jwt_decode.dart';
 import 'package:auth0_flutter/src/web/jwt_decode_exception.dart';
-import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'matchers/auth0_exception_matcher.dart';
 
 void main() {
   group('JWTDecode', () {

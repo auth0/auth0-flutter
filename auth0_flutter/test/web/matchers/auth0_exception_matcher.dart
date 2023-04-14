@@ -1,8 +1,7 @@
 // coverage: ignore-file
 
+import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import '../auth0_exception.dart';
 
 class Auth0ExceptionMatcher<T extends Auth0Exception> extends Matcher {
   final String _code;
