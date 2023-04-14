@@ -31,10 +31,6 @@ dependencies:
     sdk: flutter
   flutter_dotenv: ^5.0.2
 
-dependency_overrides:
-  auth0_flutter_platform_interface:
-    path: ../../auth0_flutter_platform_interface
-
 dev_dependencies:
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
