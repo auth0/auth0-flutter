@@ -8,7 +8,7 @@ environment:
   flutter: ">=3.0.0"
 
 dependencies:
-  auth0_flutter_platform_interface: 1.1.0
+  auth0_flutter_platform_interface: 1.2.0-beta.0
   flutter:
     sdk: flutter
   flutter_web_plugins:
