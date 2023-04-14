@@ -66,7 +66,8 @@ Auth0.swift uses `ASWebAuthenticationSession` to perform web-based authenticatio
 
 That alert box is displayed and managed by `ASWebAuthenticationSession`, not by Auth0.swift, because by default this API will store the session cookie in the shared Safari cookie jar. This makes Single Sign-On (SSO) possible. According to Apple, that requires user consent.
 
-> 💡 See [this blog post](https://developer.okta.com/blog/2022/01/13/mobile-sso) for a detailed overview of SSO on iOS.
+> **Note**
+> See [this blog post](https://developer.okta.com/blog/2022/01/13/mobile-sso) for a detailed overview of SSO on iOS.
 
 #### Use ephemeral sessions
 
@@ -82,7 +83,8 @@ Note that with `useEphemeralSession: true` you don't need to call `logout()` at 
 
 You still need to call `logout()` on Android, though, as `useEphemeralSession` is iOS-only.
 
-> ⚠️ `useEphemeralSession` relies on the `prefersEphemeralWebBrowserSession` configuration option of `ASWebAuthenticationSession`. This option is only available on [iOS 13+](https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession/3237231-prefersephemeralwebbrowsersessio), so `useEphemeralSession` will have no effect on iOS 12. To improve the experience for iOS 12 users, see the approach described below.
+> **Warning**
+> `useEphemeralSession` relies on the `prefersEphemeralWebBrowserSession` configuration option of `ASWebAuthenticationSession`. This option is only available on [iOS 13+](https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession/3237231-prefersephemeralwebbrowsersessio), so `useEphemeralSession` will have no effect on iOS 12. To improve the experience for iOS 12 users, see the approach described below.
 
 #### Use `SFSafariViewController`
 
@@ -145,7 +147,8 @@ final credentials = await auth0.webAuthentication().login(
 
 Otherwise, the browser modal will close right away and the user will be automatically logged in again, as the cookie will still be there.
 
-> ⚠️ Keeping the shared session cookie may not be an option if you have strong privacy and/or security requirements, for example in the case of a banking app.
+> **Warning**
+> Keeping the shared session cookie may not be an option if you have strong privacy and/or security requirements, for example in the case of a banking app.
 
 ### 4. How can I change the message in the iOS alert box?
 
@@ -176,7 +179,7 @@ Please try these to see if you can get unblocked:
 
 #### Using Multi-factor Authentication (MFA)
 
-By default, `auth0-spa-js` uses the `prompt=none` and `response_mode=web_message` flow for silent auth, which depends on the user's Auth0 session.
+By default, the SPA SDK uses the `prompt=none` and `response_mode=web_message` flow for silent auth, which depends on the user's Auth0 session.
 
 If you have **Require Multi-factor Auth** set to `Always` in your [Auth0 Dashboard](https://manage.auth0.com/#/security/mfa), silent authentication from your SPA will fail unless:
 
