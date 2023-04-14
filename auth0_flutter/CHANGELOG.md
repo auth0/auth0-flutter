@@ -1,5 +1,21 @@
 # Change Log
 
+## [v1.2.0-beta.0](https://github.com/auth0/auth0-flutter/tree/v1.2.0-beta.0) (2023-04-14)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/v1.1.0...v1.2.0-beta.0)
+
+This release adds support for the web platform.
+
+**Added**
+- [SDK-4110] Support options to `getTokenSilently` [\#232](https://github.com/auth0/auth0-flutter/pull/232) ([stevehobbsdev](https://github.com/stevehobbsdev))
+- [SDK-4046] WebException wrapper [\#227](https://github.com/auth0/auth0-flutter/pull/227) ([stevehobbsdev](https://github.com/stevehobbsdev))
+- [SDK-4009] Add support for custom parameters [\#226](https://github.com/auth0/auth0-flutter/pull/226) ([stevehobbsdev](https://github.com/stevehobbsdev))
+- [SDK-4002] Add support for loginWithPopup [\#224](https://github.com/auth0/auth0-flutter/pull/224) ([stevehobbsdev](https://github.com/stevehobbsdev))
+- [SDK-4001] Logout for web platform [\#223](https://github.com/auth0/auth0-flutter/pull/223) ([stevehobbsdev](https://github.com/stevehobbsdev))
+- Support additional properties for SDK client [\#211](https://github.com/auth0/auth0-flutter/pull/211) ([stevehobbsdev](https://github.com/stevehobbsdev))
+- Add credentials() and hasValidCredentials() [SDK-3997] [\#207](https://github.com/auth0/auth0-flutter/pull/207) ([Widcket](https://github.com/Widcket))
+- [SDK-3984] Support login on web platform [\#203](https://github.com/auth0/auth0-flutter/pull/203) ([stevehobbsdev](https://github.com/stevehobbsdev))
+- Add web platform boilerplate [SDK-3983] [\#197](https://github.com/auth0/auth0-flutter/pull/197) ([Widcket](https://github.com/Widcket))
+
 ## [v1.1.0](https://github.com/auth0/auth0-flutter/tree/v1.1.0) (2023-02-23)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/v1.0.2...v1.1.0)
 
