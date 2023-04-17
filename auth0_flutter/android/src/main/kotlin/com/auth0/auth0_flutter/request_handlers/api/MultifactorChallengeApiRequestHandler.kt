@@ -29,10 +29,6 @@ class MultifactorChallengeApiRequestHandler : ApiRequestHandler {
                 authenticatorId = request.data["authenticatorId"] as String?
         )
 
-        if (request.data["parameters"] is HashMap<*, *>) {
-            builder.addParameters(request.data["parameters"] as Map<String, String>)
-        }
-
         builder.start(object : Callback<Challenge, AuthenticationException> {
             override fun onFailure(exception: AuthenticationException) {
                 result.error(

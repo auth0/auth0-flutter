@@ -566,8 +566,7 @@ void main() {
               options: AuthMultifactorChallengeOptions(
                   mfaToken: 'test-mfa-token',
                   types: [ChallengeType.otp, ChallengeType.oob],
-                  authenticatorId: 'test-authenticatorId',
-                  parameters: {'test': 'test-123'})));
+                  authenticatorId: 'test-authenticatorId')));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -582,7 +581,6 @@ void main() {
           [ChallengeType.otp.value, ChallengeType.oob.value]);
       expect(verificationResult.arguments['authenticatorId'],
           'test-authenticatorId');
-      expect(verificationResult.arguments['parameters']['test'], 'test-123');
     });
 
     test(
@@ -602,7 +600,6 @@ void main() {
           verify(mocked.methodCallHandler(captureAny)).captured.single;
       expect(verificationResult.arguments['types'], isNull);
       expect(verificationResult.arguments['authenticatorId'], isNull);
-      expect(verificationResult.arguments['parameters'], isEmpty);
     });
 
     test('correctly returns the response from the Method Channel', () async {

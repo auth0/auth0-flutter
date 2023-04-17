@@ -21,7 +21,6 @@ struct AuthAPIMultifactorChallengeMethodHandler: MethodHandler {
         case mfaToken
         case types
         case authenticatorId
-        case parameters
     }
 
     let client: Authentication
@@ -30,16 +29,12 @@ struct AuthAPIMultifactorChallengeMethodHandler: MethodHandler {
         guard let mfaToken = arguments[Argument.mfaToken] as? String else {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.mfaToken.rawValue)))
         }
-        guard let parameters = arguments[Argument.parameters] as? [String: Any] else {
-            return callback(FlutterError(from: .requiredArgumentMissing(Argument.parameters.rawValue)))
-        }
 
         let types = arguments[Argument.types] as? [String]
         let authenticatorId = arguments[Argument.authenticatorId] as? String
 
         client
             .multifactorChallenge(mfaToken: mfaToken, types: types, authenticatorId: authenticatorId)
-            .parameters(parameters)
             .start {
                 switch $0 {
                 case let .success(challenge): callback(result(from: challenge))

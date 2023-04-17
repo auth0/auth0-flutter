@@ -19,7 +19,7 @@ class AuthAPIMultifactorChallengeMethodHandlerTests: XCTestCase {
 
 extension AuthAPIMultifactorChallengeMethodHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
-        let keys: [Argument] = [.mfaToken, .parameters]
+        let keys: [Argument] = [.mfaToken]
         let expectations = keys.map { expectation(description: "\($0.rawValue) is missing") }
         for (argument, currentExpectation) in zip(keys, expectations) {
             sut.handle(with: arguments(without: argument)) { result in
@@ -113,8 +113,7 @@ extension AuthAPIMultifactorChallengeMethodHandlerTests {
         return [
             Argument.mfaToken.rawValue: "",
             Argument.types.rawValue: [],
-            Argument.authenticatorId.rawValue: "",
-            Argument.parameters.rawValue: [:]
+            Argument.authenticatorId.rawValue: ""
         ]
     }
 }

@@ -131,14 +131,12 @@ class AuthenticationApi {
   Future<Challenge> multifactorChallenge(
           {required final String mfaToken,
           final List<ChallengeType>? types,
-          final String? authenticatorId,
-          final Map<String, String> parameters = const {}}) =>
+          final String? authenticatorId}) =>
       Auth0FlutterAuthPlatform.instance.multifactorChallenge(_createApiRequest(
           AuthMultifactorChallengeOptions(
               mfaToken: mfaToken,
               types: types,
-              authenticatorId: authenticatorId,
-              parameters: parameters)));
+              authenticatorId: authenticatorId)));
 
   /// Fetches the user's profile from the /userinfo endpoint. An [accessToken] from a successful authentication call must be supplied.
   ///

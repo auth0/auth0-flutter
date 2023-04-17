@@ -61,50 +61,6 @@ class MultifactorChallengeApiRequestHandlerTest {
     }
 
     @Test
-    fun `should configure the parameters when provided`() {
-        val options = hashMapOf(
-                "mfaToken" to "test-mfaToken",
-                "parameters" to mapOf("test" to "test-value", "test2" to "test-value")
-        )
-        val handler = MultifactorChallengeApiRequestHandler()
-        val mockBuilder = mock<Request<Challenge, AuthenticationException>>()
-        val mockApi = mock<AuthenticationAPIClient>()
-        val mockAccount = mock<Auth0>()
-        val mockResult = mock<Result>()
-        val request = MethodCallRequest(account = mockAccount, options)
-
-        doReturn(mockBuilder).`when`(mockApi).multifactorChallenge(any(), anyOrNull(), anyOrNull())
-        doReturn(mockBuilder).`when`(mockBuilder).addParameters(any())
-
-        handler.handle(mockApi, request, mockResult)
-
-        verify(mockBuilder).addParameters(
-                mapOf(
-                        "test" to "test-value",
-                        "test2" to "test-value"
-                )
-        )
-    }
-
-    @Test
-    fun `should not configure the parameters when not provided`() {
-        val options = hashMapOf("mfaToken" to "test-mfaToken")
-        val handler = MultifactorChallengeApiRequestHandler()
-        val mockBuilder = mock<Request<Challenge, AuthenticationException>>()
-        val mockApi = mock<AuthenticationAPIClient>()
-        val mockAccount = mock<Auth0>()
-        val mockResult = mock<Result>()
-        val request = MethodCallRequest(account = mockAccount, options)
-
-        doReturn(mockBuilder).`when`(mockApi).multifactorChallenge(any(), anyOrNull(), anyOrNull())
-        doReturn(mockBuilder).`when`(mockBuilder).addParameters(any())
-
-        handler.handle(mockApi, request, mockResult)
-
-        verify(mockBuilder, times(0)).addParameters(any())
-    }
-
-    @Test
     fun `should call result error on failure`() {
         val options = hashMapOf("mfaToken" to "test-mfaToken")
         val handler = MultifactorChallengeApiRequestHandler()
