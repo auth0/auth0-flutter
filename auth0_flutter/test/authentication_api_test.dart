@@ -184,8 +184,7 @@ void main() {
           .multifactorChallenge(
               mfaToken: 'test-mfa-token',
               types: [ChallengeType.otp, ChallengeType.oob],
-              authenticatorId: 'test-authenticatorId',
-              parameters: {'test': 'test-123'});
+              authenticatorId: 'test-authenticatorId');
 
       final verificationResult =
           verify(mockedPlatform.multifactorChallenge(captureAny))
@@ -213,7 +212,6 @@ void main() {
               .single as ApiRequest<AuthMultifactorChallengeOptions>;
       expect(verificationResult.options.types, isNull);
       expect(verificationResult.options.authenticatorId, isNull);
-      expect(verificationResult.options.parameters, isEmpty);
       expect(result, TestPlatform.multifactorChallengeResult);
     });
   });
