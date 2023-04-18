@@ -19,7 +19,7 @@ class AuthAPILoginWithOTPMethodHandlerTests: XCTestCase {
 
 extension AuthAPILoginWithOTPMethodHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
-        let keys: [Argument] = [.otp, .mfaToken, .parameters]
+        let keys: [Argument] = [.otp, .mfaToken]
         let expectations = keys.map { expectation(description: "\($0.rawValue) is missing") }
         for (argument, currentExpectation) in zip(keys, expectations) {
             sut.handle(with: arguments(without: argument)) { result in
@@ -111,8 +111,7 @@ extension AuthAPILoginWithOTPMethodHandlerTests {
     override func arguments() -> [String: Any] {
         return [
             Argument.otp.rawValue: "",
-            Argument.mfaToken.rawValue: "",
-            Argument.parameters.rawValue: [:]
+            Argument.mfaToken.rawValue: ""
         ]
     }
 }
