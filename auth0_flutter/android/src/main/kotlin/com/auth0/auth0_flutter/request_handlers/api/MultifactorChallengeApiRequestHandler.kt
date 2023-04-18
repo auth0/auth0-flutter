@@ -21,7 +21,7 @@ class MultifactorChallengeApiRequestHandler : ApiRequestHandler {
     ) {
         assertHasProperties(listOf("mfaToken"), request.data)
 
-        val challengeTypes = (request.data["types"]) as ArrayList<*>?
+        val challengeTypes = request.data["types"] as ArrayList<*>?
 
         val builder = api.multifactorChallenge(
                 mfaToken = request.data["mfaToken"] as String,
