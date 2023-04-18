@@ -27,7 +27,7 @@ class TestPlatform extends Mock
   });
 
   static Challenge multifactorChallengeResult =
-      Challenge(type: ChallengeType.otp, oobCode: 'oobCode');
+      Challenge(type: ChallengeType.oob, oobCode: 'oobCode');
 
   static Credentials renewResult = Credentials.fromMap({
     'accessToken': 'accessToken',
