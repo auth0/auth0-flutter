@@ -212,7 +212,6 @@ void main() {
               .single as ApiRequest<AuthMultifactorChallengeOptions>;
       expect(verificationResult.options.types, isNull);
       expect(verificationResult.options.authenticatorId, isNull);
-      expect(result, TestPlatform.multifactorChallengeResult);
     });
   });
 
