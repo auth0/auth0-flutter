@@ -614,7 +614,7 @@ void main() {
 
       verify(mocked.methodCallHandler(captureAny));
 
-      expect(result.challengeType, ChallengeType.otp);
+      expect(result.type, ChallengeType.otp);
       expect(result.oobCode, 'oobCode');
       expect(result.bindingMethod, 'bindingMethod');
     });
@@ -633,7 +633,7 @@ void main() {
 
       verify(mocked.methodCallHandler(captureAny));
 
-      expect(result.challengeType, ChallengeType.otp);
+      expect(result.type, ChallengeType.otp);
       expect(result.oobCode, isNull);
       expect(result.bindingMethod, isNull);
     });
