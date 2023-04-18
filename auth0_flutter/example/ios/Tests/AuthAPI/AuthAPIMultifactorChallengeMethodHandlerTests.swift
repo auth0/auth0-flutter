@@ -15,19 +15,17 @@ class AuthAPIMultifactorChallengeMethodHandlerTests: XCTestCase {
     }
 }
 
-// MARK: - Required Arguments Error
+// MARK: - Required Argument Error
 
 extension AuthAPIMultifactorChallengeMethodHandlerTests {
-    func testProducesErrorWhenRequiredArgumentsAreMissing() {
-        let keys: [Argument] = [.mfaToken]
-        let expectations = keys.map { expectation(description: "\($0.rawValue) is missing") }
-        for (argument, currentExpectation) in zip(keys, expectations) {
-            sut.handle(with: arguments(without: argument)) { result in
-                assert(result: result, isError: .requiredArgumentMissing(argument.rawValue))
-                currentExpectation.fulfill()
-            }
+    func testProducesErrorWhenMFATokenIsMissing() {
+        let key = Argument.mfaToken
+        let expectation = self.expectation(description: "mfaToken is missing")
+        sut.handle(with: arguments(without: key)) { result in
+            assert(result: result, isError: .requiredArgumentMissing(key.rawValue))
+            expectation.fulfill()
         }
-        wait(for: expectations)
+        wait(for: [expectation])
     }
 }
 
