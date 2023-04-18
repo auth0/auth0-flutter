@@ -38,7 +38,7 @@ class AuthenticationApi {
   /// If using the default username and password database connection,
   /// [connectionOrRealm] should be set to `Username-Password-Authentication`.
   ///
-  /// ## Endpoint docs
+  /// ## Endpoint
   /// https://auth0.com/docs/api/authentication#login
   ///
   /// ## Notes
@@ -87,7 +87,7 @@ class AuthenticationApi {
   /// (constructed from ID token claims).
   ///
   ///
-  /// ## Endpoint docs
+  /// ## Endpoint
   /// https://auth0.com/docs/api/authentication#verify-with-one-time-password-otp-
   ///
   /// ## Usage example
@@ -109,12 +109,19 @@ class AuthenticationApi {
       )));
 
   /// Requests a challenge for multi-factor authentication (MFA) based on the
-  /// challenge types supported by the application and user.
+  /// challenge types supported by the app and user.
   ///
   /// The `type` is how the user will get the challenge and prove possession.
+  /// Excluding this parameter means that your app accepts all supported
+  /// challenge types.
+  ///
   /// Supported challenge types include:
   /// - `otp`:  for one-time password (OTP).
   /// - `oob`:  for SMS/voice messages or out-of-band (OOB).
+  ///
+  /// **Important**: If OTP is supported by the user and you don't want to
+  /// request a different factor, you can skip the challenge request and call
+  /// [loginWithOtp] directly.
   ///
   /// ## Endpoint
   /// https://auth0.com/docs/api/authentication#challenge-request
@@ -124,7 +131,7 @@ class AuthenticationApi {
   /// ```dart
   /// final result = await auth0.api.multifactorChallenge({
   ///   mfaToken: 'received_mfa_token',
-  ///   types: [ChallengeType.otp],
+  ///   types: [ChallengeType.otp, ChallengeType.oob],
   ///   authenticatorId: 'authenticator_id'
   /// });
   /// ```
@@ -166,7 +173,7 @@ class AuthenticationApi {
   /// Registers a new user with the specified [email] address and [password] in
   /// the specified [connection].
   ///
-  /// Endpoint
+  /// ## Endpoint
   /// https://auth0.com/docs/api/authentication#signup
   ///
   /// ## Notes
