@@ -103,7 +103,9 @@ Next, configure the following URLs for your application under the **Application 
 - Allowed Logout URLs: `http://localhost:3000`
 - Allowed Web Origins: `http://localhost:3000`
 
-> 💡 These URLs should reflect the origins that your application is running on. **Allowed Callback URLs** may also include a path, depending on where you're calling auth0_flutter's `onLoad()` method –[see below](#-web-2).
+> 💡 These URLs should reflect the origins that your app is running on. **Allowed Callback URLs** may also include a path, depending on where you're calling auth0_flutter's `onLoad()` method –[see below](#-web-2).
+
+> 💡 Make sure to use port `3000` when running your app: `flutter run -d chrome --web-port 3000`.
 
 Take note of the **client ID** and **domain** values under the **Basic Information** section. You'll need these values in the next step.
 

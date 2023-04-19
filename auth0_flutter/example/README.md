@@ -52,6 +52,22 @@ Then, open the `strings.xml` file and replace `YOUR_AUTH0_DOMAIN` with your own 
 
 If you prefer to use a custom scheme, configure the `com_auth0_scheme` entry with the correct value.
 
+### 4. Run the app
+
+Use the [Flutter CLI's](https://docs.flutter.dev/reference/flutter-cli) `run` command.
+
+#### 📱 Mobile
+
+```sh
+flutter run
+```
+
+#### 🖥️ Web
+
+```sh
+flutter run -d chrome --web-port 3000
+```
+
 ## What is Auth0?
 
 Auth0 helps you to:
