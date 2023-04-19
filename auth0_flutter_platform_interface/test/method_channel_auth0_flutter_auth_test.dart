@@ -608,8 +608,8 @@ void main() {
 
       final result = await MethodChannelAuth0FlutterAuth().multifactorChallenge(
           ApiRequest<AuthMultifactorChallengeOptions>(
-              account: const Account('test-domain', 'test-clientId'),
-              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              account: const Account('', ''),
+              userAgent: UserAgent(name: '', version: ''),
               options: AuthMultifactorChallengeOptions(mfaToken: '')));
 
       verify(mocked.methodCallHandler(captureAny));
