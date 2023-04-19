@@ -663,13 +663,12 @@ void main() {
       when(mocked.methodCallHandler(any))
           .thenThrow(PlatformException(code: '123'));
 
-      Future<DatabaseUser> actual() async {
-        final result = await MethodChannelAuth0FlutterAuth().signup(
-            ApiRequest<AuthSignupOptions>(
+      Future<Challenge> actual() async {
+        final result = await MethodChannelAuth0FlutterAuth()
+            .multifactorChallenge(ApiRequest<AuthMultifactorChallengeOptions>(
                 account: const Account('', ''),
                 userAgent: UserAgent(name: '', version: ''),
-                options: AuthSignupOptions(
-                    email: '', password: '', connection: '', parameters: {})));
+                options: AuthMultifactorChallengeOptions(mfaToken: '')));
 
         return result;
       }
