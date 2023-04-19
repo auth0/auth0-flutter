@@ -24,7 +24,7 @@ class MethodCallHandler {
   };
 
   static const Map<dynamic, dynamic> multifactorChallengeResultRequired = {
-    'challengeType': 'otp'
+    'challengeType': 'oob'
   };
 
   static const Map<dynamic, dynamic> multifactorChallengeResult = {
@@ -614,7 +614,7 @@ void main() {
 
       verify(mocked.methodCallHandler(captureAny));
 
-      expect(result.type, ChallengeType.otp);
+      expect(result.type, ChallengeType.oob);
       expect(result.oobCode, 'oobCode');
       expect(result.bindingMethod, 'bindingMethod');
     });
@@ -633,7 +633,7 @@ void main() {
 
       verify(mocked.methodCallHandler(captureAny));
 
-      expect(result.type, ChallengeType.otp);
+      expect(result.type, ChallengeType.oob);
       expect(result.oobCode, isNull);
       expect(result.bindingMethod, isNull);
     });
