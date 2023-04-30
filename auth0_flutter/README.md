@@ -233,6 +233,12 @@ final auth0Web = Auth0Web('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID');
 
 > ⚠️ You should have only one instance of this class.
 
+Finally, in your `index.html` add the following `<script>` tag:
+
+```html
+<script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js" defer></script>
+```
+
 ### Logging in
 
 #### 📱 Mobile
