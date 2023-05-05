@@ -1,7 +1,7 @@
 import Flutter
 import Auth0
 
-struct AuthAPILoginWithOtpMethodHandler: MethodHandler {
+struct AuthAPILoginWithOTPMethodHandler: MethodHandler {
     enum Argument: String {
         case otp
         case mfaToken

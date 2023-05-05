@@ -23,6 +23,16 @@ class MethodCallHandler {
     'refreshToken': 'refreshToken'
   };
 
+  static const Map<dynamic, dynamic> multifactorChallengeResultRequired = {
+    'challengeType': 'oob'
+  };
+
+  static const Map<dynamic, dynamic> multifactorChallengeResult = {
+    ...multifactorChallengeResultRequired,
+    'oobCode': 'oobCode',
+    'bindingMethod': 'bindingMethod'
+  };
+
   static const Map<dynamic, dynamic> signupResultRequired = {
     'email': 'test-email',
     'emailVerified': true
@@ -521,6 +531,144 @@ void main() {
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
               options: AuthLoginWithOtpOptions(otp: '', mfaToken: '')),
         );
+
+        return result;
+      }
+
+      await expectLater(actual, throwsA(isA<ApiException>()));
+    });
+  });
+
+  group('multifactorChallenge', () {
+    test('calls the correct MethodChannel method', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async =>
+          MethodCallHandler.multifactorChallengeResultRequired);
+
+      await MethodChannelAuth0FlutterAuth().multifactorChallenge(
+          ApiRequest<AuthMultifactorChallengeOptions>(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: '', version: ''),
+              options: AuthMultifactorChallengeOptions(mfaToken: '')));
+
+      expect(
+          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          'auth#multifactorChallenge');
+    });
+
+    test('correctly maps all properties', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.multifactorChallengeResult);
+
+      await MethodChannelAuth0FlutterAuth().multifactorChallenge(
+          ApiRequest<AuthMultifactorChallengeOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: AuthMultifactorChallengeOptions(
+                  mfaToken: 'test-mfa-token',
+                  types: [ChallengeType.otp, ChallengeType.oob],
+                  authenticatorId: 'test-authenticatorId')));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['_account']['domain'], 'test-domain');
+      expect(verificationResult.arguments['_account']['clientId'],
+          'test-clientId');
+      expect(verificationResult.arguments['_userAgent']['name'], 'test-name');
+      expect(verificationResult.arguments['_userAgent']['version'],
+          'test-version');
+      expect(verificationResult.arguments['mfaToken'], 'test-mfa-token');
+      expect(verificationResult.arguments['types'],
+          [ChallengeType.otp.value, ChallengeType.oob.value]);
+      expect(verificationResult.arguments['authenticatorId'],
+          'test-authenticatorId');
+    });
+
+    test(
+        'correctly assigns default values to all non-required properties when missing',
+        () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async =>
+          MethodCallHandler.multifactorChallengeResultRequired);
+
+      await MethodChannelAuth0FlutterAuth().multifactorChallenge(
+          ApiRequest<AuthMultifactorChallengeOptions>(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: '', version: ''),
+              options:
+                  AuthMultifactorChallengeOptions(mfaToken: 'test-mfa-token')));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['types'], isNull);
+      expect(verificationResult.arguments['authenticatorId'], isNull);
+    });
+
+    test('correctly returns the response from the Method Channel', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.multifactorChallengeResult);
+
+      final result = await MethodChannelAuth0FlutterAuth().multifactorChallenge(
+          ApiRequest<AuthMultifactorChallengeOptions>(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: '', version: ''),
+              options: AuthMultifactorChallengeOptions(mfaToken: '')));
+
+      verify(mocked.methodCallHandler(captureAny));
+
+      expect(result.type, ChallengeType.oob);
+      expect(result.oobCode, 'oobCode');
+      expect(result.bindingMethod, 'bindingMethod');
+    });
+
+    test(
+        'correctly returns the response from the Method Channel when properties missing',
+        () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async =>
+          MethodCallHandler.multifactorChallengeResultRequired);
+
+      final result = await MethodChannelAuth0FlutterAuth().multifactorChallenge(
+          ApiRequest<AuthMultifactorChallengeOptions>(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: '', version: ''),
+              options: AuthMultifactorChallengeOptions(mfaToken: '')));
+
+      verify(mocked.methodCallHandler(captureAny));
+
+      expect(result.type, ChallengeType.oob);
+      expect(result.oobCode, isNull);
+      expect(result.bindingMethod, isNull);
+    });
+
+    test('throws an ApiException when method channel returns null', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      Future<Challenge> actual() async {
+        final result = await MethodChannelAuth0FlutterAuth()
+            .multifactorChallenge(ApiRequest<AuthMultifactorChallengeOptions>(
+                account: const Account('', ''),
+                userAgent: UserAgent(name: '', version: ''),
+                options: AuthMultifactorChallengeOptions(mfaToken: '')));
+
+        return result;
+      }
+
+      expectLater(
+          actual,
+          throwsA(predicate((final e) =>
+              e is ApiException && e.message == 'Channel returned null.')));
+    });
+
+    test(
+        'throws an ApiException when method channel throws a PlatformException',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenThrow(PlatformException(code: '123'));
+
+      Future<Challenge> actual() async {
+        final result = await MethodChannelAuth0FlutterAuth()
+            .multifactorChallenge(ApiRequest<AuthMultifactorChallengeOptions>(
+                account: const Account('', ''),
+                userAgent: UserAgent(name: '', version: ''),
+                options: AuthMultifactorChallengeOptions(mfaToken: '')));
 
         return result;
       }

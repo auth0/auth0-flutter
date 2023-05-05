@@ -66,6 +66,16 @@ func assert<K: RawRepresentable>(result: Any?, has keys: [K]) where K.RawValue =
     XCTAssertEqual(result.keys.sorted(), keys.map(\.rawValue).sorted())
 }
 
+func assert(result: Any?, has challenge: Challenge) {
+    guard let result = result as? [String: Any] else {
+        return XCTFail("The handler did not produce a dictionary")
+    }
+
+    XCTAssertEqual(result[ChallengeProperty.challengeType] as? String, challenge.challengeType)
+    XCTAssertEqual(result[ChallengeProperty.oobCode] as? String, challenge.oobCode)
+    XCTAssertEqual(result[ChallengeProperty.bindingMethod] as? String, challenge.bindingMethod)
+}
+
 func assert(result: Any?, has databaseUser: DatabaseUser) {
     guard let result = result as? [String: Any] else {
         return XCTFail("The handler did not produce a dictionary")

@@ -23,7 +23,7 @@ extension AuthAPISignupMethodHandlerTests {
         let expectations = keys.map { expectation(description: "\($0.rawValue) is missing") }
         for (argument, currentExpectation) in zip(keys, expectations) {
             sut.handle(with: arguments(without: argument)) { result in
-                assert(result: result, isError:  .requiredArgumentMissing(argument.rawValue))
+                assert(result: result, isError: .requiredArgumentMissing(argument.rawValue))
                 currentExpectation.fulfill()
             }
         }

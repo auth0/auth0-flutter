@@ -94,7 +94,9 @@ class AuthenticationExceptionExtensionsTest {
                 )
             },
             "isTooManyAttempts" to { exception: AuthenticationException ->
-                doReturn("too_many_attempts").`when`(exception).getCode()
+                `when`(exception.isTooManyAttempts).thenReturn(
+                    true
+                )
             },
             "isVerificationRequired" to { exception: AuthenticationException ->
                 `when`(exception.isVerificationRequired).thenReturn(

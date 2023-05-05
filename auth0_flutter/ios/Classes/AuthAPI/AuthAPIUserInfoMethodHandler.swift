@@ -16,7 +16,7 @@ struct AuthAPIUserInfoMethodHandler: MethodHandler {
     let client: Authentication
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
-        guard let accessToken = arguments[Argument.accessToken.rawValue] as? String else {
+        guard let accessToken = arguments[Argument.accessToken] as? String else {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.accessToken.rawValue)))
         }
         guard let parameters = arguments[Argument.parameters] as? [String: Any] else {

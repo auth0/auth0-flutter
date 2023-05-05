@@ -111,7 +111,7 @@ extension AuthAPIHandlerTests {
         var expectations: [XCTestExpectation] = []
         let methodHandlers: [AuthAPIHandler.Method: MethodHandler.Type] = [
             .loginWithUsernameOrEmail: AuthAPILoginUsernameOrEmailMethodHandler.self,
-            .loginWithOtp: AuthAPILoginWithOtpMethodHandler.self,
+            .loginWithOTP: AuthAPILoginWithOTPMethodHandler.self,
             .signup: AuthAPISignupMethodHandler.self,
             .userInfo: AuthAPIUserInfoMethodHandler.self,
             .renew: AuthAPIRenewMethodHandler.self,
