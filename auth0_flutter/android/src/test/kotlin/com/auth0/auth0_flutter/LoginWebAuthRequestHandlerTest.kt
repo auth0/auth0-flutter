@@ -49,7 +49,7 @@ class LoginWebAuthRequestHandlerTest {
     fun `handler should log in using the Auth0 SDK`() {
         runRequestHandler { result, builder ->
             val sdf =
-                SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US)
+                SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
 
             val formattedDate = sdf.format(defaultCredentials.expiresAt)
 
@@ -329,7 +329,7 @@ class LoginWebAuthRequestHandlerTest {
         verify(mockResult).success(captor.capture())
 
         val sdf =
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US)
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
 
         val formattedDate = sdf.format(credentials.expiresAt)
 

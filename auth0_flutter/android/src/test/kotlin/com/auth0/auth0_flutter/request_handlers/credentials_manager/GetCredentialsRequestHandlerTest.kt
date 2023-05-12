@@ -317,7 +317,7 @@ class GetCredentialsRequestHandlerTest {
         verify(mockResult).success(captor.capture())
 
         val sdf =
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.US)
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
 
         val formattedDate = sdf.format(credentials.expiresAt)
 
