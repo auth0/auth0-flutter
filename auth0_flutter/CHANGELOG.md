@@ -1,5 +1,18 @@
 # Change Log
 
+## [v1.2.0-beta.1](https://github.com/auth0/auth0-flutter/tree/v1.2.0-beta.1) (2023-05-24)
+
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/v1.2.0-beta.0...v1.2.0-beta.1)
+
+**Changed**
+
+- Document how to load the SPA SDK in index.html [\#254](https://github.com/auth0/auth0-flutter/pull/254) ([Widcket](https://github.com/Widcket))
+- Document how to pass the port `3000` when running a web app [\#249](https://github.com/auth0/auth0-flutter/pull/249) ([Widcket](https://github.com/Widcket))
+
+**Fixed**
+
+- fix: inline AuthParamsExtension.prepare usage and remove [SDK-4222] [\#260](https://github.com/auth0/auth0-flutter/pull/260) ([stevehobbsdev](https://github.com/stevehobbsdev))
+
 ## [v1.2.0-beta.0](https://github.com/auth0/auth0-flutter/tree/v1.2.0-beta.0) (2023-04-14)
 
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/v1.1.0...v1.2.0-beta.0)
