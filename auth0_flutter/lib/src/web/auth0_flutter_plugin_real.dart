@@ -49,7 +49,8 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   Future<void> loginWithRedirect(final LoginOptions? options) {
     final client = _ensureClient();
 
-    final authParams = interop.AuthorizationParams(
+    final authParams = JsInteropUtils.stripNulls(JsInteropUtils.addCustomParams(
+        interop.AuthorizationParams(
             audience: options?.audience,
             redirect_uri: options?.redirectUrl,
             organization: options?.organizationId,
@@ -57,8 +58,8 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
             max_age: options?.idTokenValidationConfig?.maxAge,
             scope: options?.scopes.isNotEmpty == true
                 ? options?.scopes.join(' ')
-                : null)
-        .prepare(options?.parameters);
+                : null),
+        options?.parameters ?? {}));
 
     final loginOptions =
         interop.RedirectLoginOptions(authorizationParams: authParams);
@@ -70,15 +71,16 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   Future<Credentials> loginWithPopup(final PopupLoginOptions? options) async {
     final client = _ensureClient();
 
-    final authParams = interop.AuthorizationParams(
+    final authParams = JsInteropUtils.stripNulls(JsInteropUtils.addCustomParams(
+        interop.AuthorizationParams(
             audience: options?.audience,
             organization: options?.organizationId,
             invitation: options?.invitationUrl,
             max_age: options?.idTokenValidationConfig?.maxAge,
             scope: options?.scopes.isNotEmpty == true
                 ? options?.scopes.join(' ')
-                : null)
-        .prepare(options?.parameters);
+                : null),
+        options?.parameters ?? {}));
 
     final popupConfig = JsInteropUtils.stripNulls(interop.PopupConfigOptions(
         popup: options?.popupWindow,
@@ -90,9 +92,9 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
           popupConfig);
 
       return CredentialsExtension.fromWeb(await client.getTokenSilently(
-        interop.GetTokenSilentlyOptions(
-            authorizationParams: authParams.toGetTokenSilentlyParams(),
-            detailedResponse: true)));
+          interop.GetTokenSilentlyOptions(
+              authorizationParams: authParams.toGetTokenSilentlyParams(),
+              detailedResponse: true)));
     } catch (e) {
       throw WebExceptionExtension.fromJsObject(e);
     }
