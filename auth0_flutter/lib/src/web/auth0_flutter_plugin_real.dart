@@ -93,7 +93,9 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
 
       return CredentialsExtension.fromWeb(await client.getTokenSilently(
           interop.GetTokenSilentlyOptions(
-              authorizationParams: authParams.toGetTokenSilentlyParams(),
+              authorizationParams: JsInteropUtils.stripNulls(
+                  interop.GetTokenSilentlyAuthParams(
+                      scope: authParams.scope, audience: authParams.audience)),
               detailedResponse: true)));
     } catch (e) {
       throw WebExceptionExtension.fromJsObject(e);
