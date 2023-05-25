@@ -204,7 +204,7 @@ void main() {
       when(mockedPlatform.multifactorChallenge(any)).thenAnswer(
           (final _) async => TestPlatform.multifactorChallengeResult);
 
-      final result = await Auth0('', '').api.multifactorChallenge(mfaToken: '');
+      await Auth0('', '').api.multifactorChallenge(mfaToken: '');
 
       final verificationResult =
           verify(mockedPlatform.multifactorChallenge(captureAny))
