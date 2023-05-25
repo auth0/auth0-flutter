@@ -12,6 +12,7 @@
 **Fixed**
 
 - fix: inline AuthParamsExtension.prepare usage and remove [SDK-4222] [\#260](https://github.com/auth0/auth0-flutter/pull/260) ([stevehobbsdev](https://github.com/stevehobbsdev))
+- Use Locale.US for Android [\#238](https://github.com/auth0/auth0-flutter/pull/238) ([Mecharyry](https://github.com/Mecharyry))
 
 ## [v1.2.0-beta.0](https://github.com/auth0/auth0-flutter/tree/v1.2.0-beta.0) (2023-04-14)
 
