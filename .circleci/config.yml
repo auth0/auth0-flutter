@@ -54,7 +54,7 @@ orbs:
 parameters:
   flutter_version:
     type: string
-    default: 3.7.4
+    default: 3.10.2
 jobs:
   test_flutter_package:
     docker:
@@ -134,8 +134,8 @@ jobs:
           flags: auth0_flutter_android
   smoke_test_android:
     parameters:
-        android_simulator:
-          type: string
+      android_simulator:
+        type: string
     executor:
       name: android/android-machine
       resource-class: xlarge
@@ -165,7 +165,7 @@ jobs:
       ios_simulator:
         type: string
     macos:
-      xcode: '13.0.0'
+      xcode: "13.0.0"
     environment:
       BUNDLE_RETRY: 3
       HOMEBREW_NO_AUTO_UPDATE: 1
