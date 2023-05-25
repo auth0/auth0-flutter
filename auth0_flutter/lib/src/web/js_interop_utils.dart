@@ -34,11 +34,3 @@ class JsInteropUtils {
     return obj;
   }
 }
-
-extension AuthParamsExtension on AuthorizationParams {
-  // Converts an instance of AuthorizationParams to
-  // GetTokenSilentlyAuthorizationParams.
-  GetTokenSilentlyAuthParams toGetTokenSilentlyParams() =>
-      JsInteropUtils.stripNulls(
-          GetTokenSilentlyAuthParams(scope: scope, audience: audience));
-}
