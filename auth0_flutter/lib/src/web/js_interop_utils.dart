@@ -1,7 +1,5 @@
 import 'dart:js_util';
 
-import 'js_interop.dart';
-
 class JsInteropUtils {
   /// Rebuilds the input object, omitting values that are null
   static T stripNulls<T extends Object>(final T obj) {

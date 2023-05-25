@@ -24,7 +24,7 @@ import java.util.*
 class LoginWithOtpApiRequestHandlerTest {
     @Test
     fun `should throw when missing otp`() {
-        val options = hashMapOf("mfaToken" to "test-mfa-token")
+        val options = hashMapOf("mfaToken" to "test-mfaToken")
         val handler = LoginWithOtpApiRequestHandler()
         val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
@@ -154,7 +154,7 @@ class LoginWithOtpApiRequestHandlerTest {
         verify(mockResult).success(captor.capture())
 
         val sdf =
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
 
         val formattedDate = sdf.format(credentials.expiresAt)
 

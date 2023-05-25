@@ -83,8 +83,7 @@ Note that with `useEphemeralSession: true` you don't need to call `logout()` at 
 
 You still need to call `logout()` on Android, though, as `useEphemeralSession` is iOS-only.
 
-> **Warning**
-> `useEphemeralSession` relies on the `prefersEphemeralWebBrowserSession` configuration option of `ASWebAuthenticationSession`. This option is only available on [iOS 13+](https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession/3237231-prefersephemeralwebbrowsersessio), so `useEphemeralSession` will have no effect on iOS 12. To improve the experience for iOS 12 users, see the approach described below.
+> **Warning** > `useEphemeralSession` relies on the `prefersEphemeralWebBrowserSession` configuration option of `ASWebAuthenticationSession`. This option is only available on [iOS 13+](https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession/3237231-prefersephemeralwebbrowsersessio), so `useEphemeralSession` will have no effect on iOS 12. To improve the experience for iOS 12 users, see the approach described below.
 
 #### Use `SFSafariViewController`
 
@@ -114,6 +113,7 @@ override func application(_ app: UIApplication,
     return super.application(application, open: url, options: options);
 }
 ```
+
 </details>
 
 <details>
@@ -127,13 +127,14 @@ func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>)
     WebAuthentication.resume(with: url)
 }
 ```
+
 </details>
 
 ### 3. How can I disable the iOS _logout_ alert box?
 
 ![ios-sso-alert](https://user-images.githubusercontent.com/5055789/198689762-8f3459a7-fdde-4c14-a13b-68933ef675e6.png)
 
-Since `logout()` on iOS also needs to use `ASWebAuthenticationSession` to clear the shared session cookie, the same alert box will be displayed. 
+Since `logout()` on iOS also needs to use `ASWebAuthenticationSession` to clear the shared session cookie, the same alert box will be displayed.
 
 If you need SSO and/or are willing to tolerate the alert box on the login call, but would prefer to get rid of it when calling `logout()`, you can simply not call `logout()` and just clear the credentials from the app. This means that the shared session cookie will not be removed, so to get the user to log in again you need to add the `'prompt': 'login'` parameter to the _login_ call.
 

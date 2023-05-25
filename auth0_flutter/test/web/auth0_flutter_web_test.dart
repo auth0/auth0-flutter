@@ -270,7 +270,8 @@ void main() {
   });
 
   test('loginWithPopup is called and throws', () async {
-    when(mockClientProxy.loginWithPopup(any, any)).thenThrow(Exception());
+    when(mockClientProxy.loginWithPopup(any, any))
+        .thenThrow(createJsException('test', 'test exception'));
 
     expect(() async => auth0.loginWithPopup(), throwsException);
   });

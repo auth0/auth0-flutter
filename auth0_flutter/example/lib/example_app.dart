@@ -52,6 +52,7 @@ class _ExampleAppState extends State<ExampleApp> {
       }
 
       final result = await webAuth.login();
+
       output = result.idToken;
     } catch (e) {
       output = e.toString();

@@ -1,11 +1,13 @@
 # Change Log
 
 ## [v1.2.0-beta.0](https://github.com/auth0/auth0-flutter/tree/v1.2.0-beta.0) (2023-04-14)
+
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/v1.1.0...v1.2.0-beta.0)
 
 This release adds support for the web platform.
 
 **Added**
+
 - [SDK-4110] Support options to `getTokenSilently` [\#232](https://github.com/auth0/auth0-flutter/pull/232) ([stevehobbsdev](https://github.com/stevehobbsdev))
 - [SDK-4046] WebException wrapper [\#227](https://github.com/auth0/auth0-flutter/pull/227) ([stevehobbsdev](https://github.com/stevehobbsdev))
 - [SDK-4009] Add support for custom parameters [\#226](https://github.com/auth0/auth0-flutter/pull/226) ([stevehobbsdev](https://github.com/stevehobbsdev))
@@ -17,13 +19,16 @@ This release adds support for the web platform.
 - Add web platform boilerplate [SDK-3983] [\#197](https://github.com/auth0/auth0-flutter/pull/197) ([Widcket](https://github.com/Widcket))
 
 ## [v1.1.0](https://github.com/auth0/auth0-flutter/tree/v1.1.0) (2023-02-23)
+
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/v1.0.2...v1.1.0)
 
 **Added**
-- Added support for `loginWithOtp`  [\#172](https://github.com/auth0/auth0-flutter/pull/172) ([wferem1](https://github.com/wferem1))
+
+- Added support for `loginWithOtp` [\#172](https://github.com/auth0/auth0-flutter/pull/172) ([wferem1](https://github.com/wferem1))
 - Added support for SafariViewController [\#198](https://github.com/auth0/auth0-flutter/pull/198) ([stevehobbsdev](https://github.com/stevehobbsdev))
 
 **Fixed**
+
 - Upgrade Flutter used for build, and fix linter warnings [\#199](https://github.com/auth0/auth0-flutter/pull/199) ([stevehobbsdev](https://github.com/stevehobbsdev))
 - Fix README links [\#184](https://github.com/auth0/auth0-flutter/pull/184) ([Widcket](https://github.com/Widcket))
 
@@ -76,13 +81,13 @@ See #152 for details.
 
 ## [1.0.0-fa.0](https://github.com/auth0/auth0-flutter/tree/1.0.0-fa.0) (2022-07-21)
 
-This is a [First Availability](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#first-availability) release of the **Auth0 Flutter SDK**! 🎉 
+This is a [First Availability](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#first-availability) release of the **Auth0 Flutter SDK**! 🎉
 
 This release includes the addition of a Credentials Manager: a mechanism to manage the tokens returned from Auth0, including the ability to automatically renew the access token when expired (web authentication only). [Read more about the credentials manager](https://github.com/auth0/auth0-flutter/tree/main/auth0_flutter#credentials-manager) in the `auth0_flutter` package readme.
 
 ## [1.0.0-beta.1](https://github.com/auth0/auth0-flutter/tree/1.0.0-beta.1) (2022-07-08)
 
-This is the first public beta release of the **Auth0 Flutter SDK**! 🎉 
+This is the first public beta release of the **Auth0 Flutter SDK**! 🎉
 
 > ⚠️ This release is not yet suitable for use in production
 

@@ -1,17 +1,24 @@
 @testable import Auth0
 
+fileprivate let mockCredentials = Credentials()
+fileprivate let mockChallenge = Challenge(challengeType: "", oobCode: nil, bindingMethod: nil)
+fileprivate let mockDatabaseUser: DatabaseUser = (email: "", username: nil, verified: true)
+fileprivate let mockUserInfo = UserInfo(json: ["sub": ""])!
+
 class SpyAuthentication: Authentication {
     let clientId = ""
     let url = mockURL
     var telemetry = Telemetry()
     var logger: Logger?
 
-    var credentialsResult: AuthenticationResult<Credentials> = .success(Credentials())
-    var databaseUserResult: AuthenticationResult<DatabaseUser> = .success((email: "", username: nil, verified: true))
-    var userInfoResult: AuthenticationResult<UserInfo> = .success(UserInfo(json: ["sub": ""])!)
+    var credentialsResult: AuthenticationResult<Credentials> = .success(mockCredentials)
+    var challengeResult: AuthenticationResult<Challenge> = .success(mockChallenge)
+    var databaseUserResult: AuthenticationResult<DatabaseUser> = .success(mockDatabaseUser)
+    var userInfoResult: AuthenticationResult<UserInfo> = .success(mockUserInfo)
     var voidResult: AuthenticationResult<Void> = .success(())
     var calledLoginWithUsernameOrEmail = false
-    var calledLoginWithOtp = false
+    var calledLoginWithOTP = false
+    var calledMultifactorChallenge = false
     var calledSignup = false
     var calledUserInfo = false
     var calledRenew = false
@@ -37,12 +44,22 @@ class SpyAuthentication: Authentication {
     func login(withOTP otp: String, mfaToken: String) -> Request<Credentials, AuthenticationError> {
         arguments["otp"] = otp
         arguments["mfaToken"] = mfaToken
-        calledLoginWithOtp = true
+        calledLoginWithOTP = true
         return request(credentialsResult)
     }
 
     func login(withRecoveryCode recoveryCode: String, mfaToken: String) -> Request<Credentials, AuthenticationError> {
         return request(credentialsResult)
+    }
+
+    func multifactorChallenge(mfaToken: String,
+                              types: [String]?,
+                              authenticatorId: String?) -> Request<Challenge, AuthenticationError> {
+        arguments["mfaToken"] = mfaToken
+        arguments["types"] = types
+        arguments["authenticatorId"] = authenticatorId
+        calledMultifactorChallenge = true
+        return request(challengeResult)
     }
 
     func signup(email: String,
