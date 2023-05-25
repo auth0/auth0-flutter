@@ -47,7 +47,7 @@ class RenewApiRequestHandler : ApiRequestHandler {
             override fun onSuccess(credentials: Credentials) {
                 val scope = credentials.scope?.split(" ") ?: listOf()
                 val sdf =
-                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault())
+                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
 
                 val formattedDate = sdf.format(credentials.expiresAt)
 

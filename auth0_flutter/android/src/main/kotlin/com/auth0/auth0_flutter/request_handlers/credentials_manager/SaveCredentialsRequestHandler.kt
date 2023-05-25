@@ -31,7 +31,7 @@ class SaveCredentialsRequestHandler : CredentialsManagerRequestHandler {
             scope = scopes.joinToString(separator = " ")
         }
 
-        val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+        val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
         format.timeZone = TimeZone.getTimeZone("UTC")
         val date = format.parse(credentials.get("expiresAt") as String)
 
