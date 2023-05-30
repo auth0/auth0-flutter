@@ -331,6 +331,9 @@ The Credentials Manager utility allows you to securely store and retrieve the us
 
 When the users open your app, check for valid credentials. If they exist, you can retrieve them and redirect the users to the app's main flow without any additional login steps.
 
+<details>
+  <summary>Mobile</summary>
+
 ```dart
 final isLoggedIn = await auth0.credentialsManager.hasValidCredentials();
 
@@ -341,15 +344,46 @@ if (isLoggedIn) {
 }
 ```
 
+</details>
+
+<details>
+  <summary>Web</summary>
+
+```dart
+final isLoggedIn = await auth0.hasValidCredentials();
+
+if (isLoggedIn) {
+  // Retrieve the credentials and redirect to the main flow
+} else {
+  // No valid credentials exist, present the login page
+}
+```
+
+</details>
+
 ### Retrieve stored credentials
 
 The credentials will be automatically renewed (if expired) using the [refresh token](https://auth0.com/docs/secure/tokens/refresh-tokens). **This method is thread-safe.**
+
+<details>
+  <summary>Mobile</summary>
 
 ```dart
 final credentials = await auth0.credentialsManager.credentials();
 ```
 
 > 💡 You do not need to call `credentialsManager.storeCredentials()` afterward. The Credentials Manager automatically persists the renewed credentials.
+
+</details>
+
+<details>
+  <summary>Web</summary>
+
+```dart
+final credentials = await auth0.credentials();
+```
+
+</details>
 
 ### Custom implementations
 

@@ -11,7 +11,7 @@
 
 ## Documentation
 
-- [Quickstart](https://auth0.com/docs/quickstart/native/flutter/interactive) - our interactive guide for quickly adding login, logout and user information to your app using Auth0
+- Quickstarts: [Native](https://auth0.com/docs/quickstart/native/flutter/interactive) / [Web](https://auth0.com/docs/quickstart/spa/flutter/interactive) - our interactive guide for quickly adding login, logout and user information to your app using Auth0
 - [Sample app](https://github.com/auth0-samples/auth0-flutter-samples/tree/main/sample) - a full-fledged sample app integrated with Auth0
 - [API documentation](https://pub.dev/documentation/auth0_flutter/latest/) - documentation auto-generated from the code comments that explains all the available features
 - [Examples](https://github.com/auth0/auth0-flutter/blob/main/auth0_flutter/EXAMPLES.md) - examples that demonstrate the different ways in which this SDK can be used
@@ -330,15 +330,12 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 
 ### Common Tasks
 
-#### 📱 Mobile
-
 - [Check for stored credentials](EXAMPLES.md#check-for-stored-credentials) - check if the user is already logged in when your app starts up.
 - [Retrieve stored credentials](EXAMPLES.md#retrieve-stored-credentials) - fetch the user's credentials from the storage, automatically renewing them if they have expired.
+
+#### 📱 Mobile
+
 - [Retrieve user information](EXAMPLES.md#retrieve-user-information) - fetch the latest user information from the `/userinfo` endpoint.
-
-#### 🖥️ Web
-
-TBC
 
 ## API reference
 
@@ -366,7 +363,12 @@ TBC
 
 ### 🖥️ Web
 
-TBC
+- [loginWithRedirect](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/loginWithRedirect.html)
+- [loginWithPopup](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/loginWithPopup.html)
+- [onLoad](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/onLoad.html)
+- [logout](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/logout.html)
+- [credentials](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/credentials.html)
+- [hasValidCredentials](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/hasValidCredentials.html)
 
 ## Feedback
 
