@@ -81,13 +81,13 @@ class _ExampleAppState extends State<ExampleApp> {
         await auth0Web.logout(returnToUrl: 'http://localhost:3000');
       } else {
         await webAuth.logout();
+
+        setState(() {
+          _isLoggedIn = false;
+        });
       }
       output = 'Logged out.';
-
-      setState(() {
-        _isLoggedIn = false;
-      });
-    } on WebAuthenticationException catch (e) {
+    } catch (e) {
       output = e.toString();
     }
 
