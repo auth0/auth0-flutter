@@ -1,6 +1,6 @@
 name: auth0_flutter
 description: Auth0 SDK for Flutter. Easily integrate Auth0 into Android / iOS Flutter apps.
-version: 1.1.0
+version: 1.2.0-beta.1
 homepage: https://github.com/auth0/auth0-flutter
 
 environment:
@@ -8,9 +8,12 @@ environment:
   flutter: ">=3.0.0"
 
 dependencies:
-  auth0_flutter_platform_interface: 1.1.0
+  auth0_flutter_platform_interface: 1.2.0-beta.1
   flutter:
     sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+  js: ^0.6.4
 
 dependency_overrides:
   auth0_flutter_platform_interface:
@@ -18,12 +21,13 @@ dependency_overrides:
 
 dev_dependencies:
   build_runner: ^2.1.8
+  dart_jsonwebtoken: ^2.7.1
   flutter_lints: ^2.0.1
   flutter_test:
     sdk: flutter
   mockito: ^5.1.0
   plugin_platform_interface: ^2.0.0
-  pubspec_yaml : ^3.1.0
+  pubspec_yaml: ^3.1.0
   test: ^1.19.5
 
 # For information on the generic Dart part of this file, see the
@@ -42,6 +46,9 @@ flutter:
         pluginClass: Auth0FlutterPlugin
       ios:
         pluginClass: Auth0FlutterPlugin
+      web:
+        pluginClass: Auth0FlutterPlugin
+        fileName: src/web.dart
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:

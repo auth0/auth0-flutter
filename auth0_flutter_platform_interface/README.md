@@ -10,7 +10,7 @@ This package provides the common interface for platform implementations.
 
 ## Issue Reporting
 
-For general support or usage questions, use the [Auth0 Community](https://community.auth0.com/c/sdks/5) forums or raise a [support ticket](https://support.auth0.com/). Only [raise an issue](https://github.com/auth0/auth0_flutter/issues) if you have found a bug or want to request a feature.
+For general support or usage questions, use the [Auth0 Community](https://community.auth0.com/c/help/6) forums or raise a [support ticket](https://support.auth0.com/). Only [raise an issue](https://github.com/auth0/auth0-flutter/issues) if you have found a bug or want to request a feature.
 
 **Do not report security vulnerabilities on the public GitHub issue tracker.** The [Responsible Disclosure Program](https://auth0.com/responsible-disclosure-policy) details the procedure for disclosing security issues.
 

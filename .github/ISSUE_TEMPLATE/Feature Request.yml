@@ -8,13 +8,13 @@ body:
     attributes:
       label: Checklist
       options:
-        - label: I have looked into the [README](https://github.com/auth0/auth0-flutter/tree/main/auth0_flutter#readme) and have not found a suitable solution or answer.
+        - label: I have looked into the [Readme](https://github.com/auth0/auth0-flutter/tree/main/auth0_flutter#readme), [Examples](https://github.com/auth0/auth0-flutter/blob/main/auth0_flutter/EXAMPLES.md), and [FAQ](https://github.com/auth0/auth0-flutter/blob/main/auth0_flutter/FAQ.md) and have not found a suitable solution or answer.
           required: true
         - label: I have looked into the [API documentation](https://pub.dev/documentation/auth0_flutter/latest/) and have not found a suitable solution or answer.
           required: true
         - label: I have searched the [issues](https://github.com/auth0/auth0-flutter/issues) and have not found a suitable solution or answer.
           required: true
-        - label: I have searched the [Auth0 Community](https://community.auth0.com/c/sdks/5) forums and have not found a suitable solution or answer.
+        - label: I have searched the [Auth0 Community](https://community.auth0.com) forums and have not found a suitable solution or answer.
           required: true
         - label: I agree to the terms within the [Auth0 Code of Conduct](https://github.com/auth0/open-source-template/blob/master/CODE-OF-CONDUCT.md).
           required: true

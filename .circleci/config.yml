@@ -3,6 +3,7 @@ orbs:
   android: circleci/android@2
   macos: circleci/macos@2
   flutter: circleci/flutter@1
+  browser-tools: circleci/browser-tools@1
   codecov: codecov/codecov@3
   local-android:
     orbs:
@@ -53,7 +54,7 @@ orbs:
 parameters:
   flutter_version:
     type: string
-    default: 3.7.4
+    default: 3.10.2
 jobs:
   test_flutter_package:
     docker:
@@ -63,6 +64,7 @@ jobs:
       - flutter/install_sdk_and_pub:
           app-dir: ./auth0_flutter
           flutter_version: << pipeline.parameters.flutter_version >>
+      - browser-tools/install-chrome
       - run:
           name: Analyze App Facing Package
           command: |
@@ -72,7 +74,8 @@ jobs:
       - run:
           name: Run package unit tests
           command: |
-            flutter test --coverage
+            flutter test --tags browser --platform chrome
+            flutter test --coverage --exclude-tags browser
           working_directory: ./auth0_flutter
       - flutter/install_pub:
           app-dir: ./auth0_flutter_platform_interface
@@ -82,8 +85,7 @@ jobs:
           working_directory: ./auth0_flutter_platform_interface
       - run:
           name: Run platform interface unit tests
-          command: |
-            flutter test --coverage
+          command: flutter test --coverage
           working_directory: ./auth0_flutter_platform_interface
       - codecov/upload:
           file: ./auth0_flutter/coverage/lcov.info
@@ -132,8 +134,8 @@ jobs:
           flags: auth0_flutter_android
   smoke_test_android:
     parameters:
-        android_simulator:
-          type: string
+      android_simulator:
+        type: string
     executor:
       name: android/android-machine
       resource-class: xlarge
@@ -163,7 +165,7 @@ jobs:
       ios_simulator:
         type: string
     macos:
-      xcode: '13.0.0'
+      xcode: "13.0.0"
     environment:
       BUNDLE_RETRY: 3
       HOMEBREW_NO_AUTO_UPDATE: 1

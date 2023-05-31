@@ -25,7 +25,11 @@ class Credentials {
   /// Token that can be used to request a new access token.
   ///
   /// The scope `offline_access` must have been requested on login for a refresh
-  ///  token to be returned.
+  /// token to be returned.
+  ///
+  /// **Note:** this property will always be `null` on the web platform. The
+  /// underlying SDK used does not expose the refresh token for security
+  /// reasons.
   ///
   /// [Read more about refresh tokens](https://auth0.com/docs/secure/tokens/refresh-tokens).
   final String? refreshToken;

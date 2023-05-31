@@ -1,9 +1,9 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 
-import 'src/authentication_api.dart';
-import 'src/credentials_manager.dart';
+import 'src/mobile/authentication_api.dart';
+import 'src/mobile/credentials_manager.dart';
+import 'src/mobile/web_authentication.dart';
 import 'src/version.dart';
-import 'src/web_authentication.dart';
 
 export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
     show
@@ -19,12 +19,12 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         CredentialsManagerException,
         LocalAuthentication;
 
-export 'src/authentication_api.dart';
-export 'src/credentials_manager.dart';
-export 'src/web_authentication.dart';
+export 'src/mobile/authentication_api.dart';
+export 'src/mobile/credentials_manager.dart';
+export 'src/mobile/web_authentication.dart';
 
-/// Primary interface for interacting with Auth0 using web authentication, or
-/// the authentication API.
+/// Primary interface for interacting with Auth0 using web authentication,
+/// or the authentication API.
 class Auth0 {
   final Account _account;
 
@@ -76,7 +76,6 @@ class Auth0 {
   ///
   /// final accessToken = result.accessToken;
   /// ```
-
   AuthenticationApi get api => AuthenticationApi(_account, _userAgent);
 
   /// Creates an instance of [WebAuthentication], the primary interface for interacting with the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login).

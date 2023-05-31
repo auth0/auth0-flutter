@@ -47,8 +47,10 @@ void main() {
 String _formatISOTime(final DateTime date, final String locale) {
   final duration = date.timeZoneOffset;
   if (duration.isNegative) {
+    // ignore: lines_longer_than_80_chars
     return "${DateFormat('yyyy-MM-ddTHH:mm:ss.mmm', locale).format(date)}-${duration.inHours.toString().padLeft(2, '0')}${(duration.inMinutes - (duration.inHours * 60)).toString().padLeft(2, '0')}";
   } else {
+    // ignore: lines_longer_than_80_chars
     return "${DateFormat('yyyy-MM-ddTHH:mm:ss.mmm', locale).format(date)}+${duration.inHours.toString().padLeft(2, '0')}${(duration.inMinutes - (duration.inHours * 60)).toString().padLeft(2, '0')}";
   }
 }

@@ -65,12 +65,15 @@ void main() {
   final mocked = MockMethodCallHandler();
 
   setUp(() {
-    channel.setMockMethodCallHandler(mocked.methodCallHandler);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, mocked.methodCallHandler);
+
     reset(mocked);
   });
 
   tearDown(() {
-    channel.setMockMethodCallHandler(null);
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, null);
   });
 
   group('signup', () {

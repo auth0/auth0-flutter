@@ -6,12 +6,9 @@ abstract class Auth0FlutterWebAuthPlatform extends PlatformInterface {
   Auth0FlutterWebAuthPlatform() : super(token: _token);
 
   static Auth0FlutterWebAuthPlatform get instance => _instance;
-
   static final Object _token = Object();
-
   static Auth0FlutterWebAuthPlatform _instance =
       MethodChannelAuth0FlutterWebAuth();
-
   static set instance(final Auth0FlutterWebAuthPlatform instance) {
     PlatformInterface.verifyToken(instance, _token);
     _instance = instance;

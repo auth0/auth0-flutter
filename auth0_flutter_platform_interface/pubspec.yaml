@@ -1,6 +1,6 @@
 name: auth0_flutter_platform_interface
 description: A common platform interface for the auth0_flutter federated plugin.
-version: 1.1.0
+version: 1.2.0-beta.1
 
 homepage: https://github.com/auth0/auth0-flutter
 
@@ -20,7 +20,6 @@ dev_dependencies:
     sdk: flutter
   intl: ^0.18.0
   mockito: ^5.1.0
-  test: ^1.19.5
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
