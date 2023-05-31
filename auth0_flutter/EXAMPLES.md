@@ -408,7 +408,7 @@ try {
 
 ## Handling Credentials on the Web
 
-> This section describes handling credentials for the web platform. For mobile, see [Credentials Manager](#credentials-manager).
+> This section describes handling credentials for the web platform. For mobile, see [Credentials Manager](#-credentials-manager).
 
 The management and storage of credentials is handled internally by the underlying [Auth0 SPA SDK](https://github.com/auth0/auth0-spa-js), including refreshing the access token when it expires. The Flutter SDK provides an API for checking whether credentials are available, and the retrieval of those credentials.
 
