@@ -330,12 +330,15 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 
 ### Common Tasks
 
+### 📱 Mobile
+
 - [Check for stored credentials](EXAMPLES.md#check-for-stored-credentials) - check if the user is already logged in when your app starts up.
 - [Retrieve stored credentials](EXAMPLES.md#retrieve-stored-credentials) - fetch the user's credentials from the storage, automatically renewing them if they have expired.
-
-#### 📱 Mobile
-
 - [Retrieve user information](EXAMPLES.md#retrieve-user-information) - fetch the latest user information from the `/userinfo` endpoint.
+
+### 💻 Web
+
+- [Handling credentials on the web](EXAMPLES.md#handling-credentials-on-the-web) - how to check and retrieve credentials on the web platform.
 
 ## API reference
 
