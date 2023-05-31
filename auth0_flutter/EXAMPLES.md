@@ -314,7 +314,7 @@ await webAuth.logout();
 
 ## 📱 Credentials Manager
 
-> This feature is mobile-only; on web, the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter keeps its own cache.
+> This feature is mobile-only; on web, the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter keeps its own cache. See [Handling Credentials on the Web](#handling-credentials-on-the-web) for more details.
 
 - [Check for stored credentials](#check-for-stored-credentials)
 - [Retrieve stored credentials](#retrieve-stored-credentials)
@@ -350,6 +350,10 @@ final credentials = await auth0.credentialsManager.credentials();
 ```
 
 > 💡 You do not need to call `credentialsManager.storeCredentials()` afterward. The Credentials Manager automatically persists the renewed credentials.
+
+```dart
+final credentials = await auth0.credentials();
+```
 
 ### Custom implementations
 
@@ -398,6 +402,44 @@ try {
 } on CredentialsManagerException catch (e) {
   print(e);
 }
+```
+
+[Go up ⤴](#examples)
+
+## Handling Credentials on the Web
+
+> This section describes handling credentials for the web platform. For mobile, see [Credentials Manager](#-credentials-manager).
+
+The management and storage of credentials is handled internally by the underlying [Auth0 SPA SDK](https://github.com/auth0/auth0-spa-js), including refreshing the access token when it expires. The Flutter SDK provides an API for checking whether credentials are available, and the retrieval of those credentials.
+
+### Check for valid credentials
+
+```dart
+final isLoggedIn = await auth0Web.hasValidCredentials();
+
+if (isLoggedIn) {
+  // Retrieve the credentials and redirect to the main flow
+} else {
+  // No valid credentials exist, present the login page
+}
+```
+
+### Retrieve stored credentials
+
+Credentials can be retrieved on application start using `onLoad()`:
+
+```dart
+auth0Web.onLoad().then((final credentials) {
+  if (credentials != null) {
+    // logged in!
+  }
+});
+```
+
+They can also be retrieved at any time using `credentials()`:
+
+```dart
+final credentials = await auth0Web.credentials();
 ```
 
 [Go up ⤴](#examples)
