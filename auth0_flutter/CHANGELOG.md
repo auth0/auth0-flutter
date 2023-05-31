@@ -3,6 +3,10 @@
 ## [v1.2.0](https://github.com/auth0/auth0-flutter/tree/v1.2.0) (2023-05-31)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/v1.1.0...v1.2.0)
 
+This release adds official support for the Web platform! 🎉 Please checkout [the readme](https://github.com/auth0/auth0-flutter/tree/main/auth0_flutter#readme) for full usage instructions for all supported platforms:
+
+Other changes in this release:
+
 **Added**
 - Add support for requesting MFA challenges [SDK-4052] [\#251](https://github.com/auth0/auth0-flutter/pull/251) ([Widcket](https://github.com/Widcket))
 
