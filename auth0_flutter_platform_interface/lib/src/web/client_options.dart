@@ -95,6 +95,16 @@ class ClientOptions {
   /// The configuration for validating ID tokens.
   final IdTokenValidationConfig? idTokenValidationConfig;
 
+  /// The default audience to be used for requesting API access.
+  final String? audience;
+
+  /// The default scopes to be used on authentication requests.
+  ///
+  /// This defaults to `openid profile email` if not specified.
+  ///
+  /// Note: The openid scope is always applied regardless of this setting.
+  final Set<String>? scopes;
+
   ClientOptions(
       {required this.account,
       this.authorizeTimeoutInSeconds,
@@ -107,5 +117,7 @@ class ClientOptions {
       this.useFormData,
       this.useRefreshTokens,
       this.useRefreshTokensFallback,
-      this.idTokenValidationConfig});
+      this.idTokenValidationConfig,
+      this.audience,
+      this.scopes});
 }

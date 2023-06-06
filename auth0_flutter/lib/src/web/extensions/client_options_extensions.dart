@@ -1,5 +1,6 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import '../js_interop.dart';
+import '../js_interop_utils.dart';
 
 extension ClientOptionsExtension on ClientOptions {
   Auth0ClientOptions toAuth0ClientOptions(final UserAgent userAgent) =>
@@ -19,5 +20,8 @@ extension ClientOptionsExtension on ClientOptions {
           useCookiesForTransactions: useCookiesForTransactions,
           useFormData: useFormData,
           useRefreshTokens: useRefreshTokens,
-          useRefreshTokensFallback: useRefreshTokensFallback);
+          useRefreshTokensFallback: useRefreshTokensFallback,
+          authorizationParams: JsInteropUtils.stripNulls(AuthorizationParams(
+              audience: audience,
+              scope: scopes?.isNotEmpty == true ? scopes?.join(' ') : null)));
 }
