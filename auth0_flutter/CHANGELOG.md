@@ -1,5 +1,11 @@
 # Change Log
 
+## [v1.2.1](https://github.com/auth0/auth0-flutter/tree/v1.2.1) (2023-06-06)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/v1.2.0...v1.2.1)
+
+**Fixed**
+- fix: allow audience and scope to be supplied during initialization [\#272](https://github.com/auth0/auth0-flutter/pull/272) ([stevehobbsdev](https://github.com/stevehobbsdev))
+
 ## [v1.2.0](https://github.com/auth0/auth0-flutter/tree/v1.2.0) (2023-05-31)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/v1.1.0...v1.2.0)
 
