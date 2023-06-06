@@ -90,7 +90,8 @@ class Auth0ClientOptions {
       final bool? useCookiesForTransactions,
       final bool? useFormData,
       final bool? useRefreshTokens,
-      final bool? useRefreshTokensFallback});
+      final bool? useRefreshTokensFallback,
+      final AuthorizationParams? authorizationParams});
 }
 
 @JS()

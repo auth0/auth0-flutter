@@ -32,6 +32,11 @@ class Auth0Web {
   /// learn more about these parameters.
   /// * See the [ClientOptions] type for the full description of the remaining
   /// parameters for this method.
+  /// * [audience] relates to the API Identifier you want to reference in your
+  /// access tokens. See [API settings](https://auth0.com/docs/get-started/apis/api-settings)
+  /// to learn more.
+  /// * [scopes] defaults to `openid profile email`. You can override these
+  /// scopes, but `openid` is always requested regardless of this setting.
   Future<Credentials?> onLoad(
       {final int? authorizeTimeoutInSeconds,
       final CacheLocation? cacheLocation,
@@ -44,7 +49,9 @@ class Auth0Web {
       final bool? useCookiesForTransactions,
       final bool? useFormData,
       final bool? useRefreshTokens,
-      final bool? useRefreshTokensFallback}) async {
+      final bool? useRefreshTokensFallback,
+      final String? audience,
+      final Set<String>? scopes}) async {
     await Auth0FlutterWebPlatform.instance.initialize(
         ClientOptions(
             account: _account,
@@ -59,7 +66,9 @@ class Auth0Web {
             useCookiesForTransactions: useCookiesForTransactions,
             useFormData: useFormData,
             useRefreshTokens: useRefreshTokens,
-            useRefreshTokensFallback: useRefreshTokensFallback),
+            useRefreshTokensFallback: useRefreshTokensFallback,
+            audience: audience,
+            scopes: scopes),
         _userAgent);
 
     if (await hasValidCredentials()) {
