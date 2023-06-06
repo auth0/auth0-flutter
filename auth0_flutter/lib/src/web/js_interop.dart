@@ -79,7 +79,6 @@ class Auth0ClientOptions {
       {required final Auth0ClientInfo clientInfo,
       required final String domain,
       required final String clientId,
-      final String? audience,
       final int? authorizeTimeoutInSeconds,
       final String? cacheLocation,
       final String? cookieDomain,
