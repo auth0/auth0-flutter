@@ -84,4 +84,4 @@ body:
     attributes:
       label: Platform version(s)
     validations:
-      required: true
+      required: false
