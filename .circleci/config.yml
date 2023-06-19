@@ -216,7 +216,7 @@ workflows:
           requires:
             - test_flutter_package
       - smoke_test_android:
-          android_simulator: system-images;android-29;google_apis;x86
+          android_simulator: system-images;android-31;google_apis;x86_64
           requires:
             - test_flutter_package
       - test_ios:
