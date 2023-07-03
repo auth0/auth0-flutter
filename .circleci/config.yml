@@ -227,6 +227,7 @@ jobs:
             - ~/.gradle/wrapper
       - store_artifacts:
           path: ./recording_video.webm
+          when: on_fail
   test_ios:
     parameters:
       ios_simulator:
