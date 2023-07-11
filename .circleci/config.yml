@@ -71,7 +71,6 @@ orbs:
                 sed -i "s/YOUR_AUTH0_DOMAIN/$AUTH0_DOMAIN/" android/app/src/main/res/values/strings.xml
                 mv android/local.properties.ci android/local.properties
               working_directory: ./auth0_flutter/example
-
 jobs:
   test_flutter_package:
     docker:
@@ -230,10 +229,13 @@ jobs:
           when: on_fail
   test_ios:
     parameters:
+      ios_version:
+        type: string
       ios_simulator:
         type: string
     macos:
-      xcode: "13.0.0"
+      xcode: "14.2.0"
+    resource_class: macos.m1.large.gen1
     environment:
       BUNDLE_RETRY: 3
       HOMEBREW_NO_AUTO_UPDATE: 1
@@ -241,9 +243,12 @@ jobs:
     steps:
       - checkout
       - macos/preboot-simulator:
-          version: "15.0"
+          version: << parameters.ios_version >>
           platform: iOS
           device: << parameters.ios_simulator >>
+      - run:
+          name: Install Rosetta
+          command: /usr/sbin/softwareupdate --install-rosetta --agree-to-license
       - flutter-install/install_sdk
       - flutter/install_pub:
           app-dir: ./auth0_flutter/example
@@ -271,6 +276,9 @@ jobs:
             mkdir cobertura
             bundle exec slather
           working_directory: ./auth0_flutter/example/ios
+      - run:
+          name: Create ~/.gnupg dir if it does not exist
+          command: mkdir -p ~/.gnupg
       - codecov/upload:
           file: ./auth0_flutter/example/ios/cobertura/cobertura.xml
           upload_name: Auth0 Flutter iOS
@@ -287,6 +295,7 @@ workflows:
           requires:
             - test_flutter_package
       - test_ios:
-          ios_simulator: iPhone 13
+          ios_version: "16.2"
+          ios_simulator: iPhone 14
           requires:
             - test_flutter_package
