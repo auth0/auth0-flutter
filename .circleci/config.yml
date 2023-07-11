@@ -16,7 +16,7 @@ orbs:
           version:
             type: string
             description: The target version for the Flutter SDK.
-            default: "3.10.2"
+            default: "3.10.5"
         steps:
           - restore_cache:
               keys:
