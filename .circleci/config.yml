@@ -209,6 +209,9 @@ jobs:
             mkdir cobertura
             bundle exec slather
           working_directory: ./auth0_flutter/example/ios
+      - run:
+          name: Ensure ~/.gnupg dir exists
+          command: mkdir -p ~/.gnupg
       - codecov/upload:
           file: ./auth0_flutter/example/ios/cobertura/cobertura.xml
           upload_name: Auth0 Flutter iOS
