@@ -210,7 +210,7 @@ jobs:
             bundle exec slather
           working_directory: ./auth0_flutter/example/ios
       - run:
-          name: Ensure ~/.gnupg dir exists
+          name: Create ~/.gnupg dir if it does not exist
           command: mkdir -p ~/.gnupg
       - codecov/upload:
           file: ./auth0_flutter/example/ios/cobertura/cobertura.xml
