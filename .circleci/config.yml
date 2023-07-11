@@ -162,6 +162,8 @@ jobs:
           cache-prefix: v1a
   test_ios:
     parameters:
+      ios_version:
+        type: string
       ios_simulator:
         type: string
     macos:
@@ -174,7 +176,7 @@ jobs:
     steps:
       - checkout
       - macos/preboot-simulator:
-          version: "15.0"
+          version: << parameters.ios_version >>
           platform: iOS
           device: << parameters.ios_simulator >>
       - flutter/install_sdk_and_pub:
@@ -221,6 +223,7 @@ workflows:
           requires:
             - test_flutter_package
       - test_ios:
+          ios_version: "16.0"
           ios_simulator: iPhone 14
           requires:
             - test_flutter_package
