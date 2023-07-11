@@ -6,53 +6,6 @@ orbs:
   browser-tools: circleci/browser-tools@1
   codecov: codecov/codecov@3
   node: circleci/node@5
-  flutter-install:
-    orbs:
-      android: circleci/flutter@2
-    commands:
-      install_sdk:
-        description: Custom script to fix issue in Flutter orb
-        parameters:
-          version:
-            type: string
-            description: The target version for the Flutter SDK.
-            default: "3.10.5"
-        steps:
-          - restore_cache:
-              keys:
-                - flutter-<<parameters.version>>-{{ arch }}
-          - run:
-              name: Install Flutter SDK if it does not exists
-              environment:
-                ORB_VAL_FLUTTER_SDK_VERSION: <<parameters.version>>
-              command: |
-                mkdir -p ~/usr/development
-                if [ "$(uname)" == 'Darwin' ]; then
-                  curl -o flutter_sdk.zip https://storage.googleapis.com/flutter_infra_release/releases/stable/macos/flutter_macos_$ORB_VAL_FLUTTER_SDK_VERSION-stable.zip
-                  unzip -qq flutter_sdk.zip -d ~/usr/development
-                  rm flutter_sdk.zip
-                elif uname -a | grep -q "Linux" ; then
-                  curl -o flutter_sdk.tar.xz https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_$ORB_VAL_FLUTTER_SDK_VERSION-stable.tar.xz
-                  tar xf flutter_sdk.tar.xz -C ~/usr/development
-                  rm -f flutter_sdk.tar.xz
-                else
-                  echo "This platform ($(uname -a)) is not supported."
-                  exit 1
-                fi
-
-                echo 'export PATH=~/usr/development/flutter/bin:$PATH' >> $BASH_ENV
-
-                # shellcheck source=/dev/null
-                source "$BASH_ENV"
-                which flutter
-          - run:
-              name: Run flutter doctor
-              command: flutter doctor
-          - save_cache:
-              key: flutter-<<parameters.version>>-{{ arch }}
-              paths:
-                - ~/usr/development
-
   local-android:
     orbs:
       android: circleci/android@2
@@ -71,13 +24,19 @@ orbs:
                 sed -i "s/YOUR_AUTH0_DOMAIN/$AUTH0_DOMAIN/" android/app/src/main/res/values/strings.xml
                 mv android/local.properties.ci android/local.properties
               working_directory: ./auth0_flutter/example
+parameters:
+  flutter_version:
+    type: string
+    default: 3.10.5
 jobs:
   test_flutter_package:
     docker:
       - image: cimg/base:current
     steps:
       - checkout
-      - flutter-install/install_sdk
+      - flutter/install_sdk_and_pub:
+          app-dir: ./auth0_flutter
+          version: << pipeline.parameters.flutter_version >>
       - flutter/install_pub:
           app-dir: ./auth0_flutter
       - browser-tools/install-chrome
@@ -118,7 +77,9 @@ jobs:
       tag: 2022.06.1
     steps:
       - checkout
-      - flutter-install/install_sdk
+      - flutter/install_sdk_and_pub:
+          app-dir: ./auth0_flutter
+          version: << pipeline.parameters.flutter_version >>
       - flutter/install_pub:
           app-dir: ./auth0_flutter
       - android/restore-gradle-cache
@@ -155,7 +116,9 @@ jobs:
       resource_class: xlarge
     steps:
       - checkout
-      - flutter-install/install_sdk
+      - flutter/install_sdk_and_pub:
+          app-dir: ./auth0_flutter
+          version: << pipeline.parameters.flutter_version >>
       - local-android/prepare-config
       - node/install:
           node-version: '18.16.0'
@@ -249,7 +212,9 @@ jobs:
       - run:
           name: Install Rosetta
           command: /usr/sbin/softwareupdate --install-rosetta --agree-to-license
-      - flutter-install/install_sdk
+      - flutter/install_sdk_and_pub:
+          app-dir: ./auth0_flutter
+          version: << pipeline.parameters.flutter_version >>
       - flutter/install_pub:
           app-dir: ./auth0_flutter/example
       - flutter/install_ios_gem:
