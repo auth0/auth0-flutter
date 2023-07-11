@@ -115,6 +115,12 @@ jobs:
       # To optimize build times, we recommend "large" and above for Android-related jobs
       resource_class: xlarge
     steps:
+      - run:
+          name: Guard Smoke Tests
+          command: |
+            if ! [[ -z "$CIRCLE_PR_NUMBER" ]]; then
+                circleci-agent step halt
+            fi
       - checkout
       - flutter/install_sdk_and_pub:
           app-dir: ./auth0_flutter
