@@ -223,7 +223,7 @@ workflows:
           requires:
             - test_flutter_package
       - test_ios:
-          ios_version: "16.0"
+          ios_version: "16.2"
           ios_simulator: iPhone 14
           requires:
             - test_flutter_package
