@@ -2,7 +2,7 @@ version: 2.1
 orbs:
   android: circleci/android@2
   macos: circleci/macos@2
-  flutter: circleci/flutter@1
+  flutter: circleci/flutter@2
   browser-tools: circleci/browser-tools@1
   codecov: codecov/codecov@3
   local-android:
