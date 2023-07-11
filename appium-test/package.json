@@ -1,0 +1,14 @@
+{
+  "name": "auth0-flutter-test",
+  "version": "1.0.0",
+  "description": "Integration Test for Auth0 Flutter",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "webdriverio": "^8.11.2"
+  }
+}
