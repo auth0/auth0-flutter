@@ -5,7 +5,7 @@ orbs:
   flutter: circleci/flutter@2
   browser-tools: circleci/browser-tools@1
   codecov: codecov/codecov@3
-  node: circleci/node@5.1.0
+  node: circleci/node@5
   flutter-install:
     orbs:
       android: circleci/flutter@2
