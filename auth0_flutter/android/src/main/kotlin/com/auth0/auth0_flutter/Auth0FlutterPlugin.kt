@@ -53,6 +53,8 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
     credentialsManagerMethodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "auth0.com/auth0_flutter/credentials_manager")
     credentialsManagerMethodChannel.setMethodCallHandler(credentialsManagerCallHandler)
+
+    credentialsManagerCallHandler.context = flutterPluginBinding.applicationContext
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {}

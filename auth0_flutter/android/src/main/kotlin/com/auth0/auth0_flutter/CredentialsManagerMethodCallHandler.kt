@@ -1,6 +1,7 @@
 package com.auth0.auth0_flutter
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import androidx.annotation.NonNull
 import com.auth0.android.authentication.AuthenticationAPIClient
@@ -23,6 +24,8 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
     // GitHub issue: https://github.com/jacoco/jacoco/issues/1182
     @Generated
     lateinit var activity: Activity
+    @Generated
+    lateinit var context: Context
 
     var credentialsManager: SecureCredentialsManager? = null
 
@@ -33,8 +36,8 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
             val request = MethodCallRequest.fromCall(call)
 
             val api = AuthenticationAPIClient(request.account)
-            val storage = SharedPreferencesStorage(activity)
-            credentialsManager = credentialsManager ?: SecureCredentialsManager(activity, api, storage)
+            val storage = SharedPreferencesStorage(context)
+            credentialsManager = credentialsManager ?: SecureCredentialsManager(context, api, storage)
 
             val credentialsManager = credentialsManager as SecureCredentialsManager
             val localAuthentication = request.data.get("localAuthentication") as Map<String, String>?
@@ -44,7 +47,7 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
                 val description = localAuthentication["description"]
                 credentialsManager.requireAuthentication(activity, RequestCodes.AUTH_REQ_CODE, title, description)
             }
-            requestHandler.handle(credentialsManager, activity, request, result)
+            requestHandler.handle(credentialsManager, context, request, result)
         } else {
             result.notImplemented()
         }

@@ -1,6 +1,7 @@
 package com.auth0.auth0_flutter
 
 import android.app.Activity
+import android.content.Context
 import android.content.SharedPreferences
 import com.auth0.auth0_flutter.request_handlers.credentials_manager.ClearCredentialsRequestHandler
 import com.auth0.auth0_flutter.request_handlers.credentials_manager.CredentialsManagerRequestHandler
@@ -33,12 +34,14 @@ class CredentialsManagerMethodCallHandlerTest {
         arguments: HashMap<String, Any?> = defaultArguments,
         requestHandlers: List<CredentialsManagerRequestHandler>,
         activity: Activity? = null,
+        context: Context? = null,
         onResult: (Result) -> Unit,
     ) {
         val handler = CredentialsManagerMethodCallHandler(requestHandlers)
         val mockResult = mock<Result>()
 
         handler.activity = if (activity === null)  mock() else activity
+        handler.context = if (context === null)  mock() else context
 
         handler.onMethodCall(MethodCall(method, arguments), mockResult)
         onResult(mockResult)
@@ -69,15 +72,17 @@ class CredentialsManagerMethodCallHandlerTest {
         `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
 
         val activity: Activity = mock()
+        val context: Context = mock()
         val mockPrefs: SharedPreferences = mock()
 
-        `when`(activity.getSharedPreferences(any(), any()))
+        `when`(context.getSharedPreferences(any(), any()))
             .thenReturn(mockPrefs)
 
         val handler = CredentialsManagerMethodCallHandler(listOf(clearCredentialsHandler))
         val mockResult = mock<Result>()
 
         handler.activity = activity
+        handler.context = context
         handler.credentialsManager = mock()
 
         handler.onMethodCall(MethodCall(clearCredentialsHandler.method, defaultArguments), mockResult)
@@ -92,15 +97,17 @@ class CredentialsManagerMethodCallHandlerTest {
         `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
 
         val activity: Activity = mock()
+        val context: Context = mock()
         val mockPrefs: SharedPreferences = mock()
 
-        `when`(activity.getSharedPreferences(any(), any()))
+        `when`(context.getSharedPreferences(any(), any()))
             .thenReturn(mockPrefs)
 
         val handler = CredentialsManagerMethodCallHandler(listOf(clearCredentialsHandler))
         val mockResult = mock<Result>()
 
         handler.activity = activity
+        handler.context = context
         handler.credentialsManager = mock()
 
         handler.onMethodCall(MethodCall(clearCredentialsHandler.method, defaultArguments + hashMapOf("localAuthentication" to hashMapOf("title" to "test", "description" to "test description"))), mockResult)
@@ -115,15 +122,17 @@ class CredentialsManagerMethodCallHandlerTest {
         `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
 
         val activity: Activity = mock()
+        val context: Context = mock()
         val mockPrefs: SharedPreferences = mock()
 
-        `when`(activity.getSharedPreferences(any(), any()))
+        `when`(context.getSharedPreferences(any(), any()))
             .thenReturn(mockPrefs)
 
         val handler = CredentialsManagerMethodCallHandler(listOf(clearCredentialsHandler))
         val mockResult = mock<Result>()
 
         handler.activity = activity
+        handler.context = context
         handler.credentialsManager = mock()
 
         handler.onMethodCall(MethodCall(clearCredentialsHandler.method, defaultArguments + hashMapOf("localAuthentication" to hashMapOf<String, String>())), mockResult)
@@ -140,14 +149,15 @@ class CredentialsManagerMethodCallHandlerTest {
         `when`(hasValidCredentialsHandler.method).thenReturn("credentialsManager#hasValidCredentials")
 
         val activity: Activity = mock()
+        val context: Context = mock()
         val mockPrefs: SharedPreferences = mock()
 
-        `when`(activity.getSharedPreferences(any(), any()))
+        `when`(context.getSharedPreferences(any(), any()))
             .thenReturn(mockPrefs)
 
-        runCallHandler(clearCredentialsHandler.method, activity = activity, requestHandlers = listOf(clearCredentialsHandler, hasValidCredentialsHandler)) {
-            verify(clearCredentialsHandler).handle(any(), eq(activity), any(), any())
-            verify(hasValidCredentialsHandler, times(0)).handle(any(), eq(activity), any(), any())
+        runCallHandler(clearCredentialsHandler.method, activity = activity, context = context, requestHandlers = listOf(clearCredentialsHandler, hasValidCredentialsHandler)) {
+            verify(clearCredentialsHandler).handle(any(), eq(context), any(), any())
+            verify(hasValidCredentialsHandler, times(0)).handle(any(), eq(context), any(), any())
         }
     }
 
