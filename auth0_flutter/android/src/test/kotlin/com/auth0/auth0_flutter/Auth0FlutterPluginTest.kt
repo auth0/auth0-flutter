@@ -1,6 +1,8 @@
 package com.auth0.auth0_flutter
 
 import android.app.Activity
+import android.content.Context
+import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodChannel
 import org.junit.Test
@@ -17,7 +19,10 @@ class Auth0FlutterPluginTest {
         mockConstruction(MethodChannel::class.java).use { m ->
             val plugin = Auth0FlutterPlugin()
 
-            plugin.onAttachedToEngine(mock())
+            val mockBindings = mock<FlutterPluginBinding>()
+            val mockContext = mock<Context>()
+            `when`(mockBindings.applicationContext).thenReturn(mockContext)
+            plugin.onAttachedToEngine(mockBindings)
 
             val constructed: List<MethodChannel> = m.constructed()
 
@@ -40,7 +45,10 @@ class Auth0FlutterPluginTest {
         mockConstruction(MethodChannel::class.java).use { m ->
             val plugin = Auth0FlutterPlugin()
 
-            plugin.onAttachedToEngine(mock())
+            val mockBindings = mock<FlutterPluginBinding>()
+            val mockContext = mock<Context>()
+            `when`(mockBindings.applicationContext).thenReturn(mockContext)
+            plugin.onAttachedToEngine(mockBindings)
 
             val constructed: List<MethodChannel> = m.constructed()
 
@@ -61,19 +69,22 @@ class Auth0FlutterPluginTest {
     }
 
     @Test
-    fun `should set Activity on onAttachedToActivity`() {
+    fun `should set Activity on onAttachedToActivity and ApplicationContext on onAttachedToEngine`() {
         mockConstruction(MethodChannel::class.java).use { m ->
             val plugin = Auth0FlutterPlugin()
 
-            plugin.onAttachedToEngine(mock())
+            val mockBindings = mock<FlutterPluginBinding>()
+            val mockContext = mock<Context>()
+            `when`(mockBindings.applicationContext).thenReturn(mockContext)
+            plugin.onAttachedToEngine(mockBindings)
 
             val constructed: List<MethodChannel> = m.constructed()
 
-            val mockBindings = mock<ActivityPluginBinding>()
+            val mockActivityBindings = mock<ActivityPluginBinding>()
             val mockActivity = mock<Activity>()
-            `when`(mockBindings.activity).thenReturn(mockActivity)
+            `when`(mockActivityBindings.activity).thenReturn(mockActivity)
 
-            plugin.onAttachedToActivity(mockBindings)
+            plugin.onAttachedToActivity(mockActivityBindings)
 
             fun <TMethodCallHandler : MethodChannel.MethodCallHandler> getHandler(i: Int): TMethodCallHandler {
                 val captor = argumentCaptor<MethodChannel.MethodCallHandler>()
@@ -86,6 +97,7 @@ class Auth0FlutterPluginTest {
 
             assert(getHandler<Auth0FlutterWebAuthMethodCallHandler>(0).activity == mockActivity)
             assert(getHandler<CredentialsManagerMethodCallHandler>(2).activity == mockActivity)
+            assert(getHandler<CredentialsManagerMethodCallHandler>(2).context == mockContext)
 
             assert(constructed.size == 3)
         }
@@ -96,16 +108,19 @@ class Auth0FlutterPluginTest {
         mockConstruction(MethodChannel::class.java).use {
             val plugin = Auth0FlutterPlugin()
 
-            plugin.onAttachedToEngine(mock())
+            val mockBindings = mock<FlutterPluginBinding>()
+            val mockContext = mock<Context>()
+            `when`(mockBindings.applicationContext).thenReturn(mockContext)
+            plugin.onAttachedToEngine(mockBindings)
 
-            val mockBindings = mock<ActivityPluginBinding>()
+            val mockActivityBindings = mock<ActivityPluginBinding>()
             val mockActivity = mock<Activity>()
 
-            `when`(mockBindings.activity).thenReturn(mockActivity)
+            `when`(mockActivityBindings.activity).thenReturn(mockActivity)
 
-            plugin.onAttachedToActivity(mockBindings)
+            plugin.onAttachedToActivity(mockActivityBindings)
 
-            verify(mockBindings).addActivityResultListener(
+            verify(mockActivityBindings).addActivityResultListener(
                 any<CredentialsManagerMethodCallHandler>()
             )
         }
