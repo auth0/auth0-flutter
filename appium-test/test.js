@@ -6,7 +6,7 @@ const capabilities = {
   'appium:deviceName': 'Android',
   'appium:appPackage': 'com.auth0.auth0_flutter_example',
   'appium:appActivity': '.MainActivity',
-  'appium:app': '/home/circleci/project/auth0_flutter/example/build/app/outputs/flutter-apk/app-x86_64-release.apk'
+  'appium:app': './auth0_flutter/example/build/app/outputs/flutter-apk/app-x86_64-release.apk'
 };
 
 const wdOpts = {
