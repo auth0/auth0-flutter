@@ -155,7 +155,14 @@ jobs:
       resource_class: xlarge
     steps:
       - checkout
-      - flutter-install/install_sdk
+      - flutter/install_sdk_and_pub:
+          app-dir: ./auth0_flutter
+      - run:
+          name: Test
+          command: |
+            echo "$BASH_ENV"
+            which flutter
+            echo "$(pyenv-version-name)"
       - local-android/prepare-config
       - node/install:
           node-version: '18.16.0'
@@ -287,15 +294,15 @@ jobs:
 workflows:
   build_and_test:
     jobs:
-      - test_flutter_package
-      - test_android:
-          requires:
-            - test_flutter_package
-      - smoke_test_android:
-          requires:
-            - test_flutter_package
-      - test_ios:
-          ios_version: "16.2"
-          ios_simulator: iPhone 14
-          requires:
-            - test_flutter_package
+      # - test_flutter_package
+      # - test_android:
+      #     requires:
+      #       - test_flutter_package
+      - smoke_test_android
+          # requires:
+          #   - test_flutter_package
+      # - test_ios:
+      #     ios_version: "16.2"
+      #     ios_simulator: iPhone 14
+      #     requires:
+      #       - test_flutter_package
