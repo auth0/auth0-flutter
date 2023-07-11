@@ -54,7 +54,7 @@ orbs:
 parameters:
   flutter_version:
     type: string
-    default: 3.10.2
+    default: 3.10.5
 jobs:
   test_flutter_package:
     docker:
@@ -179,6 +179,9 @@ jobs:
           version: << parameters.ios_version >>
           platform: iOS
           device: << parameters.ios_simulator >>
+      - run:
+          name: Install Rosetta
+          command: /usr/sbin/softwareupdate --install-rosetta --agree-to-license
       - flutter/install_sdk_and_pub:
           app-dir: ./auth0_flutter/example
           version: << pipeline.parameters.flutter_version >>
