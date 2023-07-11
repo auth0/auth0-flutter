@@ -165,7 +165,8 @@ jobs:
       ios_simulator:
         type: string
     macos:
-      xcode: "13.0.0"
+      xcode: "14.2.0"
+    resource_class: macos.m1.large.gen1
     environment:
       BUNDLE_RETRY: 3
       HOMEBREW_NO_AUTO_UPDATE: 1
@@ -220,6 +221,6 @@ workflows:
           requires:
             - test_flutter_package
       - test_ios:
-          ios_simulator: iPhone 13
+          ios_simulator: iPhone 14
           requires:
             - test_flutter_package
