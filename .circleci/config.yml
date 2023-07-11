@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  android: circleci/android@2.3.0
+  android: circleci/android@2
   macos: circleci/macos@2
   flutter: circleci/flutter@2
   browser-tools: circleci/browser-tools@1
