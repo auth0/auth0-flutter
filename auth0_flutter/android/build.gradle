@@ -1,4 +1,6 @@
-group 'com.auth0.auth0_flutter'
+def libApplicationId = 'com.auth0.auth0_flutter'
+
+group libApplicationId
 version '1.0-SNAPSHOT'
 
 buildscript {
@@ -26,7 +28,9 @@ apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 31
-
+    if (project.android.hasProperty("namespace")) {
+        namespace libApplicationId
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
