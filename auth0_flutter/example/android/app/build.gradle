@@ -1,4 +1,4 @@
-def applicationId = 'com.auth0.auth0_flutter_example'
+def exampleAppApplicationId = 'com.auth0.auth0_flutter_example'
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -33,7 +33,7 @@ jacoco {
 android {
     compileSdk 31
     if (project.android.hasProperty("namespace")) {
-        namespace applicationId
+        namespace exampleAppApplicationId
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -51,7 +51,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId applicationId
+        applicationId exampleAppApplicationId
         minSdkVersion 21
         targetSdkVersion 31
         versionCode flutterVersionCode.toInteger()
