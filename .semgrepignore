@@ -1,5 +1,3 @@
-.circleci/
-.github/
 .idea/
 .vscode/
 appium-test/
