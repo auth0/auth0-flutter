@@ -1,0 +1,8 @@
+.circleci/
+.github/
+.idea/
+.vscode/
+appium-test/
+auth0_flutter/example/
+auth0_flutter/test/
+auth0_flutter_platform_interface/test/
