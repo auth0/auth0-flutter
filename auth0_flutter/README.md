@@ -127,7 +127,7 @@ final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID');
 
 ##### Android: Configure manifest placeholders
 
-Open the `android/build.gradle` file and add the following manifest placeholders inside **android > defaultConfig**.
+Open the `android/app/build.gradle` file and add the following manifest placeholders inside **android > defaultConfig**.
 
 ```groovy
 // android/build.gradle
