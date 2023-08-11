@@ -45,10 +45,7 @@ Head to the [Auth0 Dashboard](https://manage.auth0.com/#/applications/) and crea
 <details>
   <summary>Using an existing <strong>Native</strong> application?</summary>
 
-Select the **Settings** tab of your [application's page](https://manage.auth0.com/#/applications/) and verify the following:
-
-- Ensure that **Application Type** is set to `Native`
-- Ensure that the **Token Endpoint Authentication Method** setting has a value of `None`
+Select the **Settings** tab of your [application's page](https://manage.auth0.com/#/applications/) and ensure that **Application Type** is set to `Native`.
 
 Then, scroll down and select the **Show Advanced Settings** link. Under **Advanced Settings**, select the **OAuth** tab and verify the following:
 
@@ -83,17 +80,16 @@ Head to the [Auth0 Dashboard](https://manage.auth0.com/#/applications/) and crea
 <details>
   <summary>Using an existing <strong>Single Page</strong> application?</summary>
 
-Select the **Settings** tab of your [application's page](https://manage.auth0.com/#/applications/) and verify the following:
-
-- Ensure that **Application Type** is set to `Single Page Application`
-- Ensure that the **Token Endpoint Authentication Method** setting has a value of `None`
+Select the **Settings** tab of your [application's page](https://manage.auth0.com/#/applications/) and ensure that **Application Type** is set to `Single Page Application`. 
 
 Then, scroll down and select the **Show Advanced Settings** link. Under **Advanced Settings**, select the **OAuth** tab and verify the following:
 
 - Ensure that **JsonWebToken Signature Algorithm** is set to `RS256`
 - Ensure that **OIDC Conformant** is enabled
 
-Finally, if you made any chages don't forget to scroll to the end and press the **Save Changes** button.
+If you made any chages don't forget to scroll to the end and press the **Save Changes** button.
+
+Finally, head over to the **Credentials** tab and ensure that **Authentication Methods** is set to `None`.
 
 </details>
 
