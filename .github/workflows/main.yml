@@ -24,6 +24,7 @@ jobs:
               with:
                   flutter-version: ${{ env.flutter-version }}
                   channel: stable
+                  cache: true
 
             - name: Add example/.env
               if: ${{ matrix.package == 'auth0_flutter' }}
