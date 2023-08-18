@@ -1,0 +1,35 @@
+name: CI
+on: push
+
+env:
+    flutter-version: '3.x'
+
+jobs:
+    analyze:
+        name: Analyze ${{ matrix.package }} package
+        runs-on: ubuntu-latest
+
+        strategy:
+          matrix:
+            package: 
+              - auth0_flutter
+              - auth0_flutter_platform_interface
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+
+            - name: Install Flutter
+              uses: subosito/flutter-action@v2
+              with:
+                  flutter-version: ${{ env.flutter-version }}
+                  channel: stable
+
+            - name: Add example/.env
+              if: ${{ matrix.package == 'auth0_flutter' }}
+              working-directory: ${{ matrix.package }}
+              run: cp example/.env.example example/.env
+
+            - name: Analize package
+              working-directory: ${{ matrix.package }}
+              run: flutter analyze
