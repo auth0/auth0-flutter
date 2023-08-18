@@ -27,10 +27,14 @@ jobs:
             - name: Analize auth0_flutter package
               working-directory: auth0_flutter
               run: flutter analyze
-            
+
             - name: Analize auth0_flutter_platform_interface package
               working-directory: auth0_flutter_platform_interface
               run: flutter analyze
+
+            - name: Cancel wokflow on failure
+              uses: andymckay/cancel-action@b9280e3f8986d7a8e91c7462efc0fa318010c8b1
+              if: ${{ failure() }}
 
     test-flutter:
         name: Test Flutter packages
@@ -56,7 +60,7 @@ jobs:
               run: |
                   flutter test --tags browser --platform chrome
                   flutter test --coverage --exclude-tags browser
-            
+
             - name: Test auth0_flutter_platform_interface package
               working-directory: auth0_flutter_platform_interface
               run: flutter test --coverage
@@ -74,3 +78,7 @@ jobs:
                   name: Auth0 Flutter
                   flags: auth0_flutter_platform_interface
                   files: ./auth0_flutter_platform_interface/coverage/lcov.info
+            
+            - name: Cancel wokflow on failure
+              uses: andymckay/cancel-action@b9280e3f8986d7a8e91c7462efc0fa318010c8b1
+              if: ${{ failure() }}
