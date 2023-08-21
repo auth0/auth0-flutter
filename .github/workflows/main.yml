@@ -110,7 +110,7 @@ jobs:
 
             - name: Set Ruby version
               working-directory: auth0_flutter/example
-              run: ruby -e 'puts RUBY_VERSION' | tee .ruby-version
+              run: ruby -e 'puts RUBY_VERSION' | tee .ruby-version && cp .ruby-version ios/.ruby-version
               shell: bash
 
             - name: Set up Ruby
@@ -120,13 +120,9 @@ jobs:
                   cache-version: 1
                   working-directory: auth0_flutter/example
 
-            - name: Install Flutter dependencies
-              working-directory: auth0_flutter/example
-              run: flutter pub get
-
             - name: Install pods
               working-directory: auth0_flutter/example/ios
-              run: bundle exec pod install
+              run: echo "$BUNDLE_GEMFILE" && bundle exec pod install
 
             - name: Set .env
               working-directory: auth0_flutter/example/ios
