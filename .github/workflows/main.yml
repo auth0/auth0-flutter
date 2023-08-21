@@ -84,12 +84,17 @@ jobs:
               if: ${{ failure() }}
 
     test-ios:
-        name: Test iOS native code
+        name: Test native iOS code using Xcode ${{ matrix.xcode }}
         runs-on: macos-latest
 
         env:
             xcode: '14.2'
             simulator: iPhone 14
+
+        strategy:
+          matrix:
+            xcode: 
+              - '14.2'
 
         steps:
             - name: Checkout
