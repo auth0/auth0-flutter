@@ -134,11 +134,11 @@ jobs:
 
             - name: Run iOS unit tests
               working-directory: auth0_flutter/example/ios
-              run: xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination ${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.simulator) }} -skip-testing:RunnerUITests | bundle exec xcpretty
+              run: xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination '${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.simulator) }}' -skip-testing:RunnerUITests | bundle exec xcpretty
 
             - name: Run iOS smoke tests
               working-directory: auth0_flutter/example/ios
-              run: xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination ${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.simulator) }} -only-testing:RunnerUITests | bundle exec xcpretty
+              run: xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination '${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.simulator) }}' -only-testing:RunnerUITests | bundle exec xcpretty
 
             - name: Cancel wokflow on failure
               uses: andymckay/cancel-action@b9280e3f8986d7a8e91c7462efc0fa318010c8b1
