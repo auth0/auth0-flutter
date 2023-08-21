@@ -124,10 +124,7 @@ jobs:
                   working-directory: auth0_flutter/example/ios
 
             - name: Setup Xcode
-              uses: mxcl/xcodebuild@6e60022a0cbe8c89278be2dd1773a2f68e7c5c87
-              with:
-                  xcode: ${{ env.xcode }}
-                  action: none
+              run: sudo xcode-select --switch /Applications/Xcode_${{ env.xcode }}.app/Contents/Developer
 
             - name: Save Xcode version
               run: xcodebuild -version | tee .xcode-version
