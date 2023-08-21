@@ -134,12 +134,19 @@ jobs:
 
             - name: Run iOS unit tests
               working-directory: auth0_flutter/example/ios
-              run: xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination '${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.simulator) }}' -skip-testing:RunnerUITests | bundle exec xcpretty
+              run: xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination '${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.simulator) }}' -resultBundlePath unit-tests.xcresult -skip-testing:RunnerUITests | bundle exec xcpretty
 
             - name: Run iOS smoke tests
               if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
               working-directory: auth0_flutter/example/ios
-              run: xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination '${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.simulator) }}' -only-testing:RunnerUITests | bundle exec xcpretty
+              run: xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination '${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.simulator) }}' -resultBundlePath smoke-tests.xcresult -only-testing:RunnerUITests | bundle exec xcpretty
+
+            - name: Upload xcresult bundles
+              uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
+              if: ${{ failure() }}
+              with:
+                name: xcresult bundles
+                path: '*.xcresult'
 
             - name: Cancel wokflow on failure
               uses: andymckay/cancel-action@b9280e3f8986d7a8e91c7462efc0fa318010c8b1
