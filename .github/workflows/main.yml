@@ -121,8 +121,10 @@ jobs:
                   working-directory: auth0_flutter/example
 
             - name: Install pods
+              env:
+                  BUNDLE_PATH: ../vendor/bundle
               working-directory: auth0_flutter/example/ios
-              run: BUNDLE_GEMFILE=../Gemfile bundle exec pod install
+              run: bundle exec pod install
 
             - name: Set .env
               working-directory: auth0_flutter/example/ios
