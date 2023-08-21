@@ -25,6 +25,7 @@ GEM
       racc (~> 1.4)
     racc (1.7.1)
     rexml (3.2.6)
+    rouge (2.0.7)
     slather (2.7.4)
       CFPropertyList (>= 2.2, < 4)
       activesupport
@@ -40,6 +41,8 @@ GEM
       colored2 (~> 3.1)
       nanaimo (~> 0.3.0)
       rexml (~> 3.2.4)
+    xcpretty (0.3.0)
+      rouge (~> 2.0.7)
 
 PLATFORMS
   ruby
@@ -48,6 +51,7 @@ PLATFORMS
 
 DEPENDENCIES
   slather
+  xcpretty
 
 BUNDLED WITH
    2.1.4
