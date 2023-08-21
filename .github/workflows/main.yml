@@ -137,6 +137,7 @@ jobs:
               run: xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination '${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.simulator) }}' -skip-testing:RunnerUITests | bundle exec xcpretty
 
             - name: Run iOS smoke tests
+              if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
               working-directory: auth0_flutter/example/ios
               run: xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination '${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.simulator) }}' -only-testing:RunnerUITests | bundle exec xcpretty
 
