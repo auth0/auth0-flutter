@@ -124,7 +124,7 @@ jobs:
               env:
                   BUNDLE_PATH: ../vendor/bundle
               working-directory: auth0_flutter/example/ios
-              run: bundle exec pod install
+              run: bundle exec gem query --local && gem query --local && pod install
 
             - name: Set .env
               working-directory: auth0_flutter/example/ios
