@@ -120,11 +120,13 @@ jobs:
                   cache-version: 1
                   working-directory: auth0_flutter/example
 
+            - name: Install Flutter dependencies
+              working-directory: auth0_flutter/example
+              run: flutter pub get
+
             - name: Install pods
-              env:
-                  BUNDLE_PATH: ../vendor/bundle
               working-directory: auth0_flutter/example/ios
-              run: bundle exec gem query --local && gem query --local && pod install
+              run: pod install
 
             - name: Set .env
               working-directory: auth0_flutter/example/ios
