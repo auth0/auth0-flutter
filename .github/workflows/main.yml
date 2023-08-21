@@ -102,14 +102,12 @@ jobs:
                   channel: stable
                   cache: true
 
-            - name: Setup Xcode
-              uses: mxcl/xcodebuild@6e60022a0cbe8c89278be2dd1773a2f68e7c5c87
-              with:
-                  xcode: ${{ env.xcode }}
-                  action: none
+            - name: Install Flutter dependencies
+              working-directory: auth0_flutter/example
+              run: flutter pub get
 
             - name: Set Ruby version
-              working-directory: auth0_flutter/example
+              working-directory: auth0_flutter/example/ios
               run: ruby -e 'puts RUBY_VERSION' | tee .ruby-version
               shell: bash
 
@@ -118,11 +116,13 @@ jobs:
               with:
                   bundler-cache: true
                   cache-version: 1
-                  working-directory: auth0_flutter/example
+                  working-directory: auth0_flutter/example/ios
 
-            - name: Install Flutter dependencies
-              working-directory: auth0_flutter/example
-              run: flutter pub get
+            - name: Setup Xcode
+              uses: mxcl/xcodebuild@6e60022a0cbe8c89278be2dd1773a2f68e7c5c87
+              with:
+                  xcode: ${{ env.xcode }}
+                  action: none
 
             - name: Install pods
               working-directory: auth0_flutter/example/ios
