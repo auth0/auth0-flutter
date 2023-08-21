@@ -109,7 +109,7 @@ jobs:
                   action: none
 
             - name: Set Ruby version
-              working-directory: auth0_flutter_platform_interface
+              working-directory: auth0_flutter/example/ios
               run: ruby -e 'puts RUBY_VERSION' | tee .ruby-version
               shell: bash
 
