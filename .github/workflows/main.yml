@@ -109,11 +109,11 @@ jobs:
                   action: none
 
             - name: Set Ruby version
-              working-directory: auth0_flutter/example/ios
+              working-directory: auth0_flutter/example
               run: ruby -e 'puts RUBY_VERSION' | tee .ruby-version
               shell: bash
 
-            - name: Set up Ruby
+            - name: Install pods
               uses: ruby/setup-ruby@250fcd6a742febb1123a77a841497ccaa8b9e939
               with:
                   bundler-cache: true
