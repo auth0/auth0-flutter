@@ -78,7 +78,64 @@ jobs:
                   name: Auth0 Flutter
                   flags: auth0_flutter_platform_interface
                   files: ./auth0_flutter_platform_interface/coverage/lcov.info
-            
+
+            - name: Cancel wokflow on failure
+              uses: andymckay/cancel-action@b9280e3f8986d7a8e91c7462efc0fa318010c8b1
+              if: ${{ failure() }}
+
+    test-ios:
+        name: Test iOS native code
+        runs-on: macos-latest
+
+        env:
+            xcode: '14.2'
+            simulator: iPhone 14
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+
+            - name: Install Flutter
+              uses: subosito/flutter-action@48cafc24713cca54bbe03cdc3a423187d413aafa
+              with:
+                  flutter-version: ${{ env.flutter-version }}
+                  channel: stable
+                  cache: true
+
+            - name: Setup Xcode
+              uses: mxcl/xcodebuild@6e60022a0cbe8c89278be2dd1773a2f68e7c5c87
+              with:
+                  xcode: ${{ env.xcode }}
+                  action: none
+
+            - name: Set Ruby version
+              working-directory: auth0_flutter_platform_interface
+              run: ruby -e 'puts RUBY_VERSION' | tee .ruby-version
+              shell: bash
+
+            - name: Set up Ruby
+              uses: ruby/setup-ruby@250fcd6a742febb1123a77a841497ccaa8b9e939
+              with:
+                  bundler-cache: true
+                  cache-version: 1
+                  working-directory: auth0_flutter/example/ios
+
+            - name: Install pods
+              working-directory: auth0_flutter/example/ios
+              run: bundle exec pod install
+
+            - name: Set .env
+              working-directory: auth0_flutter/example/ios
+              run: printf '%s\n%s\n%s' "AUTH0_DOMAIN=$AUTH0_DOMAIN" "AUTH0_CLIENT_ID=$AUTH0_CLIENT_ID" 'AUTH0_CUSTOM_SCHEME=demo' >> ../.env
+
+            - name: Run iOS unit tests
+              working-directory: auth0_flutter/example/ios
+              run: xcodebuild test -scheme Runner -workspace Runner.workspace -destination ${{ join('platform=iOS Simulator,name=', env.simulator) }} -skip-testing:RunnerUITests | xcpretty
+
+            - name: Run iOS smoke tests
+              working-directory: auth0_flutter/example/ios
+              run: xcodebuild test -scheme Runner -workspace Runner.workspace -destination ${{ join('platform=iOS Simulator,name=', env.simulator) }} -only-testing:RunnerUITests | xcpretty
+
             - name: Cancel wokflow on failure
               uses: andymckay/cancel-action@b9280e3f8986d7a8e91c7462efc0fa318010c8b1
               if: ${{ failure() }}
