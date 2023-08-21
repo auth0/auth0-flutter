@@ -158,7 +158,7 @@ jobs:
               if: ${{ failure() }}
               with:
                 name: xcresult bundles
-                path: '*.xcresult'
+                path: 'auth0_flutter/example/ios/*.xcresult'
 
             - name: Cancel wokflow on failure
               uses: andymckay/cancel-action@b9280e3f8986d7a8e91c7462efc0fa318010c8b1
