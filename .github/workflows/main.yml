@@ -117,7 +117,7 @@ jobs:
               uses: ruby/setup-ruby@250fcd6a742febb1123a77a841497ccaa8b9e939
               with:
                   bundler-cache: true
-                  cache-version: 2
+                  cache-version: 1
                   working-directory: auth0_flutter/example
 
             - name: Install pods
