@@ -129,7 +129,7 @@ jobs:
 
             - id: restore-pods-cache
               name: Restore Pods cache
-              uses: actions/cache/restore@f5ce41475b483ad7581884324a6eca9f48f8dcc7
+              uses: actions/cache@f5ce41475b483ad7581884324a6eca9f48f8dcc7
               with:
                 path: auth0_flutter/example/ios/Pods
                 key: pods-${{ hashFiles('Podfile.lock') }}-${{ hashFiles('.xcode-version') }}-v1
@@ -137,14 +137,6 @@ jobs:
             - name: Install pods
               working-directory: auth0_flutter/example/ios
               run: pod install
-
-            - name: Save Pods cache
-              id: save-pods-cache
-              uses: actions/cache/save@f5ce41475b483ad7581884324a6eca9f48f8dcc7
-              if: steps.restore-pods-cache.outputs.cache-hit != 'true'
-              with:
-                path: auth0_flutter/example/ios/Pods
-                key: pods-${{ hashFiles('Podfile.lock') }}-${{ hashFiles('.xcode-version') }}-v1
 
             - name: Set .env
               working-directory: auth0_flutter/example/ios
