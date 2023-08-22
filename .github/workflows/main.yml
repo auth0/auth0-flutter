@@ -96,6 +96,7 @@ jobs:
         name: Test native iOS code using Xcode ${{ matrix.xcode }}
         needs: authorize
         runs-on: macos-latest
+        environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
         env:
             xcode: '14.2'
