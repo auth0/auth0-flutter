@@ -40,10 +40,6 @@ jobs:
               working-directory: auth0_flutter_platform_interface
               run: flutter analyze
 
-            - name: Cancel wokflow on failure
-              uses: andymckay/cancel-action@b9280e3f8986d7a8e91c7462efc0fa318010c8b1
-              if: ${{ failure() }}
-
     test-flutter:
         name: Test Flutter packages
         needs: authorize
@@ -87,10 +83,6 @@ jobs:
                   name: Auth0 Flutter
                   flags: auth0_flutter_platform_interface
                   files: ./auth0_flutter_platform_interface/coverage/lcov.info
-
-            - name: Cancel wokflow on failure
-              uses: andymckay/cancel-action@b9280e3f8986d7a8e91c7462efc0fa318010c8b1
-              if: ${{ failure() }}
 
     test-ios:
         name: Test native iOS code using Xcode ${{ matrix.xcode }}
@@ -154,8 +146,8 @@ jobs:
               run: pod install
 
             - name: Set .env
-              working-directory: auth0_flutter/example/ios
-              run: printf '%s\n%s\n%s' 'AUTH0_DOMAIN=${{ vars.AUTH0_DOMAIN }}' 'AUTH0_CLIENT_ID=${{ vars.AUTH0_CLIENT_ID }}' 'AUTH0_CUSTOM_SCHEME=demo' >> ../.env
+              working-directory: auth0_flutter/example
+              run: printf '%s\n%s\n%s' 'AUTH0_DOMAIN=${{ vars.AUTH0_DOMAIN }}' 'AUTH0_CLIENT_ID=${{ vars.AUTH0_CLIENT_ID }}' 'AUTH0_CUSTOM_SCHEME=demo' >> .env
 
             - name: Run iOS unit tests
               working-directory: auth0_flutter/example/ios
@@ -172,7 +164,3 @@ jobs:
               with:
                 name: xcresult bundles
                 path: 'auth0_flutter/example/ios/*.xcresult'
-
-            - name: Cancel wokflow on failure
-              uses: andymckay/cancel-action@b9280e3f8986d7a8e91c7462efc0fa318010c8b1
-              if: ${{ failure() }}
