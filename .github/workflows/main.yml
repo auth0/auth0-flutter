@@ -167,7 +167,7 @@ jobs:
             - name: Upload coverage report
               uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
               with:
-                  working-directory: auth0_flutter/example/ios
+                  directory: auth0_flutter/example/ios/cobertura
 
             - name: Upload xcresult bundles
               uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
