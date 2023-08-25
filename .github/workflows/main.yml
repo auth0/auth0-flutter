@@ -2,7 +2,7 @@ name: CI
 on: push
 
 env:
-    flutter-version: '3.x'
+    flutter: '3.x'
 
 jobs:
     authorize:
@@ -24,7 +24,7 @@ jobs:
             - name: Install Flutter
               uses: subosito/flutter-action@48cafc24713cca54bbe03cdc3a423187d413aafa
               with:
-                  flutter-version: ${{ env.flutter-version }}
+                  flutter-version: ${{ env.flutter }}
                   channel: stable
                   cache: true
 
@@ -52,7 +52,7 @@ jobs:
             - name: Install Flutter
               uses: subosito/flutter-action@48cafc24713cca54bbe03cdc3a423187d413aafa
               with:
-                  flutter-version: ${{ env.flutter-version }}
+                  flutter-version: ${{ env.flutter }}
                   channel: stable
                   cache: true
 
@@ -105,49 +105,13 @@ jobs:
             - name: Checkout
               uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
 
-            - name: Install Flutter
-              uses: subosito/flutter-action@48cafc24713cca54bbe03cdc3a423187d413aafa
+            - name: Set up environment
+              uses: ./.github/actions/setup-ios
               with:
-                  flutter-version: ${{ env.flutter-version }}
-                  channel: stable
-                  cache: true
-
-            - name: Install Flutter dependencies
-              working-directory: auth0_flutter/example
-              run: flutter pub get
-
-            - name: Set Ruby version
-              working-directory: auth0_flutter/example/ios
-              run: ruby -e 'puts RUBY_VERSION' | tee .ruby-version
-              shell: bash
-
-            - name: Set up Ruby
-              uses: ruby/setup-ruby@250fcd6a742febb1123a77a841497ccaa8b9e939
-              with:
-                  bundler-cache: true
-                  cache-version: 1
-                  working-directory: auth0_flutter/example/ios
-
-            - name: Setup Xcode
-              run: sudo xcode-select --switch /Applications/Xcode_${{ env.xcode }}.app/Contents/Developer
-
-            - name: Save Xcode version
-              run: xcodebuild -version | tee .xcode-version
-
-            - id: restore-pods-cache
-              name: Restore Pods cache
-              uses: actions/cache@f5ce41475b483ad7581884324a6eca9f48f8dcc7
-              with:
-                path: auth0_flutter/example/ios/Pods
-                key: pods-${{ hashFiles('Podfile.lock') }}-${{ hashFiles('.xcode-version') }}-v1
-
-            - name: Install pods
-              working-directory: auth0_flutter/example/ios
-              run: pod install
-
-            - name: Set .env
-              working-directory: auth0_flutter/example
-              run: printf '%s\n%s\n%s' 'AUTH0_DOMAIN=${{ vars.AUTH0_DOMAIN }}' 'AUTH0_CLIENT_ID=${{ vars.AUTH0_CLIENT_ID }}' 'AUTH0_CUSTOM_SCHEME=demo' >> .env
+                flutter: ${{ env.flutter }}
+                xcode: ${{ matrix.xcode }}
+                auth0-domain: ${{ vars.AUTH0_DOMAIN }}
+                auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
 
             - name: Run iOS unit tests
               working-directory: auth0_flutter/example/ios
