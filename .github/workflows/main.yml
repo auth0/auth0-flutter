@@ -14,8 +14,8 @@ jobs:
       steps:
         - run: true
 
-    analyze:
-        name: Analyze Flutter packages
+    analyze-auth0_flutter:
+        name: Analyze auth0_flutter Flutter package
         needs: authorize
         runs-on: ubuntu-latest
 
@@ -37,13 +37,29 @@ jobs:
             - name: Analize auth0_flutter package
               working-directory: auth0_flutter
               run: flutter analyze
+  
+    analyze-auth0_flutter_platform_interface:
+        name: Analyze auth0_flutter_platform_interface Flutter package
+        needs: authorize
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+
+            - name: Install Flutter
+              uses: subosito/flutter-action@48cafc24713cca54bbe03cdc3a423187d413aafa
+              with:
+                  flutter-version: ${{ env.flutter }}
+                  channel: stable
+                  cache: true
 
             - name: Analize auth0_flutter_platform_interface package
               working-directory: auth0_flutter_platform_interface
               run: flutter analyze
 
-    test-flutter:
-        name: Test Flutter packages
+    test-auth0_flutter:
+        name: Test auth0_flutter Flutter package
         needs: authorize
         runs-on: ubuntu-latest
 
@@ -68,16 +84,32 @@ jobs:
                   flutter test --tags browser --platform chrome
                   flutter test --coverage --exclude-tags browser
 
-            - name: Test auth0_flutter_platform_interface package
-              working-directory: auth0_flutter_platform_interface
-              run: flutter test --coverage
-
             - name: Upload coverage report for auth0_flutter
               uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter
                   files: ./auth0_flutter/coverage/lcov.info
+
+    test-auth0_flutter_platform_interface:
+        name: Test auth0_flutter Flutter package
+        needs: authorize
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+
+            - name: Install Flutter
+              uses: subosito/flutter-action@48cafc24713cca54bbe03cdc3a423187d413aafa
+              with:
+                  flutter-version: ${{ env.flutter }}
+                  channel: stable
+                  cache: true
+
+            - name: Test auth0_flutter_platform_interface package
+              working-directory: auth0_flutter_platform_interface
+              run: flutter test --coverage
 
             - name: Upload coverage report for auth0_flutter_platform_interface
               uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
