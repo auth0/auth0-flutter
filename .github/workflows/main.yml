@@ -3,6 +3,8 @@ on: push
 
 env:
     flutter: '3.x'
+    xcode: '14.2'
+    simulator: iPhone 14
 
 jobs:
     authorize:
@@ -84,15 +86,13 @@ jobs:
                   flags: auth0_flutter_platform_interface
                   files: ./auth0_flutter_platform_interface/coverage/lcov.info
 
-    test-ios:
-        name: Test native iOS code using Xcode ${{ matrix.xcode }}
+    test-ios-unit:
+        name: Run native iOS unit tests using Xcode ${{ matrix.xcode }}
         needs: authorize
         runs-on: macos-latest
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
         env:
-            xcode: '14.2'
-            simulator: iPhone 14
             USER_EMAIL: ${{ secrets.USER_EMAIL }}
             USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
 
@@ -117,13 +117,6 @@ jobs:
               working-directory: auth0_flutter/example/ios
               run: xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination '${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.simulator) }}' -resultBundlePath unit-tests.xcresult -skip-testing:RunnerUITests
 
-            - name: Run iOS smoke tests
-              if: ${{ github.event.pull_request.head.repo.fork == false }}
-              working-directory: auth0_flutter/example/ios
-              run: |
-                defaults write com.apple.iphonesimulator ConnectHardwareKeyboard 0
-                xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination '${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.simulator) }}' -resultBundlePath smoke-tests.xcresult -only-testing:RunnerUITests
-
             - name: Convert coverage report
               working-directory: auth0_flutter/example/ios
               run: bundle exec slather coverage -x --scheme Runner Runner.xcodeproj
@@ -132,6 +125,47 @@ jobs:
               uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
               with:
                   directory: auth0_flutter/example/ios/cobertura
+
+            - name: Upload xcresult bundles
+              uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
+              if: ${{ failure() }}
+              with:
+                name: xcresult bundles
+                path: 'auth0_flutter/example/ios/*.xcresult'
+
+    test-ios-smoke:
+        name: Run native iOS smoke tests using Xcode ${{ matrix.xcode }}
+        needs: authorize
+        runs-on: macos-latest
+        environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
+
+        env:
+            USER_EMAIL: ${{ secrets.USER_EMAIL }}
+            USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
+
+        strategy:
+          matrix:
+            xcode: 
+              - '14.2'
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+
+            - name: Set up environment
+              uses: ./.github/actions/setup-ios
+              with:
+                flutter: ${{ env.flutter }}
+                xcode: ${{ matrix.xcode }}
+                auth0-domain: ${{ vars.AUTH0_DOMAIN }}
+                auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
+
+            - name: Run iOS smoke tests
+              if: ${{ github.event.pull_request.head.repo.fork == false }}
+              working-directory: auth0_flutter/example/ios
+              run: |
+                defaults write com.apple.iphonesimulator ConnectHardwareKeyboard 0
+                xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination '${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.simulator) }}' -resultBundlePath smoke-tests.xcresult -only-testing:RunnerUITests
 
             - name: Upload xcresult bundles
               uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
