@@ -30,10 +30,6 @@ jobs:
                   channel: stable
                   cache: true
 
-            - name: Add example/.env
-              working-directory: auth0_flutter
-              run: cp example/.env.example example/.env
-
             - name: Analize auth0_flutter package
               working-directory: auth0_flutter
               run: flutter analyze
@@ -92,7 +88,7 @@ jobs:
                   files: ./auth0_flutter/coverage/lcov.info
 
     test-auth0_flutter_platform_interface:
-        name: Test auth0_flutter Flutter package
+        name: Test auth0_flutter_platform_interface Flutter package
         needs: authorize
         runs-on: ubuntu-latest
 
