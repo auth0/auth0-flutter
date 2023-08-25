@@ -30,6 +30,10 @@ jobs:
                   channel: stable
                   cache: true
 
+            - name: Add example/.env
+              working-directory: auth0_flutter
+              run: cp example/.env.example example/.env
+
             - name: Analize auth0_flutter package
               working-directory: auth0_flutter
               run: flutter analyze
