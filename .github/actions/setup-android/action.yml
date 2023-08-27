@@ -47,11 +47,11 @@ runs:
       shell: bash
 
     - name: Set strings.xml
-      working-directory: auth0_flutter/example
+      working-directory: auth0_flutter/example/android/app/src/main/res/values
       run: |
-        mv android/app/src/main/res/values/strings.xml.example android/app/src/main/res/values/strings.xml
-        sed -r -i.bak 's/YOUR_AUTH0_DOMAIN/${{ inputs.auth0-domain }}/' android/app/src/main/res/values/strings.xml
-        rm android/app/src/main/res/values/strings.xml.bak
+        mv strings.xml.example strings.xml
+        sed -r -i.bak 's/YOUR_AUTH0_DOMAIN/${{ inputs.auth0-domain }}/' strings.xml
+        rm strings.xml.bak
       shell: bash
 
     - name: Set Gradle wrapper
