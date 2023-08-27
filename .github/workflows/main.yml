@@ -253,4 +253,4 @@ jobs:
 
             - name: Run Android unit tests
               working-directory: auth0_flutter/example/android
-              run: gradle jacocoTestReport
+              run: ./gradlew jacocoTestReport
