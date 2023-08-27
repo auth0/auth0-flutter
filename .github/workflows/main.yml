@@ -266,7 +266,7 @@ jobs:
 
             - name: Set up Appium tests
               working-directory: appium-test
-              run: yarn
+              run: npm install
 
             - name: Set up Appium driver
               run: APPIUM_SKIP_CHROMEDRIVER_INSTALL=1 npx --yes appium@next driver install uiautomator2
