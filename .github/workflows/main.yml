@@ -278,8 +278,11 @@ jobs:
               uses: reactivecircus/android-emulator-runner@v2
               with:
                 api-level: ${{ env.android-api }}
+                target: playstore
                 arch: x86_64
                 script: |
+                  adb shell am set-debug-app --persistent com.android.chrome
+                  adb shell 'echo "chrome --disable-fre --no-default-browser-check --no-first-run" > /data/local/tmp/chrome-command-line'
                   adb emu screenrecord start --time-limit 300 ./recording_video.webm
                   USER_EMAIL=$USER_EMAIL USER_PASSWORD=$USER_PASSWORD node appium-test/test.js
 
