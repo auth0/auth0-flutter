@@ -1,0 +1,64 @@
+name: Set up environment
+description: Set up the environment for building and testing the library on a given platform
+
+inputs:
+  flutter:
+    description: The version of Flutter to use
+    required: true
+
+  xcode:
+    description: The version of Java to use
+    required: true
+  
+  auth0-domain:
+    description: The Auth0 domain
+    required: true
+
+  auth0-client-id:
+    description: The Auth0 client ID
+    required: true
+
+runs:
+  using: composite
+
+  steps:
+    - name: Install Flutter
+      uses: subosito/flutter-action@48cafc24713cca54bbe03cdc3a423187d413aafa
+      with:
+          flutter-version: ${{ inputs.flutter }}
+          channel: stable
+          cache: true
+
+    - name: Install Flutter dependencies
+      working-directory: auth0_flutter/example
+      run: flutter pub get
+      shell: bash
+      
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: ${{ inputs.java }}
+        cache: 'gradle'
+
+    - name: Set .env
+      working-directory: auth0_flutter/example
+      run: printf '%s\n%s\n%s' 'AUTH0_DOMAIN=${{ inputs.auth0-domain }}' 'AUTH0_CLIENT_ID=${{ inputs.auth0-client-id }}' 'AUTH0_CUSTOM_SCHEME=demo' >> .env
+      shell: bash
+
+    - name: Set strings.xml
+      working-directory: auth0_flutter/example
+      run: |
+        mv android/app/src/main/res/values/strings.xml.example android/app/src/main/res/values/strings.xml
+        sed -i 's/YOUR_AUTH0_DOMAIN/${{ inputs.auth0-domain }}/' android/app/src/main/res/values/strings.xml
+      shell: bash
+
+    - name: Set Gradle wrapper
+      working-directory: auth0_flutter/example/android
+      run: gradle wrapper
+      shell: bash
+
+    - name: Build Android example app
+      working-directory: auth0_flutter/example
+      run: flutter build apk --split-per-abi
+      shell: bash
