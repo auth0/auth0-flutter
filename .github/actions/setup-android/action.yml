@@ -50,7 +50,7 @@ runs:
       working-directory: auth0_flutter/example
       run: |
         mv android/app/src/main/res/values/strings.xml.example android/app/src/main/res/values/strings.xml
-        sed -i 's/YOUR_AUTH0_DOMAIN/${{ inputs.auth0-domain }}/' android/app/src/main/res/values/strings.xml
+        sed -i -e 's/YOUR_AUTH0_DOMAIN/${{ inputs.auth0-domain }}/' android/app/src/main/res/values/strings.xml
       shell: bash
 
     - name: Set Gradle wrapper
