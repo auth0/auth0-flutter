@@ -61,5 +61,5 @@ runs:
 
     - name: Build Android example app
       working-directory: auth0_flutter/example
-      run: flutter build apk --target-platform android-x86
+      run: flutter build apk --target-platform android-arm
       shell: bash
