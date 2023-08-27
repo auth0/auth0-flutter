@@ -247,10 +247,6 @@ jobs:
                 mv android/app/src/main/res/values/strings.xml.example android/app/src/main/res/values/strings.xml
                 sed -i 's/YOUR_AUTH0_DOMAIN/${{ vars.AUTH0_DOMAIN }}/' android/app/src/main/res/values/strings.xml
 
-            - name: Set local.properties
-              working-directory: auth0_flutter/example
-              run: mv android/local.properties.ci android/local.properties
-
             - name: Build Android example app
               working-directory: auth0_flutter/example
               run: flutter build apk
