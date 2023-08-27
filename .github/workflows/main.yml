@@ -6,7 +6,7 @@ env:
     xcode: '14.2'
     ios-simulator: iPhone 14
     java: 11
-    android-api: 29
+    android-api: 31
 
 jobs:
     authorize:
@@ -278,6 +278,7 @@ jobs:
               uses: reactivecircus/android-emulator-runner@v2
               with:
                 api-level: ${{ env.android-api }}
+                arch: x86_64
                 script: |
                   adb emu screenrecord start --time-limit 300 ./recording_video.webm
                   node appium-test/test.js

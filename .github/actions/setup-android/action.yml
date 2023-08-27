@@ -61,5 +61,5 @@ runs:
 
     - name: Build Android example app
       working-directory: auth0_flutter/example
-      run: flutter build apk
+      run: flutter build apk --split-per-abi
       shell: bash
