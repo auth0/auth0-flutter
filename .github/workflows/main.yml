@@ -253,9 +253,16 @@ jobs:
 
             - name: Run Android unit tests
               working-directory: auth0_flutter/example/android
-              run: ./gradlew jacocoTestReport && ls ../build/app/reports/
+              run: ./gradlew jacocoTestReport
 
             - name: Upload coverage report
               uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
               with:
                   directory: auth0_flutter/example/build/app/reports/coverage/androidTest/debug/connected
+
+            - name: Upload test results
+              uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
+              if: ${{ failure() }}
+              with:
+                name: Test results
+                path: 'auth0_flutter/example/build/app/reports/androidTests/*.xml'
