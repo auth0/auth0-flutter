@@ -205,7 +205,7 @@ jobs:
               uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
               if: ${{ failure() }}
               with:
-                name: 'iOS: xcresult bundles'
+                name: 'iOS - xcresult bundles'
                 path: 'auth0_flutter/example/ios/*.xcresult'
 
     test-android-unit:
@@ -281,11 +281,11 @@ jobs:
                 arch: x86_64
                 script: |
                   adb emu screenrecord start --time-limit 300 ./recording_video.webm
-                  node appium-test/test.js
+                  USER_EMAIL=$USER_EMAIL USER_PASSWORD=$USER_PASSWORD node appium-test/test.js
 
             - name: Upload recording
               uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
               if: ${{ failure() }}
               with:
-                name: 'Android: smoke tests recording'
+                name: 'Android - smoke tests recording'
                 path: recording_video.webm
