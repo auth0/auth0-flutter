@@ -1,5 +1,5 @@
-name: Set up environment
-description: Set up the environment for building and testing the library on a given platform
+name: Set up Android environment
+description: Set up the environment for building and testing the library on Android
 
 inputs:
   flutter:
