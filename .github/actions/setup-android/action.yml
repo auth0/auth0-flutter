@@ -6,7 +6,7 @@ inputs:
     description: The version of Flutter to use
     required: true
 
-  xcode:
+  java:
     description: The version of Java to use
     required: true
   
