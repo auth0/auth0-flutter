@@ -9,7 +9,7 @@ inputs:
   java:
     description: The version of Java to use
     required: true
-  
+
   auth0-domain:
     description: The Auth0 domain
     required: true

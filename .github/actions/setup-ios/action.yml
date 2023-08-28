@@ -9,7 +9,7 @@ inputs:
   xcode:
     description: The version of Xcode to use
     required: true
-  
+
   auth0-domain:
     description: The Auth0 domain
     required: true
