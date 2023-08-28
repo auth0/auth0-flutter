@@ -28,7 +28,7 @@ apply plugin: 'jacoco'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    namespace 'com.auth0.auth0_flutter_example'
+    namespace exampleAppApplicationId
     compileSdk 31
     if (project.android.hasProperty("namespace")) {
         namespace exampleAppApplicationId
