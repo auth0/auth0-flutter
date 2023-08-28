@@ -281,7 +281,7 @@ jobs:
             - name: Run Appium tests
               uses: reactivecircus/android-emulator-runner@v2
               with:
-                api-level: ${{ matrix.android-api }}
+                api-level: 31
                 target: playstore
                 arch: x86_64
                 script: |
