@@ -284,6 +284,8 @@ jobs:
                 api-level: 31
                 target: playstore
                 arch: x86_64
+                cores: 4
+                ram-size: 4096M
                 script: |
                   adb shell am set-debug-app --persistent com.android.chrome
                   adb shell 'echo "chrome --disable-fre --no-default-browser-check --no-first-run" > /data/local/tmp/chrome-command-line'
