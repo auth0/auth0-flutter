@@ -225,6 +225,10 @@ jobs:
                 auth0-domain: ${{ vars.AUTH0_DOMAIN }}
                 auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
 
+            - name: Build Android example app
+              working-directory: auth0_flutter/example
+              run: flutter build apk --split-per-abi
+
             - name: Run Android unit tests
               working-directory: auth0_flutter/example/android
               run: ./gradlew testDebugUnitTest createDebugCoverageReport
@@ -267,6 +271,10 @@ jobs:
                 java: ${{ env.java }}
                 auth0-domain: ${{ vars.AUTH0_DOMAIN }}
                 auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
+
+            - name: Build Android example app
+              working-directory: auth0_flutter/example
+              run: flutter build apk --split-per-abi
 
             - name: Set up Appium tests
               working-directory: appium-test
