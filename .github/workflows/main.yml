@@ -6,7 +6,6 @@ env:
     xcode: '14.2'
     ios-simulator: iPhone 14
     java: 11
-    android-api: 31
 
 jobs:
     authorize:
@@ -243,7 +242,7 @@ jobs:
                 path: 'auth0_flutter/example/build/app/reports/androidTests/*.xml'
 
     test-android-smoke:
-        name: Run native Android smoke tests
+        name: Run native Android smoke tests using API-level ${{ matrix.android-api }}
         needs: authorize
         runs-on: macos-latest
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
@@ -251,6 +250,11 @@ jobs:
         env:
             USER_EMAIL: ${{ secrets.USER_EMAIL }}
             USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
+
+        strategy:
+          matrix:
+            android-api: 
+              - 31
 
         steps:
             - name: Checkout
@@ -277,7 +281,7 @@ jobs:
             - name: Run Appium tests
               uses: reactivecircus/android-emulator-runner@v2
               with:
-                api-level: ${{ env.android-api }}
+                api-level: ${{ matrix.android-api }}
                 target: playstore
                 arch: x86_64
                 script: |
