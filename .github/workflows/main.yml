@@ -293,7 +293,7 @@ jobs:
                 api-level: ${{ matrix.android-api }}
                 target: playstore
                 arch: x86_64
-                ram-size: 2048M
+                ram-size: 8192M
                 heap-size: 1024M
                 disk-size: 20G
                 script: |
