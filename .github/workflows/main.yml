@@ -254,6 +254,7 @@ jobs:
         env:
             USER_EMAIL: ${{ secrets.USER_EMAIL }}
             USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
+            ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: 50
 
         strategy:
           matrix:
