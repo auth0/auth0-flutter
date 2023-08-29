@@ -258,7 +258,7 @@ jobs:
         strategy:
           matrix:
             android-api: 
-              - 31
+              - 33
 
         steps:
             - name: Checkout
@@ -289,7 +289,7 @@ jobs:
             - name: Run Appium tests
               uses: reactivecircus/android-emulator-runner@v2
               with:
-                api-level: 31
+                api-level: ${{ matrix.android-api }}
                 target: playstore
                 arch: x86_64
                 ram-size: 4096M
