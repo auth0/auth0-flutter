@@ -10,7 +10,9 @@ const capabilities = {
   'appium:fullReset': true,
   'appium:autoGrantPermissions': true,
   'appium:ignoreHiddenApiPolicyError': true,
-  'appium:browserName': 'Chrome'
+  'goog:chromeOptions': {
+    args: ['--no-first-run', '--no-default-browser-check'],
+  },
 };
 
 const wdOpts = {
