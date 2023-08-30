@@ -296,9 +296,9 @@ jobs:
                 ram-size: 4096M
                 heap-size: 1024M
                 disk-size: 20G
-                pre-emulator-launch-script: | 
-                  adb shell pm clear com.google.android.apps.nexuslauncher
+                pre-emulator-launch-script: emulator -avd test -wipe-data
                 script: |
+                  adb shell pm clear com.google.android.apps.nexuslauncher
                   adb shell am set-debug-app --persistent com.android.chrome
                   adb shell 'echo "chrome --disable-fre --no-default-browser-check --no-first-run" > /data/local/tmp/chrome-command-line'
                   adb emu screenrecord start --time-limit 300 ./recording_video.webm
