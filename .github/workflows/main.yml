@@ -282,7 +282,7 @@ jobs:
               run: npm install
 
             - name: Set up Appium driver
-              run: APPIUM_SKIP_CHROMEDRIVER_INSTALL=1 npx --yes appium@next driver install uiautomator2
+              run: npx --yes appium@next driver install uiautomator2
 
             - name: Start Appium server
               run: npx --yes appium@next & # Appium recommends this until v2 is released

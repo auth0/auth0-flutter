@@ -9,7 +9,11 @@ const capabilities = {
   'appium:app': `${__dirname}/../auth0_flutter/example/build/app/outputs/flutter-apk/app-x86_64-release.apk`,
   'appium:fullReset': true,
   'appium:autoGrantPermissions': true,
-  'appium:ignoreHiddenApiPolicyError': true
+  'appium:ignoreHiddenApiPolicyError': true,
+  browserName: 'Chrome',
+  chromeOptions: {
+    args: ['--no-first-run', '--disable-fre', '--no-default-browser-check'],
+  },
 };
 
 const wdOpts = {
