@@ -9,10 +9,7 @@ const capabilities = {
   'appium:app': `${__dirname}/../auth0_flutter/example/build/app/outputs/flutter-apk/app-x86_64-release.apk`,
   'appium:fullReset': true,
   'appium:autoGrantPermissions': true,
-  'appium:ignoreHiddenApiPolicyError': true,
-  'goog:chromeOptions': {
-    args: ['--no-first-run', '--no-default-browser-check'],
-  },
+  'appium:ignoreHiddenApiPolicyError': true
 };
 
 const wdOpts = {
@@ -28,6 +25,15 @@ async function runTest() {
   try {
     const loginButton = await driver.$('//android.widget.Button[@content-desc="Web Auth Login"]');
     await loginButton.click();
+
+    const chromeContinueButton = await driver.$('//android.widget.Button[@content-desc="Accept & continue"]');
+    chromeContinueButton.waitForExist({ timeout: 5000 })
+    .then(() => {
+      chromeContinueButton.click();
+    })
+    .catch(() => {
+      console.log('Not running from a clean state, skipping chromeContinueButton');
+    });
 
     const emailTextField = await driver.$("//android.widget.EditText[@hint='User name username/email']");
     await emailTextField.waitForExist();

@@ -295,10 +295,6 @@ jobs:
                 arch: x86_64
                 script: |
                   adb shell pm clear com.google.android.apps.nexuslauncher
-                  adb shell am set-debug-app --persistent com.android.chrome
-                  adb shell 'echo "chrome --disable-fre --no-default-browser-check --no-first-run" > /data/local/tmp/chrome-command-line'
-                  adb shell am start -n com.android.chrome/com.google.android.apps.chrome.Main
-                  adb shell am clear-debug-app
                   adb emu screenrecord start --time-limit 300 ./recording_video.webm
                   USER_EMAIL=$USER_EMAIL USER_PASSWORD=$USER_PASSWORD node appium-test/test.js
 
