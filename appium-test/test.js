@@ -28,12 +28,10 @@ async function runTest() {
 
     const chromeContinueButton = await driver.$('//android.widget.Button[@text="Accept & continue"]');
     chromeContinueButton.waitForExist({ timeout: 50000 })
-    .then(() => {
-      chromeContinueButton.click();
-    })
-    .catch(() => {
-      console.log('Not running from a clean state, skipping chromeContinueButton');
-    });
+    .then(() => chromeContinueButton.click())
+    .then(() => driver.$('//android.widget.Button[@text="No thanks"]'))
+    .then((chromeSyncButton) => chromeSyncButton.waitForExist().then(() => chromeSyncButton.click()))
+    .catch(() => console.log('Not running from a clean state, skipping Chrome setup'));
 
     const emailTextField = await driver.$("//android.widget.EditText[@hint='User name username/email']");
     await emailTextField.waitForExist();
@@ -44,7 +42,7 @@ async function runTest() {
 
     const continueButton = await driver.$("//android.widget.Button[@text='Log In']");
     await continueButton.click();
-    
+
     const logoutButton = await driver.$('//android.widget.Button[@content-desc="Web Auth Logout"]');
     await logoutButton.waitForExist();
     await logoutButton.click();
