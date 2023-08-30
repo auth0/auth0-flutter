@@ -2,7 +2,6 @@ const { remote } = require('webdriverio');
 
 const capabilities = {
   platformName: 'Android',
-  browserName: 'Chrome',
   'appium:automationName': 'UiAutomator2',
   'appium:deviceName': 'Android',
   'appium:appPackage': 'com.auth0.auth0_flutter_example',
@@ -11,6 +10,7 @@ const capabilities = {
   'appium:fullReset': true,
   'appium:autoGrantPermissions': true,
   'appium:ignoreHiddenApiPolicyError': true,
+  'appium:browserName': 'Chrome'
 };
 
 const wdOpts = {
