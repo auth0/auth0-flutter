@@ -293,9 +293,9 @@ jobs:
                 api-level: ${{ matrix.android-api }}
                 target: playstore
                 arch: x86_64
-                ram-size: 2048M
+                ram-size: 4096M
                 heap-size: 1024M
-                disk-size: 12G
+                disk-size: 20G
                 script: |
                   adb shell am set-debug-app --persistent com.android.chrome
                   adb shell 'echo "chrome --disable-fre --no-default-browser-check --no-first-run" > /data/local/tmp/chrome-command-line'
