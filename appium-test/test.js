@@ -26,7 +26,7 @@ async function runTest() {
     const loginButton = await driver.$('//android.widget.Button[@content-desc="Web Auth Login"]');
     await loginButton.click();
 
-    const chromeContinueButton = await driver.$('//android.widget.Button[@content-desc="Accept & continue"]');
+    const chromeContinueButton = await driver.$('//android.widget.Button[@text="Accept & continue"]');
     chromeContinueButton.waitForExist({ timeout: 50000 })
     .then(() => {
       chromeContinueButton.click();
