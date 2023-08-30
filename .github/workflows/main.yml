@@ -248,7 +248,7 @@ jobs:
     test-android-smoke:
         name: Run native Android smoke tests using API-level ${{ matrix.android-api }}
         needs: authorize
-        runs-on: macos-latest
+        runs-on: ubuntu-latest
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
         env:
