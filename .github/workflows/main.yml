@@ -248,7 +248,7 @@ jobs:
     test-android-smoke:
         name: Run native Android smoke tests using API-level ${{ matrix.android-api }}
         needs: authorize
-        runs-on: macos-latest-xl
+        runs-on: macos-latest
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
         env:
@@ -293,8 +293,8 @@ jobs:
                 api-level: ${{ matrix.android-api }}
                 target: playstore
                 arch: x86_64
-                profile: Pixel
                 script: |
+                  avdmanager list device
                   adb shell pm clear com.google.android.apps.nexuslauncher
                   adb shell pm clear com.android.chrome
                   adb emu screenrecord start --time-limit 300 ./recording_video.webm
