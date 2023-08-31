@@ -35,10 +35,7 @@ async function runTest() {
     await emailTextField.setValue(process.env.USER_EMAIL);
 
     const passwordTextField = await driver.$("//android.widget.EditText[@hint='Password your password']");
-    await passwordTextField.setValue(process.env.USER_PASSWORD);
-
-    const continueButton = await driver.$("//android.widget.Button[@text='Log In']");
-    await continueButton.click();
+    await passwordTextField.setValue(`${process.env.USER_PASSWORD}\n`);
 
     const logoutButton = await driver.$('//android.widget.Button[@content-desc="Web Auth Logout"]');
     await logoutButton.waitForExist();
