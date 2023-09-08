@@ -14,7 +14,7 @@ Auth0 SDK for Android, iOS, and web Flutter apps.
 
 See the README of the [auth0_flutter](./auth0_flutter#readme) package.
 
-## Issue Reporting
+## Issue Reporting test
 
 For general support or usage questions, use the [Auth0 Community](https://community.auth0.com/c/help/6) forums or raise a [support ticket](https://support.auth0.com/). Only [raise an issue](https://github.com/auth0/auth0-flutter/issues) if you have found a bug or want to request a feature.
 
