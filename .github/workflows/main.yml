@@ -293,8 +293,10 @@ jobs:
                 api-level: ${{ matrix.android-api }}
                 target: playstore
                 arch: x86_64
-                profile: Nexus 9
+                profile: Nexus 6P
                 script: |
+                  adb shell pm clear com.google.android.apps.nexuslauncher
+                  adb shell pm clear com.android.chrome
                   adb shell settings put global window_animation_scale 0.0
                   adb shell settings put global transition_animation_scale 0.0
                   adb shell settings put global animator_duration_scale 0.0
