@@ -293,7 +293,7 @@ jobs:
                 api-level: ${{ matrix.android-api }}
                 target: playstore
                 arch: x86_64
-                profile: pixel_6
+                profile: Nexus 6P
                 script: |
                   adb shell settings put global window_animation_scale 0.0
                   adb shell settings put global transition_animation_scale 0.0
