@@ -15,235 +15,235 @@ jobs:
       steps:
         - run: true
 
-    analyze-auth0_flutter:
-        name: Analyze auth0_flutter Flutter package
-        needs: authorize
-        runs-on: ubuntu-latest
+    # analyze-auth0_flutter:
+    #     name: Analyze auth0_flutter Flutter package
+    #     needs: authorize
+    #     runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+    #     steps:
+    #         - name: Checkout
+    #           uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
 
-            - name: Install Flutter
-              uses: subosito/flutter-action@48cafc24713cca54bbe03cdc3a423187d413aafa
-              with:
-                  flutter-version: ${{ env.flutter }}
-                  channel: stable
-                  cache: true
+    #         - name: Install Flutter
+    #           uses: subosito/flutter-action@48cafc24713cca54bbe03cdc3a423187d413aafa
+    #           with:
+    #               flutter-version: ${{ env.flutter }}
+    #               channel: stable
+    #               cache: true
 
-            - name: Add example/.env
-              working-directory: auth0_flutter
-              run: cp example/.env.example example/.env
+    #         - name: Add example/.env
+    #           working-directory: auth0_flutter
+    #           run: cp example/.env.example example/.env
 
-            - name: Analize auth0_flutter package
-              working-directory: auth0_flutter
-              run: flutter analyze
+    #         - name: Analize auth0_flutter package
+    #           working-directory: auth0_flutter
+    #           run: flutter analyze
   
-    analyze-auth0_flutter_platform_interface:
-        name: Analyze auth0_flutter_platform_interface Flutter package
-        needs: authorize
-        runs-on: ubuntu-latest
+    # analyze-auth0_flutter_platform_interface:
+    #     name: Analyze auth0_flutter_platform_interface Flutter package
+    #     needs: authorize
+    #     runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+    #     steps:
+    #         - name: Checkout
+    #           uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
 
-            - name: Install Flutter
-              uses: subosito/flutter-action@48cafc24713cca54bbe03cdc3a423187d413aafa
-              with:
-                  flutter-version: ${{ env.flutter }}
-                  channel: stable
-                  cache: true
+    #         - name: Install Flutter
+    #           uses: subosito/flutter-action@48cafc24713cca54bbe03cdc3a423187d413aafa
+    #           with:
+    #               flutter-version: ${{ env.flutter }}
+    #               channel: stable
+    #               cache: true
 
-            - name: Analize auth0_flutter_platform_interface package
-              working-directory: auth0_flutter_platform_interface
-              run: flutter analyze
+    #         - name: Analize auth0_flutter_platform_interface package
+    #           working-directory: auth0_flutter_platform_interface
+    #           run: flutter analyze
 
-    test-auth0_flutter:
-        name: Test auth0_flutter Flutter package
-        needs: authorize
-        runs-on: ubuntu-latest
+    # test-auth0_flutter:
+    #     name: Test auth0_flutter Flutter package
+    #     needs: authorize
+    #     runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+    #     steps:
+    #         - name: Checkout
+    #           uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
 
-            - name: Install Flutter
-              uses: subosito/flutter-action@48cafc24713cca54bbe03cdc3a423187d413aafa
-              with:
-                  flutter-version: ${{ env.flutter }}
-                  channel: stable
-                  cache: true
+    #         - name: Install Flutter
+    #           uses: subosito/flutter-action@48cafc24713cca54bbe03cdc3a423187d413aafa
+    #           with:
+    #               flutter-version: ${{ env.flutter }}
+    #               channel: stable
+    #               cache: true
 
-            - name: Add example/.env
-              working-directory: auth0_flutter
-              run: cp example/.env.example example/.env
+    #         - name: Add example/.env
+    #           working-directory: auth0_flutter
+    #           run: cp example/.env.example example/.env
 
-            - name: Test auth0_flutter package
-              working-directory: auth0_flutter
-              run: |
-                  flutter test --tags browser --platform chrome
-                  flutter test --coverage --exclude-tags browser
+    #         - name: Test auth0_flutter package
+    #           working-directory: auth0_flutter
+    #           run: |
+    #               flutter test --tags browser --platform chrome
+    #               flutter test --coverage --exclude-tags browser
 
-            - name: Upload coverage report for auth0_flutter
-              uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
-              with:
-                  name: Auth0 Flutter
-                  flags: auth0_flutter
-                  files: ./auth0_flutter/coverage/lcov.info
+    #         - name: Upload coverage report for auth0_flutter
+    #           uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
+    #           with:
+    #               name: Auth0 Flutter
+    #               flags: auth0_flutter
+    #               files: ./auth0_flutter/coverage/lcov.info
 
-    test-auth0_flutter_platform_interface:
-        name: Test auth0_flutter_platform_interface Flutter package
-        needs: authorize
-        runs-on: ubuntu-latest
+    # test-auth0_flutter_platform_interface:
+    #     name: Test auth0_flutter_platform_interface Flutter package
+    #     needs: authorize
+    #     runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+    #     steps:
+    #         - name: Checkout
+    #           uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
 
-            - name: Install Flutter
-              uses: subosito/flutter-action@48cafc24713cca54bbe03cdc3a423187d413aafa
-              with:
-                  flutter-version: ${{ env.flutter }}
-                  channel: stable
-                  cache: true
+    #         - name: Install Flutter
+    #           uses: subosito/flutter-action@48cafc24713cca54bbe03cdc3a423187d413aafa
+    #           with:
+    #               flutter-version: ${{ env.flutter }}
+    #               channel: stable
+    #               cache: true
 
-            - name: Test auth0_flutter_platform_interface package
-              working-directory: auth0_flutter_platform_interface
-              run: flutter test --coverage
+    #         - name: Test auth0_flutter_platform_interface package
+    #           working-directory: auth0_flutter_platform_interface
+    #           run: flutter test --coverage
 
-            - name: Upload coverage report for auth0_flutter_platform_interface
-              uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
-              with:
-                  name: Auth0 Flutter
-                  flags: auth0_flutter_platform_interface
-                  files: ./auth0_flutter_platform_interface/coverage/lcov.info
+    #         - name: Upload coverage report for auth0_flutter_platform_interface
+    #           uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
+    #           with:
+    #               name: Auth0 Flutter
+    #               flags: auth0_flutter_platform_interface
+    #               files: ./auth0_flutter_platform_interface/coverage/lcov.info
 
-    test-ios-unit:
-        name: Run native iOS unit tests using Xcode ${{ matrix.xcode }}
-        needs: authorize
-        runs-on: macos-latest
-        environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
+    # test-ios-unit:
+    #     name: Run native iOS unit tests using Xcode ${{ matrix.xcode }}
+    #     needs: authorize
+    #     runs-on: macos-latest
+    #     environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
-        env:
-            USER_EMAIL: ${{ secrets.USER_EMAIL }}
-            USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
+    #     env:
+    #         USER_EMAIL: ${{ secrets.USER_EMAIL }}
+    #         USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
 
-        strategy:
-          matrix:
-            xcode: 
-              - '14.2'
+    #     strategy:
+    #       matrix:
+    #         xcode: 
+    #           - '14.2'
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+    #     steps:
+    #         - name: Checkout
+    #           uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
 
-            - name: Set up environment
-              uses: ./.github/actions/setup-ios
-              with:
-                flutter: ${{ env.flutter }}
-                xcode: ${{ matrix.xcode }}
-                auth0-domain: ${{ vars.AUTH0_DOMAIN }}
-                auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
+    #         - name: Set up environment
+    #           uses: ./.github/actions/setup-ios
+    #           with:
+    #             flutter: ${{ env.flutter }}
+    #             xcode: ${{ matrix.xcode }}
+    #             auth0-domain: ${{ vars.AUTH0_DOMAIN }}
+    #             auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
 
-            - name: Run iOS unit tests
-              working-directory: auth0_flutter/example/ios
-              run: xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination '${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.ios-simulator) }}' -resultBundlePath unit-tests.xcresult -skip-testing:RunnerUITests
+    #         - name: Run iOS unit tests
+    #           working-directory: auth0_flutter/example/ios
+    #           run: xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination '${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.ios-simulator) }}' -resultBundlePath unit-tests.xcresult -skip-testing:RunnerUITests
 
-            - name: Convert coverage report
-              working-directory: auth0_flutter/example/ios
-              run: bundle exec slather coverage -x --scheme Runner Runner.xcodeproj
+    #         - name: Convert coverage report
+    #           working-directory: auth0_flutter/example/ios
+    #           run: bundle exec slather coverage -x --scheme Runner Runner.xcodeproj
 
-            - name: Upload coverage report
-              uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
-              with:
-                  directory: auth0_flutter/example/ios/cobertura
+    #         - name: Upload coverage report
+    #           uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
+    #           with:
+    #               directory: auth0_flutter/example/ios/cobertura
 
-            - name: Upload xcresult bundles
-              uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
-              if: ${{ failure() }}
-              with:
-                name: xcresult bundles
-                path: 'auth0_flutter/example/ios/*.xcresult'
+    #         - name: Upload xcresult bundles
+    #           uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
+    #           if: ${{ failure() }}
+    #           with:
+    #             name: xcresult bundles
+    #             path: 'auth0_flutter/example/ios/*.xcresult'
 
-    test-ios-smoke:
-        name: Run native iOS smoke tests using Xcode ${{ matrix.xcode }}
-        needs: authorize
-        runs-on: macos-latest
-        environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
+    # test-ios-smoke:
+    #     name: Run native iOS smoke tests using Xcode ${{ matrix.xcode }}
+    #     needs: authorize
+    #     runs-on: macos-latest
+    #     environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
-        env:
-            USER_EMAIL: ${{ secrets.USER_EMAIL }}
-            USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
+    #     env:
+    #         USER_EMAIL: ${{ secrets.USER_EMAIL }}
+    #         USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
 
-        strategy:
-          matrix:
-            xcode: 
-              - '14.2'
+    #     strategy:
+    #       matrix:
+    #         xcode: 
+    #           - '14.2'
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+    #     steps:
+    #         - name: Checkout
+    #           uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
 
-            - name: Set up environment
-              uses: ./.github/actions/setup-ios
-              with:
-                flutter: ${{ env.flutter }}
-                xcode: ${{ matrix.xcode }}
-                auth0-domain: ${{ vars.AUTH0_DOMAIN }}
-                auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
+    #         - name: Set up environment
+    #           uses: ./.github/actions/setup-ios
+    #           with:
+    #             flutter: ${{ env.flutter }}
+    #             xcode: ${{ matrix.xcode }}
+    #             auth0-domain: ${{ vars.AUTH0_DOMAIN }}
+    #             auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
 
-            - name: Run iOS smoke tests
-              if: ${{ github.event.pull_request.head.repo.fork == false }}
-              working-directory: auth0_flutter/example/ios
-              run: |
-                defaults write com.apple.iphonesimulator ConnectHardwareKeyboard 0
-                xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination '${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.ios-simulator) }}' -resultBundlePath smoke-tests.xcresult -only-testing:RunnerUITests
+    #         - name: Run iOS smoke tests
+    #           if: ${{ github.event.pull_request.head.repo.fork == false }}
+    #           working-directory: auth0_flutter/example/ios
+    #           run: |
+    #             defaults write com.apple.iphonesimulator ConnectHardwareKeyboard 0
+    #             xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination '${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.ios-simulator) }}' -resultBundlePath smoke-tests.xcresult -only-testing:RunnerUITests
 
-            - name: Upload xcresult bundles
-              uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
-              if: ${{ failure() }}
-              with:
-                name: 'iOS - xcresult bundles'
-                path: 'auth0_flutter/example/ios/*.xcresult'
+    #         - name: Upload xcresult bundles
+    #           uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
+    #           if: ${{ failure() }}
+    #           with:
+    #             name: 'iOS - xcresult bundles'
+    #             path: 'auth0_flutter/example/ios/*.xcresult'
 
-    test-android-unit:
-        name: Run native Android unit tests
-        needs: authorize
-        runs-on: ubuntu-latest
-        environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
+    # test-android-unit:
+    #     name: Run native Android unit tests
+    #     needs: authorize
+    #     runs-on: ubuntu-latest
+    #     environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+    #     steps:
+    #         - name: Checkout
+    #           uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
 
-            - name: Set up environment
-              uses: ./.github/actions/setup-android
-              with:
-                flutter: ${{ env.flutter }}
-                java: ${{ env.java }}
-                auth0-domain: ${{ vars.AUTH0_DOMAIN }}
-                auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
+    #         - name: Set up environment
+    #           uses: ./.github/actions/setup-android
+    #           with:
+    #             flutter: ${{ env.flutter }}
+    #             java: ${{ env.java }}
+    #             auth0-domain: ${{ vars.AUTH0_DOMAIN }}
+    #             auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
 
-            - name: Build Android example app
-              working-directory: auth0_flutter/example
-              run: flutter build apk --split-per-abi
+    #         - name: Build Android example app
+    #           working-directory: auth0_flutter/example
+    #           run: flutter build apk --split-per-abi
 
-            - name: Run Android unit tests
-              working-directory: auth0_flutter/example/android
-              run: ./gradlew testDebugUnitTest createDebugCoverageReport
+    #         - name: Run Android unit tests
+    #           working-directory: auth0_flutter/example/android
+    #           run: ./gradlew testDebugUnitTest createDebugCoverageReport
 
-            - name: Upload coverage report
-              uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
-              with:
-                  directory: auth0_flutter/example/build/app/reports/coverage/androidTest/debug/connected
+    #         - name: Upload coverage report
+    #           uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
+    #           with:
+    #               directory: auth0_flutter/example/build/app/reports/coverage/androidTest/debug/connected
 
-            - name: Upload test results
-              uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
-              if: ${{ failure() }}
-              with:
-                name: Test results
-                path: 'auth0_flutter/example/build/app/reports/androidTests/*.xml'
+    #         - name: Upload test results
+    #           uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
+    #           if: ${{ failure() }}
+    #           with:
+    #             name: Test results
+    #             path: 'auth0_flutter/example/build/app/reports/androidTests/*.xml'
 
     test-android-smoke:
         name: Run native Android smoke tests using API-level ${{ matrix.android-api }}
