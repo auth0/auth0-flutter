@@ -294,6 +294,7 @@ jobs:
                 target: playstore
                 arch: x86_64
                 profile: 5.4in FWVGA
+                cores: 2
                 script: |
                   adb shell pm clear com.google.android.apps.nexuslauncher
                   adb shell pm clear com.android.chrome
