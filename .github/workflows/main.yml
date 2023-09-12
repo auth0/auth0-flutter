@@ -293,7 +293,7 @@ jobs:
                 api-level: ${{ matrix.android-api }}
                 target: playstore
                 arch: x86_64
-                profile: Nexus 6P
+                profile: 5.4in FWVGA
                 script: |
                   adb shell pm clear com.google.android.apps.nexuslauncher
                   adb shell pm clear com.android.chrome
