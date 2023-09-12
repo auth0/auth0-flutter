@@ -23,25 +23,19 @@ async function runTest() {
     const loginButton = await driver.$('//android.widget.Button[@content-desc="Web Auth Login"]');
     await loginButton.click();
 
-    const chromeContinueButton = await driver.$('//android.widget.Button[@text="Accept & continue"]');
-    chromeContinueButton.waitForExist({ timeout: 50000 })
-    .then(() => chromeContinueButton.click())
-    .then(() => driver.$('//android.widget.Button[@text="No thanks"]'))
-    .then((chromeSyncButton) => chromeSyncButton.waitForExist().then(() => chromeSyncButton.click()))
-    .catch(() => console.log('Not running from a clean state, skipping Chrome setup'));
-
     const emailTextField = await driver.$("//android.widget.EditText[@hint='User name username/email']");
     await emailTextField.waitForExist();
     await emailTextField.setValue(process.env.USER_EMAIL);
 
     const passwordTextField = await driver.$("//android.widget.EditText[@hint='Password your password']");
-    await passwordTextField.setValue(`${process.env.USER_PASSWORD}\n`);
+    await passwordTextField.setValue(process.env.USER_PASSWORD);
 
+    const continueButton = await driver.$("//android.widget.Button[@text='Log In']");
+    await continueButton.click();
+    
     const logoutButton = await driver.$('//android.widget.Button[@content-desc="Web Auth Logout"]');
     await logoutButton.waitForExist();
     await logoutButton.click();
-
-    await loginButton.waitForExist();
   } finally {
     await driver.pause(1000);
     await driver.deleteSession();

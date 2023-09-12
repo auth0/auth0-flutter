@@ -295,8 +295,11 @@ jobs:
                 arch: x86_64
                 profile: Nexus S
                 script: |
-                  adb shell pm clear com.google.android.apps.nexuslauncher
-                  adb shell pm clear com.android.chrome
+                  adb shell settings put global window_animation_scale 0.0
+                  adb shell settings put global transition_animation_scale 0.0
+                  adb shell settings put global animator_duration_scale 0.0
+                  adb shell am set-debug-app --persistent com.android.chrome 
+                  adb shell 'echo "chrome --disable-fre --no-default-browser-check --no-first-run" > /data/local/tmp/chrome-command-line'
                   adb emu screenrecord start --time-limit 300 ./recording_video.webm
                   USER_EMAIL=$USER_EMAIL USER_PASSWORD=$USER_PASSWORD node appium-test/test.js
 
