@@ -259,7 +259,7 @@ jobs:
         strategy:
           matrix:
             android-api: 
-              - 33
+              - 32
 
         steps:
             - name: Checkout
