@@ -312,7 +312,6 @@ jobs:
             - name: Run Appium tests
               uses: reactivecircus/android-emulator-runner@v2
               with:
-                api-level: ${{ matrix.android-api }}
                 ram-size: 10240M
                 heap-size: 4096M
                 force-avd-creation: false
