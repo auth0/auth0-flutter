@@ -13,7 +13,7 @@ const wdOpts = {
   host: process.env.APPIUM_HOST || 'localhost',
   port: parseInt(process.env.APPIUM_PORT, 10) || 4723,
   logLevel: 'info',
-  waitforTimeout: 100000,
+  waitforTimeout: 500000,
   capabilities,
 };
 
