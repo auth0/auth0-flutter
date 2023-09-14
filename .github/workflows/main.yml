@@ -294,6 +294,7 @@ jobs:
                 target: playstore
                 arch: x86_64
                 profile: 5.4in FWVGA
+                emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
                 ram-size: 10240M
                 heap-size: 4096M
                 script: |
