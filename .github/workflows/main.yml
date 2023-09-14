@@ -329,7 +329,7 @@ jobs:
                   adb shell am set-debug-app --persistent com.android.chrome 
                   adb shell 'echo "chrome --disable-fre --no-default-browser-check --no-first-run" > /data/local/tmp/chrome-command-line'
                   adb emu screenrecord start --time-limit 300 ./recording_video.webm
-                  adb shell settings put system show_touches 1
+                  adb shell settings put system pointer_location 1
                   USER_EMAIL=$USER_EMAIL USER_PASSWORD=$USER_PASSWORD node appium-test/test.js
 
             - name: Upload recording
