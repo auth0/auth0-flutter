@@ -293,59 +293,58 @@ jobs:
                 USER_EMAIL: ${{ vars.USER_EMAIL }}
                 USER_PASSWORD: ${{ vars.USER_PASSWORD }}
 
-            - name: Set up Appium tests
-              working-directory: appium-test
-              run: npm install
+            # - name: Set up Appium tests
+            #   working-directory: appium-test
+            #   run: npm install
 
-            - name: Set up Appium driver
-              run: npx --yes appium@next driver install uiautomator2
+            # - name: Set up Appium driver
+            #   run: npx --yes appium@next driver install uiautomator2
 
-            - name: Start Appium server
-              run: npx --yes appium@next & # Appium recommends this until v2 is released
+            # - name: Start Appium server
+            #   run: npx --yes appium@next & # Appium recommends this until v2 is released
 
-            - name: Create AVD and generate snapshot for caching
-              if: steps.avd-cache.outputs.cache-hit != 'true'
-              uses: reactivecircus/android-emulator-runner@v2
-              with:
-                api-level: ${{ matrix.android-api }}
-                target: playstore
-                arch: x86_64
-                profile: 5.4in FWVGA
-                force-avd-creation: false
-                emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-                disable-animations: false
-                script: echo "Generated AVD snapshot for caching."
+            # - name: Create AVD and generate snapshot for caching
+            #   if: steps.avd-cache.outputs.cache-hit != 'true'
+            #   uses: reactivecircus/android-emulator-runner@v2
+            #   with:
+            #     api-level: ${{ matrix.android-api }}
+            #     target: playstore
+            #     arch: x86_64
+            #     profile: 5.4in FWVGA
+            #     force-avd-creation: false
+            #     emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+            #     disable-animations: false
+            #     script: echo "Generated AVD snapshot for caching."
 
-            - name: Run Appium tests
-              uses: reactivecircus/android-emulator-runner@v2
-              with:
-                api-level: ${{ matrix.android-api }}
-                target: playstore
-                arch: x86_64
-                profile: 5.4in FWVGA
-                ram-size: 10240M
-                heap-size: 4096M
-                force-avd-creation: false
-                emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-                disable-animations: true
-                script: |
-                  adb shell pm clear com.android.chrome
-                  adb shell am set-debug-app --persistent com.android.chrome 
-                  adb shell 'echo "chrome --disable-fre --no-default-browser-check --no-first-run" > /data/local/tmp/chrome-command-line'
-                  adb emu screenrecord start --time-limit 300 ./recording_video.webm
-                  adb shell settings put system pointer_location 1
-                  USER_EMAIL=$USER_EMAIL USER_PASSWORD=$USER_PASSWORD node appium-test/test.js
+            # - name: Run Appium tests
+            #   uses: reactivecircus/android-emulator-runner@v2
+            #   with:
+            #     api-level: ${{ matrix.android-api }}
+            #     target: playstore
+            #     arch: x86_64
+            #     profile: 5.4in FWVGA
+            #     ram-size: 10240M
+            #     heap-size: 4096M
+            #     force-avd-creation: false
+            #     emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+            #     disable-animations: true
+            #     script: |
+            #       adb shell pm clear com.android.chrome
+            #       adb shell am set-debug-app --persistent com.android.chrome 
+            #       adb shell 'echo "chrome --disable-fre --no-default-browser-check --no-first-run" > /data/local/tmp/chrome-command-line'
+            #       adb emu screenrecord start --time-limit 300 ./recording_video.webm
+            #       adb shell settings put system pointer_location 1
+            #       USER_EMAIL=$USER_EMAIL USER_PASSWORD=$USER_PASSWORD node appium-test/test.js
 
-            - name: Upload recording
-              uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
-              if: ${{ failure() }}
-              with:
-                name: 'Android - smoke tests recording'
-                path: recording_video.webm
+            # - name: Upload recording
+            #   uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
+            #   if: ${{ failure() }}
+            #   with:
+            #     name: 'Android - smoke tests recording'
+            #     path: recording_video.webm
 
             - name: Upload APK
               uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
-              if: ${{ failure() }}
               with:
                 name: 'Android - APK'
                 path: ./auth0_flutter/example/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
