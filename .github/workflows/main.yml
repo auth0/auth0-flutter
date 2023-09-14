@@ -330,7 +330,6 @@ jobs:
                   adb shell 'echo "chrome --disable-fre --no-default-browser-check --no-first-run" > /data/local/tmp/chrome-command-line'
                   adb emu screenrecord start --time-limit 300 ./recording_video.webm
                   adb shell settings put system pointer_location 1
-                  ls
                   USER_EMAIL=$USER_EMAIL USER_PASSWORD=$USER_PASSWORD node appium-test/test.js
 
             - name: Upload recording
@@ -345,4 +344,4 @@ jobs:
               if: ${{ failure() }}
               with:
                 name: 'Android - APK'
-                path: ./auth0_flutter/example/build/app/outputs/flutter-apk/app-x86_64-release.apk
+                path: ./auth0_flutter/example/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
