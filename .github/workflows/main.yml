@@ -287,14 +287,7 @@ jobs:
 
             - name: Build Android example app
               working-directory: auth0_flutter/example
-              script: | 
-                cp .env.example .env  
-                sed -i "s/YOUR_AUTH0_DOMAIN/$AUTH0_DOMAIN/" .env
-                sed -i "s/YOUR_AUTH0_CLIENT_ID/$AUTH0_CLIENT_ID/" .env
-                sed -i "s/YOUR_AUTH0_CUSTOM_SCHEME/$AUTH0_CUSTOM_SCHEME/" .env
-                mv android/app/src/main/res/values/strings.xml.example android/app/src/main/res/values/strings.xml
-                sed -i "s/YOUR_AUTH0_DOMAIN/$AUTH0_DOMAIN/" android/app/src/main/res/values/strings.xml
-                flutter build apk --split-per-abi
+              script: flutter build apk --split-per-abi
 
             - name: Set up Appium tests
               working-directory: appium-test
