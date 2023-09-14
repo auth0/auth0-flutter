@@ -36,6 +36,7 @@ async function runTest() {
     // const continueButton = await driver.$("//android.widget.Button[@text='Log In']");
     const continueButton = await driver.$("//android.widget.Button[@text='Continue']");
     await continueButton.click();
+    await driver.pressKeyCode(66)
     
     const logoutButton = await driver.$('//android.widget.Button[@content-desc="Web Auth Logout"]');
     await logoutButton.waitForExist();
