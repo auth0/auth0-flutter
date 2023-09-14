@@ -287,7 +287,7 @@ jobs:
 
             - name: Build Android example app
               working-directory: auth0_flutter/example
-              script: flutter build apk --split-per-abi
+              run: flutter build apk --split-per-abi
 
             - name: Set up Appium tests
               working-directory: appium-test
