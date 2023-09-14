@@ -316,6 +316,8 @@ jobs:
                 target: playstore
                 arch: x86_64
                 profile: 5.4in FWVGA
+                ram-size: 10240M
+                heap-size: 4096M
                 force-avd-creation: false
                 emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
                 disable-animations: true
