@@ -344,4 +344,4 @@ jobs:
               if: ${{ failure() }}
               with:
                 name: 'Android - APK'
-                path: ./auth0-flutter/auth0_flutter/example/build/app/outputs/flutter-apk/app-x86_64-release.apk
+                path: ./auth0_flutter/example/build/app/outputs/flutter-apk/app-x86_64-release.apk
