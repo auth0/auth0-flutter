@@ -288,6 +288,10 @@ jobs:
             - name: Build Android example app
               working-directory: auth0_flutter/example
               run: flutter build apk --split-per-abi
+              env:
+                AUTH0_DOMAIN: ${{ vars.AUTH0_DOMAIN }}
+                USER_EMAIL: ${{ vars.USER_EMAIL }}
+                USER_PASSWORD: ${{ vars.USER_PASSWORD }}
 
             - name: Set up Appium tests
               working-directory: appium-test
