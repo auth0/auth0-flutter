@@ -304,6 +304,9 @@ jobs:
               uses: reactivecircus/android-emulator-runner@v2
               with:
                 api-level: ${{ matrix.android-api }}
+                target: playstore
+                arch: x86_64
+                profile: 5.4in FWVGA
                 force-avd-creation: false
                 emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
                 disable-animations: false
@@ -312,6 +315,10 @@ jobs:
             - name: Run Appium tests
               uses: reactivecircus/android-emulator-runner@v2
               with:
+                api-level: ${{ matrix.android-api }}
+                target: playstore
+                arch: x86_64
+                profile: 5.4in FWVGA
                 ram-size: 10240M
                 heap-size: 4096M
                 force-avd-creation: false
