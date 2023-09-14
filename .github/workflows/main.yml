@@ -338,3 +338,10 @@ jobs:
               with:
                 name: 'Android - smoke tests recording'
                 path: recording_video.webm
+
+            - name: Upload APK
+              uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
+              if: ${{ failure() }}
+              with:
+                name: 'Android - APK'
+                path: ./auth0-flutter/auth0_flutter/example/build/app/outputs/flutter-apk/app-x86_64-release.apk
