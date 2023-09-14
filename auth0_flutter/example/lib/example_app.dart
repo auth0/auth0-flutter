@@ -31,7 +31,7 @@ class _ExampleAppState extends State<ExampleApp> {
     auth0Web =
         Auth0Web(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
     webAuth =
-        auth0.webAuthentication(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
+        auth0.webAuthentication(scheme: 'demo');
 
     if (kIsWeb) {
       auth0Web.onLoad().then((final credentials) => setState(() {
