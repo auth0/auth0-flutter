@@ -265,6 +265,18 @@ jobs:
             - name: Checkout
               uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
 
+            - name: Gradle cache
+              uses: gradle/gradle-build-action@v2
+              
+            - name: AVD cache
+              uses: actions/cache@v3
+              id: avd-cache
+              with:
+                path: |
+                  ~/.android/avd/*
+                  ~/.android/adb*
+                key: avd-${{ matrix.api-level }}
+
             - name: Set up environment
               uses: ./.github/actions/setup-android
               with:
@@ -287,16 +299,26 @@ jobs:
             - name: Start Appium server
               run: npx --yes appium@next & # Appium recommends this until v2 is released
 
+            - name: Create AVD and generate snapshot for caching
+              if: steps.avd-cache.outputs.cache-hit != 'true'
+              uses: reactivecircus/android-emulator-runner@v2
+              with:
+                api-level: ${{ matrix.api-level }}
+                force-avd-creation: false
+                emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+                disable-animations: false
+                script: echo "Generated AVD snapshot for caching."
+
             - name: Run Appium tests
               uses: reactivecircus/android-emulator-runner@v2
               with:
-                api-level: ${{ matrix.android-api }}
+                api-level: ${{ matrix.api-level }}
                 target: playstore
                 arch: x86_64
                 profile: 5.4in FWVGA
+                force-avd-creation: false
                 emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-                ram-size: 10240M
-                heap-size: 4096M
+                disable-animations: true
                 script: |
                   adb shell pm clear com.android.chrome
                   adb shell am set-debug-app --persistent com.android.chrome 
