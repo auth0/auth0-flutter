@@ -1,6 +1,12 @@
 name: CI
 on: push
 
+permissions: {}
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: ${{ github.ref == 'refs/heads/master' }}
+
 env:
     flutter: '3.x'
     xcode: '14.2'
