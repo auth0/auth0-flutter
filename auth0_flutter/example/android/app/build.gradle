@@ -56,7 +56,7 @@ android {
         versionName flutterVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [auth0Domain: "$System.env.AUTH0_DOMAIN",
-                                auth0Scheme: "demo"]
+                                auth0Scheme: "$System.env.AUTH0_CUSTOM_SCHEME"]
 
         testOptions {
             unitTests.all {
