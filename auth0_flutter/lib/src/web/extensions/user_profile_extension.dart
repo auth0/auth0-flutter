@@ -28,6 +28,11 @@ extension UserProfileExtension on UserProfile {
     final updatedAt = claims[PublicClaims.updatedAt] != null
         ? DateTime.parse(claims[PublicClaims.updatedAt] as String)
         : null;
+    final isEmailVerified = claims[PublicClaims.emailVerified] != null
+        ? claims[PublicClaims.emailVerified] is bool
+            ? claims[PublicClaims.emailVerified] as bool
+            : claims[PublicClaims.emailVerified] == 'true'
+        : null;
 
     return UserProfile(
       sub: claims[PublicClaims.sub] as String,
@@ -41,7 +46,7 @@ extension UserProfileExtension on UserProfile {
       pictureUrl: pictureUrl,
       websiteUrl: websiteUrl,
       email: claims[PublicClaims.email] as String?,
-      isEmailVerified: claims[PublicClaims.emailVerified] as bool?,
+      isEmailVerified: isEmailVerified,
       gender: claims[PublicClaims.gender] as String?,
       birthdate: claims[PublicClaims.birthdate] as String?,
       zoneinfo: claims[PublicClaims.zoneinfo] as String?,
