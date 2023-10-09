@@ -1,7 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    CFPropertyList (3.0.5)
+    CFPropertyList (3.0.6)
       rexml
     activesupport (7.0.7.2)
       concurrent-ruby (~> 1.0, >= 1.0.2)
@@ -15,17 +15,17 @@ GEM
     concurrent-ruby (1.2.2)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
-    mini_portile2 (2.8.1)
+    mini_portile2 (2.8.4)
     minitest (5.19.0)
     nanaimo (0.3.0)
-    nokogiri (1.14.3)
-      mini_portile2 (~> 2.8.0)
+    nokogiri (1.15.4)
+      mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
-    nokogiri (1.14.3-x86_64-darwin)
+    nokogiri (1.15.4-x86_64-darwin)
       racc (~> 1.4)
-    racc (1.6.2)
-    rexml (3.2.5)
-    slather (2.7.3)
+    racc (1.7.1)
+    rexml (3.2.6)
+    slather (2.7.4)
       CFPropertyList (>= 2.2, < 4)
       activesupport
       clamp (~> 1.3)

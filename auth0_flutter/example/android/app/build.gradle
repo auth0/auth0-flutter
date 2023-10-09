@@ -24,13 +24,11 @@ if (flutterVersionName == null) {
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'jacoco'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
-jacoco {
-    toolVersion = '0.8.8'
-}
-
 android {
+    namespace exampleAppApplicationId
     compileSdk 31
     if (project.android.hasProperty("namespace")) {
         namespace exampleAppApplicationId
@@ -61,10 +59,21 @@ android {
                                 auth0Scheme: "$System.env.AUTH0_CUSTOM_SCHEME"]
 
         testOptions {
+            unitTests.all {
+                jacoco {
+                    includeNoLocationClasses = true
+                }
+            }
+
+            unitTests.returnDefaultValues = true
             animationsDisabled = true
             buildConfigField "String", "USER_EMAIL", "\"$System.env.USER_EMAIL\""
             buildConfigField "String", "USER_PASSWORD", "\"$System.env.USER_PASSWORD\""
         }
+    }
+
+    buildFeatures {
+        buildConfig true
     }
 
     buildTypes {
@@ -83,7 +92,7 @@ android {
             enable true
             reset()
             include 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'mips', 'mips64', 'arm64-v8a'
-            universalApk true
+            universalApk false
         }
     }
 }
