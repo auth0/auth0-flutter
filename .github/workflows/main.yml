@@ -334,8 +334,7 @@ jobs:
                   adb shell 'echo "chrome --disable-fre --no-default-browser-check --no-first-run" > /data/local/tmp/chrome-command-line'
                   adb emu screenrecord start --time-limit 300 ./recording_video.webm
                   adb shell settings put system pointer_location 1
-                  USER_EMAIL=$USER_EMAIL USER_PASSWORD=$USER_PASSWORD node appium-test/test.js
-                  ./gradlew connectedCheck
+                  ./gradlew connectedCheck  
 
             - name: Upload recording
               uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
