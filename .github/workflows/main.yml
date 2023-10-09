@@ -349,3 +349,10 @@ jobs:
               with:
                 name: 'Android - APK'
                 path: ./auth0_flutter/example/build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+
+            - name: Upload Test Report
+              uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
+              if: ${{ failure() }}
+              with:
+                name: 'Android - APK'
+                path: ./auth0_flutter/example/build/auth0_flutter/reports/coverage/androidTest/debug/connected/index.html
