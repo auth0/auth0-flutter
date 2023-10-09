@@ -335,6 +335,7 @@ jobs:
                   adb emu screenrecord start --time-limit 300 ./recording_video.webm
                   adb shell settings put system pointer_location 1
                   cd auth0_flutter/example/android 
+                  ls
                   ./gradlew connectedCheck  
 
             - name: Upload recording
