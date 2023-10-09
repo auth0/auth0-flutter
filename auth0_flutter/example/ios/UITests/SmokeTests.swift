@@ -11,7 +11,7 @@ class SmokeTests: XCTestCase {
     override func setUp() {
         continueAfterFailure = false
         let app = XCUIApplication()
-        app.launchArguments = ["SmokeTests"]
+        app.launchArguments.append("--smoke-tests")
         app.launchEnvironment = ProcessInfo.processInfo.environment
         app.launch()
     }
@@ -52,7 +52,18 @@ private extension SmokeTests {
     func tap(button label: String) {
         let button = XCUIApplication().buttons[label]
         XCTAssertTrue(button.waitForExistence(timeout: timeout))
-        button.tap()
+        button.forceTap()
         tapAlert()
+    }
+}
+
+extension XCUIElement {
+    func forceTap() {
+        if self.isHittable {
+            self.tap()
+        } else {
+            let coordinate = self.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+            coordinate.tap()
+        }
     }
 }
