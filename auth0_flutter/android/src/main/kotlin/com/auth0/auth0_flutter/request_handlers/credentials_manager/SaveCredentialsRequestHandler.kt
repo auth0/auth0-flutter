@@ -7,6 +7,7 @@ import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.utils.assertHasProperties
 import io.flutter.plugin.common.MethodChannel
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.util.*
 
 
@@ -32,7 +33,6 @@ class SaveCredentialsRequestHandler : CredentialsManagerRequestHandler {
         }
 
         val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
-        format.timeZone = TimeZone.getTimeZone("UTC")
         val date = format.parse(credentials.get("expiresAt") as String)
 
         credentialsManager.saveCredentials(Credentials(
