@@ -32,7 +32,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Install Flutter
               uses: subosito/flutter-action@cc97e1648fff6ca5cc647fa67f47e70f7895510b
@@ -56,7 +56,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Install Flutter
               uses: subosito/flutter-action@cc97e1648fff6ca5cc647fa67f47e70f7895510b
@@ -76,7 +76,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Install Flutter
               uses: subosito/flutter-action@cc97e1648fff6ca5cc647fa67f47e70f7895510b
@@ -109,7 +109,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Install Flutter
               uses: subosito/flutter-action@cc97e1648fff6ca5cc647fa67f47e70f7895510b
@@ -146,7 +146,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Set up environment
               uses: ./.github/actions/setup-ios
@@ -193,7 +193,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Set up environment
               uses: ./.github/actions/setup-ios
@@ -225,7 +225,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Set up environment
               uses: ./.github/actions/setup-android
@@ -273,7 +273,7 @@ jobs:
 
     #     steps:
     #         - name: Checkout
-    #           uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9
+    #           uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
     #         - name: Gradle cache
     #           uses: gradle/gradle-build-action@ef76a971e2fa3f867b617efd72f2fbd72cf6f8bc
