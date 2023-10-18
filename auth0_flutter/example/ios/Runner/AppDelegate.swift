@@ -9,7 +9,7 @@ import Auth0
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         GeneratedPluginRegistrant.register(with: self)
-        if ProcessInfo.processInfo.arguments.contains("SmokeTests") {
+        if CommandLine.arguments.contains("--smoke-tests") {
             self.window?.layer.speed = 0.0
             UIView.setAnimationsEnabled(false)
         }
