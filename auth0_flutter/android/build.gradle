@@ -4,14 +4,14 @@ group libApplicationId
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.6.10'
+    ext.kotlin_version = '1.7.10'
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.0'
+        classpath 'com.android.tools.build:gradle:7.4.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -75,6 +75,6 @@ dependencies {
     testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
     testImplementation 'com.jayway.awaitility:awaitility:1.7.0'
     testImplementation 'org.robolectric:robolectric:4.6.1'
-    testImplementation 'androidx.test.espresso:espresso-intents:3.4.0'
+    testImplementation 'androidx.test.espresso:espresso-intents:3.5.1'
     testImplementation 'com.auth0:java-jwt:3.19.1'
 }

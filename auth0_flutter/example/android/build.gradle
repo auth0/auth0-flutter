@@ -6,16 +6,10 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.2'
+        classpath 'com.android.tools.build:gradle:7.4.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "com.vanniktech:gradle-android-junit-jacoco-plugin:0.16.0"
+        classpath 'org.jacoco:org.jacoco.core:0.8.10'
     }
-}
-
-apply plugin: "com.vanniktech.android.junit.jacoco"
-
-junitJacoco {
-    jacocoVersion = '0.8.8' // type String
 }
 
 allprojects {
