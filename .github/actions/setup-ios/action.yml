@@ -1,0 +1,72 @@
+name: Set up iOS environment
+description: Set up the environment for building and testing the library on iOS
+
+inputs:
+  flutter:
+    description: The version of Flutter to use
+    required: true
+
+  xcode:
+    description: The version of Xcode to use
+    required: true
+
+  auth0-domain:
+    description: The Auth0 domain
+    required: true
+
+  auth0-client-id:
+    description: The Auth0 client ID
+    required: true
+
+runs:
+  using: composite
+
+  steps:
+    - name: Install Flutter
+      uses: subosito/flutter-action@48cafc24713cca54bbe03cdc3a423187d413aafa
+      with:
+          flutter-version: ${{ inputs.flutter }}
+          channel: stable
+          cache: true
+
+    - name: Install Flutter dependencies
+      working-directory: auth0_flutter/example
+      run: flutter pub get
+      shell: bash
+
+    - name: Set Ruby version
+      working-directory: auth0_flutter/example/ios
+      run: ruby -e 'puts RUBY_VERSION' | tee .ruby-version
+      shell: bash
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@250fcd6a742febb1123a77a841497ccaa8b9e939
+      with:
+          bundler-cache: true
+          cache-version: 1
+          working-directory: auth0_flutter/example/ios
+
+    - name: Setup Xcode
+      run: sudo xcode-select --switch /Applications/Xcode_${{ inputs.xcode }}.app/Contents/Developer
+      shell: bash
+
+    - name: Save Xcode version
+      run: xcodebuild -version | tee .xcode-version
+      shell: bash
+
+    - id: restore-pods-cache
+      name: Restore Pods cache
+      uses: actions/cache@f5ce41475b483ad7581884324a6eca9f48f8dcc7
+      with:
+        path: auth0_flutter/example/ios/Pods
+        key: pods-${{ hashFiles('Podfile.lock') }}-${{ hashFiles('.xcode-version') }}-v1
+
+    - name: Install pods
+      working-directory: auth0_flutter/example/ios
+      run: pod install
+      shell: bash
+
+    - name: Set .env
+      working-directory: auth0_flutter/example
+      run: printf '%s\n%s\n%s' 'AUTH0_DOMAIN=${{ inputs.auth0-domain }}' 'AUTH0_CLIENT_ID=${{ inputs.auth0-client-id }}' 'AUTH0_CUSTOM_SCHEME=demo' >> .env
+      shell: bash
