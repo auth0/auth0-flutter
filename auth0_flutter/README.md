@@ -3,7 +3,7 @@
 [![Package](https://img.shields.io/pub/v/auth0_flutter.svg)](https://pub.dartlang.org/packages/auth0_flutter)
 [![Codecov](https://codecov.io/gh/auth0/auth0-flutter/branch/main/graph/badge.svg)](https://codecov.io/gh/auth0/auth0-flutter)
 [![License](https://img.shields.io/github/license/auth0/auth0-flutter)](https://www.apache.org/licenses/LICENSE-2.0)
-[![CircleCI](https://img.shields.io/circleci/project/github/auth0/auth0-flutter.svg)](https://circleci.com/gh/auth0/auth0-flutter/tree/main)
+![Build Status](https://img.shields.io/github/actions/workflow/status/auth0/auth0-flutter/main.yml?style=flat)
 
 <div>
 📚 <a href="#documentation">Documentation</a> • 🚀 <a href="#getting-started">Getting started</a> • 💻 <a href="#api-reference">API reference</a> • 💬 <a href="#feedback">Feedback</a>
@@ -45,10 +45,7 @@ Head to the [Auth0 Dashboard](https://manage.auth0.com/#/applications/) and crea
 <details>
   <summary>Using an existing <strong>Native</strong> application?</summary>
 
-Select the **Settings** tab of your [application's page](https://manage.auth0.com/#/applications/) and verify the following:
-
-- Ensure that **Application Type** is set to `Native`
-- Ensure that the **Token Endpoint Authentication Method** setting has a value of `None`
+Select the **Settings** tab of your [application's page](https://manage.auth0.com/#/applications/) and ensure that **Application Type** is set to `Native`.
 
 Then, scroll down and select the **Show Advanced Settings** link. Under **Advanced Settings**, select the **OAuth** tab and verify the following:
 
@@ -83,17 +80,16 @@ Head to the [Auth0 Dashboard](https://manage.auth0.com/#/applications/) and crea
 <details>
   <summary>Using an existing <strong>Single Page</strong> application?</summary>
 
-Select the **Settings** tab of your [application's page](https://manage.auth0.com/#/applications/) and verify the following:
-
-- Ensure that **Application Type** is set to `Single Page Application`
-- Ensure that the **Token Endpoint Authentication Method** setting has a value of `None`
+Select the **Settings** tab of your [application's page](https://manage.auth0.com/#/applications/) and ensure that **Application Type** is set to `Single Page Application`.
 
 Then, scroll down and select the **Show Advanced Settings** link. Under **Advanced Settings**, select the **OAuth** tab and verify the following:
 
 - Ensure that **JsonWebToken Signature Algorithm** is set to `RS256`
 - Ensure that **OIDC Conformant** is enabled
 
-Finally, if you made any chages don't forget to scroll to the end and press the **Save Changes** button.
+If you made any chages don't forget to scroll to the end and press the **Save Changes** button.
+
+Finally, head over to the **Credentials** tab and ensure that **Authentication Methods** is set to `None`.
 
 </details>
 
@@ -127,7 +123,7 @@ final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID');
 
 ##### Android: Configure manifest placeholders
 
-Open the `android/build.gradle` file and add the following manifest placeholders inside **android > defaultConfig**.
+Open the `android/app/build.gradle` file and add the following manifest placeholders inside **android > defaultConfig**.
 
 ```groovy
 // android/build.gradle

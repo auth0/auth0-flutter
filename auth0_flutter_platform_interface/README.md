@@ -1,6 +1,6 @@
 # auth0_flutter_platform_interface
 
-[![CircleCI](https://img.shields.io/circleci/project/github/auth0/auth0-flutter.svg)](https://circleci.com/gh/auth0/auth0-flutter/tree/main)
+![Build Status](https://img.shields.io/github/actions/workflow/status/auth0/auth0-flutter/main.yml?style=flat)
 [![Codecov](https://codecov.io/gh/auth0/auth0-flutter/branch/main/graph/badge.svg?flag=auth0_flutter_platform_interface)](https://codecov.io/gh/auth0/auth0-flutter)
 [![Package](https://img.shields.io/pub/v/auth0_flutter_platform_interface.svg)](https://pub.dartlang.org/packages/auth0_flutter_platform_interface)
 
