@@ -1,5 +1,17 @@
 # Change Log
 
+## [af-v1.3.0](https://github.com/auth0/auth0-flutter/tree/af-v1.3.0) (2023-10-27)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/v1.2.1...af-v1.3.0)
+
+**Changed**
+- Lock Auth0.Android version to avoid dynamic versioning [\#311](https://github.com/auth0/auth0-flutter/pull/311) ([poovamraj](https://github.com/poovamraj))
+- Add namespace to build.gradle [\#290](https://github.com/auth0/auth0-flutter/pull/290) ([poovamraj](https://github.com/poovamraj))
+- af: Pin Auth0.swift and its dependencies to last version that supports iOS 12 [\#276](https://github.com/auth0/auth0-flutter/pull/276) ([Widcket](https://github.com/Widcket))
+
+**Fixed**
+- Fix access token expiry android [\#315](https://github.com/auth0/auth0-flutter/pull/315) ([poovamraj](https://github.com/poovamraj))
+- af: Use Application Context for Credentials Manager [\#289](https://github.com/auth0/auth0-flutter/pull/289) ([poovamraj](https://github.com/poovamraj))
+
 ## [v1.2.1](https://github.com/auth0/auth0-flutter/tree/v1.2.1) (2023-06-06)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/v1.2.0...v1.2.1)
 
