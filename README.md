@@ -1,6 +1,6 @@
 ![Auth0 Flutter SDK](https://cdn.auth0.com/website/sdks/banners/flutter-banner.png)
 
-[![CircleCI](https://img.shields.io/circleci/build/github/auth0/auth0-flutter)](https://circleci.com/gh/auth0/auth0-flutter)
+![Build Status](https://img.shields.io/github/actions/workflow/status/auth0/auth0-flutter/main.yml?style=flat)
 [![Codecov](https://codecov.io/gh/auth0/auth0-flutter/branch/main/graph/badge.svg)](https://codecov.io/gh/auth0/auth0-flutter)
 
 Auth0 SDK for Android, iOS, and web Flutter apps.

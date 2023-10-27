@@ -3,7 +3,7 @@
 [![Package](https://img.shields.io/pub/v/auth0_flutter.svg)](https://pub.dartlang.org/packages/auth0_flutter)
 [![Codecov](https://codecov.io/gh/auth0/auth0-flutter/branch/main/graph/badge.svg)](https://codecov.io/gh/auth0/auth0-flutter)
 [![License](https://img.shields.io/github/license/auth0/auth0-flutter)](https://www.apache.org/licenses/LICENSE-2.0)
-[![CircleCI](https://img.shields.io/circleci/project/github/auth0/auth0-flutter.svg)](https://circleci.com/gh/auth0/auth0-flutter/tree/main)
+![Build Status](https://img.shields.io/github/actions/workflow/status/auth0/auth0-flutter/main.yml?style=flat)
 
 <div>
 📚 <a href="#documentation">Documentation</a> • 🚀 <a href="#getting-started">Getting started</a> • 💻 <a href="#api-reference">API reference</a> • 💬 <a href="#feedback">Feedback</a>
@@ -80,7 +80,7 @@ Head to the [Auth0 Dashboard](https://manage.auth0.com/#/applications/) and crea
 <details>
   <summary>Using an existing <strong>Single Page</strong> application?</summary>
 
-Select the **Settings** tab of your [application's page](https://manage.auth0.com/#/applications/) and ensure that **Application Type** is set to `Single Page Application`. 
+Select the **Settings** tab of your [application's page](https://manage.auth0.com/#/applications/) and ensure that **Application Type** is set to `Single Page Application`.
 
 Then, scroll down and select the **Show Advanced Settings** link. Under **Advanced Settings**, select the **OAuth** tab and verify the following:
 
@@ -178,6 +178,11 @@ Re-declare the activity manually using `tools:node="remove"` in the `android/src
 ```
 
 </details>
+
+> 💡 `https` schemes require enabling [Android App
+> Links](https://auth0.com/docs/applications/enable-android-app-links). You can
+> read more about setting this value in the [Auth0.Android SDK
+> README](https://github.com/auth0/Auth0.Android#a-note-about-app-deep-linking).
 
 > 💡 If your Android app is using [product flavors](https://developer.android.com/studio/build/build-variants#product-flavors), you might need to specify different manifest placeholders for each flavor.
 

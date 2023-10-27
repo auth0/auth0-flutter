@@ -1,4 +1,5 @@
 {
+  "packageLabel": "af",
   "files": {
     "lib/src/version.dart": [],
     "pubspec.yaml": [
@@ -8,7 +9,7 @@
       "= '{MAJOR}.{MINOR}.{PATCH}'"
     ]
   },
-  "prebump": "flutter analyze",
+  "prebump": "flutter analyze && dart pub upgrade auth0_flutter_platform_interface",
   "prFilters": [
     {
       "type": "title",

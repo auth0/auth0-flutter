@@ -1,4 +1,5 @@
 {
+  "packageLabel": "afpi",
   "files": {
     "pubspec.yaml": [
       "version: {MAJOR}.{MINOR}.{PATCH}"
