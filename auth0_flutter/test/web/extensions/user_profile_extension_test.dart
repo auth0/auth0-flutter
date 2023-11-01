@@ -169,7 +169,10 @@ void main() {
       expect(
           result.websiteUrl, Uri.parse(claims[PublicClaims.website] as String));
       expect(result.email, claims[PublicClaims.email]);
-      expect(result.isEmailVerified, claims[PublicClaims.emailVerified]);
+      expect(
+        result.isEmailVerified,
+        claims[PublicClaims.emailVerified] == 'true',
+      );
       expect(result.gender, claims[PublicClaims.gender]);
       expect(result.birthdate, claims[PublicClaims.birthdate]);
       expect(result.zoneinfo, claims[PublicClaims.zoneinfo]);
