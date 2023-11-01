@@ -12,7 +12,7 @@ class MethodCallHandler {
   static const Map<dynamic, dynamic> loginResultRequired = {
     'accessToken': 'accessToken',
     'idToken': 'idToken',
-    'expiresAt': '2022-01-01',
+    'expiresAt': '2023-11-01T22:16:35.760Z',
     'scopes': ['a', 'b'],
     'userProfile': {'sub': '123', 'name': 'John Doe'},
     'tokenType': 'Bearer'
@@ -47,7 +47,7 @@ class MethodCallHandler {
     'accessToken': 'accessToken',
     'idToken': 'idToken',
     'refreshToken': 'refreshToken',
-    'expiresAt': '2022-01-01',
+    'expiresAt': '2023-11-01T22:16:35.760Z',
     'scopes': ['a', 'b'],
     'userProfile': {'sub': '123', 'name': 'John Doe'},
     'tokenType': 'Bearer'

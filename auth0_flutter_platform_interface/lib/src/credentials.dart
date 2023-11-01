@@ -63,7 +63,7 @@ class Credentials {
         idToken: result['idToken'] as String,
         accessToken: result['accessToken'] as String,
         refreshToken: result['refreshToken'] as String?,
-        expiresAt: DateTime.parse(result['expiresAt'] as String),
+        expiresAt: DateTime.parse(result['expiresAt'] as String).toUtc(),
         scopes: Set<String>.from(result['scopes'] as List<Object?>),
         user: UserProfile.fromMap(Map<String, dynamic>.from(
             result['userProfile'] as Map<dynamic, dynamic>)),
@@ -74,7 +74,7 @@ class Credentials {
         'idToken': idToken,
         'accessToken': accessToken,
         'refreshToken': refreshToken,
-        'expiresAt': expiresAt.toIso8601String(),
+        'expiresAt': expiresAt.toUtc().toIso8601String(),
         'scopes': scopes.toList(),
         'tokenType': tokenType,
       };
