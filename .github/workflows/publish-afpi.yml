@@ -7,6 +7,9 @@ on:
 
 jobs:
   publish:
+    permissions:
+      id-token: write
     uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
     with:
+      environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
       working-directory: auth0_flutter_platform_interface
