@@ -24,9 +24,9 @@
 
 | Flutter    | Android         | iOS               |
 | :--------- | :-------------- | :---------------- |
-| SDK 3.0+   | Android API 21+ | iOS 12+           |
-| Dart 2.17+ | Java 8+         | Swift 5.5+        |
-|            |                 | Xcode 13.x / 14.x |
+| SDK 3.0+   | Android API 21+ | iOS 13+           |
+| Dart 2.17+ | Java 8+         | Swift 5.7+        |
+|            |                 | Xcode 14.x / 15.x |
 
 ### Installation
 
@@ -353,6 +353,8 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 #### API
 
 - [login](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/login.html)
+- [loginWithOtp](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/loginWithOtp.html)
+- [multifactorChallenge](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/multifactorChallenge.html)
 - [renewCredentials](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/renewCredentials.html)
 - [resetPassword](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/resetPassword.html)
 - [signup](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/signup.html)
