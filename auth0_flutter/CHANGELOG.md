@@ -1,5 +1,11 @@
 # Change Log
 
+## [af-v1.3.1](https://github.com/auth0/auth0-flutter/tree/af-v1.3.1) (2023-11-08)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.3.0...af-v1.3.1)
+
+**Fixed**
+- af: Fix email verified type [\#309](https://github.com/auth0/auth0-flutter/pull/309) ([itome](https://github.com/itome))
+
 ## [af-v1.3.0](https://github.com/auth0/auth0-flutter/tree/af-v1.3.0) (2023-10-27)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/v1.2.1...af-v1.3.0)
 
