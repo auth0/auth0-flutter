@@ -1,5 +1,11 @@
 # Change Log
 
+## [afpi-v1.3.1](https://github.com/auth0/auth0-flutter/tree/afpi-v1.3.1) (2023-11-08)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.3.0...afpi-v1.3.1)
+
+**Fixed**
+- afpi: Ensure Dart `expiresAt` uses the UTC time zone [\#331](https://github.com/auth0/auth0-flutter/pull/331) ([Widcket](https://github.com/Widcket))
+
 ## [afpi-v1.3.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.3.0) (2023-10-27)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/v1.2.1...afpi-v1.3.0)
 
