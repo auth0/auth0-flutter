@@ -365,7 +365,6 @@ jobs:
         runs-on: ubuntu-latest
 
         needs: [
-          authorize,
           test-auth0_flutter,
           test-auth0_flutter_platform_interface,
           test-ios-unit,
