@@ -413,12 +413,12 @@ jobs:
               uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
               with:
                   name: Auth0 Flutter
-                  flags: ios
+                  flags: auth0_flutter_ios
                   directory: coverage/ios
 
             - name: Upload coverage report for Android
               uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
               with:
                   name: Auth0 Flutter
-                  flags: android
+                  flags: auth0_flutter_android
                   directory: coverage/android
