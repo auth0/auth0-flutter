@@ -5,11 +5,28 @@ on:
     tags:
       - 'af-v[0-9]+.[0-9]+.[0-9]+*'
 
+env:
+  flutter: '3.x'
+
 jobs:
   publish:
+    name: Publish auth0_flutter to pub.dev
+    environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
+    runs-on: ubuntu-latest
+
     permissions:
       id-token: write
-    uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
-    with:
-      environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
-      working-directory: auth0_flutter
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+
+      - name: Setup Flutter and Dart SDK
+        uses: ./.github/actions/setup-publish
+        with:
+          flutter: ${{ env.flutter }}
+          working-directory: auth0_flutter
+
+      - name: Publish
+        run: dart pub publish -f
+        working-directory: auth0_flutter
