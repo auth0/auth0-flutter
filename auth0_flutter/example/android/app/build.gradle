@@ -24,7 +24,7 @@ if (flutterVersionName == null) {
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'jacoco'
+apply plugin: 'org.jetbrains.kotlinx.kover'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
@@ -58,12 +58,6 @@ android {
                                 auth0Scheme: "$System.env.AUTH0_CUSTOM_SCHEME"]
 
         testOptions {
-            unitTests.all {
-                jacoco {
-                    includeNoLocationClasses = true
-                }
-            }
-
             unitTests.returnDefaultValues = true
             animationsDisabled = true
             buildConfigField "String", "USER_EMAIL", "\"$System.env.USER_EMAIL\""
@@ -102,4 +96,22 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    kover(project(":auth0_flutter"))
+}
+
+koverReport {
+    filters {
+        excludes {
+            classes(
+                    "*Activity",
+                    "*Activity\$*",
+                    "*GeneratedPluginRegistrant",
+                    "*.BuildConfig"
+            )
+        }
+    }
+
+    defaults {
+        mergeWith("debug")
+    }
 }

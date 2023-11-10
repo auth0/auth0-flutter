@@ -25,6 +25,7 @@ rootProject.allprojects {
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'org.jetbrains.kotlinx.kover'
 
 android {
     compileSdkVersion 31

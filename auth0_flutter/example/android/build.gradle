@@ -8,8 +8,11 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:7.4.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'org.jacoco:org.jacoco.core:0.8.10'
     }
+}
+
+plugins {
+    id("org.jetbrains.kotlinx.kover") version "0.7.4" apply false
 }
 
 allprojects {
