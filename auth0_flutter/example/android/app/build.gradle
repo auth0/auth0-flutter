@@ -100,18 +100,11 @@ dependencies {
 }
 
 koverReport {
-    filters {
-        excludes {
-            classes(
-                    "*Activity",
-                    "*Activity\$*",
-                    "*GeneratedPluginRegistrant",
-                    "*.BuildConfig"
-            )
+    androidReports("debug") {
+        filters {
+            includes {
+                classes("com.auth0.auth0_flutter.*")
+            }
         }
-    }
-
-    defaults {
-        mergeWith("debug")
     }
 }
