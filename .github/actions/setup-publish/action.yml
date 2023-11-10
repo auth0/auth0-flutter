@@ -1,0 +1,30 @@
+name: Set up Flutter and Dart SDK for publishing
+description: Set up the environment for publishing the Flutter libraries to pub.dev
+
+inputs:
+  flutter:
+    description: The version of Flutter to use
+    required: true
+
+  working-directory:
+    description: The directory of the package to publish
+    required: true
+
+runs:
+  using: composite
+
+  steps:
+    - name: Install Flutter
+      uses: subosito/flutter-action@48cafc24713cca54bbe03cdc3a423187d413aafa
+      with:
+          flutter-version: ${{ inputs.flutter }}
+          channel: stable
+          cache: true
+
+    - name: Install Flutter dependencies
+      working-directory: ${{ inputs.working-directory }}
+      run: flutter pub get
+      shell: bash
+
+    - name: Setup Dart SDK for publishing # With JWT token
+      uses: dart-lang/setup-dart@b64355ae6ca0b5d484f0106a033dd1388965d06d
