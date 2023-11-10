@@ -103,7 +103,7 @@ koverReport {
     androidReports("debug") {
         filters {
             includes {
-                classes("com.auth0.auth0_flutter.*")
+                packages("com.auth0.auth0_flutter")
             }
         }
     }
