@@ -101,6 +101,10 @@ dependencies {
 
 koverReport {
     androidReports("debug") {
+        xml {
+            setReportFile(layout.buildDirectory.file("coverage.xml"))
+        }
+
         filters {
             includes {
                 packages("com.auth0.auth0_flutter")

@@ -246,7 +246,7 @@ jobs:
               uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
               with:
                 name: Android coverage
-                path: auth0_flutter/example/build/app/reports/kover/reportDebug.xml
+                path: auth0_flutter/example/build/app/coverage.xml
 
             - name: Upload test results
               uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
