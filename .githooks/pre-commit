@@ -1,0 +1,18 @@
+base_dir='auth0_flutter'
+source_dir="$base_dir/darwin"
+staged_files=($(git diff --staged --name-only -- "$source_dir"))
+
+# Only proceed if there are staged changes from the 'darwin' folder
+if [ ${#staged_files[@]} -eq 0 ]; then
+    exit 0
+fi
+
+platforms=('ios' 'macos')
+
+for platform in "${platforms[@]}"; do
+    dir="$base_dir/$platform"
+    rm -rf "$dir"
+    mkdir "$dir"
+    cp -Rv "$source_dir/" "$dir"
+    git add "$dir"
+done
