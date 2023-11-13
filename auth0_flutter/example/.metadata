@@ -1,11 +1,11 @@
 # This file tracks properties of this Flutter project.
 # Used by Flutter tool to assess capabilities and perform upgrades etc.
 #
-# This file should be version controlled.
+# This file should be version controlled and should not be manually edited.
 
 version:
-  revision: 778b3fa3226637dc6825bba176a3b84c880c27a0
-  channel: master
+  revision: "d211f42860350d914a5ad8102f9ec32764dc6d06"
+  channel: "stable"
 
 project_type: app
 
@@ -13,26 +13,20 @@ project_type: app
 migration:
   platforms:
     - platform: root
-      create_revision: 778b3fa3226637dc6825bba176a3b84c880c27a0
-      base_revision: 778b3fa3226637dc6825bba176a3b84c880c27a0
+      create_revision: d211f42860350d914a5ad8102f9ec32764dc6d06
+      base_revision: d211f42860350d914a5ad8102f9ec32764dc6d06
     - platform: android
-      create_revision: 778b3fa3226637dc6825bba176a3b84c880c27a0
-      base_revision: 778b3fa3226637dc6825bba176a3b84c880c27a0
+      create_revision: d211f42860350d914a5ad8102f9ec32764dc6d06
+      base_revision: d211f42860350d914a5ad8102f9ec32764dc6d06
     - platform: ios
-      create_revision: 778b3fa3226637dc6825bba176a3b84c880c27a0
-      base_revision: 778b3fa3226637dc6825bba176a3b84c880c27a0
-    - platform: linux
-      create_revision: 778b3fa3226637dc6825bba176a3b84c880c27a0
-      base_revision: 778b3fa3226637dc6825bba176a3b84c880c27a0
+      create_revision: d211f42860350d914a5ad8102f9ec32764dc6d06
+      base_revision: d211f42860350d914a5ad8102f9ec32764dc6d06
     - platform: macos
-      create_revision: 778b3fa3226637dc6825bba176a3b84c880c27a0
-      base_revision: 778b3fa3226637dc6825bba176a3b84c880c27a0
+      create_revision: d211f42860350d914a5ad8102f9ec32764dc6d06
+      base_revision: d211f42860350d914a5ad8102f9ec32764dc6d06
     - platform: web
-      create_revision: 778b3fa3226637dc6825bba176a3b84c880c27a0
-      base_revision: 778b3fa3226637dc6825bba176a3b84c880c27a0
-    - platform: windows
-      create_revision: 778b3fa3226637dc6825bba176a3b84c880c27a0
-      base_revision: 778b3fa3226637dc6825bba176a3b84c880c27a0
+      create_revision: d211f42860350d914a5ad8102f9ec32764dc6d06
+      base_revision: d211f42860350d914a5ad8102f9ec32764dc6d06
 
   # User provided section
 
