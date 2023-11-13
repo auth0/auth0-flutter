@@ -15,7 +15,7 @@ import Auth0
         }
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
-    
+
     override func application(
         _ application: UIApplication,
         open url: URL,
