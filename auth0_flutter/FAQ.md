@@ -83,7 +83,7 @@ Note that with `useEphemeralSession: true` you don't need to call `logout()` at 
 
 You still need to call `logout()` on Android, though, as `useEphemeralSession` is iOS-only.
 
-> **Warning** > `useEphemeralSession` relies on the `prefersEphemeralWebBrowserSession` configuration option of `ASWebAuthenticationSession`. This option is only available on [iOS 13+](https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession/3237231-prefersephemeralwebbrowsersessio), so `useEphemeralSession` will have no effect on iOS 12. To improve the experience for iOS 12 users, see the approach described below.
+> **Warning** > `useEphemeralSession` relies on the `prefersEphemeralWebBrowserSession` configuration option of `ASWebAuthenticationSession`.
 
 #### Use `SFSafariViewController`
 
