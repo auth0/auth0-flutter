@@ -116,13 +116,13 @@ class SpyPluginRegistrar: NSObject, FlutterPluginRegistrar {
                   withId: String,
                   gestureRecognizersBlockingPolicy: FlutterPlatformViewGestureRecognizersBlockingPolicy) {}
     #else
+    var view: NSView?
+
     let messenger: FlutterBinaryMessenger = MockBinaryMessenger()
 
     let textures: FlutterTextureRegistry = MockTextureRegistry()
 
     func addApplicationDelegate(_ delegate: FlutterAppLifecycleDelegate) {}
-
-    var view: NSView?
     #endif
 
     private(set) var delegate: FlutterPlugin?
