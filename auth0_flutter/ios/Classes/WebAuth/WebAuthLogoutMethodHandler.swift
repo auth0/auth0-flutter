@@ -1,6 +1,11 @@
 import Foundation
-import Flutter
 import Auth0
+
+#if os(iOS)
+import Flutter
+#else
+import FlutterMacOS
+#endif
 
 struct WebAuthLogoutMethodHandler: MethodHandler {
     enum Argument: String {

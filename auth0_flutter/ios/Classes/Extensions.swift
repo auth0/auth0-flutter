@@ -1,6 +1,11 @@
-import Flutter
 import Auth0
 import JWTDecode
+
+#if os(iOS)
+import Flutter
+#else
+import FlutterMacOS
+#endif
 
 extension Array where Element == String {
     var asSpaceSeparatedString: String {

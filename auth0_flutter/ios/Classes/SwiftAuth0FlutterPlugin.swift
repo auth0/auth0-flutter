@@ -1,4 +1,8 @@
+#if os(iOS)
 import Flutter
+#else
+import FlutterMacOS
+#endif
 
 public class SwiftAuth0FlutterPlugin: NSObject, FlutterPlugin {
     static var handlers: [FlutterPlugin.Type] = [WebAuthHandler.self,

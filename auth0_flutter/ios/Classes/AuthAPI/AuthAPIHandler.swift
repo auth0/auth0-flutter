@@ -1,5 +1,10 @@
-import Flutter
 import Auth0
+
+#if os(iOS)
+import Flutter
+#else
+import FlutterMacOS
+#endif
 
 // MARK: - Providers
 
@@ -23,8 +28,15 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let handler = AuthAPIHandler()
+
+        #if os(iOS)
         let channel = FlutterMethodChannel(name: AuthAPIHandler.channelName,
                                            binaryMessenger: registrar.messenger())
+        #else
+        let channel = FlutterMethodChannel(name: AuthAPIHandler.channelName,
+                                           binaryMessenger: registrar.messenger)
+        #endif
+
         registrar.addMethodCallDelegate(handler, channel: channel)
     }
 
