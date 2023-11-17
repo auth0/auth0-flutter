@@ -8,12 +8,20 @@ fileprivate typealias Argument = WebAuthLoginMethodHandler.Argument
 class WebAuthLoginHandlerTests: XCTestCase {
     var spy: SpyWebAuth!
     var sut: WebAuthLoginMethodHandler!
+
+    #if os(iOS)
     var spySafariProvider: SpySafariProvider!
+    #endif
 
     override func setUpWithError() throws {
         spy = SpyWebAuth()
+
+        #if os(iOS)
         spySafariProvider = SpySafariProvider()
         sut = WebAuthLoginMethodHandler(client: spy, safariProvider: spySafariProvider.provider)
+        #else
+        sut = WebAuthLoginMethodHandler(client: spy)
+        #endif
     }
 }
 
@@ -176,24 +184,26 @@ extension WebAuthLoginHandlerTests {
         sut.handle(with: arguments(without: Argument.maxAge)) { _ in }
         XCTAssertNil(spy.maxAgeValue)
     }
-    
+
+    #if os(iOS)
     // MARK: safariViewController
-    
+
     func testAddsSafariViewController() {
         sut.handle(with: arguments()) { _ in }
         XCTAssertNotNil(spy.provider)
     }
-    
+
     func testDoesNotAddSafariViewController() {
         sut.handle(with: arguments(without: SafariViewController.key)) { _ in }
         XCTAssertNil(spy.provider)
     }
-    
+
     func testAddSafariViewControllerWithStyle() {
         let value = [SafariViewControllerProperty.presentationStyle.rawValue: 2]
         sut.handle(with: arguments(withKey: SafariViewController.key, value: value)) { _ in }
         XCTAssertEqual(spySafariProvider.presentationStyle, UIModalPresentationStyle.formSheet)
     }
+    #endif
 }
 
 // MARK: - Login Result
@@ -236,7 +246,7 @@ extension WebAuthLoginHandlerTests {
 
 extension WebAuthLoginHandlerTests {
     override func arguments() -> [String: Any] {
-        return [
+        var values: [String: Any] = [
             Argument.scopes.rawValue: [],
             Argument.parameters.rawValue: [:],
             Argument.useEphemeralSession.rawValue: false,
@@ -247,7 +257,12 @@ extension WebAuthLoginHandlerTests {
             Argument.leeway.rawValue: 1,
             Argument.issuer.rawValue: "",
             Argument.maxAge.rawValue: 1,
-            Argument.safariViewController.rawValue: [:],
         ]
+
+        #if os(iOS)
+        values[Argument.safariViewController.rawValue] = [:]
+        #endif
+
+        return values
     }
 }

@@ -113,6 +113,10 @@ extension WebAuthHandlerTests {
             .login: WebAuthLoginMethodHandler.self,
             .logout: WebAuthLogoutMethodHandler.self
         ]
+        let mockMethodHandlers: [WebAuthHandler.Method: MethodHandler] = [
+            .login: WebAuthLoginMethodHandler(client: SpyWebAuth()),
+            .logout: WebAuthLogoutMethodHandler(client: SpyWebAuth())
+        ]
         methodHandlers.forEach { method, methodHandler in
             let methodCall = FlutterMethodCall(methodName: method.rawValue, arguments: arguments())
             let expectation = self.expectation(description: "Returned \(methodHandler)")
@@ -121,7 +125,7 @@ extension WebAuthHandlerTests {
                 let result = WebAuthHandler().methodHandlerProvider(method, client)
                 XCTAssertTrue(type(of: result) == methodHandler)
                 expectation.fulfill()
-                return result
+                return mockMethodHandlers[method]!
             }
             sut.handle(methodCall) { _ in }
         }
