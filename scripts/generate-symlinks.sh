@@ -2,6 +2,7 @@
 
 # This script generates symlinks for every file inside the 'darwin' directory
 # of the auth0_flutter package, to the 'ios' and 'macos' directories.
+# It's meant to be run from the repository root, and it takes two arguments:
 
 # First argument is the root directory of the auth0_flutter package
 if [ -z "$1" ]; then
