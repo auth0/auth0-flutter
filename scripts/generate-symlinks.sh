@@ -14,7 +14,7 @@ if [ "$repo_path" != $PWD ]; then
 fi
 
 base_dir='auth0_flutter'
-darwin_dir="auth0_flutter/darwin"
+darwin_dir='auth0_flutter/darwin'
 files=($(find "$darwin_dir" -type f -print))
 platforms=('ios' 'macos')
 
