@@ -1,10 +1,8 @@
-base_dir='auth0_flutter'
-darwin_dir="$base_dir/darwin"
-staged_files=($(git diff --staged --name-only --diff-filter=ACDRT -- "$darwin_dir"))
+staged_files=($(git diff --staged --name-only --diff-filter=ACDRT -- auth0_flutter/darwin))
 
 # Only proceed if there are staged files from the 'darwin' directory
 if [ ${#staged_files[@]} -eq 0 ]; then
     exit 0
 fi
 
-scripts/generate-symlinks.sh "$base_dir" "$darwin_dir"
+scripts/generate-symlinks.sh
