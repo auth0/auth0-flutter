@@ -9,7 +9,7 @@ set -euo pipefail
 repo_path=$(git rev-parse --show-toplevel)
 
 if [ "$repo_path" != $PWD ]; then
-    echo "This script must be run from the repository root"
+    echo 'This script must be run from the repository root'
     exit 1
 fi
 
