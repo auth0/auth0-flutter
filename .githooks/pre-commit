@@ -2,7 +2,7 @@ base_dir='auth0_flutter'
 darwin_dir="$base_dir/darwin"
 staged_files=($(git diff --staged --name-only --diff-filter=ACDRT -- "$darwin_dir"))
 
-# Only proceed if there are staged changes from the 'darwin' folder
+# Only proceed if there are staged changes from the 'darwin' directory
 if [ ${#staged_files[@]} -eq 0 ]; then
     exit 0
 fi
