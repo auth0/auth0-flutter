@@ -1,5 +1,5 @@
-import './challenge_type.dart';
 import '../request/request_options.dart';
+import './challenge_type.dart';
 
 class AuthMultifactorChallengeOptions implements RequestOptions {
   final String mfaToken;
