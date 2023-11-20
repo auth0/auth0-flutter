@@ -1,6 +1,11 @@
 import Combine
-import Flutter
 import Auth0
+
+#if os(iOS)
+import Flutter
+#else
+import FlutterMacOS
+#endif
 
 @testable import auth0_flutter
 
@@ -118,21 +123,12 @@ class SpyWebAuth: WebAuth {
         callback(loginResult)
     }
 
-#if compiler(>=5.5) && canImport(_Concurrency)
-#if compiler(>=5.5.2)
-    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.2, *)
+#if canImport(_Concurrency)
     func start() async throws -> Credentials {
         return try loginResult.get()
     }
-#else
-    @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-    func start() async throws -> Credentials {
-        return try loginResult.get()
-    }
-#endif
 #endif
 
-    @available(iOS 13.0, *)
     func start() -> AnyPublisher<Credentials, WebAuthError> {
         return loginResult.publisher.eraseToAnyPublisher()
     }
@@ -144,24 +140,23 @@ class SpyWebAuth: WebAuth {
 }
 
 class MockWebAuthUserAgent: WebAuthUserAgent {
-    func start() {
-    }
-    
-    func finish(with result: Auth0.WebAuthResult<Void>) {
-    }
+    func start() {}
+
+    func finish(with result: Auth0.WebAuthResult<Void>) {}
 }
 
-
+#if os(iOS)
 class SpySafariProvider {
     var presentationStyle: UIModalPresentationStyle? = nil
-    
+
     init() {}
-    
+
     func provider(_ style: UIModalPresentationStyle) -> WebAuthProvider {
         self.presentationStyle = style
-        
+
         return { (_: URL, _: @escaping (WebAuthResult<Void>) -> Void) -> (WebAuthUserAgent) in
             return MockWebAuthUserAgent()
         }
     }
 }
+#endif

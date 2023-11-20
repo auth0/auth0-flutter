@@ -1,7 +1,12 @@
 import XCTest
-import Flutter
 import Auth0
 import JWTDecode
+
+#if os(iOS)
+import Flutter
+#else
+import FlutterMacOS
+#endif
 
 @testable import auth0_flutter
 
