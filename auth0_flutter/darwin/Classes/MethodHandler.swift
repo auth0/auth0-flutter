@@ -1,5 +1,10 @@
-import Flutter
 import Auth0
+
+#if os(iOS)
+import Flutter
+#else
+import FlutterMacOS
+#endif
 
 protocol MethodHandler {
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult)

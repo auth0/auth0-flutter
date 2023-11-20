@@ -1,5 +1,10 @@
-import Flutter
 import Auth0
+
+#if os(iOS)
+import Flutter
+#else
+import FlutterMacOS
+#endif
 
 struct CredentialsManagerHasValidMethodHandler: MethodHandler {
     enum Argument: String {

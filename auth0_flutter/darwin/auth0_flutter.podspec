@@ -12,9 +12,13 @@ Pod::Spec.new do |s|
   s.author       = { 'Auth0' => 'support@auth0.com' }
   s.source       = { :path => '.' }
   s.source_files = 'Classes/**/*'
-  s.platform     = :ios, '12.0'
 
-  s.dependency 'Flutter'
+  s.ios.deployment_target = '13.0'
+  s.ios.dependency 'Flutter'
+
+  s.osx.deployment_target = '11.0'
+  s.osx.dependency 'FlutterMacOS'
+
   s.dependency 'Auth0', '2.3.2'
   s.dependency 'JWTDecode', '3.0.1'
   s.dependency 'SimpleKeychain', '1.0.1'

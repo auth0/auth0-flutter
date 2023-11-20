@@ -1,5 +1,10 @@
-import Flutter
 import Auth0
+
+#if os(iOS)
+import Flutter
+#else
+import FlutterMacOS
+#endif
 
 struct AuthAPILoginWithOTPMethodHandler: MethodHandler {
     enum Argument: String {

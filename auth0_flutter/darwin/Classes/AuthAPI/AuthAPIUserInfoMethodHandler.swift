@@ -1,32 +1,39 @@
-import Flutter
 import Auth0
 
-struct AuthAPIResetPasswordMethodHandler: MethodHandler {
+#if os(iOS)
+import Flutter
+#else
+import FlutterMacOS
+#endif
+
+fileprivate extension MethodHandler {
+    func result(from userInfo: UserInfo) -> Any? {
+        return userInfo.asDictionary()
+    }
+}
+
+struct AuthAPIUserInfoMethodHandler: MethodHandler {
     enum Argument: String {
-        case email
-        case connection
+        case accessToken
         case parameters
     }
 
     let client: Authentication
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
-        guard let email = arguments[Argument.email] as? String else {
-            return callback(FlutterError(from: .requiredArgumentMissing(Argument.email.rawValue)))
-        }
-        guard let connection = arguments[Argument.connection] as? String else {
-            return callback(FlutterError(from: .requiredArgumentMissing(Argument.connection.rawValue)))
+        guard let accessToken = arguments[Argument.accessToken] as? String else {
+            return callback(FlutterError(from: .requiredArgumentMissing(Argument.accessToken.rawValue)))
         }
         guard let parameters = arguments[Argument.parameters] as? [String: Any] else {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.parameters.rawValue)))
         }
 
         client
-            .resetPassword(email: email, connection: connection)
+            .userInfo(withAccessToken: accessToken)
             .parameters(parameters)
             .start {
                 switch $0 {
-                case .success: callback(nil)
+                case let .success(userInfo): callback(result(from: userInfo))
                 case let .failure(error): callback(FlutterError(from: error))
                 }
             }

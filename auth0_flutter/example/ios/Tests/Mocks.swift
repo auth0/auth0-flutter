@@ -1,5 +1,10 @@
-import Flutter
 import Auth0
+
+#if os(iOS)
+import Flutter
+#else
+import FlutterMacOS
+#endif
 
 let testIdToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmb28iLCJuYW1lIjoiYmFyIiwiZW1haWwiOiJmb29AZXhhbXBsZS5"
     + "jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGljdHVyZSI6Imh0dHBzOi8vZXhhbXBsZS5jb20vcGljdHVyZSIsInVwZGF0ZWRfYXQiOiIyMDI"
@@ -96,8 +101,7 @@ class MockTextureRegistry: NSObject, FlutterTextureRegistry {
 }
 
 class SpyPluginRegistrar: NSObject, FlutterPluginRegistrar {
-    private(set) var delegate: FlutterPlugin?
-
+    #if os(iOS)
     func messenger() -> FlutterBinaryMessenger {
         return MockBinaryMessenger()
     }
@@ -106,15 +110,26 @@ class SpyPluginRegistrar: NSObject, FlutterPluginRegistrar {
         return MockTextureRegistry()
     }
 
-    func register(_ factory: FlutterPlatformViewFactory, withId: String) {}
+    func addApplicationDelegate(_ delegate: FlutterPlugin) {}
 
     func register(_ factory: FlutterPlatformViewFactory,
                   withId: String,
                   gestureRecognizersBlockingPolicy: FlutterPlatformViewGestureRecognizersBlockingPolicy) {}
+    #else
+    var view: NSView?
+
+    let messenger: FlutterBinaryMessenger = MockBinaryMessenger()
+
+    let textures: FlutterTextureRegistry = MockTextureRegistry()
+
+    func addApplicationDelegate(_ delegate: FlutterAppLifecycleDelegate) {}
+    #endif
+
+    private(set) var delegate: FlutterPlugin?
+
+    func register(_ factory: FlutterPlatformViewFactory, withId: String) {}
 
     func publish(_ value: NSObject) {}
-
-    func addApplicationDelegate(_ delegate: FlutterPlugin) {}
 
     func lookupKey(forAsset asset: String) -> String {
         return ""
