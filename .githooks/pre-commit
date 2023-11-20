@@ -1,0 +1,36 @@
+base_dir='auth0_flutter'
+darwin_dir="$base_dir/darwin"
+staged_files=($(git diff --staged --name-only --diff-filter=ACDRT -- "$darwin_dir"))
+
+# Only proceed if there are staged changes from the 'darwin' folder
+if [ ${#staged_files[@]} -eq 0 ]; then
+    exit 0
+fi
+
+files=($(find "$darwin_dir" -type f -print))
+repo_path=$(git rev-parse --show-toplevel)
+platforms=('ios' 'macos')
+
+for platform in "${platforms[@]}"; do
+    rm -rf "$base_dir/$platform"
+done
+
+for file in "${files[@]}"; do
+    for platform in "${platforms[@]}"; do
+        target_file=$(echo "$file" | sed "s/darwin/$platform/")
+        target_dir=$(dirname "$target_file")
+
+        mkdir -p "$target_dir"
+
+        case "$file" in
+            # If it's a .gitignore file, copy it
+            (*'.gitignore') cp -v "$file" "$target_dir" ;;
+            # Else symlink it
+            (*) ln -sv "$repo_path/$file" "$target_file" ;;
+        esac
+    done
+done
+
+for platform in "${platforms[@]}"; do
+    git add "$base_dir/$platform"
+done
