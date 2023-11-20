@@ -4,6 +4,8 @@
 # of the auth0_flutter package, to the 'ios' and 'macos' directories.
 # It's meant to be run from the repository root.
 
+set -euo pipefail
+
 base_dir='auth0_flutter'
 darwin_dir="auth0_flutter/darwin"
 files=($(find "$darwin_dir" -type f -print))
