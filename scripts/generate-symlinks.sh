@@ -6,10 +6,16 @@
 
 set -euo pipefail
 
+repo_path=$(git rev-parse --show-toplevel)
+
+if [ "$repo_path" != $PWD ]; then
+    echo "This script must be run from the repository root"
+    exit 1
+fi
+
 base_dir='auth0_flutter'
 darwin_dir="auth0_flutter/darwin"
 files=($(find "$darwin_dir" -type f -print))
-repo_path=$(git rev-parse --show-toplevel)
 platforms=('ios' 'macos')
 
 for platform in "${platforms[@]}"; do
