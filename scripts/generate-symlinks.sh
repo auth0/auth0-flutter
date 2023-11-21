@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # This script generates symlinks for every file inside the 'darwin' directory
 # of the auth0_flutter package, to the 'ios' and 'macos' directories.
