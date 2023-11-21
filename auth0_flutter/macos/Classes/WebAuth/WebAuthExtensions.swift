@@ -1,1 +1,1 @@
-/Users/rita/Desktop/auth0-flutter/auth0_flutter/darwin/Classes/WebAuth/WebAuthExtensions.swift
+auth0_flutter/darwin/Classes/WebAuth/WebAuthExtensions.swift

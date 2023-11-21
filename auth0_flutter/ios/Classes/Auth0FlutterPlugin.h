@@ -1,1 +1,1 @@
-/Users/rita/Desktop/auth0-flutter/auth0_flutter/darwin/Classes/Auth0FlutterPlugin.h
+auth0_flutter/darwin/Classes/Auth0FlutterPlugin.h
