@@ -21,12 +21,38 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		331C80D8294CF71000263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C80D7294CF71000263BE5 /* RunnerTests.swift */; };
 		335BBD1B22A9A15E00E9071D /* GeneratedPluginRegistrant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 335BBD1A22A9A15E00E9071D /* GeneratedPluginRegistrant.swift */; };
 		33CC10F12044A3C60003C045 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC10F02044A3C60003C045 /* AppDelegate.swift */; };
 		33CC10F32044A3C60003C045 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33CC10F22044A3C60003C045 /* Assets.xcassets */; };
 		33CC10F62044A3C60003C045 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 33CC10F42044A3C60003C045 /* MainMenu.xib */; };
 		33CC11132044BFA00003C045 /* MainFlutterWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC11122044BFA00003C045 /* MainFlutterWindow.swift */; };
+		5C1399232B0EB5F3006DCE54 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399052B0EB5F3006DCE54 /* Utilities.swift */; };
+		5C1399242B0EB5F3006DCE54 /* ExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399062B0EB5F3006DCE54 /* ExtensionsTests.swift */; };
+		5C1399252B0EB5F3006DCE54 /* ModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399072B0EB5F3006DCE54 /* ModelsTests.swift */; };
+		5C1399262B0EB5F3006DCE54 /* WebAuthSpies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399092B0EB5F3006DCE54 /* WebAuthSpies.swift */; };
+		5C1399272B0EB5F3006DCE54 /* WebAuthExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C13990A2B0EB5F3006DCE54 /* WebAuthExtensionsTests.swift */; };
+		5C1399282B0EB5F3006DCE54 /* WebAuthLogoutMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C13990B2B0EB5F3006DCE54 /* WebAuthLogoutMethodHandlerTests.swift */; };
+		5C1399292B0EB5F3006DCE54 /* WebAuthLoginMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C13990C2B0EB5F3006DCE54 /* WebAuthLoginMethodHandlerTests.swift */; };
+		5C13992A2B0EB5F3006DCE54 /* WebAuthHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C13990D2B0EB5F3006DCE54 /* WebAuthHandlerTests.swift */; };
+		5C13992B2B0EB5F3006DCE54 /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C13990E2B0EB5F3006DCE54 /* Mocks.swift */; };
+		5C13992C2B0EB5F3006DCE54 /* AuthAPIExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399102B0EB5F3006DCE54 /* AuthAPIExtensionsTests.swift */; };
+		5C13992D2B0EB5F3006DCE54 /* AuthAPIMultifactorChallengeMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399112B0EB5F3006DCE54 /* AuthAPIMultifactorChallengeMethodHandlerTests.swift */; };
+		5C13992E2B0EB5F3006DCE54 /* AuthAPISignupMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399122B0EB5F3006DCE54 /* AuthAPISignupMethodHandlerTests.swift */; };
+		5C13992F2B0EB5F3006DCE54 /* AuthAPIRenewMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399132B0EB5F3006DCE54 /* AuthAPIRenewMethodHandlerTests.swift */; };
+		5C1399302B0EB5F3006DCE54 /* AuthAPILoginWithOTPMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399142B0EB5F3006DCE54 /* AuthAPILoginWithOTPMethodHandlerTests.swift */; };
+		5C1399312B0EB5F3006DCE54 /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399152B0EB5F3006DCE54 /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift */; };
+		5C1399322B0EB5F3006DCE54 /* AuthAPIHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399162B0EB5F3006DCE54 /* AuthAPIHandlerTests.swift */; };
+		5C1399332B0EB5F3006DCE54 /* AuthAPIResetPasswordMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399172B0EB5F3006DCE54 /* AuthAPIResetPasswordMethodHandlerTests.swift */; };
+		5C1399342B0EB5F3006DCE54 /* AuthAPISpies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399182B0EB5F3006DCE54 /* AuthAPISpies.swift */; };
+		5C1399352B0EB5F3006DCE54 /* AuthAPIUserInfoMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399192B0EB5F3006DCE54 /* AuthAPIUserInfoMethodHandlerTests.swift */; };
+		5C1399362B0EB5F3006DCE54 /* SwiftAuth0FlutterPluginTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C13991A2B0EB5F3006DCE54 /* SwiftAuth0FlutterPluginTests.swift */; };
+		5C1399372B0EB5F3006DCE54 /* CredentialsManagerHasValidMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C13991C2B0EB5F3006DCE54 /* CredentialsManagerHasValidMethodHandlerTests.swift */; };
+		5C1399382B0EB5F3006DCE54 /* CredentialsManagerSaveMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C13991D2B0EB5F3006DCE54 /* CredentialsManagerSaveMethodHandlerTests.swift */; };
+		5C1399392B0EB5F3006DCE54 /* CredentialsManagerSpies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C13991E2B0EB5F3006DCE54 /* CredentialsManagerSpies.swift */; };
+		5C13993A2B0EB5F3006DCE54 /* CredentialsManagerExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C13991F2B0EB5F3006DCE54 /* CredentialsManagerExtensionsTests.swift */; };
+		5C13993B2B0EB5F3006DCE54 /* CredentialsManagerClearMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399202B0EB5F3006DCE54 /* CredentialsManagerClearMethodHandlerTests.swift */; };
+		5C13993C2B0EB5F3006DCE54 /* CredentialsManagerGetMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399212B0EB5F3006DCE54 /* CredentialsManagerGetMethodHandlerTests.swift */; };
+		5C13993D2B0EB5F3006DCE54 /* CredentialsManagerHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399222B0EB5F3006DCE54 /* CredentialsManagerHandlerTests.swift */; };
 		6506977C62A28B07631343FE /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B084DBD70F1B79CBD5BF972F /* Pods_Runner.framework */; };
 		7C00D08230EDB6656A41CC08 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 92B870F77BCCB4D11EBDCAD0 /* Pods_RunnerTests.framework */; };
 /* End PBXBuildFile section */
@@ -65,7 +91,6 @@
 		0E70B419A5115F7C13D57417 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		2E8C69542A7F52E6E7C639D0 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		331C80D5294CF71000263BE5 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		331C80D7294CF71000263BE5 /* RunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerTests.swift; sourceTree = "<group>"; };
 		333000ED22D3DE5D00554162 /* Warnings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Warnings.xcconfig; sourceTree = "<group>"; };
 		335BBD1A22A9A15E00E9071D /* GeneratedPluginRegistrant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneratedPluginRegistrant.swift; sourceTree = "<group>"; };
 		33CC10ED2044A3C60003C045 /* example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = example.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -81,6 +106,33 @@
 		33E51914231749380026EE4D /* Release.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Release.entitlements; sourceTree = "<group>"; };
 		33E5194F232828860026EE4D /* AppInfo.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = AppInfo.xcconfig; sourceTree = "<group>"; };
 		5C1399032B0D3526006DCE54 /* RunnerDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RunnerDebug.entitlements; sourceTree = "<group>"; };
+		5C1399052B0EB5F3006DCE54 /* Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
+		5C1399062B0EB5F3006DCE54 /* ExtensionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtensionsTests.swift; sourceTree = "<group>"; };
+		5C1399072B0EB5F3006DCE54 /* ModelsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelsTests.swift; sourceTree = "<group>"; };
+		5C1399092B0EB5F3006DCE54 /* WebAuthSpies.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebAuthSpies.swift; sourceTree = "<group>"; };
+		5C13990A2B0EB5F3006DCE54 /* WebAuthExtensionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebAuthExtensionsTests.swift; sourceTree = "<group>"; };
+		5C13990B2B0EB5F3006DCE54 /* WebAuthLogoutMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebAuthLogoutMethodHandlerTests.swift; sourceTree = "<group>"; };
+		5C13990C2B0EB5F3006DCE54 /* WebAuthLoginMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebAuthLoginMethodHandlerTests.swift; sourceTree = "<group>"; };
+		5C13990D2B0EB5F3006DCE54 /* WebAuthHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebAuthHandlerTests.swift; sourceTree = "<group>"; };
+		5C13990E2B0EB5F3006DCE54 /* Mocks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
+		5C1399102B0EB5F3006DCE54 /* AuthAPIExtensionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIExtensionsTests.swift; sourceTree = "<group>"; };
+		5C1399112B0EB5F3006DCE54 /* AuthAPIMultifactorChallengeMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIMultifactorChallengeMethodHandlerTests.swift; sourceTree = "<group>"; };
+		5C1399122B0EB5F3006DCE54 /* AuthAPISignupMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPISignupMethodHandlerTests.swift; sourceTree = "<group>"; };
+		5C1399132B0EB5F3006DCE54 /* AuthAPIRenewMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIRenewMethodHandlerTests.swift; sourceTree = "<group>"; };
+		5C1399142B0EB5F3006DCE54 /* AuthAPILoginWithOTPMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPILoginWithOTPMethodHandlerTests.swift; sourceTree = "<group>"; };
+		5C1399152B0EB5F3006DCE54 /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPILoginUsernameOrEmailMethodHandlerTests.swift; sourceTree = "<group>"; };
+		5C1399162B0EB5F3006DCE54 /* AuthAPIHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIHandlerTests.swift; sourceTree = "<group>"; };
+		5C1399172B0EB5F3006DCE54 /* AuthAPIResetPasswordMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIResetPasswordMethodHandlerTests.swift; sourceTree = "<group>"; };
+		5C1399182B0EB5F3006DCE54 /* AuthAPISpies.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPISpies.swift; sourceTree = "<group>"; };
+		5C1399192B0EB5F3006DCE54 /* AuthAPIUserInfoMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIUserInfoMethodHandlerTests.swift; sourceTree = "<group>"; };
+		5C13991A2B0EB5F3006DCE54 /* SwiftAuth0FlutterPluginTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftAuth0FlutterPluginTests.swift; sourceTree = "<group>"; };
+		5C13991C2B0EB5F3006DCE54 /* CredentialsManagerHasValidMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CredentialsManagerHasValidMethodHandlerTests.swift; sourceTree = "<group>"; };
+		5C13991D2B0EB5F3006DCE54 /* CredentialsManagerSaveMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CredentialsManagerSaveMethodHandlerTests.swift; sourceTree = "<group>"; };
+		5C13991E2B0EB5F3006DCE54 /* CredentialsManagerSpies.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CredentialsManagerSpies.swift; sourceTree = "<group>"; };
+		5C13991F2B0EB5F3006DCE54 /* CredentialsManagerExtensionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CredentialsManagerExtensionsTests.swift; sourceTree = "<group>"; };
+		5C1399202B0EB5F3006DCE54 /* CredentialsManagerClearMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CredentialsManagerClearMethodHandlerTests.swift; sourceTree = "<group>"; };
+		5C1399212B0EB5F3006DCE54 /* CredentialsManagerGetMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CredentialsManagerGetMethodHandlerTests.swift; sourceTree = "<group>"; };
+		5C1399222B0EB5F3006DCE54 /* CredentialsManagerHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CredentialsManagerHandlerTests.swift; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
 		8DBF374EFD36050EC17A0A2D /* Pods-RunnerTests.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.profile.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.profile.xcconfig"; sourceTree = "<group>"; };
 		92B870F77BCCB4D11EBDCAD0 /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -124,14 +176,6 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		331C80D6294CF71000263BE5 /* RunnerTests */ = {
-			isa = PBXGroup;
-			children = (
-				331C80D7294CF71000263BE5 /* RunnerTests.swift */,
-			);
-			path = RunnerTests;
-			sourceTree = "<group>";
-		};
 		33BA886A226E78AF003329D5 /* Configs */ = {
 			isa = PBXGroup;
 			children = (
@@ -148,7 +192,7 @@
 			children = (
 				33FAB671232836740065AC1E /* Runner */,
 				33CEB47122A05771004F2AC0 /* Flutter */,
-				331C80D6294CF71000263BE5 /* RunnerTests */,
+				5C1399042B0EB5F3006DCE54 /* Tests */,
 				33CC10EE2044A3C60003C045 /* Products */,
 				D73912EC22F37F3D000D13A0 /* Frameworks */,
 				1D5D4AA99FB925976AA6B2EB /* Pods */,
@@ -198,6 +242,65 @@
 				33BA886A226E78AF003329D5 /* Configs */,
 			);
 			path = Runner;
+			sourceTree = "<group>";
+		};
+		5C1399042B0EB5F3006DCE54 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				5C1399052B0EB5F3006DCE54 /* Utilities.swift */,
+				5C1399062B0EB5F3006DCE54 /* ExtensionsTests.swift */,
+				5C1399072B0EB5F3006DCE54 /* ModelsTests.swift */,
+				5C1399082B0EB5F3006DCE54 /* WebAuth */,
+				5C13990E2B0EB5F3006DCE54 /* Mocks.swift */,
+				5C13990F2B0EB5F3006DCE54 /* AuthAPI */,
+				5C13991A2B0EB5F3006DCE54 /* SwiftAuth0FlutterPluginTests.swift */,
+				5C13991B2B0EB5F3006DCE54 /* CredentialsManager */,
+			);
+			name = Tests;
+			path = ../ios/Tests;
+			sourceTree = "<group>";
+		};
+		5C1399082B0EB5F3006DCE54 /* WebAuth */ = {
+			isa = PBXGroup;
+			children = (
+				5C1399092B0EB5F3006DCE54 /* WebAuthSpies.swift */,
+				5C13990A2B0EB5F3006DCE54 /* WebAuthExtensionsTests.swift */,
+				5C13990B2B0EB5F3006DCE54 /* WebAuthLogoutMethodHandlerTests.swift */,
+				5C13990C2B0EB5F3006DCE54 /* WebAuthLoginMethodHandlerTests.swift */,
+				5C13990D2B0EB5F3006DCE54 /* WebAuthHandlerTests.swift */,
+			);
+			path = WebAuth;
+			sourceTree = "<group>";
+		};
+		5C13990F2B0EB5F3006DCE54 /* AuthAPI */ = {
+			isa = PBXGroup;
+			children = (
+				5C1399102B0EB5F3006DCE54 /* AuthAPIExtensionsTests.swift */,
+				5C1399112B0EB5F3006DCE54 /* AuthAPIMultifactorChallengeMethodHandlerTests.swift */,
+				5C1399122B0EB5F3006DCE54 /* AuthAPISignupMethodHandlerTests.swift */,
+				5C1399132B0EB5F3006DCE54 /* AuthAPIRenewMethodHandlerTests.swift */,
+				5C1399142B0EB5F3006DCE54 /* AuthAPILoginWithOTPMethodHandlerTests.swift */,
+				5C1399152B0EB5F3006DCE54 /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift */,
+				5C1399162B0EB5F3006DCE54 /* AuthAPIHandlerTests.swift */,
+				5C1399172B0EB5F3006DCE54 /* AuthAPIResetPasswordMethodHandlerTests.swift */,
+				5C1399182B0EB5F3006DCE54 /* AuthAPISpies.swift */,
+				5C1399192B0EB5F3006DCE54 /* AuthAPIUserInfoMethodHandlerTests.swift */,
+			);
+			path = AuthAPI;
+			sourceTree = "<group>";
+		};
+		5C13991B2B0EB5F3006DCE54 /* CredentialsManager */ = {
+			isa = PBXGroup;
+			children = (
+				5C13991C2B0EB5F3006DCE54 /* CredentialsManagerHasValidMethodHandlerTests.swift */,
+				5C13991D2B0EB5F3006DCE54 /* CredentialsManagerSaveMethodHandlerTests.swift */,
+				5C13991E2B0EB5F3006DCE54 /* CredentialsManagerSpies.swift */,
+				5C13991F2B0EB5F3006DCE54 /* CredentialsManagerExtensionsTests.swift */,
+				5C1399202B0EB5F3006DCE54 /* CredentialsManagerClearMethodHandlerTests.swift */,
+				5C1399212B0EB5F3006DCE54 /* CredentialsManagerGetMethodHandlerTests.swift */,
+				5C1399222B0EB5F3006DCE54 /* CredentialsManagerHandlerTests.swift */,
+			);
+			path = CredentialsManager;
 			sourceTree = "<group>";
 		};
 		D73912EC22F37F3D000D13A0 /* Frameworks */ = {
@@ -429,7 +532,33 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				331C80D8294CF71000263BE5 /* RunnerTests.swift in Sources */,
+				5C1399232B0EB5F3006DCE54 /* Utilities.swift in Sources */,
+				5C1399242B0EB5F3006DCE54 /* ExtensionsTests.swift in Sources */,
+				5C1399292B0EB5F3006DCE54 /* WebAuthLoginMethodHandlerTests.swift in Sources */,
+				5C13992E2B0EB5F3006DCE54 /* AuthAPISignupMethodHandlerTests.swift in Sources */,
+				5C1399342B0EB5F3006DCE54 /* AuthAPISpies.swift in Sources */,
+				5C1399392B0EB5F3006DCE54 /* CredentialsManagerSpies.swift in Sources */,
+				5C13992C2B0EB5F3006DCE54 /* AuthAPIExtensionsTests.swift in Sources */,
+				5C1399252B0EB5F3006DCE54 /* ModelsTests.swift in Sources */,
+				5C13992A2B0EB5F3006DCE54 /* WebAuthHandlerTests.swift in Sources */,
+				5C1399282B0EB5F3006DCE54 /* WebAuthLogoutMethodHandlerTests.swift in Sources */,
+				5C1399272B0EB5F3006DCE54 /* WebAuthExtensionsTests.swift in Sources */,
+				5C13992D2B0EB5F3006DCE54 /* AuthAPIMultifactorChallengeMethodHandlerTests.swift in Sources */,
+				5C1399262B0EB5F3006DCE54 /* WebAuthSpies.swift in Sources */,
+				5C1399322B0EB5F3006DCE54 /* AuthAPIHandlerTests.swift in Sources */,
+				5C1399362B0EB5F3006DCE54 /* SwiftAuth0FlutterPluginTests.swift in Sources */,
+				5C1399302B0EB5F3006DCE54 /* AuthAPILoginWithOTPMethodHandlerTests.swift in Sources */,
+				5C1399372B0EB5F3006DCE54 /* CredentialsManagerHasValidMethodHandlerTests.swift in Sources */,
+				5C13993B2B0EB5F3006DCE54 /* CredentialsManagerClearMethodHandlerTests.swift in Sources */,
+				5C13992F2B0EB5F3006DCE54 /* AuthAPIRenewMethodHandlerTests.swift in Sources */,
+				5C1399332B0EB5F3006DCE54 /* AuthAPIResetPasswordMethodHandlerTests.swift in Sources */,
+				5C13993A2B0EB5F3006DCE54 /* CredentialsManagerExtensionsTests.swift in Sources */,
+				5C1399312B0EB5F3006DCE54 /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift in Sources */,
+				5C1399382B0EB5F3006DCE54 /* CredentialsManagerSaveMethodHandlerTests.swift in Sources */,
+				5C13992B2B0EB5F3006DCE54 /* Mocks.swift in Sources */,
+				5C13993D2B0EB5F3006DCE54 /* CredentialsManagerHandlerTests.swift in Sources */,
+				5C1399352B0EB5F3006DCE54 /* AuthAPIUserInfoMethodHandlerTests.swift in Sources */,
+				5C13993C2B0EB5F3006DCE54 /* CredentialsManagerGetMethodHandlerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
