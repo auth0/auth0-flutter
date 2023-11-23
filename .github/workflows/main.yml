@@ -13,8 +13,7 @@ concurrency:
 
 env:
     flutter: '3.x'
-    xcode: '14.2'
-    ios-simulator: iPhone 14
+    ios-simulator: iPhone 15
     java: 11
 
 jobs:
@@ -136,7 +135,7 @@ jobs:
         strategy:
           matrix:
             xcode:
-              - '14.2'
+              - '15.0'
 
         env:
           platform: iOS
@@ -184,7 +183,7 @@ jobs:
         strategy:
           matrix:
             xcode:
-              - '14.2'
+              - '15.0'
 
         steps:
             - name: Checkout
@@ -222,7 +221,7 @@ jobs:
         strategy:
           matrix:
             xcode:
-              - '14.2'
+              - '15.0'
 
         env:
           platform: macOS
