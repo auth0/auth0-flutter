@@ -133,10 +133,6 @@ jobs:
         runs-on: macos-latest
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
-        env:
-            USER_EMAIL: ${{ secrets.USER_EMAIL }}
-            USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
-
         strategy:
           matrix:
             xcode:
@@ -147,7 +143,7 @@ jobs:
               uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Set up environment
-              uses: ./.github/actions/setup-ios
+              uses: ./.github/actions/setup-darwin
               with:
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
@@ -155,8 +151,10 @@ jobs:
                 auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
 
             - name: Run iOS unit tests
-              working-directory: auth0_flutter/example/ios
-              run: xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination '${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.ios-simulator) }}' -resultBundlePath unit-tests.xcresult -skip-testing:RunnerUITests
+              uses: ./.github/actions/unit-tests-darwin
+              with:
+                platform: iOS
+                destination: ${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.ios-simulator) }}
 
             - name: Convert coverage report
               working-directory: auth0_flutter/example/ios
@@ -167,13 +165,6 @@ jobs:
               with:
                 name: iOS coverage
                 path: auth0_flutter/example/ios/cobertura
-
-            - name: Upload xcresult bundles
-              uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
-              if: ${{ failure() }}
-              with:
-                name: xcresult bundles
-                path: 'auth0_flutter/example/ios/*.xcresult'
 
     test-ios-smoke:
         name: Run native iOS smoke tests using Xcode ${{ matrix.xcode }}
@@ -195,7 +186,7 @@ jobs:
               uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Set up environment
-              uses: ./.github/actions/setup-ios
+              uses: ./.github/actions/setup-darwin
               with:
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
@@ -213,8 +204,37 @@ jobs:
               uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
               if: ${{ failure() }}
               with:
-                name: 'iOS - xcresult bundles'
+                name: 'iOS xcresult bundles [smoke tests]'
                 path: 'auth0_flutter/example/ios/*.xcresult'
+
+    test-macos-unit:
+        name: Run native macOS unit tests using Xcode ${{ matrix.xcode }}
+        needs: authorize
+        runs-on: macos-latest
+        environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
+
+        strategy:
+          matrix:
+            xcode:
+              - '14.2'
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+
+            - name: Set up environment
+              uses: ./.github/actions/setup-darwin
+              with:
+                flutter: ${{ env.flutter }}
+                xcode: ${{ matrix.xcode }}
+                auth0-domain: ${{ vars.AUTH0_DOMAIN }}
+                auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
+
+            - name: Run macOS unit tests
+              uses: ./.github/actions/unit-tests-darwin
+              with:
+                platform: macOS
+                destination: platform=macOS,arch=x86_64
 
     test-android-unit:
         name: Run native Android unit tests

@@ -1,5 +1,5 @@
-name: Set up iOS environment
-description: Set up the environment for building and testing the library on iOS
+name: Set up iOS/macOS environment
+description: Set up the environment for building and testing the library on iOS/macOS
 
 inputs:
   flutter:
