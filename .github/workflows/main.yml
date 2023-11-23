@@ -240,6 +240,10 @@ jobs:
                 auth0-domain: ${{ vars.AUTH0_DOMAIN }}
                 auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
 
+            - name: Build macOS example app
+              working-directory: auth0_flutter/example
+              run: flutter build macos --debug
+
             - name: Run macOS unit tests
               uses: ./.github/actions/unit-tests-darwin
               with:
