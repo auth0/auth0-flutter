@@ -30,10 +30,10 @@ for file in "${files[@]}"; do
         mkdir -p "$target_dir"
 
         case "$file" in
-            # If it's a .gitignore file, copy it
-            (*'.gitignore') cp -v "$file" "$target_dir" ;;
+            # If it's a .gitignore or Podspec file, copy it
+            (*'.gitignore' | *'.podspec') cp -v "$file" "$target_dir" ;;
             # Else symlink it
-            (*) ln -sv "$repo_path/$file" "$target_file" ;;
+            (*) ln -sv "$file" "$target_file" ;;
         esac
     done
 done
