@@ -19,7 +19,7 @@ runs:
       run: echo "platform=$(echo ${{ inputs.platform }} | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
       shell: bash
 
-    - name: Run unit tests
+    - name: Run ${{ inputs.platform }} unit tests
       working-directory: auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}
       run: xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination '${{ inputs.destination }}' -resultBundlePath unit-tests.xcresult -skip-testing:RunnerUITests
       shell: bash

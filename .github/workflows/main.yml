@@ -138,6 +138,9 @@ jobs:
             xcode:
               - '14.2'
 
+        env:
+          platform: iOS
+
         steps:
             - name: Checkout
               uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
@@ -145,6 +148,7 @@ jobs:
             - name: Set up environment
               uses: ./.github/actions/setup-darwin
               with:
+                platform: ${{ env.platform }}
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
                 auth0-domain: ${{ vars.AUTH0_DOMAIN }}
@@ -153,7 +157,7 @@ jobs:
             - name: Run iOS unit tests
               uses: ./.github/actions/unit-tests-darwin
               with:
-                platform: iOS
+                platform: ${{ env.platform }}
                 destination: ${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.ios-simulator) }}
 
             - name: Convert coverage report
@@ -173,6 +177,7 @@ jobs:
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
         env:
+            platform: iOS
             USER_EMAIL: ${{ secrets.USER_EMAIL }}
             USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
 
@@ -188,6 +193,7 @@ jobs:
             - name: Set up environment
               uses: ./.github/actions/setup-darwin
               with:
+                platform: ${{ env.platform }}
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
                 auth0-domain: ${{ vars.AUTH0_DOMAIN }}
@@ -218,6 +224,9 @@ jobs:
             xcode:
               - '14.2'
 
+        env:
+          platform: macOS
+
         steps:
             - name: Checkout
               uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
@@ -225,6 +234,7 @@ jobs:
             - name: Set up environment
               uses: ./.github/actions/setup-darwin
               with:
+                platform: ${{ env.platform }}
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
                 auth0-domain: ${{ vars.AUTH0_DOMAIN }}
@@ -233,7 +243,7 @@ jobs:
             - name: Run macOS unit tests
               uses: ./.github/actions/unit-tests-darwin
               with:
-                platform: macOS
+                platform: ${{ env.platform }}
                 destination: platform=macOS,arch=x86_64
 
     test-android-unit:
