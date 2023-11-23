@@ -92,8 +92,8 @@ jobs:
             - name: Test auth0_flutter package
               working-directory: auth0_flutter
               run: |
-                  flutter test --tags browser --platform chrome
-                  flutter test --coverage --exclude-tags browser
+                flutter test --tags browser --platform chrome
+                flutter test --coverage --exclude-tags browser
 
             - name: Upload coverage report
               uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
