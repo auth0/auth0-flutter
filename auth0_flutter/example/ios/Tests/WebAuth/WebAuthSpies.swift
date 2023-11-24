@@ -137,6 +137,10 @@ class SpyWebAuth: WebAuth {
         calledLogout = true
         callback(logoutResult)
     }
+
+    func onClose(_ callback: (() -> Void)?) -> Self {
+        return self
+    }
 }
 
 class MockWebAuthUserAgent: WebAuthUserAgent {

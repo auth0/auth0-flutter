@@ -19,11 +19,11 @@ Pod::Spec.new do |s|
   s.osx.deployment_target = '11.0'
   s.osx.dependency 'FlutterMacOS'
 
-  s.dependency 'Auth0', '2.3.2'
-  s.dependency 'JWTDecode', '3.0.1'
-  s.dependency 'SimpleKeychain', '1.0.1'
+  s.dependency 'Auth0', '2.5.0'
+  s.dependency 'JWTDecode', '3.1.0'
+  s.dependency 'SimpleKeychain', '1.1.0'
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
-  s.swift_version       = ['5.3', '5.4', '5.5', '5.6', '5.7']
+  s.swift_version       = ['5.7', '5.8']
 end
