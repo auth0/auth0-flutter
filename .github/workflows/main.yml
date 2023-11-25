@@ -209,7 +209,7 @@ jobs:
               uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
               if: ${{ failure() }}
               with:
-                name: 'iOS xcresult bundles [smoke tests]'
+                name: 'iOS xcresult bundles (smoke tests)'
                 path: 'auth0_flutter/example/ios/*.xcresult'
 
     test-macos-unit:
