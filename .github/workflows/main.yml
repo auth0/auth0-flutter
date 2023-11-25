@@ -172,7 +172,7 @@ jobs:
     test-ios-smoke:
         name: Run native iOS smoke tests using Xcode ${{ matrix.xcode }}
         needs: authorize
-        runs-on: macos-13
+        runs-on: macos-latest
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
         env:
@@ -183,7 +183,7 @@ jobs:
         strategy:
           matrix:
             xcode:
-              - '15.0.1'
+              - '14.2'
 
         steps:
             - name: Checkout
@@ -203,7 +203,7 @@ jobs:
               working-directory: auth0_flutter/example/ios
               run: |
                 defaults write com.apple.iphonesimulator ConnectHardwareKeyboard 0
-                xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination '${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.ios-simulator) }}' -resultBundlePath smoke-tests.xcresult -only-testing:RunnerUITests
+                xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 14' -resultBundlePath smoke-tests.xcresult -only-testing:RunnerUITests
 
             - name: Upload xcresult bundles
               uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
