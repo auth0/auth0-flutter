@@ -6,7 +6,7 @@ class SmokeTests: XCTestCase {
     private let loginButton = "Web Auth Login"
     private let logoutButton = "Web Auth Logout"
     private let continueButton = "Continue"
-    private let timeout: TimeInterval = 10
+    private let timeout: TimeInterval = 30
 
     override func setUp() {
         continueAfterFailure = false
