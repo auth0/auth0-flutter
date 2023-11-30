@@ -1,7 +1,11 @@
-name: Set up iOS environment
-description: Set up the environment for building and testing the library on iOS
+name: Set up iOS/macOS environment
+description: Set up the environment for building and testing the library on iOS/macOS
 
 inputs:
+  platform:
+    description: Either iOS or macOS
+    required: true
+
   flutter:
     description: The version of Flutter to use
     required: true
@@ -22,6 +26,11 @@ runs:
   using: composite
 
   steps:
+    - name: Lowercase platform value
+      id: lowercase-platform
+      run: echo "platform=$(echo ${{ inputs.platform }} | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+      shell: bash
+
     - name: Install Flutter
       uses: subosito/flutter-action@48cafc24713cca54bbe03cdc3a423187d413aafa
       with:
@@ -35,7 +44,7 @@ runs:
       shell: bash
 
     - name: Set Ruby version
-      working-directory: auth0_flutter/example/ios
+      working-directory: auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}
       run: ruby -e 'puts RUBY_VERSION' | tee .ruby-version
       shell: bash
 
@@ -44,7 +53,7 @@ runs:
       with:
           bundler-cache: true
           cache-version: 1
-          working-directory: auth0_flutter/example/ios
+          working-directory: auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}
 
     - name: Setup Xcode
       run: sudo xcode-select --switch /Applications/Xcode_${{ inputs.xcode }}.app/Contents/Developer
@@ -58,11 +67,11 @@ runs:
       name: Restore Pods cache
       uses: actions/cache@f5ce41475b483ad7581884324a6eca9f48f8dcc7
       with:
-        path: auth0_flutter/example/ios/Pods
+        path: auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}/Pods
         key: pods-${{ hashFiles('Podfile.lock') }}-${{ hashFiles('.xcode-version') }}-v1
 
     - name: Install pods
-      working-directory: auth0_flutter/example/ios
+      working-directory: auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}
       run: pod install
       shell: bash
 
