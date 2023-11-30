@@ -25,7 +25,7 @@ jobs:
           run: |
             scripts/generate-symlinks.sh
 
-            if git diff HEAD --quiet --diff-filter=ACDRT; then
+            if git diff HEAD --quiet --diff-filter=ACDMRT; then
                 echo $'\nNo changes detected in the iOS/macOS files that require updating the symlinks.'
                 echo 'All good.'
             else
