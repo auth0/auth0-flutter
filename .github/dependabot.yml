@@ -1,6 +1,30 @@
 version: 2
 
 updates:
+  - package-ecosystem: pub
+    directory: auth0_flutter
+    schedule:
+      interval: daily
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+
+  - package-ecosystem: pub
+    directory: auth0_flutter/example
+    schedule:
+      interval: daily
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+
+  - package-ecosystem: pub
+    directory: auth0_flutter_platform_interface
+    schedule:
+      interval: daily
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+
   - package-ecosystem: github-actions
     directory: /
     schedule:
