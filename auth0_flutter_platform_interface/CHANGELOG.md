@@ -1,5 +1,14 @@
 # Change Log
 
+## [afpi-v1.4.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.4.0) (2023-12-06)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.3.1...afpi-v1.4.0)
+
+**Added**
+- Add support for passing parameters onLoad [\#363](https://github.com/auth0/auth0-flutter/pull/363) ([frederikprijck](https://github.com/frederikprijck))
+
+**Changed**
+- Remove and gitignore `pubspec.lock` files [\#340](https://github.com/auth0/auth0-flutter/pull/340) ([Widcket](https://github.com/Widcket))
+
 ## [afpi-v1.3.1](https://github.com/auth0/auth0-flutter/tree/afpi-v1.3.1) (2023-11-08)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.3.0...afpi-v1.3.1)
 
