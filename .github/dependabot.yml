@@ -9,7 +9,8 @@ updates:
       - dependency-name: '*'
         update-types: ['version-update:semver-major']
     labels:
-      - 'ignore title check'
+      - ignore title check
+      - dependencies
 
   - package-ecosystem: pub
     directory: auth0_flutter/example
@@ -19,7 +20,8 @@ updates:
       - dependency-name: '*'
         update-types: ['version-update:semver-major']
     labels:
-      - 'ignore title check'
+      - ignore title check
+      - dependencies
 
   - package-ecosystem: pub
     directory: auth0_flutter_platform_interface
@@ -29,11 +31,13 @@ updates:
       - dependency-name: '*'
         update-types: ['version-update:semver-major']
     labels:
-      - 'ignore title check'
+      - ignore title check
+      - dependencies
 
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: daily
     labels:
-      - 'ignore title check'
+      - ignore title check
+      - dependencies
