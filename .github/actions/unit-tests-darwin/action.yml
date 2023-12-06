@@ -29,4 +29,4 @@ runs:
       if: ${{ failure() }}
       with:
         name: '${{ inputs.platform }} xcresult bundles (unit tests)'
-        path: 'auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}/*.xcresult'
+        path: 'auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}/unit-tests.xcresult'
