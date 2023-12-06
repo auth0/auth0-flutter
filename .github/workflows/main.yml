@@ -173,7 +173,7 @@ jobs:
     test-ios-smoke:
         name: Run native iOS smoke tests using Xcode ${{ matrix.xcode }}
         needs: authorize
-        runs-on: macos-latest
+        runs-on: macos-latest-large
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
         env:
