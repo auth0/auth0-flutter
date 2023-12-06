@@ -53,14 +53,14 @@ class _ExampleAppState extends State<ExampleApp> {
 
       final result = await webAuth.login();
 
+      setState(() {
+        _isLoggedIn = true;
+      });
+
       output = result.idToken;
     } catch (e) {
       output = e.toString();
     }
-
-    setState(() {
-      _isLoggedIn = true;
-    });
 
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
