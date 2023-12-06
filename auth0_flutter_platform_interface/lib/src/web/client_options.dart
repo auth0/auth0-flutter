@@ -105,6 +105,9 @@ class ClientOptions {
   /// Note: The openid scope is always applied regardless of this setting.
   final Set<String>? scopes;
 
+  /// The default additional parameters to be sent to Auth0.
+  final Map<String, String> parameters;
+
   ClientOptions(
       {required this.account,
       this.authorizeTimeoutInSeconds,
@@ -119,5 +122,6 @@ class ClientOptions {
       this.useRefreshTokensFallback,
       this.idTokenValidationConfig,
       this.audience,
-      this.scopes});
+      this.scopes,
+      this.parameters = const {}});
 }
