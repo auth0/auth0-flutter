@@ -21,7 +21,12 @@ extension ClientOptionsExtension on ClientOptions {
           useFormData: useFormData,
           useRefreshTokens: useRefreshTokens,
           useRefreshTokensFallback: useRefreshTokensFallback,
-          authorizationParams: JsInteropUtils.stripNulls(AuthorizationParams(
-              audience: audience,
-              scope: scopes?.isNotEmpty == true ? scopes?.join(' ') : null)));
+          authorizationParams: JsInteropUtils.stripNulls(
+              JsInteropUtils.addCustomParams(
+                  AuthorizationParams(
+                      audience: audience,
+                      scope: scopes?.isNotEmpty == true
+                          ? scopes?.join(' ')
+                          : null),
+                  parameters)));
 }

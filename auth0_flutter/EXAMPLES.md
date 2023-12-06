@@ -180,6 +180,15 @@ final credentials = await auth0
 <details>
   <summary>Web</summary>
 
+Custom parameters can be configured globally.
+
+```dart
+await auth0Web.onLoad(
+    parameters: {'connection': 'github'});
+```
+
+Custom parameters can be configured when calling `loginWithRedirect`. Any globally configured parameter (passed to `onLoad()`) can be overriden when passing the same custom parameter to `loginWithRedirect`.
+
 ```dart
 await auth0Web.loginWithRedirect(
     redirectUrl: 'http://localhost:3000',
