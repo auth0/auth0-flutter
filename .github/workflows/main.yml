@@ -1,4 +1,5 @@
 name: CI
+
 on:
     pull_request:
       types:
@@ -172,7 +173,7 @@ jobs:
     test-ios-smoke:
         name: Run native iOS smoke tests using Xcode ${{ matrix.xcode }}
         needs: authorize
-        runs-on: macos-latest
+        runs-on: macos-latest-large
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
         env:
@@ -199,18 +200,10 @@ jobs:
                 auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
 
             - name: Run iOS smoke tests
-              if: ${{ github.event.pull_request.head.repo.fork == false }}
-              working-directory: auth0_flutter/example/ios
-              run: |
-                defaults write com.apple.iphonesimulator ConnectHardwareKeyboard 0
-                xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 14' -resultBundlePath smoke-tests.xcresult -only-testing:RunnerUITests
-
-            - name: Upload xcresult bundles
-              uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
-              if: ${{ failure() }}
+              uses: ./.github/actions/smoke-tests-darwin
               with:
-                name: 'iOS xcresult bundles (smoke tests)'
-                path: 'auth0_flutter/example/ios/*.xcresult'
+                platform: ${{ env.platform }}
+                destination: 'platform=iOS Simulator,name=iPhone 14'
 
     test-macos-unit:
         name: Run native macOS unit tests using Xcode ${{ matrix.xcode }}
@@ -245,6 +238,41 @@ jobs:
 
             - name: Run macOS unit tests
               uses: ./.github/actions/unit-tests-darwin
+              with:
+                platform: ${{ env.platform }}
+                destination: platform=macOS,arch=x86_64
+
+    test-macos-smoke:
+        name: Run native macOS smoke tests using Xcode ${{ matrix.xcode }}
+        needs: authorize
+        runs-on: macos-13
+        environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
+
+        env:
+            platform: macOS
+            USER_EMAIL: ${{ secrets.USER_EMAIL }}
+            USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
+
+        strategy:
+          matrix:
+            xcode:
+              - '15.0.1'
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+
+            - name: Set up environment
+              uses: ./.github/actions/setup-darwin
+              with:
+                platform: ${{ env.platform }}
+                flutter: ${{ env.flutter }}
+                xcode: ${{ matrix.xcode }}
+                auth0-domain: ${{ vars.AUTH0_DOMAIN }}
+                auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
+
+            - name: Run macOS smoke tests
+              uses: ./.github/actions/smoke-tests-darwin
               with:
                 platform: ${{ env.platform }}
                 destination: platform=macOS,arch=x86_64
@@ -408,22 +436,26 @@ jobs:
             - name: Checkout
               uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
-            - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a
+            - name: Download coverage report for auth0_flutter
+              uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a
               with:
                 name: auth0_flutter coverage
                 path: coverage/auth0_flutter
 
-            - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a
+            - name: Download coverage report for auth0_flutter_platform_interface
+              uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a
               with:
                 name: auth0_flutter_platform_interface coverage
                 path: coverage/auth0_flutter_platform_interface
 
-            - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a
+            - name: Download coverage report for iOS
+              uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a
               with:
                 name: iOS coverage
                 path: coverage/ios
 
-            - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a
+            - name: Download coverage report for Android
+              uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a
               with:
                 name: Android coverage
                 path: coverage/android

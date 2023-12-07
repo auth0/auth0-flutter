@@ -31,8 +31,14 @@ target 'Runner' do
   use_modular_headers!
 
   flutter_install_all_macos_pods File.dirname(File.realpath(__FILE__))
+
   target 'RunnerTests' do
     inherit! :search_paths
+  end
+
+  target 'RunnerUITests' do
+    inherit! :search_paths
+    flutter_install_all_macos_pods File.dirname(File.realpath(__FILE__))
   end
 end
 
