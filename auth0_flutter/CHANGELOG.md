@@ -1,5 +1,12 @@
 # Change Log
 
+## [af-v1.4.1](https://github.com/auth0/auth0-flutter/tree/af-v1.4.1) (2023-12-07)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.4.0...af-v1.4.1)
+
+**Fixed**
+- af: Install Kover from the library's Gradle config [\#372](https://github.com/auth0/auth0-flutter/pull/372) ([Widcket](https://github.com/Widcket))
+- Update `auth0_flutter_platform_interface` to 1.4.0 [\#370](https://github.com/auth0/auth0-flutter/pull/370) ([Widcket](https://github.com/Widcket))
+
 ## [af-v1.4.0](https://github.com/auth0/auth0-flutter/tree/af-v1.4.0) (2023-12-06)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.3.1...af-v1.4.0)
 
