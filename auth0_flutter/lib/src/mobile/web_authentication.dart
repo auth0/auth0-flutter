@@ -6,7 +6,7 @@ import '../../auth0_flutter.dart';
 ///
 /// Authentication using Universal Login works by redirecting your user to a
 /// login page hosted on Auth0's servers. To achieve this on a native device,
-/// this class uses the [Auth0.Android](https://github.com/auth0/Auth0.Android) and [Auth0.Swift](https://github.com/auth0/Auth0.swift) SDKs on Android and iOS respectively to
+/// this class uses the [Auth0.Android](https://github.com/auth0/Auth0.Android) and [Auth0.Swift](https://github.com/auth0/Auth0.swift) SDKs on Android and iOS/macOS respectively to
 /// perform interactions with Universal Login.
 ///
 /// It is not intended for you to instantiate this class yourself, as an
@@ -34,7 +34,7 @@ class WebAuthentication {
   ///
   /// If [redirectUrl] is not specified, a default URL is used that incorporates
   ///  the `domain` value specified to [Auth0.new], and scheme on Android, or
-  /// the bundle identifier in iOS. [redirectUrl] must appear in your
+  /// the bundle identifier in iOS/macOS. [redirectUrl] must appear in your
   /// **Allowed Callback URLs** list for the Auth0 app.
   /// [Read more about redirecting users](https://auth0.com/docs/authenticate/login/redirect-users-after-login).
   ///
@@ -44,7 +44,7 @@ class WebAuthentication {
   ///
   /// Additional notes:
   ///
-  /// * (iOS only): [useEphemeralSession] controls whether shared persistent
+  /// * (iOS/macOS only): [useEphemeralSession] controls whether shared persistent
   /// storage is used for cookies. [Read more on the effects this setting has](https://github.com/auth0/auth0-flutter/blob/main/auth0_flutter/FAQ.md#2-how-can-i-disable-the-ios-login-alert-box).
   /// * [audience] relates to the API Identifier you want to reference in your
   /// access tokens. See [API settings](https://auth0.com/docs/get-started/apis/api-settings)
@@ -103,7 +103,7 @@ class WebAuthentication {
   ///
   /// If [returnTo] is not specified, a default URL is used that incorporates
   /// the `domain` value specified to [Auth0.new], and the custom scheme on
-  /// Android, or the bundle identifier in iOS. [returnTo] must appear in your
+  /// Android, or the bundle identifier on iOS/macOS. [returnTo] must appear in your
   /// **Allowed Logout URLs** list for the Auth0 app.
   /// [Read more about redirecting users after logout](https://auth0.com/docs/authenticate/login/logout#redirect-users-after-logout).
   Future<void> logout({final String? returnTo}) async {
