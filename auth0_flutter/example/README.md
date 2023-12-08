@@ -1,33 +1,35 @@
 # Auth0 Flutter SDK: Example
 
-Flutter app for Android, iOS, and the web that demonstrates how to use the Auth0 Flutter SDK.
+Flutter app for Android, iOS, macOS, and the web that demonstrates how to use the Auth0 Flutter SDK.
 
 ## Configuration
 
 ### 1. Configure Auth0 Application
 
-#### 📱 Mobile
+#### 📱 Mobile/Desktop
 
 Go to the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/) and configure the following URLs under the **Application URIs** section of the **Settings** page, for both **Allowed Callback URLs** and **Allowed Logout URLs**:
 
 - Android: `SCHEME://YOUR_DOMAIN/android/YOUR_PACKAGE_NAME/callback`
 - iOS: `YOUR_BUNDLE_ID://YOUR_DOMAIN/ios/YOUR_BUNDLE_ID/callback`
+- macOS: `YOUR_BUNDLE_ID://YOUR_DOMAIN/macos/YOUR_BUNDLE_ID/callback`
 
 If you are using a [Custom Domain](https://auth0.com/docs/customize/custom-domains), replace `YOUR_AUTH0_DOMAIN` with the value of your Custom Domain instead of the value from the settings page.
 
 <details>
   <summary>Example</summary>
 
-If your Auth0 domain was `company.us.auth0.com` and your package name (Android) or bundle ID (iOS) was `com.company.myapp`, then these values would be:
+If your Auth0 domain was `company.us.auth0.com` and your package name (Android) or bundle ID (iOS/macOS) was `com.company.myapp`, then these values would be:
 
 - Android: `https://company.us.auth0.com/android/com.company.myapp/callback`
 - iOS: `com.company.myapp://company.us.auth0.com/ios/com.company.myapp/callback`
+- macOS: `com.company.myapp://company.us.auth0.com/macos/com.company.myapp/callback`
 
 </details>
 
 Take note of the **client ID** and **domain** values under the **Basic Information** section. You'll need these values in the next step.
 
-#### 🖥️ Web
+#### 🌐 Web
 
 Go to the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/) and configure the following URLs under the **Application URIs** section of the **Settings** page:
 
@@ -37,18 +39,18 @@ Go to the settings page of your [Auth0 application](https://manage.auth0.com/#/a
 
 Take note of the **client ID** and **domain** values under the **Basic Information** section. You'll need these values in the next step.
 
-### 2. Configure Flutter app
+### 2. Configure the Flutter app
 
 Rename the `.env.example` file to `.env`. Then, open it and fill in the values:
 
 - `AUTH0_DOMAIN`: your Auth0 domain, for example `company.us.auth0.com`
 - `AUTH0_CLIENT_ID`: the client ID of your Auth0 application
 
-### 3. Configure Android project
+### 3. Configure the Android project
 
 Copy the `android/app/src/main/res/values/strings.xml.example` file into a new file called `strings.xml` in the same folder. This new file is ignored by Git.
 
-Then, open the `strings.xml` file and replace `YOUR_AUTH0_DOMAIN` with your own value, for instance `company.us.auth0.com`. This value will be passed to the respective manifest placeholder.
+Then, open the `strings.xml` file and replace `YOUR_AUTH0_DOMAIN` with your own value –for instance, `company.us.auth0.com`. This value will be passed to the respective manifest placeholder.
 
 If you prefer to use a custom scheme, configure the `com_auth0_scheme` entry with the correct value.
 
@@ -56,13 +58,13 @@ If you prefer to use a custom scheme, configure the `com_auth0_scheme` entry wit
 
 Use the [Flutter CLI's](https://docs.flutter.dev/reference/flutter-cli) `run` command.
 
-#### 📱 Mobile
+#### 📱 Mobile/Desktop
 
 ```sh
 flutter run
 ```
 
-#### 🖥️ Web
+#### 🌐 Web
 
 ```sh
 flutter run -d chrome --web-port 3000
