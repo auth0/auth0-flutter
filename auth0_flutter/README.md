@@ -6,7 +6,7 @@
 ![Build Status](https://img.shields.io/github/actions/workflow/status/auth0/auth0-flutter/main.yml?style=flat)
 
 <div>
-📚 <a href="#documentation">Documentation</a> • 🚀 <a href="#getting-started">Getting started</a> • 💻 <a href="#api-reference">API reference</a> • 💬 <a href="#feedback">Feedback</a>
+📚 <a href="#documentation">Documentation</a> • 🚀 <a href="#getting-started">Getting started</a> • 🌐 <a href="#api-reference">API reference</a> • 💬 <a href="#feedback">Feedback</a>
 </div>
 
 ## Documentation
@@ -22,11 +22,11 @@
 
 ### Requirements
 
-| Flutter    | Android         | iOS               |
-| :--------- | :-------------- | :---------------- |
-| SDK 3.0+   | Android API 21+ | iOS 13+           |
-| Dart 2.17+ | Java 8+         | Swift 5.7+        |
-|            |                 | Xcode 14.x / 15.x |
+| Flutter    | Android         | iOS               | macOS             |
+| :--------- | :-------------- | :---------------- | :---------------- |
+| SDK 3.0+   | Android API 21+ | iOS 13+           | macOS 11+         |
+| Dart 2.17+ | Java 8+         | Swift 5.7+        | Swift 5.7+        |
+|            |                 | Xcode 14.x / 15.x | Xcode 14.x / 15.x |
 
 ### Installation
 
@@ -38,7 +38,7 @@ flutter pub add auth0_flutter
 
 ### Configure Auth0
 
-#### 📱 Mobile
+#### 📱 Mobile/Desktop
 
 Head to the [Auth0 Dashboard](https://manage.auth0.com/#/applications/) and create a new **Native** application.
 
@@ -52,7 +52,7 @@ Then, scroll down and select the **Show Advanced Settings** link. Under **Advanc
 - Ensure that **JsonWebToken Signature Algorithm** is set to `RS256`
 - Ensure that **OIDC Conformant** is enabled
 
-Finally, if you made any chages don't forget to scroll to the end and press the **Save Changes** button.
+Finally, if you made any changes don't forget to scroll to the end and press the **Save Changes** button.
 
 </details>
 
@@ -60,20 +60,22 @@ Next, configure the following URLs for your application under the **Application 
 
 - Android: `SCHEME://YOUR_DOMAIN/android/YOUR_PACKAGE_NAME/callback`
 - iOS: `YOUR_BUNDLE_ID://YOUR_DOMAIN/ios/YOUR_BUNDLE_ID/callback`
+- macOS: `YOUR_BUNDLE_ID://YOUR_DOMAIN/macos/YOUR_BUNDLE_ID/callback`
 
 <details>
   <summary>Example</summary>
 
-If your Auth0 domain was `company.us.auth0.com` and your package name (Android) or bundle ID (iOS) was `com.company.myapp`, then these values would be:
+If your Auth0 domain was `company.us.auth0.com` and your package name (Android) or bundle ID (iOS/macOS) was `com.company.myapp`, then these values would be:
 
 - Android: `https://company.us.auth0.com/android/com.company.myapp/callback`
 - iOS: `com.company.myapp://company.us.auth0.com/ios/com.company.myapp/callback`
+- macOS: `com.company.myapp://company.us.auth0.com/macos/com.company.myapp/callback`
 
 </details>
 
 Take note of the **client ID** and **domain** values under the **Basic Information** section. You'll need these values in the next step.
 
-#### 🖥️ Web
+#### 🌐 Web
 
 Head to the [Auth0 Dashboard](https://manage.auth0.com/#/applications/) and create a new **Single Page** application.
 
@@ -87,7 +89,7 @@ Then, scroll down and select the **Show Advanced Settings** link. Under **Advanc
 - Ensure that **JsonWebToken Signature Algorithm** is set to `RS256`
 - Ensure that **OIDC Conformant** is enabled
 
-If you made any chages don't forget to scroll to the end and press the **Save Changes** button.
+If you made any changes don't forget to scroll to the end and press the **Save Changes** button.
 
 Finally, head over to the **Credentials** tab and ensure that **Authentication Methods** is set to `None`.
 
@@ -107,7 +109,7 @@ Take note of the **client ID** and **domain** values under the **Basic Informati
 
 ### Configure the SDK
 
-#### 📱 Mobile
+#### 📱 Mobile/Desktop
 
 Start by importing `auth0_flutter/auth0_flutter.dart`.
 
@@ -186,12 +188,12 @@ Re-declare the activity manually using `tools:node="remove"` in the `android/src
 
 > 💡 If your Android app is using [product flavors](https://developer.android.com/studio/build/build-variants#product-flavors), you might need to specify different manifest placeholders for each flavor.
 
-##### iOS: Configure custom URL scheme
+##### iOS/macOS: Configure custom URL scheme
 
-Open the `ios/Runner/Info.plist` file and add the following snippet inside the top-level `<dict>` tag. This registers your iOS bundle identifier as a custom URL scheme, so the callback and logout URLs can reach your app.
+There is an `Info.plist` file in the `ios/Runner` (or `macos/Runner`, for macOS) directory of your app. Open it and add the following snippet inside the top-level `<dict>` tag. This registers your iOS/macOS bundle identifier as a custom URL scheme, so the callback and logout URLs can reach your app.
 
 ```xml
-<!-- ios/Runner/Info.plist -->
+<!-- Info.plist -->
 
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -216,9 +218,9 @@ Open the `ios/Runner/Info.plist` file and add the following snippet inside the t
 </plist>
 ```
 
-> 💡 If you're opening the `Info.plist` file in Xcode and it is not being shown in this format, you can **Right Click** on `Info.plist` in the Xcode [project navigator](https://developer.apple.com/library/archive/documentation/ToolsLanguages/Conceptual/Xcode_Overview/NavigatingYourWorkspace.html) and then select **Open As > Source Code**.
+> 💡 If you're opening the `Info.plist` file in Xcode and it is not being shown in this format, you can **Right Click** on `Info.plist` in the Xcode [project navigator](https://developer.apple.com/documentation/bundleresources/information_property_list/managing_your_app_s_information_property_list) and then select **Open As > Source Code**.
 
-#### 🖥️ Web
+#### 🌐 Web
 
 Start by importing `auth0_flutter/auth0_flutter_web.dart`.
 
@@ -242,7 +244,7 @@ Finally, in your `index.html` add the following `<script>` tag:
 
 ### Logging in
 
-#### 📱 Mobile
+#### 📱 Mobile/Desktop
 
 Present the [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login) page in the `onPressed` callback of your **Login** button.
 
@@ -260,7 +262,7 @@ final credentials = await auth0.credentialsManager.credentials();
 
 For other comprehensive examples, see the [EXAMPLES.md](EXAMPLES.md) document.
 
-#### 💻 Web
+#### 🌐 Web
 
 Start by calling the `onLoad()` method in your app's `initState()`.
 
@@ -331,21 +333,21 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 
 ### Common Tasks
 
-### 📱 Mobile
+### 📱 Mobile/Desktop
 
 - [Check for stored credentials](EXAMPLES.md#check-for-stored-credentials) - check if the user is already logged in when your app starts up.
 - [Retrieve stored credentials](EXAMPLES.md#retrieve-stored-credentials) - fetch the user's credentials from the storage, automatically renewing them if they have expired.
 - [Retrieve user information](EXAMPLES.md#retrieve-user-information) - fetch the latest user information from the `/userinfo` endpoint.
 
-### 💻 Web
+### 🌐 Web
 
 - [Handling credentials on the web](EXAMPLES.md#handling-credentials-on-the-web) - how to check and retrieve credentials on the web platform.
 
 ## API reference
 
-### 📱 Mobile
+### 📱 Mobile/Desktop
 
-#### Web authentication
+#### Web Authentication
 
 - [login](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/WebAuthentication/login.html)
 - [logout](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/WebAuthentication/logout.html)
@@ -367,7 +369,7 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 - [storeCredentials](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/DefaultCredentialsManager/storeCredentials.html)
 - [clearCredentials](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/DefaultCredentialsManager/clearCredentials.html)
 
-### 🖥️ Web
+### 🌐 Web
 
 - [loginWithRedirect](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/loginWithRedirect.html)
 - [loginWithPopup](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/loginWithPopup.html)
@@ -403,7 +405,7 @@ Please do not report security vulnerabilities on the public GitHub issue tracker
   </picture>
 </p>
 <p align="center">
-  Auth0 is an easy to implement, adaptable authentication and authorization platform. To learn more checkout <a href="https://auth0.com/why-auth0">Why Auth0?</a>
+  Auth0 is an easy-to-implement, adaptable authentication and authorization platform. To learn more checkout <a href="https://auth0.com/why-auth0">Why Auth0?</a>
 </p>
 <p align="center">
   This project is licensed under the Apache 2.0 license. See the <a href="https://github.com/auth0/auth0-flutter/blob/main/LICENSE"> LICENSE</a> file for more info.

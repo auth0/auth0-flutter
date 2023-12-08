@@ -1,13 +1,12 @@
 # Examples
 
-- [🖥️📱 Web Authentication](#️-web-authentication)
+- [📱 Web Authentication](#-web-authentication)
   - [Log out](#log-out)
   - [Sign up](#sign-up)
   - [Adding an audience](#adding-an-audience)
   - [Adding scopes](#adding-scopes)
   - [Adding custom parameters](#adding-custom-parameters)
   - [ID token validation](#id-token-validation)
-    - [Custom domains](#custom-domains)
   - [Errors](#errors)
   - [Android: Custom schemes](#android-custom-schemes)
 - [📱 Credentials Manager](#-credentials-manager)
@@ -17,18 +16,21 @@
   - [Local authentication](#local-authentication)
   - [Disable credentials storage](#disable-credentials-storage)
   - [Errors](#errors-1)
+- [🌐 Handling Credentials on the Web](#-handling-credentials-on-the-web)
+  - [Check for valid credentials](#check-for-valid-credentials)
+  - [Retrieve stored credentials](#retrieve-stored-credentials-1)
 - [📱 Authentication API](#-authentication-api)
   - [Login with database connection](#login-with-database-connection)
   - [Sign up with database connection](#sign-up-with-database-connection)
   - [Retrieve user information](#retrieve-user-information)
   - [Renew credentials](#renew-credentials)
   - [Errors](#errors-2)
-- [🖥️📱 Organizations](#️-organizations)
+- [🌐📱 Organizations](#-organizations)
   - [Log in to an organization](#log-in-to-an-organization)
   - [Accept user invitations](#accept-user-invitations)
 - [📱 Bot detection](#-bot-detection)
 
-## 🖥️📱 Web Authentication
+## 📱 Web Authentication
 
   - [Log out](#log-out)
   - [Sign up](#sign-up)
@@ -228,35 +230,6 @@ await auth0Web.loginWithRedirect(
 
 </details>
 
-#### Custom domains
-
-Users of Auth0 Private Cloud with custom domains still on the [legacy behavior](https://auth0.com/docs/deploy/private-cloud/private-cloud-migrations/migrate-private-cloud-custom-domains) need to specify a custom issuer to match the Auth0 domain when performing Web Auth login. Otherwise, the ID token validation will fail.
-
-<details>
-  <summary>Mobile</summary>
-
-```dart
-const config =
-    IdTokenValidationConfig(issuer: 'https://YOUR_AUTH0_DOMAIN/');
-final credentials =
-    await auth0.webAuthentication().login(idTokenValidationConfig: config);
-```
-
-</details>
-
-<details>
-  <summary>Web</summary>
-
-```dart
-auth0Web
-    .onLoad(issuer: 'https://example.com/')
-    .then((final credentials) {
-  // ...
-});
-```
-
-</details>
-
 ### Errors
 
 <details>
@@ -314,7 +287,7 @@ await webAuth.logout();
 
 ## 📱 Credentials Manager
 
-> This feature is mobile-only; on web, the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter keeps its own cache. See [Handling Credentials on the Web](#handling-credentials-on-the-web) for more details.
+> This feature is mobile/desktop only; on web, the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter keeps its own cache. See [Handling Credentials on the Web](#handling-credentials-on-the-web) for more details.
 
 - [Check for stored credentials](#check-for-stored-credentials)
 - [Retrieve stored credentials](#retrieve-stored-credentials)
@@ -323,7 +296,7 @@ await webAuth.logout();
 - [Credentials Manager errors](#credentials-manager-errors)
 - [Disable credentials storage](#disable-credentials-storage)
 
-The Credentials Manager utility allows you to securely store and retrieve the user's credentials. The credentials will be stored encrypted in Shared Preferences on Android, and in the Keychain on iOS.
+The Credentials Manager utility allows you to securely store and retrieve the user's credentials. The credentials will be stored encrypted in Shared Preferences on Android, and in the Keychain on iOS/macOS.
 
 > 💡 If you're using Web Auth, you do not need to manually store the credentials after login and delete them after logout; auth0_flutter does it automatically.
 
@@ -406,9 +379,9 @@ try {
 
 [Go up ⤴](#examples)
 
-## Handling Credentials on the Web
+## 🌐 Handling Credentials on the Web
 
-> This section describes handling credentials for the web platform. For mobile, see [Credentials Manager](#-credentials-manager).
+> This section describes handling credentials for the web platform. For mobile/desktop, see [Credentials Manager](#-credentials-manager).
 
 The management and storage of credentials is handled internally by the underlying [Auth0 SPA SDK](https://github.com/auth0/auth0-spa-js), including refreshing the access token when it expires. The Flutter SDK provides an API for checking whether credentials are available, and the retrieval of those credentials.
 
@@ -446,7 +419,7 @@ final credentials = await auth0Web.credentials();
 
 ## 📱 Authentication API
 
-> This feature is mobile-only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
+> This feature is mobile/desktop only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
 
 - [Login with database connection](#login-with-database-connection)
 - [Sign up with database connection](#sign-up-with-database-connection)
@@ -561,7 +534,7 @@ try {
 
 [Go up ⤴](#examples)
 
-## 🖥️📱 Organizations
+## 🌐📱 Organizations
 
 [Organizations](https://auth0.com/docs/manage-users/organizations) is a set of features that provide better support for developers who build and maintain SaaS and Business-to-Business (B2B) applications.
 
@@ -622,7 +595,7 @@ await auth0Web.loginWithRedirect(
 
 ## 📱 Bot detection
 
-> This example is mobile-only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
+> This example is mobile/desktop only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
 
 If you are performing database login/signup via the Authentication API and would like to use the [Bot Detection](https://auth0.com/docs/secure/attack-protection/bot-detection) feature, you need to handle the `isVerificationRequired` error. It indicates that the request was flagged as suspicious and an additional verification step is necessary to log the user in. That verification step is web-based, so you need to use Web Auth to complete it.
 
@@ -638,7 +611,7 @@ try {
   if (e.isVerificationRequired) {
     final credentials = await auth0.webAuthentication().login(
         scopes: scopes,
-        useEphemeralSession: true, // Otherwise a session cookie will remain (iOS-only)
+        useEphemeralSession: true, // Otherwise a session cookie will remain (iOS/macOS only)
         parameters: {
           'connection': connection,
           'login_hint': email // So the user doesn't have to type it again
