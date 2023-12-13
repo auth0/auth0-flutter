@@ -5,7 +5,13 @@
     "pubspec.yaml": [
       "version: {MAJOR}.{MINOR}.{PATCH}"
     ],
+    "darwin/auth0_flutter.podspec": [
+      "= '{MAJOR}.{MINOR}.{PATCH}'"
+    ],
     "ios/auth0_flutter.podspec": [
+      "= '{MAJOR}.{MINOR}.{PATCH}'"
+    ],
+    "macos/auth0_flutter.podspec": [
       "= '{MAJOR}.{MINOR}.{PATCH}'"
     ]
   },
