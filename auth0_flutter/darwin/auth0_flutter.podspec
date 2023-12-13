@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name         = 'auth0_flutter'
-  s.version      = '1.3.1'
+  s.version      = '1.4.1'
   s.summary      = 'Auth0 SDK for Flutter'
   s.description  = 'Auth0 SDK for Flutter Android and iOS apps.'
   s.homepage     = 'https://auth0.com'
