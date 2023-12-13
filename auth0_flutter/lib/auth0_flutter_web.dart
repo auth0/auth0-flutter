@@ -51,7 +51,8 @@ class Auth0Web {
       final bool? useRefreshTokens,
       final bool? useRefreshTokensFallback,
       final String? audience,
-      final Set<String>? scopes}) async {
+      final Set<String>? scopes,
+      final Map<String, String> parameters = const {}}) async {
     await Auth0FlutterWebPlatform.instance.initialize(
         ClientOptions(
             account: _account,
@@ -68,7 +69,8 @@ class Auth0Web {
             useRefreshTokens: useRefreshTokens,
             useRefreshTokensFallback: useRefreshTokensFallback,
             audience: audience,
-            scopes: scopes),
+            scopes: scopes,
+            parameters: parameters),
         _userAgent);
 
     if (await hasValidCredentials()) {

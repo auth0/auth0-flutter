@@ -1,10 +1,5 @@
-def libApplicationId = 'com.auth0.auth0_flutter'
-
-group libApplicationId
-version '1.0-SNAPSHOT'
-
 buildscript {
-    ext.kotlin_version = '1.7.10'
+    ext.kotlin_version = '1.9.0'
     repositories {
         google()
         mavenCentral()
@@ -16,16 +11,24 @@ buildscript {
     }
 }
 
+plugins {
+    id("org.jetbrains.kotlinx.kover") version "0.7.4"
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+def libApplicationId = 'com.auth0.auth0_flutter'
+
+group libApplicationId
+version '1.0-SNAPSHOT'
+
 rootProject.allprojects {
     repositories {
         google()
         mavenCentral()
     }
 }
-
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'org.jetbrains.kotlinx.kover'
 
 android {
     compileSdkVersion 31
