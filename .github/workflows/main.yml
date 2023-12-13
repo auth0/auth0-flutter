@@ -173,7 +173,7 @@ jobs:
     test-ios-smoke:
         name: Run native iOS smoke tests using Xcode ${{ matrix.xcode }}
         needs: authorize
-        runs-on: macos-latest-large
+        runs-on: macos-13-large
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
         env:
@@ -184,7 +184,7 @@ jobs:
         strategy:
           matrix:
             xcode:
-              - '14.2'
+              - '15.0.1'
 
         steps:
             - name: Checkout
@@ -203,7 +203,7 @@ jobs:
               uses: ./.github/actions/smoke-tests-darwin
               with:
                 platform: ${{ env.platform }}
-                destination: 'platform=iOS Simulator,name=iPhone 14'
+                destination: ${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.ios-simulator) }}
 
     test-macos-unit:
         name: Run native macOS unit tests using Xcode ${{ matrix.xcode }}
