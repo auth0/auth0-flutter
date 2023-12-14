@@ -96,7 +96,7 @@ jobs:
                 flutter test --coverage --exclude-tags browser
 
             - name: Upload coverage report
-              uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
+              uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392
               with:
                 name: auth0_flutter coverage
                 path: auth0_flutter/coverage/lcov.info
@@ -122,7 +122,7 @@ jobs:
               run: flutter test --coverage
 
             - name: Upload coverage report
-              uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
+              uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392
               with:
                 name: auth0_flutter_platform_interface coverage
                 path: auth0_flutter_platform_interface/coverage/lcov.info
@@ -165,7 +165,7 @@ jobs:
               run: bundle exec slather coverage -x --scheme Runner Runner.xcodeproj
 
             - name: Upload coverage report
-              uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
+              uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392
               with:
                 name: iOS coverage
                 path: auth0_flutter/example/ios/cobertura
@@ -304,13 +304,13 @@ jobs:
               run: ./gradlew koverXmlReportDebug
 
             - name: Upload coverage report
-              uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
+              uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392
               with:
                 name: Android coverage
                 path: auth0_flutter/example/build/app/coverage.xml
 
             - name: Upload test results
-              uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
+              uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392
               if: ${{ failure() }}
               with:
                 name: Test results
@@ -408,14 +408,14 @@ jobs:
     #               USER_EMAIL=$USER_EMAIL USER_PASSWORD=$USER_PASSWORD node appium-test/test.js
 
     #         - name: Upload recording
-    #           uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
+    #           uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392
     #           if: ${{ failure() }}
     #           with:
     #             name: 'Android - smoke tests recording'
     #             path: recording_video.webm
 
     #         - name: Upload APK
-    #           uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
+    #           uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392
     #           if: ${{ failure() }}
     #           with:
     #             name: 'Android - APK'
