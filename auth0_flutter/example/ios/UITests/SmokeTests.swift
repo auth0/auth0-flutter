@@ -6,7 +6,7 @@ class SmokeTests: XCTestCase {
     private let loginButton = "Web Auth Login"
     private let logoutButton = "Web Auth Logout"
     private let continueButton = "Continue"
-    private let timeout: TimeInterval = 10
+    private let timeout: TimeInterval = 30
 
     override func setUp() {
         continueAfterFailure = false
@@ -19,6 +19,7 @@ class SmokeTests: XCTestCase {
     func testLogin() {
         let app = XCUIApplication()
         app.activate()
+        XCTAssertTrue(app.wait(for: .runningForeground, timeout: timeout))
         tap(button: loginButton)
         let emailInput = app.webViews.textFields.firstMatch
         XCTAssertTrue(emailInput.waitForExistence(timeout: timeout))
@@ -33,6 +34,7 @@ class SmokeTests: XCTestCase {
     func testLogout() {
         let app = XCUIApplication()
         app.activate()
+        XCTAssertTrue(app.wait(for: .runningForeground, timeout: timeout))
         tap(button: loginButton)
         let sessionButton = app.webViews.staticTexts[email]
         XCTAssertTrue(sessionButton.waitForExistence(timeout: timeout))

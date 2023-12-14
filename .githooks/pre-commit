@@ -1,0 +1,8 @@
+staged_files=($(git diff --staged --name-only --diff-filter=ACDMRT -- auth0_flutter/darwin))
+
+# Only proceed if there are staged files from the 'darwin' directory
+if [ ${#staged_files[@]} -eq 0 ]; then
+    exit 0
+fi
+
+scripts/generate-symlinks.sh

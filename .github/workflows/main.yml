@@ -1,4 +1,5 @@
 name: CI
+
 on:
     pull_request:
       types:
@@ -13,8 +14,7 @@ concurrency:
 
 env:
     flutter: '3.x'
-    xcode: '14.2'
-    ios-simulator: iPhone 14
+    ios-simulator: iPhone 15
     java: 11
 
 jobs:
@@ -92,8 +92,8 @@ jobs:
             - name: Test auth0_flutter package
               working-directory: auth0_flutter
               run: |
-                  flutter test --tags browser --platform chrome
-                  flutter test --coverage --exclude-tags browser
+                flutter test --tags browser --platform chrome
+                flutter test --coverage --exclude-tags browser
 
             - name: Upload coverage report
               uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
@@ -130,33 +130,35 @@ jobs:
     test-ios-unit:
         name: Run native iOS unit tests using Xcode ${{ matrix.xcode }}
         needs: authorize
-        runs-on: macos-latest
+        runs-on: macos-13
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
-
-        env:
-            USER_EMAIL: ${{ secrets.USER_EMAIL }}
-            USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
 
         strategy:
           matrix:
             xcode:
-              - '14.2'
+              - '15.0.1'
+
+        env:
+          platform: iOS
 
         steps:
             - name: Checkout
               uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Set up environment
-              uses: ./.github/actions/setup-ios
+              uses: ./.github/actions/setup-darwin
               with:
+                platform: ${{ env.platform }}
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
                 auth0-domain: ${{ vars.AUTH0_DOMAIN }}
                 auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
 
             - name: Run iOS unit tests
-              working-directory: auth0_flutter/example/ios
-              run: xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination '${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.ios-simulator) }}' -resultBundlePath unit-tests.xcresult -skip-testing:RunnerUITests
+              uses: ./.github/actions/unit-tests-darwin
+              with:
+                platform: ${{ env.platform }}
+                destination: ${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.ios-simulator) }}
 
             - name: Convert coverage report
               working-directory: auth0_flutter/example/ios
@@ -168,53 +170,112 @@ jobs:
                 name: iOS coverage
                 path: auth0_flutter/example/ios/cobertura
 
-            - name: Upload xcresult bundles
-              uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
-              if: ${{ failure() }}
-              with:
-                name: xcresult bundles
-                path: 'auth0_flutter/example/ios/*.xcresult'
-
     test-ios-smoke:
         name: Run native iOS smoke tests using Xcode ${{ matrix.xcode }}
         needs: authorize
-        runs-on: macos-latest
+        runs-on: macos-13-large
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
         env:
+            platform: iOS
             USER_EMAIL: ${{ secrets.USER_EMAIL }}
             USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
 
         strategy:
           matrix:
             xcode:
-              - '14.2'
+              - '15.0.1'
 
         steps:
             - name: Checkout
               uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Set up environment
-              uses: ./.github/actions/setup-ios
+              uses: ./.github/actions/setup-darwin
               with:
+                platform: ${{ env.platform }}
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
                 auth0-domain: ${{ vars.AUTH0_DOMAIN }}
                 auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
 
             - name: Run iOS smoke tests
-              if: ${{ github.event.pull_request.head.repo.fork == false }}
-              working-directory: auth0_flutter/example/ios
-              run: |
-                defaults write com.apple.iphonesimulator ConnectHardwareKeyboard 0
-                xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination '${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.ios-simulator) }}' -resultBundlePath smoke-tests.xcresult -only-testing:RunnerUITests
-
-            - name: Upload xcresult bundles
-              uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
-              if: ${{ failure() }}
+              uses: ./.github/actions/smoke-tests-darwin
               with:
-                name: 'iOS - xcresult bundles'
-                path: 'auth0_flutter/example/ios/*.xcresult'
+                platform: ${{ env.platform }}
+                destination: ${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.ios-simulator) }}
+
+    test-macos-unit:
+        name: Run native macOS unit tests using Xcode ${{ matrix.xcode }}
+        needs: authorize
+        runs-on: macos-13
+        environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
+
+        strategy:
+          matrix:
+            xcode:
+              - '15.0.1'
+
+        env:
+          platform: macOS
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+
+            - name: Set up environment
+              uses: ./.github/actions/setup-darwin
+              with:
+                platform: ${{ env.platform }}
+                flutter: ${{ env.flutter }}
+                xcode: ${{ matrix.xcode }}
+                auth0-domain: ${{ vars.AUTH0_DOMAIN }}
+                auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
+
+            - name: Build macOS example app
+              working-directory: auth0_flutter/example
+              run: flutter build macos --debug
+
+            - name: Run macOS unit tests
+              uses: ./.github/actions/unit-tests-darwin
+              with:
+                platform: ${{ env.platform }}
+                destination: platform=macOS,arch=x86_64
+
+    test-macos-smoke:
+        name: Run native macOS smoke tests using Xcode ${{ matrix.xcode }}
+        needs: authorize
+        runs-on: macos-13
+        environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
+
+        env:
+            platform: macOS
+            USER_EMAIL: ${{ secrets.USER_EMAIL }}
+            USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
+
+        strategy:
+          matrix:
+            xcode:
+              - '15.0.1'
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+
+            - name: Set up environment
+              uses: ./.github/actions/setup-darwin
+              with:
+                platform: ${{ env.platform }}
+                flutter: ${{ env.flutter }}
+                xcode: ${{ matrix.xcode }}
+                auth0-domain: ${{ vars.AUTH0_DOMAIN }}
+                auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
+
+            - name: Run macOS smoke tests
+              uses: ./.github/actions/smoke-tests-darwin
+              with:
+                platform: ${{ env.platform }}
+                destination: platform=macOS,arch=x86_64
 
     test-android-unit:
         name: Run native Android unit tests
@@ -375,22 +436,26 @@ jobs:
             - name: Checkout
               uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
-            - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a
+            - name: Download coverage report for auth0_flutter
+              uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a
               with:
                 name: auth0_flutter coverage
                 path: coverage/auth0_flutter
 
-            - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a
+            - name: Download coverage report for auth0_flutter_platform_interface
+              uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a
               with:
                 name: auth0_flutter_platform_interface coverage
                 path: coverage/auth0_flutter_platform_interface
 
-            - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a
+            - name: Download coverage report for iOS
+              uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a
               with:
                 name: iOS coverage
                 path: coverage/ios
 
-            - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a
+            - name: Download coverage report for Android
+              uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a
               with:
                 name: Android coverage
                 path: coverage/android

@@ -1,6 +1,6 @@
 # Frequently Asked Questions
 
-- [📱 Mobile](#-mobile)
+- [📱 Mobile/Desktop](#-mobiledesktop)
   - [1. How can I have separate Auth0 domains for each environment on Android?](#1-how-can-i-have-separate-auth0-domains-for-each-environment-on-android)
   - [2. How can I disable the iOS _login_ alert box?](#2-how-can-i-disable-the-ios-login-alert-box)
     - [Use ephemeral sessions](#use-ephemeral-sessions)
@@ -8,14 +8,14 @@
   - [3. How can I disable the iOS _logout_ alert box?](#3-how-can-i-disable-the-ios-logout-alert-box)
   - [4. How can I change the message in the iOS alert box?](#4-how-can-i-change-the-message-in-the-ios-alert-box)
   - [5. How can I programmatically close the iOS alert box?](#5-how-can-i-programmatically-close-the-ios-alert-box)
-- [🖥️ Web](#️-web)
+- [🌐 Web](#-web)
   - [1. Why is the user logged out when they refresh the page in their SPA?](#1-why-is-the-user-logged-out-when-they-refresh-the-page-in-their-spa)
     - [Using Multi-factor Authentication (MFA)](#using-multi-factor-authentication-mfa)
   - [2. Why do I get `auth0-spa-js must run on a secure origin`?](#2-why-do-i-get-auth0-spa-js-must-run-on-a-secure-origin)
 
-## 📱 Mobile
+## 📱 Mobile/Desktop
 
-This library uses [Auth0.Android](https://github.com/auth0/Auth0.Android) on Android, and [Auth0.swift](https://github.com/auth0/Auth0.swift) on iOS.
+This library uses [Auth0.Android](https://github.com/auth0/Auth0.Android) on Android, and [Auth0.swift](https://github.com/auth0/Auth0.swift) on iOS/macOS.
 
 ### 1. How can I have separate Auth0 domains for each environment on Android?
 
@@ -81,7 +81,7 @@ final credentials =
 
 Note that with `useEphemeralSession: true` you don't need to call `logout()` at all. Just clearing the credentials from the app will suffice. What `logout()` does is clear the shared session cookie, so that in the next login call the user gets asked to log in again. But with `useEphemeralSession: true` there will be no shared cookie to remove.
 
-You still need to call `logout()` on Android, though, as `useEphemeralSession` is iOS-only.
+You still need to call `logout()` on Android, though, as `useEphemeralSession` is iOS/macOS only.
 
 > **Warning** > `useEphemeralSession` relies on the `prefersEphemeralWebBrowserSession` configuration option of `ASWebAuthenticationSession`.
 
@@ -159,7 +159,7 @@ This library has no control whatsoever over the alert box. Its contents cannot b
 
 This library has no control whatsoever over the alert box. It cannot be closed programmatically. Unfortunately, that's a limitation of `ASWebAuthenticationSession`.
 
-## 🖥️ Web
+## 🌐 Web
 
 This library uses the [Auth0 SPA SDK](https://github.com/auth0/auth0-spa-js) on the web platform.
 

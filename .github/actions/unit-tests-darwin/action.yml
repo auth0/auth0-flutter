@@ -1,0 +1,32 @@
+name: Run iOS/macOS unit tests
+description: Execute the unit test suite on iOS/macOS
+
+inputs:
+  platform:
+    description: Either iOS or macOS
+    required: true
+
+  destination:
+    description: The destination string for xcodebuild
+    required: true
+
+runs:
+  using: composite
+
+  steps:
+    - name: Lowercase platform value
+      id: lowercase-platform
+      run: echo "platform=$(echo ${{ inputs.platform }} | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+      shell: bash
+
+    - name: Run ${{ inputs.platform }} unit tests
+      working-directory: auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}
+      run: xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination '${{ inputs.destination }}' -resultBundlePath unit-tests.xcresult -skip-testing:RunnerUITests
+      shell: bash
+
+    - name: Upload xcresult bundles
+      uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32
+      if: ${{ failure() }}
+      with:
+        name: '${{ inputs.platform }} xcresult bundles (unit tests)'
+        path: 'auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}/unit-tests.xcresult'

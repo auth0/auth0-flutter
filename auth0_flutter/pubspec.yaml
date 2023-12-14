@@ -46,6 +46,10 @@ flutter:
         pluginClass: Auth0FlutterPlugin
       ios:
         pluginClass: Auth0FlutterPlugin
+        sharedDarwinSource: true
+      macos:
+        pluginClass: Auth0FlutterPlugin
+        sharedDarwinSource: true
       web:
         pluginClass: Auth0FlutterPlugin
         fileName: src/web.dart

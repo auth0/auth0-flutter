@@ -1,0 +1,35 @@
+name: Symlinks
+
+on:
+    pull_request:
+      types:
+        - opened
+        - synchronize
+
+permissions: {}
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  check-symlinks:
+    name: Check symlinks of iOS/macOS native code
+    runs-on: ubuntu-latest
+
+    steps:
+        - name: Checkout
+          uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+
+        - name: Run check
+          run: |
+            scripts/generate-symlinks.sh
+
+            if git diff HEAD --quiet --diff-filter=ACDMRT; then
+                echo $'\nNo changes detected in the iOS/macOS files that require updating the symlinks.'
+                echo 'All good.'
+            else
+                echo $'\nDetected changes in the iOS/macOS files that require updating the symlinks.'
+                echo "Please run 'scripts/generate-symlinks.sh' from the repository root and commit the changes."
+                exit 1
+            fi
