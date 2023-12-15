@@ -1,5 +1,11 @@
 # Change Log
 
+## [af-v1.5.0](https://github.com/auth0/auth0-flutter/tree/af-v1.5.0) (2023-12-15)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.4.1...af-v1.5.0)
+
+**Added**
+- Add support for macOS [\#381](https://github.com/auth0/auth0-flutter/pull/381) ([Widcket](https://github.com/Widcket))
+
 ## [af-v1.4.1](https://github.com/auth0/auth0-flutter/tree/af-v1.4.1) (2023-12-07)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.4.0...af-v1.4.1)
 
