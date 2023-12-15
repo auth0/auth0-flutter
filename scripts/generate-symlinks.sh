@@ -33,7 +33,14 @@ for file in "${files[@]}"; do
             # If it's a .gitignore or Podspec file, copy it
             (*'.gitignore' | *'.podspec') cp -v "$file" "$target_dir" ;;
             # Else symlink it
-            (*) ln -sv "$file" "$target_file" ;;
+            (*)
+                # Calculate the relative path to the file from the symlink's
+                # location
+                file_subpath=${file#"$base_dir/"}
+                file_depth=$(echo "$file_subpath" | awk -F '/' '{print NF-1}')
+                file_relpath=$(printf '../%.0s' $(seq 1 $file_depth))
+
+                ln -sv "$file_relpath$file_subpath" "$target_file" ;;
         esac
     done
 done

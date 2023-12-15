@@ -1,1 +1,1 @@
-auth0_flutter/darwin/Classes/HandlerError.swift
+../../darwin/Classes/HandlerError.swift

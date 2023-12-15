@@ -1,1 +1,1 @@
-auth0_flutter/darwin/Classes/CredentialsManager/CredentialsManagerHasValidMethodHandler.swift
+../../../darwin/Classes/CredentialsManager/CredentialsManagerHasValidMethodHandler.swift

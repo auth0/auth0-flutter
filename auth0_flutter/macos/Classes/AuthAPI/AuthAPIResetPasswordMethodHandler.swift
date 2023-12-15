@@ -1,1 +1,1 @@
-auth0_flutter/darwin/Classes/AuthAPI/AuthAPIResetPasswordMethodHandler.swift
+../../../darwin/Classes/AuthAPI/AuthAPIResetPasswordMethodHandler.swift

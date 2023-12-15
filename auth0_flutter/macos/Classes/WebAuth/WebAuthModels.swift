@@ -1,1 +1,1 @@
-auth0_flutter/darwin/Classes/WebAuth/WebAuthModels.swift
+../../../darwin/Classes/WebAuth/WebAuthModels.swift

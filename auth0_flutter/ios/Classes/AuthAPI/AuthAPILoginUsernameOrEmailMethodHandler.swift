@@ -1,1 +1,1 @@
-auth0_flutter/darwin/Classes/AuthAPI/AuthAPILoginUsernameOrEmailMethodHandler.swift
+../../../darwin/Classes/AuthAPI/AuthAPILoginUsernameOrEmailMethodHandler.swift

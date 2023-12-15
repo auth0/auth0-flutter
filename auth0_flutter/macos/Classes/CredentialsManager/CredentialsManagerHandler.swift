@@ -1,1 +1,1 @@
-auth0_flutter/darwin/Classes/CredentialsManager/CredentialsManagerHandler.swift
+../../../darwin/Classes/CredentialsManager/CredentialsManagerHandler.swift

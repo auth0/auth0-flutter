@@ -1,1 +1,1 @@
-auth0_flutter/darwin/Classes/Properties.swift
+../../darwin/Classes/Properties.swift

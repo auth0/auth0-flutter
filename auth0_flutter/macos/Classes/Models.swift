@@ -1,1 +1,1 @@
-auth0_flutter/darwin/Classes/Models.swift
+../../darwin/Classes/Models.swift
