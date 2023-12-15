@@ -1,5 +1,11 @@
 # Change Log
 
+## [afpi-v1.5.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.5.0) (2023-12-15)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.4.0...afpi-v1.5.0)
+
+**Added**
+- Add support for macOS [\#381](https://github.com/auth0/auth0-flutter/pull/381) ([Widcket](https://github.com/Widcket))
+
 ## [afpi-v1.4.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.4.0) (2023-12-06)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.3.1...afpi-v1.4.0)
 
