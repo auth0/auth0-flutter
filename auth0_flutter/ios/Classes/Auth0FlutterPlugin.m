@@ -1,1 +1,1 @@
-auth0_flutter/darwin/Classes/Auth0FlutterPlugin.m
+../../darwin/Classes/Auth0FlutterPlugin.m

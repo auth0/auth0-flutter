@@ -1,1 +1,1 @@
-auth0_flutter/darwin/Classes/MethodHandler.swift
+../../darwin/Classes/MethodHandler.swift
