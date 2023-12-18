@@ -333,10 +333,6 @@ final credentials = await auth0.credentialsManager.credentials();
 
 > 💡 You do not need to call `credentialsManager.storeCredentials()` afterward. The Credentials Manager automatically persists the renewed credentials.
 
-```dart
-final credentials = await auth0.credentials();
-```
-
 ### Custom implementations
 
 flutter_auth0 exposes a built-in, default Credentials Manager implementation through the `credentialsManager` property. You can pass your own implementation to the `Auth0` constructor. If you're using Web Auth, this implementation will be used to store the user's credentials after login and delete them after logout.
@@ -443,7 +439,7 @@ To log in or sign up with a username and password, the `Password` grant type nee
 
 > 💡 If your Auth0 account has the **Bot Detection** feature enabled, your requests might be flagged for verification. Check how to handle this scenario in the [Bot Detection](#bot-detection) section.
 
-> ⚠️ The ID tokens obtained from Web Auth login are automatically validated by `auth0_flutter`, ensuring their contents have not been tampered with. **This is not the case for the ID tokens obtained from the Authentication API client.** You must [validate](https://auth0.com/docs/security/tokens/id-tokens/validate-id-tokens) any ID tokens received from the Authentication API client before using the information they contain.
+> ⚠️ The ID tokens obtained from Web Auth login are automatically validated by `auth0_flutter`, ensuring their contents have not been tampered with. **This is not the case for the ID tokens obtained from the Authentication API client**, including the ones received when renewing the credentials using the refresh token. You must [validate](https://auth0.com/docs/secure/tokens/id-tokens/validate-id-tokens) any ID tokens received from the Authentication API client before using the information they contain.
 
 ### Login with database connection
 
