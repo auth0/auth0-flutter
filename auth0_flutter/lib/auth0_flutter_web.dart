@@ -1,4 +1,5 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
+
 import 'src/version.dart';
 
 export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
@@ -101,6 +102,8 @@ class Auth0Web {
   /// * Arbitrary [parameters] can be specified and then picked up in a custom
   /// Auth0 [Action](https://auth0.com/docs/customize/actions) or
   /// [Rule](https://auth0.com/docs/customize/rules).
+  /// * [openUrl] Used to control the redirect and not rely on the SDK to do the
+  /// actual redirect. Required *auth0-spa-js* `2.0.1` or later.
   Future<void> loginWithRedirect(
           {final String? audience,
           final String? redirectUrl,
@@ -108,6 +111,7 @@ class Auth0Web {
           final String? invitationUrl,
           final int? maxAge,
           final Set<String>? scopes,
+          final void Function(String url)? openUrl,
           final Map<String, String> parameters = const {}}) =>
       Auth0FlutterWebPlatform.instance.loginWithRedirect(LoginOptions(
           audience: audience,
@@ -115,6 +119,7 @@ class Auth0Web {
           organizationId: organizationId,
           invitationUrl: invitationUrl,
           scopes: scopes ?? {},
+          openUrl: openUrl,
           idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge),
           parameters: parameters));
 

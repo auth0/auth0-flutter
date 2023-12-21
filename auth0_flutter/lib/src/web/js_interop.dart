@@ -44,10 +44,14 @@ class AuthorizationParams {
 @anonymous
 class RedirectLoginOptions {
   external AuthorizationParams? get authorizationParams;
+  external void Function(String url)? openUrl;
   external String? get fragment;
 
-  external factory RedirectLoginOptions(
-      {final AuthorizationParams authorizationParams, final String fragment});
+  external factory RedirectLoginOptions({
+    final AuthorizationParams authorizationParams,
+    final String fragment,
+    final void Function(String url)? openUrl,
+  });
 }
 
 @JS()
