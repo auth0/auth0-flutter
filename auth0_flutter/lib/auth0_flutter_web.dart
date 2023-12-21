@@ -111,7 +111,7 @@ class Auth0Web {
           final String? invitationUrl,
           final int? maxAge,
           final Set<String>? scopes,
-          final void Function(String url)? openUrl,
+          final Future<void> Function(String url)? openUrl,
           final Map<String, String> parameters = const {}}) =>
       Auth0FlutterWebPlatform.instance.loginWithRedirect(LoginOptions(
           audience: audience,

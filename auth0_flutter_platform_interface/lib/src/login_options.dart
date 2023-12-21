@@ -8,7 +8,7 @@ class LoginOptions implements RequestOptions {
   final String? redirectUrl;
   final String? organizationId;
   final String? invitationUrl;
-  final void Function(String url)? openUrl;
+  final Future<void> Function(String url)? openUrl;
   final Map<String, String> parameters;
 
   LoginOptions(
