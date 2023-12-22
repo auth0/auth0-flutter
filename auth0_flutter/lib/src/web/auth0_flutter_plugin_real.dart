@@ -3,6 +3,7 @@ import 'dart:html';
 
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:js/js.dart';
 
 import 'auth0_flutter_web_platform_proxy.dart';
 import 'extensions/client_options_extensions.dart';
@@ -61,9 +62,11 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
                 : null),
         options?.parameters ?? {}));
 
+    final openUrl = options?.openUrl;
+
     final loginOptions = JsInteropUtils.stripNulls(interop.RedirectLoginOptions(
       authorizationParams: authParams,
-      openUrl: options?.openUrl,
+      openUrl: openUrl != null ? allowInterop(openUrl) : null,
     ));
 
     return client.loginWithRedirect(loginOptions);
