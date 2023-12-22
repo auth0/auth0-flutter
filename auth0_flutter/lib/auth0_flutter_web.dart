@@ -195,6 +195,7 @@ class Auth0Web {
   /// * Use [federated] to log the user out of their identity provider
   /// (such as Google) as well as Auth0. Only applicable if the user
   /// authenticated using an identity provider. [Read more about how federated logout works at Auth0](https://auth0.com/docs/logout/guides/logout-idps).
+  /// * You can use [openUrl] to control the redirect and not rely on the SDK.
   Future<void> logout({
     final bool? federated,
     final String? returnToUrl,
