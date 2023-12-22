@@ -12,9 +12,14 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+
 import 'auth0_flutter_web_test.mocks.dart';
 
-@GenerateMocks([Auth0FlutterWebClientProxy])
+abstract class OpenUrl {
+  Future<void> call(final String url) async {}
+}
+
+@GenerateMocks([Auth0FlutterWebClientProxy, OpenUrl])
 void main() {
   final auth0 = Auth0Web('test-domain', 'test-client-id');
   final mockClientProxy = MockAuth0FlutterWebClientProxy();
@@ -140,6 +145,25 @@ void main() {
     expect(params.screen_hint, 'signup');
   });
 
+  test('loginWithRedirect supports openUrl', () async {
+    when(mockClientProxy.isAuthenticated())
+        .thenAnswer((final _) => Future.value(false));
+
+    final openUrlMock = MockOpenUrl();
+    await auth0.loginWithRedirect(openUrl: openUrlMock);
+
+    final openUrl = verify(mockClientProxy.loginWithRedirect(captureAny))
+        .captured
+        .first
+        .openUrl;
+
+    expect(openUrl, isNotNull);
+
+    await openUrl('http://open.url');
+
+    verify(openUrlMock('http://open.url')).called(1);
+  });
+
   test('loginWithRedirect strips options that are null', () async {
     when(mockClientProxy.isAuthenticated())
         .thenAnswer((final _) => Future.value(false));
@@ -234,6 +258,22 @@ void main() {
 
     expect(params.federated, true);
     expect(params.returnTo, 'http://returnto.url');
+  });
+
+  test('logout support openUrl', () async {
+    when(mockClientProxy.logout(any)).thenAnswer((final _) => Future.value());
+    final openUrlMock = MockOpenUrl();
+
+    await auth0.logout(openUrl: openUrlMock);
+
+    final openUrl =
+        verify(mockClientProxy.logout(captureAny)).captured.first.openUrl;
+
+    expect(openUrl, isNotNull);
+
+    await openUrl('http://open.url');
+
+    verify(openUrlMock('http://open.url')).called(1);
   });
 
   test('loginWithPopup is called and succeeds', () async {
