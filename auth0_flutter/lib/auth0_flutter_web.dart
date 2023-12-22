@@ -102,7 +102,7 @@ class Auth0Web {
   /// * Arbitrary [parameters] can be specified and then picked up in a custom
   /// Auth0 [Action](https://auth0.com/docs/customize/actions) or
   /// [Rule](https://auth0.com/docs/customize/rules).
-  /// * [openUrl] Used to control the redirect and not rely on the SDK to do the
+  /// * Use [openUrl] to control the redirect and not rely on the SDK to do the
   /// actual redirect. Required *auth0-spa-js* `2.0.1` or later.
   Future<void> loginWithRedirect(
           {final String? audience,
@@ -195,7 +195,8 @@ class Auth0Web {
   /// * Use [federated] to log the user out of their identity provider
   /// (such as Google) as well as Auth0. Only applicable if the user
   /// authenticated using an identity provider. [Read more about how federated logout works at Auth0](https://auth0.com/docs/logout/guides/logout-idps).
-  /// * You can use [openUrl] to control the redirect and not rely on the SDK.
+  /// * Use [openUrl] to control the redirect and not rely on the SDK to do the
+  /// actual redirect. Required *auth0-spa-js* `2.0.1` or later.
   Future<void> logout({
     final bool? federated,
     final String? returnToUrl,
