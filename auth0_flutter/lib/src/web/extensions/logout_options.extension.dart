@@ -4,7 +4,10 @@ import '../js_interop.dart' as interop;
 import '../js_interop_utils.dart';
 
 extension LogoutOptionsExtension on LogoutOptions {
-  interop.LogoutOptions toClientLogoutOptions() => interop.LogoutOptions(
-      logoutParams: JsInteropUtils.stripNulls(
-          interop.LogoutParams(federated: federated, returnTo: returnTo)));
+  interop.LogoutOptions toClientLogoutOptions() =>
+      JsInteropUtils.stripNulls(interop.LogoutOptions(
+        openUrl: openUrl,
+        logoutParams: JsInteropUtils.stripNulls(
+            interop.LogoutParams(federated: federated, returnTo: returnTo)),
+      ));
 }

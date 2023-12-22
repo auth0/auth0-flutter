@@ -195,9 +195,16 @@ class Auth0Web {
   /// * Use [federated] to log the user out of their identity provider
   /// (such as Google) as well as Auth0. Only applicable if the user
   /// authenticated using an identity provider. [Read more about how federated logout works at Auth0](https://auth0.com/docs/logout/guides/logout-idps).
-  Future<void> logout({final bool? federated, final String? returnToUrl}) =>
-      Auth0FlutterWebPlatform.instance
-          .logout(LogoutOptions(federated: federated, returnTo: returnToUrl));
+  Future<void> logout({
+    final bool? federated,
+    final String? returnToUrl,
+    final Future<void> Function(String url)? openUrl,
+  }) =>
+      Auth0FlutterWebPlatform.instance.logout(LogoutOptions(
+        federated: federated,
+        returnTo: returnToUrl,
+        openUrl: openUrl,
+      ));
 
   /// Retrieves a set of credentials for the user.
   ///

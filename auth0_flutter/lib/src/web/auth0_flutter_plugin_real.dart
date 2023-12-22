@@ -61,10 +61,10 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
                 : null),
         options?.parameters ?? {}));
 
-    final loginOptions = interop.RedirectLoginOptions(
+    final loginOptions = JsInteropUtils.stripNulls(interop.RedirectLoginOptions(
       authorizationParams: authParams,
       openUrl: options?.openUrl,
-    );
+    ));
 
     return client.loginWithRedirect(loginOptions);
   }

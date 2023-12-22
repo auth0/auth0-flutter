@@ -154,8 +154,12 @@ class LogoutParams {
 @anonymous
 class LogoutOptions {
   external LogoutParams? get logoutParams;
+  external Future<void> Function(String url)? openUrl;
 
-  external factory LogoutOptions({final LogoutParams? logoutParams});
+  external factory LogoutOptions({
+    final LogoutParams? logoutParams,
+    final Future<void> Function(String url)? openUrl,
+  });
 }
 
 @JS()
@@ -188,5 +192,5 @@ class Auth0Client {
   external Future<WebCredentials> getTokenSilently(
       [final GetTokenSilentlyOptions? options]);
   external Future<bool> isAuthenticated();
-  external Future<void> logout([final LogoutOptions? logoutParams]);
+  external Future<void> logout([final LogoutOptions? logoutOptions]);
 }
