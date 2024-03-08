@@ -81,8 +81,9 @@ void main() {
                   organizationId: 'test-org',
                   invitationUrl: 'http://invite.com',
                   parameters: {'test': 'test-123'},
-                  scheme: 'test-scheme',
+                  useHTTPS: true,
                   useEphemeralSession: true,
+                  scheme: 'test-scheme',
                   idTokenValidationConfig: const IdTokenValidationConfig(
                       leeway: 10, issuer: 'test-issuer', maxAge: 20))));
 
@@ -101,8 +102,9 @@ void main() {
       expect(
           verificationResult.arguments['invitationUrl'], 'http://invite.com');
       expect(verificationResult.arguments['parameters']['test'], 'test-123');
-      expect(verificationResult.arguments['scheme'], 'test-scheme');
+      expect(verificationResult.arguments['useHTTPS'], true);
       expect(verificationResult.arguments['useEphemeralSession'], true);
+      expect(verificationResult.arguments['scheme'], 'test-scheme');
       expect(verificationResult.arguments['leeway'], 10);
       expect(verificationResult.arguments['issuer'], 'test-issuer');
       expect(verificationResult.arguments['maxAge'], 20);
@@ -128,8 +130,9 @@ void main() {
       expect(verificationResult.arguments['organizationId'], isNull);
       expect(verificationResult.arguments['invitationUrl'], isNull);
       expect(verificationResult.arguments['parameters'], isEmpty);
-      expect(verificationResult.arguments['scheme'], isNull);
+      expect(verificationResult.arguments['useHTTPS'], false);
       expect(verificationResult.arguments['useEphemeralSession'], false);
+      expect(verificationResult.arguments['scheme'], isNull);
       expect(verificationResult.arguments['idTokenValidationConfig'], isNull);
       expect(verificationResult.arguments['safariViewController'], isNull);
     });
@@ -277,7 +280,9 @@ void main() {
               account: const Account('test-domain', 'test-clientId'),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
               options: WebAuthLogoutOptions(
-                  returnTo: 'http://localhost:1234', scheme: 'test-scheme')));
+                  useHTTPS: true,
+                  returnTo: 'http://localhost:1234',
+                  scheme: 'test-scheme')));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -287,6 +292,7 @@ void main() {
       expect(verificationResult.arguments['_userAgent']['name'], 'test-name');
       expect(verificationResult.arguments['_userAgent']['version'],
           'test-version');
+      expect(verificationResult.arguments['useHTTPS'], true);
       expect(verificationResult.arguments['returnTo'], 'http://localhost:1234');
       expect(verificationResult.arguments['scheme'], 'test-scheme');
     });
@@ -304,6 +310,7 @@ void main() {
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['useHTTPS'], false);
       expect(verificationResult.arguments['returnTo'], isNull);
       expect(verificationResult.arguments['scheme'], isNull);
     });

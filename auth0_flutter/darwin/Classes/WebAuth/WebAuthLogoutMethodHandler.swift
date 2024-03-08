@@ -9,13 +9,22 @@ import FlutterMacOS
 
 struct WebAuthLogoutMethodHandler: MethodHandler {
     enum Argument: String {
+        case useHTTPS
         case returnTo
     }
 
     let client: WebAuth
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
+        guard let useHTTPS = arguments[Argument.useHTTPS] as? Bool else {
+            return callback(FlutterError(from: .requiredArgumentMissing(Argument.useHTTPS.rawValue)))
+        }
+
         var webAuth = client
+
+        if useHTTPS {
+            webAuth = webAuth.useHTTPS()
+        }
 
         if let returnTo = arguments[Argument.returnTo] as? String, let url = URL(string: returnTo) {
             webAuth = webAuth.redirectURL(url)
