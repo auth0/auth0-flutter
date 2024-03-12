@@ -44,8 +44,6 @@ class WebAuthentication {
   ///
   /// Additional notes:
   ///
-  /// * (iOS/macOS only): [useEphemeralSession] controls whether shared persistent
-  /// storage is used for cookies. [Read more on the effects this setting has](https://github.com/auth0/auth0-flutter/blob/main/auth0_flutter/FAQ.md#2-how-can-i-disable-the-ios-login-alert-box).
   /// * [audience] relates to the API Identifier you want to reference in your
   /// access tokens. See [API settings](https://auth0.com/docs/get-started/apis/api-settings)
   /// to learn more.
@@ -63,6 +61,14 @@ class WebAuthentication {
   /// default `ASWebAuthenticationSession`. You will also need to
   /// [configure your iOS app to automatically resume](https://github.com/auth0/auth0-flutter/blob/main/auth0_flutter/FAQ.md#use-sfsafariviewcontroller)
   /// the Web Auth operation after login.
+  /// * (iOS/macOS only): [useHTTPS] controls whether to use `https` as the
+  /// scheme for the redirect URL on iOS 17.4+ and macOS 14.4+. When set to
+  /// `true`, the bundle identifier of the app will be used as a custom scheme
+  /// on older versions of iOS and macOS. Requires an Associated Domain
+  /// configured with the `webcredentials` service type, set to your Auth0
+  /// domain –or custom domain, if you have one.
+  /// * (iOS/macOS only): [useEphemeralSession] controls whether shared persistent
+  /// storage is used for cookies. [Read more on the effects this setting has](https://github.com/auth0/auth0-flutter/blob/main/auth0_flutter/FAQ.md#2-how-can-i-disable-the-ios-login-alert-box).
   Future<Credentials> login(
       {final String? audience,
       final Set<String> scopes = const {
@@ -74,6 +80,7 @@ class WebAuthentication {
       final String? redirectUrl,
       final String? organizationId,
       final String? invitationUrl,
+      final bool useHTTPS = false,
       final bool useEphemeralSession = false,
       final Map<String, String> parameters = const {},
       final IdTokenValidationConfig idTokenValidationConfig =
@@ -89,6 +96,7 @@ class WebAuthentication {
             parameters: parameters,
             idTokenValidationConfig: idTokenValidationConfig,
             scheme: _scheme,
+            useHTTPS: useHTTPS,
             useEphemeralSession: useEphemeralSession,
             safariViewController: safariViewController)));
 
@@ -106,9 +114,18 @@ class WebAuthentication {
   /// Android, or the bundle identifier on iOS/macOS. [returnTo] must appear in your
   /// **Allowed Logout URLs** list for the Auth0 app.
   /// [Read more about redirecting users after logout](https://auth0.com/docs/authenticate/login/logout#redirect-users-after-logout).
-  Future<void> logout({final String? returnTo}) async {
+  ///
+  /// [useHTTPS] (iOS/macOS only) controls whether to use `https` as the scheme
+  /// for the return URL on iOS 17.4+ and macOS 14.4+. When set to `true`, the
+  /// bundle identifier of the app will be used as a custom scheme on older
+  /// versions of iOS and macOS. Requires an Associated Domain configured with
+  /// the `webcredentials` service type, set to your Auth0 domain –or custom
+  /// domain, if you have one.
+  Future<void> logout(
+      {final String? returnTo, final bool useHTTPS = false}) async {
     await Auth0FlutterWebAuthPlatform.instance.logout(_createWebAuthRequest(
-      WebAuthLogoutOptions(returnTo: returnTo, scheme: _scheme),
+      WebAuthLogoutOptions(
+          returnTo: returnTo, scheme: _scheme, useHTTPS: useHTTPS),
     ));
     await _credentialsManager?.clearCredentials();
   }

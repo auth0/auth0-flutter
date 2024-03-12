@@ -29,7 +29,7 @@ class WebAuthLoginHandlerTests: XCTestCase {
 
 extension WebAuthLoginHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
-        let keys: [Argument] = [.useEphemeralSession, .scopes, .parameters]
+        let keys: [Argument] = [.useHTTPS, .useEphemeralSession, .scopes, .parameters]
         let expectations = keys.map { expectation(description: "\($0.rawValue) is missing") }
         for (argument, currentExpectation) in zip(keys, expectations) {
             sut.handle(with: arguments(without: argument)) { result in
@@ -59,6 +59,19 @@ extension WebAuthLoginHandlerTests {
 // MARK: - Arguments
 
 extension WebAuthLoginHandlerTests {
+
+    // MARK: useHTTPS
+
+    func testEnablesUseHTTPS() {
+        let value = true
+        sut.handle(with: arguments(withKey: Argument.useHTTPS, value: value)) { _ in }
+        XCTAssertEqual(spy.useHTTPSValue, value)
+    }
+
+    func testDoesNotEnableUseHTTPSWhenFalse() {
+        sut.handle(with: arguments(withKey: Argument.useHTTPS, value: false)) { _ in }
+        XCTAssertNil(spy.useHTTPSValue)
+    }
 
     // MARK: useEphemeralSession
 
@@ -249,6 +262,7 @@ extension WebAuthLoginHandlerTests {
         var values: [String: Any] = [
             Argument.scopes.rawValue: [],
             Argument.parameters.rawValue: [:],
+            Argument.useHTTPS.rawValue: false,
             Argument.useEphemeralSession.rawValue: false,
             Argument.audience.rawValue: "",
             Argument.redirectUrl.rawValue: "https://example.com",
