@@ -47,7 +47,7 @@ Head to the [Auth0 Dashboard](https://manage.auth0.com/#/applications/) and crea
 
 Select the **Settings** tab of your [application's page](https://manage.auth0.com/#/applications/) and ensure that **Application Type** is set to `Native`.
 
-Then, scroll down and select the **Show Advanced Settings** link. Under **Advanced Settings**, select the **OAuth** tab and verify the following:
+Scroll down and select the **Show Advanced Settings** link. Under **Advanced Settings**, select the **OAuth** tab and verify the following:
 
 - Ensure that **JsonWebToken Signature Algorithm** is set to `RS256`
 - Ensure that **OIDC Conformant** is enabled
@@ -56,11 +56,19 @@ Finally, if you made any changes don't forget to scroll to the end and press the
 
 </details>
 
-Next, configure the following URLs for your application under the **Application URIs** section of the **Settings** page, for both **Allowed Callback URLs** and **Allowed Logout URLs**:
+##### Configure the callback and logout URLs
+
+The callback and logout URLs are the URLs that Auth0 invokes to redirect back to your app. Auth0 invokes the callback URL after authenticating the user, and the logout URL after removing the session cookie.
+
+> 💡 On iOS 17.4+ and macOS 14.4+ it is possible to use Universal Links as callback and logout URLs. When enabled, auth0_flutter will fall back to using a custom URL scheme on older iOS / macOS versions.
+>
+> **This feature requires Xcode 15.3+ and a paid Apple Developer account**.
+
+Under the **Application URIs** section of the **Settings** page, configure the following URLs for your application for both **Allowed Callback URLs** and **Allowed Logout URLs**:
 
 - Android: `SCHEME://YOUR_DOMAIN/android/YOUR_PACKAGE_NAME/callback`
-- iOS: `YOUR_BUNDLE_ID://YOUR_DOMAIN/ios/YOUR_BUNDLE_ID/callback`
-- macOS: `YOUR_BUNDLE_ID://YOUR_DOMAIN/macos/YOUR_BUNDLE_ID/callback`
+- iOS: `https://YOUR_DOMAIN/ios/YOUR_BUNDLE_ID/callback,YOUR_BUNDLE_ID://YOUR_DOMAIN/ios/YOUR_BUNDLE_ID/callback`
+- macOS: `https://YOUR_DOMAIN/macos/YOUR_BUNDLE_ID/callback,YOUR_BUNDLE_ID://YOUR_DOMAIN/macos/YOUR_BUNDLE_ID/callback`
 
 <details>
   <summary>Example</summary>
@@ -68,12 +76,20 @@ Next, configure the following URLs for your application under the **Application 
 If your Auth0 domain was `company.us.auth0.com` and your package name (Android) or bundle ID (iOS/macOS) was `com.company.myapp`, then these values would be:
 
 - Android: `https://company.us.auth0.com/android/com.company.myapp/callback`
-- iOS: `com.company.myapp://company.us.auth0.com/ios/com.company.myapp/callback`
-- macOS: `com.company.myapp://company.us.auth0.com/macos/com.company.myapp/callback`
+- iOS: `https://company.us.auth0.com/ios/com.company.myapp/callback,com.company.myapp://company.us.auth0.com/ios/com.company.myapp/callback`
+- macOS: `https://company.us.auth0.com/macos/com.company.myapp/callback,com.company.myapp://company.us.auth0.com/macos/com.company.myapp/callback`
 
 </details>
 
-Take note of the **client ID** and **domain** values under the **Basic Information** section. You'll need these values in the next step.
+Take note of the **client ID** and **domain** values under the **Basic Information** section. You will need these values to configure the SDK.
+
+##### Configure the Team ID and bundle identifier
+
+Scroll to the end of the **Settings** page and open **Advanced Settings > Device Settings**. In the **iOS** section, set **Team ID** to your [Apple Team ID](https://developer.apple.com/help/account/manage-your-team/locate-your-team-id/), and **App ID** to your app's bundle identifier.
+
+![Screenshot of the iOS section inside the Settings page of the Auth0 application](https://github.com/auth0/Auth0.swift/assets/5055789/7eb5f6a2-7cc7-4c70-acf3-633fd72dc506)
+
+This will add your app to your Auth0 tenant's `apple-app-site-association` file.
 
 #### 🌐 Web
 
@@ -188,37 +204,34 @@ Re-declare the activity manually using `tools:node="remove"` in the `android/src
 
 > 💡 If your Android app is using [product flavors](https://developer.android.com/studio/build/build-variants#product-flavors), you might need to specify different manifest placeholders for each flavor.
 
-##### iOS/macOS: Configure custom URL scheme
+##### iOS/macOS: Add the associated domain capability
 
-There is an `Info.plist` file in the `ios/Runner` (or `macos/Runner`, for macOS) directory of your app. Open it and add the following snippet inside the top-level `<dict>` tag. This registers your iOS/macOS bundle identifier as a custom URL scheme, so the callback and logout URLs can reach your app.
+> ⚠️ This step requires a paid Apple Developer account. It is needed to use Universal Links as callback and logout URLs.
+> Skip this step to use a custom URL scheme instead.
 
-```xml
-<!-- Info.plist -->
+In Xcode, go to the **Signing and Capabilities** [tab](https://developer.apple.com/documentation/xcode/adding-capabilities-to-your-app#Add-a-capability) of your app's target settings, and press the **+ Capability** button. Then select **Associated Domains**.
 
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-<!-- ... -->
-    <key>CFBundleURLTypes</key>
-    <array>
-        <dict>
-            <key>CFBundleTypeRole</key>
-            <string>None</string>
-            <key>CFBundleURLName</key>
-            <string>auth0</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-            </array>
-        </dict>
-    </array>
-<!-- ... -->
-</dict>
-</plist>
+![Screenshot of the capabilities library inside Xcode](https://github.com/auth0/Auth0.swift/assets/5055789/3f7b0a70-c36c-46bf-9441-29f98724204a)
+
+Next, add the following [entry](https://developer.apple.com/documentation/xcode/configuring-an-associated-domain#Define-a-service-and-its-associated-domain) under **Associated Domains**:
+
+```text
+webcredentials:YOUR_AUTH0_DOMAIN
 ```
 
-> 💡 If you're opening the `Info.plist` file in Xcode and it is not being shown in this format, you can **Right Click** on `Info.plist` in the Xcode [project navigator](https://developer.apple.com/documentation/bundleresources/information_property_list/managing_your_app_s_information_property_list) and then select **Open As > Source Code**.
+<details>
+  <summary>Example</summary>
+
+If your Auth0 Domain were `example.us.auth0.com`, then this value would be:
+
+```text
+webcredentials:example.us.auth0.com
+```
+</details>
+
+If you have a [custom domain](https://auth0.com/docs/customize/custom-domains), replace `YOUR_AUTH0_DOMAIN` with your custom domain.
+
+> ⚠️ For the associated domain to work, your app must be signed with your team certificate **even when building for the iOS simulator**. Make sure you are using the Apple Team whose Team ID is configured in the **Settings** page of your application.
 
 #### 🌐 Web
 
@@ -325,7 +338,7 @@ For other comprehensive examples, see the [EXAMPLES.md](EXAMPLES.md) document.
 
 ### iOS SSO Alert Box
 
-![ios-sso-alert](https://user-images.githubusercontent.com/5055789/198689762-8f3459a7-fdde-4c14-a13b-68933ef675e6.png)
+![Screenshot of the SSO alert box](https://user-images.githubusercontent.com/5055789/198689762-8f3459a7-fdde-4c14-a13b-68933ef675e6.png)
 
 Check the [FAQ](FAQ.md) for more information about the alert box that pops up **by default** when using web authentication on iOS.
 
@@ -395,18 +408,16 @@ To provide feedback or report a bug, please [raise an issue on our issue tracker
 
 Please do not report security vulnerabilities on the public GitHub issue tracker. The [Responsible Disclosure Program](https://auth0.com/responsible-disclosure-policy) details the procedure for disclosing security issues.
 
-## What is Auth0?
+---
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://cdn.auth0.com/website/sdks/logos/auth0_dark_mode.png" width="150">
     <source media="(prefers-color-scheme: light)" srcset="https://cdn.auth0.com/website/sdks/logos/auth0_light_mode.png" width="150">
+    <source media="(prefers-color-scheme: dark)" srcset="https://cdn.auth0.com/website/sdks/logos/auth0_dark_mode.png" width="150">
     <img alt="Auth0 Logo" src="https://cdn.auth0.com/website/sdks/logos/auth0_light_mode.png" width="150">
   </picture>
 </p>
-<p align="center">
-  Auth0 is an easy-to-implement, adaptable authentication and authorization platform. To learn more checkout <a href="https://auth0.com/why-auth0">Why Auth0?</a>
-</p>
-<p align="center">
-  This project is licensed under the Apache 2.0 license. See the <a href="https://github.com/auth0/auth0-flutter/blob/main/LICENSE"> LICENSE</a> file for more info.
-</p>
+
+<p align="center">Auth0 is an easy-to-implement, adaptable authentication and authorization platform. To learn more check out <a href="https://auth0.com/why-auth0">Why Auth0?</a></p>
+
+<p align="center">This project is licensed under the MIT license. See the <a href="./LICENSE"> LICENSE</a> file for more info.</p>
