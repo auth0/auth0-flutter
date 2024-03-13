@@ -61,7 +61,9 @@ Call the `logout()` method in the `onPressed` callback of your **Logout** button
 If you're using your own credentials storage, make sure to delete the credentials afterward.
 
 ```dart
-await auth0.webAuthentication().logout();
+// Use a Universal Link logout URL on iOS 17.4+ / macOS 14.4+
+// useHTTPS is ignored on Android
+await auth0.webAuthentication().logout(useHTTPS: true);
 ```
 
 </details>

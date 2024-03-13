@@ -262,7 +262,10 @@ Finally, in your `index.html` add the following `<script>` tag:
 Present the [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login) page in the `onPressed` callback of your **Login** button.
 
 ```dart
-final credentials = await auth0.webAuthentication().login();
+// Use a Universal Link callback URL on iOS 17.4+ / macOS 14.4+
+// useHTTPS is ignored on Android
+final credentials = await auth0.webAuthentication().login(useHTTPS: true);
+
 // Access token -> credentials.accessToken
 // User profile -> credentials.user
 ```
