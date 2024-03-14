@@ -209,7 +209,7 @@ Re-declare the activity manually using `tools:node="remove"` in the `android/src
 > ⚠️ This step requires a paid Apple Developer account. It is needed to use Universal Links as callback and logout URLs.
 > Skip this step to use a custom URL scheme instead.
 
-In Xcode, go to the **Signing and Capabilities** [tab](https://developer.apple.com/documentation/xcode/adding-capabilities-to-your-app#Add-a-capability) of your app's target settings, and press the **+ Capability** button. Then select **Associated Domains**.
+Open your app in Xcode by running `open ios/Runner.xcworkspace` (or `open macos/Runner.xcworkspace` for macOS). Go to the **Signing and Capabilities** [tab](https://developer.apple.com/documentation/xcode/adding-capabilities-to-your-app#Add-a-capability) of the **Runner** target settings, and press the **+ Capability** button. Then select **Associated Domains**.
 
 ![Screenshot of the capabilities library inside Xcode](https://github.com/auth0/Auth0.swift/assets/5055789/3f7b0a70-c36c-46bf-9441-29f98724204a)
 
