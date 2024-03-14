@@ -86,7 +86,7 @@ You still need to call `logout()` on Android, though, as `useEphemeralSession` i
 
 #### Use `SFSafariViewController`
 
-An alternative is to use `SFSafariViewController` instead of `ASWebAuthenticationSession`. See [EXAMPLES.md](./EXAMPLES.md#using-sfsafariviewcontroller-ios-only).
+An alternative is to use `SFSafariViewController` instead of `ASWebAuthenticationSession`. See [EXAMPLES.md](./EXAMPLES.md#using-sfsafariviewcontroller-ios-only) to learn more.
 
 ### 3. How can I disable the iOS _logout_ alert box?
 
