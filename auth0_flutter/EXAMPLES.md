@@ -253,7 +253,7 @@ auth0_flutter supports using `SFSafariViewController` as the browser instead of 
 
 ![Screenshoot of SFSafariViewController's documentation](https://github.com/auth0/auth0-flutter/assets/5055789/952aa669-f229-4e6e-bb7e-527b701bdea6)
 
-This is the case for login, but not for logout. Instead of calling `logout()`, you can delete the stored credentials –using the [Credentials Manager](#-credentials-manager)– and use `'prompt': 'login'` to force the login page even if the session cookie is still present. Since the cookies stored by `SFSafariViewController` are scoped to your app, this should not pose an issue.
+This is the case for login, but not for logout. Instead of calling `logout()`, you can delete the stored credentials –using the Credentials Manager's `clearCredentials()` method– and use `'prompt': 'login'` to force the login page even if the session cookie is still present. Since the cookies stored by `SFSafariViewController` are scoped to your app, this should not pose an issue.
 
 ```dart
 await auth0.webAuthentication().login(
