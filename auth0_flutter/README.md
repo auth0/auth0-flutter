@@ -45,7 +45,7 @@ Head to the [Auth0 Dashboard](https://manage.auth0.com/#/applications/) and crea
 <details>
   <summary>Using an existing <strong>Native</strong> application?</summary>
 
-Select the **Settings** tab of your [application's page](https://manage.auth0.com/#/applications/) and ensure that **Application Type** is set to `Native`.
+Select the **Settings** tab of your [application's page](https://manage.auth0.com/#/applications/) and ensure that **Application Type** is set to `Native`. Avoid using other application types, as they have different configurations and may cause errors.
 
 Scroll down and select the **Show Advanced Settings** link. Under **Advanced Settings**, select the **OAuth** tab and verify the following:
 
@@ -81,15 +81,7 @@ If your Auth0 domain was `company.us.auth0.com` and your package name (Android) 
 
 </details>
 
-Take note of the **client ID** and **domain** values under the **Basic Information** section. You will need these values to configure the SDK.
-
-##### Configure the Team ID and bundle identifier
-
-Scroll to the end of the **Settings** page and open **Advanced Settings > Device Settings**. In the **iOS** section, set **Team ID** to your [Apple Team ID](https://developer.apple.com/help/account/manage-your-team/locate-your-team-id/), and **App ID** to your app's bundle identifier.
-
-![Screenshot of the iOS section inside the Settings page of the Auth0 application](https://github.com/auth0/Auth0.swift/assets/5055789/7eb5f6a2-7cc7-4c70-acf3-633fd72dc506)
-
-This will add your app to your Auth0 tenant's `apple-app-site-association` file.
+Take note of the **client ID** and **domain** values under the **Basic Information** section. You'll need these values in the next step.
 
 #### 🌐 Web
 
@@ -204,16 +196,22 @@ Re-declare the activity manually using `tools:node="remove"` in the `android/src
 
 > 💡 If your Android app is using [product flavors](https://developer.android.com/studio/build/build-variants#product-flavors), you might need to specify different manifest placeholders for each flavor.
 
-##### iOS/macOS: Add the associated domain capability
+##### iOS/macOS: Configure the associated domain
 
 > ⚠️ This step requires a paid Apple Developer account. It is needed to use Universal Links as callback and logout URLs.
 > Skip this step to use a custom URL scheme instead.
 
-Open your app in Xcode by running `open ios/Runner.xcworkspace` (or `open macos/Runner.xcworkspace` for macOS). Go to the **Signing and Capabilities** [tab](https://developer.apple.com/documentation/xcode/adding-capabilities-to-your-app#Add-a-capability) of the **Runner** target settings, and press the **+ Capability** button. Then select **Associated Domains**.
+Select the **Settings** tab of your [application's page](https://manage.auth0.com/#/applications/), scroll to the end, and open **Advanced Settings > Device Settings**. In the **iOS** section, set **Team ID** to your [Apple Team ID](https://developer.apple.com/help/account/manage-your-team/locate-your-team-id/), and **App ID** to your app's bundle identifier.
+
+![Screenshot of the iOS section inside the Settings page of the Auth0 application](https://github.com/auth0/Auth0.swift/assets/5055789/7eb5f6a2-7cc7-4c70-acf3-633fd72dc506)
+
+This will add your app to your Auth0 tenant's `apple-app-site-association` file.
+
+Next, open your app in Xcode by running `open ios/Runner.xcworkspace` (or `open macos/Runner.xcworkspace` for macOS). Go to the **Signing and Capabilities** [tab](https://developer.apple.com/documentation/xcode/adding-capabilities-to-your-app#Add-a-capability) of the **Runner** target settings, and press the **+ Capability** button. Then select **Associated Domains**.
 
 ![Screenshot of the capabilities library inside Xcode](https://github.com/auth0/Auth0.swift/assets/5055789/3f7b0a70-c36c-46bf-9441-29f98724204a)
 
-Next, add the following [entry](https://developer.apple.com/documentation/xcode/configuring-an-associated-domain#Define-a-service-and-its-associated-domain) under **Associated Domains**:
+Under **Associated Domains**, add the following [entry](https://developer.apple.com/documentation/xcode/configuring-an-associated-domain#Define-a-service-and-its-associated-domain):
 
 ```text
 webcredentials:YOUR_AUTH0_DOMAIN
