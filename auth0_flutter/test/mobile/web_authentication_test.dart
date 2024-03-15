@@ -60,6 +60,7 @@ void main() {
               invitationUrl: 'invitation_url',
               organizationId: 'org_123',
               redirectUrl: 'redirect_url',
+              useHTTPS: true,
               useEphemeralSession: true,
               safariViewController: const SafariViewController(
                   presentationStyle:
@@ -75,6 +76,7 @@ void main() {
       expect(verificationResult.options.invitationUrl, 'invitation_url');
       expect(verificationResult.options.organizationId, 'org_123');
       expect(verificationResult.options.redirectUrl, 'redirect_url');
+      expect(verificationResult.options.useHTTPS, true);
       expect(verificationResult.options.useEphemeralSession, true);
       expect(
           verificationResult.options.safariViewController,
@@ -91,13 +93,7 @@ void main() {
       when(mockedCMPlatform.saveCredentials(any))
           .thenAnswer((final _) async => true);
 
-      await Auth0('test-domain', 'test-clientId').webAuthentication().login(
-          audience: 'test-audience',
-          scopes: {'a', 'b'},
-          invitationUrl: 'invitation_url',
-          organizationId: 'org_123',
-          redirectUrl: 'redirect_url',
-          useEphemeralSession: true);
+      await Auth0('test-domain', 'test-clientId').webAuthentication().login();
 
       final verificationResult =
           verify(mockedCMPlatform.saveCredentials(captureAny)).captured.single
@@ -116,13 +112,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .webAuthentication(useCredentialsManager: false)
-          .login(
-              audience: 'test-audience',
-              scopes: {'a', 'b'},
-              invitationUrl: 'invitation_url',
-              organizationId: 'org_123',
-              redirectUrl: 'redirect_url',
-              useEphemeralSession: true);
+          .login();
 
       verifyNever(mockedCMPlatform.saveCredentials(any));
     });
@@ -138,13 +128,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId', credentialsManager: mockCm)
           .webAuthentication()
-          .login(
-              audience: 'test-audience',
-              scopes: {'a', 'b'},
-              invitationUrl: 'invitation_url',
-              organizationId: 'org_123',
-              redirectUrl: 'redirect_url',
-              useEphemeralSession: true);
+          .login();
 
       // Verify it doesn't call our own Platform Interface when providing a
       // custom CredentialsManager
@@ -179,21 +163,32 @@ void main() {
       expect(result, TestPlatform.loginResult);
     });
 
+    test('does not use HTTPS redirect URLs by default', () async {
+      when(mockedPlatform.login(any))
+          .thenAnswer((final _) async => TestPlatform.loginResult);
+      when(mockedCMPlatform.saveCredentials(any))
+          .thenAnswer((final _) async => true);
+
+      await Auth0('test-domain', 'test-clientId').webAuthentication().login();
+
+      final verificationResult = verify(mockedPlatform.login(captureAny))
+          .captured
+          .single as WebAuthRequest<WebAuthLoginOptions>;
+      expect(verificationResult.options.useHTTPS, false);
+    });
+
     test('does not use EphemeralSession by default', () async {
       when(mockedPlatform.login(any))
           .thenAnswer((final _) async => TestPlatform.loginResult);
       when(mockedCMPlatform.saveCredentials(any))
           .thenAnswer((final _) async => true);
 
-      final result = await Auth0('test-domain', 'test-clientId')
-          .webAuthentication()
-          .login(audience: 'test-audience', scopes: {'a', 'b'});
+      await Auth0('test-domain', 'test-clientId').webAuthentication().login();
 
       final verificationResult = verify(mockedPlatform.login(captureAny))
           .captured
           .single as WebAuthRequest<WebAuthLoginOptions>;
       expect(verificationResult.options.useEphemeralSession, false);
-      expect(result, TestPlatform.loginResult);
     });
   });
 
@@ -205,13 +200,14 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .webAuthentication()
-          .logout(returnTo: 'abc');
+          .logout(useHTTPS: true, returnTo: 'abc');
 
       final verificationResult = verify(mockedPlatform.logout(captureAny))
           .captured
           .single as WebAuthRequest<WebAuthLogoutOptions>;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
+      expect(verificationResult.options.useHTTPS, true);
       expect(verificationResult.options.returnTo, 'abc');
     });
 
@@ -220,9 +216,7 @@ void main() {
       when(mockedCMPlatform.clearCredentials(any))
           .thenAnswer((final _) async => true);
 
-      await Auth0('test-domain', 'test-clientId')
-          .webAuthentication()
-          .logout(returnTo: 'abc');
+      await Auth0('test-domain', 'test-clientId').webAuthentication().logout();
 
       final verificationResult =
           verify(mockedCMPlatform.clearCredentials(captureAny)).captured.single
@@ -239,7 +233,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .webAuthentication(useCredentialsManager: false)
-          .logout(returnTo: 'abc');
+          .logout();
 
       verifyNever(mockedCMPlatform.clearCredentials(any));
     });
@@ -254,7 +248,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId', credentialsManager: mockCm)
           .webAuthentication()
-          .logout(returnTo: 'abc');
+          .logout();
 
       // Verify it doesn't call our own Platform Interface when providing a
       //custom CredentialsManager

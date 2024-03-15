@@ -2,6 +2,7 @@ import '../login_options.dart';
 import 'safari_view_controller.dart';
 
 class WebAuthLoginOptions extends LoginOptions {
+  final bool useHTTPS;
   final bool useEphemeralSession;
   final String? scheme;
   final SafariViewController? safariViewController;
@@ -14,14 +15,16 @@ class WebAuthLoginOptions extends LoginOptions {
       super.redirectUrl,
       super.scopes,
       super.parameters,
-      this.scheme,
+      this.useHTTPS = false,
       this.useEphemeralSession = false,
+      this.scheme,
       this.safariViewController});
 
   @override
   Map<String, dynamic> toMap() {
     final map = {
       ...super.toMap(),
+      'useHTTPS': useHTTPS,
       'useEphemeralSession': useEphemeralSession,
       'scheme': scheme,
       ...safariViewController != null
