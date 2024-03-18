@@ -1,5 +1,11 @@
 # Change Log
 
+## [afpi-v1.6.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.6.0) (2024-03-18)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.5.0...afpi-v1.6.0)
+
+**Added**
+- Add support for HTTPS redirect URLs [SDK-4754] [\#417](https://github.com/auth0/auth0-flutter/pull/417) ([Widcket](https://github.com/Widcket))
+
 ## [afpi-v1.5.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.5.0) (2023-12-15)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.4.0...afpi-v1.5.0)
 
