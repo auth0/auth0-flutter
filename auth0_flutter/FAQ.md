@@ -60,14 +60,13 @@ Alternatively, you can re-declare the `RedirectActivity` in the `android/app/src
 
 ### 2. How can I disable the iOS _login_ alert box?
 
-![ios-sso-alert](https://user-images.githubusercontent.com/5055789/198689762-8f3459a7-fdde-4c14-a13b-68933ef675e6.png)
+![Screenshot of the SSO alert box](https://user-images.githubusercontent.com/5055789/198689762-8f3459a7-fdde-4c14-a13b-68933ef675e6.png)
 
 Auth0.swift uses `ASWebAuthenticationSession` to perform web-based authentication, which is the [API provided by Apple](https://developer.apple.com/documentation/authenticationservices/aswebauthenticationsession) for such purpose.
 
 That alert box is displayed and managed by `ASWebAuthenticationSession`, not by Auth0.swift, because by default this API will store the session cookie in the shared Safari cookie jar. This makes Single Sign-On (SSO) possible. According to Apple, that requires user consent.
 
-> **Note**
-> See [this blog post](https://developer.okta.com/blog/2022/01/13/mobile-sso) for a detailed overview of SSO on iOS.
+> 💡 See [this blog post](https://developer.okta.com/blog/2022/01/13/mobile-sso) for a detailed overview of SSO on iOS.
 
 #### Use ephemeral sessions
 
@@ -83,56 +82,15 @@ Note that with `useEphemeralSession: true` you don't need to call `logout()` at 
 
 You still need to call `logout()` on Android, though, as `useEphemeralSession` is iOS/macOS only.
 
-> **Warning** > `useEphemeralSession` relies on the `prefersEphemeralWebBrowserSession` configuration option of `ASWebAuthenticationSession`.
+> ⚠️ `useEphemeralSession` relies on the `prefersEphemeralWebBrowserSession` configuration option of `ASWebAuthenticationSession`.
 
 #### Use `SFSafariViewController`
 
-An alternative is to use `SFSafariViewController` instead of `ASWebAuthenticationSession`. You can do so by setting the `safariViewController` property during login:
-
-```dart
-await auth0
-    .webAuthentication()
-    .login(safariViewController: const SafariViewController());
-```
-
-> **Note**
-> Since `SFSafariViewController` does not share cookies with the Safari app, SSO will not work either. But it will keep its own cookies, so you can use it to perform SSO between your app and your website as long as you open it inside your app using `SFSafariViewController`. This also means that any feature that relies on the persistence of cookies will work as expected.
-
-If you choose to use `SFSafariViewController`, you need to perform an additional bit of setup. Unlike `ASWebAuthenticationSession`, `SFSafariViewController` will not automatically capture the callback URL when Auth0 redirects back to your app, so it's necessary to manually resume the Web Auth operation.
-
-<details>
-  <summary>Using the UIKit app lifecycle</summary>
-
-```swift
-// AppDelegate.swift
-
-override func application(_ app: UIApplication,
-                 open url: URL,
-                 options: [UIApplication.OpenURLOptionsKey: Any]) -> Bool {
-    WebAuthentication.resume(with: url)
-    return super.application(application, open: url, options: options);
-}
-```
-
-</details>
-
-<details>
-  <summary>Using the UIKit app lifecycle with Scenes</summary>
-
-```swift
-// SceneDelegate.swift
-
-func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-    guard let url = URLContexts.first?.url else { return }
-    WebAuthentication.resume(with: url)
-}
-```
-
-</details>
+An alternative is to use `SFSafariViewController` instead of `ASWebAuthenticationSession`. See [EXAMPLES.md](./EXAMPLES.md#using-sfsafariviewcontroller-ios-only) to learn more.
 
 ### 3. How can I disable the iOS _logout_ alert box?
 
-![ios-sso-alert](https://user-images.githubusercontent.com/5055789/198689762-8f3459a7-fdde-4c14-a13b-68933ef675e6.png)
+![Screenshot of the SSO alert box](https://user-images.githubusercontent.com/5055789/198689762-8f3459a7-fdde-4c14-a13b-68933ef675e6.png)
 
 Since `logout()` on iOS also needs to use `ASWebAuthenticationSession` to clear the shared session cookie, the same alert box will be displayed.
 
@@ -148,8 +106,7 @@ final credentials = await auth0.webAuthentication().login(
 
 Otherwise, the browser modal will close right away and the user will be automatically logged in again, as the cookie will still be there.
 
-> **Warning**
-> Keeping the shared session cookie may not be an option if you have strong privacy and/or security requirements, for example in the case of a banking app.
+> ⚠️ Keeping the shared session cookie may not be an option if you have strong privacy and/or security requirements, for example in the case of a banking app.
 
 ### 4. How can I change the message in the iOS alert box?
 

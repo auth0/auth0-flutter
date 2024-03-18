@@ -7,6 +7,9 @@
   - [Adding scopes](#adding-scopes)
   - [Adding custom parameters](#adding-custom-parameters)
   - [ID token validation](#id-token-validation)
+  - [Using `SFSafariViewController` (iOS only)](#using-sfsafariviewcontroller-ios-only)
+    - [1. Configure a custom URL scheme](#1-configure-a-custom-url-scheme)
+    - [2. Capture the callback URL](#2-capture-the-callback-url)
   - [Errors](#errors)
   - [Android: Custom schemes](#android-custom-schemes)
 - [📱 Credentials Manager](#-credentials-manager)
@@ -38,6 +41,9 @@
   - [Adding scopes](#adding-scopes)
   - [Adding custom parameters](#adding-custom-parameters)
   - [ID token validation](#id-token-validation)
+  - [Using `SFSafariViewController` (iOS only)](#using-sfsafariviewcontroller-ios-only)
+    - [1. Configure a custom URL scheme](#1-configure-a-custom-url-scheme)
+    - [2. Capture the callback URL](#2-capture-the-callback-url)
   - [Errors](#errors)
   - [Android: Custom schemes](#android-custom-schemes)
 
@@ -55,7 +61,9 @@ Call the `logout()` method in the `onPressed` callback of your **Logout** button
 If you're using your own credentials storage, make sure to delete the credentials afterward.
 
 ```dart
-await auth0.webAuthentication().logout();
+// Use a Universal Link logout URL on iOS 17.4+ / macOS 14.4+
+// useHTTPS is ignored on Android
+await auth0.webAuthentication().logout(useHTTPS: true);
 ```
 
 </details>
@@ -235,6 +243,88 @@ The `max_age` value can be configured through `loginWithRedirect()` and `loginWi
 await auth0Web.loginWithRedirect(
     redirectUrl: 'http://localhost:3000',
     maxAge: 7200);
+```
+
+</details>
+
+### Using `SFSafariViewController` (iOS only)
+
+auth0_flutter supports using `SFSafariViewController` as the browser instead of `ASWebAuthenticationSession`. Note that it can only be used for login, not for logout. According to its docs, `SFSafariViewController` must be used "to visibly present information to users":
+
+![Screenshot of SFSafariViewController's documentation](https://github.com/auth0/auth0-flutter/assets/5055789/952aa669-f229-4e6e-bb7e-527b701bdea6)
+
+This is the case for login, but not for logout. Instead of calling `logout()`, you can delete the stored credentials –using the Credentials Manager's `clearCredentials()` method– and use `'prompt': 'login'` to force the login page even if the session cookie is still present. Since the cookies stored by `SFSafariViewController` are scoped to your app, this should not pose an issue.
+
+```dart
+await auth0.webAuthentication().login(
+      safariViewController: const SafariViewController(),
+      parameters: {'prompt': 'login'}); // Ignore the cookie (if present) and show the login page
+```
+
+> 💡 `SFSafariViewController` does not support using a Universal Link as callback URL. See https://auth0.github.io/Auth0.swift/documentation/auth0/useragents to learn more about the differences between `ASWebAuthenticationSession` and `SFSafariViewController`.
+
+If you choose to use `SFSafariViewController`, you need to perform an additional bit of setup. Unlike `ASWebAuthenticationSession`, `SFSafariViewController` will not automatically capture the callback URL when Auth0 redirects back to your app, so it is necessary to manually resume the login operation.
+
+#### 1. Configure a custom URL scheme
+
+There is an `Info.plist` file in the `ios/Runner` (or `macos/Runner`, for macOS) directory of your app. Open it and add the following snippet inside the top-level `<dict>` tag. This registers your iOS/macOS bundle identifier as a custom URL scheme, so the callback URL can reach your app.
+
+```xml
+<!-- Info.plist -->
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+<!-- ... -->
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>None</string>
+            <key>CFBundleURLName</key>
+            <string>auth0</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+            </array>
+        </dict>
+    </array>
+<!-- ... -->
+</dict>
+</plist>
+```
+
+> 💡 If you're opening the `Info.plist` file in Xcode and it is not being shown in this format, you can **Right Click** on `Info.plist` in the Xcode [project navigator](https://developer.apple.com/documentation/bundleresources/information_property_list/managing_your_app_s_information_property_list) and then select **Open As > Source Code**.
+
+#### 2. Capture the callback URL
+
+<details>
+  <summary>Using the UIKit app lifecycle</summary>
+
+```swift
+// AppDelegate.swift
+
+override func application(_ app: UIApplication,
+                 open url: URL,
+                 options: [UIApplication.OpenURLOptionsKey: Any]) -> Bool {
+    WebAuthentication.resume(with: url)
+    return super.application(application, open: url, options: options);
+}
+```
+
+</details>
+
+<details>
+  <summary>Using the UIKit app lifecycle with Scenes</summary>
+
+```swift
+// SceneDelegate.swift
+
+func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+    guard let url = URLContexts.first?.url else { return }
+    WebAuthentication.resume(with: url)
+}
 ```
 
 </details>
