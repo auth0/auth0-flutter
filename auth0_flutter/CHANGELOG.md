@@ -1,5 +1,11 @@
 # Change Log
 
+## [af-v1.7.1](https://github.com/auth0/auth0-flutter/tree/af-v1.7.1) (2024-05-03)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.7.0...af-v1.7.1)
+
+**Fixed**
+- (af) chore: upgraded dependency on Auth0.swift to 2.7.1 to fix the declaration of privacy manifest [\#448](https://github.com/auth0/auth0-flutter/pull/448) ([desusai7](https://github.com/desusai7))
+
 ## [af-v1.7.0](https://github.com/auth0/auth0-flutter/tree/af-v1.7.0) (2024-04-22)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.6.0...af-v1.7.0)
 
