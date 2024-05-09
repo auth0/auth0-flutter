@@ -1,5 +1,12 @@
 # Change Log
 
+## [af-v1.7.2](https://github.com/auth0/auth0-flutter/tree/af-v1.7.2) (2024-05-09)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.7.1...af-v1.7.2)
+
+**Fixed**
+- (af) chore: upgraded dependency on Auth0.swift to 2.7.2 [\#451](https://github.com/auth0/auth0-flutter/pull/451) ([desusai7](https://github.com/desusai7))
+- ci: upgraded setup-ruby action version to 1.176.0 [\#452](https://github.com/auth0/auth0-flutter/pull/452) ([desusai7](https://github.com/desusai7))
+
 ## [af-v1.7.1](https://github.com/auth0/auth0-flutter/tree/af-v1.7.1) (2024-05-03)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.7.0...af-v1.7.1)
 
