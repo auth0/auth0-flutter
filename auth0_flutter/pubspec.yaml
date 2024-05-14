@@ -13,7 +13,7 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  js: ^0.6.4
+  js: ">=0.6.4 <0.8.0"
 
 dependency_overrides:
   auth0_flutter_platform_interface:
