@@ -12,7 +12,7 @@ Auth0 SDK for Android, iOS, macOS, and web Flutter apps.
 
 ## Getting Started
 
-See the README of the [auth0_flutter](./auth0_flutter#readme) package.
+See the README of the [auth0_flutter](./auth0_flutter#readme) package. (Testing CI)
 
 ## Issue Reporting
 
