@@ -154,7 +154,7 @@ class LoginWithOtpApiRequestHandlerTest {
         verify(mockResult).success(captor.capture())
 
         val sdf =
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US)
 
         val formattedDate = sdf.format(credentials.expiresAt)
 
