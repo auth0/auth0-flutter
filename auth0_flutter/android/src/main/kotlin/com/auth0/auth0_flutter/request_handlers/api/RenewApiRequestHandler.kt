@@ -10,6 +10,7 @@ import com.auth0.auth0_flutter.utils.assertHasProperties
 import io.flutter.plugin.common.MethodChannel
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.TimeZone
 
 private const val AUTH_RENEW_METHOD = "auth#renew"
 
@@ -48,6 +49,7 @@ class RenewApiRequestHandler : ApiRequestHandler {
                 val scope = credentials.scope?.split(" ") ?: listOf()
                 val sdf =
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"))
 
                 val formattedDate = sdf.format(credentials.expiresAt)
 

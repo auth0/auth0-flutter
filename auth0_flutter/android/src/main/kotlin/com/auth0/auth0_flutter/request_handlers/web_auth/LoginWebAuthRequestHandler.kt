@@ -71,6 +71,7 @@ class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest
                 val scopes = credentials.scope?.split(" ") ?: listOf()
                 val sdf =
                     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+                sdf.setTimeZone(TimeZone.getTimeZone("UTC"))
 
                 val formattedDate = sdf.format(credentials.expiresAt)
 
