@@ -8,8 +8,6 @@ import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.toMap
 import com.auth0.auth0_flutter.utils.assertHasProperties
 import io.flutter.plugin.common.MethodChannel
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 private const val AUTH_RENEW_METHOD = "auth#renew"
 
@@ -45,11 +43,11 @@ class RenewApiRequestHandler : ApiRequestHandler {
             }
 
             override fun onSuccess(credentials: Credentials) {
+                println("RenewApiRequestHandler::onSuccess credentials.expiresAt ${credentials.expiresAt}");
                 val scope = credentials.scope?.split(" ") ?: listOf()
-                val sdf =
-                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+                val formattedDate = credentials.expiresAt.toInstant().toString();
 
-                val formattedDate = sdf.format(credentials.expiresAt)
+                println("RenewApiRequestHandler::onSuccess formattedDate ${formattedDate}");
 
                 result.success(
                     mapOf(
