@@ -6,8 +6,7 @@ import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.utils.assertHasProperties
 import io.flutter.plugin.common.MethodChannel
-import java.text.SimpleDateFormat
-import java.time.LocalDate
+import java.time.Instant
 import java.util.*
 
 
@@ -32,15 +31,18 @@ class SaveCredentialsRequestHandler : CredentialsManagerRequestHandler {
             scope = scopes.joinToString(separator = " ")
         }
 
-        val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
-        val date = format.parse(credentials.get("expiresAt") as String)
+        println("SaveCredentialsRequestHandler::get " + credentials.get("expiresAt"))
+
+        val instant = Instant.parse(credentials.get("expiresAt") as String)
+
+        println("SaveCredentialsRequestHandler Instant::parse " + instant)
 
         credentialsManager.saveCredentials(Credentials(
             credentials.get("idToken") as String,
             credentials.get("accessToken") as String,
             credentials.get("tokenType") as String,
             credentials.get("refreshToken") as String?,
-            date,
+            Date.from(instant),
             scope,
         ))
         result.success(true)
