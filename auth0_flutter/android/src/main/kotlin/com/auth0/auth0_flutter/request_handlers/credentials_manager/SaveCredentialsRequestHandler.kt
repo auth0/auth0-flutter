@@ -31,11 +31,7 @@ class SaveCredentialsRequestHandler : CredentialsManagerRequestHandler {
             scope = scopes.joinToString(separator = " ")
         }
 
-        println("SaveCredentialsRequestHandler::get " + credentials.get("expiresAt"))
-
         val instant = Instant.parse(credentials.get("expiresAt") as String)
-
-        println("SaveCredentialsRequestHandler Instant::parse " + instant)
 
         credentialsManager.saveCredentials(Credentials(
             credentials.get("idToken") as String,

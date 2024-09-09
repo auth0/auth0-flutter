@@ -43,11 +43,8 @@ class RenewApiRequestHandler : ApiRequestHandler {
             }
 
             override fun onSuccess(credentials: Credentials) {
-                println("RenewApiRequestHandler::onSuccess credentials.expiresAt ${credentials.expiresAt}");
                 val scope = credentials.scope?.split(" ") ?: listOf()
                 val formattedDate = credentials.expiresAt.toInstant().toString();
-
-                println("RenewApiRequestHandler::onSuccess formattedDate ${formattedDate}");
 
                 result.success(
                     mapOf(
