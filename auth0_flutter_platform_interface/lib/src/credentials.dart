@@ -58,21 +58,17 @@ class Credentials {
     required this.tokenType,
   });
 
-  factory Credentials.fromMap(final Map<dynamic, dynamic> result) {
-    print("Credentials::fromMap result.expiresAt ${result['expiresAt']}");
-    print(
-        "Credentials::fromMap result.expiresAt DateTime::parse().toUtc() ${DateTime.parse(result['expiresAt'] as String).toUtc()}");
-    return Credentials(
-      idToken: result['idToken'] as String,
-      accessToken: result['accessToken'] as String,
-      refreshToken: result['refreshToken'] as String?,
-      expiresAt: DateTime.parse(result['expiresAt'] as String).toUtc(),
-      scopes: Set<String>.from(result['scopes'] as List<Object?>),
-      user: UserProfile.fromMap(Map<String, dynamic>.from(
-          result['userProfile'] as Map<dynamic, dynamic>)),
-      tokenType: result['tokenType'] as String,
-    );
-  }
+  factory Credentials.fromMap(final Map<dynamic, dynamic> result) =>
+      Credentials(
+        idToken: result['idToken'] as String,
+        accessToken: result['accessToken'] as String,
+        refreshToken: result['refreshToken'] as String?,
+        expiresAt: DateTime.parse(result['expiresAt'] as String).toUtc(),
+        scopes: Set<String>.from(result['scopes'] as List<Object?>),
+        user: UserProfile.fromMap(Map<String, dynamic>.from(
+            result['userProfile'] as Map<dynamic, dynamic>)),
+        tokenType: result['tokenType'] as String,
+      );
 
   Map<String, dynamic> toMap() => {
         'idToken': idToken,
