@@ -75,6 +75,57 @@ void main() {
 
       expect(credentials.toMap()['expiresAt'], '2023-11-01T22:16:35.760Z');
     });
+
+    test('converting to a map and back again populates the user property', () {
+      final dateTime = DateTime.utc(2023, 11, 2);
+      final updatedAt = DateTime.utc(2024, 10, 3);
+      const userName = 'User name';
+      const customClaimValue = 1;
+      const exampleUrl =
+          'https://store.google.com/ca/product/pixel_tablet?hl=en-GB';
+
+      final credentials = Credentials(
+        accessToken: 'accessToken',
+        idToken: 'idToken',
+        refreshToken: 'refreshToken',
+        expiresAt: dateTime,
+        scopes: {'a'},
+        user: UserProfile(
+          sub: 'sub',
+          name: userName,
+          givenName: 'givenName',
+          familyName: 'familyName',
+          middleName: 'middleName',
+          nickname: 'nickname',
+          preferredUsername: 'preferredUsername',
+          profileUrl: Uri.parse(exampleUrl),
+          pictureUrl: Uri.parse(exampleUrl),
+          websiteUrl: Uri.parse(exampleUrl),
+          email: 'email',
+          isEmailVerified: true,
+          gender: 'gender',
+          birthdate: 'birthdate',
+          zoneinfo: 'zoneinfo',
+          locale: 'locale',
+          phoneNumber: 'phoneNumber',
+          isPhoneNumberVerified: true,
+          address: {
+            'line_1': '123 Fox Lane',
+          },
+          updatedAt: updatedAt,
+          customClaims: {
+            'my_claim': customClaimValue,
+          },
+        ),
+        tokenType: 'Bearer',
+      );
+
+      final result = Credentials.fromMap(credentials.toMap());
+
+      expect(result.user.name, userName);
+      expect(result.user.customClaims?['my_claim'], customClaimValue);
+      expect(result.user.websiteUrl?.toString(), exampleUrl);
+    });
   });
 }
 
