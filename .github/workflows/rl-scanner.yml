@@ -54,7 +54,7 @@ jobs:
       - name: Get Artifact Version
         id: get_version
         run: |
-          version=$(cat .version)
+          version=$(cat auth0_flutter/lib/src/version.dart)
           echo "version=$version" >> $GITHUB_OUTPUT
 
       - name: Output build artifact
