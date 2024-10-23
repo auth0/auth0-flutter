@@ -34,6 +34,10 @@ jobs:
           channel: stable
           cache: true
 
+      - name: Add example/.env
+        working-directory: auth0_flutter
+        run: cp example/.env.example example/.env
+
       - name: Install dependencies
         working-directory: auth0_flutter
         run: flutter pub get
