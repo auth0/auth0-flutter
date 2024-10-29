@@ -2,10 +2,8 @@ name: Publish auth0_flutter_platform_interface to pub.dev
 
 on:
   push:
-    branches:
-      - 'reversing_labs'
-#    tags:
-#      - 'afpi-v[0-9]+.[0-9]+.[0-9]+*'
+    tags:
+      - 'afpi-v[0-9]+.[0-9]+.[0-9]+*'
 
 permissions:
   contents: write
@@ -47,6 +45,6 @@ jobs:
           flutter: ${{ env.flutter }}
           working-directory: auth0_flutter_platform_interface
 
-#      - name: Publish
-#        run: dart pub publish -f
-#        working-directory: auth0_flutter_platform_interface
+      - name: Publish
+        run: dart pub publish -f
+        working-directory: auth0_flutter_platform_interface
