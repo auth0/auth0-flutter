@@ -9,19 +9,19 @@ on:
       artifact-name:
         required: true
         type: string
-      secrets:
-        RLSECURE_LICENSE:
-          required: true
-        RLSECURE_SITE_KEY:
-          required: true
-        SIGNAL_HANDLER_TOKEN:
-          required: true
-        PRODSEC_TOOLS_USER:
-          required: true
-        PRODSEC_TOOLS_TOKEN:
-          required: true
-        PRODSEC_TOOLS_ARN:
-          required: true
+    secrets:
+      RLSECURE_LICENSE:
+        required: true
+      RLSECURE_SITE_KEY:
+        required: true
+      SIGNAL_HANDLER_TOKEN:
+        required: true
+      PRODSEC_TOOLS_USER:
+        required: true
+      PRODSEC_TOOLS_TOKEN:
+        required: true
+      PRODSEC_TOOLS_ARN:
+        required: true
 
 
 
@@ -42,7 +42,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@2783a3f08e1baf891508463f8c6653c258246225
         with:
-          flutter-version: ${{ inputs .flutter }}
+          flutter-version: ${{ inputs.flutter-version }}
           channel: stable
           cache: true
 
