@@ -18,7 +18,7 @@ jobs:
   rl-scanner:
     uses: ./.github/workflows/rl-scanner.yml
     with:
-      flutter: ${{ env.flutter }}
+      flutter: '3.x'
       artifact-name: 'flutter-auth0-package.zip'
     secrets:
       RLSECURE_LICENSE: ${{ secrets.RLSECURE_LICENSE }}

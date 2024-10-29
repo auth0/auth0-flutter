@@ -42,7 +42,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@2783a3f08e1baf891508463f8c6653c258246225
         with:
-          flutter-version: ${{ env.flutter }}
+          flutter-version: ${{ inputs .flutter }}
           channel: stable
           cache: true
 
