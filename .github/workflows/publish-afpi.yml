@@ -3,9 +3,9 @@ name: Publish auth0_flutter_platform_interface to pub.dev
 on:
   push:
     branches:
-      - 'Add-Reversing-Labs-Scanner'
-    tags:
-      - 'afpi-v[0-9]+.[0-9]+.[0-9]+*'
+      - 'reversing_labs'
+#    tags:
+#      - 'afpi-v[0-9]+.[0-9]+.[0-9]+*'
 
 permissions:
   contents: write

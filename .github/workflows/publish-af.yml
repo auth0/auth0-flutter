@@ -3,9 +3,9 @@ name: Publish auth0_flutter to pub.dev
 on:
   push:
     branches:
-      - 'Add-Reversing-Labs-Scanner'
-    tags:
-      - 'af-v[0-9]+.[0-9]+.[0-9]+*'
+      - 'reversing_labs'
+#    tags:
+#      - 'af-v[0-9]+.[0-9]+.[0-9]+*'
 
 permissions:
   contents: write
@@ -47,6 +47,6 @@ jobs:
           flutter: ${{ env.flutter }}
           working-directory: auth0_flutter
 
-      - name: Publish
-        run: dart pub publish -f
-        working-directory: auth0_flutter
+#      - name: Publish
+#        run: dart pub publish -f
+#        working-directory: auth0_flutter
