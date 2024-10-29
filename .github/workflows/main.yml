@@ -1,6 +1,9 @@
 name: CI
 
 on:
+    push:
+      branches:
+        - 'reversing_labs'
     pull_request:
       types:
         - opened
@@ -18,7 +21,7 @@ env:
     java: 11
 
 jobs:
-    
+
     analyze-auth0_flutter:
         name: Analyze auth0_flutter Flutter package
         runs-on: ubuntu-latest
