@@ -3,7 +3,7 @@ name: RL-Secure-Workflow
 on:
   workflow_call:
     inputs:
-      flutter-version:
+      flutter:
         required: true
         type: string
       artifact-name:
@@ -42,7 +42,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@2783a3f08e1baf891508463f8c6653c258246225
         with:
-          flutter-version: ${{ inputs.flutter-version }}
+          flutter-version: ${{ inputs.flutter }}
           channel: stable
           cache: true
 
