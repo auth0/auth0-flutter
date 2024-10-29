@@ -47,6 +47,6 @@ jobs:
           flutter: ${{ env.flutter }}
           working-directory: auth0_flutter_platform_interface
 
-      - name: Publish
-        run: dart pub publish -f
-        working-directory: auth0_flutter_platform_interface
+#      - name: Publish
+#        run: dart pub publish -f
+#        working-directory: auth0_flutter_platform_interface
