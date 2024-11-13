@@ -143,7 +143,7 @@ android {
     defaultConfig {
         // ...
         // Add the following line
-        manifestPlaceholders = [auth0Domain: "YOUR_AUTH0_DOMAIN", auth0Scheme: "https"]
+        manifestPlaceholders += [auth0Domain: "YOUR_AUTH0_DOMAIN", auth0Scheme: "https"]
     }
     // ...
 }
