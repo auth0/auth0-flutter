@@ -43,11 +43,15 @@ class AuthorizationParams {
 @JS()
 @anonymous
 class RedirectLoginOptions {
+  external Object? get appState; // TODO: use `JSAny?` when migrating to WASM
   external AuthorizationParams? get authorizationParams;
   external String? get fragment;
 
-  external factory RedirectLoginOptions(
-      {final AuthorizationParams authorizationParams, final String fragment});
+  external factory RedirectLoginOptions({
+    final Object? appState,
+    final AuthorizationParams authorizationParams,
+    final String fragment,
+  });
 }
 
 @JS()

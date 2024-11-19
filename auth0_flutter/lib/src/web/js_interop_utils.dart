@@ -31,4 +31,13 @@ class JsInteropUtils {
 
     return obj;
   }
+
+  // TODO: replace with `jsify` from `dart:js_interop_unsafe` when migrating to WASM
+  /// Convert [obj] to a plain Javascript object.
+  ///
+  /// This method should only be used to convert objects
+  /// that do not fit into a static interop definition.
+  ///
+  /// See https://api.dart.dev/dart-js_interop/NullableObjectUtilExtension/jsify.html
+  static Object? jsifyObject(final Object? obj) => jsify(obj);
 }
