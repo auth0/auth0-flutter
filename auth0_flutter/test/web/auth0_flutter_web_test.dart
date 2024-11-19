@@ -8,6 +8,7 @@ import 'package:auth0_flutter/src/web/auth0_flutter_plugin_real.dart';
 import 'package:auth0_flutter/src/web/auth0_flutter_web_platform_proxy.dart';
 import 'package:auth0_flutter/src/web/js_interop.dart' as interop;
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
+import 'package:collection/collection.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -158,6 +159,32 @@ void main() {
     expect(params.redirect_uri, null);
     expect(params.scope, null);
     expect(params.max_age, null);
+  });
+
+  test('loginWithRedirect supports appState parameter', () async {
+    when(mockClientProxy.isAuthenticated())
+        .thenAnswer((final _) => Future.value(false));
+
+    final Map<String, Object?> appState = <String, Object?>{
+      'someFancyState': 'value',
+    };
+
+    await auth0.loginWithRedirect(
+      appState: appState,
+    );
+
+    final params =
+        verify(mockClientProxy.loginWithRedirect(captureAny)).captured.first;
+
+    final Object? capturedAppState = dartify(params.appState);
+
+    expect(capturedAppState, isNotNull);
+    expect(capturedAppState, isA<Map<Object?, Object?>>());
+    capturedAppState as Map<Object?, Object?>;
+
+    const MapEquality<Object?, Object?> eq = MapEquality<Object?, Object?>();
+
+    expect(eq.equals(capturedAppState, appState), isTrue);
   });
 
   test('hasValidCredentials is called without authenticated user', () async {
