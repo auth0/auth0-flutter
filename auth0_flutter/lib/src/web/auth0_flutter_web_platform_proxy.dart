@@ -20,8 +20,8 @@ class Auth0FlutterWebClientProxy {
           [final GetTokenSilentlyOptions? options]) =>
       promiseToFuture(client.getTokenSilently(options));
 
-  Future<void> handleRedirectCallback() =>
-      promiseToFuture(client.handleRedirectCallback());
+  Future<RedirectLoginResult> handleRedirectCallback([final String? url]) =>
+      promiseToFuture(client.handleRedirectCallback(url));
 
   Future<bool> isAuthenticated() => promiseToFuture(client.isAuthenticated());
 

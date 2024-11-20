@@ -56,6 +56,12 @@ class RedirectLoginOptions {
 
 @JS()
 @anonymous
+class RedirectLoginResult {
+  external Object? get appState; // TODO: use `JSAny?` when migrating to WASM
+}
+
+@JS()
+@anonymous
 abstract class Cache {
   T get<T>(final String key);
   void remove(final String key);
@@ -181,12 +187,17 @@ class PopupConfigOptions {
 class Auth0Client {
   external Auth0Client(final Auth0ClientOptions options);
   external Future<void> loginWithRedirect([final RedirectLoginOptions options]);
-  external Future<void> loginWithPopup(
-      [final PopupLoginOptions? options, final PopupConfigOptions? config]);
-  external Future<void> handleRedirectCallback([final String? url]);
+  external Future<void> loginWithPopup([
+    final PopupLoginOptions? options,
+    final PopupConfigOptions? config,
+  ]);
+  external Future<RedirectLoginResult> handleRedirectCallback([
+    final String? url,
+  ]);
   external Future<void> checkSession();
-  external Future<WebCredentials> getTokenSilently(
-      [final GetTokenSilentlyOptions? options]);
+  external Future<WebCredentials> getTokenSilently([
+    final GetTokenSilentlyOptions? options,
+  ]);
   external Future<bool> isAuthenticated();
   external Future<void> logout([final LogoutOptions? logoutParams]);
 }
