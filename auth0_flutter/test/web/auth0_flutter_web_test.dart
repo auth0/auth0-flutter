@@ -7,6 +7,7 @@ import 'package:auth0_flutter/auth0_flutter_web.dart';
 import 'package:auth0_flutter/src/web/auth0_flutter_plugin_real.dart';
 import 'package:auth0_flutter/src/web/auth0_flutter_web_platform_proxy.dart';
 import 'package:auth0_flutter/src/web/js_interop.dart' as interop;
+import 'package:auth0_flutter/src/web/js_interop_utils.dart';
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'package:collection/collection.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
@@ -80,6 +81,63 @@ void main() {
     await auth0.onLoad();
     verify(mockClientProxy.handleRedirectCallback());
     verifyNever(mockClientProxy.checkSession());
+  });
+
+  test('handleRedirectCallback captures appState that was passed', () async {
+    final Map<String, Object?> appState = <String, Object?>{
+      'someFancyState': 'value',
+    };
+
+    final interop.RedirectLoginResult mockRedirectResult =
+        interop.RedirectLoginResult(
+      appState: appState,
+    );
+
+    when(mockClientProxy.isAuthenticated())
+        .thenAnswer((final _) => Future.value(false));
+    when(mockClientProxy.handleRedirectCallback(any))
+        .thenAnswer((final _) => Future.value(mockRedirectResult));
+
+    plugin.urlSearchProvider = () => '?code=abc&state=123';
+    await auth0.onLoad();
+    verify(mockClientProxy.handleRedirectCallback());
+    verifyNever(mockClientProxy.checkSession());
+
+    final Object? capturedAppState = await auth0.appState;
+
+    expect(capturedAppState, isNotNull);
+    expect(capturedAppState, isA<Map<Object?, Object?>>());
+    capturedAppState as Map<Object?, Object?>;
+    const MapEquality<Object?, Object?> eq = MapEquality<Object?, Object?>();
+
+    expect(eq.equals(capturedAppState, appState), isTrue);
+  });
+
+  test('appState getter returns null when accessed more than once', () async {
+    final Map<String, Object?> appState = <String, Object?>{
+      'someFancyState': 'value',
+    };
+
+    final interop.RedirectLoginResult mockRedirectResult =
+        interop.RedirectLoginResult(
+      appState: appState,
+    );
+
+    when(mockClientProxy.isAuthenticated())
+        .thenAnswer((final _) => Future.value(false));
+    when(mockClientProxy.handleRedirectCallback(any))
+        .thenAnswer((final _) => Future.value(mockRedirectResult));
+
+    plugin.urlSearchProvider = () => '?code=abc&state=123';
+    await auth0.onLoad();
+    verify(mockClientProxy.handleRedirectCallback());
+    verifyNever(mockClientProxy.checkSession());
+
+    final Object? capturedAppState = await auth0.appState;
+    expect(capturedAppState, isNotNull);
+
+    final Object? capturedAppState2 = await auth0.appState;
+    expect(capturedAppState2, isNull);
   });
 
   test('onLoad throws the correct exception from handleRedirectCallback',
