@@ -44,6 +44,17 @@ class _FakeWebCredentials_1 extends _i1.SmartFake
         );
 }
 
+class _FakeRedirectLoginResult_2 extends _i1.SmartFake
+    implements _i2.RedirectLoginResult {
+  _FakeRedirectLoginResult_2(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [Auth0FlutterWebClientProxy].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -118,14 +129,21 @@ class MockAuth0FlutterWebClientProxy extends _i1.Mock
       ) as _i4.Future<_i2.WebCredentials>);
 
   @override
-  _i4.Future<void> handleRedirectCallback() => (super.noSuchMethod(
+  _i4.Future<_i2.RedirectLoginResult> handleRedirectCallback([String? url]) =>
+      (super.noSuchMethod(
         Invocation.method(
           #handleRedirectCallback,
-          [],
+          [url],
         ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+        returnValue: _i4.Future<_i2.RedirectLoginResult>.value(
+            _FakeRedirectLoginResult_2(
+          this,
+          Invocation.method(
+            #handleRedirectCallback,
+            [url],
+          ),
+        )),
+      ) as _i4.Future<_i2.RedirectLoginResult>);
 
   @override
   _i4.Future<bool> isAuthenticated() => (super.noSuchMethod(
