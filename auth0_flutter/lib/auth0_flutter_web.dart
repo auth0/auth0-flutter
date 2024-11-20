@@ -19,6 +19,15 @@ class Auth0Web {
   Auth0Web(final String domain, final String clientId)
       : _account = Account(domain, clientId);
 
+  /// Get the app state that was provided during a previous call
+  /// to [loginWithRedirect].
+  ///
+  /// This method should be called after calling [onLoad].
+  ///
+  /// This getter can only be called once,
+  /// afer which it will return `null` for subsequent invocations.
+  Future<Object?> get appState => Auth0FlutterWebPlatform.instance.appState;
+
   /// Initializes the client.
   ///
   /// This should be called during the loading phase of your application. If
