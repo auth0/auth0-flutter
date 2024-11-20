@@ -23,6 +23,24 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   Auth0FlutterWebClientProxy? clientProxy;
   UrlSearchProvider urlSearchProvider = () => window.location.search;
 
+  /// The app state that was passed through [loginWithRedirect]
+  /// and retrieved in [initialize].
+  ///
+  /// This object is always a Dart object, never a JS object.
+  Object? _appState;
+
+  @override
+  Future<Object?> get appState {
+    if (_appState != null) {
+      final Object? appState = _appState;
+      _appState = null;
+
+      return Future<Object?>.value(appState);
+    }
+
+    return Future<Object?>.value();
+  }
+
   @override
   Future<void> initialize(
       final ClientOptions clientOptions, final UserAgent userAgent) async {
