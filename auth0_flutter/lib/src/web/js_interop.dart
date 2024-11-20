@@ -196,7 +196,7 @@ class Auth0Client {
     final PopupConfigOptions? config,
   ]);
   external Future<RedirectLoginResult> handleRedirectCallback([
-    final String? url,
+    final String url,
   ]);
   external Future<void> checkSession();
   external Future<WebCredentials> getTokenSilently([

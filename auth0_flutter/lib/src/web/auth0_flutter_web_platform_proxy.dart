@@ -1,3 +1,4 @@
+import 'dart:html';
 import 'dart:js_util';
 import 'js_interop.dart';
 
@@ -21,7 +22,9 @@ class Auth0FlutterWebClientProxy {
       promiseToFuture(client.getTokenSilently(options));
 
   Future<RedirectLoginResult> handleRedirectCallback([final String? url]) =>
-      promiseToFuture(client.handleRedirectCallback(url));
+      promiseToFuture(client.handleRedirectCallback(
+        url ?? window.location.href,
+      ));
 
   Future<bool> isAuthenticated() => promiseToFuture(client.isAuthenticated());
 
