@@ -9,6 +9,11 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   static void registerWith(final Registrar registrar) {}
 
   @override
+  Future<Object?> get appState {
+    throw UnsupportedError('appState is only supported on the web platform');
+  }
+
+  @override
   Future<void> initialize(
       final ClientOptions clientOptions, final UserAgent userAgent) {
     throw UnsupportedError('initialize is only supported on the web platform');
