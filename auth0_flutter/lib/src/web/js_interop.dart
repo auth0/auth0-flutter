@@ -58,6 +58,10 @@ class RedirectLoginOptions {
 @anonymous
 class RedirectLoginResult {
   external Object? get appState; // TODO: use `JSAny?` when migrating to WASM
+
+  external factory RedirectLoginResult({
+    final Object? appState,
+  });
 }
 
 @JS()
