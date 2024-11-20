@@ -32,8 +32,17 @@ class JsInteropUtils {
     return obj;
   }
 
+  // TODO: replace with `dartify` from `dart:js_interop_unsafe` when migrating to WASM
+  /// Convert the Javascript object [obj] to a Dart object.
+  ///
+  /// This method should only be used to convert objects
+  /// that do not fit into a static interop definition.
+  ///
+  /// See https://api.dart.dev/dart-js_interop/JSAnyUtilityExtension/dartify.html
+  static Object? dartifyObject(final Object? obj) => dartify(obj);
+
   // TODO: replace with `jsify` from `dart:js_interop_unsafe` when migrating to WASM
-  /// Convert [obj] to a plain Javascript object.
+  /// Convert the Dart object [obj] to a plain Javascript object.
   ///
   /// This method should only be used to convert objects
   /// that do not fit into a static interop definition.
