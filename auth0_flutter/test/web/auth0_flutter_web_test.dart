@@ -176,7 +176,8 @@ void main() {
     final params =
         verify(mockClientProxy.loginWithRedirect(captureAny)).captured.first;
 
-    final Object? capturedAppState = dartify(params.appState);
+    final Object? capturedAppState =
+        JsInteropUtils.dartifyObject(params.appState);
 
     expect(capturedAppState, isNotNull);
     expect(capturedAppState, isA<Map<Object?, Object?>>());
