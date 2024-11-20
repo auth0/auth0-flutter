@@ -25,7 +25,7 @@ class Auth0Web {
   /// This method should be called after calling [onLoad].
   ///
   /// This getter can only be called once,
-  /// afer which it will return `null` for subsequent invocations.
+  /// after which it will return `null` for subsequent invocations.
   Future<Object?> get appState => Auth0FlutterWebPlatform.instance.appState;
 
   /// Initializes the client.
