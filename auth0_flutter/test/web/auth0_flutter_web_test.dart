@@ -74,8 +74,13 @@ void main() {
 
   test('handleRedirectCallback is called on load when auth params exist in URL',
       () async {
+    final interop.RedirectLoginResult mockRedirectResult =
+        interop.RedirectLoginResult();
+
     when(mockClientProxy.isAuthenticated())
         .thenAnswer((final _) => Future.value(false));
+    when(mockClientProxy.handleRedirectCallback())
+        .thenAnswer((final _) => Future.value(mockRedirectResult));
 
     plugin.urlSearchProvider = () => '?code=abc&state=123';
     await auth0.onLoad();
