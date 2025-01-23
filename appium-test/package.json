@@ -9,6 +9,6 @@
   "author": "",
   "license": "Apache-2.0",
   "devDependencies": {
-    "webdriverio": "^8.11.2"
+    "webdriverio": "^9.6.0"
   }
 }
