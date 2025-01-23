@@ -5,3 +5,5 @@
 coverage/
 
 appium-test/node_modules/*
+
+.idea/*
