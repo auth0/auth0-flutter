@@ -18,16 +18,9 @@ env:
     java: 11
 
 jobs:
-    authorize:
-      name: Authorize
-      environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
-      runs-on: ubuntu-latest
-      steps:
-        - run: true
 
     analyze-auth0_flutter:
         name: Analyze auth0_flutter Flutter package
-        needs: authorize
         runs-on: ubuntu-latest
 
         steps:
@@ -35,7 +28,7 @@ jobs:
               uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Install Flutter
-              uses: subosito/flutter-action@2783a3f08e1baf891508463f8c6653c258246225
+              uses: subosito/flutter-action@44ac965b96f18d999802d4b807e3256d5a3f9fa1
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
@@ -51,7 +44,6 @@ jobs:
 
     analyze-auth0_flutter_platform_interface:
         name: Analyze auth0_flutter_platform_interface Flutter package
-        needs: authorize
         runs-on: ubuntu-latest
 
         steps:
@@ -59,7 +51,7 @@ jobs:
               uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Install Flutter
-              uses: subosito/flutter-action@2783a3f08e1baf891508463f8c6653c258246225
+              uses: subosito/flutter-action@44ac965b96f18d999802d4b807e3256d5a3f9fa1
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
@@ -71,7 +63,6 @@ jobs:
 
     test-auth0_flutter:
         name: Test auth0_flutter Flutter package
-        needs: authorize
         runs-on: ubuntu-latest
 
         steps:
@@ -79,7 +70,7 @@ jobs:
               uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Install Flutter
-              uses: subosito/flutter-action@2783a3f08e1baf891508463f8c6653c258246225
+              uses: subosito/flutter-action@44ac965b96f18d999802d4b807e3256d5a3f9fa1
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
@@ -103,7 +94,6 @@ jobs:
 
     test-auth0_flutter_platform_interface:
         name: Test auth0_flutter_platform_interface Flutter package
-        needs: authorize
         runs-on: ubuntu-latest
 
         steps:
@@ -111,7 +101,7 @@ jobs:
               uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Install Flutter
-              uses: subosito/flutter-action@2783a3f08e1baf891508463f8c6653c258246225
+              uses: subosito/flutter-action@44ac965b96f18d999802d4b807e3256d5a3f9fa1
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
@@ -129,7 +119,6 @@ jobs:
 
     test-ios-unit:
         name: Run native iOS unit tests using Xcode ${{ matrix.xcode }}
-        needs: authorize
         runs-on: macos-13
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
@@ -172,7 +161,6 @@ jobs:
 
     test-ios-smoke:
         name: Run native iOS smoke tests using Xcode ${{ matrix.xcode }}
-        needs: authorize
         runs-on: macos-13-large
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
@@ -207,7 +195,6 @@ jobs:
 
     test-macos-unit:
         name: Run native macOS unit tests using Xcode ${{ matrix.xcode }}
-        needs: authorize
         runs-on: macos-13
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
@@ -244,7 +231,6 @@ jobs:
 
     test-macos-smoke:
         name: Run native macOS smoke tests using Xcode ${{ matrix.xcode }}
-        needs: authorize
         runs-on: macos-13
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
@@ -279,7 +265,6 @@ jobs:
 
     test-android-unit:
         name: Run native Android unit tests
-        needs: authorize
         runs-on: ubuntu-latest
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
@@ -318,7 +303,6 @@ jobs:
 
     # test-android-smoke:
     #     name: Run native Android smoke tests using API-level ${{ matrix.android-api }}
-    #     needs: authorize
     #     runs-on: macos-latest-xl
     #     environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 

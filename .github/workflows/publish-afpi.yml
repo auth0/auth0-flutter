@@ -5,13 +5,31 @@ on:
     tags:
       - 'afpi-v[0-9]+.[0-9]+.[0-9]+*'
 
+permissions:
+  contents: write
+  id-token: write
+
 env:
   flutter: '3.x'
 
 jobs:
+  rl-scanner:
+    uses: ./.github/workflows/rl-scanner.yml
+    with:
+      flutter: '3.x'
+      artifact-name: 'auth0-flutter-afpi.zip'
+    secrets:
+      RLSECURE_LICENSE: ${{ secrets.RLSECURE_LICENSE }}
+      RLSECURE_SITE_KEY: ${{ secrets.RLSECURE_SITE_KEY }}
+      SIGNAL_HANDLER_TOKEN: ${{ secrets.SIGNAL_HANDLER_TOKEN }}
+      PRODSEC_TOOLS_USER: ${{ secrets.PRODSEC_TOOLS_USER }}
+      PRODSEC_TOOLS_TOKEN: ${{ secrets.PRODSEC_TOOLS_TOKEN }}
+      PRODSEC_TOOLS_ARN: ${{ secrets.PRODSEC_TOOLS_ARN }}
+
   publish:
     name: Publish auth0_flutter_platform_interface to pub.dev
     environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
+    needs: rl-scanner
     runs-on: ubuntu-latest
 
     permissions:
