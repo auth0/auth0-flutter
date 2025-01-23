@@ -49,7 +49,7 @@ runs:
       shell: bash
 
     - name: Set up Ruby
-      uses: ruby/setup-ruby@250fcd6a742febb1123a77a841497ccaa8b9e939
+      uses: ruby/setup-ruby@cacc9f1c0b3f4eb8a16a6bb0ed10897b43b9de49 # Pinned to version 1.176.0
       with:
           bundler-cache: true
           cache-version: 1

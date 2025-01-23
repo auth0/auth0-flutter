@@ -40,6 +40,7 @@ class SpyWebAuth: WebAuth {
     private(set) var issuerValue: String?
     private(set) var leewayValue: Int?
     private(set) var maxAgeValue: Int?
+    private(set) var useHTTPSValue: Bool?
     private(set) var useEmphemeralSessionValue: Bool?
     private(set) var invitationURLValue: URL?
     private(set) var organizationValue: String?
@@ -95,6 +96,11 @@ class SpyWebAuth: WebAuth {
 
     func maxAge(_ maxAge: Int) -> Self {
         self.maxAgeValue = maxAge
+        return self
+    }
+
+    func useHTTPS() -> Self {
+        self.useHTTPSValue = true
         return self
     }
 
