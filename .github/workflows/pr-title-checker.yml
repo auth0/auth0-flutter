@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Pinned to commit for 1.4.0
-      - uses: thehanimo/pr-title-checker@5652588c80c479af803eabfbdb5a3895a77c1388
+      - uses: thehanimo/pr-title-checker@1d8cd483a2b73118406a187f54dca8a9415f1375
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           pass_on_octokit_error: false
