@@ -15,6 +15,7 @@ struct WebAuthLoginMethodHandler: MethodHandler {
     enum Argument: String {
         case scopes
         case parameters
+        case useHTTPS
         case useEphemeralSession
         case audience
         case redirectUrl
@@ -44,6 +45,9 @@ struct WebAuthLoginMethodHandler: MethodHandler {
     #endif
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
+        guard let useHTTPS = arguments[Argument.useHTTPS] as? Bool else {
+            return callback(FlutterError(from: .requiredArgumentMissing(Argument.useHTTPS.rawValue)))
+        }
         guard let useEphemeralSession = arguments[Argument.useEphemeralSession] as? Bool else {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.useEphemeralSession.rawValue)))
         }
@@ -57,6 +61,10 @@ struct WebAuthLoginMethodHandler: MethodHandler {
         var webAuth = client
             .scope(scopes.asSpaceSeparatedString)
             .parameters(parameters)
+
+        if useHTTPS {
+            webAuth = webAuth.useHTTPS()
+        }
 
         if useEphemeralSession {
             webAuth = webAuth.useEphemeralSession()
