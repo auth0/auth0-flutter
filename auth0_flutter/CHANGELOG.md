@@ -1,5 +1,24 @@
 # Change Log
 
+## [af-v1.7.2](https://github.com/auth0/auth0-flutter/tree/af-v1.7.2) (2024-05-09)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.7.1...af-v1.7.2)
+
+**Fixed**
+- (af) chore: upgraded dependency on Auth0.swift to 2.7.2 [\#451](https://github.com/auth0/auth0-flutter/pull/451) ([desusai7](https://github.com/desusai7))
+- ci: upgraded setup-ruby action version to 1.176.0 [\#452](https://github.com/auth0/auth0-flutter/pull/452) ([desusai7](https://github.com/desusai7))
+
+## [af-v1.7.1](https://github.com/auth0/auth0-flutter/tree/af-v1.7.1) (2024-05-03)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.7.0...af-v1.7.1)
+
+**Fixed**
+- (af) chore: upgraded dependency on Auth0.swift to 2.7.1 to fix the declaration of privacy manifest [\#448](https://github.com/auth0/auth0-flutter/pull/448) ([desusai7](https://github.com/desusai7))
+
+## [af-v1.7.0](https://github.com/auth0/auth0-flutter/tree/af-v1.7.0) (2024-04-22)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.6.0...af-v1.7.0)
+
+**Added**
+- iOS - Bump Auth0 dependency version [\#435](https://github.com/auth0/auth0-flutter/pull/435) ([martin-headspace](https://github.com/martin-headspace))
+
 ## [af-v1.6.0](https://github.com/auth0/auth0-flutter/tree/af-v1.6.0) (2024-03-18)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.5.0...af-v1.6.0)
 
