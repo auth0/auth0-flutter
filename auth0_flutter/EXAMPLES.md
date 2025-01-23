@@ -386,7 +386,7 @@ await webAuth.logout();
 
 ## 📱 Credentials Manager
 
-> This feature is mobile/desktop only; on web, the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter keeps its own cache. See [Handling Credentials on the Web](#handling-credentials-on-the-web) for more details.
+> This feature is mobile/desktop only; on web, the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter keeps its own cache. See [Handling Credentials on the Web](#-handling-credentials-on-the-web) for more details.
 
 - [Check for stored credentials](#check-for-stored-credentials)
 - [Retrieve stored credentials](#retrieve-stored-credentials)
