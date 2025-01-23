@@ -151,7 +151,6 @@ class SpyWebAuth: WebAuth {
         calledLogout = true
         callback(logoutResult)
     }
-    
 }
 
 class MockWebAuthUserAgent: WebAuthUserAgent {

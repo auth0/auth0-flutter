@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.source       = { :path => '.' }
   s.source_files = 'Classes/**/*'
 
-  s.ios.deployment_target = '13.0'
+  s.ios.deployment_target = '14.0'
   s.ios.dependency 'Flutter'
 
   s.osx.deployment_target = '11.0'
