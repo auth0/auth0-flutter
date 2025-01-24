@@ -266,8 +266,8 @@ void main() {
       expect(verificationResult.arguments['credentials']['scopes'], ['a']);
       expect(
           verificationResult.arguments['credentials']['tokenType'], 'Bearer');
-      expect(
-          verificationResult.arguments['credentials']['userProfile'], isNull);
+      expect(verificationResult.arguments['credentials']['userProfile'],
+          isNotNull);
     });
 
     test(
