@@ -7,13 +7,17 @@ class AuthPasswordlessLoginOptions implements RequestOptions {
   final PasswordlessType? passwordlessType;
   final String? connection;
   final String? verificationCode;
+  final String? scope;
+  final String? audience;
 
   AuthPasswordlessLoginOptions(
       {this.email,
       this.phoneNumber,
       this.passwordlessType,
       this.connection,
-      this.verificationCode});
+      this.verificationCode,
+      this.scope,
+      this.audience});
 
   @override
   Map<String, dynamic> toMap() => {
@@ -21,7 +25,8 @@ class AuthPasswordlessLoginOptions implements RequestOptions {
         'phoneNumber': phoneNumber,
         'passwordlessType': passwordlessType?.name,
         'connection': connection,
-        'verificationCode': verificationCode
+        'verificationCode': verificationCode,
+        'scope': scope,
+        'audience': audience
       };
 }
-
