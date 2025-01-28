@@ -139,40 +139,76 @@ class AuthenticationApi {
   ///   authenticatorId: 'authenticator_id'
   /// });
   /// ```
-  Future<Challenge> multifactorChallenge(
-          {required final String mfaToken,
-          final List<ChallengeType>? types,
-          final String? authenticatorId}) =>
+  Future<Challenge> multifactorChallenge({required final String mfaToken,
+    final List<ChallengeType>? types,
+    final String? authenticatorId}) =>
       Auth0FlutterAuthPlatform.instance.multifactorChallenge(_createApiRequest(
           AuthMultifactorChallengeOptions(
               mfaToken: mfaToken,
               types: types,
               authenticatorId: authenticatorId)));
 
-  /// Fetches the user's profile from the /userinfo endpoint. An [accessToken] from a successful authentication call must be supplied.
-  ///
-  /// ## Endpoint
-  /// https://auth0.com/docs/api/authentication#user-profile
-  ///
-  /// ## Usage example
-  ///
-  /// ```dart
-  /// final result = await auth0.api.login({
-  ///   usernameOrEmail: 'my@email.com',
-  ///   password: 'my_password'
-  ///   connectionOrRealm: 'Username-Password-Authentication'
-  /// });
-  ///
-  /// final profile = await auth0.api.userProfile({
-  ///   accessToken: result.accessToken
-  /// });
-  /// ```
-  Future<UserProfile> userProfile(
-          {required final String accessToken,
-          final Map<String, String> parameters = const {}}) =>
-      Auth0FlutterAuthPlatform.instance.userInfo(_createApiRequest(
-          AuthUserInfoOptions(
-              accessToken: accessToken, parameters: parameters)));
+
+  Future<void> passwordlessLoginWithEmail(
+      {required final String email,
+        required final PasswordlessType passwordlessType,
+        final String? connectionType}) =>
+      Auth0FlutterAuthPlatform.instance.passwordlessWithEmail(_createApiRequest(
+          AuthPasswordlessLoginOptions(email: email,
+              passwordlessType: passwordlessType,
+              connection: connectionType)));
+
+
+  Future<Credentials> loginWithEmail( {required final String email,
+    required final String verificationCode,final String? connectionType}) =>
+  Auth0FlutterAuthPlatform.instance.loginWithEmail(_createApiRequest(
+  AuthPasswordlessLoginOptions(email: email,
+      verificationCode: verificationCode,
+      connection: connectionType)));
+
+  Future<void> passwordlessLoginWithPhoneNumber(
+      {required final String phoneNumber, final String? connectionType}) =>
+      Auth0FlutterAuthPlatform.instance.passwordlessWithPhoneNumber(_createApiRequest(
+          AuthPasswordlessLoginOptions(phoneNumber: phoneNumber,
+              connection: connectionType)));
+
+  Future<Credentials> loginWithPhoneNumber( {required final String phoneNumber,
+    required final String verificationCode,final String? connectionType}) =>
+      Auth0FlutterAuthPlatform.instance.loginWithPhoneNumber(_createApiRequest(
+          AuthPasswordlessLoginOptions(phoneNumber: phoneNumber,
+              verificationCode: verificationCode,
+              connection: connectionType)));
+
+          /// Fetches the user's profile from the /userinfo endpoint. An [accessToken] from a successful authentication call must be supplied.
+          ///
+          /// ## Endpoint
+          /// https://auth0.com/docs/api/authentication#user-profile
+          ///
+          /// ## Usage example
+          ///
+          /// ```dart
+          /// final result = await auth0.api.login({
+          ///   usernameOrEmail: 'my@email.com',
+          ///   password: 'my_password'
+          ///   connectionOrRealm: 'Username-Password-Authentication'
+          /// });
+          ///
+          /// final profile = await auth0.api.userProfile({
+          ///   accessToken: result.accessToken
+          /// });
+          /// ```
+          Future<UserProfile> userProfile({required final String accessToken,
+          final Map<String, String> parameters = const {}})
+
+  =>
+
+  Auth0FlutterAuthPlatform.instance.userInfo
+
+  (
+
+  _createApiRequest(
+  AuthUserInfoOptions(
+  accessToken: accessToken, parameters: parameters)));
 
   /// Registers a new user with the specified [email] address and [password] in
   /// the specified [connection].
@@ -183,21 +219,20 @@ class AuthenticationApi {
   /// ## Notes
   ///
   /// * [username] is only required if the [connection] you specify requires it
-  Future<DatabaseUser> signup(
-          {required final String email,
-          required final String password,
-          final String? username,
-          required final String connection,
-          final Map<String, String> userMetadata = const {},
-          final Map<String, String> parameters = const {}}) =>
-      Auth0FlutterAuthPlatform.instance.signup(_createApiRequest(
-          AuthSignupOptions(
-              email: email,
-              password: password,
-              connection: connection,
-              username: username,
-              userMetadata: userMetadata,
-              parameters: parameters)));
+  Future<DatabaseUser> signup({required final String email,
+  required final String password,
+  final String? username,
+  required final String connection,
+  final Map<String, String> userMetadata = const {},
+  final Map<String, String> parameters = const {}}) =>
+  Auth0FlutterAuthPlatform.instance.signup(_createApiRequest(
+  AuthSignupOptions(
+  email: email,
+  password: password,
+  connection: connection,
+  username: username,
+  userMetadata: userMetadata,
+  parameters: parameters)));
 
   /// Uses a [refreshToken] to get a new access token.
   ///
@@ -227,15 +262,15 @@ class AuthenticationApi {
   /// }
   /// ```
   Future<Credentials> renewCredentials({
-    required final String refreshToken,
-    final Set<String> scopes = const {},
-    final Map<String, String> parameters = const {},
+  required final String refreshToken,
+  final Set<String> scopes = const {},
+  final Map<String, String> parameters = const {},
   }) =>
-      Auth0FlutterAuthPlatform.instance.renew(_createApiRequest(
-          AuthRenewOptions(
-              refreshToken: refreshToken,
-              scopes: scopes,
-              parameters: parameters)));
+  Auth0FlutterAuthPlatform.instance.renew(_createApiRequest(
+  AuthRenewOptions(
+  refreshToken: refreshToken,
+  scopes: scopes,
+  parameters: parameters)));
 
   /// Initiates a reset of password of the user with the specific [email]
   /// address in the specific [connection].
@@ -252,16 +287,15 @@ class AuthenticationApi {
   /// Arbitrary [parameters] can be specified and then picked up in a custom
   /// Auth0 [Action](https://auth0.com/docs/customize/actions) or
   ///  [Rule](https://auth0.com/docs/customize/rules).
-  Future<void> resetPassword(
-          {required final String email,
-          required final String connection,
-          final Map<String, String> parameters = const {}}) =>
-      Auth0FlutterAuthPlatform.instance.resetPassword(_createApiRequest(
-          AuthResetPasswordOptions(
-              email: email, connection: connection, parameters: parameters)));
+  Future<void> resetPassword({required final String email,
+  required final String connection,
+  final Map<String, String> parameters = const {}}) =>
+  Auth0FlutterAuthPlatform.instance.resetPassword(_createApiRequest(
+  AuthResetPasswordOptions(
+  email: email, connection: connection, parameters: parameters)));
 
   ApiRequest<TOptions> _createApiRequest<TOptions extends RequestOptions>(
-          final TOptions options) =>
-      ApiRequest<TOptions>(
-          account: _account, options: options, userAgent: _userAgent);
+  final TOptions options) =>
+  ApiRequest<TOptions>(
+  account: _account, options: options, userAgent: _userAgent);
 }
