@@ -15,32 +15,28 @@ class LoginWithPhoneNumberRequestHandler : ApiRequestHandler {
     override val method: String = SMS_LOGIN_METHOD
 
     override fun handle(
-        api: AuthenticationAPIClient,
-        request: MethodCallRequest,
-        result: MethodChannel.Result
+        api: AuthenticationAPIClient, request: MethodCallRequest, result: MethodChannel.Result
     ) {
         val args = request.data
         assertHasProperties(listOf("phoneNumber", "verificationCode"), args)
 
-        val builder = if (args["connection"] is String) {
-            api.loginWithPhoneNumber(
-                args["email"] as String,
-                args["verificationCode"] as String,
-                args["connection"] as String
-            )
-        } else {
-            api.loginWithPhoneNumber(
-                args["email"] as String,
-                args["verificationCode"] as String,
-            )
+        val builder = api.loginWithPhoneNumber(
+            args["email"] as String,
+            args["verificationCode"] as String,
+            args["connection"] as? String ?: "sms"
+        ).apply {
+            if (args.containsKey("scope")) {
+                setScope(args["scope"] as String)
+            }
+            if (args.containsKey("audience")) {
+                setAudience(args["audience"] as String)
+            }
         }
 
         builder.start(object : Callback<Credentials, AuthenticationException> {
             override fun onFailure(error: AuthenticationException) {
                 result.error(
-                    error.getCode(),
-                    error.getDescription(),
-                    error.toMap()
+                    error.getCode(), error.getDescription(), error.toMap()
                 )
             }
 

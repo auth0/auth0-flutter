@@ -18,7 +18,7 @@ struct AuthAPILoginWithPhoneNumberMethodHandler: MethodHandler {
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
         guard let phoneNumber = arguments[Argument.phoneNumber] as? String else {
-            return callback(FlutterError(from: .requiredArgumentMissing(Argument.email.rawValue)))
+            return callback(FlutterError(from: .requiredArgumentMissing(Argument.phoneNumber.rawValue)))
         }
 
         guard let verificationCode = arguments[Argument.verificationCode] as? String else {
@@ -34,8 +34,8 @@ struct AuthAPILoginWithPhoneNumberMethodHandler: MethodHandler {
         client
             .login(phoneNumber: phoneNumber,
                    code: verificationCode,
-                   scope: scope,
-                   audience: audience
+                   audience: audience,
+                   scope: scope
             )
             .start {
                 switch $0 {

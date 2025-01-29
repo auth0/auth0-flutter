@@ -23,18 +23,11 @@ class PasswordlessWithEmailRequestHandler : ApiRequestHandler {
         assertHasProperties(listOf("email", "passwordlessType"), args)
         val passwordlessType = getPasswordlessType(args["passwordlessType"] as String)
 
-        val builder = if (args["connection"] is String) {
-            api.passwordlessWithEmail(
-                args["email"] as String,
-                passwordlessType,
-                args["connection"] as String
-            )
-        } else {
-            api.passwordlessWithEmail(
-                args["email"] as String,
-                passwordlessType
-            )
-        }
+        val builder = api.passwordlessWithEmail(
+            args["email"] as String,
+            passwordlessType,
+            args["connection"] as? String ?: "email"
+        )
 
         builder.start(object : Callback<Void?, AuthenticationException> {
             override fun onFailure(error: AuthenticationException) {

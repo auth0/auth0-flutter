@@ -1,6 +1,5 @@
 package com.auth0.auth0_flutter.request_handlers.api
 
-import android.util.Log
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.authentication.PasswordlessType
@@ -24,22 +23,14 @@ class PasswordlessWithPhoneNumberRequestHandler : ApiRequestHandler {
         assertHasProperties(listOf("phoneNumber", "passwordlessType"), args)
         val passwordlessType = getPasswordlessType(args["passwordlessType"] as String)
 
-        val builder = if (args["connection"] is String) {
-            api.passwordlessWithSMS(
-                args["phoneNumber"] as String,
-                passwordlessType,
-                args["connection"] as String
-            )
-        } else {
-            api.passwordlessWithSMS(
-                args["phoneNumber"] as String,
-                passwordlessType
-            )
-        }
+        val builder = api.passwordlessWithSMS(
+            args["phoneNumber"] as String,
+            passwordlessType,
+            args["connection"] as? String ?: "sms"
+        )
 
         builder.start(object : Callback<Void?, AuthenticationException> {
             override fun onFailure(exception: AuthenticationException) {
-                Log.d("TAG", "onError: ${exception.getDescription()}")
                 result.error(
                     exception.getCode(),
                     exception.getDescription(),
@@ -48,7 +39,6 @@ class PasswordlessWithPhoneNumberRequestHandler : ApiRequestHandler {
             }
 
             override fun onSuccess(void: Void?) {
-                Log.d("TAG", "onSuccess: ")
                 result.success(void)
             }
         })

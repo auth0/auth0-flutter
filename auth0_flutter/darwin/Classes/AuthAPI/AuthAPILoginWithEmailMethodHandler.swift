@@ -35,8 +35,8 @@ struct AuthAPILoginWithEmailMethodHandler: MethodHandler {
         client
             .login(email: email,
                    code: verificationCode,
-                   scope: scope,
-                   audience: audience
+                   audience: audience,
+                   scope: scope
             )
             .start {
                 switch $0 {

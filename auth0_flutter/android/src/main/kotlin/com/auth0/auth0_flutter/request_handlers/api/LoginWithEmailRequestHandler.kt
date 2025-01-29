@@ -2,7 +2,6 @@ package com.auth0.auth0_flutter.request_handlers.api
 
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
-import com.auth0.android.authentication.PasswordlessType
 import com.auth0.android.callback.Callback
 import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
@@ -23,20 +22,20 @@ class LoginWithEmailRequestHandler : ApiRequestHandler {
         val args = request.data
         assertHasProperties(listOf("email", "verificationCode"), args)
 
-        val builder = if (args["connection"] is String) {
-            api.loginWithEmail(
-                args["email"] as String,
-                args["verificationCode"] as String,
-                args["connection"] as String
-            )
-        } else {
-            api.loginWithEmail(
-                args["email"] as String,
-                args["verificationCode"] as String,
-            )
+        val builder = api.loginWithEmail(
+            args["email"] as String,
+            args["verificationCode"] as String,
+            args["connection"] as? String ?: "email"
+        ).apply {
+            if (args.containsKey("scope")) {
+                setScope(args["scope"] as String)
+            }
+            if (args.containsKey("audience")) {
+                setAudience(args["audience"] as String)
+            }
         }
 
-        builder.start(object :Callback<Credentials,AuthenticationException>{
+        builder.start(object : Callback<Credentials, AuthenticationException> {
             override fun onFailure(error: AuthenticationException) {
                 result.error(
                     error.getCode(),
