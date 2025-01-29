@@ -35,11 +35,8 @@ struct AuthAPIEmailPasswordlessLoginMethodHandler: MethodHandler {
             .start {
                 switch $0 {
                 case let .success:
-                    print("Passwordless email sent")
-                    callback(result(nil))
-
+                    callback(nil)
                 case let .failure(error):
-                    print("Passwordless email failed error")
                     callback(FlutterError(from: error))
                 }
             }
