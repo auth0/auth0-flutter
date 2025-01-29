@@ -28,18 +28,16 @@ struct AuthAPIPhoneNumberPasswordlessLoginMethod: MethodHandler {
         let connection = arguments[Argument.connection] as? String ?? "sms"
 
         client
-            .startPasswordless(email: email,
+            .startPasswordless(phoneNumber: phoneNumber,
                                type: passwordlessType,
                                connection: connection
             )
             .start {
                 switch $0 {
                 case let .success:
-                    print("Passwordless sms sent")
-                    callback(result(nil))
+                    callback(nil)
 
                 case let .failure(error):
-                    print("Passwordless sms failed error")
                     callback(FlutterError(from: error))
                 }
             }
