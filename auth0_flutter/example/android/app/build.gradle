@@ -28,7 +28,7 @@ apply plugin: 'org.jetbrains.kotlinx.kover'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdk 31
+    compileSdk 34
     if (project.android.hasProperty("namespace")) {
         namespace exampleAppApplicationId
     }
