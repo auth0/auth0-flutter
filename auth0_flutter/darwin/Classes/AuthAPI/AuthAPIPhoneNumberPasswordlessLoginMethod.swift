@@ -6,11 +6,10 @@ import Flutter
 import FlutterMacOS
 #endif
 
-struct AuthAPIPhoneNumberPasswordlessLoginMethod: MethodHandler {
+struct AuthAPIPasswordlessPhoneNumberMethodHandler: MethodHandler {
     enum Argument: String {
         case phoneNumber
         case passwordlessType
-        case connection
     }
 
     let client: Authentication
@@ -25,12 +24,10 @@ struct AuthAPIPhoneNumberPasswordlessLoginMethod: MethodHandler {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.passwordlessType.rawValue)))
         }
 
-        let connection = arguments[Argument.connection] as? String ?? "sms"
-
         client
             .startPasswordless(phoneNumber: phoneNumber,
                                type: passwordlessType,
-                               connection: connection
+                               connection: "sms"
             )
             .start {
                 switch $0 {

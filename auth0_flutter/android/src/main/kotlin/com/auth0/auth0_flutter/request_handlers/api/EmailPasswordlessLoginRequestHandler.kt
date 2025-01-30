@@ -11,7 +11,7 @@ import io.flutter.plugin.common.MethodChannel
 
 private const val PASSWORDLESS_EMAIL_LOGIN_METHOD = "auth#passwordlessWithEmail"
 
-class PasswordlessWithEmailRequestHandler : ApiRequestHandler {
+class EmailPasswordlessLoginRequestHandler : ApiRequestHandler {
     override val method: String = PASSWORDLESS_EMAIL_LOGIN_METHOD
 
     override fun handle(
@@ -25,8 +25,7 @@ class PasswordlessWithEmailRequestHandler : ApiRequestHandler {
 
         val builder = api.passwordlessWithEmail(
             args["email"] as String,
-            passwordlessType,
-            args["connection"] as? String ?: "email"
+            passwordlessType
         )
 
         builder.start(object : Callback<Void?, AuthenticationException> {
@@ -39,7 +38,7 @@ class PasswordlessWithEmailRequestHandler : ApiRequestHandler {
             }
 
             override fun onSuccess(void: Void?) {
-                result.success(void)
+                result.success(null)
             }
         })
     }
