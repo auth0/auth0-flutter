@@ -187,14 +187,19 @@ class AuthenticationApi {
           {required final String email,
           required final String verificationCode,
           final String? connection,
-          final String? scope,
+          final Set<String> scopes = const {
+            'openid',
+            'profile',
+            'email',
+            'offline_access'
+          },
           final String? audience,
           final Map<String, String> parameters = const {}}) =>
       Auth0FlutterAuthPlatform.instance.loginWithEmailCode(_createApiRequest(
           AuthLoginWithCodeOptions(
               email: email,
               verificationCode: verificationCode,
-              scope: scope,
+              scopes: scopes,
               audience: audience,
               parameters: parameters)));
 
@@ -234,14 +239,19 @@ class AuthenticationApi {
   Future<Credentials> loginWithSmsCode(
           {required final String phoneNumber,
           required final String verificationCode,
-          final String? scope,
+          final Set<String> scopes = const {
+            'openid',
+            'profile',
+            'email',
+            'offline_access'
+          },
           final String? audience,
           final Map<String, String> parameters = const {}}) =>
       Auth0FlutterAuthPlatform.instance.loginWithSmsCode(_createApiRequest(
           AuthLoginWithCodeOptions(
               phoneNumber: phoneNumber,
               verificationCode: verificationCode,
-              scope: scope,
+              scopes: scopes,
               audience: audience,
               parameters: parameters)));
 
