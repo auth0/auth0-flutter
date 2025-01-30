@@ -8,6 +8,7 @@ import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.toMap
 import com.auth0.auth0_flutter.utils.assertHasProperties
 import io.flutter.plugin.common.MethodChannel
+import java.util.HashMap
 
 private const val PASSWORDLESS_PHONE_NUMBER_LOGIN_METHOD = "auth#passwordlessWithPhoneNumber"
 
@@ -27,6 +28,10 @@ class PhoneNumberPasswordlessApiRequestHandler : ApiRequestHandler {
             args["phoneNumber"] as String,
             passwordlessType
         )
+
+        if (args["parameters"] is HashMap<*, *>) {
+            builder.addParameters(args["parameters"] as Map<String, String>)
+        }
 
         builder.start(object : Callback<Void?, AuthenticationException> {
             override fun onFailure(exception: AuthenticationException) {
