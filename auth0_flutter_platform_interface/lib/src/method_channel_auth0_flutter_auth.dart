@@ -63,7 +63,7 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   Future<void> startPasswordlessWithEmail(
       final ApiRequest<AuthPasswordlessLoginOptions> request) async {
      await invokeRequest(method: authStartPasswordlessWithEmailMethod,
-         request: request);
+         request: request,throwOnNull: false);
   }
 
 
@@ -80,7 +80,7 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   Future<void> startPasswordlessWithPhoneNumber(
       final ApiRequest<AuthPasswordlessLoginOptions> request)  async{
     await invokeRequest(method: authStartPasswordlessWithPhoneNumberMethod,
-        request: request);
+        request: request,throwOnNull: false);
   }
 
   @override
