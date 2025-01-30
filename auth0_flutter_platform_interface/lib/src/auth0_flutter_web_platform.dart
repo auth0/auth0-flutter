@@ -15,8 +15,14 @@ abstract class Auth0FlutterWebPlatform extends PlatformInterface {
     _instance = instance;
   }
 
+  Future<Object?> get appState {
+    throw UnimplementedError('web.appState has not been implemented');
+  }
+
   Future<void> initialize(
-      final ClientOptions clientOptions, final UserAgent userAgent) {
+    final ClientOptions clientOptions,
+    final UserAgent userAgent,
+  ) {
     throw UnimplementedError('web.initialize has not been implemented');
   }
 
@@ -34,7 +40,8 @@ abstract class Auth0FlutterWebPlatform extends PlatformInterface {
 
   Future<bool> hasValidCredentials() {
     throw UnimplementedError(
-        'web.hasValidCredentials has not been implemented');
+      'web.hasValidCredentials has not been implemented',
+    );
   }
 
   Future<void> logout(final LogoutOptions? options) {
