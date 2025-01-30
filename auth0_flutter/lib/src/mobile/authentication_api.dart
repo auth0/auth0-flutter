@@ -171,8 +171,9 @@ class AuthenticationApi {
               passwordlessType: passwordlessType,
               parameters: parameters)));
 
-  /// Log in a user using an email and a verification code received via Email (Part of passwordless login flow).
-  /// The default scope used is 'openid profile email'.
+  /// Log in a user using an email and a verification code received via Email
+  /// (Part of passwordless login flow).
+  /// The default scope used is 'openid profile email offline_access'.
   ///
   /// Your Application must have the **Passwordless OTP** Grant Type enabled.
   ///
@@ -205,7 +206,8 @@ class AuthenticationApi {
 
   /// Start a passwordless flow with a [SMS](https://auth0.com/docs/api/authentication#get-code-or-link)
   ///
-  /// Your Application requires to have the **Passwordless OTP** Grant Type enabled.
+  /// Your Application requires to have the **Passwordless OTP** Grant Type
+  /// enabled.
   ///
   /// ## Usage example:
   /// ```dart
@@ -224,8 +226,9 @@ class AuthenticationApi {
               passwordlessType: passwordlessType,
               parameters: parameters)));
 
-  /// Log in a user using a phone number and a verification code received via SMS (Part of passwordless login flow).
-  /// The default scope used is 'openid profile email'.
+  /// Log in a user using a phone number and a verification code received via
+  /// SMS (Part of passwordless login flow).
+  /// The default scope used is 'openid profile email offline_access'.
   ///
   /// Your Application must have the **Passwordless OTP** Grant Type enabled.
   ///
