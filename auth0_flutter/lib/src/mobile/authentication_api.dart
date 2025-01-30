@@ -164,7 +164,7 @@ class AuthenticationApi {
   Future<void> startPasswordlessWithEmail(
           {required final String email,
           required final PasswordlessType passwordlessType}) =>
-      Auth0FlutterAuthPlatform.instance.passwordlessWithEmail(_createApiRequest(
+      Auth0FlutterAuthPlatform.instance.startPasswordlessWithEmail(_createApiRequest(
           AuthPasswordlessLoginOptions(
               email: email, passwordlessType: passwordlessType)));
 
@@ -175,22 +175,21 @@ class AuthenticationApi {
   ///
   /// ## Usage example:
   /// ```dart
-  /// final result = await auth0.api.loginWithEmail({
+  /// final result = await auth0.api.loginWithEmailCode({
   ///   email: 'email',
   ///   verificationCode: 'code'
   /// });
   ///```
-  Future<Credentials> loginWithEmail(
+  Future<Credentials> loginWithEmailCode(
           {required final String email,
           required final String verificationCode,
           final String? connection,
           final String? scope,
           final String? audience}) =>
-      Auth0FlutterAuthPlatform.instance.loginWithEmail(_createApiRequest(
-          AuthPasswordlessLoginOptions(
+      Auth0FlutterAuthPlatform.instance.loginWithEmailCode(_createApiRequest(
+          AuthLoginWithCodeOptions(
               email: email,
               verificationCode: verificationCode,
-              connection: connection,
               scope: scope,
               audience: audience)));
 
@@ -208,7 +207,7 @@ class AuthenticationApi {
   Future<void> startPasswordlessWithPhoneNumber(
           {required final String phoneNumber,
             required final PasswordlessType passwordlessType}) =>
-      Auth0FlutterAuthPlatform.instance.passwordlessWithPhoneNumber(
+      Auth0FlutterAuthPlatform.instance.startPasswordlessWithPhoneNumber(
           _createApiRequest(AuthPasswordlessLoginOptions(
               phoneNumber: phoneNumber,passwordlessType: passwordlessType)));
 
@@ -219,22 +218,20 @@ class AuthenticationApi {
   ///
   /// ## Usage example:
   /// ```dart
-  /// final result = await auth0.api.loginWithPhoneNumber({
+  /// final result = await auth0.api.loginWithSmsCode({
   ///   phoneNumber: 'phoneNumber',
   ///   verificationCode: 'code'
   /// });
   ///```
-  Future<Credentials> loginWithPhoneNumber(
+  Future<Credentials> loginWithSmsCode(
           {required final String phoneNumber,
           required final String verificationCode,
-          final String? connection,
           final String? scope,
           final String? audience}) =>
-      Auth0FlutterAuthPlatform.instance.loginWithPhoneNumber(_createApiRequest(
-          AuthPasswordlessLoginOptions(
+      Auth0FlutterAuthPlatform.instance.loginWithSmsCode(_createApiRequest(
+          AuthLoginWithCodeOptions(
               phoneNumber: phoneNumber,
               verificationCode: verificationCode,
-              connection: connection,
               scope: scope,
               audience: audience)));
 

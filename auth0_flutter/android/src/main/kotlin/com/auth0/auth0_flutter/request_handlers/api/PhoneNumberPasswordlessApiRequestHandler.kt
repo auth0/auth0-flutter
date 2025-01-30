@@ -11,7 +11,7 @@ import io.flutter.plugin.common.MethodChannel
 
 private const val PASSWORDLESS_PHONE_NUMBER_LOGIN_METHOD = "auth#passwordlessWithPhoneNumber"
 
-class PhoneNumberPasswordlessLoginRequestHandler : ApiRequestHandler {
+class PhoneNumberPasswordlessApiRequestHandler : ApiRequestHandler {
     override val method: String = PASSWORDLESS_PHONE_NUMBER_LOGIN_METHOD
 
     override fun handle(

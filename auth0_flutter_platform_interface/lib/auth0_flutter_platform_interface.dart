@@ -3,6 +3,7 @@ export 'src/auth/api_exception.dart';
 export 'src/auth/auth_login_options.dart';
 export 'src/auth/auth_login_with_otp_options.dart';
 export 'src/auth/auth_passwordless_login_options.dart';
+export 'src/auth/auth_login_code_options.dart';
 export 'src/auth/auth_passwordless_type.dart';
 export 'src/auth/auth_multifactor_challenge_options.dart';
 export 'src/auth/auth_renew_access_token_options.dart';
