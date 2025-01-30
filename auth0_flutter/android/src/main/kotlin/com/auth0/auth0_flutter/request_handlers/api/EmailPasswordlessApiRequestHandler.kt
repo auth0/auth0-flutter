@@ -11,7 +11,7 @@ import io.flutter.plugin.common.MethodChannel
 
 private const val PASSWORDLESS_EMAIL_LOGIN_METHOD = "auth#passwordlessWithEmail"
 
-class EmailPasswordlessLoginRequestHandler : ApiRequestHandler {
+class EmailPasswordlessApiRequestHandler : ApiRequestHandler {
     override val method: String = PASSWORDLESS_EMAIL_LOGIN_METHOD
 
     override fun handle(
