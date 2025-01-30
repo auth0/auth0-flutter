@@ -22,8 +22,10 @@ const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter/auth');
 const String authLoginMethod = 'auth#login';
 const String authLoginWithOtpMethod = 'auth#loginOtp';
 const String authMultifactorChallengeMethod = 'auth#multifactorChallenge';
-const String authStartPasswordlessWithEmailMethod = 'auth#passwordlessWithEmail';
-const String authStartPasswordlessWithPhoneNumberMethod = 'auth#passwordlessWithPhoneNumber';
+const String authStartPasswordlessWithEmailMethod =
+    'auth#passwordlessWithEmail';
+const String authStartPasswordlessWithPhoneNumberMethod =
+    'auth#passwordlessWithPhoneNumber';
 const String authLoginWithEmailCodeMethod = 'auth#loginWithEmail';
 const String authLoginWithSmsCodeMethod = 'auth#loginWithPhoneNumber';
 const String authUserInfoMethod = 'auth#userInfo';
