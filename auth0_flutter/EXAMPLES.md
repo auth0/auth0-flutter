@@ -25,6 +25,7 @@
 - [📱 Authentication API](#-authentication-api)
   - [Login with database connection](#login-with-database-connection)
   - [Sign up with database connection](#sign-up-with-database-connection)
+  - [Passwordless Login](#passwordless-login)
   - [Retrieve user information](#retrieve-user-information)
   - [Renew credentials](#renew-credentials)
   - [Errors](#errors-2)
@@ -585,6 +586,43 @@ final databaseUser = await auth0.api.signup(
 ```
 
 > 💡 You might want to log the user in after signup. See [Login with database connection](#login-with-database-connection) above for an example.
+
+### Passwordless Login
+Passwordless is a two-step authentication flow that requires the **Passwordless OTP** grant to be enabled for your Auth0 application. Check [our documentation](https://auth0.com/docs/get-started/applications/application-grant-types) for more information.
+
+#### 1. Start the passwordless flow
+
+Request a code to be sent to the user's email or phone number. For email scenarios, a link can be sent in place of the code.
+
+```dart
+await auth0.api.startPasswordlessWithEmail(
+    email: "support@auth0.com", passwordlessType: PasswordlessType.code);
+```
+<details>
+<summary>Using PhoneNumber</summary>
+```dart
+await auth0.api.startPasswordlessWithPhoneNumber(
+    phoneNumber: "123456789", passwordlessType: PasswordlessType.code);
+```
+</details>
+#### 2. Login with the received code
+
+To complete the authentication, you must send back that code the user received along with the email or phone number used to start the flow.
+
+```dart
+final credentials = await auth0.api.loginWithEmailCode(
+          email: "support@auth0.com", verificationCode: "000000");
+```
+<details>
+<summary>Using SMS</summary>
+```dart
+final credentials = await auth0.api.loginWithSmsCode(
+    phoneNumber: "123456789", verificationCode: "000000");
+```
+</details>
+
+> [!NOTE]
+> Sending additional parameter is supported only on ios at the moment.
 
 ### Retrieve user information
 
