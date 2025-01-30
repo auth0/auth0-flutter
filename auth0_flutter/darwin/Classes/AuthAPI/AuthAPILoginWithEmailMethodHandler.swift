@@ -13,6 +13,7 @@ struct AuthAPILoginWithEmailMethodHandler: MethodHandler {
         case verificationCode
         case scope
         case audience
+        case parameters
     }
 
     let client: Authentication
@@ -30,6 +31,10 @@ struct AuthAPILoginWithEmailMethodHandler: MethodHandler {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.scope.rawValue)))
         }
 
+        guard let parameters = arguments[Argument.parameters] as? [String: Any] else {
+            return callback(FlutterError(from: .requiredArgumentMissing(Argument.parameters.rawValue)))
+        }
+
         let audience = arguments[Argument.audience] as? String
 
         client
@@ -38,6 +43,7 @@ struct AuthAPILoginWithEmailMethodHandler: MethodHandler {
                    audience: audience,
                    scope: scope
             )
+            .parameters(parameters)
             .start {
                 switch $0 {
                 case let .success(credentials): callback(result(from: credentials))

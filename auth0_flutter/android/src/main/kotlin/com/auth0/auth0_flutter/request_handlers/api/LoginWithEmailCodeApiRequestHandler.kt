@@ -8,6 +8,7 @@ import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.toMap
 import com.auth0.auth0_flutter.utils.assertHasProperties
 import io.flutter.plugin.common.MethodChannel
+import java.util.HashMap
 
 private const val EMAIL_LOGIN_METHOD = "auth#loginWithEmail"
 
@@ -31,6 +32,9 @@ class LoginWithEmailCodeApiRequestHandler : ApiRequestHandler {
             }
             if (args["audience"] is String) {
                 setAudience(args["audience"] as String)
+            }
+            if (args["parameters"] is HashMap<*, *>) {
+                addParameters(args["parameters"] as Map<String, String>)
             }
         }
 
