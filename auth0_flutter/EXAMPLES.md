@@ -600,6 +600,7 @@ await auth0.api.startPasswordlessWithEmail(
 ```
 <details>
 <summary>Using PhoneNumber</summary>
+
 ```dart
 await auth0.api.startPasswordlessWithPhoneNumber(
     phoneNumber: "123456789", passwordlessType: PasswordlessType.code);
@@ -615,6 +616,7 @@ final credentials = await auth0.api.loginWithEmailCode(
 ```
 <details>
 <summary>Using SMS</summary>
+
 ```dart
 final credentials = await auth0.api.loginWithSmsCode(
     phoneNumber: "123456789", verificationCode: "000000");
