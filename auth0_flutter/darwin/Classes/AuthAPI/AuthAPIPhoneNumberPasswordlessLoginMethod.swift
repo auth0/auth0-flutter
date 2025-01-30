@@ -34,7 +34,7 @@ struct AuthAPIPasswordlessPhoneNumberMethodHandler: MethodHandler {
                                type: passwordlessType,
                                connection: "sms"
             )
-            .parameters(parameters)
+            .parameters(["authParams":parameters])
             .start {
                 switch $0 {
                 case let .success:

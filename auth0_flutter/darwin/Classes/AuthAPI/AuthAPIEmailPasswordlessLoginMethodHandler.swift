@@ -34,7 +34,7 @@ struct AuthAPIPasswordlessEmailMethodHandler: MethodHandler {
                                type: passwordlessType,
                                connection: "email"
             )
-            .parameters(parameters)
+            .parameters(["authParams":parameters])
             .start {
                 switch $0 {
                 case let .success:
