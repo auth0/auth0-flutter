@@ -11,7 +11,7 @@ import io.flutter.plugin.common.MethodChannel
 
 private const val PASSWORDLESS_PHONE_NUMBER_LOGIN_METHOD = "auth#passwordlessWithPhoneNumber"
 
-class PasswordlessWithPhoneNumberRequestHandler : ApiRequestHandler {
+class PhoneNumberPasswordlessLoginRequestHandler : ApiRequestHandler {
     override val method: String = PASSWORDLESS_PHONE_NUMBER_LOGIN_METHOD
 
     override fun handle(
@@ -25,8 +25,7 @@ class PasswordlessWithPhoneNumberRequestHandler : ApiRequestHandler {
 
         val builder = api.passwordlessWithSMS(
             args["phoneNumber"] as String,
-            passwordlessType,
-            args["connection"] as? String ?: "sms"
+            passwordlessType
         )
 
         builder.start(object : Callback<Void?, AuthenticationException> {

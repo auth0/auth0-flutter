@@ -157,20 +157,16 @@ class AuthenticationApi {
   /// ```dart
   /// final result = await auth0.api.startPasswordlessWithEmail({
   ///   email : 'email',
-  ///   passwordlessType : 'PasswordlessType',
-  ///   connection:'connection'
+  ///   passwordlessType : 'PasswordlessType'
   ///   });
   /// ```
   ///
   Future<void> startPasswordlessWithEmail(
           {required final String email,
-          required final PasswordlessType passwordlessType,
-          final String? connection}) =>
+          required final PasswordlessType passwordlessType}) =>
       Auth0FlutterAuthPlatform.instance.passwordlessWithEmail(_createApiRequest(
           AuthPasswordlessLoginOptions(
-              email: email,
-              passwordlessType: passwordlessType,
-              connection: connection)));
+              email: email, passwordlessType: passwordlessType)));
 
   /// Log in a user using an email and a verification code received via Email (Part of passwordless login flow).
   /// The default scope used is 'openid profile email'.
@@ -181,8 +177,7 @@ class AuthenticationApi {
   /// ```dart
   /// final result = await auth0.api.loginWithEmail({
   ///   email: 'email',
-  ///   verificationCode: 'code',
-  ///   connection:'connection'
+  ///   verificationCode: 'code'
   /// });
   ///```
   Future<Credentials> loginWithEmail(
@@ -207,15 +202,15 @@ class AuthenticationApi {
   /// ```dart
   /// final result = await auth0.api.startPasswordlessWithPhoneNumber({
   ///   phoneNumber : 'phoneNumber',
-  ///   passwordlessType : 'PasswordlessType',
-  ///   connection:'connection'
+  ///   passwordlessType : 'PasswordlessType'
   ///   });
   /// ```
   Future<void> startPasswordlessWithPhoneNumber(
-          {required final String phoneNumber, final String? connection}) =>
+          {required final String phoneNumber,
+            required final PasswordlessType passwordlessType}) =>
       Auth0FlutterAuthPlatform.instance.passwordlessWithPhoneNumber(
           _createApiRequest(AuthPasswordlessLoginOptions(
-              phoneNumber: phoneNumber, connection: connection)));
+              phoneNumber: phoneNumber,passwordlessType: passwordlessType)));
 
   /// Log in a user using a phone number and a verification code received via SMS (Part of passwordless login flow).
   /// The default scope used is 'openid profile email'.
@@ -226,8 +221,7 @@ class AuthenticationApi {
   /// ```dart
   /// final result = await auth0.api.loginWithPhoneNumber({
   ///   phoneNumber: 'phoneNumber',
-  ///   verificationCode: 'code',
-  ///   connection:'connection'
+  ///   verificationCode: 'code'
   /// });
   ///```
   Future<Credentials> loginWithPhoneNumber(

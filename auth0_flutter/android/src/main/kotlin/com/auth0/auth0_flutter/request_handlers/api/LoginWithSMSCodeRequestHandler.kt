@@ -11,7 +11,7 @@ import io.flutter.plugin.common.MethodChannel
 
 private const val SMS_LOGIN_METHOD = "auth#loginWithPhoneNumber"
 
-class LoginWithPhoneNumberRequestHandler : ApiRequestHandler {
+class LoginWithSMSCodeRequestHandler : ApiRequestHandler {
     override val method: String = SMS_LOGIN_METHOD
 
     override fun handle(
@@ -25,10 +25,10 @@ class LoginWithPhoneNumberRequestHandler : ApiRequestHandler {
             args["verificationCode"] as String,
             args["connection"] as? String ?: "sms"
         ).apply {
-            if (args.containsKey("scope")) {
+            if (args["scope"] is String) {
                 setScope(args["scope"] as String)
             }
-            if (args.containsKey("audience")) {
+            if (args["audience"] is String) {
                 setAudience(args["audience"] as String)
             }
         }

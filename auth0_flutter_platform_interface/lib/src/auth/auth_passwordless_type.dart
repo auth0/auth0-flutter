@@ -6,6 +6,6 @@ enum PasswordlessType {
   link,
   /// Android App Link.
   link_android,
-  /// Universal Link.
+  /// iOS Universal Link.
   link_ios
 }
