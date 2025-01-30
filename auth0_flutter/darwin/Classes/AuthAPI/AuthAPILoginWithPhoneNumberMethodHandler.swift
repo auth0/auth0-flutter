@@ -10,7 +10,7 @@ struct AuthAPILoginWithPhoneNumberMethodHandler: MethodHandler {
     enum Argument: String {
         case phoneNumber
         case verificationCode
-        case scope
+        case scopes
         case audience
         case parameters
     }
@@ -26,8 +26,8 @@ struct AuthAPILoginWithPhoneNumberMethodHandler: MethodHandler {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.verificationCode.rawValue)))
         }
 
-        guard let scope = arguments[Argument.scope] as? String else {
-            return callback(FlutterError(from: .requiredArgumentMissing(Argument.scope.rawValue)))
+        guard let scopes = arguments[Argument.scopes] as? [String] else {
+            return callback(FlutterError(from: .requiredArgumentMissing(Argument.scopes.rawValue)))
         }
 
         guard let parameters = arguments[Argument.parameters] as? [String: Any] else {
@@ -41,7 +41,7 @@ struct AuthAPILoginWithPhoneNumberMethodHandler: MethodHandler {
             .login(phoneNumber: phoneNumber,
                    code: verificationCode,
                    audience: audience,
-                   scope: scope
+                   scope: scopes.asSpaceSeparatedString
             )
             .parameters(parameters)
             .start {
