@@ -11,7 +11,7 @@ import io.flutter.plugin.common.MethodChannel
 
 private const val EMAIL_LOGIN_METHOD = "auth#loginWithEmail"
 
-class LoginWithEmailRequestHandler : ApiRequestHandler {
+class LoginWithEmailCodeRequestHandler : ApiRequestHandler {
     override val method: String = EMAIL_LOGIN_METHOD
 
     override fun handle(
@@ -27,10 +27,10 @@ class LoginWithEmailRequestHandler : ApiRequestHandler {
             args["verificationCode"] as String,
             args["connection"] as? String ?: "email"
         ).apply {
-            if (args.containsKey("scope")) {
+            if (args["scope"] is String) {
                 setScope(args["scope"] as String)
             }
-            if (args.containsKey("audience")) {
+            if (args["audience"] is String) {
                 setAudience(args["audience"] as String)
             }
         }
