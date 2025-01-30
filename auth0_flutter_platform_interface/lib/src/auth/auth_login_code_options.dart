@@ -4,7 +4,7 @@ class AuthLoginWithCodeOptions implements RequestOptions {
   final String verificationCode;
   final String? email;
   final String? phoneNumber;
-  final String? scope;
+  final Set<String> scopes;
   final String? audience;
   final Map<String, String> parameters;
 
@@ -12,7 +12,7 @@ class AuthLoginWithCodeOptions implements RequestOptions {
       {required this.verificationCode,
       this.email,
       this.phoneNumber,
-      this.scope,
+      this.scopes = const {},
       this.audience,
       this.parameters = const {}});
 
@@ -21,7 +21,7 @@ class AuthLoginWithCodeOptions implements RequestOptions {
         'email': email,
         'phoneNumber': phoneNumber,
         'verificationCode': verificationCode,
-        'scope': scope,
+        'scopes': scopes.toList(),
         'audience': audience,
         'parameters': parameters
       };

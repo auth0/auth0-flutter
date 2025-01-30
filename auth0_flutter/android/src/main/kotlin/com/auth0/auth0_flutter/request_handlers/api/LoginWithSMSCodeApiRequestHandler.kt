@@ -8,6 +8,7 @@ import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.toMap
 import com.auth0.auth0_flutter.utils.assertHasProperties
 import io.flutter.plugin.common.MethodChannel
+import java.util.ArrayList
 import java.util.HashMap
 
 private const val SMS_LOGIN_METHOD = "auth#loginWithPhoneNumber"
@@ -25,9 +26,8 @@ class LoginWithSMSCodeApiRequestHandler : ApiRequestHandler {
             args["email"] as String,
             args["verificationCode"] as String
         ).apply {
-            if (args["scope"] is String) {
-                setScope(args["scope"] as String)
-            }
+            val scopes = (args["scopes"] ?: arrayListOf<String>()) as ArrayList<*>
+            setScope(scopes.joinToString(separator = " "))
             if (args["audience"] is String) {
                 setAudience(args["audience"] as String)
             }

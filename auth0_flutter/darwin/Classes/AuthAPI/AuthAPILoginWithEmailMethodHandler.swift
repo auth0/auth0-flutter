@@ -11,7 +11,7 @@ struct AuthAPILoginWithEmailMethodHandler: MethodHandler {
     enum Argument: String {
         case email
         case verificationCode
-        case scope
+        case scopes
         case audience
         case parameters
     }
@@ -27,8 +27,8 @@ struct AuthAPILoginWithEmailMethodHandler: MethodHandler {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.verificationCode.rawValue)))
         }
 
-        guard let scope = arguments[Argument.scope] as? String else {
-            return callback(FlutterError(from: .requiredArgumentMissing(Argument.scope.rawValue)))
+        guard let scopes = arguments[Argument.scopes] as? [String] else {
+            return callback(FlutterError(from: .requiredArgumentMissing(Argument.scopes.rawValue)))
         }
 
         guard let parameters = arguments[Argument.parameters] as? [String: Any] else {
@@ -41,7 +41,7 @@ struct AuthAPILoginWithEmailMethodHandler: MethodHandler {
             .login(email: email,
                    code: verificationCode,
                    audience: audience,
-                   scope: scope
+                   scope: scopes.asSpaceSeparatedString
             )
             .parameters(parameters)
             .start {
