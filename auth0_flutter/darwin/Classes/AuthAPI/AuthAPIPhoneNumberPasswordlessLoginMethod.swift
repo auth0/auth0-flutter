@@ -10,6 +10,7 @@ struct AuthAPIPasswordlessPhoneNumberMethodHandler: MethodHandler {
     enum Argument: String {
         case phoneNumber
         case passwordlessType
+        case parameters
     }
 
     let client: Authentication
@@ -24,11 +25,16 @@ struct AuthAPIPasswordlessPhoneNumberMethodHandler: MethodHandler {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.passwordlessType.rawValue)))
         }
 
+        guard let parameters = arguments[Argument.parameters] as? [String: Any] else {
+             return callback(FlutterError(from: .requiredArgumentMissing(Argument.parameters.rawValue)))
+        }
+
         client
             .startPasswordless(phoneNumber: phoneNumber,
                                type: passwordlessType,
                                connection: "sms"
             )
+            .parameters(parameters)
             .start {
                 switch $0 {
                 case let .success:

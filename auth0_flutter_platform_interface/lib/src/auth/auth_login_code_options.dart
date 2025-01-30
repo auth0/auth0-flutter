@@ -6,13 +6,15 @@ class AuthLoginWithCodeOptions implements RequestOptions {
   final String? phoneNumber;
   final String? scope;
   final String? audience;
+  final Map<String, String> parameters;
 
   AuthLoginWithCodeOptions(
       {required this.verificationCode,
       this.email,
       this.phoneNumber,
       this.scope,
-      this.audience});
+      this.audience,
+      this.parameters = const {}});
 
   @override
   Map<String, dynamic> toMap() => {
@@ -20,6 +22,7 @@ class AuthLoginWithCodeOptions implements RequestOptions {
         'phoneNumber': phoneNumber,
         'verificationCode': verificationCode,
         'scope': scope,
-        'audience': audience
+        'audience': audience,
+        'parameters': parameters
       };
 }
