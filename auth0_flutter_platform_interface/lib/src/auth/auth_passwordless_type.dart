@@ -1,11 +1,15 @@
 /// Types of passwordless authentication.
 enum PasswordlessType {
   /// Simple OTP code sent by email or SMS.
-  code,
+  code('code'),
   /// Regular Web HTTP link (web only, uses a redirect).
-  link,
+  link('link'),
   /// Android App Link.
-  link_android,
+  linkAndroid('link_android'),
   /// iOS Universal Link.
-  link_ios
+  linkIOS('link_ios');
+
+  final String name;
+
+  const PasswordlessType(this.name);
 }
