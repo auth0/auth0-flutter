@@ -54,8 +54,8 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        manifestPlaceholders += [auth0Domain: "$System.env.AUTH0_DOMAIN",
-                                auth0Scheme: "$System.env.AUTH0_CUSTOM_SCHEME"]
+        manifestPlaceholders += [auth0Domain: "YOUR_DOMAIN",
+                                auth0Scheme: "YOUR_SCHEME"]
 
         testOptions {
             unitTests.returnDefaultValues = true
