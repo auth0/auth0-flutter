@@ -149,6 +149,115 @@ class AuthenticationApi {
               types: types,
               authenticatorId: authenticatorId)));
 
+  /// Start a passwordless flow with an [Email](https://auth0.com/docs/api/authentication#get-code-or-link).
+  ///
+  /// Your Application must have the **Passwordless OTP** Grant Type enabled.
+  ///
+  /// ## Usage example:
+  /// ```dart
+  /// final result = await auth0.api.startPasswordlessWithEmail({
+  ///   email : 'email',
+  ///   passwordlessType : 'PasswordlessType'
+  ///   });
+  /// ```
+  ///
+  Future<void> startPasswordlessWithEmail(
+          {required final String email,
+          required final PasswordlessType passwordlessType,
+          final Map<String, String> parameters = const {}}) =>
+      Auth0FlutterAuthPlatform.instance.startPasswordlessWithEmail(
+          _createApiRequest(AuthPasswordlessLoginOptions(
+              email: email,
+              passwordlessType: passwordlessType,
+              parameters: parameters)));
+
+  /// Log in a user using an email and a verification code received via Email
+  /// (Part of passwordless login flow).
+  /// The default scope used is 'openid profile email offline_access'.
+  ///
+  /// Your Application must have the **Passwordless OTP** Grant Type enabled.
+  ///
+  /// ## Usage example:
+  /// ```dart
+  /// final result = await auth0.api.loginWithEmailCode({
+  ///   email: 'email',
+  ///   verificationCode: 'code'
+  /// });
+  ///```
+  Future<Credentials> loginWithEmailCode(
+          {required final String email,
+          required final String verificationCode,
+          final String? connection,
+          final Set<String> scopes = const {
+            'openid',
+            'profile',
+            'email',
+            'offline_access'
+          },
+          final String? audience,
+          final Map<String, String> parameters = const {}}) =>
+      Auth0FlutterAuthPlatform.instance.loginWithEmailCode(_createApiRequest(
+          AuthLoginWithCodeOptions(
+              email: email,
+              verificationCode: verificationCode,
+              scopes: scopes,
+              audience: audience,
+              parameters: parameters)));
+
+  /// Start a passwordless flow with a [SMS](https://auth0.com/docs/api/authentication#get-code-or-link)
+  ///
+  /// Your Application requires to have the **Passwordless OTP** Grant Type
+  /// enabled.
+  ///
+  /// ## Usage example:
+  /// ```dart
+  /// final result = await auth0.api.startPasswordlessWithPhoneNumber({
+  ///   phoneNumber : 'phoneNumber',
+  ///   passwordlessType : 'PasswordlessType'
+  ///   });
+  /// ```
+  Future<void> startPasswordlessWithPhoneNumber(
+          {required final String phoneNumber,
+          required final PasswordlessType passwordlessType,
+          final Map<String, String> parameters = const {}}) =>
+      Auth0FlutterAuthPlatform.instance.startPasswordlessWithPhoneNumber(
+          _createApiRequest(AuthPasswordlessLoginOptions(
+              phoneNumber: phoneNumber,
+              passwordlessType: passwordlessType,
+              parameters: parameters)));
+
+  /// Log in a user using a phone number and a verification code received via
+  /// SMS (Part of passwordless login flow).
+  /// The default scope used is 'openid profile email offline_access'.
+  ///
+  /// Your Application must have the **Passwordless OTP** Grant Type enabled.
+  ///
+  /// ## Usage example:
+  /// ```dart
+  /// final result = await auth0.api.loginWithSmsCode({
+  ///   phoneNumber: 'phoneNumber',
+  ///   verificationCode: 'code'
+  /// });
+  ///```
+  Future<Credentials> loginWithSmsCode(
+          {required final String phoneNumber,
+          required final String verificationCode,
+          final Set<String> scopes = const {
+            'openid',
+            'profile',
+            'email',
+            'offline_access'
+          },
+          final String? audience,
+          final Map<String, String> parameters = const {}}) =>
+      Auth0FlutterAuthPlatform.instance.loginWithSmsCode(_createApiRequest(
+          AuthLoginWithCodeOptions(
+              phoneNumber: phoneNumber,
+              verificationCode: verificationCode,
+              scopes: scopes,
+              audience: audience,
+              parameters: parameters)));
+
   /// Fetches the user's profile from the /userinfo endpoint. An [accessToken] from a successful authentication call must be supplied.
   ///
   /// ## Endpoint
