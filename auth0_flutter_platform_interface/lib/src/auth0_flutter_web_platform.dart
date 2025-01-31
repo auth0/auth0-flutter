@@ -1,4 +1,5 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+
 import '../auth0_flutter_platform_interface.dart';
 
 class StubAuth0FlutterWeb extends Auth0FlutterWebPlatform {}
