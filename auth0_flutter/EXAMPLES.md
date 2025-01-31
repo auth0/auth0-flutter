@@ -606,6 +606,7 @@ await auth0.api.startPasswordlessWithPhoneNumber(
     phoneNumber: "123456789", passwordlessType: PasswordlessType.code);
 ```
 </details>
+
 #### 2. Login with the received code
 
 To complete the authentication, you must send back that code the user received along with the email or phone number used to start the flow.
@@ -614,6 +615,7 @@ To complete the authentication, you must send back that code the user received a
 final credentials = await auth0.api.loginWithEmailCode(
           email: "support@auth0.com", verificationCode: "000000");
 ```
+
 <details>
 <summary>Using SMS</summary>
 
@@ -624,7 +626,7 @@ final credentials = await auth0.api.loginWithSmsCode(
 </details>
 
 > [!NOTE]
-> Sending additional parameter is supported only on ios at the moment.
+> Sending additional parameters is supported only on iOS at the moment.
 
 ### Retrieve user information
 
