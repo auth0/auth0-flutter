@@ -1,11 +1,11 @@
 import 'package:flutter/services.dart';
 
-import '../auth0_flutter_platform_interface.dart';
 import 'auth/api_exception.dart';
+import 'auth/auth_login_code_options.dart';
 import 'auth/auth_login_options.dart';
 import 'auth/auth_login_with_otp_options.dart';
-import 'auth/auth_passwordless_login_options.dart';
 import 'auth/auth_multifactor_challenge_options.dart';
+import 'auth/auth_passwordless_login_options.dart';
 import 'auth/auth_renew_access_token_options.dart';
 import 'auth/auth_reset_password_options.dart';
 import 'auth/auth_signup_options.dart';
