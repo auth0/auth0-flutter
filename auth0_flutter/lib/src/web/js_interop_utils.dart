@@ -22,7 +22,9 @@ class JsInteropUtils {
   // **Note**: there is no static typing for these parameters to be able
   // to retrieve them again.
   static T addCustomParams<T extends Object>(
-      final T obj, final Map<String, dynamic> params) {
+    final T obj,
+    final Map<String, dynamic> params,
+  ) {
     params.forEach((final key, final value) {
       if (value != null) {
         setProperty(obj, key, value);
