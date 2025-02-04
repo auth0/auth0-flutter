@@ -118,6 +118,22 @@ void main() {
     expect(eq.equals(capturedAppState, appState), isTrue);
   });
 
+  test('appState getter throws UnimplementedError when not overridden',
+      () async {
+    final Auth0FlutterWebPlatform implementation = StubAuth0FlutterWeb();
+
+    expect(
+      () async => implementation.appState,
+      throwsA(predicate((final Object? error) {
+        if (error is! UnimplementedError) {
+          return false;
+        }
+
+        return error.message == 'web.appState has not been implemented';
+      })),
+    );
+  });
+
   test('appState getter returns null when accessed more than once', () async {
     final Map<String, Object?> appState = <String, Object?>{
       'someFancyState': 'value',
