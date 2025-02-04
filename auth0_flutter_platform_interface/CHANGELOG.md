@@ -1,5 +1,11 @@
 # Change Log
 
+## [afpi-v1.7.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.7.0) (2024-04-22)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.6.0...afpi-v1.7.0)
+
+**Added**
+- iOS - Bump Auth0 dependency version [\#435](https://github.com/auth0/auth0-flutter/pull/435) ([martin-headspace](https://github.com/martin-headspace))
+
 ## [afpi-v1.6.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.6.0) (2024-03-18)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.5.0...afpi-v1.6.0)
 

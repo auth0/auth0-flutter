@@ -24,9 +24,9 @@
 
 | Flutter    | Android         | iOS               | macOS             |
 | :--------- | :-------------- | :---------------- | :---------------- |
-| SDK 3.0+   | Android API 21+ | iOS 13+           | macOS 11+         |
-| Dart 2.17+ | Java 8+         | Swift 5.7+        | Swift 5.7+        |
-|            |                 | Xcode 14.x / 15.x | Xcode 14.x / 15.x |
+| SDK 3.0+   | Android API 21+ | iOS 14+           | macOS 11+         |
+| Dart 2.17+ | Java 8+         | Swift 5.9+        | Swift 5.9+        |
+|            |                 | Xcode 15.x / 16.x | Xcode 15.x / 16.x |
 
 ### Installation
 
@@ -143,7 +143,7 @@ android {
     defaultConfig {
         // ...
         // Add the following line
-        manifestPlaceholders = [auth0Domain: "YOUR_AUTH0_DOMAIN", auth0Scheme: "https"]
+        manifestPlaceholders += [auth0Domain: "YOUR_AUTH0_DOMAIN", auth0Scheme: "https"]
     }
     // ...
 }
