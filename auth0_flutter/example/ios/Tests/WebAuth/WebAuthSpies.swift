@@ -124,6 +124,14 @@ class SpyWebAuth: WebAuth {
         return self
     }
 
+    func onClose(_ callback: (() -> Void)?) -> Self {
+        return self
+    }
+
+    func authorizeURL(_ authorizeURL: URL) -> Self {
+        return self
+    }
+
     func start(_ callback: @escaping (WebAuthResult<Credentials>) -> Void) {
         calledLogin = true
         callback(loginResult)
@@ -142,10 +150,6 @@ class SpyWebAuth: WebAuth {
     func clearSession(federated: Bool, callback: @escaping (WebAuthResult<Void>) -> Void) {
         calledLogout = true
         callback(logoutResult)
-    }
-
-    func onClose(_ callback: (() -> Void)?) -> Self {
-        return self
     }
 }
 

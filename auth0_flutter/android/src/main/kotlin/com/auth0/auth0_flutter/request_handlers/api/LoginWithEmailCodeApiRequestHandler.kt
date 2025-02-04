@@ -8,44 +8,48 @@ import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.toMap
 import com.auth0.auth0_flutter.utils.assertHasProperties
 import io.flutter.plugin.common.MethodChannel
+import java.util.ArrayList
+import java.util.HashMap
 
-private const val AUTH_RENEW_METHOD = "auth#renew"
+private const val EMAIL_LOGIN_METHOD = "auth#loginWithEmail"
 
-class RenewApiRequestHandler : ApiRequestHandler {
-    override val method: String = AUTH_RENEW_METHOD
+class LoginWithEmailCodeApiRequestHandler : ApiRequestHandler {
+    override val method: String = EMAIL_LOGIN_METHOD
 
     override fun handle(
         api: AuthenticationAPIClient,
         request: MethodCallRequest,
         result: MethodChannel.Result
     ) {
-        assertHasProperties(listOf("refreshToken"), request.data)
+        val args = request.data
+        assertHasProperties(listOf("email", "verificationCode"), args)
 
-        val renewAuthBuilder = api.renewAuth(request.data["refreshToken"] as String)
-
-        val scopes = (request.data["scopes"] ?: arrayListOf<String>()) as ArrayList<*>
-        if (scopes.isNotEmpty()) {
-            renewAuthBuilder.addParameter("scope", scopes.joinToString(separator = " "))
+        val builder = api.loginWithEmail(
+            args["email"] as String,
+            args["verificationCode"] as String
+        ).apply {
+            val scopes = (args["scopes"] ?: arrayListOf<String>()) as ArrayList<*>
+            setScope(scopes.joinToString(separator = " "))
+            if (args["audience"] is String) {
+                setAudience(args["audience"] as String)
+            }
+            if (args["parameters"] is HashMap<*, *>) {
+                addParameters(args["parameters"] as Map<String, String>)
+            }
         }
 
-        if (request.data["parameters"] is HashMap<*, *>) {
-            renewAuthBuilder.addParameters(request.data["parameters"] as Map<String, String>)
-        }
-
-        renewAuthBuilder.start(object :
-            Callback<Credentials, AuthenticationException> {
-            override fun onFailure(exception: AuthenticationException) {
+        builder.start(object : Callback<Credentials, AuthenticationException> {
+            override fun onFailure(error: AuthenticationException) {
                 result.error(
-                    exception.getCode(),
-                    exception.getDescription(),
-                    exception.toMap()
+                    error.getCode(),
+                    error.getDescription(),
+                    error.toMap()
                 )
             }
 
             override fun onSuccess(credentials: Credentials) {
                 val scope = credentials.scope?.split(" ") ?: listOf()
-                val formattedDate = credentials.expiresAt.toInstant().toString();
-
+                val formattedDate = credentials.expiresAt.toInstant().toString()
                 result.success(
                     mapOf(
                         "accessToken" to credentials.accessToken,

@@ -8,40 +8,44 @@ import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.toMap
 import com.auth0.auth0_flutter.utils.assertHasProperties
 import io.flutter.plugin.common.MethodChannel
-import java.util.*
+import java.util.ArrayList
+import java.util.HashMap
 
-private const val AUTH_LOGIN_OTP_METHOD = "auth#loginOtp"
+private const val SMS_LOGIN_METHOD = "auth#loginWithPhoneNumber"
 
-class LoginWithOtpApiRequestHandler: ApiRequestHandler {
-    override val method: String = AUTH_LOGIN_OTP_METHOD
+class LoginWithSMSCodeApiRequestHandler : ApiRequestHandler {
+    override val method: String = SMS_LOGIN_METHOD
 
     override fun handle(
-        api: AuthenticationAPIClient,
-        request: MethodCallRequest,
-        result: MethodChannel.Result
+        api: AuthenticationAPIClient, request: MethodCallRequest, result: MethodChannel.Result
     ) {
         val args = request.data
+        assertHasProperties(listOf("phoneNumber", "verificationCode"), args)
 
-        assertHasProperties(listOf("mfaToken", "otp"), args)
+        val builder = api.loginWithPhoneNumber(
+            args["email"] as String,
+            args["verificationCode"] as String
+        ).apply {
+            val scopes = (args["scopes"] ?: arrayListOf<String>()) as ArrayList<*>
+            setScope(scopes.joinToString(separator = " "))
+            if (args["audience"] is String) {
+                setAudience(args["audience"] as String)
+            }
+            if (args["parameters"] is HashMap<*, *>) {
+                addParameters(args["parameters"] as Map<String, String>)
+            }
+        }
 
-        val loginBuilder = api
-            .loginWithOTP(
-                args["mfaToken"] as String,
-                args["otp"] as String,
-            )
-
-        loginBuilder.start(object : Callback<Credentials, AuthenticationException> {
-            override fun onFailure(exception: AuthenticationException) {
+        builder.start(object : Callback<Credentials, AuthenticationException> {
+            override fun onFailure(error: AuthenticationException) {
                 result.error(
-                    exception.getCode(),
-                    exception.getDescription(),
-                    exception.toMap()
+                    error.getCode(), error.getDescription(), error.toMap()
                 )
             }
 
             override fun onSuccess(credentials: Credentials) {
                 val scope = credentials.scope?.split(" ") ?: listOf()
-                var formattedDate = credentials.expiresAt.toInstant().toString()
+                val formattedDate = credentials.expiresAt.toInstant().toString()
                 result.success(
                     mapOf(
                         "accessToken" to credentials.accessToken,
@@ -56,5 +60,4 @@ class LoginWithOtpApiRequestHandler: ApiRequestHandler {
             }
         })
     }
-
 }

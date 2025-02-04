@@ -17,6 +17,7 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         DatabaseUser,
         ChallengeType,
         CredentialsManagerException,
+        PasswordlessType,
         LocalAuthentication;
 
 export 'src/mobile/authentication_api.dart';
