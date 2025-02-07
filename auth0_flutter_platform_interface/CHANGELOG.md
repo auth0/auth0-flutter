@@ -1,5 +1,15 @@
 # Change Log
 
+## [afpi-v2.0.0-beta.0](https://github.com/auth0/auth0-flutter/tree/afpi-v2.0.0-beta.0) (2025-02-07)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.7.0...afpi-v2.0.0-beta.0)
+
+**Added**
+- feat: Added support for passwordless authentication [\#503](https://github.com/auth0/auth0-flutter/pull/503) ([pmathew92](https://github.com/pmathew92))
+- Updated the android gradle version [\#490](https://github.com/auth0/auth0-flutter/pull/490) ([pmathew92](https://github.com/pmathew92))
+
+**Changed**
+- Set `compileSdk` to `34` to match Auth0.Android [\#494](https://github.com/auth0/auth0-flutter/pull/494) ([Widcket](https://github.com/Widcket))
+
 ## [afpi-v1.7.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.7.0) (2024-04-22)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.6.0...afpi-v1.7.0)
 
