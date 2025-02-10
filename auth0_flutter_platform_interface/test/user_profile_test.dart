@@ -55,15 +55,11 @@ void main() {
     });
 
     test('fromMap handles missing optional properties', () {
-      final map = {
-        'sub': 'user123',
-        'email': 'john@example.com',
-      };
+      final map = {'sub': 'user123'};
 
       final userProfile = UserProfile.fromMap(map);
 
       expect(userProfile.sub, 'user123');
-      expect(userProfile.email, 'john@example.com');
       expect(userProfile.name, isNull);
       expect(userProfile.givenName, isNull);
       expect(userProfile.familyName, isNull);
@@ -73,6 +69,7 @@ void main() {
       expect(userProfile.profileUrl, isNull);
       expect(userProfile.pictureUrl, isNull);
       expect(userProfile.websiteUrl, isNull);
+      expect(userProfile.email, isNull);
       expect(userProfile.isEmailVerified, isNull);
       expect(userProfile.gender, isNull);
       expect(userProfile.birthdate, isNull);
