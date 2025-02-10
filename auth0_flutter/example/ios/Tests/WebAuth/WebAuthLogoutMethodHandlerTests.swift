@@ -3,6 +3,8 @@ import Auth0
 
 @testable import auth0_flutter
 
+fileprivate typealias Argument = WebAuthLogoutMethodHandler.Argument
+
 class WebAuthLogoutHandlerTests: XCTestCase {
     var spy: SpyWebAuth!
     var sut: WebAuthLogoutMethodHandler!
@@ -13,20 +15,47 @@ class WebAuthLogoutHandlerTests: XCTestCase {
     }
 }
 
+// MARK: - Required Arguments Error
+
+extension WebAuthLogoutHandlerTests {
+    func testProducesErrorWhenUseHTTPSIsMissing() {
+        let argument = Argument.useHTTPS
+        let expectation = expectation(description: "\(argument.rawValue) is missing")
+        sut.handle(with: arguments(without: argument)) { result in
+            assert(result: result, isError: .requiredArgumentMissing(argument.rawValue))
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
+    }
+}
+
 // MARK: - Arguments
 
 extension WebAuthLogoutHandlerTests {
+
+    // MARK: useHTTPS
+
+    func testEnablesUseHTTPS() {
+        let value = true
+        sut.handle(with: arguments(withKey: Argument.useHTTPS, value: value)) { _ in }
+        XCTAssertEqual(spy.useHTTPSValue, value)
+    }
+
+    func testDoesNotEnableUseHTTPSWhenFalse() {
+        sut.handle(with: arguments(withKey: Argument.useHTTPS, value: false)) { _ in }
+        XCTAssertNil(spy.useHTTPSValue)
+    }
 
     // MARK: returnTo
 
     func testAddsReturnTo() {
         let value = "https://auth0.com"
-        sut.handle(with: [WebAuthLogoutMethodHandler.Argument.returnTo.rawValue: value]) { _ in }
+        sut.handle(with: arguments(withKey: Argument.returnTo, value: value)) { _ in }
         XCTAssertEqual(spy.redirectURLValue?.absoluteString, value)
     }
 
     func testDoesNotAddReturnToWhenNil() {
-        sut.handle(with: arguments()) { _ in }
+        sut.handle(with: arguments(without: Argument.returnTo)) { _ in }
         XCTAssertNil(spy.redirectURLValue)
     }
 }
@@ -58,5 +87,17 @@ extension WebAuthLogoutHandlerTests {
             expectation.fulfill()
         }
         wait(for: [expectation])
+    }
+}
+
+
+// MARK: - Helpers
+
+extension WebAuthLogoutHandlerTests {
+    override func arguments() -> [String: Any] {
+        return [
+            Argument.useHTTPS.rawValue: false,
+            Argument.returnTo.rawValue: ""
+        ]
     }
 }

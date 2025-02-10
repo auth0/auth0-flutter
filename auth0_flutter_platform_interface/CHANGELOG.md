@@ -1,5 +1,30 @@
 # Change Log
 
+## [afpi-v1.8.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.8.0) (2025-02-10)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.7.0...afpi-v1.8.0)
+
+**Added**
+- feat: Added support for passwordless authentication [\#503](https://github.com/auth0/auth0-flutter/pull/503) ([pmathew92](https://github.com/pmathew92))
+
+**Changed**
+- Updated the android gradle version [\#490](https://github.com/auth0/auth0-flutter/pull/490) ([pmathew92](https://github.com/pmathew92))
+- Update Swift dependencies [\#493](https://github.com/auth0/auth0-flutter/pull/493) ([Widcket](https://github.com/Widcket))
+- Minor readme update [\#483](https://github.com/auth0/auth0-flutter/pull/483) ([pmathew92](https://github.com/pmathew92))
+- Set `compileSdk` to `34` to match Auth0.Android [\#494](https://github.com/auth0/auth0-flutter/pull/494) ([Widcket](https://github.com/Widcket))
+- Use java.time.Instant instead of java.text.SimpleDateFormat [\#469](https://github.com/auth0/auth0-flutter/pull/469) ([gferon](https://github.com/gferon))
+
+## [afpi-v1.7.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.7.0) (2024-04-22)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.6.0...afpi-v1.7.0)
+
+**Added**
+- iOS - Bump Auth0 dependency version [\#435](https://github.com/auth0/auth0-flutter/pull/435) ([martin-headspace](https://github.com/martin-headspace))
+
+## [afpi-v1.6.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.6.0) (2024-03-18)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.5.0...afpi-v1.6.0)
+
+**Added**
+- Add support for HTTPS redirect URLs [SDK-4754] [\#417](https://github.com/auth0/auth0-flutter/pull/417) ([Widcket](https://github.com/Widcket))
+
 ## [afpi-v1.5.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.5.0) (2023-12-15)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.4.0...afpi-v1.5.0)
 

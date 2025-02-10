@@ -1,9 +1,11 @@
 import 'package:flutter/services.dart';
 
 import 'auth/api_exception.dart';
+import 'auth/auth_login_code_options.dart';
 import 'auth/auth_login_options.dart';
 import 'auth/auth_login_with_otp_options.dart';
 import 'auth/auth_multifactor_challenge_options.dart';
+import 'auth/auth_passwordless_login_options.dart';
 import 'auth/auth_renew_access_token_options.dart';
 import 'auth/auth_reset_password_options.dart';
 import 'auth/auth_signup_options.dart';
@@ -20,6 +22,12 @@ const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter/auth');
 const String authLoginMethod = 'auth#login';
 const String authLoginWithOtpMethod = 'auth#loginOtp';
 const String authMultifactorChallengeMethod = 'auth#multifactorChallenge';
+const String authStartPasswordlessWithEmailMethod =
+    'auth#passwordlessWithEmail';
+const String authStartPasswordlessWithPhoneNumberMethod =
+    'auth#passwordlessWithPhoneNumber';
+const String authLoginWithEmailCodeMethod = 'auth#loginWithEmail';
+const String authLoginWithSmsCodeMethod = 'auth#loginWithPhoneNumber';
 const String authUserInfoMethod = 'auth#userInfo';
 const String authSignUpMethod = 'auth#signUp';
 const String authRenewMethod = 'auth#renew';
@@ -50,6 +58,39 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
         method: authMultifactorChallengeMethod, request: request);
 
     return Challenge.fromMap(result);
+  }
+
+
+  @override
+  Future<void> startPasswordlessWithEmail(
+      final ApiRequest<AuthPasswordlessLoginOptions> request) async {
+     await invokeRequest(method: authStartPasswordlessWithEmailMethod,
+         request: request,throwOnNull: false);
+  }
+
+
+  @override
+  Future<Credentials> loginWithEmailCode(
+      final ApiRequest<AuthLoginWithCodeOptions> request)  async{
+      final Map<String,dynamic> result = await invokeRequest(
+          method: authLoginWithEmailCodeMethod, request: request);
+      return Credentials.fromMap(result);
+  }
+
+
+  @override
+  Future<void> startPasswordlessWithPhoneNumber(
+      final ApiRequest<AuthPasswordlessLoginOptions> request)  async{
+    await invokeRequest(method: authStartPasswordlessWithPhoneNumberMethod,
+        request: request,throwOnNull: false);
+  }
+
+  @override
+  Future<Credentials> loginWithSmsCode(
+      final ApiRequest<AuthLoginWithCodeOptions> request) async {
+    final Map<String,dynamic> result = await invokeRequest(
+        method: authLoginWithSmsCodeMethod, request: request);
+    return Credentials.fromMap(result);
   }
 
   @override

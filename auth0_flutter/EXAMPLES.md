@@ -7,6 +7,9 @@
   - [Adding scopes](#adding-scopes)
   - [Adding custom parameters](#adding-custom-parameters)
   - [ID token validation](#id-token-validation)
+  - [Using `SFSafariViewController` (iOS only)](#using-sfsafariviewcontroller-ios-only)
+    - [1. Configure a custom URL scheme](#1-configure-a-custom-url-scheme)
+    - [2. Capture the callback URL](#2-capture-the-callback-url)
   - [Errors](#errors)
   - [Android: Custom schemes](#android-custom-schemes)
 - [📱 Credentials Manager](#-credentials-manager)
@@ -22,6 +25,7 @@
 - [📱 Authentication API](#-authentication-api)
   - [Login with database connection](#login-with-database-connection)
   - [Sign up with database connection](#sign-up-with-database-connection)
+  - [Passwordless Login](#passwordless-login)
   - [Retrieve user information](#retrieve-user-information)
   - [Renew credentials](#renew-credentials)
   - [Errors](#errors-2)
@@ -38,6 +42,9 @@
   - [Adding scopes](#adding-scopes)
   - [Adding custom parameters](#adding-custom-parameters)
   - [ID token validation](#id-token-validation)
+  - [Using `SFSafariViewController` (iOS only)](#using-sfsafariviewcontroller-ios-only)
+    - [1. Configure a custom URL scheme](#1-configure-a-custom-url-scheme)
+    - [2. Capture the callback URL](#2-capture-the-callback-url)
   - [Errors](#errors)
   - [Android: Custom schemes](#android-custom-schemes)
 
@@ -55,7 +62,9 @@ Call the `logout()` method in the `onPressed` callback of your **Logout** button
 If you're using your own credentials storage, make sure to delete the credentials afterward.
 
 ```dart
-await auth0.webAuthentication().logout();
+// Use a Universal Link logout URL on iOS 17.4+ / macOS 14.4+
+// useHTTPS is ignored on Android
+await auth0.webAuthentication().logout(useHTTPS: true);
 ```
 
 </details>
@@ -239,6 +248,88 @@ await auth0Web.loginWithRedirect(
 
 </details>
 
+### Using `SFSafariViewController` (iOS only)
+
+auth0_flutter supports using `SFSafariViewController` as the browser instead of `ASWebAuthenticationSession`. Note that it can only be used for login, not for logout. According to its docs, `SFSafariViewController` must be used "to visibly present information to users":
+
+![Screenshot of SFSafariViewController's documentation](https://github.com/auth0/auth0-flutter/assets/5055789/952aa669-f229-4e6e-bb7e-527b701bdea6)
+
+This is the case for login, but not for logout. Instead of calling `logout()`, you can delete the stored credentials –using the Credentials Manager's `clearCredentials()` method– and use `'prompt': 'login'` to force the login page even if the session cookie is still present. Since the cookies stored by `SFSafariViewController` are scoped to your app, this should not pose an issue.
+
+```dart
+await auth0.webAuthentication().login(
+      safariViewController: const SafariViewController(),
+      parameters: {'prompt': 'login'}); // Ignore the cookie (if present) and show the login page
+```
+
+> 💡 `SFSafariViewController` does not support using a Universal Link as callback URL. See https://auth0.github.io/Auth0.swift/documentation/auth0/useragents to learn more about the differences between `ASWebAuthenticationSession` and `SFSafariViewController`.
+
+If you choose to use `SFSafariViewController`, you need to perform an additional bit of setup. Unlike `ASWebAuthenticationSession`, `SFSafariViewController` will not automatically capture the callback URL when Auth0 redirects back to your app, so it is necessary to manually resume the login operation.
+
+#### 1. Configure a custom URL scheme
+
+There is an `Info.plist` file in the `ios/Runner` (or `macos/Runner`, for macOS) directory of your app. Open it and add the following snippet inside the top-level `<dict>` tag. This registers your iOS/macOS bundle identifier as a custom URL scheme, so the callback URL can reach your app.
+
+```xml
+<!-- Info.plist -->
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+<!-- ... -->
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>None</string>
+            <key>CFBundleURLName</key>
+            <string>auth0</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+            </array>
+        </dict>
+    </array>
+<!-- ... -->
+</dict>
+</plist>
+```
+
+> 💡 If you're opening the `Info.plist` file in Xcode and it is not being shown in this format, you can **Right Click** on `Info.plist` in the Xcode [project navigator](https://developer.apple.com/documentation/bundleresources/information_property_list/managing_your_app_s_information_property_list) and then select **Open As > Source Code**.
+
+#### 2. Capture the callback URL
+
+<details>
+  <summary>Using the UIKit app lifecycle</summary>
+
+```swift
+// AppDelegate.swift
+
+override func application(_ app: UIApplication,
+                 open url: URL,
+                 options: [UIApplication.OpenURLOptionsKey: Any]) -> Bool {
+    WebAuthentication.resume(with: url)
+    return super.application(application, open: url, options: options);
+}
+```
+
+</details>
+
+<details>
+  <summary>Using the UIKit app lifecycle with Scenes</summary>
+
+```swift
+// SceneDelegate.swift
+
+func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+    guard let url = URLContexts.first?.url else { return }
+    WebAuthentication.resume(with: url)
+}
+```
+
+</details>
+
 ### Errors
 
 <details>
@@ -296,7 +387,7 @@ await webAuth.logout();
 
 ## 📱 Credentials Manager
 
-> This feature is mobile/desktop only; on web, the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter keeps its own cache. See [Handling Credentials on the Web](#handling-credentials-on-the-web) for more details.
+> This feature is mobile/desktop only; on web, the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter keeps its own cache. See [Handling Credentials on the Web](#-handling-credentials-on-the-web) for more details.
 
 - [Check for stored credentials](#check-for-stored-credentials)
 - [Retrieve stored credentials](#retrieve-stored-credentials)
@@ -495,6 +586,47 @@ final databaseUser = await auth0.api.signup(
 ```
 
 > 💡 You might want to log the user in after signup. See [Login with database connection](#login-with-database-connection) above for an example.
+
+### Passwordless Login
+Passwordless is a two-step authentication flow that requires the **Passwordless OTP** grant to be enabled for your Auth0 application. Check [our documentation](https://auth0.com/docs/get-started/applications/application-grant-types) for more information.
+
+#### 1. Start the passwordless flow
+
+Request a code to be sent to the user's email or phone number. For email scenarios, a link can be sent in place of the code.
+
+```dart
+await auth0.api.startPasswordlessWithEmail(
+    email: "support@auth0.com", passwordlessType: PasswordlessType.code);
+```
+<details>
+<summary>Using PhoneNumber</summary>
+
+```dart
+await auth0.api.startPasswordlessWithPhoneNumber(
+    phoneNumber: "123456789", passwordlessType: PasswordlessType.code);
+```
+</details>
+
+#### 2. Login with the received code
+
+To complete the authentication, you must send back that code the user received along with the email or phone number used to start the flow.
+
+```dart
+final credentials = await auth0.api.loginWithEmailCode(
+          email: "support@auth0.com", verificationCode: "000000");
+```
+
+<details>
+<summary>Using SMS</summary>
+
+```dart
+final credentials = await auth0.api.loginWithSmsCode(
+    phoneNumber: "123456789", verificationCode: "000000");
+```
+</details>
+
+> [!NOTE]
+> Sending additional parameters is supported only on iOS at the moment.
 
 ### Retrieve user information
 

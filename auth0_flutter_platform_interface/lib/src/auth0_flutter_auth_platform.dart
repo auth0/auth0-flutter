@@ -1,9 +1,11 @@
 // coverage:ignore-file
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
+import 'auth/auth_login_code_options.dart';
 import 'auth/auth_login_options.dart';
 import 'auth/auth_login_with_otp_options.dart';
 import 'auth/auth_multifactor_challenge_options.dart';
+import 'auth/auth_passwordless_login_options.dart';
 import 'auth/auth_renew_access_token_options.dart';
 import 'auth/auth_reset_password_options.dart';
 import 'auth/auth_signup_options.dart';
@@ -38,6 +40,28 @@ abstract class Auth0FlutterAuthPlatform extends PlatformInterface {
   Future<Challenge> multifactorChallenge(
       final ApiRequest<AuthMultifactorChallengeOptions> request) {
     throw UnimplementedError('multifactorChallenge() has not been implemented');
+  }
+
+  Future<void> startPasswordlessWithEmail(
+      final ApiRequest<AuthPasswordlessLoginOptions> request) {
+    throw UnimplementedError('startPasswordlessWithEmail() has not been '
+        'implemented');
+  }
+
+  Future<Credentials> loginWithEmailCode(
+      final ApiRequest<AuthLoginWithCodeOptions> request) {
+    throw UnimplementedError('loginWithEmailCode() has not been implemented');
+  }
+
+  Future<void> startPasswordlessWithPhoneNumber(
+      final ApiRequest<AuthPasswordlessLoginOptions> request) {
+    throw UnimplementedError
+      ('startPasswordlessWithPhoneNumber() has not been implemented');
+  }
+
+  Future<Credentials> loginWithSmsCode(
+      final ApiRequest<AuthLoginWithCodeOptions> request) {
+    throw UnimplementedError('loginWithSmsCode() has not been implemented');
   }
 
   Future<UserProfile> userInfo(final ApiRequest<AuthUserInfoOptions> request) {

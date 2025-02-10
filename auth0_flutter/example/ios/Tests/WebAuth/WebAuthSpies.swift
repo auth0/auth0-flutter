@@ -40,6 +40,7 @@ class SpyWebAuth: WebAuth {
     private(set) var issuerValue: String?
     private(set) var leewayValue: Int?
     private(set) var maxAgeValue: Int?
+    private(set) var useHTTPSValue: Bool?
     private(set) var useEmphemeralSessionValue: Bool?
     private(set) var invitationURLValue: URL?
     private(set) var organizationValue: String?
@@ -98,6 +99,11 @@ class SpyWebAuth: WebAuth {
         return self
     }
 
+    func useHTTPS() -> Self {
+        self.useHTTPSValue = true
+        return self
+    }
+
     func useEphemeralSession() -> Self {
         self.useEmphemeralSessionValue = true
         return self
@@ -115,6 +121,14 @@ class SpyWebAuth: WebAuth {
 
     func provider(_ provider: @escaping WebAuthProvider) -> Self {
         self.provider = provider
+        return self
+    }
+
+    func onClose(_ callback: (() -> Void)?) -> Self {
+        return self
+    }
+
+    func authorizeURL(_ authorizeURL: URL) -> Self {
         return self
     }
 
@@ -136,10 +150,6 @@ class SpyWebAuth: WebAuth {
     func clearSession(federated: Bool, callback: @escaping (WebAuthResult<Void>) -> Void) {
         calledLogout = true
         callback(logoutResult)
-    }
-
-    func onClose(_ callback: (() -> Void)?) -> Self {
-        return self
     }
 }
 
