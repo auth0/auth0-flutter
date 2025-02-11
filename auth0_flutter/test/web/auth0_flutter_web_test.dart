@@ -122,15 +122,18 @@ void main() {
       () async {
     final Auth0FlutterWebPlatform webImpl = StubAuth0FlutterWeb();
 
-    expect(
-      () async => webImpl.appState,
-      throwsA(predicate((final Object? error) {
-        if (error is! UnimplementedError) {
-          return false;
-        }
+    Object? exception;
 
-        return error.message == 'web.appState has not been implemented';
-      })),
+    try {
+      await webImpl.appState;
+    } catch (error) {
+      exception = error;
+    }
+
+    expect(exception, isA<UnimplementedError>());
+    expect(
+      (exception as UnimplementedError).message,
+      'web.appState has not been implemented',
     );
   });
 
