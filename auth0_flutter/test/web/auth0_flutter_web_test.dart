@@ -7,7 +7,9 @@ import 'package:auth0_flutter/auth0_flutter_web.dart';
 import 'package:auth0_flutter/src/web/auth0_flutter_plugin_real.dart';
 import 'package:auth0_flutter/src/web/auth0_flutter_web_platform_proxy.dart';
 import 'package:auth0_flutter/src/web/js_interop.dart' as interop;
+import 'package:auth0_flutter/src/web/js_interop_utils.dart';
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
+import 'package:collection/collection.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -72,13 +74,91 @@ void main() {
 
   test('handleRedirectCallback is called on load when auth params exist in URL',
       () async {
+    final interop.RedirectLoginResult mockRedirectResult =
+        interop.RedirectLoginResult();
+
     when(mockClientProxy.isAuthenticated())
         .thenAnswer((final _) => Future.value(false));
+    when(mockClientProxy.handleRedirectCallback())
+        .thenAnswer((final _) => Future.value(mockRedirectResult));
 
     plugin.urlSearchProvider = () => '?code=abc&state=123';
     await auth0.onLoad();
     verify(mockClientProxy.handleRedirectCallback());
     verifyNever(mockClientProxy.checkSession());
+  });
+
+  test('handleRedirectCallback captures appState that was passed', () async {
+    final Map<String, Object?> appState = <String, Object?>{
+      'someFancyState': 'value',
+    };
+
+    final interop.RedirectLoginResult mockRedirectResult =
+        interop.RedirectLoginResult(
+      appState: appState,
+    );
+
+    when(mockClientProxy.isAuthenticated())
+        .thenAnswer((final _) => Future.value(false));
+    when(mockClientProxy.handleRedirectCallback(any))
+        .thenAnswer((final _) => Future.value(mockRedirectResult));
+
+    plugin.urlSearchProvider = () => '?code=abc&state=123';
+    await auth0.onLoad();
+    verify(mockClientProxy.handleRedirectCallback());
+    verifyNever(mockClientProxy.checkSession());
+
+    final Object? capturedAppState = await auth0.appState;
+
+    expect(capturedAppState, isNotNull);
+    expect(capturedAppState, isA<Map<Object?, Object?>>());
+    capturedAppState as Map<Object?, Object?>;
+    const MapEquality<Object?, Object?> eq = MapEquality<Object?, Object?>();
+
+    expect(eq.equals(capturedAppState, appState), isTrue);
+  });
+
+  test('appState getter throws UnimplementedError when not overridden',
+      () async {
+    final Auth0FlutterWebPlatform webImpl = StubAuth0FlutterWeb();
+
+    expect(
+      () async => webImpl.appState,
+      throwsA(predicate((final Object? error) {
+        if (error is! UnimplementedError) {
+          return false;
+        }
+
+        return error.message == 'web.appState has not been implemented';
+      })),
+    );
+  });
+
+  test('appState getter returns value when accessed more than once', () async {
+    final Map<String, Object?> appState = <String, Object?>{
+      'someFancyState': 'value',
+    };
+
+    final interop.RedirectLoginResult mockRedirectResult =
+        interop.RedirectLoginResult(
+      appState: appState,
+    );
+
+    when(mockClientProxy.isAuthenticated())
+        .thenAnswer((final _) => Future.value(false));
+    when(mockClientProxy.handleRedirectCallback(any))
+        .thenAnswer((final _) => Future.value(mockRedirectResult));
+
+    plugin.urlSearchProvider = () => '?code=abc&state=123';
+    await auth0.onLoad();
+    verify(mockClientProxy.handleRedirectCallback());
+    verifyNever(mockClientProxy.checkSession());
+
+    final Object? capturedAppState = await auth0.appState;
+    expect(capturedAppState, isNotNull);
+
+    final Object? capturedAppState2 = await auth0.appState;
+    expect(capturedAppState2, isNotNull);
   });
 
   test('onLoad throws the correct exception from handleRedirectCallback',
@@ -97,6 +177,33 @@ void main() {
             e is WebException &&
             e.code == 'test' &&
             e.message == 'test exception')));
+  });
+
+  test('loginWithRedirect supports appState parameter', () async {
+    when(mockClientProxy.isAuthenticated())
+        .thenAnswer((final _) => Future.value(false));
+
+    final Map<String, Object?> appState = <String, Object?>{
+      'someFancyState': 'value',
+    };
+
+    await auth0.loginWithRedirect(
+      appState: appState,
+    );
+
+    final params =
+        verify(mockClientProxy.loginWithRedirect(captureAny)).captured.first;
+
+    final Object? capturedAppState =
+        JsInteropUtils.dartifyObject(params.appState);
+
+    expect(capturedAppState, isNotNull);
+    expect(capturedAppState, isA<Map<Object?, Object?>>());
+    capturedAppState as Map<Object?, Object?>;
+
+    const MapEquality<Object?, Object?> eq = MapEquality<Object?, Object?>();
+
+    expect(eq.equals(capturedAppState, appState), isTrue);
   });
 
   test('loginWithRedirect with all options', () async {
