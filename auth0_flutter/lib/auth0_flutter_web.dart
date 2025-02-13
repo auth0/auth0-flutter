@@ -19,6 +19,12 @@ class Auth0Web {
   Auth0Web(final String domain, final String clientId)
       : _account = Account(domain, clientId);
 
+  /// Get the app state that was provided during a previous call
+  /// to [loginWithRedirect].
+  ///
+  /// This method should be called after calling [onLoad].
+  Future<Object?> get appState => Auth0FlutterWebPlatform.instance.appState;
+
   /// Initializes the client.
   ///
   /// This should be called during the loading phase of your application. If
@@ -101,22 +107,33 @@ class Auth0Web {
   /// * Arbitrary [parameters] can be specified and then picked up in a custom
   /// Auth0 [Action](https://auth0.com/docs/customize/actions) or
   /// [Rule](https://auth0.com/docs/customize/rules).
-  Future<void> loginWithRedirect(
-          {final String? audience,
-          final String? redirectUrl,
-          final String? organizationId,
-          final String? invitationUrl,
-          final int? maxAge,
-          final Set<String>? scopes,
-          final Map<String, String> parameters = const {}}) =>
-      Auth0FlutterWebPlatform.instance.loginWithRedirect(LoginOptions(
+  /// * The [appState] can be used to pass custom state to the callback URL.
+  /// This app state can be any value,
+  /// as long as it can be converted into a Javascript literal.
+  ///
+  /// See https://api.dart.dev/dart-js_interop/NullableObjectUtilExtension/jsify.html
+  Future<void> loginWithRedirect({
+    final Object? appState,
+    final String? audience,
+    final String? redirectUrl,
+    final String? organizationId,
+    final String? invitationUrl,
+    final int? maxAge,
+    final Set<String>? scopes,
+    final Map<String, String> parameters = const {},
+  }) =>
+      Auth0FlutterWebPlatform.instance.loginWithRedirect(
+        LoginOptions(
+          appState: appState,
           audience: audience,
           redirectUrl: redirectUrl,
           organizationId: organizationId,
           invitationUrl: invitationUrl,
           scopes: scopes ?? {},
           idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge),
-          parameters: parameters));
+          parameters: parameters,
+        ),
+      );
 
   /// Opens a popup with the `/authorize` URL using the parameters provided as
   /// parameters.

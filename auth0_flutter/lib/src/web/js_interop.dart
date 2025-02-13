@@ -43,11 +43,25 @@ class AuthorizationParams {
 @JS()
 @anonymous
 class RedirectLoginOptions {
+  external Object? get appState; // TODO: use `JSAny?` when migrating to WASM
   external AuthorizationParams? get authorizationParams;
   external String? get fragment;
 
-  external factory RedirectLoginOptions(
-      {final AuthorizationParams authorizationParams, final String fragment});
+  external factory RedirectLoginOptions({
+    final Object? appState,
+    final AuthorizationParams authorizationParams,
+    final String fragment,
+  });
+}
+
+@JS()
+@anonymous
+class RedirectLoginResult {
+  external Object? get appState; // TODO: use `JSAny?` when migrating to WASM
+
+  external factory RedirectLoginResult({
+    final Object? appState,
+  });
 }
 
 @JS()
@@ -179,7 +193,9 @@ class Auth0Client {
   external Future<void> loginWithRedirect([final RedirectLoginOptions options]);
   external Future<void> loginWithPopup(
       [final PopupLoginOptions? options, final PopupConfigOptions? config]);
-  external Future<void> handleRedirectCallback([final String? url]);
+  external Future<RedirectLoginResult> handleRedirectCallback([
+    final String url,
+  ]);
   external Future<void> checkSession();
   external Future<WebCredentials> getTokenSilently(
       [final GetTokenSilentlyOptions? options]);
