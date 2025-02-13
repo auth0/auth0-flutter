@@ -8,6 +8,7 @@ class LoginOptions implements RequestOptions {
   final String? redirectUrl;
   final String? organizationId;
   final String? invitationUrl;
+  final Future<void> Function(String url)? openUrl;
   final Map<String, String> parameters;
 
   LoginOptions(
@@ -17,6 +18,7 @@ class LoginOptions implements RequestOptions {
       this.redirectUrl,
       this.organizationId,
       this.invitationUrl,
+      this.openUrl,
       this.parameters = const {}});
 
   @override
@@ -29,6 +31,7 @@ class LoginOptions implements RequestOptions {
         'redirectUrl': redirectUrl,
         'organizationId': organizationId,
         'invitationUrl': invitationUrl,
+        'openUrl': openUrl,
         'parameters': parameters,
       };
 }
