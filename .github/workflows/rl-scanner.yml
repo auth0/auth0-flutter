@@ -28,7 +28,7 @@ on:
 jobs:
   rl-scanner:
     name: Run Reversing Labs Scanner
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' &&(startsWith(github.ref, 'refs/tags/afpi-v') || startsWith(github.ref, 'refs/tags/af-v')) &&contains(github.ref, 'v[0-9]+.[0-9]+.[0-9]+*'))
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && contains(github.ref,'refs/tags/'))
     runs-on: ubuntu-latest
     outputs:
       scan-status: ${{ steps.rl-scan-conclusion.outcome }}
