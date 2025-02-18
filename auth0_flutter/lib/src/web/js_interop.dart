@@ -1,13 +1,14 @@
+// @dart=3.4
 // ignore_for_file: non_constant_identifier_names
 
 @JS('auth0')
 library auth0;
 
-import 'package:js/js.dart';
+import 'dart:js_interop';
 
 @JS()
 @anonymous
-class AuthorizationParams {
+extension type AuthorizationParams._(JSObject _) implements JSObject {
   external String? get audience;
   external String? get redirect_uri;
   external String? get acr_values;
@@ -42,7 +43,7 @@ class AuthorizationParams {
 
 @JS()
 @anonymous
-class RedirectLoginOptions {
+extension type RedirectLoginOptions._(JSObject _) implements JSObject {
   external AuthorizationParams? get authorizationParams;
   external String? get fragment;
 
@@ -52,29 +53,29 @@ class RedirectLoginOptions {
 
 @JS()
 @anonymous
-abstract class Cache {
-  T get<T>(final String key);
-  void remove(final String key);
-  void set<T>(final String key, final T entry);
-  Future<List<String>> allKeys();
+extension type  Cache._(JSObject _) implements JSObject {
+  external JSAny get(final String key);
+  external void remove(final String key);
+  external void set(final String key, final JSAny entry);
+  external JSPromise<JSArray<JSString>> allKeys();
 }
 
 @JS()
 @anonymous
-class Auth0ClientInfo {
-  external Map<String, String>? get env;
-  external String get name;
-  external String get version;
+extension type Auth0ClientInfo._(JSObject _) implements JSObject {
+  external JSObject?  env;
+  external String  name;
+  external String  version;
 
-  external factory Auth0ClientInfo(
-      {final Map<String, String> env,
+  external factory Auth0ClientInfo({
+      final JSObject env,
       required final String name,
       required final String version});
 }
 
 @JS()
 @anonymous
-class Auth0ClientOptions {
+extension type Auth0ClientOptions._(JSObject _) implements JSObject {
   external factory Auth0ClientOptions(
       {required final Auth0ClientInfo clientInfo,
       required final String domain,
@@ -96,7 +97,7 @@ class Auth0ClientOptions {
 
 @JS()
 @anonymous
-class GetTokenSilentlyAuthParams {
+extension type GetTokenSilentlyAuthParams._(JSObject _ )implements JSObject {
   external String? scope;
   external String? audience;
 
@@ -106,7 +107,7 @@ class GetTokenSilentlyAuthParams {
 
 @JS()
 @anonymous
-class GetTokenSilentlyOptions {
+extension type GetTokenSilentlyOptions._(JSObject _) implements JSObject {
   external GetTokenSilentlyAuthParams? get authorizationParams;
   external String? get cacheMode;
   external num? get timeoutInSeconds;
@@ -121,10 +122,10 @@ class GetTokenSilentlyOptions {
 
 @JS()
 @anonymous
-class WebCredentials {
+extension type WebCredentials._(JSObject _) implements JSObject {
   external String get access_token;
   external String get id_token;
-  external num expires_in;
+  external JSNumber expires_in;
   external String? get refresh_token;
   external String? get scope;
 
@@ -138,7 +139,7 @@ class WebCredentials {
 
 @JS()
 @anonymous
-class LogoutParams {
+extension type LogoutParams._(JSObject _) implements JSObject {
   external String? get returnTo;
   external bool? get federated;
 
@@ -148,7 +149,7 @@ class LogoutParams {
 
 @JS()
 @anonymous
-class LogoutOptions {
+extension type  LogoutOptions._(JSObject _) implements JSObject {
   external LogoutParams? get logoutParams;
 
   external factory LogoutOptions({final LogoutParams? logoutParams});
@@ -156,7 +157,7 @@ class LogoutOptions {
 
 @JS()
 @anonymous
-class PopupLoginOptions {
+extension type PopupLoginOptions._ (JSObject _ ) implements JSObject {
   external AuthorizationParams? get authorizationParams;
 
   external factory PopupLoginOptions(
@@ -165,24 +166,25 @@ class PopupLoginOptions {
 
 @JS()
 @anonymous
-class PopupConfigOptions {
-  external dynamic get popup;
-  external int? get timeoutInSeconds;
+extension type PopupConfigOptions._ (JSObject _ ) implements JSObject  {
+  external JSAny  popup;
+  external int?  timeoutInSeconds;
 
   external factory PopupConfigOptions(
-      {final dynamic popup, final int? timeoutInSeconds});
+      {final JSAny popup, final int? timeoutInSeconds});
 }
 
 @JS()
-class Auth0Client {
+extension type Auth0Client._ (JSObject _ ) implements JSObject {
   external Auth0Client(final Auth0ClientOptions options);
-  external Future<void> loginWithRedirect([final RedirectLoginOptions options]);
-  external Future<void> loginWithPopup(
+  external JSPromise<JSAny?> loginWithRedirect(
+      [final RedirectLoginOptions options]);
+  external JSPromise<JSAny?> loginWithPopup(
       [final PopupLoginOptions? options, final PopupConfigOptions? config]);
-  external Future<void> handleRedirectCallback([final String? url]);
-  external Future<void> checkSession();
-  external Future<WebCredentials> getTokenSilently(
+  external JSPromise<JSAny?> handleRedirectCallback([final String? url]);
+  external JSPromise<JSAny?> checkSession();
+  external JSPromise<WebCredentials> getTokenSilently(
       [final GetTokenSilentlyOptions? options]);
-  external Future<bool> isAuthenticated();
-  external Future<void> logout([final LogoutOptions? logoutParams]);
+  external JSPromise<JSBoolean> isAuthenticated();
+  external JSPromise<JSAny?> logout([final LogoutOptions? logoutParams]);
 }

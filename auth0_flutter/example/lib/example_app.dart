@@ -32,8 +32,7 @@ class _ExampleAppState extends State<ExampleApp> {
         Auth0Web(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
     webAuth =
         auth0.webAuthentication(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
-
-    if (kIsWeb) {
+    if (kIsWasm) {
       auth0Web.onLoad().then((final credentials) => setState(() {
             _output = credentials?.idToken ?? '';
             _isLoggedIn = credentials != null;
@@ -47,7 +46,7 @@ class _ExampleAppState extends State<ExampleApp> {
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
-      if (kIsWeb) {
+      if (kIsWasm) {
         return auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
       }
 

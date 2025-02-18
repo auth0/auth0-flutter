@@ -1,15 +1,20 @@
-import 'dart:js_util';
+import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
+
+@JS('Object.keys')
+external JSArray<JSString> keys(final JSObject o);
 
 extension WebExceptionExtension on WebException {
   static WebException fromJsObject(final Object jsException) {
-    final error = getProperty<String>(jsException, 'error');
-    final description = getProperty<String>(jsException, 'error_description');
-    final Map<String, dynamic> details = {};
+    final error = jsException.toJSBox.getProperty<JSString>('error'.toJS);
+    final description =
+        jsException.toJSBox.getProperty<JSString>('error_description'.toJS);
+    final Map<String, JSAny> details = {};
 
-    objectKeys(jsException).forEach((final key) {
+    keys(jsException.toJSBox).toDart.forEach((final key) {
       if (key == 'error' || key == 'error_description') return;
-      details[key as String] = getProperty<dynamic>(jsException, key);
+      details[key.toString()] = jsException.toJSBox.getProperty<JSAny>(key);
     });
 
     switch (error) {
@@ -26,19 +31,19 @@ extension WebExceptionExtension on WebException {
       case 'unsupported_response_type':
       case 'unsupported_grant_type':
       case 'temporarily_unavailable':
-        return WebException.authenticationError(
-            error, description, {'state': details['state']});
+        return WebException.authenticationError(error.toString(),
+            description.toString(), {'state': details['state']});
       case 'mfa_required':
-        return WebException.mfaError(
-            description, getProperty(jsException, 'mfaToken'));
+        return WebException.mfaError(description.toString(),
+            jsException.toJSBox.getProperty('mfaToken'.toJS));
       case 'timeout':
-        return WebException.timeout(description);
+        return WebException.timeout(description.toDart);
       case 'cancelled':
-        return WebException.popupClosed(description);
+        return WebException.popupClosed(description.toDart);
       case 'missing_refresh_token':
-        return WebException.missingRefreshToken(description);
+        return WebException.missingRefreshToken(description.toDart);
     }
 
-    return WebException(error, description, details);
+    return WebException(error.toString(), description.toDart, details);
   }
 }
