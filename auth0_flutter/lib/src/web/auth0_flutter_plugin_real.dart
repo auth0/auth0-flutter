@@ -82,7 +82,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
         options?.parameters ?? {}));
 
     final popupConfig = JsInteropUtils.stripNulls(interop.PopupConfigOptions(
-        popup: options?.popupWindow as JSAny,
+        popup: options?.popupWindow as JSAny?,
         timeoutInSeconds: options?.timeoutInSeconds));
 
     try {

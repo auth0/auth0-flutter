@@ -1,4 +1,3 @@
-// @dart=3.4
 // ignore_for_file: non_constant_identifier_names
 
 @JS('auth0')
@@ -63,9 +62,9 @@ extension type  Cache._(JSObject _) implements JSObject {
 @JS()
 @anonymous
 extension type Auth0ClientInfo._(JSObject _) implements JSObject {
-  external JSObject?  env;
-  external String  name;
-  external String  version;
+  external JSObject? get env;
+  external String  get name;
+  external String get version;
 
   external factory Auth0ClientInfo({
       final JSObject env,
@@ -97,7 +96,7 @@ extension type Auth0ClientOptions._(JSObject _) implements JSObject {
 
 @JS()
 @anonymous
-extension type GetTokenSilentlyAuthParams._(JSObject _ )implements JSObject {
+extension type GetTokenSilentlyAuthParams._(JSObject _) implements JSObject {
   external String? scope;
   external String? audience;
 
@@ -157,7 +156,7 @@ extension type  LogoutOptions._(JSObject _) implements JSObject {
 
 @JS()
 @anonymous
-extension type PopupLoginOptions._ (JSObject _ ) implements JSObject {
+extension type PopupLoginOptions._ (JSObject _) implements JSObject {
   external AuthorizationParams? get authorizationParams;
 
   external factory PopupLoginOptions(
@@ -166,16 +165,16 @@ extension type PopupLoginOptions._ (JSObject _ ) implements JSObject {
 
 @JS()
 @anonymous
-extension type PopupConfigOptions._ (JSObject _ ) implements JSObject  {
-  external JSAny  popup;
-  external int?  timeoutInSeconds;
+extension type PopupConfigOptions._ (JSObject _) implements JSObject  {
+  external JSAny? get popup;
+  external int? get timeoutInSeconds;
 
   external factory PopupConfigOptions(
-      {final JSAny popup, final int? timeoutInSeconds});
+      {final JSAny? popup, final int? timeoutInSeconds});
 }
 
 @JS()
-extension type Auth0Client._ (JSObject _ ) implements JSObject {
+extension type Auth0Client._ (JSObject _) implements JSObject {
   external Auth0Client(final Auth0ClientOptions options);
   external JSPromise<JSAny?> loginWithRedirect(
       [final RedirectLoginOptions options]);

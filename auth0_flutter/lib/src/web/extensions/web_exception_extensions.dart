@@ -10,11 +10,11 @@ extension WebExceptionExtension on WebException {
     final error = jsException.toJSBox.getProperty<JSString>('error'.toJS);
     final description =
         jsException.toJSBox.getProperty<JSString>('error_description'.toJS);
-    final Map<String, JSAny> details = {};
+    final Map<String, JSAny?> details = {};
 
     keys(jsException.toJSBox).toDart.forEach((final key) {
-      if (key == 'error' || key == 'error_description') return;
-      details[key.toString()] = jsException.toJSBox.getProperty<JSAny>(key);
+      if (key == 'error'.toJS || key.toDart == 'error_description'.toJS) return;
+      details[key.toDart] = jsException.toJSBox.getProperty<JSAny?>(key);
     });
 
     switch (error) {
@@ -31,10 +31,10 @@ extension WebExceptionExtension on WebException {
       case 'unsupported_response_type':
       case 'unsupported_grant_type':
       case 'temporarily_unavailable':
-        return WebException.authenticationError(error.toString(),
-            description.toString(), {'state': details['state']});
+        return WebException.authenticationError(error.toDart,
+            description.toDart, {'state': details['state']});
       case 'mfa_required':
-        return WebException.mfaError(description.toString(),
+        return WebException.mfaError(description.toDart,
             jsException.toJSBox.getProperty('mfaToken'.toJS));
       case 'timeout':
         return WebException.timeout(description.toDart);
@@ -44,6 +44,6 @@ extension WebExceptionExtension on WebException {
         return WebException.missingRefreshToken(description.toDart);
     }
 
-    return WebException(error.toString(), description.toDart, details);
+    return WebException(error.toDart, description.toDart, details);
   }
 }
