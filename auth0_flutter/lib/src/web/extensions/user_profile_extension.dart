@@ -33,6 +33,15 @@ extension UserProfileExtension on UserProfile {
             ? claims[PublicClaims.emailVerified] as bool
             : claims[PublicClaims.emailVerified] == 'true'
         : null;
+    final isPhoneVerified = claims[PublicClaims.phoneNumberVerified] != null
+        ? claims[PublicClaims.phoneNumberVerified] is bool
+            ? claims[PublicClaims.phoneNumberVerified] as bool
+            : claims[PublicClaims.phoneNumberVerified] == 'true'
+        : null;
+    final locale = claims[PublicClaims.locale] != null &&
+            claims[PublicClaims.locale] is String
+        ? claims[PublicClaims.locale] as String
+        : null;
 
     return UserProfile(
       sub: claims[PublicClaims.sub] as String,
@@ -50,9 +59,9 @@ extension UserProfileExtension on UserProfile {
       gender: claims[PublicClaims.gender] as String?,
       birthdate: claims[PublicClaims.birthdate] as String?,
       zoneinfo: claims[PublicClaims.zoneinfo] as String?,
-      locale: claims[PublicClaims.locale] as String?,
+      locale: locale,
       phoneNumber: claims[PublicClaims.phoneNumber] as String?,
-      isPhoneNumberVerified: claims[PublicClaims.phoneNumberVerified] as bool?,
+      isPhoneNumberVerified: isPhoneVerified,
       address: address,
       updatedAt: updatedAt,
       customClaims: customClaims.isNotEmpty ? customClaims : null,
