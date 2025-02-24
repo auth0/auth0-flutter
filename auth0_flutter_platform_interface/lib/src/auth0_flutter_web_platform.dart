@@ -1,7 +1,9 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import '../auth0_flutter_platform_interface.dart';
 
-class StubAuth0FlutterWeb extends Auth0FlutterWebPlatform {}
+class StubAuth0FlutterWeb extends Auth0FlutterWebPlatform {
+  StubAuth0FlutterWeb() : super();
+}
 
 abstract class Auth0FlutterWebPlatform extends PlatformInterface {
   Auth0FlutterWebPlatform() : super(token: _token);
@@ -20,7 +22,9 @@ abstract class Auth0FlutterWebPlatform extends PlatformInterface {
   }
 
   Future<void> initialize(
-      final ClientOptions clientOptions, final UserAgent userAgent) {
+    final ClientOptions clientOptions,
+    final UserAgent userAgent,
+  ) {
     throw UnimplementedError('web.initialize has not been implemented');
   }
 
@@ -38,7 +42,8 @@ abstract class Auth0FlutterWebPlatform extends PlatformInterface {
 
   Future<bool> hasValidCredentials() {
     throw UnimplementedError(
-        'web.hasValidCredentials has not been implemented');
+      'web.hasValidCredentials has not been implemented',
+    );
   }
 
   Future<void> logout(final LogoutOptions? options) {
