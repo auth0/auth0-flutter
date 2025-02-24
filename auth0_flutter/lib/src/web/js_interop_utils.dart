@@ -22,7 +22,9 @@ class JsInteropUtils {
   // **Note**: there is no static typing for these parameters to be able
   // to retrieve them again.
   static T addCustomParams<T extends Object>(
-      final T obj, final Map<String, dynamic> params) {
+    final T obj,
+    final Map<String, dynamic> params,
+  ) {
     params.forEach((final key, final value) {
       if (value != null) {
         setProperty(obj, key, value);
@@ -31,4 +33,22 @@ class JsInteropUtils {
 
     return obj;
   }
+
+  // TODO: replace w/ `dartify` from `dart:js_interop_unsafe` when migrating to WASM
+  /// Convert the Javascript object [obj] to a Dart object.
+  ///
+  /// This method should only be used to convert objects
+  /// that do not fit into a static interop definition.
+  ///
+  /// See https://api.dart.dev/dart-js_interop/JSAnyUtilityExtension/dartify.html
+  static Object? dartifyObject(final Object? obj) => dartify(obj);
+
+  // TODO: replace w/ `jsify` from `dart:js_interop_unsafe` when migrating to WASM
+  /// Convert the Dart object [obj] to a plain Javascript object.
+  ///
+  /// This method should only be used to convert objects
+  /// that do not fit into a static interop definition.
+  ///
+  /// See https://api.dart.dev/dart-js_interop/NullableObjectUtilExtension/jsify.html
+  static Object? jsifyObject(final Object? obj) => jsify(obj);
 }
