@@ -6,15 +6,15 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 external JSArray<JSString> keys(final JSObject o);
 
 extension WebExceptionExtension on WebException {
-  static WebException fromJsObject(final Object jsException) {
-    final error = jsException.toJSBox.getProperty<JSString>('error'.toJS);
+  static WebException fromJsObject(final JSObject jsException) {
+    final error = jsException.getProperty<JSString>('error'.toJS);
     final description =
-        jsException.toJSBox.getProperty<JSString>('error_description'.toJS);
+        jsException.getProperty<JSString>('error_description'.toJS);
     final Map<String, JSAny?> details = {};
 
-    keys(jsException.toJSBox).toDart.forEach((final key) {
-      if (key == 'error'.toJS || key.toDart == 'error_description'.toJS) return;
-      details[key.toDart] = jsException.toJSBox.getProperty<JSAny?>(key);
+    keys(jsException).toDart.forEach((final JSString key) {
+      if (key.toDart == 'error' || key.toDart == 'error_description') return;
+      details[key.toDart] = jsException.getProperty<JSAny?>(key);
     });
 
     switch (error) {
@@ -31,11 +31,11 @@ extension WebExceptionExtension on WebException {
       case 'unsupported_response_type':
       case 'unsupported_grant_type':
       case 'temporarily_unavailable':
-        return WebException.authenticationError(error.toDart,
-            description.toDart, {'state': details['state']});
+        return WebException.authenticationError(
+            error.toDart, description.toDart, {'state': details['state']});
       case 'mfa_required':
         return WebException.mfaError(description.toDart,
-            jsException.toJSBox.getProperty('mfaToken'.toJS));
+            jsException.getProperty('mfaToken'.toJS) as String);
       case 'timeout':
         return WebException.timeout(description.toDart);
       case 'cancelled':

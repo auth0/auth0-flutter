@@ -39,7 +39,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
       try {
         return await clientProxy!.handleRedirectCallback();
       } catch (e) {
-        throw WebExceptionExtension.fromJsObject(e);
+        throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
       }
     }
 
@@ -97,7 +97,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
                       scope: authParams.scope, audience: authParams.audience)),
               detailedResponse: true)));
     } catch (e) {
-      throw WebExceptionExtension.fromJsObject(e);
+      throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
     }
   }
 
@@ -121,7 +121,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
       final result = await clientProxy.getTokenSilently(tokenOptions);
       return CredentialsExtension.fromWeb(result);
     } catch (e) {
-      throw WebExceptionExtension.fromJsObject(e);
+      throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
     }
   }
 

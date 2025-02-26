@@ -52,7 +52,7 @@ extension type RedirectLoginOptions._(JSObject _) implements JSObject {
 
 @JS()
 @anonymous
-extension type  Cache._(JSObject _) implements JSObject {
+extension type Cache._(JSObject _) implements JSObject {
   external JSAny get(final String key);
   external void remove(final String key);
   external void set(final String key, final JSAny entry);
@@ -63,7 +63,7 @@ extension type  Cache._(JSObject _) implements JSObject {
 @anonymous
 extension type Auth0ClientInfo._(JSObject _) implements JSObject {
   external JSObject? get env;
-  external String  get name;
+  external String get name;
   external String get version;
 
   external factory Auth0ClientInfo({
@@ -109,13 +109,13 @@ extension type GetTokenSilentlyAuthParams._(JSObject _) implements JSObject {
 extension type GetTokenSilentlyOptions._(JSObject _) implements JSObject {
   external GetTokenSilentlyAuthParams? get authorizationParams;
   external String? get cacheMode;
-  external num? get timeoutInSeconds;
+  external JSNumber? get timeoutInSeconds;
   external bool detailedResponse;
 
   external factory GetTokenSilentlyOptions(
       {final GetTokenSilentlyAuthParams? authorizationParams,
       final String? cacheMode,
-      final num? timeoutInSeconds,
+      final JSNumber? timeoutInSeconds,
       final bool? detailedResponse});
 }
 
@@ -131,7 +131,7 @@ extension type WebCredentials._(JSObject _) implements JSObject {
   external factory WebCredentials(
       {final String access_token,
       final String id_token,
-      final num expires_in,
+      final JSNumber expires_in,
       final String? refresh_token,
       final String? scope});
 }
@@ -148,7 +148,7 @@ extension type LogoutParams._(JSObject _) implements JSObject {
 
 @JS()
 @anonymous
-extension type  LogoutOptions._(JSObject _) implements JSObject {
+extension type LogoutOptions._(JSObject _) implements JSObject {
   external LogoutParams? get logoutParams;
 
   external factory LogoutOptions({final LogoutParams? logoutParams});
