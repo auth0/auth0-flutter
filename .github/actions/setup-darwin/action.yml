@@ -6,6 +6,10 @@ inputs:
     description: Either iOS or macOS
     required: true
 
+  ruby:
+    description: The version of Ruby to use
+    required: true
+
   flutter:
     description: The version of Flutter to use
     required: true
@@ -31,29 +35,25 @@ runs:
       run: echo "platform=$(echo ${{ inputs.platform }} | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
       shell: bash
 
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@32110d4e311bd8996b2a82bf2a43b714ccc91777 # pin@v1.221.0
+      with:
+        ruby-version: ${{ inputs.ruby }}
+        bundler-cache: true
+        cache-version: 1
+        working-directory: auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}
+
     - name: Install Flutter
       uses: subosito/flutter-action@48cafc24713cca54bbe03cdc3a423187d413aafa
       with:
-          flutter-version: ${{ inputs.flutter }}
-          channel: stable
-          cache: true
+        flutter-version: ${{ inputs.flutter }}
+        channel: stable
+        cache: true
 
     - name: Install Flutter dependencies
       working-directory: auth0_flutter/example
       run: flutter pub get
       shell: bash
-
-    - name: Set Ruby version
-      working-directory: auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}
-      run: ruby -e 'puts RUBY_VERSION' | tee .ruby-version
-      shell: bash
-
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@cacc9f1c0b3f4eb8a16a6bb0ed10897b43b9de49 # Pinned to version 1.176.0
-      with:
-          bundler-cache: true
-          cache-version: 1
-          working-directory: auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}
 
     - name: Setup Xcode
       run: sudo xcode-select --switch /Applications/Xcode_${{ inputs.xcode }}.app/Contents/Developer
