@@ -194,6 +194,8 @@ Re-declare the activity manually using `tools:node="remove"` in the `android/src
 > read more about setting this value in the [Auth0.Android SDK
 > README](https://github.com/auth0/Auth0.Android#a-note-about-app-deep-linking).
 
+> Whenever possible, Auth0 recommends using [Android App Links](https://auth0.com/docs/applications/enable-android-app-links) as a secure way to link directly to content within your app. Custom URL schemes can be subject to [client impersonation attacks](https://datatracker.ietf.org/doc/html/rfc8252#section-8.6).
+
 > 💡 If your Android app is using [product flavors](https://developer.android.com/studio/build/build-variants#product-flavors), you might need to specify different manifest placeholders for each flavor.
 
 ##### iOS/macOS: Configure the associated domain
