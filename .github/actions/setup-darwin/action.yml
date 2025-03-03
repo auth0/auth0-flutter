@@ -44,7 +44,7 @@ runs:
         working-directory: auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}
 
     - name: Install Flutter
-      uses: subosito/flutter-action@48cafc24713cca54bbe03cdc3a423187d413aafa
+      uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff # pin@v2.18.0
       with:
         flutter-version: ${{ inputs.flutter }}
         channel: stable
@@ -65,7 +65,7 @@ runs:
 
     - id: restore-pods-cache
       name: Restore Pods cache
-      uses: actions/cache@f5ce41475b483ad7581884324a6eca9f48f8dcc7
+      uses: actions/cache@v4
       with:
         path: auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}/Pods
         key: pods-${{ hashFiles('Podfile.lock') }}-${{ hashFiles('.xcode-version') }}-v1
