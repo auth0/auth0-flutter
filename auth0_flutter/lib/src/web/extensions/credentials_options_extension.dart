@@ -1,3 +1,5 @@
+import 'dart:js_interop';
+
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 
 import '../js_interop.dart';
@@ -12,6 +14,6 @@ extension CredentialsOptionsExtension on CredentialsOptions {
                       scope: scopes?.join(' '), audience: audience),
                   parameters)),
           cacheMode: cacheMode.toString(),
-          timeoutInSeconds: timeoutInSeconds,
+          timeoutInSeconds: timeoutInSeconds?.toJS,
           detailedResponse: detailedResponse);
 }

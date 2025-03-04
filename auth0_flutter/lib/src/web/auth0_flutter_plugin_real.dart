@@ -1,8 +1,9 @@
 import 'dart:async';
-import 'dart:html';
+import 'dart:js_interop';
 
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:web/web.dart';
 
 import 'auth0_flutter_web_platform_proxy.dart';
 import 'extensions/client_options_extensions.dart';
@@ -38,7 +39,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
       try {
         return await clientProxy!.handleRedirectCallback();
       } catch (e) {
-        throw WebExceptionExtension.fromJsObject(e);
+        throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
       }
     }
 
@@ -48,7 +49,6 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   @override
   Future<void> loginWithRedirect(final LoginOptions? options) {
     final client = _ensureClient();
-
     final authParams = JsInteropUtils.stripNulls(JsInteropUtils.addCustomParams(
         interop.AuthorizationParams(
             audience: options?.audience,
@@ -63,7 +63,6 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
 
     final loginOptions =
         interop.RedirectLoginOptions(authorizationParams: authParams);
-
     return client.loginWithRedirect(loginOptions);
   }
 
@@ -83,7 +82,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
         options?.parameters ?? {}));
 
     final popupConfig = JsInteropUtils.stripNulls(interop.PopupConfigOptions(
-        popup: options?.popupWindow,
+        popup: options?.popupWindow as JSAny?,
         timeoutInSeconds: options?.timeoutInSeconds));
 
     try {
@@ -98,7 +97,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
                       scope: authParams.scope, audience: authParams.audience)),
               detailedResponse: true)));
     } catch (e) {
-      throw WebExceptionExtension.fromJsObject(e);
+      throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
     }
   }
 
@@ -115,17 +114,14 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     final clientProxy = _ensureClient();
     final tokenOptions = options?.toGetTokenSilentlyOptions() ??
         interop.GetTokenSilentlyOptions();
-
     // Force this, as we always want the full detail back so that we can
     // return a full Credentials instance.
     tokenOptions.detailedResponse = true;
-
     try {
       final result = await clientProxy.getTokenSilently(tokenOptions);
-
       return CredentialsExtension.fromWeb(result);
     } catch (e) {
-      throw WebExceptionExtension.fromJsObject(e);
+      throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
     }
   }
 
@@ -136,7 +132,6 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     if (clientProxy == null) {
       throw ArgumentError('Auth0Client has not been initialized');
     }
-
     return clientProxy!;
   }
 }
