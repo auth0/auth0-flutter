@@ -6,14 +6,14 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   JSObject createJsException(final String error, final String description,
-      {final Map<String, JSAny>? additionalProps}) {
+      {final Map<String, dynamic>? additionalProps}) {
     final jsObject = JSObject();
     jsObject.setProperty('error'.toJS, error.toJS);
     jsObject.setProperty('error_description'.toJS, description.toJS);
 
     if (additionalProps != null) {
       for (final element in additionalProps.entries) {
-        jsObject.setProperty(element.key.toJS, element.value);
+        jsObject.setProperty(element.key.toJS, element.value as JSAny);
       }
     }
 
@@ -24,8 +24,8 @@ void main() {
     final exception = createJsException(
         'authentication_error', 'A test authentication error',
         additionalProps: {
-          'prop-1': 'Property 1'.toJS,
-          'prop-2': 'Property 2'.toJS
+          'prop-1': 'Property 1',
+          'prop-2': 'Property 2'
         });
 
     final webException = WebExceptionExtension.fromJsObject(exception);
@@ -38,7 +38,7 @@ void main() {
 
   test('mfa_required exception is created', () {
     final exception = createJsException('mfa_required', 'MFA is required',
-        additionalProps: {'mfaToken': 'abc123'.toJS});
+        additionalProps: {'mfaToken': 'abc123'});
 
     final webException = WebExceptionExtension.fromJsObject(exception);
     expect(webException.code, 'MFA_REQUIRED');
@@ -103,7 +103,7 @@ void main() {
 
   test('AUTHENTICATION_ERROR is captured with state only', () {
     final exception = createJsException('invalid_grant', 'Invalid grant',
-        additionalProps: {'state': '123'.toJS, 'appState': '456'.toJS});
+        additionalProps: {'state': '123', 'appState': '456'});
 
     final webException = WebExceptionExtension.fromJsObject(exception);
 
