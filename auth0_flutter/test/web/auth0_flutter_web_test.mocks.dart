@@ -4,11 +4,13 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i4;
+import 'dart:js_interop';
 
 import 'package:auth0_flutter/src/web/auth0_flutter_web_platform_proxy.dart'
     as _i3;
 import 'package:auth0_flutter/src/web/js_interop.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
+import 'auth0_extension_type_mocks.dart';
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -21,7 +23,8 @@ import 'package:mockito/mockito.dart' as _i1;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakeAuth0Client_0 extends _i1.SmartFake implements _i2.Auth0Client {
+@JSExport()
+class _FakeAuth0Client_0 extends _i1.SmartFake implements Auth0ClientImpl {
   _FakeAuth0Client_0(
     Object parent,
     Invocation parentInvocation,
@@ -31,8 +34,9 @@ class _FakeAuth0Client_0 extends _i1.SmartFake implements _i2.Auth0Client {
         );
 }
 
+@JSExport()
 class _FakeWebCredentials_1 extends _i1.SmartFake
-    implements _i2.WebCredentials {
+    implements WebCredentialsImpl {
   _FakeWebCredentials_1(
     Object parent,
     Invocation parentInvocation,
@@ -52,12 +56,12 @@ class MockAuth0FlutterWebClientProxy extends _i1.Mock
   }
 
   @override
-  _i2.Auth0Client get client => (super.noSuchMethod(
+  _i2.Auth0Client get client => (
+      super.noSuchMethod(
         Invocation.getter(#client),
-        returnValue: _FakeAuth0Client_0(
-          this,
-          Invocation.getter(#client),
-        ),
+        returnValue:createJSInteropWrapper<_FakeAuth0Client_0>
+          (_FakeAuth0Client_0(this, Invocation.getter(#client),
+        )) as _i2.Auth0Client,
       ) as _i2.Auth0Client);
   @override
   _i4.Future<void> loginWithRedirect(_i2.RedirectLoginOptions? options) =>
@@ -102,13 +106,11 @@ class MockAuth0FlutterWebClientProxy extends _i1.Mock
           #getTokenSilently,
           [options],
         ),
-        returnValue: _i4.Future<_i2.WebCredentials>.value(_FakeWebCredentials_1(
-          this,
-          Invocation.method(
-            #getTokenSilently,
-            [options],
-          ),
-        )),
+        returnValue: _i4.Future<_i2.WebCredentials>.value(
+            createJSInteropWrapper<_FakeWebCredentials_1>(
+                _FakeWebCredentials_1(this, Invocation.method(
+            #getTokenSilently, [options],),
+        )) as _i2.WebCredentials),
       ) as _i4.Future<_i2.WebCredentials>);
   @override
   _i4.Future<void> handleRedirectCallback() => (super.noSuchMethod(
