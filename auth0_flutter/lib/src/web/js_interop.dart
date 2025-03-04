@@ -43,11 +43,25 @@ extension type AuthorizationParams._(JSObject _) implements JSObject {
 @JS()
 @anonymous
 extension type RedirectLoginOptions._(JSObject _) implements JSObject {
+  external Object? get appState; // TODO: use `JSAny?` when migrating to WASM
   external AuthorizationParams? get authorizationParams;
   external String? get fragment;
 
-  external factory RedirectLoginOptions(
-      {final AuthorizationParams authorizationParams, final String fragment});
+  external factory RedirectLoginOptions({
+    final Object? appState,
+    final AuthorizationParams authorizationParams,
+    final String fragment,
+  });
+}
+
+@JS()
+@anonymous
+class RedirectLoginResult {
+  external Object? get appState; // TODO: use `JSAny?` when migrating to WASM
+
+  external factory RedirectLoginResult({
+    final Object? appState,
+  });
 }
 
 @JS()
@@ -180,7 +194,7 @@ extension type Auth0Client._ (JSObject _) implements JSObject {
       [final RedirectLoginOptions options]);
   external JSPromise<JSAny?> loginWithPopup(
       [final PopupLoginOptions? options, final PopupConfigOptions? config]);
-  external JSPromise<JSAny?> handleRedirectCallback([final String? url]);
+  external JSPromise<RedirectLoginResult> handleRedirectCallback([final JSString? url]);
   external JSPromise<JSAny?> checkSession();
   external JSPromise<WebCredentials> getTokenSilently(
       [final GetTokenSilentlyOptions? options]);
