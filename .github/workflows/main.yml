@@ -13,6 +13,7 @@ concurrency:
     cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 env:
+    ruby: '3.3.1'
     flutter: '3.x'
     ios-simulator: iPhone 15
     java: 11
@@ -28,7 +29,7 @@ jobs:
               uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Install Flutter
-              uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+              uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff # pin@v2.18.0
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
@@ -51,7 +52,7 @@ jobs:
               uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Install Flutter
-              uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+              uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff # pin@v2.18.0
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
@@ -70,7 +71,7 @@ jobs:
               uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Install Flutter
-              uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+              uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff # pin@v2.18.0
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
@@ -101,7 +102,7 @@ jobs:
               uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Install Flutter
-              uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+              uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff # pin@v2.18.0
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
@@ -138,6 +139,7 @@ jobs:
               uses: ./.github/actions/setup-darwin
               with:
                 platform: ${{ env.platform }}
+                ruby: ${{ env.ruby }}
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
                 auth0-domain: ${{ vars.AUTH0_DOMAIN }}
@@ -182,6 +184,7 @@ jobs:
               uses: ./.github/actions/setup-darwin
               with:
                 platform: ${{ env.platform }}
+                ruby: ${{ env.ruby }}
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
                 auth0-domain: ${{ vars.AUTH0_DOMAIN }}
@@ -214,6 +217,7 @@ jobs:
               uses: ./.github/actions/setup-darwin
               with:
                 platform: ${{ env.platform }}
+                ruby: ${{ env.ruby }}
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
                 auth0-domain: ${{ vars.AUTH0_DOMAIN }}
@@ -252,6 +256,7 @@ jobs:
               uses: ./.github/actions/setup-darwin
               with:
                 platform: ${{ env.platform }}
+                ruby: ${{ env.ruby }}
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
                 auth0-domain: ${{ vars.AUTH0_DOMAIN }}
@@ -324,7 +329,7 @@ jobs:
     #           uses: gradle/gradle-build-action@ef76a971e2fa3f867b617efd72f2fbd72cf6f8bc
 
     #         - name: AVD cache
-    #           uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84
+    #           uses: actions/cache@v4
     #           id: avd-cache
     #           with:
     #             path: |
@@ -421,52 +426,52 @@ jobs:
               uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Download coverage report for auth0_flutter
-              uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16
+              uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806
               with:
                 name: auth0_flutter coverage
                 path: coverage/auth0_flutter
 
             - name: Download coverage report for auth0_flutter_platform_interface
-              uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16
+              uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806
               with:
                 name: auth0_flutter_platform_interface coverage
                 path: coverage/auth0_flutter_platform_interface
 
             - name: Download coverage report for iOS
-              uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16
+              uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806
               with:
                 name: iOS coverage
                 path: coverage/ios
 
             - name: Download coverage report for Android
-              uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16
+              uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806
               with:
                 name: Android coverage
                 path: coverage/android
 
             - name: Upload coverage report for auth0_flutter
-              uses: codecov/codecov-action@13ce06bfc6bbe3ecf90edbbf1bc32fe5978ca1d3
+              uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter
                   directory: coverage/auth0_flutter
 
             - name: Upload coverage report for auth0_flutter_platform_interface
-              uses: codecov/codecov-action@13ce06bfc6bbe3ecf90edbbf1bc32fe5978ca1d3
+              uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter_platform_interface
                   directory: coverage/auth0_flutter_platform_interface
 
             - name: Upload coverage report for iOS
-              uses: codecov/codecov-action@13ce06bfc6bbe3ecf90edbbf1bc32fe5978ca1d3
+              uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter_ios
                   directory: coverage/ios
 
             - name: Upload coverage report for Android
-              uses: codecov/codecov-action@13ce06bfc6bbe3ecf90edbbf1bc32fe5978ca1d3
+              uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter_android
