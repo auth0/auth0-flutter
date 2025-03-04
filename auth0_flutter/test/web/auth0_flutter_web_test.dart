@@ -1,7 +1,7 @@
 @Tags(['browser'])
 
-import 'dart:js';
-import 'dart:js_util';
+import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
 
 import 'package:auth0_flutter/auth0_flutter_web.dart';
 import 'package:auth0_flutter/src/web/auth0_flutter_plugin_real.dart';
@@ -12,6 +12,7 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+
 import 'auth0_flutter_web_test.mocks.dart';
 
 @GenerateMocks([Auth0FlutterWebClientProxy])
@@ -25,7 +26,7 @@ void main() {
       id_token: jwt,
       refresh_token: jwt,
       scope: 'openid read_messages',
-      expires_in: 0);
+      expires_in: 0.toJS);
   late Auth0FlutterPlugin plugin;
 
   setUp(() {
@@ -37,9 +38,9 @@ void main() {
   });
 
   Object createJsException(final String error, final String description) {
-    final jsObject = newObject<JsObject>();
-    setProperty(jsObject, 'error', error);
-    setProperty(jsObject, 'error_description', description);
+    final jsObject = JSObject();
+    jsObject.setProperty('error'.toJS, error.toJS);
+    jsObject.setProperty('error_description'.toJS, description.toJS);
     return jsObject;
   }
 

@@ -62,6 +62,8 @@ The callback and logout URLs are the URLs that Auth0 invokes to redirect back to
 
 > 💡 On iOS 17.4+ and macOS 14.4+ it is possible to use Universal Links as callback and logout URLs. When enabled, auth0_flutter will fall back to using a custom URL scheme on older iOS / macOS versions.
 >
+> Whenever possible, Auth0 recommends using Universal Links as a secure way to link directly to content within your iOS app. Custom URL schemes can be subject to [client impersonation attacks](https://datatracker.ietf.org/doc/html/rfc8252#section-8.6).
+>
 > **This feature requires Xcode 15.3+ and a paid Apple Developer account**.
 
 Under the **Application URIs** section of the **Settings** page, configure the following URLs for your application for both **Allowed Callback URLs** and **Allowed Logout URLs**:
