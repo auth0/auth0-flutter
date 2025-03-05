@@ -4,14 +4,24 @@ import 'dart:js_interop_unsafe';
 @JS('Object.keys')
 external JSArray<JSString> keys(final JSObject o);
 
+// TODO: remove this extension when updating to Dart 3.6.0
+extension JSArrayExt on JSArray<JSString> {
+  @JS('length')
+  external int get arrayLength;
+
+  @JS('at')
+  external JSFunction get elementAt;
+}
+
 class JsInteropUtils {
   /// Rebuilds the input object, omitting values that are null
   static T stripNulls<T extends JSObject>(final T obj) {
     final objKeys = keys(obj);
     final output = JSObject();
 
-    for (var i = 0; i < objKeys.length; i++) {
-      final key = objKeys[i];
+    for (var i = 0; i < objKeys.arrayLength; i++) {
+      // TODO: replace w/ `final key = objKeys[i];` when updating to Dart 3.6.0
+      final key = objKeys.elementAt.callAsFunction(objKeys, i.toJS)!;
       final value = obj.getProperty(key);
       if (value != null) {
         output.setProperty(key, value);
