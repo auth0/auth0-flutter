@@ -14,6 +14,11 @@ class Auth0ClientImpl {
 }
 
 @JSExport()
+class RedirectLoginResultImpl {
+  Object? appState = throw Exception('');
+}
+
+@JSExport()
 class WebCredentialsImpl {
   @JSExport('access_token')
   String accessToken = throw Exception('');
