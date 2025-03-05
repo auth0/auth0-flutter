@@ -1,5 +1,11 @@
 # Change Log
 
+## [afpi-v1.9.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.9.0) (2025-03-05)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.8.0...afpi-v1.9.0)
+
+**Added**
+- Added support for WASM compilation [\#516](https://github.com/auth0/auth0-flutter/pull/516) ([pmathew92](https://github.com/pmathew92))
+
 ## [afpi-v1.8.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.8.0) (2025-02-10)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.7.0...afpi-v1.8.0)
 
