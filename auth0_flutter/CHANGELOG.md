@@ -1,5 +1,12 @@
 # Change Log
 
+## [af-v1.9.0](https://github.com/auth0/auth0-flutter/tree/af-v1.9.0) (2025-03-05)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.8.0...af-v1.9.0)
+
+**Added**
+- Added support for WASM compilation [\#516](https://github.com/auth0/auth0-flutter/pull/516) ([pmathew92](https://github.com/pmathew92))
+- af: Ignore locale when it's not a string [\#518](https://github.com/auth0/auth0-flutter/pull/518) ([Widcket](https://github.com/Widcket))
+
 ## [af-v1.8.0](https://github.com/auth0/auth0-flutter/tree/af-v1.8.0) (2025-02-13)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.7.2...af-v1.8.0)
 
