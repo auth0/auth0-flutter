@@ -20,7 +20,7 @@ runs:
       shell: bash
 
     - name: Build ${{ inputs.platform }} app
-      working-directory: auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}
+      working-directory: auth0_flutter/example
       run: flutter build ${{ steps.lowercase-platform.outputs.platform }} --debug ${{ inputs.platform == 'iOS' && '--no-codesign' || '' }}
       shell: bash
 
@@ -38,5 +38,5 @@ runs:
       uses: actions/upload-artifact@v4
       if: ${{ failure() }}
       with:
-        name: '${{ inputs.platform }} xcresult bundles (smoke tests)'
-        path: 'auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}/smoke-tests.xcresult'
+        name: "${{ inputs.platform }} xcresult bundles (smoke tests)"
+        path: "auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}/smoke-tests.xcresult"
