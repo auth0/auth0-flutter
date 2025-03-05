@@ -18,15 +18,18 @@ void main() {
       const expiresIn = 8400;
       const expectedTokenType = 'Bearer';
       final webCredentials = WebCredentials(
-          access_token: accessToken, id_token: idToken,
-          expires_in: expiresIn.toJS);
+        access_token: accessToken,
+        id_token: idToken,
+        expires_in: expiresIn.toJS,
+      );
       final result = CredentialsExtension.fromWeb(webCredentials);
 
       expect(result.accessToken, accessToken);
       expect(result.idToken, idToken);
       expect(
           result.expiresAt.difference(
-              DateTime.now().add(const Duration(seconds: expiresIn))),
+            DateTime.now().add(const Duration(seconds: expiresIn)),
+          ),
           lessThan(const Duration(seconds: 1)));
       expect(result.user.sub, JWT.decode(idToken)['sub']);
       expect(result.tokenType, expectedTokenType);
