@@ -43,12 +43,12 @@ extension type AuthorizationParams._(JSObject _) implements JSObject {
 @JS()
 @anonymous
 extension type RedirectLoginOptions._(JSObject _) implements JSObject {
-  external Object? get appState; // TODO: use `JSAny?` when migrating to WASM
+  external JSAny? get appState;
   external AuthorizationParams? get authorizationParams;
   external String? get fragment;
 
   external factory RedirectLoginOptions({
-    final Object? appState,
+    final JSAny? appState,
     final AuthorizationParams authorizationParams,
     final String fragment,
   });
@@ -56,11 +56,11 @@ extension type RedirectLoginOptions._(JSObject _) implements JSObject {
 
 @JS()
 @anonymous
-class RedirectLoginResult {
-  external Object? get appState; // TODO: use `JSAny?` when migrating to WASM
+extension type RedirectLoginResult._(JSObject _) implements JSObject {
+  external JSAny? get appState;
 
   external factory RedirectLoginResult({
-    final Object? appState,
+    final JSAny? appState,
   });
 }
 

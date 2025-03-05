@@ -96,7 +96,7 @@ void main() {
 
     final interop.RedirectLoginResult mockRedirectResult =
         interop.RedirectLoginResult(
-      appState: appState,
+      appState: JsInteropUtils.jsifyObject(appState),
     );
 
     when(mockClientProxy.isAuthenticated())
@@ -126,7 +126,7 @@ void main() {
 
     final interop.RedirectLoginResult mockRedirectResult =
         interop.RedirectLoginResult(
-      appState: appState,
+      appState: JsInteropUtils.jsifyObject(appState),
     );
 
     when(mockClientProxy.isAuthenticated())
@@ -176,11 +176,12 @@ void main() {
       appState: appState,
     );
 
-    final params =
-        verify(mockClientProxy.loginWithRedirect(captureAny)).captured.first;
+    final params = verify(mockClientProxy.loginWithRedirect(captureAny))
+        .captured
+        .first as interop.RedirectLoginOptions?;
 
     final Object? capturedAppState =
-        JsInteropUtils.dartifyObject(params.appState);
+        JsInteropUtils.dartifyObject(params?.appState);
 
     expect(capturedAppState, isNotNull);
     expect(capturedAppState, isA<Map<Object?, Object?>>());

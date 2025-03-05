@@ -29,7 +29,7 @@ class JsInteropUtils {
   ) {
     params.forEach((final key, final value) {
       if (value != null) {
-        obj.setProperty(key.toJS,value as JSAny);
+        obj.setProperty(key.toJS, value as JSAny);
       }
     });
     return obj;
@@ -41,7 +41,7 @@ class JsInteropUtils {
   /// that do not fit into a static interop definition.
   ///
   /// See https://api.dart.dev/dart-js_interop/JSAnyUtilityExtension/dartify.html
-  static Object? dartifyObject(final Object? obj) => dartify(obj);
+  static Object? dartifyObject(final JSAny? obj) => obj.dartify();
 
   /// Convert the Dart object [obj] to a plain Javascript object.
   ///
@@ -49,5 +49,5 @@ class JsInteropUtils {
   /// that do not fit into a static interop definition.
   ///
   /// See https://api.dart.dev/dart-js_interop/NullableObjectUtilExtension/jsify.html
-  static Object? jsifyObject(final Object? obj) => jsify(obj);
+  static JSAny? jsifyObject(final Object? obj) => obj.jsify();
 }
