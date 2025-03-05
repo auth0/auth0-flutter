@@ -18,7 +18,8 @@ void main() {
       const expiresIn = 8400;
       const expectedTokenType = 'Bearer';
       final webCredentials = WebCredentials(
-          access_token: accessToken, id_token: idToken, expires_in: expiresIn.toJS);
+          access_token: accessToken, id_token: idToken,
+          expires_in: expiresIn.toJS);
       final result = CredentialsExtension.fromWeb(webCredentials);
 
       expect(result.accessToken, accessToken);
