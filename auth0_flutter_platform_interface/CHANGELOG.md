@@ -5,9 +5,10 @@
 
 **Added**
 - Added support for WASM compilation [\#516](https://github.com/auth0/auth0-flutter/pull/516) ([pmathew92](https://github.com/pmathew92))
+
 **Updated**
-- Updated Flutter version to 3.24.0
-- Updated Dart sdk version to 3.5.0
+- Updated Flutter version to 3.24.0 ([pmathew92](https://github.com/pmathew92))
+- Updated Dart sdk version to 3.5.0 ([pmathew92](https://github.com/pmathew92))
 
 ## [afpi-v1.8.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.8.0) (2025-02-10)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.7.0...afpi-v1.8.0)
