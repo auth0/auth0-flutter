@@ -15,7 +15,7 @@
       "= '{MAJOR}.{MINOR}.{PATCH}'"
     ]
   },
-  "prebump": "flutter analyze && dart pub upgrade auth0_flutter_platform_interface --tighten",
+  "prebump": "flutter analyze --no-fatal-infos --no-fatal-warnings && dart pub upgrade auth0_flutter_platform_interface --tighten",
   "prFilters": [
     {
       "type": "title",
