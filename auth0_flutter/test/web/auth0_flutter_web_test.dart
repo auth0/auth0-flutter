@@ -7,7 +7,6 @@ import 'package:auth0_flutter/auth0_flutter_web.dart';
 import 'package:auth0_flutter/src/web/auth0_flutter_plugin_real.dart';
 import 'package:auth0_flutter/src/web/auth0_flutter_web_platform_proxy.dart';
 import 'package:auth0_flutter/src/web/js_interop.dart' as interop;
-import 'package:auth0_flutter/src/web/js_interop_utils.dart';
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'package:collection/collection.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
@@ -96,7 +95,7 @@ void main() {
 
     final interop.RedirectLoginResult mockRedirectResult =
         interop.RedirectLoginResult(
-      appState: JsInteropUtils.jsifyObject(appState),
+      appState: appState.jsify(),
     );
 
     when(mockClientProxy.isAuthenticated())
@@ -126,7 +125,7 @@ void main() {
 
     final interop.RedirectLoginResult mockRedirectResult =
         interop.RedirectLoginResult(
-      appState: JsInteropUtils.jsifyObject(appState),
+      appState: appState.jsify(),
     );
 
     when(mockClientProxy.isAuthenticated())
@@ -180,8 +179,7 @@ void main() {
         .captured
         .first as interop.RedirectLoginOptions?;
 
-    final Object? capturedAppState =
-        JsInteropUtils.dartifyObject(params?.appState);
+    final Object? capturedAppState = params?.appState.dartify();
 
     expect(capturedAppState, isNotNull);
     expect(capturedAppState, isA<Map<Object?, Object?>>());

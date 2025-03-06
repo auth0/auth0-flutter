@@ -44,20 +44,4 @@ class JsInteropUtils {
     });
     return obj;
   }
-
-  /// Convert the Javascript object [obj] to a Dart object.
-  ///
-  /// This method should only be used to convert objects
-  /// that do not fit into a static interop definition.
-  ///
-  /// See https://api.dart.dev/dart-js_interop/JSAnyUtilityExtension/dartify.html
-  static Object? dartifyObject(final JSAny? obj) => obj.dartify();
-
-  /// Convert the Dart object [obj] to a plain Javascript object.
-  ///
-  /// This method should only be used to convert objects
-  /// that do not fit into a static interop definition.
-  ///
-  /// See https://api.dart.dev/dart-js_interop/NullableObjectUtilExtension/jsify.html
-  static JSAny? jsifyObject(final Object? obj) => obj.jsify();
 }

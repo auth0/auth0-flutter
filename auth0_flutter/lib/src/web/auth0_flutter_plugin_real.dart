@@ -55,7 +55,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
         final interop.RedirectLoginResult result =
             await clientProxy!.handleRedirectCallback();
 
-        _appState = JsInteropUtils.dartifyObject(result.appState);
+        _appState = result.appState.dartify();
 
         return;
       } catch (e) {
@@ -82,7 +82,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
         options?.parameters ?? {}));
 
     final loginOptions = interop.RedirectLoginOptions(
-      appState: JsInteropUtils.jsifyObject(options?.appState),
+      appState: options?.appState.jsify(),
       authorizationParams: authParams,
     );
 
