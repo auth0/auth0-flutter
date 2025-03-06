@@ -1,17 +1,10 @@
 import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
 
+import 'js_interop.dart';
+
 @JS('Object.keys')
 external JSArray<JSString> keys(final JSObject o);
-
-// TODO: remove this extension when updating to Dart 3.6.0
-extension JSArrayExt on JSArray<JSString> {
-  @JS('length')
-  external int get arrayLength;
-
-  @JS('at')
-  external JSFunction get elementAt;
-}
 
 class JsInteropUtils {
   /// Rebuilds the input object, omitting values that are null
