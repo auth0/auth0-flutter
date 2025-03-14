@@ -194,6 +194,10 @@ jobs:
                 auth0-domain: ${{ env.AUTH0_DOMAIN }}
                 auth0-client-id: ${{ env.AUTH0_CLIENT_ID }}
 
+            - name: Write .env file
+              working-directory: auth0_flutter/example
+              run: echo "AUTH0_DOMAIN='brucke.auth0.com'\nAUTH0_CLIENT_ID='ZaYdeHhGVqCESJDy89dnCHwso1dvcqLr'" > .env
+
             - name: Run iOS smoke tests
               uses: ./.github/actions/smoke-tests-darwin
               with:
