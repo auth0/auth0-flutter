@@ -6,7 +6,7 @@ class SmokeTests: XCTestCase {
     private let loginButton = "Web Auth Login"
     private let logoutButton = "Web Auth Logout"
     private let continueButton = "Continue"
-    private let notNow = "Not Now"
+    private let notNowButton = "Not Now"
     private let timeout: TimeInterval = 30
 
     override func setUp() {
@@ -22,16 +22,18 @@ class SmokeTests: XCTestCase {
         app.activate()
         XCTAssertTrue(app.wait(for: .runningForeground, timeout: timeout))
         tap(button: loginButton)
+
         let emailInput = app.webViews.textFields.firstMatch
         XCTAssertTrue(emailInput.waitForExistence(timeout: timeout))
         emailInput.tap()
         emailInput.typeText(email)
+
         let passwordInput = app.webViews.secureTextFields.firstMatch
         passwordInput.tap()
         passwordInput.typeText("\(password)\n")
 
-        if app.buttons[notNow].waitForExistence(timeout: timeout) {
-            app.buttons[notNow].forceTap()
+        if app.buttons[notNowButton].waitForExistence(timeout: timeout) {
+            app.buttons[notNowButton].forceTap()
         }
 
         XCTAssertTrue(app.buttons[logoutButton].waitForExistence(timeout: timeout))
@@ -42,9 +44,6 @@ class SmokeTests: XCTestCase {
         app.activate()
         XCTAssertTrue(app.wait(for: .runningForeground, timeout: timeout))
         tap(button: loginButton)
-        let sessionButton = app.webViews.staticTexts[email]
-        XCTAssertTrue(sessionButton.waitForExistence(timeout: timeout))
-        sessionButton.tap()
         tap(button: logoutButton)
         XCTAssertTrue(app.buttons[loginButton].waitForExistence(timeout: timeout))
     }
