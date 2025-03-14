@@ -1,8 +1,8 @@
 import XCTest
 
 class SmokeTests: XCTestCase {
-    private let email = "rita.zerrizuela+test@auth0.com"
-    private let password = "test"
+    private let email = ProcessInfo.processInfo.environment["USER_EMAIL"]!
+    private let password = ProcessInfo.processInfo.environment["USER_PASSWORD"]!
     private let loginButton = "Web Auth Login"
     private let logoutButton = "Web Auth Logout"
     private let continueButton = "Continue"
