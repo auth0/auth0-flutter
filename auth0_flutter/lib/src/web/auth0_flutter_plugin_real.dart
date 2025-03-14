@@ -24,6 +24,21 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   Auth0FlutterWebClientProxy? clientProxy;
   UrlSearchProvider urlSearchProvider = () => window.location.search;
 
+  /// The app state that was passed through [loginWithRedirect]
+  /// and retrieved in [initialize].
+  ///
+  /// This object is always a Dart object, never a JS object.
+  ///
+  /// When the login completes with the redirect, the page is reloaded.
+  /// Thus clearing this object is not needed,
+  /// as the actual state is managed across reloads,
+  /// using the transaction manager.
+  // TODO: move the `appState` to the result of `onLoad/initialize`
+  Object? _appState;
+
+  @override
+  Future<Object?> get appState => Future<Object?>.value(_appState);
+
   @override
   Future<void> initialize(
       final ClientOptions clientOptions, final UserAgent userAgent) async {
@@ -37,7 +52,12 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
         (search?.contains('code=') == true ||
             search?.contains('error=') == true)) {
       try {
-        return await clientProxy!.handleRedirectCallback();
+        final interop.RedirectLoginResult result =
+            await clientProxy!.handleRedirectCallback();
+
+        _appState = result.appState.dartify();
+
+        return;
       } catch (e) {
         throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
       }
@@ -61,8 +81,11 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
                 : null),
         options?.parameters ?? {}));
 
-    final loginOptions =
-        interop.RedirectLoginOptions(authorizationParams: authParams);
+    final loginOptions = interop.RedirectLoginOptions(
+      appState: options?.appState.jsify(),
+      authorizationParams: authParams,
+    );
+
     return client.loginWithRedirect(loginOptions);
   }
 
