@@ -1,11 +1,12 @@
 import XCTest
 
 class SmokeTests: XCTestCase {
-    private let email = ProcessInfo.processInfo.environment["USER_EMAIL"]!
-    private let password = ProcessInfo.processInfo.environment["USER_PASSWORD"]!
+    private let email = "rita.zerrizuela+test@auth0.com"
+    private let password = "test"
     private let loginButton = "Web Auth Login"
     private let logoutButton = "Web Auth Logout"
     private let continueButton = "Continue"
+    private let notNow = "Not Now"
     private let timeout: TimeInterval = 30
 
     override func setUp() {
@@ -28,6 +29,11 @@ class SmokeTests: XCTestCase {
         let passwordInput = app.webViews.secureTextFields.firstMatch
         passwordInput.tap()
         passwordInput.typeText("\(password)\n")
+
+        if app.buttons[notNow].waitForExistence(timeout: timeout) {
+            app.buttons[notNow].forceTap()
+        }
+
         XCTAssertTrue(app.buttons[logoutButton].waitForExistence(timeout: timeout))
     }
 
