@@ -69,6 +69,10 @@ flutter run
 ```sh
 flutter run -d chrome --web-port 3000
 ```
+> We now support WASM compilation for web on flutter 3.24.0 and above . To compile with WASM run
+ ```sh
+flutter run -d chrome --web-port 3000 --wasm
+```
 
 ## What is Auth0?
 
