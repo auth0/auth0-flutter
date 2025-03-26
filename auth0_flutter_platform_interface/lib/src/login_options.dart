@@ -3,6 +3,7 @@ import 'request/request_options.dart';
 
 class LoginOptions implements RequestOptions {
   final IdTokenValidationConfig? idTokenValidationConfig;
+  final Object? appState;
   final String? audience;
   final Set<String> scopes;
   final String? redirectUrl;
@@ -10,14 +11,16 @@ class LoginOptions implements RequestOptions {
   final String? invitationUrl;
   final Map<String, String> parameters;
 
-  LoginOptions(
-      {this.idTokenValidationConfig,
-      this.audience,
-      this.scopes = const {},
-      this.redirectUrl,
-      this.organizationId,
-      this.invitationUrl,
-      this.parameters = const {}});
+  LoginOptions({
+    this.idTokenValidationConfig,
+    this.appState,
+    this.audience,
+    this.scopes = const {},
+    this.redirectUrl,
+    this.organizationId,
+    this.invitationUrl,
+    this.parameters = const {},
+  });
 
   @override
   Map<String, dynamic> toMap() => {

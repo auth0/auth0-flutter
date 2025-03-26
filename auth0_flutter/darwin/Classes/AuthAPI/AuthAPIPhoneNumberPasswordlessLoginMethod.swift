@@ -37,7 +37,7 @@ struct AuthAPIPasswordlessPhoneNumberMethodHandler: MethodHandler {
             .parameters(["authParams":parameters])
             .start {
                 switch $0 {
-                case let .success:
+                case .success:
                     callback(nil)
 
                 case let .failure(error):

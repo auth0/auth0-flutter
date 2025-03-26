@@ -21,8 +21,14 @@ class Auth0FlutterWebClientProxy {
           [final GetTokenSilentlyOptions? options]) =>
       JSPromiseToFuture(client.getTokenSilently(options)).toDart;
 
-  Future<void> handleRedirectCallback() =>
-      JSPromiseToFuture(client.handleRedirectCallback()).toDart;
+  Future<RedirectLoginResult> handleRedirectCallback([final String? url]) {
+    // Omit the url if it is not provided, so that the default argument is used.
+    if (url == null) {
+      return JSPromiseToFuture(client.handleRedirectCallback()).toDart;
+    } else {
+      return JSPromiseToFuture(client.handleRedirectCallback(url.toJS)).toDart;
+    }
+  }
 
   Future<bool> isAuthenticated() async {
     final jsBool = await JSPromiseToFuture(client.isAuthenticated()).toDart;
