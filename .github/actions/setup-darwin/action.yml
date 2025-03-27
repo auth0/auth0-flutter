@@ -44,7 +44,7 @@ runs:
         working-directory: auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}
 
     - name: Install Flutter
-      uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff # pin@v2.18.0
+      uses: subosito/flutter-action@e938fdf56512cc96ef2f93601a5a40bde3801046 # pin@v2.19.0
       with:
         flutter-version: ${{ inputs.flutter }}
         channel: stable
