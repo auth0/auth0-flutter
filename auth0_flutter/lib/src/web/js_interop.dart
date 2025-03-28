@@ -187,3 +187,12 @@ extension type Auth0Client._ (JSObject _) implements JSObject {
   external JSPromise<JSBoolean> isAuthenticated();
   external JSPromise<JSAny?> logout([final LogoutOptions? logoutParams]);
 }
+
+// TODO: remove this extension when updating to Dart 3.6.0
+extension JSArrayExt on JSArray<JSString> {
+  @JS('length')
+  external int get arrayLength;
+
+  @JS('at')
+  external JSFunction get elementAt;
+}
