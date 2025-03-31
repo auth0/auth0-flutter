@@ -28,11 +28,11 @@ class JsInteropUtils {
   // to retrieve them again.
   static T addCustomParams<T extends JSObject>(
     final T obj,
-    final Map<String, dynamic> params,
+    final Map<String, String?> params,
   ) {
     params.forEach((final key, final value) {
       if (value != null) {
-        obj.setProperty(key.toJS, value as JSAny);
+        obj.setProperty(key.toJS, value.toJS);
       }
     });
     return obj;

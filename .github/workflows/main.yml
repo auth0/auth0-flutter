@@ -29,7 +29,7 @@ jobs:
               uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Install Flutter
-              uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff # pin@v2.18.0
+              uses: subosito/flutter-action@e938fdf56512cc96ef2f93601a5a40bde3801046 # pin@v2.19.0
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
@@ -52,7 +52,7 @@ jobs:
               uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Install Flutter
-              uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff # pin@v2.18.0
+              uses: subosito/flutter-action@e938fdf56512cc96ef2f93601a5a40bde3801046 # pin@v2.19.0
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
@@ -71,7 +71,7 @@ jobs:
               uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Install Flutter
-              uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff # pin@v2.18.0
+              uses: subosito/flutter-action@e938fdf56512cc96ef2f93601a5a40bde3801046 # pin@v2.19.0
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
@@ -102,7 +102,7 @@ jobs:
               uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Install Flutter
-              uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff # pin@v2.18.0
+              uses: subosito/flutter-action@e938fdf56512cc96ef2f93601a5a40bde3801046 # pin@v2.19.0
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
@@ -426,25 +426,25 @@ jobs:
               uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
             - name: Download coverage report for auth0_flutter
-              uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806
+              uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e
               with:
                 name: auth0_flutter coverage
                 path: coverage/auth0_flutter
 
             - name: Download coverage report for auth0_flutter_platform_interface
-              uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806
+              uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e
               with:
                 name: auth0_flutter_platform_interface coverage
                 path: coverage/auth0_flutter_platform_interface
 
             - name: Download coverage report for iOS
-              uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806
+              uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e
               with:
                 name: iOS coverage
                 path: coverage/ios
 
             - name: Download coverage report for Android
-              uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806
+              uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e
               with:
                 name: Android coverage
                 path: coverage/android
