@@ -115,6 +115,8 @@ Next, configure the following URLs for your application under the **Application 
 
 > 💡 Make sure to use port `3000` when running your app: `flutter run -d chrome --web-port 3000`.
 
+> 💡 Compile with WASM by running the app: `flutter run -d chrome --web-port 3000 --wasm`.
+
 Take note of the **client ID** and **domain** values under the **Basic Information** section. You'll need these values in the next step.
 
 ### Configure the SDK
