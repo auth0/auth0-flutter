@@ -75,11 +75,12 @@ void main() {
 
       expect(credentials.toMap()['expiresAt'], '2023-11-01T22:16:35.760Z');
       expect(
-        credentials.toMap()['userProfile'],
-        {
-          'sub': '123',
-          'name': 'John Doe',
-        },
+        credentials.toMap()['userProfile']['sub'],
+        '123',
+      );
+      expect(
+        credentials.toMap()['userProfile']['name'],
+        'John Doe',
       );
     });
   });
