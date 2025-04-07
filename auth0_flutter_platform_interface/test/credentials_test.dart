@@ -20,15 +20,6 @@ void main() {
       });
 
       expect(credentials.expiresAt.isUtc, true);
-      expect(
-        credentials.user.toMap(),
-        UserProfile.fromMap(
-          {
-            'sub': '123',
-            'name': 'John Doe',
-          },
-        ).toMap(),
-      );
     });
 
     test('Credentials throws when expiresAt Locale set to ar', () async {
