@@ -163,4 +163,28 @@ class UserProfile {
                 result['custom_claims'] as Map<dynamic, dynamic>)
             : null,
       );
+
+  Map<String, dynamic> toMap() => {
+        'sub': sub,
+        'name': name,
+        'given_name': givenName,
+        'family_name': familyName,
+        'middle_name': middleName,
+        'nickname': nickname,
+        'preferred_username': preferredUsername,
+        'profile': profileUrl?.toString(),
+        'picture': pictureUrl?.toString(),
+        'website': websiteUrl?.toString(),
+        'email': email,
+        'email_verified': isEmailVerified,
+        'gender': gender,
+        'birthdate': birthdate,
+        'zoneinfo': zoneinfo,
+        'locale': locale,
+        'phone_number': phoneNumber,
+        'phone_number_verified': isPhoneNumberVerified,
+        'address': address,
+        'updated_at': updatedAt?.toIso8601String(),
+        'custom_claims': customClaims,
+      };
 }
