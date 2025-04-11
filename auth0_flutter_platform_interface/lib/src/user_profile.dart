@@ -184,7 +184,7 @@ class UserProfile {
         'phone_number': phoneNumber,
         'phone_number_verified': isPhoneNumberVerified,
         'address': address,
-        'updated_at': updatedAt?.toIso8601String(),
+        'updated_at': updatedAt?.toUtc(),
         'custom_claims': customClaims,
       };
 }

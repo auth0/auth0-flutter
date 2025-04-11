@@ -50,7 +50,7 @@ void main() {
       expect(userProfile.phoneNumber, '+1234567890');
       expect(userProfile.isPhoneNumberVerified, true);
       expect(userProfile.address, {'country': 'USA', 'postal_code': '12345'});
-      expect(userProfile.updatedAt, DateTime.parse('2023-01-01T00:00:00.000Z'));
+      expect(userProfile.updatedAt?.isUtc, true);
       expect(userProfile.customClaims, {'role': 'admin'});
     });
 
@@ -87,27 +87,28 @@ void main() {
 
     test('toMap correctly converts all properties', () {
       final userProfile = UserProfile(
-          sub: 'user123',
-          name: 'John Doe',
-          givenName: 'John',
-          familyName: 'Doe',
-          middleName: 'Smith',
-          nickname: 'Johnny',
-          preferredUsername: 'john.doe',
-          profileUrl: Uri.parse('https://example.com/profile'),
-          pictureUrl: Uri.parse('https://example.com/picture.jpg'),
-          websiteUrl: Uri.parse('https://johndoe.com'),
-          email: 'john@example.com',
-          isEmailVerified: true,
-          gender: 'male',
-          birthdate: '1990-01-01',
-          zoneinfo: 'America/New_York',
-          locale: 'en-US',
-          phoneNumber: '+1234567890',
-          isPhoneNumberVerified: true,
-          address: {'country': 'USA', 'postal_code': '12345'},
-          updatedAt: DateTime.parse('2023-01-01T00:00:00.000Z'),
-          customClaims: {'role': 'admin'});
+        sub: 'user123',
+        name: 'John Doe',
+        givenName: 'John',
+        familyName: 'Doe',
+        middleName: 'Smith',
+        nickname: 'Johnny',
+        preferredUsername: 'john.doe',
+        profileUrl: Uri.parse('https://example.com/profile'),
+        pictureUrl: Uri.parse('https://example.com/picture.jpg'),
+        websiteUrl: Uri.parse('https://johndoe.com'),
+        email: 'john@example.com',
+        isEmailVerified: true,
+        gender: 'male',
+        birthdate: '1990-01-01',
+        zoneinfo: 'America/New_York',
+        locale: 'en-US',
+        phoneNumber: '+1234567890',
+        isPhoneNumberVerified: true,
+        address: {'country': 'USA', 'postal_code': '12345'},
+        updatedAt: DateTime.parse('2023-01-01T00:00:00.000Z'),
+        customClaims: {'role': 'admin'},
+      );
 
       final map = userProfile.toMap();
 
@@ -130,7 +131,7 @@ void main() {
       expect(map['phone_number'], '+1234567890');
       expect(map['phone_number_verified'], true);
       expect(map['address'], {'country': 'USA', 'postal_code': '12345'});
-      expect(map['updated_at'], '2023-01-01T00:00:00.000Z');
+      expect(map['updated_at'], DateTime.parse('2023-01-01T00:00:00.000Z'));
       expect(map['custom_claims'], {'role': 'admin'});
     });
   });
