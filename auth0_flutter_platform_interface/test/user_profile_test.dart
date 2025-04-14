@@ -50,7 +50,10 @@ void main() {
       expect(userProfile.phoneNumber, '+1234567890');
       expect(userProfile.isPhoneNumberVerified, true);
       expect(userProfile.address, {'country': 'USA', 'postal_code': '12345'});
-      expect(userProfile.updatedAt?.isUtc, true);
+      expect(
+        userProfile.updatedAt?.toUtc().toIso8601String(),
+        '2023-01-01T00:00:00.000Z',
+      );
       expect(userProfile.customClaims, {'role': 'admin'});
     });
 
@@ -131,7 +134,7 @@ void main() {
       expect(map['phone_number'], '+1234567890');
       expect(map['phone_number_verified'], true);
       expect(map['address'], {'country': 'USA', 'postal_code': '12345'});
-      expect(map['updated_at'], DateTime.parse('2023-01-01T00:00:00.000Z'));
+      expect(map['updated_at'], '2023-01-01T00:00:00.000Z');
       expect(map['custom_claims'], {'role': 'admin'});
     });
   });
