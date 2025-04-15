@@ -43,11 +43,25 @@ extension type AuthorizationParams._(JSObject _) implements JSObject {
 @JS()
 @anonymous
 extension type RedirectLoginOptions._(JSObject _) implements JSObject {
+  external JSAny? get appState;
   external AuthorizationParams? get authorizationParams;
   external String? get fragment;
 
-  external factory RedirectLoginOptions(
-      {final AuthorizationParams authorizationParams, final String fragment});
+  external factory RedirectLoginOptions({
+    final JSAny? appState,
+    final AuthorizationParams authorizationParams,
+    final String fragment,
+  });
+}
+
+@JS()
+@anonymous
+extension type RedirectLoginResult._(JSObject _) implements JSObject {
+  external JSAny? get appState;
+
+  external factory RedirectLoginResult({
+    final JSAny? appState,
+  });
 }
 
 @JS()
@@ -67,9 +81,10 @@ extension type Auth0ClientInfo._(JSObject _) implements JSObject {
   external String get version;
 
   external factory Auth0ClientInfo({
-      final JSObject env,
-      required final String name,
-      required final String version});
+    final JSObject env,
+    required final String name,
+    required final String version,
+  });
 }
 
 @JS()
@@ -100,8 +115,10 @@ extension type GetTokenSilentlyAuthParams._(JSObject _) implements JSObject {
   external String? scope;
   external String? audience;
 
-  external factory GetTokenSilentlyAuthParams(
-      {final String? audience, final String? scope});
+  external factory GetTokenSilentlyAuthParams({
+    final String? audience,
+    final String? scope,
+  });
 }
 
 @JS()
@@ -142,8 +159,10 @@ extension type LogoutParams._(JSObject _) implements JSObject {
   external String? get returnTo;
   external bool? get federated;
 
-  external factory LogoutParams(
-      {final String? returnTo, final bool? federated});
+  external factory LogoutParams({
+    final String? returnTo,
+    final bool? federated,
+  });
 }
 
 @JS()
@@ -156,34 +175,43 @@ extension type LogoutOptions._(JSObject _) implements JSObject {
 
 @JS()
 @anonymous
-extension type PopupLoginOptions._ (JSObject _) implements JSObject {
+extension type PopupLoginOptions._(JSObject _) implements JSObject {
   external AuthorizationParams? get authorizationParams;
 
-  external factory PopupLoginOptions(
-      {final AuthorizationParams authorizationParams});
+  external factory PopupLoginOptions({
+    final AuthorizationParams authorizationParams,
+  });
 }
 
 @JS()
 @anonymous
-extension type PopupConfigOptions._ (JSObject _) implements JSObject  {
+extension type PopupConfigOptions._(JSObject _) implements JSObject {
   external JSAny? get popup;
   external int? get timeoutInSeconds;
 
-  external factory PopupConfigOptions(
-      {final JSAny? popup, final int? timeoutInSeconds});
+  external factory PopupConfigOptions({
+    final JSAny? popup,
+    final int? timeoutInSeconds,
+  });
 }
 
 @JS()
-extension type Auth0Client._ (JSObject _) implements JSObject {
+extension type Auth0Client._(JSObject _) implements JSObject {
   external Auth0Client(final Auth0ClientOptions options);
-  external JSPromise<JSAny?> loginWithRedirect(
-      [final RedirectLoginOptions options]);
-  external JSPromise<JSAny?> loginWithPopup(
-      [final PopupLoginOptions? options, final PopupConfigOptions? config]);
-  external JSPromise<JSAny?> handleRedirectCallback([final String? url]);
+  external JSPromise<JSAny?> loginWithRedirect([
+    final RedirectLoginOptions options,
+  ]);
+  external JSPromise<JSAny?> loginWithPopup([
+    final PopupLoginOptions? options,
+    final PopupConfigOptions? config,
+  ]);
+  external JSPromise<RedirectLoginResult> handleRedirectCallback([
+    final JSString? url,
+  ]);
   external JSPromise<JSAny?> checkSession();
-  external JSPromise<WebCredentials> getTokenSilently(
-      [final GetTokenSilentlyOptions? options]);
+  external JSPromise<WebCredentials> getTokenSilently([
+    final GetTokenSilentlyOptions? options,
+  ]);
   external JSPromise<JSBoolean> isAuthenticated();
   external JSPromise<JSAny?> logout([final LogoutOptions? logoutParams]);
 }
