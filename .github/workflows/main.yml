@@ -450,28 +450,28 @@ jobs:
                 path: coverage/android
 
             - name: Upload coverage report for auth0_flutter
-              uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574
+              uses: codecov/codecov-action@ad3126e916f78f00edff4ed0317cf185271ccc2d
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter
                   directory: coverage/auth0_flutter
 
             - name: Upload coverage report for auth0_flutter_platform_interface
-              uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574
+              uses: codecov/codecov-action@ad3126e916f78f00edff4ed0317cf185271ccc2d
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter_platform_interface
                   directory: coverage/auth0_flutter_platform_interface
 
             - name: Upload coverage report for iOS
-              uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574
+              uses: codecov/codecov-action@ad3126e916f78f00edff4ed0317cf185271ccc2d
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter_ios
                   directory: coverage/ios
 
             - name: Upload coverage report for Android
-              uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574
+              uses: codecov/codecov-action@ad3126e916f78f00edff4ed0317cf185271ccc2d
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter_android
