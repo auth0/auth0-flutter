@@ -1,6 +1,8 @@
 import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
 
+import 'js_interop.dart';
+
 @JS('Object.keys')
 external JSArray<JSString> keys(final JSObject o);
 
@@ -10,8 +12,9 @@ class JsInteropUtils {
     final objKeys = keys(obj);
     final output = JSObject();
 
-    for (var i = 0; i < objKeys.length; i++) {
-      final key = objKeys[i];
+    for (var i = 0; i < objKeys.arrayLength; i++) {
+      // TODO: replace w/ `final key = objKeys[i];` when updating to Dart 3.6.0
+      final key = objKeys.elementAt.callAsFunction(objKeys, i.toJS)!;
       final value = obj.getProperty(key);
       if (value != null) {
         output.setProperty(key, value);
@@ -24,10 +27,12 @@ class JsInteropUtils {
   // **Note**: there is no static typing for these parameters to be able
   // to retrieve them again.
   static T addCustomParams<T extends JSObject>(
-      final T obj, final Map<String, dynamic> params) {
+    final T obj,
+    final Map<String, String?> params,
+  ) {
     params.forEach((final key, final value) {
       if (value != null) {
-        obj.setProperty(key.toJS,value as JSAny);
+        obj.setProperty(key.toJS, value.toJS);
       }
     });
     return obj;

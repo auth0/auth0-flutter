@@ -76,6 +76,7 @@ class Credentials {
         'refreshToken': refreshToken,
         'expiresAt': expiresAt.toUtc().toIso8601String(),
         'scopes': scopes.toList(),
+        'userProfile': user.toMap(),
         'tokenType': tokenType,
       };
 }

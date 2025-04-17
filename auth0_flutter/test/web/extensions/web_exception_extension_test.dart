@@ -22,11 +22,13 @@ void main() {
 
   test('additional props are added to the details collection', () {
     final exception = createJsException(
-        'authentication_error', 'A test authentication error',
-        additionalProps: {
-          'prop-1': 'Property 1',
-          'prop-2': 'Property 2'
-        });
+      'authentication_error',
+      'A test authentication error',
+      additionalProps: {
+        'prop-1': 'Property 1',
+        'prop-2': 'Property 2',
+      },
+    );
 
     final webException = WebExceptionExtension.fromJsObject(exception);
 
@@ -37,8 +39,11 @@ void main() {
   });
 
   test('mfa_required exception is created', () {
-    final exception = createJsException('mfa_required', 'MFA is required',
-        additionalProps: {'mfaToken': 'abc123'});
+    final exception = createJsException(
+      'mfa_required',
+      'MFA is required',
+      additionalProps: {'mfaToken': 'abc123'},
+    );
 
     final webException = WebExceptionExtension.fromJsObject(exception);
     expect(webException.code, 'MFA_REQUIRED');
@@ -56,8 +61,10 @@ void main() {
   });
 
   test('missing_refresh_token is created', () {
-    final exception =
-        createJsException('missing_refresh_token', 'Missing refresh token');
+    final exception = createJsException(
+      'missing_refresh_token',
+      'Missing refresh token',
+    );
     final webException = WebExceptionExtension.fromJsObject(exception);
 
     expect(webException.code, 'MISSING_REFRESH_TOKEN');
@@ -102,8 +109,11 @@ void main() {
   }
 
   test('AUTHENTICATION_ERROR is captured with state only', () {
-    final exception = createJsException('invalid_grant', 'Invalid grant',
-        additionalProps: {'state': '123', 'appState': '456'});
+    final exception = createJsException(
+      'invalid_grant',
+      'Invalid grant',
+      additionalProps: {'state': '123', 'appState': '456'},
+    );
 
     final webException = WebExceptionExtension.fromJsObject(exception);
 
