@@ -90,4 +90,4 @@ linter:
     sort_pub_dependencies: true
 
     # Specific rules
-    package_api_docs: true # TODO: replace with public_member_api_docs
+    # TODO: package_api_docs has been removed. replace with public_member_api_docs
