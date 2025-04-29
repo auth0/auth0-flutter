@@ -1,5 +1,15 @@
 # Change Log
 
+## [afpi-v1.10.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.10.0) (2025-04-29)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.9.0...afpi-v1.10.0)
+
+**Added**
+- implement app state getter for web [\#509](https://github.com/auth0/auth0-flutter/pull/509) ([navaronbracke](https://github.com/navaronbracke))
+- feat(auth): 🔐 Add UserProfile serialization and include in Credentials [\#556](https://github.com/auth0/auth0-flutter/pull/556) ([Rohithgilla12](https://github.com/Rohithgilla12))
+
+**Fixed**
+- Fixed the WASM compilation issue on 3.24 version of flutter [\#547](https://github.com/auth0/auth0-flutter/pull/547) ([pmathew92](https://github.com/pmathew92))
+
 ## [afpi-v1.9.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.9.0) (2025-03-05)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.8.0...afpi-v1.9.0)
 
