@@ -130,9 +130,23 @@ class WebAuthentication {
     await _credentialsManager?.clearCredentials();
   }
 
+
+  /// Terminates the ongoing web-based operation and reports back that it was cancelled.
+  /// You need to call this method within your custom Web Auth provider implementation whenever the operation is
+  /// cancelled by the user.
+  /// ## Note:
+  /// This is an iOS specific api
+  ///
+  void cancelWebAuth() {
+    Auth0FlutterWebAuthPlatform.instance.cancelWebAuth();
+  }
+
   WebAuthRequest<TOptions>
       _createWebAuthRequest<TOptions extends RequestOptions>(
               final TOptions options) =>
           WebAuthRequest<TOptions>(
               account: _account, options: options, userAgent: _userAgent);
+
+
+
 }

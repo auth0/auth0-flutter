@@ -12,6 +12,7 @@ const MethodChannel _channel =
     MethodChannel('auth0.com/auth0_flutter/web_auth');
 const String loginMethod = 'webAuth#login';
 const String logoutMethod = 'webAuth#logout';
+const String cancelMethod = 'webAuth#cancel';
 
 class MethodChannelAuth0FlutterWebAuth extends Auth0FlutterWebAuthPlatform {
   @override
@@ -31,6 +32,16 @@ class MethodChannelAuth0FlutterWebAuth extends Auth0FlutterWebAuthPlatform {
       request: request,
       throwOnNull: false,
     );
+  }
+
+
+  @override
+  void cancelWebAuth() {
+    try {
+      _channel.invokeMethod(cancelMethod);
+    } on PlatformException catch (e) {
+      throw WebAuthenticationException.fromPlatformException(e);
+    }
   }
 
   Future<Map<String, dynamic>> invokeRequest<TOptions extends RequestOptions>({

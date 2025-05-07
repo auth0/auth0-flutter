@@ -8,6 +8,7 @@
   - [3. How can I disable the iOS _logout_ alert box?](#3-how-can-i-disable-the-ios-logout-alert-box)
   - [4. How can I change the message in the iOS alert box?](#4-how-can-i-change-the-message-in-the-ios-alert-box)
   - [5. How can I programmatically close the iOS alert box?](#5-how-can-i-programmatically-close-the-ios-alert-box)
+  - [6. How to resolve the _Failed to start this transaction, as there is an active transaction at the moment_ error?](#6-how-to-resolve-the-failed-to-start-this-transaction-as-there-is-an-active-transaction-at-the-moment-error)
 - [🌐 Web](#-web)
   - [1. Why is the user logged out when they refresh the page in their SPA?](#1-why-is-the-user-logged-out-when-they-refresh-the-page-in-their-spa)
     - [Using Multi-factor Authentication (MFA)](#using-multi-factor-authentication-mfa)
@@ -115,6 +116,32 @@ This library has no control whatsoever over the alert box. Its contents cannot b
 ### 5. How can I programmatically close the iOS alert box?
 
 This library has no control whatsoever over the alert box. It cannot be closed programmatically. Unfortunately, that's a limitation of `ASWebAuthenticationSession`.
+
+### 6. How to resolve the _Failed to start this transaction, as there is an active transaction at the moment_ error?
+
+Users might encounter this error when the app moves to the background and then back to the foreground while the login/logout alert box is displayed, for example by locking and unlocking the device. The alert box would get dismissed but when the user tries to log in again, the Web Auth operation fails with the `transactionActiveAlready` error.
+
+This is a known issue with `ASWebAuthenticationSession` and it is not specific to auth0-flutter. We have already filed a bug report with Apple and are awaiting for a response from them.
+
+#### Workarounds
+
+##### Clear the login transaction when handling the `transactionActiveAlready` error
+
+You can invoke `cancelWebAuth()` to manually clear the current login transaction upon encountering this error. Then, you can retry login. For example:
+
+```dart
+ try {
+  await webAuth.login(useHTTPS: false);
+} catch (e) {
+if(e.toString() == 'Failed to start this transaction, as there is an active transaction at the moment '){
+webAuth.cancelWebAuth();
+//Retry login
+}
+}
+```
+##### Clear the login transaction when the app moves to the background/foreground
+
+You can invoke `cancelWebAuth()` to manually clear the current login transaction when the app moves to the background or back to the foreground. However, you need to make sure to not cancel valid login attempts –for example, when the user switches briefly to another app while the login page is open.
 
 ## 🌐 Web
 

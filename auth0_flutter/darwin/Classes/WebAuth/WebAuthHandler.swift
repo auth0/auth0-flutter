@@ -17,6 +17,7 @@ public class WebAuthHandler: NSObject, FlutterPlugin {
     enum Method: String, CaseIterable {
         case login = "webAuth#login"
         case logout = "webAuth#logout"
+        case cancel = "webAuth#cancel"
     }
 
     private static let channelName = "auth0.com/auth0_flutter/web_auth"
@@ -45,10 +46,18 @@ public class WebAuthHandler: NSObject, FlutterPlugin {
         switch method {
         case .login: return WebAuthLoginMethodHandler(client: client)
         case .logout: return WebAuthLogoutMethodHandler(client: client)
+        case .cancel: return WebAuthCancelMethodHandler()
         }
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+
+        if call.method == Method.cancel.rawValue  {
+            let methodHandler = WebAuthCancelMethodHandler()
+            methodHandler.handle(with: [:], callback: result)
+            return
+        }
+
         guard let arguments = call.arguments as? [String: Any] else {
             return result(FlutterError(from: .argumentsMissing))
         }
