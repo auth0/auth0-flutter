@@ -51,6 +51,7 @@ class LoginWebAuthRequestHandlerTest {
             val sdf =
                 SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
 
+            sdf.timeZone = TimeZone.getTimeZone("UTC")
             val formattedDate = sdf.format(defaultCredentials.expiresAt)
 
             verify(result).success(check {
@@ -331,6 +332,7 @@ class LoginWebAuthRequestHandlerTest {
         val sdf =
             SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
 
+        sdf.timeZone = TimeZone.getTimeZone("UTC")
         val formattedDate = sdf.format(credentials.expiresAt)
 
         assertThat((captor.firstValue as Map<*, *>)["accessToken"], equalTo(credentials.accessToken))

@@ -130,13 +130,17 @@ This is a known issue with `ASWebAuthenticationSession` and it is not specific t
 You can invoke `cancelWebAuth()` to manually clear the current login transaction upon encountering this error. Then, you can retry login. For example:
 
 ```dart
- try {
+try {
+
   await webAuth.login(useHTTPS: false);
+
 } catch (e) {
-if(e.toString() == 'Failed to start this transaction, as there is an active transaction at the moment '){
+
+if(e.toString() == 'UNKNOWN: Failed to start this transaction, as there is an active transaction at the moment.') {
 webAuth.cancelWebAuth();
 //Retry login
 }
+
 }
 ```
 ##### Clear the login transaction when the app moves to the background/foreground

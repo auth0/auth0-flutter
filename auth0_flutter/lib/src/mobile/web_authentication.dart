@@ -135,7 +135,7 @@ class WebAuthentication {
   /// You need to call this method within your custom Web Auth provider implementation whenever the operation is
   /// cancelled by the user.
   /// ## Note:
-  /// This is an iOS specific api
+  /// This is an iOS specific API
   ///
   void cancelWebAuth() {
     Auth0FlutterWebAuthPlatform.instance.cancelWebAuth();
