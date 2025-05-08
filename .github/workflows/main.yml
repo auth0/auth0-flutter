@@ -289,6 +289,9 @@ jobs:
               working-directory: auth0_flutter/example
               run: flutter build apk --split-per-abi
 
+            - name: Print java version
+              run: java --version
+
             - name: Run Android unit tests
               working-directory: auth0_flutter/example/android
               run: ./gradlew koverXmlReportDebug
