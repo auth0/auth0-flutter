@@ -1,4 +1,6 @@
 import Auth0
+import SimpleKeychain
+
 
 #if os(iOS)
 import Flutter
@@ -46,7 +48,27 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
     }
 
     var credentialsManagerProvider: CredentialsManagerProvider = { apiClient, arguments in
-        var instance = CredentialsManagerHandler.credentialsManager ?? CredentialsManager(authentication: apiClient)
+        
+        
+        var createCredentialManager: (_ apiClient: Authentication, _ arguments: [String: Any]) -> CredentialsManager = { apiClient, arguments in
+            if let configuration = arguments["credentialsManagerConfiguration"] as? [String: Any],
+               let iosConfiguration = configuration["ios"] as? [String: String] {
+
+                let storeKey = iosConfiguration["storeKey"]
+                let accessGroup = iosConfiguration["accessGroup"]
+                let accessibility = Accessibility(rawValue: iosConfiguration["accessibility"]! as CFString)
+
+                let storage = SimpleKeychain(
+                    accessGroup: accessGroup,
+                    accessibility: accessibility
+                )
+                return CredentialsManager(authentication: apiClient, storeKey: storeKey!, storage: storage)
+            } else {
+                return CredentialsManager(authentication: apiClient)
+            }
+        }
+    
+        var instance = CredentialsManagerHandler.credentialsManager ?? createCredentialManager(apiClient,arguments)
 
         if let localAuthenticationDictionary = arguments[LocalAuthentication.key] as? [String: String?] {
             let localAuthentication = LocalAuthentication(from: localAuthenticationDictionary)
@@ -89,4 +111,5 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         let methodHandler = methodHandlerProvider(method, credentialsManager)
         methodHandler.handle(with: arguments, callback: result)
     }
+  
 }
