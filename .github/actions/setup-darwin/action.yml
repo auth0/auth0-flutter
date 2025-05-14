@@ -36,7 +36,7 @@ runs:
       shell: bash
 
     - name: Set up Ruby
-      uses: ruby/setup-ruby@2e007403fc1ec238429ecaa57af6f22f019cc135 # pin@v1.234.0
+      uses: ruby/setup-ruby@84684c07c1965536eb4802c8daf1a77968df0cb1 # pin@v1.239.0
       with:
         ruby-version: ${{ inputs.ruby }}
         bundler-cache: true
