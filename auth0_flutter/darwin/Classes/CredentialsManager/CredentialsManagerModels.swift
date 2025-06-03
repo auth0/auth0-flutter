@@ -1,3 +1,13 @@
+import Foundation
+import Auth0
+
+protocol CredentialsManagerProtocol {
+    func credentials(withScope scope: String?, minTTL: Int, parameters: [String: Any], headers: [String: String], callback: @escaping (CredentialsManagerResult<Credentials>) -> Void)
+    func renew(parameters: [String: Any], headers: [String: String], callback: @escaping (CredentialsManagerResult<Credentials>) -> Void)
+}
+
+extension Auth0.CredentialsManager: CredentialsManagerProtocol {
+}
 enum LocalAuthenticationProperty: String, CaseIterable {
     case title
     case cancelTitle

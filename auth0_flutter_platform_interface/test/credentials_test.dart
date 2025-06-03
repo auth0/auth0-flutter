@@ -71,7 +71,7 @@ void main() {
 
   group('toMap', () {
     test('expiresAt is a ISO 8601 date with UTC time zone', () async {
-      final dateTime = DateTime(2023, 11, 1, 22, 16, 35, 760);
+      final dateTime = DateTime.utc(2023, 11, 1, 22, 16, 35, 760);
       final credentials = Credentials(
           accessToken: 'accessToken',
           idToken: 'idToken',

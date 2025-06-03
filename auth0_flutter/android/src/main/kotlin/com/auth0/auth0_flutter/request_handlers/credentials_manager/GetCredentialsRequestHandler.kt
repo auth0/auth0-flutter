@@ -28,8 +28,8 @@ class GetCredentialsRequestHandler : CredentialsManagerRequestHandler {
 
         val minTtl = request.data.get("minTtl") as Int? ?: 0
         val parameters = request.data.get("parameters") as Map<String, String>? ?: mapOf()
-
-        credentialsManager.getCredentials(scope, minTtl, parameters, object:
+        val forceRefresh = request.data.get("forceRefresh") as Boolean? ?: false
+        credentialsManager.getCredentials(scope, minTtl, parameters,forceRefresh, object:
             Callback<Credentials, CredentialsManagerException> {
             override fun onFailure(exception: CredentialsManagerException) {
                 result.error(exception.message ?: "UNKNOWN ERROR", exception.message, exception)

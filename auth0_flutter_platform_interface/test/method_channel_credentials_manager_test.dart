@@ -69,6 +69,7 @@ void main() {
                 minTtl: 30,
                 scopes: {'test-scope1', 'test-scope2'},
                 parameters: {'test': 'test-123'},
+                forceRefresh: true,
               )));
 
       final verificationResult =
@@ -83,6 +84,7 @@ void main() {
       expect(verificationResult.arguments['scopes'],
           ['test-scope1', 'test-scope2']);
       expect(verificationResult.arguments['parameters']['test'], 'test-123');
+      expect(verificationResult.arguments['forceRefresh'], true);
     });
 
     test(
@@ -102,6 +104,24 @@ void main() {
       expect(verificationResult.arguments['minTtl'], 0);
       expect(verificationResult.arguments['scopes'], isEmpty);
       expect(verificationResult.arguments['parameters'], isEmpty);
+      expect(verificationResult.arguments['forceRefresh'], false);
+    });
+
+    test('correctly maps forceRefresh when set to false', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.credentials);
+
+      await MethodChannelCredentialsManager().getCredentials(
+          CredentialsManagerRequest<GetCredentialsOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: GetCredentialsOptions(
+                forceRefresh: false,
+              )));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['forceRefresh'], false);
     });
 
     test('correctly includes the local authentication settings', () async {
