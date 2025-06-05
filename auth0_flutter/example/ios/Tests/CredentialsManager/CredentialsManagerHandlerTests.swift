@@ -306,3 +306,128 @@ extension CredentialsManagerHandlerTests {
         ]
     }
 }
+
+
+// MARK: - Credentials Manager Configuration Arguments
+
+extension CredentialsManagerHandlerTests {
+    
+    func testUsesDefaultConfigurationWhenMissing() {
+           let expectation = expectation(description: "Default configuration")
+           let method = CredentialsManagerHandler.Method.save.rawValue
+           
+           // Keep track of whether a configuration was passed
+           var configPassed = false
+           let originalProvider = sut.credentialsManagerProvider
+           
+           sut.credentialsManagerProvider = { auth, args in
+               configPassed = args["credentialsManagerConfiguration"] != nil
+               return self.sut.createCredentialManager(auth, args)
+           }
+           
+           sut.handle(FlutterMethodCall(methodName: method, arguments: arguments())) { _ in
+               XCTAssertFalse(configPassed, "No configuration should be passed")
+               expectation.fulfill()
+           }
+           
+           wait(for: [expectation])
+           sut.credentialsManagerProvider = originalProvider
+       }
+    
+    
+       func testPassesIOSStoreKey() {
+           let expectation = expectation(description: "iOS store key")
+           let method = CredentialsManagerHandler.Method.save.rawValue
+           let customStoreKey = "custom.store.key"
+           
+           var passedStoreKey: String?
+           let originalProvider = sut.credentialsManagerProvider
+           
+           let configurationDict: [String: Any] = [
+               "ios": ["storeKey": customStoreKey]
+           ]
+           
+           var args = arguments()
+           args["credentialsManagerConfiguration"] = configurationDict
+           
+           sut.credentialsManagerProvider = { auth, args in
+               if let config = args["credentialsManagerConfiguration"] as? [String: Any],
+                  let iosConfig = config["ios"] as? [String: String] {
+                   passedStoreKey = iosConfig["storeKey"]
+               }
+               return self.sut.createCredentialManager(auth, args)
+           }
+           
+           sut.handle(FlutterMethodCall(methodName: method, arguments: args)) { _ in
+               XCTAssertEqual(passedStoreKey, customStoreKey)
+               expectation.fulfill()
+           }
+           
+           wait(for: [expectation])
+           sut.credentialsManagerProvider = originalProvider
+       }
+    
+    func testPassesIOSAccessGroup() {
+            let expectation = expectation(description: "iOS access group")
+            let method = CredentialsManagerHandler.Method.save.rawValue
+            let customAccessGroup = "com.example.group"
+            
+            var passedAccessGroup: String?
+            let originalProvider = sut.credentialsManagerProvider
+            
+            let configurationDict: [String: Any] = [
+                "ios": ["accessGroup": customAccessGroup]
+            ]
+            
+            var args = arguments()
+            args["credentialsManagerConfiguration"] = configurationDict
+            
+            sut.credentialsManagerProvider = { auth, args in
+                if let config = args["credentialsManagerConfiguration"] as? [String: Any],
+                   let iosConfig = config["ios"] as? [String: String] {
+                    passedAccessGroup = iosConfig["accessGroup"]
+                }
+                return self.sut.createCredentialManager(auth, args)
+            }
+            
+            sut.handle(FlutterMethodCall(methodName: method, arguments: args)) { _ in
+                XCTAssertEqual(passedAccessGroup, customAccessGroup)
+                expectation.fulfill()
+            }
+            
+            wait(for: [expectation])
+            sut.credentialsManagerProvider = originalProvider
+        }
+    
+    func testPassesIOSAccessibility() {
+            let expectation = expectation(description: "iOS accessibility")
+            let method = CredentialsManagerHandler.Method.save.rawValue
+            let customAccessibility = "whenUnlocked"
+            
+            var passedAccessibility: String?
+            let originalProvider = sut.credentialsManagerProvider
+            
+            let configurationDict: [String: Any] = [
+                "ios": ["accessibility": customAccessibility]
+            ]
+            
+            var args = arguments()
+            args["credentialsManagerConfiguration"] = configurationDict
+            
+            sut.credentialsManagerProvider = { auth, args in
+                if let config = args["credentialsManagerConfiguration"] as? [String: Any],
+                   let iosConfig = config["ios"] as? [String: String] {
+                    passedAccessibility = iosConfig["accessibility"]
+                }
+                return self.sut.createCredentialManager(auth, args)
+            }
+            
+            sut.handle(FlutterMethodCall(methodName: method, arguments: args)) { _ in
+                XCTAssertEqual(passedAccessibility, customAccessibility)
+                expectation.fulfill()
+            }
+            
+            wait(for: [expectation])
+            sut.credentialsManagerProvider = originalProvider
+        }
+}
