@@ -49,8 +49,8 @@ class Auth0 {
   /// [DefaultCredentialsManager], set [localAuthentication]` to an instance
   /// of [LocalAuthentication]. Note however that this setting has no effect
   /// when specifying a custom [credentialsManager].
-  /// Use [CredentialsManagerConfiguration] to configure platform specific
-  /// configuration of the CredentialsManager
+  /// Use [CredentialsManagerConfiguration] to set platform-specific
+  /// configuration for the default CredentialsManager.
   Auth0(final String domain, final String clientId,
       {final LocalAuthentication? localAuthentication,
       final CredentialsManager? credentialsManager,

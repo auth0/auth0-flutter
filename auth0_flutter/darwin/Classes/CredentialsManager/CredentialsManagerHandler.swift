@@ -40,35 +40,37 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
 
         registrar.addMethodCallDelegate(handler, channel: channel)
     }
+    
+      func createCredentialManager(_ apiClient: Authentication, _ arguments: [String: Any]) -> CredentialsManager {
+        if let configuration = arguments["credentialsManagerConfiguration"] as? [String: Any],
+           let iosConfiguration = configuration["ios"] as? [String: String] {
+
+            let storeKey = iosConfiguration["storeKey"] ?? "credentials"
+            let accessGroup = iosConfiguration["accessGroup"]
+            let accessibilityString = iosConfiguration["accessibility"] ?? "afterFirstUnlock"
+            let accessibility = Accessibility(rawValue: accessibilityString as CFString)
+
+            let storage = SimpleKeychain(
+                accessGroup: accessGroup,
+                accessibility: accessibility
+            )
+            return CredentialsManager(authentication: apiClient, storeKey: storeKey, storage: storage)
+        } else {
+            return CredentialsManager(authentication: apiClient)
+        }
+    }
 
     var apiClientProvider: AuthAPIClientProvider = { account, userAgent in
         var client = Auth0.authentication(clientId: account.clientId, domain: account.domain)
         client.using(inLibrary: userAgent.name, version: userAgent.version)
         return client
     }
-
-    var credentialsManagerProvider: CredentialsManagerProvider = { apiClient, arguments in
-        
-        
-        var createCredentialManager: (_ apiClient: Authentication, _ arguments: [String: Any]) -> CredentialsManager = { apiClient, arguments in
-            if let configuration = arguments["credentialsManagerConfiguration"] as? [String: Any],
-               let iosConfiguration = configuration["ios"] as? [String: String] {
-
-                let storeKey = iosConfiguration["storeKey"]
-                let accessGroup = iosConfiguration["accessGroup"]
-                let accessibility = Accessibility(rawValue: iosConfiguration["accessibility"]! as CFString)
-
-                let storage = SimpleKeychain(
-                    accessGroup: accessGroup,
-                    accessibility: accessibility
-                )
-                return CredentialsManager(authentication: apiClient, storeKey: storeKey!, storage: storage)
-            } else {
-                return CredentialsManager(authentication: apiClient)
-            }
-        }
     
-        var instance = CredentialsManagerHandler.credentialsManager ?? createCredentialManager(apiClient,arguments)
+
+    lazy var credentialsManagerProvider: CredentialsManagerProvider = { apiClient, arguments in
+        
+        var instance = CredentialsManagerHandler.credentialsManager ??
+        self.createCredentialManager(apiClient,arguments)
 
         if let localAuthenticationDictionary = arguments[LocalAuthentication.key] as? [String: String?] {
             let localAuthentication = LocalAuthentication(from: localAuthenticationDictionary)
