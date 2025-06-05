@@ -458,8 +458,8 @@ Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platfo
 ### Credential Manager configuration
 
 You can set platform specific configuration on the CredentialManager while initialising it.
-On iOS ,this would mean configuring the `storeKey`, `accessGroup` and  `accessibilty` of the key chain. If these are not set then, the default values will be used.
-On Android , you can configure the `shared preference`  name used to store the credentials.
+On iOS, this would mean configuring the `storeKey` of the Auth0.swift Credentials Manager, and the `accessGroup` and `accessibilty` of SimpleKeychain. If these are not set, the default values will be used.
+On Android , you can configure the `sharedpreferences`  name used to store the credentials.
 
 ```dart
 const configuration = CredentialsManagerConfiguration(
