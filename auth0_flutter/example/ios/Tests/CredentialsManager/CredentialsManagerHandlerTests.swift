@@ -331,7 +331,6 @@ extension CredentialsManagerHandlerTests {
            }
            
            wait(for: [expectation])
-           sut.credentialsManagerProvider = originalProvider
        }
     
     
@@ -364,7 +363,6 @@ extension CredentialsManagerHandlerTests {
            }
            
            wait(for: [expectation])
-           sut.credentialsManagerProvider = originalProvider
        }
     
     func testPassesIOSAccessGroup() {
@@ -396,7 +394,6 @@ extension CredentialsManagerHandlerTests {
             }
             
             wait(for: [expectation])
-            sut.credentialsManagerProvider = originalProvider
         }
     
     func testPassesIOSAccessibility() {
@@ -428,6 +425,5 @@ extension CredentialsManagerHandlerTests {
             }
             
             wait(for: [expectation])
-            sut.credentialsManagerProvider = originalProvider
         }
 }
