@@ -3,7 +3,7 @@ import XCTest
 @testable import Auth0
 @testable import auth0_flutter
 
-class CredentialsManagerHandlerTests: XCTestCase {
+    class CredentialsManagerHandlerTests: XCTestCase {
     var sut: CredentialsManagerHandler!
 
     override func setUpWithError() throws {
@@ -318,7 +318,6 @@ extension CredentialsManagerHandlerTests {
            
            // Keep track of whether a configuration was passed
            var configPassed = false
-           let originalProvider = sut.credentialsManagerProvider
            
            sut.credentialsManagerProvider = { auth, args in
                configPassed = args["credentialsManagerConfiguration"] != nil
@@ -340,7 +339,6 @@ extension CredentialsManagerHandlerTests {
            let customStoreKey = "custom.store.key"
            
            var passedStoreKey: String?
-           let originalProvider = sut.credentialsManagerProvider
            
            let configurationDict: [String: Any] = [
                "ios": ["storeKey": customStoreKey]
@@ -371,7 +369,6 @@ extension CredentialsManagerHandlerTests {
             let customAccessGroup = "com.example.group"
             
             var passedAccessGroup: String?
-            let originalProvider = sut.credentialsManagerProvider
             
             let configurationDict: [String: Any] = [
                 "ios": ["accessGroup": customAccessGroup]
@@ -402,7 +399,6 @@ extension CredentialsManagerHandlerTests {
             let customAccessibility = "whenUnlocked"
             
             var passedAccessibility: String?
-            let originalProvider = sut.credentialsManagerProvider
             
             let configurationDict: [String: Any] = [
                 "ios": ["accessibility": customAccessibility]
