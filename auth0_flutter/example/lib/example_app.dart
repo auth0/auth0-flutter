@@ -3,6 +3,8 @@ import 'package:auth0_flutter/auth0_flutter.dart';
 import 'package:auth0_flutter/auth0_flutter_web.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:auth0_flutter/src/mobile/credentials_manager.dart';
+import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'api_card.dart';
 import 'constants.dart';
@@ -27,7 +29,15 @@ class _ExampleAppState extends State<ExampleApp> {
   void initState() {
     super.initState();
 
-    auth0 = Auth0(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
+    auth0 = Auth0(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!,
+        credentialsManagerConfiguration: CredentialsManagerConfiguration(
+            androidConfiguration:
+                AndroidCredentialsConfiguration("testSharedPreference"),
+            iosConfiguration: IOSCredentialsConfiguration(
+                storeKey: "iosStoreKey",
+                accessGroup: "com.auth0.auth0FlutterExample",
+                accessibility: Accessibility.afterFirstUnlock)));
+
     auth0Web =
         Auth0Web(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
     webAuth =
@@ -38,6 +48,22 @@ class _ExampleAppState extends State<ExampleApp> {
             _isLoggedIn = credentials != null;
           }));
     }
+
+    auth0.credentialsManager.credentials().then((credentials) {
+      // Store the credentials in a class variable or use them directly
+      // Update UI if needed
+      setState(() {
+        _isLoggedIn = true;
+        _output = credentials.idToken;
+      });
+    }).catchError((e) {
+      print('Failed to get credentials: $e');
+      // Handle the error
+      setState(() {
+        _isLoggedIn = false;
+        _output = 'No stored credentials';
+      });
+    });
   }
 
   Future<void> webAuthLogin() async {
@@ -50,7 +76,7 @@ class _ExampleAppState extends State<ExampleApp> {
         return auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
       }
 
-      final result = await webAuth.login(useHTTPS: true);
+      final result = await webAuth.login(useHTTPS: false);
 
       setState(() {
         _isLoggedIn = true;
@@ -79,7 +105,7 @@ class _ExampleAppState extends State<ExampleApp> {
       if (kIsWeb) {
         await auth0Web.logout(returnToUrl: 'http://localhost:3000');
       } else {
-        await webAuth.logout(useHTTPS: true);
+        await webAuth.logout(useHTTPS: false);
 
         setState(() {
           _isLoggedIn = false;
