@@ -16,6 +16,7 @@ export 'src/auth0_exception.dart';
 export 'src/auth0_flutter_auth_platform.dart';
 export 'src/auth0_flutter_web_auth_platform.dart';
 export 'src/auth0_flutter_web_platform.dart';
+export 'src/credentials-manager/credentials_manager_configuration.dart';
 export 'src/credentials-manager/credentials_manager_exception.dart';
 export 'src/credentials-manager/credentials_manager_platform.dart';
 export 'src/credentials-manager/method_channel_credentials_manager.dart';

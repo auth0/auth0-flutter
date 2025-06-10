@@ -15,7 +15,8 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry
 
-class CredentialsManagerMethodCallHandler(private val requestHandlers: List<CredentialsManagerRequestHandler>) : MethodCallHandler, PluginRegistry.ActivityResultListener {
+class CredentialsManagerMethodCallHandler(private val requestHandlers: List<CredentialsManagerRequestHandler>) :
+    MethodCallHandler, PluginRegistry.ActivityResultListener {
     lateinit var activity: Activity
     lateinit var context: Context
 
@@ -27,17 +28,34 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
         if (requestHandler != null) {
             val request = MethodCallRequest.fromCall(call)
 
+            val configuration =
+                request.data["credentialsManagerConfiguration"] as Map<*, *>?
+
+            val sharedPreferenceConfiguration = configuration?.get("android")
+            val sharedPreferenceName: String? = if (sharedPreferenceConfiguration != null) {
+                (sharedPreferenceConfiguration as Map<String, String>).get("sharedPreferencesName")
+            } else null
+
             val api = AuthenticationAPIClient(request.account)
-            val storage = SharedPreferencesStorage(context)
-            credentialsManager = credentialsManager ?: SecureCredentialsManager(context, api, storage)
+            val storage = sharedPreferenceName?.let {
+                SharedPreferencesStorage(context, it)
+            } ?: SharedPreferencesStorage(context)
+            credentialsManager =
+                credentialsManager ?: SecureCredentialsManager(context, api, storage)
 
             val credentialsManager = credentialsManager as SecureCredentialsManager
-            val localAuthentication = request.data.get("localAuthentication") as Map<String, String>?
+            val localAuthentication =
+                request.data.get("localAuthentication") as Map<String, String>?
 
             if (localAuthentication != null) {
                 val title = localAuthentication["title"]
                 val description = localAuthentication["description"]
-                credentialsManager.requireAuthentication(activity, RequestCodes.AUTH_REQ_CODE, title, description)
+                credentialsManager.requireAuthentication(
+                    activity,
+                    RequestCodes.AUTH_REQ_CODE,
+                    title,
+                    description
+                )
             }
             requestHandler.handle(credentialsManager, context, request, result)
         } else {

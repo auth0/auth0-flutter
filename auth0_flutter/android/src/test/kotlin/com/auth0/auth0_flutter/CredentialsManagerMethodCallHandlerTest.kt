@@ -91,6 +91,30 @@ class CredentialsManagerMethodCallHandlerTest {
     }
 
     @Test
+    fun `handler should extract sharedPreferenceName correctly`() {
+        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
+
+        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
+
+        val activity: Activity = mock()
+        val context: Context = mock()
+        val mockPrefs: SharedPreferences = mock()
+
+        `when`(context.getSharedPreferences(any(), any()))
+            .thenReturn(mockPrefs)
+
+        val arguments = defaultArguments + hashMapOf(
+            "credentialsManagerConfiguration" to mapOf(
+                "android" to mapOf("sharedPreferencesName" to "test_prefs")
+            )
+        )
+
+        runCallHandler(clearCredentialsHandler.method, arguments as HashMap, listOf(clearCredentialsHandler), activity, context) {
+            verify(context).getSharedPreferences(eq("test_prefs"), any())
+        }
+    }
+
+    @Test
     fun `handler should call credentialsManager requireAuthentication`() {
         val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
 

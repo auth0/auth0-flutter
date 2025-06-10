@@ -17,6 +17,7 @@
   - [Retrieve stored credentials](#retrieve-stored-credentials)
   - [Custom implementations](#custom-implementations)
   - [Local authentication](#local-authentication)
+  - [Credentials Manager configuration](#credentials-manager-configuration)
   - [Disable credentials storage](#disable-credentials-storage)
   - [Errors](#errors-1)
 - [🌐 Handling Credentials on the Web](#-handling-credentials-on-the-web)
@@ -395,6 +396,7 @@ await webAuth.logout();
 - [Retrieve stored credentials](#retrieve-stored-credentials)
 - [Custom implementations](#custom-implementations)
 - [Local authentication](#local-authentication)
+- [Credentials Manager configuration](#credentials-manager-configuration)
 - [Credentials Manager errors](#credentials-manager-errors)
 - [Disable credentials storage](#disable-credentials-storage)
 
@@ -452,6 +454,26 @@ final credentials = await auth0.credentialsManager.credentials();
 Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/LocalAuthentication-class.html) to learn more about the available `LocalAuthentication` properties.
 
 > ⚠️ Enabling local authentication will not work if you're using a custom Credentials Manager implementation. In that case, you will need to build support for local authentication into your custom implementation.
+
+### Credentials Manager configuration
+
+You can set platform specific configuration on the CredentialManager while initialising it.
+On iOS, this would mean configuring the `storeKey` of the Auth0.swift Credentials Manager, and the `accessGroup` and `accessibilty` of SimpleKeychain. If these are not set, the default values will be used.
+On Android , you can configure the `sharedpreferences`  name used to store the credentials.
+
+```dart
+const configuration = CredentialsManagerConfiguration(
+    androidConfiguration: AndroidCredentialsConfiguration("testSharedPreference"),
+    iosConfiguration: IOSCredentialsConfiguration(
+        storeKey: "iosStoreKey",
+        accessGroup: "com.example.accessGroup",
+        accessibility: Accessibility.afterFirstUnlock));
+
+final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID',
+    credentialsManagerConfiguration: configuration);
+final credentials = await auth0.credentialsManager.credentials();
+
+```
 
 ### Disable credentials storage
 
