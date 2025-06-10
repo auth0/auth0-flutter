@@ -23,7 +23,7 @@ runs:
 
   steps:
     - name: Install Flutter
-      uses: subosito/flutter-action@c05b4b29742b9d69a8a940563c6f72559b4cf2bb  #pin@v1.10.0
+      uses: subosito/flutter-action@e938fdf56512cc96ef2f93601a5a40bde3801046  #pin@v2.19.0
       with:
         flutter-version: 3.29.3
         channel: stable
