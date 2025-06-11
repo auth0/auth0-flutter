@@ -131,13 +131,11 @@ class WebAuthentication {
   }
 
 
-  /// Terminates the ongoing web-based operation and reports back that it was cancelled.
-  /// You need to call this method within your custom Web Auth provider implementation whenever the operation is
-  /// cancelled by the user.
-  /// ## Note:
-  /// This is an iOS specific API
+  /// Terminates the ongoing web-based operation and reports back that it was
+  /// cancelled.
+  /// ## Note: This is an iOS specific API
   ///
-  void cancelWebAuth() {
+ static void cancelWebAuth() {
     Auth0FlutterWebAuthPlatform.instance.cancelWebAuth();
   }
 
@@ -146,7 +144,4 @@ class WebAuthentication {
               final TOptions options) =>
           WebAuthRequest<TOptions>(
               account: _account, options: options, userAgent: _userAgent);
-
-
-
 }
