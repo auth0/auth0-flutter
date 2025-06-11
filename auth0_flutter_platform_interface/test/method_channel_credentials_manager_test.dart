@@ -132,6 +132,61 @@ void main() {
           'test-fallback-title');
     });
 
+    test('correctly includes the credential manager configuration settings', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.credentials);
+
+      await MethodChannelCredentialsManager().getCredentials(
+          CredentialsManagerRequest<GetCredentialsOptions>(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: '', version: ''),
+              options: GetCredentialsOptions(),
+              credentialsManagerConfiguration: CredentialsManagerConfiguration(
+                  iosConfiguration: IOSCredentialsConfiguration(
+                      storeKey: 'test-store-key',
+                      accessGroup: 'test-access-group',
+                      accessibility: Accessibility.whenUnlocked
+                  ),
+                  androidConfiguration: AndroidCredentialsConfiguration(
+                       'test-shared-preferences'
+                  ))));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['credentialsManagerConfiguration'], isNotNull);
+      expect(verificationResult.arguments['credentialsManagerConfiguration']['ios'], isNotNull);
+      expect(verificationResult.arguments['credentialsManagerConfiguration']['ios']['storeKey'], 'test-store-key');
+      expect(verificationResult.arguments['credentialsManagerConfiguration']['ios']['accessGroup'], 'test-access-group');
+      expect(verificationResult.arguments['credentialsManagerConfiguration']['ios']['accessibility'], 'whenUnlocked');
+      expect(verificationResult.arguments['credentialsManagerConfiguration']['android'], isNotNull);
+      expect(verificationResult.arguments['credentialsManagerConfiguration']['android']['sharedPreferencesName'], 'test-shared-preferences');
+    });
+
+    test('correctly includes the optional parameters of credential manager configuration settings', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.credentials);
+
+      await MethodChannelCredentialsManager().getCredentials(
+          CredentialsManagerRequest<GetCredentialsOptions>(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: '', version: ''),
+              options: GetCredentialsOptions(),
+              credentialsManagerConfiguration: CredentialsManagerConfiguration(
+                  iosConfiguration: IOSCredentialsConfiguration(
+                      accessGroup: 'test-access-group',
+                  ),
+              )));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['credentialsManagerConfiguration'], isNotNull);
+      expect(verificationResult.arguments['credentialsManagerConfiguration']['ios'], isNotNull);
+      expect(verificationResult.arguments['credentialsManagerConfiguration']['ios']['storeKey'], isNull);
+      expect(verificationResult.arguments['credentialsManagerConfiguration']['ios']['accessGroup'], 'test-access-group');
+      expect(verificationResult.arguments['credentialsManagerConfiguration']['ios']['accessibility'], isNull);
+      expect(verificationResult.arguments['credentialsManagerConfiguration']['android'], isNull);
+    });
+
     test('correctly returns the response from the Method Channel', () async {
       when(mocked.methodCallHandler(any))
           .thenAnswer((final _) async => MethodCallHandler.credentials);
