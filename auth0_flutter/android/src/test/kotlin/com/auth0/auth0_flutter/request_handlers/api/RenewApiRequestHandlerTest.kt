@@ -235,7 +235,6 @@ class RenewApiRequestHandlerTest {
         val sdf =
             SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
 
-        sdf.timeZone = TimeZone.getTimeZone("UTC")
         val formattedDate = sdf.format(credentials.expiresAt)
 
         assertThat(
