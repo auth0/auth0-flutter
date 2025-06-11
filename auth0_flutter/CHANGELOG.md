@@ -1,5 +1,11 @@
 # Change Log
 
+## [af-v1.11.0](https://github.com/auth0/auth0-flutter/tree/af-v1.11.0) (2025-06-11)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.10.0...af-v1.11.0)
+
+**Added**
+- Added support to configure credentials manager for iOS and Android  [\#576](https://github.com/auth0/auth0-flutter/pull/576) ([pmathew92](https://github.com/pmathew92))
+
 ## [af-v1.10.0](https://github.com/auth0/auth0-flutter/tree/af-v1.10.0) (2025-04-29)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.9.0...af-v1.10.0)
 
