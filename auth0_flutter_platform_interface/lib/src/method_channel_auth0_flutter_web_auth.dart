@@ -36,7 +36,7 @@ class MethodChannelAuth0FlutterWebAuth extends Auth0FlutterWebAuthPlatform {
 
 
   @override
-  void cancelWebAuth() {
+  void cancel() {
     try {
       _channel.invokeMethod(cancelMethod);
     } on PlatformException catch (e) {

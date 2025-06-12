@@ -135,8 +135,8 @@ class WebAuthentication {
   /// cancelled.
   /// ## Note: This is an iOS specific API
   ///
- static void cancelWebAuth() {
-    Auth0FlutterWebAuthPlatform.instance.cancelWebAuth();
+ static void cancel() {
+    Auth0FlutterWebAuthPlatform.instance.cancel();
   }
 
   WebAuthRequest<TOptions>

@@ -127,22 +127,21 @@ This is a known issue with `ASWebAuthenticationSession` and it is not specific t
 
 ##### Clear the login transaction when handling the `transactionActiveAlready` error
 
-You can invoke `cancelWebAuth()` to manually clear the current login transaction upon encountering this error. Then, you can retry login. For example:
+You can invoke `WebAuthentication.cancel()` to manually clear the current login transaction upon encountering this error. Then, you can retry login. For example:
 
 ```dart
 try {
-    await webAuth.login(useHTTPS: false);
-} catch (e) {
-    if (e.toString() ==
-    'UNKNOWN: Failed to start this transaction, as there is an active transaction at the moment.') {
-    webAuth.cancelWebAuth();
+    await webAuth.login(useHTTPS: true);
+} on WebAuthenticationException catch (e)  {
+    if (e.code == "TRANSACTION_ACTIVE_ALREADY") {
+    WebAuthentication.cancel();
   //Retry login
   }
 }
 ```
 ##### Clear the login transaction when the app moves to the background/foreground
 
-You can invoke `cancelWebAuth()` to manually clear the current login transaction when the app moves to the background or back to the foreground. However, you need to make sure to not cancel valid login attempts –for example, when the user switches briefly to another app while the login page is open.
+You can invoke `WebAuthentication.cancel()` to manually clear the current login transaction when the app moves to the background or back to the foreground. However, you need to make sure to not cancel valid login attempts –for example, when the user switches briefly to another app while the login page is open.
 
 ## 🌐 Web
 

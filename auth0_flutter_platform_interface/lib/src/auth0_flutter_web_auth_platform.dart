@@ -22,7 +22,7 @@ abstract class Auth0FlutterWebAuthPlatform extends PlatformInterface {
     throw UnimplementedError('webAuth.logout() has not been implemented');
   }
 
-  void cancelWebAuth(){
-    throw UnimplementedError('webAuth.cancelWebAuth() has not been implemented');
+  void cancel(){
+    throw UnimplementedError('webAuth.cancel() has not been implemented');
   }
 }
