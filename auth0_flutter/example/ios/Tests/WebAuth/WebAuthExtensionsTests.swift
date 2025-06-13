@@ -13,7 +13,8 @@ class WebAuthExtensionsTests: XCTestCase {
             "NO_BUNDLE_IDENTIFIER": .noBundleIdentifier,
             "PKCE_NOT_ALLOWED": .pkceNotAllowed,
             "OTHER": .other,
-            "UNKNOWN": .unknown
+            "UNKNOWN": .unknown,
+            "TRANSACTION_ACTIVE_ALREADY": .transactionActiveAlready
         ]
         for (code, error) in errors {
             let flutterError = FlutterError(from: error)
