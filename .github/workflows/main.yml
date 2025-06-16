@@ -130,6 +130,8 @@ jobs:
 
         env:
           platform: iOS
+          AUTH0_DOMAIN: ${{ vars.AUTH0_DOMAIN }}
+          AUTH0_CLIENT_ID: ${{ vars.AUTH0_CLIENT_ID }}
 
         steps:
             - name: Checkout
@@ -142,8 +144,8 @@ jobs:
                 ruby: ${{ env.ruby }}
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
-                auth0-domain: ${{ vars.AUTH0_DOMAIN }}
-                auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
+                auth0-domain: ${{ env.AUTH0_DOMAIN }}
+                auth0-client-id: ${{ env.AUTH0_CLIENT_ID }}
 
             - name: Run iOS unit tests
               uses: ./.github/actions/unit-tests-darwin
@@ -168,6 +170,8 @@ jobs:
 
         env:
             platform: iOS
+            AUTH0_DOMAIN: ${{ vars.AUTH0_DOMAIN }}
+            AUTH0_CLIENT_ID: ${{ vars.AUTH0_CLIENT_ID }}
             USER_EMAIL: ${{ secrets.USER_EMAIL }}
             USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
 
@@ -187,8 +191,8 @@ jobs:
                 ruby: ${{ env.ruby }}
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
-                auth0-domain: ${{ vars.AUTH0_DOMAIN }}
-                auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
+                auth0-domain: ${{ env.AUTH0_DOMAIN }}
+                auth0-client-id: ${{ env.AUTH0_CLIENT_ID }}
 
             - name: Run iOS smoke tests
               uses: ./.github/actions/smoke-tests-darwin
@@ -208,6 +212,8 @@ jobs:
 
         env:
           platform: macOS
+          AUTH0_DOMAIN: ${{ vars.AUTH0_DOMAIN }}
+          AUTH0_CLIENT_ID: ${{ vars.AUTH0_CLIENT_ID }}
 
         steps:
             - name: Checkout
@@ -220,8 +226,8 @@ jobs:
                 ruby: ${{ env.ruby }}
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
-                auth0-domain: ${{ vars.AUTH0_DOMAIN }}
-                auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
+                auth0-domain: ${{ env.AUTH0_DOMAIN }}
+                auth0-client-id: ${{ env.AUTH0_CLIENT_ID }}
 
             - name: Build macOS example app
               working-directory: auth0_flutter/example
@@ -240,6 +246,8 @@ jobs:
 
         env:
             platform: macOS
+            AUTH0_DOMAIN: ${{ vars.AUTH0_DOMAIN }}
+            AUTH0_CLIENT_ID: ${{ vars.AUTH0_CLIENT_ID }}
             USER_EMAIL: ${{ secrets.USER_EMAIL }}
             USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
 
@@ -259,8 +267,8 @@ jobs:
                 ruby: ${{ env.ruby }}
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
-                auth0-domain: ${{ vars.AUTH0_DOMAIN }}
-                auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
+                auth0-domain: ${{ env.AUTH0_DOMAIN }}
+                auth0-client-id: ${{ env.AUTH0_CLIENT_ID }}
 
             - name: Run macOS smoke tests
               uses: ./.github/actions/smoke-tests-darwin
@@ -273,6 +281,10 @@ jobs:
         runs-on: ubuntu-latest
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
+        env:
+          AUTH0_DOMAIN: ${{ vars.AUTH0_DOMAIN }}
+          AUTH0_CLIENT_ID: ${{ vars.AUTH0_CLIENT_ID }}
+
         steps:
             - name: Checkout
               uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
@@ -282,8 +294,8 @@ jobs:
               with:
                 flutter: ${{ env.flutter }}
                 java: ${{ env.java }}
-                auth0-domain: ${{ vars.AUTH0_DOMAIN }}
-                auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
+                auth0-domain: ${{ env.AUTH0_DOMAIN }}
+                auth0-client-id: ${{ env.AUTH0_CLIENT_ID }}
 
             - name: Build Android example app
               working-directory: auth0_flutter/example
@@ -314,6 +326,8 @@ jobs:
     #     env:
     #         USER_EMAIL: ${{ secrets.USER_EMAIL }}
     #         USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
+    #         AUTH0_DOMAIN: ${{ vars.AUTH0_DOMAIN }}
+    #         AUTH0_CLIENT_ID: ${{ vars.AUTH0_CLIENT_ID }}
     #         ANDROID_EMULATOR_WAIT_TIME_BEFORE_KILL: 50
 
     #     strategy:
@@ -342,16 +356,16 @@ jobs:
     #           with:
     #             flutter: ${{ env.flutter }}
     #             java: ${{ env.java }}
-    #             auth0-domain: ${{ vars.AUTH0_DOMAIN }}
-    #             auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
+    #             auth0-domain: ${{ env.AUTH0_DOMAIN }}
+    #             auth0-client-id: ${{ env.AUTH0_CLIENT_ID }}
 
     #         - name: Build Android example app
     #           working-directory: auth0_flutter/example
     #           run: flutter build apk --split-per-abi
     #           env:
-    #             AUTH0_DOMAIN: ${{ vars.AUTH0_DOMAIN }}
-    #             USER_EMAIL: ${{ vars.USER_EMAIL }}
-    #             USER_PASSWORD: ${{ vars.USER_PASSWORD }}
+    #             AUTH0_DOMAIN: ${{ env.AUTH0_DOMAIN }}
+    #             USER_EMAIL: ${{ env.USER_EMAIL }}
+    #             USER_PASSWORD: ${{ env.USER_PASSWORD }}
 
     #         - name: Set up Appium tests
     #           working-directory: appium-test
