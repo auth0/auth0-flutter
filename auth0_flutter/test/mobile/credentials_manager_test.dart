@@ -13,11 +13,12 @@ class TestPlatform extends Mock
         MockPlatformInterfaceMixin
     implements
         CredentialsManagerPlatform {
+  static final DateTime _testExpiresAtUtc = DateTime.utc(2023, 11, 1, 22, 16, 35, 760);
   static Credentials credentials = Credentials.fromMap({
     'accessToken': 'accessToken',
     'idToken': 'idToken',
     'refreshToken': 'refreshToken',
-    'expiresAt': DateTime.now().toIso8601String(),
+    'expiresAt': _testExpiresAtUtc.toIso8601String(),
     'scopes': ['a'],
     'userProfile': {'sub': '123', 'name': 'John Doe'},
     'tokenType': 'Bearer'
@@ -55,6 +56,32 @@ void main() {
       expect(verificationResult.options?.parameters, {'a': 'b'});
     });
 
+    test('passes forceRefresh: true to the platform', () async {
+      when(mockedPlatform.getCredentials(any))
+          .thenAnswer((final _) async => TestPlatform.credentials);
+
+      await DefaultCredentialsManager(account, userAgent)
+          .credentials(forceRefresh: true, scopes: {'openid', 'profile', 'offline_access'});
+
+      final verificationResult =
+      verify(mockedPlatform.getCredentials(captureAny)).captured.single
+      as CredentialsManagerRequest<GetCredentialsOptions>;
+      expect(verificationResult.options?.forceRefresh, true);
+    });
+
+    test('passes forceRefresh: false to the platform when explicitly set', () async {
+      when(mockedPlatform.getCredentials(any))
+          .thenAnswer((final _) async => TestPlatform.credentials);
+
+      await DefaultCredentialsManager(account, userAgent)
+          .credentials(forceRefresh: false);
+
+      final verificationResult =
+      verify(mockedPlatform.getCredentials(captureAny)).captured.single
+      as CredentialsManagerRequest<GetCredentialsOptions>;
+      expect(verificationResult.options?.forceRefresh, false);
+    });
+
     test('set minTtl, scope and parameters to default value when omitted',
         () async {
       when(mockedPlatform.getCredentials(any))
@@ -69,6 +96,7 @@ void main() {
       // ignore: inference_failure_on_collection_literal
       expect(verificationResult.options?.scopes, isEmpty);
       expect(verificationResult.options?.parameters, isEmpty);
+      expect(verificationResult.options?.forceRefresh, false);
     });
   });
 
