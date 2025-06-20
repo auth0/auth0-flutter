@@ -40,6 +40,7 @@
 - Minor readme update [\#483](https://github.com/auth0/auth0-flutter/pull/483) ([pmathew92](https://github.com/pmathew92))
 - Set `compileSdk` to `34` to match Auth0.Android [\#494](https://github.com/auth0/auth0-flutter/pull/494) ([Widcket](https://github.com/Widcket))
 - Use java.time.Instant instead of java.text.SimpleDateFormat [\#469](https://github.com/auth0/auth0-flutter/pull/469) ([gferon](https://github.com/gferon))
+- Updated minimum iOS version required to 14
 
 ## [af-v1.7.2](https://github.com/auth0/auth0-flutter/tree/af-v1.7.2) (2024-05-09)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.7.1...af-v1.7.2)
