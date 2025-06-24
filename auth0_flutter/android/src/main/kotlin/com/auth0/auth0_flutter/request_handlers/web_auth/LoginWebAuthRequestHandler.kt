@@ -3,12 +3,15 @@ package com.auth0.auth0_flutter.request_handlers.web_auth
 import android.content.Context
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
+import com.auth0.android.provider.BrowserPicker
+import com.auth0.android.provider.CustomTabsOptions
 import com.auth0.android.provider.WebAuthProvider
 import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.toMap
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
+import android.util.Log
 
 class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest) -> WebAuthProvider.Builder) : WebAuthRequestHandler {
     override val method: String = "webAuth#login"
@@ -38,6 +41,12 @@ class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest
 
         if (args["invitationUrl"] is String) {
             builder.withInvitationUrl(args["invitationUrl"] as String)
+        }
+
+
+        if(args["allowedPackages"] is List<*>) {
+            builder.withCustomTabsOptions(CustomTabsOptions.newBuilder().withBrowserPicker(
+                BrowserPicker.newBuilder().withAllowedPackages(args["allowedPackages"] as List<String>).build()).build())
         }
 
         if (args["leeway"] is Int) {
