@@ -45,8 +45,14 @@ class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest
 
 
         if(args["allowedPackages"] is List<*>) {
-            builder.withCustomTabsOptions(CustomTabsOptions.newBuilder().withBrowserPicker(
-                BrowserPicker.newBuilder().withAllowedPackages(args["allowedPackages"] as List<String>).build()).build())
+            if((args["allowedPackages"] as List<String>).isNotEmpty()) {
+                builder.withCustomTabsOptions(
+                    CustomTabsOptions.newBuilder().withBrowserPicker(
+                        BrowserPicker.newBuilder()
+                            .withAllowedPackages(args["allowedPackages"] as List<String>).build()
+                    ).build()
+                )
+            }
         }
 
         if (args["leeway"] is Int) {
