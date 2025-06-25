@@ -1,7 +1,6 @@
 import 'package:flutter/services.dart';
 
-import '../user_info.dart';
-import '../credentials.dart';
+import '../../auth0_flutter_platform_interface.dart';
 import '../request/request.dart';
 import '../request/request_options.dart';
 import 'credentials_manager_exception.dart';
@@ -17,7 +16,7 @@ const String credentialsManagerSaveCredentialsMethod =
 const String credentialsManagerGetCredentialsMethod =
     'credentialsManager#getCredentials';
 const String credentialsManagerGetUserProfileMethod =
-'credentialsManager#getIDTokenContent';
+'credentialsManager#getUserInfo';
 const String credentialsManagerClearCredentialsMethod =
     'credentialsManager#clearCredentials';
 const String credentialsManagerHasValidCredentialsMethod =
