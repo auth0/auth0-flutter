@@ -45,7 +45,8 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     GetCredentialsRequestHandler(),
     SaveCredentialsRequestHandler(),
     HasValidCredentialsRequestHandler(),
-    ClearCredentialsRequestHandler()
+    ClearCredentialsRequestHandler(),
+    GetIdTokenContentRequestHandler()
   ))
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {

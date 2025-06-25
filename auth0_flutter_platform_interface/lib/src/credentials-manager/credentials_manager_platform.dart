@@ -1,6 +1,8 @@
 // coverage:ignore-file
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
+import '../../auth0_flutter_platform_interface.dart';
+import '../user_info.dart';
 import '../credentials.dart';
 import '../request/request.dart';
 import 'method_channel_credentials_manager.dart';
@@ -34,6 +36,11 @@ abstract class CredentialsManagerPlatform extends PlatformInterface {
   Future<Credentials> getCredentials(
       final CredentialsManagerRequest<GetCredentialsOptions> request) {
     throw UnimplementedError('getCredentials() has not been implemented');
+  }
+
+  /// Retrieves the credentials from the native storage.
+  Future<UserInfo> getIDTokenContents(final CredentialsManagerRequest request) {
+    throw UnimplementedError('getIDTokenContents() has not been implemented');
   }
 
   /// Removes the credentials from the native storage if present.
