@@ -10,7 +10,7 @@ import java.lang.Exception
 
 
 class GetIdTokenContentRequestHandler: CredentialsManagerRequestHandler {
-    override val method: String = "credentialsManager#getIDTokenContent"
+    override val method: String = "credentialsManager#getUserInfo"
     override fun handle(
         credentialsManager: SecureCredentialsManager,
         context: Context,

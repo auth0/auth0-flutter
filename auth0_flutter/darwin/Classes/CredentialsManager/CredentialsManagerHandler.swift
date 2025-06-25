@@ -22,6 +22,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         case hasValid = "credentialsManager#hasValidCredentials"
         case get = "credentialsManager#getCredentials"
         case clear = "credentialsManager#clearCredentials"
+        case userInfo = "credentialsManager#getUserInfo"
     }
 
     private static let channelName = "auth0.com/auth0_flutter/credentials_manager"
@@ -40,7 +41,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
 
         registrar.addMethodCallDelegate(handler, channel: channel)
     }
-    
+
       func createCredentialManager(_ apiClient: Authentication, _ arguments: [String: Any]) -> CredentialsManager {
         if let configuration = arguments["credentialsManagerConfiguration"] as? [String: Any],
            let iosConfiguration = configuration["ios"] as? [String: String] {
@@ -65,10 +66,10 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         client.using(inLibrary: userAgent.name, version: userAgent.version)
         return client
     }
-    
+
 
     lazy var credentialsManagerProvider: CredentialsManagerProvider = { apiClient, arguments in
-        
+
         var instance = CredentialsManagerHandler.credentialsManager ??
         self.createCredentialManager(apiClient,arguments)
 
@@ -89,6 +90,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         case .hasValid: return CredentialsManagerHasValidMethodHandler(credentialsManager: credentialsManager)
         case .get: return CredentialsManagerGetMethodHandler(credentialsManager: credentialsManager)
         case .clear: return CredentialsManagerClearMethodHandler(credentialsManager: credentialsManager)
+        case .userInfo: return CredentialsManagerUserInfoMethodHandler(credentialsManager: credentialsManager)
         }
     }
 
@@ -113,5 +115,5 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         let methodHandler = methodHandlerProvider(method, credentialsManager)
         methodHandler.handle(with: arguments, callback: result)
     }
-  
+
 }
