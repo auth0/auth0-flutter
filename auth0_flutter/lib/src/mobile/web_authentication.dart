@@ -81,6 +81,7 @@ class WebAuthentication {
       final String? organizationId,
       final String? invitationUrl,
       final bool useHTTPS = false,
+        final List<String> allowedPackages = const [],
       final bool useEphemeralSession = false,
       final Map<String, String> parameters = const {},
       final IdTokenValidationConfig idTokenValidationConfig =
@@ -98,10 +99,10 @@ class WebAuthentication {
             scheme: _scheme,
             useHTTPS: useHTTPS,
             useEphemeralSession: useEphemeralSession,
-            safariViewController: safariViewController)));
+            safariViewController: safariViewController,
+            allowedPackages: allowedPackages)));
 
     await _credentialsManager?.storeCredentials(credentials);
-
     return credentials;
   }
 
