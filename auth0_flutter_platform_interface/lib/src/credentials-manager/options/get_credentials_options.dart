@@ -7,11 +7,13 @@ class GetCredentialsOptions implements RequestOptions {
   final int minTtl;
   final Set<String> scopes;
   final Map<String, String> parameters;
+  final bool forceRefresh;
 
   GetCredentialsOptions({
     this.minTtl = 0,
     this.scopes = const {},
     this.parameters = const {},
+    this.forceRefresh = false,
   });
 
   @override
@@ -19,5 +21,6 @@ class GetCredentialsOptions implements RequestOptions {
         'minTtl': minTtl,
         'scopes': scopes.toList(),
         'parameters': parameters,
+        'forceRefresh': forceRefresh,
       };
 }
