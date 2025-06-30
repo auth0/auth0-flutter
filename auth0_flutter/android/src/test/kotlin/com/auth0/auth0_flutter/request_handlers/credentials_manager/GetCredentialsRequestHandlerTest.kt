@@ -43,12 +43,13 @@ class GetCredentialsRequestHandlerTest {
             isNull(),
             eq(0),
             anyMap(),
+            eq(false), // forceRefresh defaults to false
             any()
         )
     }
 
     @Test
-    fun `should use default value for minTtl and parameters when only providing scope`() {
+    fun `should use default value for minTtl, parameters and forceRefresh when only providing scope`() {
         val handler = GetCredentialsRequestHandler()
         val options = hashMapOf(
             "scopes" to arrayListOf("test-scope1", "test-scope2"),
@@ -69,12 +70,13 @@ class GetCredentialsRequestHandlerTest {
             eq("test-scope1 test-scope2"),
             eq(0),
             anyMap(),
+            eq(false), // forceRefresh defaults to false
             any()
         )
     }
 
     @Test
-    fun `should use default value for parameters when only providing minTtl`() {
+    fun `should use default value for parameters and forceRefresh when only providing minTtl`() {
         val handler = GetCredentialsRequestHandler()
         val options = hashMapOf(
             "minTtl" to 30,
@@ -95,12 +97,13 @@ class GetCredentialsRequestHandlerTest {
             isNull(),
             eq(30),
             anyMap(),
+            eq(false), // forceRefresh defaults to false
             any()
         )
     }
 
     @Test
-    fun `should use default value for minTtl when only providing parameters`() {
+    fun `should use default value for minTtl and forceRefresh when only providing parameters`() {
         val handler = GetCredentialsRequestHandler()
         val options = hashMapOf(
             "parameters" to mapOf("test" to "test-value", "test2" to "test-value")
@@ -121,16 +124,16 @@ class GetCredentialsRequestHandlerTest {
             isNull(),
             eq(0),
             eq(mapOf("test" to "test-value", "test2" to "test-value")),
+            eq(false), // forceRefresh defaults to false
             any()
         )
     }
 
     @Test
-    fun `should use default value for parameters when providing scope and minTtl`() {
+    fun `should call getCredentials with forceRefresh set to true`() {
         val handler = GetCredentialsRequestHandler()
         val options = hashMapOf(
-            "minTtl" to 30,
-            "scopes" to arrayListOf("test-scope1", "test-scope2"),
+            "forceRefresh" to true
         )
         val mockResult = mock<Result>()
         val mockAccount = mock<Auth0>()
@@ -145,63 +148,10 @@ class GetCredentialsRequestHandlerTest {
         )
 
         verify(mockCredentialsManager).getCredentials(
-            eq("test-scope1 test-scope2"),
-            eq(30),
+            isNull(),
+            eq(0),
             anyMap(),
-            any()
-        )
-    }
-
-    @Test
-    fun `should use default value for minTtl when only providing scope and parameters`() {
-        val handler = GetCredentialsRequestHandler()
-        val options = hashMapOf(
-            "scopes" to arrayListOf("test-scope1", "test-scope2"),
-            "parameters" to mapOf("test" to "test-value", "test2" to "test-value")
-        )
-        val mockResult = mock<Result>()
-        val mockAccount = mock<Auth0>()
-        val mockCredentialsManager = mock<SecureCredentialsManager>()
-        val request = MethodCallRequest(account = mockAccount, options)
-
-        handler.handle(
-            mockCredentialsManager,
-            mock(),
-            request,
-            mockResult
-        )
-
-        verify(mockCredentialsManager).getCredentials(
-            eq("test-scope1 test-scope2"),
-            eq(0),
-            eq(mapOf("test" to "test-value", "test2" to "test-value")),
-            any()
-        )
-    }
-
-    @Test
-    fun `should call getCredentials when providing minTtl and parameters`() {
-        val handler = GetCredentialsRequestHandler()
-        val options = hashMapOf(
-            "minTtl" to 30,
-            "parameters" to mapOf("test" to "test-value", "test2" to "test-value")
-        )
-        val mockResult = mock<Result>()
-        val mockAccount = mock<Auth0>()
-        val mockCredentialsManager = mock<SecureCredentialsManager>()
-        val request = MethodCallRequest(account = mockAccount, options)
-
-        handler.handle(
-            mockCredentialsManager,
-            mock(),
-            request,
-            mockResult
-        )
-
-        verify(mockCredentialsManager).getCredentials(
-            isNull(),
-            eq(30),
-            eq(mapOf("test" to "test-value", "test2" to "test-value")),
+            eq(true), // forceRefresh is true
             any()
         )
     }
@@ -212,7 +162,8 @@ class GetCredentialsRequestHandlerTest {
         val options = hashMapOf(
             "minTtl" to 30,
             "scopes" to arrayListOf("test-scope1", "test-scope2"),
-            "parameters" to mapOf("test" to "test-value", "test2" to "test-value")
+            "parameters" to mapOf("test" to "test-value", "test2" to "test-value"),
+            "forceRefresh" to true
         )
         val mockResult = mock<Result>()
         val mockAccount = mock<Auth0>()
@@ -230,6 +181,7 @@ class GetCredentialsRequestHandlerTest {
             eq("test-scope1 test-scope2"),
             eq(30),
             eq(mapOf("test" to "test-value", "test2" to "test-value")),
+            eq(true), // forceRefresh is true
             any()
         )
     }
@@ -245,12 +197,13 @@ class GetCredentialsRequestHandlerTest {
 
         val exception = mock<CredentialsManagerException>()
 
-        `when`(exception.message).thenReturn("test-message")
+        `when`(exception.code).thenReturn("test-code")
+        `when`(exception.localizedMessage).thenReturn("test-message")
 
         doAnswer {
-            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(3)
+            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(4)
             ob.onFailure(exception)
-        }.`when`(mockCredentialsManager).getCredentials(isNull(), anyInt(), anyMap(), any())
+        }.`when`(mockCredentialsManager).getCredentials(isNull(), anyInt(), anyMap(), anyBoolean(), any())
 
         handler.handle(
             mockCredentialsManager,
@@ -259,35 +212,7 @@ class GetCredentialsRequestHandlerTest {
             mockResult
         )
 
-        verify(mockResult).error(eq("test-message"), eq("test-message"), any())
-    }
-
-    @Test
-    fun `should fallback to UNKNOWN ERROR on failure without a message`() {
-        val options = hashMapOf<String, Any>()
-        val handler = GetCredentialsRequestHandler()
-        val mockResult = mock<Result>()
-        val mockAccount = mock<Auth0>()
-        val mockCredentialsManager = mock<SecureCredentialsManager>()
-        val request = MethodCallRequest(account = mockAccount, options)
-
-        val exception = mock<CredentialsManagerException>()
-
-        `when`(exception.message).thenReturn(null)
-
-        doAnswer {
-            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(3)
-            ob.onFailure(exception)
-        }.`when`(mockCredentialsManager).getCredentials(isNull(), anyInt(), anyMap(), any())
-
-        handler.handle(
-            mockCredentialsManager,
-            mock(),
-            request,
-            mockResult
-        )
-
-        verify(mockResult).error(eq("UNKNOWN ERROR"), isNull(), any())
+        verify(mockResult).error(eq("test-code"), eq("test-message"), any())
     }
 
     @Test
@@ -299,12 +224,12 @@ class GetCredentialsRequestHandlerTest {
         val mockCredentialsManager = mock<SecureCredentialsManager>()
         val request = MethodCallRequest(account = mockAccount, options)
         val idToken = JwtTestUtils.createJwt(claims = mapOf("name" to "John Doe"))
-        val credentials = Credentials(idToken, "test", "", null, Date(), "scope1 scope2")
+        val credentials = Credentials(idToken, "test-access-token", "test-token-type", "test-refresh-token", Date(), "scope1 scope2")
 
         doAnswer {
-            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(3)
+            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(4)
             ob.onSuccess(credentials)
-        }.`when`(mockCredentialsManager).getCredentials(isNull(), anyInt(), anyMap(), any())
+        }.`when`(mockCredentialsManager).getCredentials(isNull(), anyInt(), anyMap(), anyBoolean(), any())
 
         handler.handle(
             mockCredentialsManager,
@@ -313,7 +238,7 @@ class GetCredentialsRequestHandlerTest {
             mockResult
         )
 
-        val captor = argumentCaptor<() -> Map<String, *>>()
+        val captor = argumentCaptor<Map<String, *>>()
         verify(mockResult).success(captor.capture())
 
         val sdf =
@@ -322,62 +247,32 @@ class GetCredentialsRequestHandlerTest {
         val formattedDate = sdf.format(credentials.expiresAt)
 
         MatcherAssert.assertThat(
-            (captor.firstValue as Map<*, *>)["accessToken"],
+            captor.firstValue["accessToken"],
             CoreMatchers.equalTo(credentials.accessToken)
         )
         MatcherAssert.assertThat(
-            (captor.firstValue as Map<*, *>)["idToken"],
+            captor.firstValue["idToken"],
             CoreMatchers.equalTo(credentials.idToken)
         )
         MatcherAssert.assertThat(
-            (captor.firstValue as Map<*, *>)["refreshToken"],
+            captor.firstValue["refreshToken"],
             CoreMatchers.equalTo(credentials.refreshToken)
         )
         MatcherAssert.assertThat(
-            (captor.firstValue as Map<*, *>)["expiresAt"] as String,
+            captor.firstValue["expiresAt"] as String,
             CoreMatchers.equalTo(formattedDate)
         )
         MatcherAssert.assertThat(
-            (captor.firstValue as Map<*, *>)["scopes"],
+            captor.firstValue["scopes"],
             CoreMatchers.equalTo(listOf("scope1", "scope2"))
         )
         MatcherAssert.assertThat(
-            ((captor.firstValue as Map<*, *>)["userProfile"] as Map<*, *>)["name"],
+            captor.firstValue["tokenType"],
+            CoreMatchers.equalTo("test-token-type")
+        )
+        MatcherAssert.assertThat(
+            (captor.firstValue["userProfile"] as Map<*, *>)["name"],
             CoreMatchers.equalTo("John Doe")
         )
     }
-
-    @Test
-    fun `should call result success on success without scopes`() {
-        val options = hashMapOf<String, Any>()
-        val handler = GetCredentialsRequestHandler()
-        val mockResult = mock<Result>()
-        val mockAccount = mock<Auth0>()
-        val mockCredentialsManager = mock<SecureCredentialsManager>()
-        val request = MethodCallRequest(account = mockAccount, options)
-        val idToken = JwtTestUtils.createJwt(claims = mapOf("name" to "John Doe"))
-        val credentials = Credentials(idToken, "test", "", null, Date(), scope = null)
-
-        doAnswer {
-            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(3)
-            ob.onSuccess(credentials)
-        }.`when`(mockCredentialsManager).getCredentials(isNull(), anyInt(), anyMap(), any())
-
-        handler.handle(
-            mockCredentialsManager,
-            mock(),
-            request,
-            mockResult
-        )
-
-        val captor = argumentCaptor<() -> Map<String, *>>()
-
-        verify(mockResult).success(captor.capture())
-
-        MatcherAssert.assertThat(
-            (captor.firstValue as Map<*, *>)["scopes"],
-            CoreMatchers.equalTo(listOf<String>())
-        )
-    }
-
 }

@@ -72,6 +72,15 @@ class MockTestPlatform extends _i1.Mock implements _i3.TestPlatform {
         returnValue: _i4.Future<void>.value(),
         returnValueForMissingStub: _i4.Future<void>.value(),
       ) as _i4.Future<void>);
+
+  @override
+  void cancel() => super.noSuchMethod(
+        Invocation.method(
+          #cancel,
+          [],
+        ),
+        returnValueForMissingStub: null,
+      );
 }
 
 /// A class which mocks [TestCMPlatform].
@@ -145,20 +154,20 @@ class MockCredentialsManager extends _i1.Mock
 
   @override
   _i4.Future<_i2.Credentials> credentials({
-    int? minTtl = 0,
-    Set<String>? scopes = const {},
-    Map<String, String>? parameters = const {},
     bool? forceRefresh = false,
+    int? minTtl = 0,
+    Map<String, String>? parameters = const {},
+    Set<String>? scopes = const {},
   }) =>
       (super.noSuchMethod(
         Invocation.method(
           #credentials,
           [],
           {
-            #minTtl: minTtl,
-            #scopes: scopes,
-            #parameters: parameters,
             #forceRefresh: forceRefresh,
+            #minTtl: minTtl,
+            #parameters: parameters,
+            #scopes: scopes,
           },
         ),
         returnValue: _i4.Future<_i2.Credentials>.value(_FakeCredentials_0(
@@ -167,10 +176,10 @@ class MockCredentialsManager extends _i1.Mock
             #credentials,
             [],
             {
-              #minTtl: minTtl,
-              #scopes: scopes,
-              #parameters: parameters,
               #forceRefresh: forceRefresh,
+              #minTtl: minTtl,
+              #parameters: parameters,
+              #scopes: scopes,
             },
           ),
         )),

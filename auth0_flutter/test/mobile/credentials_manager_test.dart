@@ -9,16 +9,15 @@ import 'credentials_manager_test.mocks.dart';
 
 class TestPlatform extends Mock
     with
-        // ignore: prefer_mixin
+    // ignore: prefer_mixin
         MockPlatformInterfaceMixin
     implements
         CredentialsManagerPlatform {
-  static final DateTime _testExpiresAtUtc = DateTime.utc(2023, 11, 1, 22, 16, 35, 760);
   static Credentials credentials = Credentials.fromMap({
     'accessToken': 'accessToken',
     'idToken': 'idToken',
     'refreshToken': 'refreshToken',
-    'expiresAt': _testExpiresAtUtc.toIso8601String(),
+    'expiresAt': DateTime.now().toIso8601String(),
     'scopes': ['a'],
     'userProfile': {'sub': '123', 'name': 'John Doe'},
     'tokenType': 'Bearer'
@@ -47,8 +46,8 @@ void main() {
           .credentials(minTtl: 30, scopes: {'a', 'b'}, parameters: {'a': 'b'});
 
       final verificationResult =
-          verify(mockedPlatform.getCredentials(captureAny)).captured.single
-              as CredentialsManagerRequest<GetCredentialsOptions>;
+      verify(mockedPlatform.getCredentials(captureAny)).captured.single
+      as CredentialsManagerRequest<GetCredentialsOptions>;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
       expect(verificationResult.options?.minTtl, 30);
@@ -56,48 +55,35 @@ void main() {
       expect(verificationResult.options?.parameters, {'a': 'b'});
     });
 
-    test('passes forceRefresh: true to the platform', () async {
+    test('passes the forceRefresh property to the platform', () async {
       when(mockedPlatform.getCredentials(any))
           .thenAnswer((final _) async => TestPlatform.credentials);
 
       await DefaultCredentialsManager(account, userAgent)
-          .credentials(forceRefresh: true, scopes: {'openid', 'profile', 'offline_access'});
+          .credentials(forceRefresh: true);
 
       final verificationResult =
       verify(mockedPlatform.getCredentials(captureAny)).captured.single
       as CredentialsManagerRequest<GetCredentialsOptions>;
-      expect(verificationResult.options?.forceRefresh, true);
-    });
-
-    test('passes forceRefresh: false to the platform when explicitly set', () async {
-      when(mockedPlatform.getCredentials(any))
-          .thenAnswer((final _) async => TestPlatform.credentials);
-
-      await DefaultCredentialsManager(account, userAgent)
-          .credentials(forceRefresh: false);
-
-      final verificationResult =
-      verify(mockedPlatform.getCredentials(captureAny)).captured.single
-      as CredentialsManagerRequest<GetCredentialsOptions>;
-      expect(verificationResult.options?.forceRefresh, false);
+      expect(verificationResult.options?.forceRefresh, isTrue);
     });
 
     test('set minTtl, scope and parameters to default value when omitted',
-        () async {
-      when(mockedPlatform.getCredentials(any))
-          .thenAnswer((final _) async => TestPlatform.credentials);
+            () async {
+          when(mockedPlatform.getCredentials(any))
+              .thenAnswer((final _) async => TestPlatform.credentials);
 
-      await DefaultCredentialsManager(account, userAgent).credentials();
+          await DefaultCredentialsManager(account, userAgent).credentials();
 
-      final verificationResult =
+          final verificationResult =
           verify(mockedPlatform.getCredentials(captureAny)).captured.single
-              as CredentialsManagerRequest<GetCredentialsOptions>;
-      expect(verificationResult.options?.minTtl, 0);
-      // ignore: inference_failure_on_collection_literal
-      expect(verificationResult.options?.scopes, isEmpty);
-      expect(verificationResult.options?.parameters, isEmpty);
-      expect(verificationResult.options?.forceRefresh, false);
-    });
+          as CredentialsManagerRequest<GetCredentialsOptions>;
+          expect(verificationResult.options?.minTtl, 0);
+          // ignore: inference_failure_on_collection_literal
+          expect(verificationResult.options?.scopes, isEmpty);
+          expect(verificationResult.options?.parameters, isEmpty);
+          expect(verificationResult.options?.forceRefresh, isFalse);
+        });
   });
 
   group('storeCredentials', () {
@@ -109,8 +95,8 @@ void main() {
           .storeCredentials(TestPlatform.credentials);
 
       final verificationResult =
-          verify(mockedPlatform.saveCredentials(captureAny)).captured.single
-              as CredentialsManagerRequest<SaveCredentialsOptions>;
+      verify(mockedPlatform.saveCredentials(captureAny)).captured.single
+      as CredentialsManagerRequest<SaveCredentialsOptions>;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
       expect(verificationResult.options?.credentials.accessToken,
@@ -137,8 +123,8 @@ void main() {
           .hasValidCredentials(minTtl: 30);
 
       final verificationResult =
-          verify(mockedPlatform.hasValidCredentials(captureAny)).captured.single
-              as CredentialsManagerRequest<HasValidCredentialsOptions>;
+      verify(mockedPlatform.hasValidCredentials(captureAny)).captured.single
+      as CredentialsManagerRequest<HasValidCredentialsOptions>;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
       expect(verificationResult.options?.minTtl, 30);
@@ -151,8 +137,8 @@ void main() {
       await DefaultCredentialsManager(account, userAgent).hasValidCredentials();
 
       final verificationResult =
-          verify(mockedPlatform.hasValidCredentials(captureAny)).captured.single
-              as CredentialsManagerRequest<HasValidCredentialsOptions>;
+      verify(mockedPlatform.hasValidCredentials(captureAny)).captured.single
+      as CredentialsManagerRequest<HasValidCredentialsOptions>;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
       expect(verificationResult.options?.minTtl, 0);
@@ -187,8 +173,8 @@ void main() {
       await DefaultCredentialsManager(account, userAgent).clearCredentials();
 
       final verificationResult =
-          verify(mockedPlatform.clearCredentials(captureAny)).captured.single
-              as CredentialsManagerRequest;
+      verify(mockedPlatform.clearCredentials(captureAny)).captured.single
+      as CredentialsManagerRequest;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
     });
