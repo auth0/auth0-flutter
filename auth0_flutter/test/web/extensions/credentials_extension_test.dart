@@ -1,4 +1,4 @@
-@Tags(['browser'])
+@TestOn('browser')
 
 import 'dart:js_interop';
 import 'package:auth0_flutter/src/web/extensions/credentials_extension.dart';

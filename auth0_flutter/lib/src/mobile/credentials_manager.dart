@@ -4,9 +4,10 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 /// CredentialManager.
 abstract class CredentialsManager {
   Future<Credentials> credentials({
+    final bool forceRefresh = false,
     final int minTtl = 0,
-    final Set<String> scopes = const {},
     final Map<String, String> parameters = const {},
+    final Set<String> scopes = const {},
   });
 
   Future<bool> storeCredentials(final Credentials credentials);
@@ -44,15 +45,17 @@ class DefaultCredentialsManager extends CredentialsManager {
   /// request to refresh expired credentials.
   @override
   Future<Credentials> credentials({
+    final bool forceRefresh = false,
     final int minTtl = 0,
-    final Set<String> scopes = const {},
     final Map<String, String> parameters = const {},
+    final Set<String> scopes = const {},
   }) =>
       CredentialsManagerPlatform.instance
           .getCredentials(_createApiRequest(GetCredentialsOptions(
         minTtl: minTtl,
         scopes: scopes,
         parameters: parameters,
+        forceRefresh: forceRefresh,
       )));
 
   /// Stores the given credentials in the storage. Must have an `access_token`

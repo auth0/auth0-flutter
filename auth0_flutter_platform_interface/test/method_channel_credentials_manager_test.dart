@@ -24,7 +24,7 @@ class MethodCallHandler {
 @GenerateMocks([MethodCallHandler])
 void main() {
   const MethodChannel channel =
-      MethodChannel('auth0.com/auth0_flutter/credentials_manager');
+  MethodChannel('auth0.com/auth0_flutter/credentials_manager');
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -63,14 +63,13 @@ void main() {
 
       await MethodChannelCredentialsManager()
           .getCredentials(CredentialsManagerRequest<GetCredentialsOptions>(
-              account: const Account('test-domain', 'test-clientId'),
-              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: GetCredentialsOptions(
-                minTtl: 30,
-                scopes: {'test-scope1', 'test-scope2'},
-                parameters: {'test': 'test-123'},
-                forceRefresh: true,
-              )));
+          account: const Account('test-domain', 'test-clientId'),
+          userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+          options: GetCredentialsOptions(
+            minTtl: 30,
+            scopes: {'test-scope1', 'test-scope2'},
+            parameters: {'test': 'test-123'},
+          )));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -84,45 +83,43 @@ void main() {
       expect(verificationResult.arguments['scopes'],
           ['test-scope1', 'test-scope2']);
       expect(verificationResult.arguments['parameters']['test'], 'test-123');
+    });
+
+    test('correctly includes the forceRefresh property', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.credentials);
+
+      await MethodChannelCredentialsManager()
+          .getCredentials(CredentialsManagerRequest<GetCredentialsOptions>(
+        account: const Account('test-domain', 'test-clientId'),
+        userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+        options: GetCredentialsOptions(forceRefresh: true),
+      ));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
       expect(verificationResult.arguments['forceRefresh'], true);
     });
 
     test(
         'correctly assigns default values to all non-required properties when missing',
-        () async {
-      when(mocked.methodCallHandler(any))
-          .thenAnswer((final _) async => MethodCallHandler.credentials);
+            () async {
+          when(mocked.methodCallHandler(any))
+              .thenAnswer((final _) async => MethodCallHandler.credentials);
 
-      await MethodChannelCredentialsManager().getCredentials(
-          CredentialsManagerRequest<GetCredentialsOptions>(
-              account: const Account('', ''),
-              userAgent: UserAgent(name: '', version: ''),
-              options: GetCredentialsOptions()));
+          await MethodChannelCredentialsManager().getCredentials(
+              CredentialsManagerRequest<GetCredentialsOptions>(
+                  account: const Account('', ''),
+                  userAgent: UserAgent(name: '', version: ''),
+                  options: GetCredentialsOptions()));
 
-      final verificationResult =
-          verify(mocked.methodCallHandler(captureAny)).captured.single;
-      expect(verificationResult.arguments['minTtl'], 0);
-      expect(verificationResult.arguments['scopes'], isEmpty);
-      expect(verificationResult.arguments['parameters'], isEmpty);
-      expect(verificationResult.arguments['forceRefresh'], false);
-    });
-
-    test('correctly maps forceRefresh when set to false', () async {
-      when(mocked.methodCallHandler(any))
-          .thenAnswer((final _) async => MethodCallHandler.credentials);
-
-      await MethodChannelCredentialsManager().getCredentials(
-          CredentialsManagerRequest<GetCredentialsOptions>(
-              account: const Account('test-domain', 'test-clientId'),
-              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: GetCredentialsOptions(
-                forceRefresh: false,
-              )));
-
-      final verificationResult =
-          verify(mocked.methodCallHandler(captureAny)).captured.single;
-      expect(verificationResult.arguments['forceRefresh'], false);
-    });
+          final verificationResult =
+              verify(mocked.methodCallHandler(captureAny)).captured.single;
+          expect(verificationResult.arguments['minTtl'], 0);
+          expect(verificationResult.arguments['scopes'], isEmpty);
+          expect(verificationResult.arguments['parameters'], isEmpty);
+          expect(verificationResult.arguments['forceRefresh'], false);
+        });
 
     test('correctly includes the local authentication settings', () async {
       when(mocked.methodCallHandler(any))
@@ -152,60 +149,91 @@ void main() {
           'test-fallback-title');
     });
 
-    test('correctly includes the credential manager configuration settings', () async {
-      when(mocked.methodCallHandler(any))
-          .thenAnswer((final _) async => MethodCallHandler.credentials);
+    test('correctly includes the credential manager configuration settings',
+            () async {
+          when(mocked.methodCallHandler(any))
+              .thenAnswer((final _) async => MethodCallHandler.credentials);
 
-      await MethodChannelCredentialsManager().getCredentials(
-          CredentialsManagerRequest<GetCredentialsOptions>(
-              account: const Account('', ''),
-              userAgent: UserAgent(name: '', version: ''),
-              options: GetCredentialsOptions(),
-              credentialsManagerConfiguration: CredentialsManagerConfiguration(
-                  iosConfiguration: IOSCredentialsConfiguration(
-                      storeKey: 'test-store-key',
-                      accessGroup: 'test-access-group',
-                      accessibility: Accessibility.whenUnlocked
-                  ),
-                  androidConfiguration: AndroidCredentialsConfiguration(
-                       'test-shared-preferences'
-                  ))));
+          await MethodChannelCredentialsManager().getCredentials(
+              CredentialsManagerRequest<GetCredentialsOptions>(
+                  account: const Account('', ''),
+                  userAgent: UserAgent(name: '', version: ''),
+                  options: GetCredentialsOptions(),
+                  credentialsManagerConfiguration: CredentialsManagerConfiguration(
+                      iosConfiguration: IOSCredentialsConfiguration(
+                          storeKey: 'test-store-key',
+                          accessGroup: 'test-access-group',
+                          accessibility: Accessibility.whenUnlocked),
+                      androidConfiguration: AndroidCredentialsConfiguration(
+                          'test-shared-preferences'))));
 
-      final verificationResult =
-          verify(mocked.methodCallHandler(captureAny)).captured.single;
-      expect(verificationResult.arguments['credentialsManagerConfiguration'], isNotNull);
-      expect(verificationResult.arguments['credentialsManagerConfiguration']['ios'], isNotNull);
-      expect(verificationResult.arguments['credentialsManagerConfiguration']['ios']['storeKey'], 'test-store-key');
-      expect(verificationResult.arguments['credentialsManagerConfiguration']['ios']['accessGroup'], 'test-access-group');
-      expect(verificationResult.arguments['credentialsManagerConfiguration']['ios']['accessibility'], 'whenUnlocked');
-      expect(verificationResult.arguments['credentialsManagerConfiguration']['android'], isNotNull);
-      expect(verificationResult.arguments['credentialsManagerConfiguration']['android']['sharedPreferencesName'], 'test-shared-preferences');
-    });
+          final verificationResult =
+              verify(mocked.methodCallHandler(captureAny)).captured.single;
+          expect(verificationResult.arguments['credentialsManagerConfiguration'],
+              isNotNull);
+          expect(verificationResult
+              .arguments['credentialsManagerConfiguration']['ios'], isNotNull);
+          expect(
+              verificationResult.arguments['credentialsManagerConfiguration']['ios']
+              ['storeKey'],
+              'test-store-key');
+          expect(
+              verificationResult.arguments['credentialsManagerConfiguration']['ios']
+              ['accessGroup'],
+              'test-access-group');
+          expect(
+              verificationResult.arguments['credentialsManagerConfiguration']['ios']
+              ['accessibility'],
+              'whenUnlocked');
+          expect(
+              verificationResult
+                  .arguments['credentialsManagerConfiguration']['android'],
+              isNotNull);
+          expect(
+              verificationResult.arguments['credentialsManagerConfiguration']
+              ['android']['sharedPreferencesName'],
+              'test-shared-preferences');
+        });
 
-    test('correctly includes the optional parameters of credential manager configuration settings', () async {
-      when(mocked.methodCallHandler(any))
-          .thenAnswer((final _) async => MethodCallHandler.credentials);
+    test(
+        'correctly includes the optional parameters of credential manager configuration settings',
+            () async {
+          when(mocked.methodCallHandler(any))
+              .thenAnswer((final _) async => MethodCallHandler.credentials);
 
-      await MethodChannelCredentialsManager().getCredentials(
-          CredentialsManagerRequest<GetCredentialsOptions>(
-              account: const Account('', ''),
-              userAgent: UserAgent(name: '', version: ''),
-              options: GetCredentialsOptions(),
-              credentialsManagerConfiguration: CredentialsManagerConfiguration(
-                  iosConfiguration: IOSCredentialsConfiguration(
-                      accessGroup: 'test-access-group',
-                  ),
-              )));
+          await MethodChannelCredentialsManager().getCredentials(
+              CredentialsManagerRequest<GetCredentialsOptions>(
+                account: const Account('', ''),
+                userAgent: UserAgent(name: '', version: ''),
+                options: GetCredentialsOptions(),
+                credentialsManagerConfiguration: CredentialsManagerConfiguration(
+                    iosConfiguration:
+                    IOSCredentialsConfiguration(accessGroup: 'test-access-group')),
+              ));
 
-      final verificationResult =
-          verify(mocked.methodCallHandler(captureAny)).captured.single;
-      expect(verificationResult.arguments['credentialsManagerConfiguration'], isNotNull);
-      expect(verificationResult.arguments['credentialsManagerConfiguration']['ios'], isNotNull);
-      expect(verificationResult.arguments['credentialsManagerConfiguration']['ios']['storeKey'], isNull);
-      expect(verificationResult.arguments['credentialsManagerConfiguration']['ios']['accessGroup'], 'test-access-group');
-      expect(verificationResult.arguments['credentialsManagerConfiguration']['ios']['accessibility'], isNull);
-      expect(verificationResult.arguments['credentialsManagerConfiguration']['android'], isNull);
-    });
+          final verificationResult =
+              verify(mocked.methodCallHandler(captureAny)).captured.single;
+          expect(verificationResult.arguments['credentialsManagerConfiguration'],
+              isNotNull);
+          expect(verificationResult
+              .arguments['credentialsManagerConfiguration']['ios'], isNotNull);
+          expect(
+              verificationResult.arguments['credentialsManagerConfiguration']['ios']
+              ['storeKey'],
+              isNull);
+          expect(
+              verificationResult.arguments['credentialsManagerConfiguration']['ios']
+              ['accessGroup'],
+              'test-access-group');
+          expect(
+              verificationResult.arguments['credentialsManagerConfiguration']['ios']
+              ['accessibility'],
+              isNull);
+          expect(
+              verificationResult
+                  .arguments['credentialsManagerConfiguration']['android'],
+              isNull);
+        });
 
     test('correctly returns the response from the Method Channel', () async {
       when(mocked.methodCallHandler(any))
@@ -213,13 +241,13 @@ void main() {
 
       final result = await MethodChannelCredentialsManager()
           .getCredentials(CredentialsManagerRequest<GetCredentialsOptions>(
-              account: const Account('test-domain', 'test-clientId'),
-              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: GetCredentialsOptions(
-                minTtl: 30,
-                scopes: {'test-scope1', 'test-scope2'},
-                parameters: {'test': 'test-123'},
-              )));
+          account: const Account('test-domain', 'test-clientId'),
+          userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+          options: GetCredentialsOptions(
+            minTtl: 30,
+            scopes: {'test-scope1', 'test-scope2'},
+            parameters: {'test': 'test-123'},
+          )));
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -235,46 +263,46 @@ void main() {
 
     test(
         'throws a CredentialsManagerException when method channel returns null',
-        () async {
-      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+            () async {
+          when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
-      Future<Credentials> actual() async {
-        final result = await MethodChannelCredentialsManager().getCredentials(
-            CredentialsManagerRequest<GetCredentialsOptions>(
-                account: const Account('', ''),
-                userAgent:
+          Future<Credentials> actual() async {
+            final result = await MethodChannelCredentialsManager().getCredentials(
+                CredentialsManagerRequest<GetCredentialsOptions>(
+                    account: const Account('', ''),
+                    userAgent:
                     UserAgent(name: 'test-name', version: 'test-version'),
-                options: GetCredentialsOptions()));
+                    options: GetCredentialsOptions()));
 
-        return result;
-      }
+            return result;
+          }
 
-      expectLater(
-          actual,
-          throwsA(predicate((final e) =>
+          expectLater(
+              actual,
+              throwsA(predicate((final e) =>
               e is CredentialsManagerException &&
-              e.message == 'Channel returned null.')));
-    });
+                  e.message == 'Channel returned null.')));
+        });
 
     test(
         'throws an ApiException when method channel throws a PlatformException',
-        () async {
-      when(mocked.methodCallHandler(any))
-          .thenThrow(PlatformException(code: '123'));
+            () async {
+          when(mocked.methodCallHandler(any))
+              .thenThrow(PlatformException(code: '123'));
 
-      Future<Credentials> actual() async {
-        final result = await MethodChannelCredentialsManager().getCredentials(
-            CredentialsManagerRequest<GetCredentialsOptions>(
-                account: const Account('', ''),
-                userAgent:
+          Future<Credentials> actual() async {
+            final result = await MethodChannelCredentialsManager().getCredentials(
+                CredentialsManagerRequest<GetCredentialsOptions>(
+                    account: const Account('', ''),
+                    userAgent:
                     UserAgent(name: 'test-name', version: 'test-version'),
-                options: GetCredentialsOptions()));
+                    options: GetCredentialsOptions()));
 
-        return result;
-      }
+            return result;
+          }
 
-      await expectLater(actual, throwsA(isA<CredentialsManagerException>()));
-    });
+          await expectLater(actual, throwsA(isA<CredentialsManagerException>()));
+        });
   });
 
   group('saveCredentials', () {
@@ -349,66 +377,66 @@ void main() {
 
     test(
         'throws a CredentialsManagerException when method channel throws a PlatformException',
-        () async {
-      when(mocked.methodCallHandler(any))
-          .thenThrow(PlatformException(code: '123'));
+            () async {
+          when(mocked.methodCallHandler(any))
+              .thenThrow(PlatformException(code: '123'));
 
-      final credentials = Credentials.fromMap({
-        'accessToken': 'accessToken',
-        'idToken': 'idToken',
-        'refreshToken': 'refreshToken',
-        'expiresAt': DateTime.now().toIso8601String(),
-        'scopes': ['a'],
-        'userProfile': {'sub': '123', 'name': 'John Doe'},
-        'tokenType': 'Bearer',
-      });
+          final credentials = Credentials.fromMap({
+            'accessToken': 'accessToken',
+            'idToken': 'idToken',
+            'refreshToken': 'refreshToken',
+            'expiresAt': DateTime.now().toIso8601String(),
+            'scopes': ['a'],
+            'userProfile': {'sub': '123', 'name': 'John Doe'},
+            'tokenType': 'Bearer',
+          });
 
-      Future<bool> actual() async {
-        final result = await MethodChannelCredentialsManager().saveCredentials(
-            CredentialsManagerRequest<SaveCredentialsOptions>(
-                account: const Account('', ''),
-                userAgent:
+          Future<bool> actual() async {
+            final result = await MethodChannelCredentialsManager().saveCredentials(
+                CredentialsManagerRequest<SaveCredentialsOptions>(
+                    account: const Account('', ''),
+                    userAgent:
                     UserAgent(name: 'test-name', version: 'test-version'),
-                options: SaveCredentialsOptions(credentials: credentials)));
+                    options: SaveCredentialsOptions(credentials: credentials)));
 
-        return result;
-      }
+            return result;
+          }
 
-      await expectLater(actual, throwsA(isA<CredentialsManagerException>()));
-    });
+          await expectLater(actual, throwsA(isA<CredentialsManagerException>()));
+        });
 
     test(
         'throws a CredentialsManagerException when method channel returns null',
-        () async {
-      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+            () async {
+          when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
-      final credentials = Credentials.fromMap({
-        'accessToken': 'accessToken',
-        'idToken': 'idToken',
-        'refreshToken': 'refreshToken',
-        'expiresAt': DateTime.now().toIso8601String(),
-        'scopes': ['a'],
-        'userProfile': {'sub': '123', 'name': 'John Doe'},
-        'tokenType': 'Bearer',
-      });
+          final credentials = Credentials.fromMap({
+            'accessToken': 'accessToken',
+            'idToken': 'idToken',
+            'refreshToken': 'refreshToken',
+            'expiresAt': DateTime.now().toIso8601String(),
+            'scopes': ['a'],
+            'userProfile': {'sub': '123', 'name': 'John Doe'},
+            'tokenType': 'Bearer',
+          });
 
-      Future<bool> actual() async {
-        final result = await MethodChannelCredentialsManager().saveCredentials(
-            CredentialsManagerRequest<SaveCredentialsOptions>(
-                account: const Account('', ''),
-                userAgent:
+          Future<bool> actual() async {
+            final result = await MethodChannelCredentialsManager().saveCredentials(
+                CredentialsManagerRequest<SaveCredentialsOptions>(
+                    account: const Account('', ''),
+                    userAgent:
                     UserAgent(name: 'test-name', version: 'test-version'),
-                options: SaveCredentialsOptions(credentials: credentials)));
+                    options: SaveCredentialsOptions(credentials: credentials)));
 
-        return result;
-      }
+            return result;
+          }
 
-      expectLater(
-          actual,
-          throwsA(predicate((final e) =>
+          expectLater(
+              actual,
+              throwsA(predicate((final e) =>
               e is CredentialsManagerException &&
-              e.message == 'Channel returned null.')));
-    });
+                  e.message == 'Channel returned null.')));
+        });
   });
 
   group('hasValidCredentials', () {
@@ -452,11 +480,11 @@ void main() {
 
       final result = await MethodChannelCredentialsManager()
           .hasValidCredentials(
-              CredentialsManagerRequest<HasValidCredentialsOptions>(
-                  account: const Account('test-domain', 'test-clientId'),
-                  userAgent:
-                      UserAgent(name: 'test-name', version: 'test-version'),
-                  options: HasValidCredentialsOptions()));
+          CredentialsManagerRequest<HasValidCredentialsOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent:
+              UserAgent(name: 'test-name', version: 'test-version'),
+              options: HasValidCredentialsOptions()));
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -465,48 +493,48 @@ void main() {
 
     test(
         'throws a CredentialsManagerException when method channel throws a PlatformException',
-        () async {
-      when(mocked.methodCallHandler(any))
-          .thenThrow(PlatformException(code: '123'));
+            () async {
+          when(mocked.methodCallHandler(any))
+              .thenThrow(PlatformException(code: '123'));
 
-      Future<bool> actual() async {
-        final result = await MethodChannelCredentialsManager()
-            .hasValidCredentials(
+          Future<bool> actual() async {
+            final result = await MethodChannelCredentialsManager()
+                .hasValidCredentials(
                 CredentialsManagerRequest<HasValidCredentialsOptions>(
                     account: const Account('', ''),
                     userAgent:
-                        UserAgent(name: 'test-name', version: 'test-version'),
+                    UserAgent(name: 'test-name', version: 'test-version'),
                     options: HasValidCredentialsOptions()));
 
-        return result;
-      }
+            return result;
+          }
 
-      await expectLater(actual, throwsA(isA<CredentialsManagerException>()));
-    });
+          await expectLater(actual, throwsA(isA<CredentialsManagerException>()));
+        });
 
     test(
         'throws a CredentialsManagerException when method channel returns null',
-        () async {
-      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+            () async {
+          when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
-      Future<bool> actual() async {
-        final result = await MethodChannelCredentialsManager()
-            .hasValidCredentials(
+          Future<bool> actual() async {
+            final result = await MethodChannelCredentialsManager()
+                .hasValidCredentials(
                 CredentialsManagerRequest<HasValidCredentialsOptions>(
                     account: const Account('', ''),
                     userAgent:
-                        UserAgent(name: 'test-name', version: 'test-version'),
+                    UserAgent(name: 'test-name', version: 'test-version'),
                     options: HasValidCredentialsOptions()));
 
-        return result;
-      }
+            return result;
+          }
 
-      expectLater(
-          actual,
-          throwsA(predicate((final e) =>
+          expectLater(
+              actual,
+              throwsA(predicate((final e) =>
               e is CredentialsManagerException &&
-              e.message == 'Channel returned null.')));
-    });
+                  e.message == 'Channel returned null.')));
+        });
   });
 
   group('clearCredentials', () {
@@ -517,7 +545,7 @@ void main() {
           CredentialsManagerRequest(
               account: const Account('test-domain', 'test-clientId'),
               userAgent:
-                  UserAgent(name: 'test-name', version: 'test-version')));
+              UserAgent(name: 'test-name', version: 'test-version')));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -531,7 +559,7 @@ void main() {
           CredentialsManagerRequest(
               account: const Account('test-domain', 'test-clientId'),
               userAgent:
-                  UserAgent(name: 'test-name', version: 'test-version')));
+              UserAgent(name: 'test-name', version: 'test-version')));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -545,43 +573,43 @@ void main() {
 
     test(
         'throws a CredentialsManagerException when method channel throws a PlatformException',
-        () async {
-      when(mocked.methodCallHandler(any))
-          .thenThrow(PlatformException(code: '123'));
+            () async {
+          when(mocked.methodCallHandler(any))
+              .thenThrow(PlatformException(code: '123'));
 
-      Future<bool> actual() async {
-        final result = await MethodChannelCredentialsManager().clearCredentials(
-            CredentialsManagerRequest(
-                account: const Account('', ''),
-                userAgent:
+          Future<bool> actual() async {
+            final result = await MethodChannelCredentialsManager().clearCredentials(
+                CredentialsManagerRequest(
+                    account: const Account('', ''),
+                    userAgent:
                     UserAgent(name: 'test-name', version: 'test-version')));
 
-        return result;
-      }
+            return result;
+          }
 
-      await expectLater(actual, throwsA(isA<CredentialsManagerException>()));
-    });
+          await expectLater(actual, throwsA(isA<CredentialsManagerException>()));
+        });
 
     test(
         'throws a CredentialsManagerException when method channel returns null',
-        () async {
-      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+            () async {
+          when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
-      Future<bool> actual() async {
-        final result = await MethodChannelCredentialsManager().clearCredentials(
-            CredentialsManagerRequest(
-                account: const Account('', ''),
-                userAgent:
+          Future<bool> actual() async {
+            final result = await MethodChannelCredentialsManager().clearCredentials(
+                CredentialsManagerRequest(
+                    account: const Account('', ''),
+                    userAgent:
                     UserAgent(name: 'test-name', version: 'test-version')));
 
-        return result;
-      }
+            return result;
+          }
 
-      expectLater(
-          actual,
-          throwsA(predicate((final e) =>
+          expectLater(
+              actual,
+              throwsA(predicate((final e) =>
               e is CredentialsManagerException &&
-              e.message == 'Channel returned null.')));
-    });
+                  e.message == 'Channel returned null.')));
+        });
   });
 }
