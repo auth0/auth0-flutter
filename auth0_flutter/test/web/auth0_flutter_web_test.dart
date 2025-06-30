@@ -1,4 +1,4 @@
-@Tags(['browser'])
+@TestOn('browser')
 
 import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
@@ -73,20 +73,20 @@ void main() {
   });
 
   test('handleRedirectCallback is called on load when auth params exist in URL',
-      () async {
-    final interop.RedirectLoginResult mockRedirectResult =
+          () async {
+        final interop.RedirectLoginResult mockRedirectResult =
         interop.RedirectLoginResult();
 
-    when(mockClientProxy.isAuthenticated())
-        .thenAnswer((final _) => Future.value(false));
-    when(mockClientProxy.handleRedirectCallback())
-        .thenAnswer((final _) => Future.value(mockRedirectResult));
+        when(mockClientProxy.isAuthenticated())
+            .thenAnswer((final _) => Future.value(false));
+        when(mockClientProxy.handleRedirectCallback())
+            .thenAnswer((final _) => Future.value(mockRedirectResult));
 
-    plugin.urlSearchProvider = () => '?code=abc&state=123';
-    await auth0.onLoad();
-    verify(mockClientProxy.handleRedirectCallback());
-    verifyNever(mockClientProxy.checkSession());
-  });
+        plugin.urlSearchProvider = () => '?code=abc&state=123';
+        await auth0.onLoad();
+        verify(mockClientProxy.handleRedirectCallback());
+        verifyNever(mockClientProxy.checkSession());
+      });
 
   test('handleRedirectCallback captures appState that was passed', () async {
     final Map<String, Object?> appState = <String, Object?>{
@@ -94,7 +94,7 @@ void main() {
     };
 
     final interop.RedirectLoginResult mockRedirectResult =
-        interop.RedirectLoginResult(
+    interop.RedirectLoginResult(
       appState: appState.jsify(),
     );
 
@@ -124,7 +124,7 @@ void main() {
     };
 
     final interop.RedirectLoginResult mockRedirectResult =
-        interop.RedirectLoginResult(
+    interop.RedirectLoginResult(
       appState: appState.jsify(),
     );
 
@@ -146,22 +146,22 @@ void main() {
   });
 
   test('onLoad throws the correct exception from handleRedirectCallback',
-      () async {
-    when(mockClientProxy.isAuthenticated())
-        .thenAnswer((final _) => Future.value(false));
+          () async {
+        when(mockClientProxy.isAuthenticated())
+            .thenAnswer((final _) => Future.value(false));
 
-    when(mockClientProxy.handleRedirectCallback())
-        .thenThrow(createJsException('test', 'test exception'));
+        when(mockClientProxy.handleRedirectCallback())
+            .thenThrow(createJsException('test', 'test exception'));
 
-    plugin.urlSearchProvider = () => '?code=abc&state=123';
+        plugin.urlSearchProvider = () => '?code=abc&state=123';
 
-    expect(
-        () async => auth0.onLoad(),
-        throwsA(predicate((final e) =>
+        expect(
+                () async => auth0.onLoad(),
+            throwsA(predicate((final e) =>
             e is WebException &&
-            e.code == 'test' &&
-            e.message == 'test exception')));
-  });
+                e.code == 'test' &&
+                e.message == 'test exception')));
+      });
 
   test('loginWithRedirect supports appState parameter', () async {
     when(mockClientProxy.isAuthenticated())
@@ -304,14 +304,27 @@ void main() {
     expect(options.detailedResponse, true);
   });
 
+  test('credentials is called with cacheMode off to force refresh', () async {
+    when(mockClientProxy.getTokenSilently(any))
+        .thenAnswer((final _) => Future.value(webCredentials));
+
+    await auth0.credentials(cacheMode: CacheMode.off);
+
+    final options =
+        verify(mockClientProxy.getTokenSilently(captureAny)).captured.first;
+
+    expect(options.cacheMode, 'off');
+    expect(options.detailedResponse, true);
+  });
+
   test('credentials is called and throws', () async {
     when(mockClientProxy.getTokenSilently(any))
         .thenThrow(createJsException('test', 'test exception'));
 
     expect(
-        () async => auth0.credentials(),
+            () async => auth0.credentials(),
         throwsA(predicate((final e) =>
-            e is WebException &&
+        e is WebException &&
             e.code == 'test' &&
             e.message == 'test exception')));
   });
@@ -375,7 +388,7 @@ void main() {
         .thenAnswer((final _) => Future.value(webCredentials));
 
     final credentials =
-        await auth0.loginWithPopup(parameters: {'screen_hint': 'signup'});
+    await auth0.loginWithPopup(parameters: {'screen_hint': 'signup'});
 
     expect(credentials, isNotNull);
 
@@ -386,31 +399,31 @@ void main() {
   });
 
   test('loginWithPopup throws the correct exception from js.loginWithPopup',
-      () async {
-    when(mockClientProxy.loginWithPopup(any, any))
-        .thenThrow(createJsException('test', 'test exception'));
+          () async {
+        when(mockClientProxy.loginWithPopup(any, any))
+            .thenThrow(createJsException('test', 'test exception'));
 
-    expect(
-        () async => auth0.loginWithPopup(),
-        throwsA(predicate((final e) =>
+        expect(
+                () async => auth0.loginWithPopup(),
+            throwsA(predicate((final e) =>
             e is WebException &&
-            e.code == 'test' &&
-            e.message == 'test exception')));
-  });
+                e.code == 'test' &&
+                e.message == 'test exception')));
+      });
 
   test('loginWithPopup throws the correct exception from getTokenSilently',
-      () async {
-    when(mockClientProxy.loginWithPopup(any, any))
-        .thenAnswer((final _) => Future.value());
+          () async {
+        when(mockClientProxy.loginWithPopup(any, any))
+            .thenAnswer((final _) => Future.value());
 
-    when(mockClientProxy.getTokenSilently(any))
-        .thenThrow(createJsException('test', 'test exception'));
+        when(mockClientProxy.getTokenSilently(any))
+            .thenThrow(createJsException('test', 'test exception'));
 
-    expect(
-        () async => auth0.loginWithPopup(),
-        throwsA(predicate((final e) =>
+        expect(
+                () async => auth0.loginWithPopup(),
+            throwsA(predicate((final e) =>
             e is WebException &&
-            e.code == 'test' &&
-            e.message == 'test exception')));
-  });
+                e.code == 'test' &&
+                e.message == 'test exception')));
+      });
 }
