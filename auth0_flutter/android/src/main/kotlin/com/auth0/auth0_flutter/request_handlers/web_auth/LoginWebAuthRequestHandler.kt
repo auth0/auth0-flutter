@@ -11,7 +11,6 @@ import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.toMap
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
-import android.util.Log
 
 class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest) -> WebAuthProvider.Builder) : WebAuthRequestHandler {
     override val method: String = "webAuth#login"
@@ -43,16 +42,14 @@ class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest
             builder.withInvitationUrl(args["invitationUrl"] as String)
         }
 
-
-        if(args["allowedPackages"] is List<*>) {
-            if((args["allowedPackages"] as List<String>).isNotEmpty()) {
-                builder.withCustomTabsOptions(
-                    CustomTabsOptions.newBuilder().withBrowserPicker(
-                        BrowserPicker.newBuilder()
-                            .withAllowedPackages(args["allowedPackages"] as List<String>).build()
-                    ).build()
-                )
-            }
+        val allowedPackages = (args["allowedPackages"] as? List<*>)?.filterIsInstance<String>().orEmpty()
+        if(allowedPackages.isNotEmpty()) {
+            builder.withCustomTabsOptions(
+                CustomTabsOptions.newBuilder().withBrowserPicker(
+                    BrowserPicker.newBuilder()
+                        .withAllowedPackages(allowedPackages).build()
+                ).build()
+            )
         }
 
         if (args["leeway"] is Int) {

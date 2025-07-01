@@ -340,4 +340,24 @@ class LoginWebAuthRequestHandlerTest {
         assertThat((captor.firstValue as Map<*, *>)["scopes"], equalTo(listOf("scope1", "scope2")))
         assertThat(((captor.firstValue as Map<*, *>)["userProfile"] as Map<*, *>)["name"], equalTo("John Doe"))
     }
+
+    @Test
+    fun `handle works without allowedPackages`() {
+        val argsWithoutPackages = requestArgs.toMutableMap().apply {
+            remove("allowedPackages")
+        }
+        val request = MethodCallRequest("webAuth#login", argsWithoutPackages)
+        handler.handle(context, request, result)
+        verify(result).success(any())
+    }
+
+    @Test
+    fun `handle skips invalid allowedPackages without crashing`() {
+        val argsWithInvalidPackages = requestArgs.toMutableMap().apply {
+            put("allowedPackages", "not-a-list")  // Wrong type
+        }
+        val request = MethodCallRequest("webAuth#login", argsWithInvalidPackages)
+        handler.handle(context, request, result)
+        verify(result).success(any())
+    }
 }
