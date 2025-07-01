@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import '../login_options.dart';
 import 'safari_view_controller.dart';
 
