@@ -22,6 +22,11 @@ class LogoutWebAuthRequestHandler(private val builderResolver: (MethodCallReques
             builder.withReturnToUrl(args["returnTo"] as String)
         }
 
+        if (args["parameters"] is Map<*, *>) {
+            @Suppress("UNCHECKED_CAST")
+            val parameters = args["parameters"] as Map<String, String>
+        }
+
         builder.start(context, object: Callback<Void?, AuthenticationException> {
             override fun onFailure(exception: AuthenticationException) {
                 result.error(exception.getCode(), exception.getDescription(), exception)
