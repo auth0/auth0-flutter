@@ -69,6 +69,10 @@ class WebAuthentication {
   /// domain –or custom domain, if you have one.
   /// * (iOS/macOS only): [useEphemeralSession] controls whether shared persistent
   /// storage is used for cookies. [Read more on the effects this setting has](https://github.com/auth0/auth0-flutter/blob/main/auth0_flutter/FAQ.md#2-how-can-i-disable-the-ios-login-alert-box).
+  /// * (android only): [allowedPackages] Defines an allowlist of browser packages
+  /// When the user's default browser is in the allowlist, it uses the default browser
+  /// When the user's default browser is not in the allowlist, but the user has another allowed browser installed, the allowed browser is used instead
+  /// When the user's default browser is not in the allowlist, and the user has no other allowed browser installed, an error is returned
   Future<Credentials> login(
       {final String? audience,
       final Set<String> scopes = const {
@@ -81,7 +85,7 @@ class WebAuthentication {
       final String? organizationId,
       final String? invitationUrl,
       final bool useHTTPS = false,
-        final List<String> allowedPackages = const [],
+      final List<String> allowedPackages = const [],
       final bool useEphemeralSession = false,
       final Map<String, String> parameters = const {},
       final IdTokenValidationConfig idTokenValidationConfig =

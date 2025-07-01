@@ -354,8 +354,7 @@ class LoginWebAuthRequestHandlerTest {
     @Test
     fun `handle skips invalid allowedPackages without crashing`() {
         val argsWithInvalidPackages = requestArgs.toMutableMap().apply {
-            put("allowedPackages", "not-a-list")  // Wrong type
-        }
+            put("allowedPackages", "not-a-list")
         val request = MethodCallRequest("webAuth#login", argsWithInvalidPackages)
         handler.handle(context, request, result)
         verify(result).success(any())
