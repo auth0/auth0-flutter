@@ -22,7 +22,19 @@ import java.util.*
 class LoginWebAuthRequestHandlerTest {
     private val defaultCredentials =
         Credentials(JwtTestUtils.createJwt(), "test", "", null, Date(), "openid profile email offline_access")
-
+    private val requestArgs = mapOf(
+        "scopes" to arrayListOf("openid", "profile", "email"),
+        "audience" to "https://myapi/",
+        "redirectUrl" to "myapp://callback",
+        "organizationId" to "org_123",
+        "invitationUrl" to "https://invite.link",
+        "allowedPackages" to listOf("com.browser.chrome"),
+        "leeway" to 60,
+        "maxAge" to 120,
+        "issuer" to "https://issuer.auth0.com/",
+        "scheme" to "myapp",
+        "parameters" to mapOf("screen_hint" to "signup")
+    )
     private fun runRequestHandler(
         args: HashMap<String, Any?> = hashMapOf(),
         credentials: Credentials = defaultCredentials,
@@ -343,20 +355,27 @@ class LoginWebAuthRequestHandlerTest {
 
     @Test
     fun `handle works without allowedPackages`() {
+        val builder = mock<WebAuthProvider.Builder>()
+        val mockResult = mock<Result>()
+        val handler = LoginWebAuthRequestHandler { builder }
         val argsWithoutPackages = requestArgs.toMutableMap().apply {
             remove("allowedPackages")
         }
-        val request = MethodCallRequest("webAuth#login", argsWithoutPackages)
-        handler.handle(context, request, result)
-        verify(result).success(any())
+        val request = MethodCallRequest(Auth0("test.auth0.com", "test-client"), argsWithoutPackages as HashMap<*, *>)
+        handler.handle(mock(), request, mockResult)
+        verify(mockResult).success(any())
     }
 
     @Test
     fun `handle skips invalid allowedPackages without crashing`() {
+        val builder = mock<WebAuthProvider.Builder>()
+        val mockResult = mock<Result>()
+        val handler = LoginWebAuthRequestHandler { builder }
         val argsWithInvalidPackages = requestArgs.toMutableMap().apply {
             put("allowedPackages", "not-a-list")
-        val request = MethodCallRequest("webAuth#login", argsWithInvalidPackages)
-        handler.handle(context, request, result)
-        verify(result).success(any())
+        }
+            val request = MethodCallRequest(Auth0("test.auth0.com", "test-client"), argsWithInvalidPackages as HashMap<*, *>)
+            handler.handle(mock(), request, mockResult)
+            verify(mockResult).success(any())
     }
 }
