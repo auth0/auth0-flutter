@@ -11,6 +11,7 @@ struct WebAuthLogoutMethodHandler: MethodHandler {
     enum Argument: String {
         case useHTTPS
         case returnTo
+        case parameters
     }
 
     let client: WebAuth
@@ -30,7 +31,10 @@ struct WebAuthLogoutMethodHandler: MethodHandler {
             webAuth = webAuth.redirectURL(url)
         }
 
-        webAuth.clearSession {
+        let parameters = arguments[Argument.parameters] as? [String: Any]
+        let federatedLogout = parameters?["federated"] as? Bool ?? false
+
+        webAuth.clearSession(federated: federatedLogout) {
             switch $0 {
             case .success: callback(nil)
             case let .failure(error): callback(FlutterError(from: error))
