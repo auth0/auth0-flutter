@@ -8,7 +8,7 @@ import FlutterMacOS
 
 struct CredentialsManagerRenewMethodHandler: MethodHandler {
 
-    enum Argument: String {
+    enum Argument: String { 
         case parameters
     }
 

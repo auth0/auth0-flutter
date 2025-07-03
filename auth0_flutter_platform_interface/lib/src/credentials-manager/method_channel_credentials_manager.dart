@@ -46,7 +46,7 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
   Future<Credentials> renewCredentials(
       final CredentialsManagerRequest<RenewCredentialsOptions> request) async {
     final Map<String, dynamic> result = await _invokeMapRequest(
-        method: credentialsManagerGetCredentialsMethod, request: request);
+        method: credentialsManagerRenewCredentialsMethod, request: request);
 
     return Credentials.fromMap(result);
   }
