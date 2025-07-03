@@ -172,6 +172,7 @@ class SaveCredentialsRequestHandlerTest {
             "scopes" to arrayListOf("a", "b")
         )
         val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+        format.timeZone = TimeZone.getTimeZone("UTC")
         val date = format.parse(credentialsMap["expiresAt"] as String) as Date
         var scope: String? = null
         val scopes = (credentialsMap["scopes"] ?: arrayListOf<String>()) as ArrayList<*>
@@ -221,7 +222,8 @@ class SaveCredentialsRequestHandlerTest {
             "tokenType" to "Bearer",
             "expiresAt" to "2022-01-01T00:00:00.000Z"
         )
-        val format = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+        format.timeZone = TimeZone.getTimeZone("UTC")
         val date = format.parse(credentialsMap["expiresAt"] as String) as Date
         var scope: String? = null
         val scopes = (credentialsMap["scopes"] ?: arrayListOf<String>()) as ArrayList<*>

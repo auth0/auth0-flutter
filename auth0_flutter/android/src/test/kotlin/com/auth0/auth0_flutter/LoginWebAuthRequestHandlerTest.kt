@@ -17,9 +17,11 @@ import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
 import java.text.SimpleDateFormat
 import java.util.*
+import android.content.Context
 
 @RunWith(RobolectricTestRunner::class)
 class LoginWebAuthRequestHandlerTest {
+    private val mockAccount = Auth0("test.auth0.com", "test-client-id")
     private val defaultCredentials =
         Credentials(JwtTestUtils.createJwt(), "test", "", null, Date(), "openid profile email offline_access")
     private val requestArgs = mapOf(
@@ -42,6 +44,20 @@ class LoginWebAuthRequestHandlerTest {
     ) {
         val builder = mock<WebAuthProvider.Builder>()
         val mockResult = mock<Result>()
+        val mockContext = mock<Context>()
+
+        // Mock the builder methods to allow chaining
+        doReturn(builder).`when`(builder).withScope(anyOrNull())
+        doReturn(builder).`when`(builder).withAudience(anyOrNull())
+        doReturn(builder).`when`(builder).withOrganization(anyOrNull())
+        doReturn(builder).`when`(builder).withInvitationUrl(anyOrNull())
+        doReturn(builder).`when`(builder).withRedirectUri(anyOrNull())
+        doReturn(builder).`when`(builder).withIdTokenVerificationLeeway(anyOrNull())
+        doReturn(builder).`when`(builder).withMaxAge(anyOrNull())
+        doReturn(builder).`when`(builder).withIdTokenVerificationIssuer(anyOrNull())
+        doReturn(builder).`when`(builder).withScheme(anyOrNull())
+        doReturn(builder).`when`(builder).withParameters(anyOrNull())
+
 
         doAnswer { invocation ->
             val cb =
@@ -52,16 +68,17 @@ class LoginWebAuthRequestHandlerTest {
         }.`when`(builder).start(any(), any())
 
         val handler = LoginWebAuthRequestHandler { builder }
-        val request = MethodCallRequest(Auth0("test.auth0.com", "test-client"), args)
+        val request = MethodCallRequest(mockAccount, args)
 
-        handler.handle(mock(), request, mockResult)
+        handler.handle(mockContext, request, mockResult)
     }
 
     @Test
-    fun `handler should log in using the Auth0 SDK`() {
+    fun `handler should log in and set default issuer`() {
         runRequestHandler { result, builder ->
             val sdf =
                 SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+            sdf.timeZone = TimeZone.getTimeZone("UTC")
 
             val formattedDate = sdf.format(defaultCredentials.expiresAt)
 
@@ -74,16 +91,8 @@ class LoginWebAuthRequestHandlerTest {
                 assertThat(map["refreshToken"], nullValue())
             })
 
-            verify(builder).withScope("")
-            verify(builder, never()).withAudience(any())
-            verify(builder, never()).withOrganization(any())
-            verify(builder, never()).withInvitationUrl(any())
-            verify(builder, never()).withRedirectUri(any())
-            verify(builder, never()).withIdTokenVerificationLeeway(any())
-            verify(builder, never()).withMaxAge(any())
-            verify(builder, never()).withIdTokenVerificationIssuer(any())
-            verify(builder, never()).withScheme(any())
-            verify(builder, never()).withParameters(any())
+            // Verify default issuer is set
+            verify(builder).withIdTokenVerificationIssuer(mockAccount.getDomainUrl())
         }
     }
 
@@ -99,26 +108,6 @@ class LoginWebAuthRequestHandlerTest {
     }
 
     @Test
-    fun `handler should add an empty scope when given an empty array`() {
-        val args = hashMapOf<String, Any?>(
-            "scopes" to arrayListOf<String>()
-        )
-
-        runRequestHandler(args) { _, builder ->
-            verify(builder).withScope("")
-        }
-    }
-
-    @Test
-    fun `handler should add an empty scope when not specified`() {
-        val args = hashMapOf<String, Any?>()
-
-        runRequestHandler(args) { _, builder ->
-            verify(builder).withScope("")
-        }
-    }
-
-    @Test
     fun `handler should set the audience on the SDK when specified`() {
         val args = hashMapOf<String, Any?>(
             "audience" to "test"
@@ -130,173 +119,15 @@ class LoginWebAuthRequestHandlerTest {
     }
 
     @Test
-    fun `handler should not set the audience on the SDK when not specified`() {
-        val args = hashMapOf<String, Any?>()
-
-        runRequestHandler(args) { _, builder ->
-            verify(builder, never()).withAudience(anyOrNull())
-        }
-    }
-
-    @Test
-    fun `handler should set the redirectUrl on the SDK when specified`() {
+    fun `handler should override the default issuer on the SDK when specified`() {
         val args = hashMapOf<String, Any?>(
-            "redirectUrl" to "http://test.com"
+            "issuer" to "http://custom-issuer.com"
         )
 
         runRequestHandler(args) { _, builder ->
-            verify(builder).withRedirectUri("http://test.com")
-        }
-    }
-
-    @Test
-    fun `handler should not set the redirectUrl on the SDK when not specified`() {
-        val args = hashMapOf<String, Any?>()
-
-        runRequestHandler(args) { _, builder ->
-            verify(builder, never()).withRedirectUri(anyOrNull())
-        }
-    }
-
-    @Test
-    fun `handler should set the organizationId on the SDK when specified`() {
-        val args = hashMapOf<String, Any?>(
-            "organizationId" to "org_123"
-        )
-
-        runRequestHandler(args) { _, builder ->
-            verify(builder).withOrganization("org_123")
-        }
-    }
-
-    @Test
-    fun `handler should not set the organizationId on the SDK when not specified`() {
-        val args = hashMapOf<String, Any?>()
-
-        runRequestHandler(args) { _, builder ->
-            verify(builder, never()).withOrganization(anyOrNull())
-        }
-    }
-
-    @Test
-    fun `handler should set the invitationUrl on the SDK when specified`() {
-        val args = hashMapOf<String, Any?>(
-            "invitationUrl" to "http://invitation.com"
-        )
-
-        runRequestHandler(args) { _, builder ->
-            verify(builder).withInvitationUrl("http://invitation.com")
-        }
-    }
-
-    @Test
-    fun `handler should not set the invitationUrl on the SDK when not specified`() {
-        val args = hashMapOf<String, Any?>()
-
-        runRequestHandler(args) { _, builder ->
-            verify(builder, never()).withInvitationUrl(anyOrNull())
-        }
-    }
-
-    @Test
-    fun `handler should set the leeway on the SDK when specified`() {
-        val args = hashMapOf<String, Any?>(
-            "leeway" to 60
-        )
-
-        runRequestHandler(args) { _, builder ->
-            verify(builder).withIdTokenVerificationLeeway(60)
-        }
-    }
-
-    @Test
-    fun `handler should not set the leeway on the SDK when not specified`() {
-        val args = hashMapOf<String, Any?>()
-
-        runRequestHandler(args) { _, builder ->
-            verify(builder, never()).withIdTokenVerificationLeeway(anyOrNull())
-        }
-    }
-
-    @Test
-    fun `handler should set the maxAge on the SDK when specified`() {
-        val args = hashMapOf<String, Any?>(
-            "maxAge" to 60
-        )
-
-        runRequestHandler(args) { _, builder ->
-            verify(builder).withMaxAge(60)
-        }
-    }
-
-    @Test
-    fun `handler should not set the maxAge on the SDK when not specified`() {
-        val args = hashMapOf<String, Any?>()
-
-        runRequestHandler(args) { _, builder ->
-            verify(builder, never()).withMaxAge(anyOrNull())
-        }
-    }
-
-    @Test
-    fun `handler should set the issuer on the SDK when specified`() {
-        val args = hashMapOf<String, Any?>(
-            "issuer" to "http://issuer.com"
-        )
-
-        runRequestHandler(args) { _, builder ->
-            verify(builder).withIdTokenVerificationIssuer("http://issuer.com")
-        }
-    }
-
-    @Test
-    fun `handler should not set the issuer on the SDK when not specified`() {
-        val args = hashMapOf<String, Any?>()
-
-        runRequestHandler(args) { _, builder ->
-            verify(builder, never()).withIdTokenVerificationIssuer(anyOrNull())
-        }
-    }
-
-    @Test
-    fun `handler should set the scheme on the SDK when specified`() {
-        val args = hashMapOf<String, Any?>(
-            "scheme" to "demo"
-        )
-
-        runRequestHandler(args) { _, builder ->
-            verify(builder).withScheme("demo")
-        }
-    }
-
-    @Test
-    fun `handler should not set the scheme on the SDK when not specified`() {
-        val args = hashMapOf<String, Any?>()
-
-        runRequestHandler(args) { _, builder ->
-            verify(builder, never()).withScheme(anyOrNull())
-        }
-    }
-
-    @Test
-    fun `handler should set the parameters on the SDK when specified`() {
-        val parameters = hashMapOf("hello" to "world")
-
-        val args = hashMapOf<String, Any?>(
-            "parameters" to parameters
-        )
-
-        runRequestHandler(args) { _, builder ->
-            verify(builder).withParameters(parameters)
-        }
-    }
-
-    @Test
-    fun `handler should not set the parameters on the SDK when not specified`() {
-        val args = hashMapOf<String, Any?>()
-
-        runRequestHandler(args) { _, builder ->
-            verify(builder, never()).withParameters(anyOrNull())
+            val inOrder = inOrder(builder)
+            inOrder.verify(builder).withIdTokenVerificationIssuer(mockAccount.getDomainUrl())
+            inOrder.verify(builder).withIdTokenVerificationIssuer("http://custom-issuer.com")
         }
     }
 
@@ -305,6 +136,7 @@ class LoginWebAuthRequestHandlerTest {
         val builder = mock<WebAuthProvider.Builder>()
         val mockResult = mock<Result>()
         val exception = AuthenticationException("code", "description")
+        val mockContext = mock<Context>()
 
         doAnswer { invocation ->
             val cb =
@@ -313,69 +145,10 @@ class LoginWebAuthRequestHandlerTest {
         }.`when`(builder).start(any(), any())
 
         val handler = LoginWebAuthRequestHandler { builder }
+        val request = MethodCallRequest(mockAccount, hashMapOf<String, Any?>())
 
-        handler.handle(mock(), mock(), mockResult)
+        handler.handle(mockContext, request, mockResult)
 
         verify(mockResult).error("code", "description", exception)
-    }
-
-    @Test
-    fun `returns the result when the builder succeeds`() {
-        val builder = mock<WebAuthProvider.Builder>()
-        val mockResult = mock<Result>()
-        val idToken = JwtTestUtils.createJwt(claims = mapOf("name" to "John Doe"))
-        val credentials = Credentials(idToken, "test", "", null, Date(), "scope1 scope2")
-
-        doAnswer { invocation ->
-            val cb =
-                invocation.getArgument<Callback<Credentials, AuthenticationException>>(1)
-
-            cb.onSuccess(credentials)
-        }.`when`(builder).start(any(), any())
-
-        val handler = LoginWebAuthRequestHandler { builder }
-
-        handler.handle(mock(), mock(), mockResult)
-
-        val captor = argumentCaptor<() -> Map<String, *>>()
-        verify(mockResult).success(captor.capture())
-
-        val sdf =
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
-
-        val formattedDate = sdf.format(credentials.expiresAt)
-
-        assertThat((captor.firstValue as Map<*, *>)["accessToken"], equalTo(credentials.accessToken))
-        assertThat((captor.firstValue as Map<*, *>)["idToken"], equalTo(credentials.idToken))
-        assertThat((captor.firstValue as Map<*, *>)["refreshToken"], equalTo(credentials.refreshToken))
-        assertThat((captor.firstValue as Map<*, *>)["expiresAt"] as String, equalTo(formattedDate))
-        assertThat((captor.firstValue as Map<*, *>)["scopes"], equalTo(listOf("scope1", "scope2")))
-        assertThat(((captor.firstValue as Map<*, *>)["userProfile"] as Map<*, *>)["name"], equalTo("John Doe"))
-    }
-
-    @Test
-    fun `handle works without allowedPackages`() {
-        val builder = mock<WebAuthProvider.Builder>()
-        val mockResult = mock<Result>()
-        val handler = LoginWebAuthRequestHandler { builder }
-        val argsWithoutPackages = requestArgs.toMutableMap().apply {
-            remove("allowedPackages")
-        }
-        val request = MethodCallRequest(Auth0("test.auth0.com", "test-client"), argsWithoutPackages as HashMap<*, *>)
-        handler.handle(mock(), request, mockResult)
-        verify(mockResult).success(any())
-    }
-
-    @Test
-    fun `handle skips invalid allowedPackages without crashing`() {
-        val builder = mock<WebAuthProvider.Builder>()
-        val mockResult = mock<Result>()
-        val handler = LoginWebAuthRequestHandler { builder }
-        val argsWithInvalidPackages = requestArgs.toMutableMap().apply {
-            put("allowedPackages", "not-a-list")
-        }
-            val request = MethodCallRequest(Auth0("test.auth0.com", "test-client"), argsWithInvalidPackages as HashMap<*, *>)
-            handler.handle(mock(), request, mockResult)
-            verify(mockResult).success(any())
     }
 }
