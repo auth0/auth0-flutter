@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="com_auth0_domain">AUTH0</string>
-    <string name="com_auth0_scheme">AUTH0</string>
+    <string name="com_auth0_domain">YOUR_AUTH0_DOMAIN</string>
+    <string name="com_auth0_scheme">demo</string>
 </resources>

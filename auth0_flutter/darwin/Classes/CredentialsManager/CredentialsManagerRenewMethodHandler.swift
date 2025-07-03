@@ -1,6 +1,4 @@
 import Auth0
-import SimpleKeychain
-
 
 #if os(iOS)
 import Flutter
@@ -9,11 +7,11 @@ import FlutterMacOS
 #endif
 
 struct CredentialsManagerRenewMethodHandler: MethodHandler {
-    
+
     enum Argument: String {
         case parameters
     }
-    
+
     let credentialsManager: CredentialsManager
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
@@ -29,5 +27,5 @@ struct CredentialsManagerRenewMethodHandler: MethodHandler {
             }
         }
     }
-    
+
 }
