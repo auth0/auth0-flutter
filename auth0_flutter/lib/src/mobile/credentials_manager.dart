@@ -9,6 +9,10 @@ abstract class CredentialsManager {
     final Map<String, String> parameters = const {},
   });
 
+  Future<Credentials> renewCredentials({
+    final Map<String, String> parameters = const {},
+  });
+
   Future<bool> storeCredentials(final Credentials credentials);
 
   Future<bool> hasValidCredentials({
@@ -54,6 +58,19 @@ class DefaultCredentialsManager extends CredentialsManager {
         scopes: scopes,
         parameters: parameters,
       )));
+
+  /// Fetches new set of credentials each time and stores them in storage.
+  /// This will replace the existing credentials currently stored
+  /// even if they are not expired.
+  ///
+  /// Use the [parameters] parameter to send additional parameters in the
+  /// request.
+  @override
+  Future<Credentials> renewCredentials({
+    final Map<String, String> parameters = const {},
+  }) =>
+      CredentialsManagerPlatform.instance.renewCredentials(
+          _createApiRequest(RenewCredentialsOptions(parameters: parameters)));
 
   /// Stores the given credentials in the storage. Must have an `access_token`
   /// or `id_token` and a `expires_in` value.

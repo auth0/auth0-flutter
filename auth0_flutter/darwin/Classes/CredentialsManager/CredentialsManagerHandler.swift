@@ -21,6 +21,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         case save = "credentialsManager#saveCredentials"
         case hasValid = "credentialsManager#hasValidCredentials"
         case get = "credentialsManager#getCredentials"
+        case renew = "credentialsManager#renewCredentials"
         case clear = "credentialsManager#clearCredentials"
     }
 
@@ -89,6 +90,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         case .hasValid: return CredentialsManagerHasValidMethodHandler(credentialsManager: credentialsManager)
         case .get: return CredentialsManagerGetMethodHandler(credentialsManager: credentialsManager)
         case .clear: return CredentialsManagerClearMethodHandler(credentialsManager: credentialsManager)
+        case .renew: return CredentialsManagerRenewMethodHandler(credentialsManager: credentialsManager)
         }
     }
 
