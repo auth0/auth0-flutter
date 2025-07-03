@@ -125,12 +125,14 @@ class MockCredentialsManager extends _i1.Mock
     int? minTtl = 0,
     Set<String>? scopes = const {},
     Map<String, String>? parameters = const {},
+    bool forceRefresh = false
   }) =>
       (super.noSuchMethod(
         Invocation.method(#credentials, [], {
           #minTtl: minTtl,
           #scopes: scopes,
           #parameters: parameters,
+          #forceRefresh: forceRefresh
         }),
         returnValue: _i4.Future<_i2.Credentials>.value(
           _FakeCredentials_0(
@@ -139,6 +141,7 @@ class MockCredentialsManager extends _i1.Mock
               #minTtl: minTtl,
               #scopes: scopes,
               #parameters: parameters,
+              #forceRefresh: forceRefresh
             }),
           ),
         ),

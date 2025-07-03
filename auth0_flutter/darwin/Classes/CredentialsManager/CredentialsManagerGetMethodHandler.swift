@@ -11,6 +11,7 @@ struct CredentialsManagerGetMethodHandler: MethodHandler {
         case scopes
         case minTtl
         case parameters
+        case forceRefresh
     }
 
     let credentialsManager: CredentialsManager
@@ -25,10 +26,13 @@ struct CredentialsManagerGetMethodHandler: MethodHandler {
         guard let parameters = arguments[Argument.parameters] as? [String: Any] else {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.parameters.rawValue)))
         }
+        
+        let forceRenew = (arguments[Argument.forceRefresh] as? Bool) ?? false
 
-        self.credentialsManager.credentials(withScope: scopes.isEmpty ? nil : scopes.asSpaceSeparatedString,
+        self.credentialsManager.retrieveCredentials(withScope: scopes.isEmpty ? nil : scopes.asSpaceSeparatedString,
                                        minTTL: minTTL,
-                                       parameters: parameters) {
+                                      parameters: parameters,headers: [:],
+                                      forceRenewal: forceRenew) {
             switch $0 {
             case let .success(credentials): callback(result(from: credentials))
             case let .failure(error): callback(FlutterError(from: error))

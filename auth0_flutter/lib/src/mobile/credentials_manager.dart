@@ -7,6 +7,7 @@ abstract class CredentialsManager {
     final int minTtl = 0,
     final Set<String> scopes = const {},
     final Map<String, String> parameters = const {},
+    final bool forceRefresh = false,
   });
 
   Future<bool> storeCredentials(final Credentials credentials);
@@ -43,17 +44,17 @@ class DefaultCredentialsManager extends CredentialsManager {
   /// Use the [parameters] parameter to send additional parameters in the
   /// request to refresh expired credentials.
   @override
-  Future<Credentials> credentials({
-    final int minTtl = 0,
-    final Set<String> scopes = const {},
-    final Map<String, String> parameters = const {},
-  }) =>
-      CredentialsManagerPlatform.instance
-          .getCredentials(_createApiRequest(GetCredentialsOptions(
-        minTtl: minTtl,
-        scopes: scopes,
-        parameters: parameters,
-      )));
+  Future<Credentials> credentials(
+          {final int minTtl = 0,
+          final Set<String> scopes = const {},
+          final Map<String, String> parameters = const {},
+          final bool forceRefresh = false}) =>
+      CredentialsManagerPlatform.instance.getCredentials(_createApiRequest(
+          GetCredentialsOptions(
+              minTtl: minTtl,
+              scopes: scopes,
+              parameters: parameters,
+              forceRefresh: forceRefresh)));
 
   /// Stores the given credentials in the storage. Must have an `access_token`
   /// or `id_token` and a `expires_in` value.

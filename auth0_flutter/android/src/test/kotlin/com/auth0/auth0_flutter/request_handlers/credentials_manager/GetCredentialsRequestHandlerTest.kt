@@ -43,6 +43,7 @@ class GetCredentialsRequestHandlerTest {
             isNull(),
             eq(0),
             anyMap(),
+            eq(false),
             any()
         )
     }
@@ -69,6 +70,7 @@ class GetCredentialsRequestHandlerTest {
             eq("test-scope1 test-scope2"),
             eq(0),
             anyMap(),
+            eq(false),
             any()
         )
     }
@@ -95,6 +97,7 @@ class GetCredentialsRequestHandlerTest {
             isNull(),
             eq(30),
             anyMap(),
+            eq(false),
             any()
         )
     }
@@ -121,6 +124,7 @@ class GetCredentialsRequestHandlerTest {
             isNull(),
             eq(0),
             eq(mapOf("test" to "test-value", "test2" to "test-value")),
+            eq(false),
             any()
         )
     }
@@ -148,6 +152,7 @@ class GetCredentialsRequestHandlerTest {
             eq("test-scope1 test-scope2"),
             eq(30),
             anyMap(),
+            eq(false),
             any()
         )
     }
@@ -175,6 +180,7 @@ class GetCredentialsRequestHandlerTest {
             eq("test-scope1 test-scope2"),
             eq(0),
             eq(mapOf("test" to "test-value", "test2" to "test-value")),
+            eq(false),
             any()
         )
     }
@@ -202,6 +208,7 @@ class GetCredentialsRequestHandlerTest {
             isNull(),
             eq(30),
             eq(mapOf("test" to "test-value", "test2" to "test-value")),
+            eq(false),
             any()
         )
     }
@@ -230,6 +237,7 @@ class GetCredentialsRequestHandlerTest {
             eq("test-scope1 test-scope2"),
             eq(30),
             eq(mapOf("test" to "test-value", "test2" to "test-value")),
+            eq(false),
             any()
         )
     }
@@ -248,9 +256,9 @@ class GetCredentialsRequestHandlerTest {
         `when`(exception.message).thenReturn("test-message")
 
         doAnswer {
-            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(3)
+            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(4)
             ob.onFailure(exception)
-        }.`when`(mockCredentialsManager).getCredentials(isNull(), anyInt(), anyMap(), any())
+        }.`when`(mockCredentialsManager).getCredentials(isNull(), anyInt(), anyMap(), any(), any())
 
         handler.handle(
             mockCredentialsManager,
@@ -276,9 +284,9 @@ class GetCredentialsRequestHandlerTest {
         `when`(exception.message).thenReturn(null)
 
         doAnswer {
-            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(3)
+            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(4)
             ob.onFailure(exception)
-        }.`when`(mockCredentialsManager).getCredentials(isNull(), anyInt(), anyMap(), any())
+        }.`when`(mockCredentialsManager).getCredentials(isNull(), anyInt(), anyMap(), any(), any())
 
         handler.handle(
             mockCredentialsManager,
@@ -302,9 +310,9 @@ class GetCredentialsRequestHandlerTest {
         val credentials = Credentials(idToken, "test", "", null, Date(), "scope1 scope2")
 
         doAnswer {
-            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(3)
+            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(4)
             ob.onSuccess(credentials)
-        }.`when`(mockCredentialsManager).getCredentials(isNull(), anyInt(), anyMap(), any())
+        }.`when`(mockCredentialsManager).getCredentials(isNull(), anyInt(), anyMap(), any(), any())
 
         handler.handle(
             mockCredentialsManager,
@@ -359,9 +367,9 @@ class GetCredentialsRequestHandlerTest {
         val credentials = Credentials(idToken, "test", "", null, Date(), scope = null)
 
         doAnswer {
-            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(3)
+            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(4)
             ob.onSuccess(credentials)
-        }.`when`(mockCredentialsManager).getCredentials(isNull(), anyInt(), anyMap(), any())
+        }.`when`(mockCredentialsManager).getCredentials(isNull(), anyInt(), anyMap(), any(), any())
 
         handler.handle(
             mockCredentialsManager,
