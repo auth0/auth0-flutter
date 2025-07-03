@@ -1,4 +1,4 @@
-@TestOn('browser')
+@Tags(['browser'])
 
 import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
@@ -24,7 +24,7 @@ void main() {
       final object = AuthorizationParams();
 
       final output =
-      JsInteropUtils.addCustomParams(object, {'custom_param': null});
+          JsInteropUtils.addCustomParams(object, {'custom_param': null});
 
       expect(output, isNotNull);
       expect((output as dynamic).custom_param, null);

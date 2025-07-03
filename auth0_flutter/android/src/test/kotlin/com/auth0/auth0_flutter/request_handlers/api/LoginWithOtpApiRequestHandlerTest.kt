@@ -109,6 +109,7 @@ class LoginWithOtpApiRequestHandlerTest {
             AuthenticationException(code = "test-code", description = "test-description")
 
         doReturn(mockLoginBuilder).`when`(mockApi).loginWithOTP(any(), any())
+        doReturn(mockLoginBuilder).`when`(mockLoginBuilder).addParameters(any())
         doAnswer {
             val ob = it.getArgument<Callback<Credentials, AuthenticationException>>(0)
             ob.onFailure(exception)
@@ -139,6 +140,7 @@ class LoginWithOtpApiRequestHandlerTest {
         val credentials = Credentials(idToken, "test", "", null, Date(), "scope1 scope2")
 
         doReturn(mockLoginBuilder).`when`(mockApi).loginWithOTP(any(), any())
+        doReturn(mockLoginBuilder).`when`(mockLoginBuilder).addParameters(any())
         doAnswer {
             val ob = it.getArgument<Callback<Credentials, AuthenticationException>>(0)
             ob.onSuccess(credentials)
@@ -150,19 +152,21 @@ class LoginWithOtpApiRequestHandlerTest {
             mockResult
         )
 
-        val captor = argumentCaptor<() -> Map<String, *>>()
+        val captor = argumentCaptor<Map<String, Any>>()
         verify(mockResult).success(captor.capture())
 
         val sdf =
             SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+        // This is the only change to fix the timezone issue
+        sdf.timeZone = TimeZone.getTimeZone("UTC")
 
         val formattedDate = sdf.format(credentials.expiresAt)
 
-        assertThat((captor.firstValue as Map<*, *>)["accessToken"], equalTo(credentials.accessToken))
-        assertThat((captor.firstValue as Map<*, *>)["idToken"], equalTo(credentials.idToken))
-        assertThat((captor.firstValue as Map<*, *>)["refreshToken"], equalTo(credentials.refreshToken))
-        assertThat((captor.firstValue as Map<*, *>)["expiresAt"] as String, equalTo(formattedDate))
-        assertThat((captor.firstValue as Map<*, *>)["scopes"], equalTo(listOf("scope1", "scope2")))
-        assertThat(((captor.firstValue as Map<*, *>)["userProfile"] as Map<*, *>)["name"], equalTo("John Doe"))
+        assertThat(captor.firstValue["accessToken"], equalTo(credentials.accessToken))
+        assertThat(captor.firstValue["idToken"], equalTo(credentials.idToken))
+        assertThat(captor.firstValue["refreshToken"], equalTo(credentials.refreshToken))
+        assertThat(captor.firstValue["expiresAt"] as String, equalTo(formattedDate))
+        assertThat(captor.firstValue["scopes"], equalTo(listOf("scope1", "scope2")))
+        assertThat((captor.firstValue["userProfile"] as Map<*, *>)["name"], equalTo("John Doe"))
     }
 }

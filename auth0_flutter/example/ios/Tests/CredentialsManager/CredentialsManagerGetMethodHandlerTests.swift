@@ -5,16 +5,40 @@ import Auth0
 
 fileprivate typealias Argument = CredentialsManagerGetMethodHandler.Argument
 
+// MARK: - Test Spy
+
+fileprivate class SpyCredentialsManager: CredentialsManager {
+    var credentialsCalled = false
+    var renewCalled = false
+
+    var credentialsCallback: ((Result<Credentials, CredentialsManagerError>) -> Void)?
+
+    override func credentials(withScope scope: String? = nil,
+                              minTTL: Int = 0,
+                              parameters: [String: Any] = [:],
+                              headers: [String: String] = [:],
+                              callback: @escaping (Result<Credentials, CredentialsManagerError>) -> Void) {
+        self.credentialsCalled = true
+        self.credentialsCallback = callback
+    }
+
+    override func renew(withParameters parameters: [String: Any] = [:],
+                        headers: [String: String] = [:],
+                        callback: @escaping (Result<Credentials, CredentialsManagerError>) -> Void) {
+        self.renewCalled = true
+        self.credentialsCallback = callback
+    }
+}
+
+// MARK: - Test Case
+
 class CredentialsManagerGetMethodHandlerTests: XCTestCase {
-    var spyAuthentication: SpyAuthentication!
-    var spyStorage: SpyCredentialsStorage!
+    var spy: SpyCredentialsManager!
     var sut: CredentialsManagerGetMethodHandler!
 
     override func setUpWithError() throws {
-        spyAuthentication = SpyAuthentication()
-        spyStorage = SpyCredentialsStorage()
-        let credentialsManager = CredentialsManager(authentication: spyAuthentication, storage: spyStorage)
-        sut = CredentialsManagerGetMethodHandler(credentialsManager: credentialsManager)
+        spy = SpyCredentialsManager(authentication: SpyAuthentication(), storage: SpyCredentialsStorage())
+        sut = CredentialsManagerGetMethodHandler(credentialsManager: spy)
     }
 }
 
@@ -34,85 +58,76 @@ extension CredentialsManagerGetMethodHandlerTests {
     }
 }
 
-// MARK: - Arguments
+// MARK: - Force Refresh
 
 extension CredentialsManagerGetMethodHandlerTests {
+    func testCallsRenewWhenForceRefreshIsTrue() {
+        let expectation = self.expectation(description: "Called renew method")
+        var arguments = self.arguments()
+        arguments[Argument.forceRefresh.rawValue] = true
 
-    // MARK: scopes
-
-    func testAddsScopes() {
-        let value = ["foo", "bar"]
-        let credentials = Credentials(accessToken: "accessToken",
-                                      tokenType: "tokenType",
-                                      idToken: testIdToken,
-                                      refreshToken: "refreshToken",
-                                      expiresIn: Date(timeIntervalSinceNow: -3600),
-                                      scope: "foo bar")
-        let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
-        let expectation = self.expectation(description: "Produced credentials")
-        spyStorage.getEntryReturnValue = data
-        sut.handle(with: arguments(withKey: Argument.scopes, value: value)) { _ in
-            XCTAssertEqual(self.spyAuthentication.arguments["scope"] as? String, value.asSpaceSeparatedString)
-            expectation.fulfill()
-        }
+        sut.handle(with: arguments) { _ in }
+        XCTAssertTrue(self.spy.renewCalled)
+        XCTAssertFalse(self.spy.credentialsCalled)
+        expectation.fulfill()
         wait(for: [expectation])
     }
 
-    func testAddsNilScopeWhenEmpty() {
-        let credentials = Credentials(accessToken: "accessToken",
-                                      tokenType: "tokenType",
-                                      idToken: testIdToken,
-                                      refreshToken: "refreshToken",
-                                      expiresIn: Date(timeIntervalSinceNow: -3600),
-                                      scope: "foo bar")
-        let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
-        let expectation = self.expectation(description: "Produced credentials")
-        spyStorage.getEntryReturnValue = data
-        sut.handle(with: arguments(withKey: Argument.scopes, value: [])) { _ in
-            XCTAssertNil(self.spyAuthentication.arguments["scope"] as? String)
-            expectation.fulfill()
-        }
+    func testCallsCredentialsWhenForceRefreshIsFalse() {
+        let expectation = self.expectation(description: "Called credentials method")
+        var arguments = self.arguments()
+        arguments[Argument.forceRefresh.rawValue] = false
+
+        sut.handle(with: arguments) { _ in }
+        XCTAssertFalse(self.spy.renewCalled)
+        XCTAssertTrue(self.spy.credentialsCalled)
+        expectation.fulfill()
+        wait(for: [expectation])
+    }
+
+    func testCallsCredentialsWhenForceRefreshIsOmitted() {
+        let expectation = self.expectation(description: "Called credentials method")
+
+        sut.handle(with: arguments()) { _ in }
+        XCTAssertFalse(self.spy.renewCalled)
+        XCTAssertTrue(self.spy.credentialsCalled)
+        expectation.fulfill()
         wait(for: [expectation])
     }
 }
+
 
 // MARK: - Get Result
 
 extension CredentialsManagerGetMethodHandlerTests {
     func testCallsSDKGetMethod() {
-        let expectation = self.expectation(description: "Called get credentials method from the SDK")
+        let expectation = self.expectation(description: "Called credentials method from the SDK")
         sut.handle(with: arguments()) { _ in
-            XCTAssertTrue(self.spyStorage.calledGetEntry)
+            XCTAssertTrue(self.spy.credentialsCalled)
             expectation.fulfill()
         }
         wait(for: [expectation])
     }
 
     func testProducesCredentials() {
-        let credentials = Credentials(accessToken: "accessToken",
-                                      tokenType: "tokenType",
-                                      idToken: testIdToken,
-                                      refreshToken: "refreshToken",
-                                      expiresIn: Date(timeIntervalSinceNow: 3600),
-                                      scope: "foo bar")
-        let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
+        let credentials = Credentials.from(idToken: testIdToken, accessToken: "accessToken")
         let expectation = self.expectation(description: "Produced credentials")
-        spyStorage.getEntryReturnValue = data
         sut.handle(with: arguments()) { result in
             assert(result: result, has: CredentialsProperty.allCases)
             expectation.fulfill()
         }
+        spy.credentialsCallback?(.success(credentials))
         wait(for: [expectation])
     }
 
     func testProducesCredentialsManagerError() {
         let error = CredentialsManagerError.noCredentials
         let expectation = self.expectation(description: "Produced the CredentialsManagerError \(error)")
-        spyStorage.getEntryReturnValue = nil
         sut.handle(with: arguments()) { result in
             assert(result: result, isError: error)
             expectation.fulfill()
         }
+        spy.credentialsCallback?(.failure(error))
         wait(for: [expectation])
     }
 }
@@ -121,6 +136,11 @@ extension CredentialsManagerGetMethodHandlerTests {
 
 extension CredentialsManagerGetMethodHandlerTests {
     override func arguments() -> [String: Any] {
-        return [Argument.scopes.rawValue: [], Argument.minTtl.rawValue: 1, Argument.parameters.rawValue: [:]]
+        return [
+            Argument.scopes.rawValue: [],
+            Argument.minTtl.rawValue: 0,
+            Argument.parameters.rawValue: [:],
+            // forceRefresh is omitted to test default behavior
+        ]
     }
 }

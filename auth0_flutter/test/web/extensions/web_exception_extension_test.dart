@@ -1,5 +1,4 @@
-@TestOn('browser')
-
+@Tags(['browser'])
 import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
 import 'package:auth0_flutter/src/web/extensions/web_exception_extensions.dart';

@@ -79,7 +79,7 @@ dependencies {
     testImplementation 'org.hamcrest:java-hamcrest:2.0.0.0'
     testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
     testImplementation 'com.jayway.awaitility:awaitility:1.7.0'
-    testImplementation 'org.robolectric:robolectric:4.6.1'
+    testImplementation 'org.robolectric:robolectric:4.11.1'
     testImplementation 'androidx.test.espresso:espresso-intents:3.5.1'
     testImplementation 'com.auth0:java-jwt:3.19.1'
 }

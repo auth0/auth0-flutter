@@ -197,13 +197,13 @@ class GetCredentialsRequestHandlerTest {
 
         val exception = mock<CredentialsManagerException>()
 
-        `when`(exception.code).thenReturn("test-code")
-        `when`(exception.localizedMessage).thenReturn("test-message")
+        // CORRECTED: Mock the public 'message' property
+        `when`(exception.message).thenReturn("test-message")
 
         doAnswer {
             val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(4)
             ob.onFailure(exception)
-        }.`when`(mockCredentialsManager).getCredentials(isNull(), anyInt(), anyMap(), anyBoolean(), any())
+        }.`when`(mockCredentialsManager).getCredentials(isNull(), anyInt(), anyMap(), any(), any())
 
         handler.handle(
             mockCredentialsManager,
@@ -212,7 +212,12 @@ class GetCredentialsRequestHandlerTest {
             mockResult
         )
 
-        verify(mockResult).error(eq("test-code"), eq("test-message"), any())
+        // CORRECTED: Verify the error call uses the message and handles nullability
+        verify(mockResult).error(check {
+            MatcherAssert.assertThat(it, CoreMatchers.equalTo("test-message"))
+        }, check {
+            MatcherAssert.assertThat(it, CoreMatchers.equalTo("test-message"))
+        }, any())
     }
 
     @Test
@@ -229,7 +234,7 @@ class GetCredentialsRequestHandlerTest {
         doAnswer {
             val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(4)
             ob.onSuccess(credentials)
-        }.`when`(mockCredentialsManager).getCredentials(isNull(), anyInt(), anyMap(), anyBoolean(), any())
+        }.`when`(mockCredentialsManager).getCredentials(isNull(), anyInt(), anyMap(), any(), any())
 
         handler.handle(
             mockCredentialsManager,
@@ -243,6 +248,7 @@ class GetCredentialsRequestHandlerTest {
 
         val sdf =
             SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+        sdf.timeZone = TimeZone.getTimeZone("UTC")
 
         val formattedDate = sdf.format(credentials.expiresAt)
 

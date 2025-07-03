@@ -1,4 +1,3 @@
-@TestOn('browser')
 import 'package:auth0_flutter/src/web/extensions/user_profile_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -22,6 +22,8 @@ class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest
         val args = request.data
         val scopes = (args["scopes"] ?: arrayListOf<String>()) as ArrayList<*>
 
+        builder.withIdTokenVerificationIssuer(request.account.getDomainUrl())
+
         builder.withScope(scopes.joinToString(separator = " "))
 
         if (args["audience"] is String) {
@@ -48,6 +50,7 @@ class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest
             builder.withMaxAge(args["maxAge"] as Int)
         }
 
+        // Allow overriding the default issuer if one is explicitly provided.
         if (args["issuer"] is String) {
             builder.withIdTokenVerificationIssuer(args["issuer"] as String)
         }
