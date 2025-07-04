@@ -15,7 +15,7 @@ concurrency:
 env:
     ruby: '3.3.1'
     flutter: '3.x'
-    ios-simulator: iPhone 15
+    ios-simulator: iPhone 16
     java: 11
 
 jobs:
@@ -120,13 +120,13 @@ jobs:
 
     test-ios-unit:
         name: Run native iOS unit tests using Xcode ${{ matrix.xcode }}
-        runs-on: macos-13
+        runs-on: macos-14
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
         strategy:
           matrix:
             xcode:
-              - '15.0.1'
+              - '16.1'
 
         env:
           platform: iOS
@@ -163,7 +163,7 @@ jobs:
 
     test-ios-smoke:
         name: Run native iOS smoke tests using Xcode ${{ matrix.xcode }}
-        runs-on: macos-13-large
+        runs-on: macos-14-large
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
         env:
@@ -174,7 +174,7 @@ jobs:
         strategy:
           matrix:
             xcode:
-              - '15.0.1'
+              - '16.1'
 
         steps:
             - name: Checkout
@@ -198,13 +198,13 @@ jobs:
 
     test-macos-unit:
         name: Run native macOS unit tests using Xcode ${{ matrix.xcode }}
-        runs-on: macos-13
+        runs-on: macos-14
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
         strategy:
           matrix:
             xcode:
-              - '15.0.1'
+              - '16.1'
 
         env:
           platform: macOS
@@ -235,7 +235,7 @@ jobs:
 
     test-macos-smoke:
         name: Run native macOS smoke tests using Xcode ${{ matrix.xcode }}
-        runs-on: macos-13
+        runs-on: macos-14
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
         env:
@@ -246,7 +246,7 @@ jobs:
         strategy:
           matrix:
             xcode:
-              - '15.0.1'
+              - '16.1'
 
         steps:
             - name: Checkout
