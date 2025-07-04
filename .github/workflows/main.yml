@@ -15,7 +15,7 @@ concurrency:
 env:
     ruby: '3.3.1'
     flutter: '3.x'
-    ios-simulator: iPhone 15
+    ios-simulator: iPhone 16
     java: 11
 
 jobs:

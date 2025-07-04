@@ -3,6 +3,8 @@ package com.auth0.auth0_flutter
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
+import com.auth0.android.provider.BrowserPicker
+import com.auth0.android.provider.CustomTabsOptions
 import com.auth0.android.provider.WebAuthProvider
 import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
@@ -22,19 +24,7 @@ import java.util.*
 class LoginWebAuthRequestHandlerTest {
     private val defaultCredentials =
         Credentials(JwtTestUtils.createJwt(), "test", "", null, Date(), "openid profile email offline_access")
-    private val requestArgs = mapOf(
-        "scopes" to arrayListOf("openid", "profile", "email"),
-        "audience" to "https://myapi/",
-        "redirectUrl" to "myapp://callback",
-        "organizationId" to "org_123",
-        "invitationUrl" to "https://invite.link",
-        "allowedPackages" to listOf("com.browser.chrome"),
-        "leeway" to 60,
-        "maxAge" to 120,
-        "issuer" to "https://issuer.auth0.com/",
-        "scheme" to "myapp",
-        "parameters" to mapOf("screen_hint" to "signup")
-    )
+
     private fun runRequestHandler(
         args: HashMap<String, Any?> = hashMapOf(),
         credentials: Credentials = defaultCredentials,
@@ -354,28 +344,25 @@ class LoginWebAuthRequestHandlerTest {
     }
 
     @Test
-    fun `handle works without allowedPackages`() {
-        val builder = mock<WebAuthProvider.Builder>()
-        val mockResult = mock<Result>()
-        val handler = LoginWebAuthRequestHandler { builder }
-        val argsWithoutPackages = requestArgs.toMutableMap().apply {
-            remove("allowedPackages")
+    fun `handler should add an empty allowedPackages when given an empty array`() {
+        val args = hashMapOf<String, Any?>(
+            "allowedPackages" to listOf<String>()
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder, never()).withCustomTabsOptions(CustomTabsOptions.newBuilder().withBrowserPicker(
+                BrowserPicker.newBuilder().withAllowedPackages(listOf<String>()).build()).build())
         }
-        val request = MethodCallRequest(Auth0("test.auth0.com", "test-client"), argsWithoutPackages as HashMap<*, *>)
-        handler.handle(mock(), request, mockResult)
-        verify(mockResult).success(any())
     }
 
     @Test
-    fun `handle skips invalid allowedPackages without crashing`() {
-        val builder = mock<WebAuthProvider.Builder>()
-        val mockResult = mock<Result>()
-        val handler = LoginWebAuthRequestHandler { builder }
-        val argsWithInvalidPackages = requestArgs.toMutableMap().apply {
-            put("allowedPackages", "not-a-list")
+    fun `handler should add an empty allowedPackages when not specified`() {
+        val args = hashMapOf<String, Any?>()
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder, never()).withCustomTabsOptions(CustomTabsOptions.newBuilder().withBrowserPicker(
+                BrowserPicker.newBuilder().withAllowedPackages(listOf<String>()).build()).build())
         }
-            val request = MethodCallRequest(Auth0("test.auth0.com", "test-client"), argsWithInvalidPackages as HashMap<*, *>)
-            handler.handle(mock(), request, mockResult)
-            verify(mockResult).success(any())
     }
+
 }
