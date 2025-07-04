@@ -30,6 +30,8 @@
 ## [af-v1.8.0](https://github.com/auth0/auth0-flutter/tree/af-v1.8.0) (2025-02-13)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.7.2...af-v1.8.0)
 
+**This release updates the minimum required version for iOS to 14**
+
 **Added**
 - feat: Added support for passwordless authentication [\#503](https://github.com/auth0/auth0-flutter/pull/503) ([pmathew92](https://github.com/pmathew92))
 - build(deps): bump actions/download-artifact from 4.1.7 to 4.1.8 [\#499](https://github.com/auth0/auth0-flutter/pull/499) ([dependabot[bot]](https://github.com/apps/dependabot))
