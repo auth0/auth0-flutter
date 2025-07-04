@@ -43,6 +43,7 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   ))
   private val credentialsManagerCallHandler = CredentialsManagerMethodCallHandler(listOf(
     GetCredentialsRequestHandler(),
+    RenewCredentialsRequestHandler(),
     SaveCredentialsRequestHandler(),
     HasValidCredentialsRequestHandler(),
     ClearCredentialsRequestHandler()
