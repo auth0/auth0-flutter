@@ -42,12 +42,12 @@ class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest
             builder.withInvitationUrl(args["invitationUrl"] as String)
         }
 
-        val allowedPackages = (args["allowedPackages"] as? List<*>)?.filterIsInstance<String>().orEmpty()
-        if(allowedPackages.isNotEmpty()) {
+        val allowedBrowsers = (args["allowedBrowsers"] as? List<*>)?.filterIsInstance<String>().orEmpty()
+        if(allowedBrowsers.isNotEmpty()) {
             builder.withCustomTabsOptions(
                 CustomTabsOptions.newBuilder().withBrowserPicker(
                     BrowserPicker.newBuilder()
-                        .withAllowedPackages(allowedPackages).build()
+                        .withAllowedPackages(allowedBrowsers).build()
                 ).build()
             )
         }
