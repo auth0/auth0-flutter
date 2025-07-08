@@ -346,7 +346,7 @@ class LoginWebAuthRequestHandlerTest {
     @Test
     fun `handler should not add an empty allowedPackages when given an empty array`() {
         val args = hashMapOf<String, Any?>(
-            "allowedPackages" to listOf<String>()
+            "allowedBrowsers" to listOf<String>()
         )
 
         runRequestHandler(args) { _, builder ->
