@@ -3,6 +3,8 @@ package com.auth0.auth0_flutter
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
+import com.auth0.android.provider.BrowserPicker
+import com.auth0.android.provider.CustomTabsOptions
 import com.auth0.android.provider.WebAuthProvider
 import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
@@ -340,4 +342,27 @@ class LoginWebAuthRequestHandlerTest {
         assertThat((captor.firstValue as Map<*, *>)["scopes"], equalTo(listOf("scope1", "scope2")))
         assertThat(((captor.firstValue as Map<*, *>)["userProfile"] as Map<*, *>)["name"], equalTo("John Doe"))
     }
+
+    @Test
+    fun `handler should not add an empty allowedPackages when given an empty array`() {
+        val args = hashMapOf<String, Any?>(
+            "allowedBrowsers" to listOf<String>()
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder, never()).withCustomTabsOptions(CustomTabsOptions.newBuilder().withBrowserPicker(
+                BrowserPicker.newBuilder().withAllowedPackages(listOf<String>()).build()).build())
+        }
+    }
+
+    @Test
+    fun `handler should not add an empty allowedPackages when not specified`() {
+        val args = hashMapOf<String, Any?>()
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder, never()).withCustomTabsOptions(CustomTabsOptions.newBuilder().withBrowserPicker(
+                BrowserPicker.newBuilder().withAllowedPackages(listOf<String>()).build()).build())
+        }
+    }
+
 }
