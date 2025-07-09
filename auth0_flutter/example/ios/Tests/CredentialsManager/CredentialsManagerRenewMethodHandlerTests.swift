@@ -41,7 +41,7 @@ extension CredentialsManagerRenewMethodHandlerTests {
                                          tokenType: "tokenType",
                                          idToken: testIdToken,
                                          refreshToken: "refreshToken",
-                                         expiresIn: Date(timeIntervalSinceNow: -3600),
+                                         expiresIn: Date(),
                                          scope: "scope")
            let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
            let expectation = self.expectation(description: "Produced credentials")
@@ -52,6 +52,24 @@ extension CredentialsManagerRenewMethodHandlerTests {
            }
            wait(for: [expectation])
     }
+    
+    func testProducesCredentials() {
+            let credentials = Credentials(accessToken: "accessToken",
+                                          tokenType: "tokenType",
+                                          idToken: testIdToken,
+                                          refreshToken: "refreshToken",
+                                          expiresIn: Date(timeIntervalSinceNow: 3600),
+                                          scope: "scope")
+            let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
+            let expectation = self.expectation(description: "Produced credentials")
+            spyAuthentication.credentialsResult = .success(credentials)
+            spyStorage.getEntryReturnValue = data
+            sut.handle(with: arguments(withKey: Argument.parameters, value: [:])) { result in
+                assert(result: result, has: CredentialsProperty.allCases)
+                expectation.fulfill()
+            }
+            wait(for: [expectation])
+        }
 }
 
 extension CredentialsManagerRenewMethodHandlerTests {
