@@ -28,7 +28,7 @@ struct CredentialsManagerGetMethodHandler: MethodHandler {
 
         self.credentialsManager.credentials(withScope: scopes.isEmpty ? nil : scopes.asSpaceSeparatedString,
                                        minTTL: minTTL,
-                                       parameters: parameters) {
+                                      parameters: parameters) {
             switch $0 {
             case let .success(credentials): callback(result(from: credentials))
             case let .failure(error): callback(FlutterError(from: error))

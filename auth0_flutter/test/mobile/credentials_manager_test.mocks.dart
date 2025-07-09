@@ -54,6 +54,20 @@ class MockTestPlatform extends _i1.Mock implements _i3.TestPlatform {
       ) as _i4.Future<_i2.Credentials>);
 
   @override
+  _i4.Future<_i2.Credentials> renewCredentials(
+    _i5.CredentialsManagerRequest<_i5.RenewCredentialsOptions>? request,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(#renewCredentials, [request]),
+        returnValue: _i4.Future<_i2.Credentials>.value(
+          _FakeCredentials_0(
+            this,
+            Invocation.method(#renewCredentials, [request]),
+          ),
+        ),
+      ) as _i4.Future<_i2.Credentials>);
+
+  @override
   _i4.Future<bool> clearCredentials(
     _i5.CredentialsManagerRequest<_i5.RequestOptions?>? request,
   ) =>
