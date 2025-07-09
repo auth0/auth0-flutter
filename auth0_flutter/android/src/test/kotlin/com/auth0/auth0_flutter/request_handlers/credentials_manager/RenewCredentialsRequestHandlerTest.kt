@@ -23,7 +23,9 @@ import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.robolectric.RobolectricTestRunner
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 @RunWith(RobolectricTestRunner::class)
 class RenewCredentialsRequestHandlerTest {
@@ -75,31 +77,6 @@ class RenewCredentialsRequestHandlerTest {
             isNull(),
             eq(0),
             eq(mapOf("test" to "test-value", "test2" to "test-value")),
-            eq(true),
-            any()
-        )
-    }
-
-    @Test
-    fun `should always call getCredentials with forceRefresh equal to true`() {
-        val handler = RenewCredentialsRequestHandler()
-        val options = hashMapOf<String, Any>()
-        val mockResult = mock<Result>()
-        val mockAccount = mock<Auth0>()
-        val mockCredentialsManager = mock<SecureCredentialsManager>()
-        val request = MethodCallRequest(account = mockAccount, options)
-
-        handler.handle(
-            mockCredentialsManager,
-            mock(),
-            request,
-            mockResult
-        )
-
-        verify(mockCredentialsManager).getCredentials(
-            isNull(),
-            eq(0),
-            anyMap(),
             eq(true),
             any()
         )
@@ -190,6 +167,11 @@ class RenewCredentialsRequestHandlerTest {
         val captor = argumentCaptor<() -> Map<String, *>>()
         verify(mockResult).success(captor.capture())
 
+        val sdf =
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+
+        val formattedDate = sdf.format(credentials.expiresAt)
+
 
         MatcherAssert.assertThat(
             (captor.firstValue as Map<*, *>)["accessToken"],
@@ -202,6 +184,18 @@ class RenewCredentialsRequestHandlerTest {
         MatcherAssert.assertThat(
             (captor.firstValue as Map<*, *>)["refreshToken"],
             CoreMatchers.equalTo(credentials.refreshToken)
+        )
+        MatcherAssert.assertThat(
+            (captor.firstValue as Map<*, *>)["expiresAt"] as String,
+            CoreMatchers.equalTo(formattedDate)
+        )
+        MatcherAssert.assertThat(
+            (captor.firstValue as Map<*, *>)["scopes"],
+            CoreMatchers.equalTo(listOf("scope1"))
+        )
+        MatcherAssert.assertThat(
+            ((captor.firstValue as Map<*, *>)["userProfile"] as Map<*, *>)["name"],
+            CoreMatchers.equalTo("John Doe")
         )
     }
 }

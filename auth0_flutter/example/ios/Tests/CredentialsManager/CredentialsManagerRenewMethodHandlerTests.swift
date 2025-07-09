@@ -36,22 +36,21 @@ extension CredentialsManagerRenewMethodHandlerTests {
 
 extension CredentialsManagerRenewMethodHandlerTests {
 
-    func testAddsParameters() {
-        let value = ["a":"b"]
-        let credentials = Credentials(accessToken: "accessToken",
-                                      tokenType: "tokenType",
-                                      idToken: testIdToken,
-                                      refreshToken: "refreshToken",
-                                      expiresIn: Date(timeIntervalSinceNow: -3600),
-                                      scope: "foo bar")
-        let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
-        let expectation = self.expectation(description: "Produced credentials")
-        spyStorage.getEntryReturnValue = data
-        sut.handle(with: arguments(withKey: Argument.parameters, value: [value])) { _ in
-            XCTAssertNil(self.spyAuthentication.arguments["a"] as? String)
-            expectation.fulfill()
-        }
-        wait(for: [expectation])
+    func testRenewApiCalled() {
+           let credentials = Credentials(accessToken: "accessToken",
+                                         tokenType: "tokenType",
+                                         idToken: testIdToken,
+                                         refreshToken: "refreshToken",
+                                         expiresIn: Date(timeIntervalSinceNow: -3600),
+                                         scope: "scope")
+           let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
+           let expectation = self.expectation(description: "Produced credentials")
+           spyStorage.getEntryReturnValue = data
+           sut.handle(with: arguments(withKey: Argument.parameters, value: [:])) { _ in
+               XCTAssertEqual(self.spyAuthentication.calledRenew as Bool, true)
+               expectation.fulfill()
+           }
+           wait(for: [expectation])
     }
 }
 

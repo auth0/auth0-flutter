@@ -661,6 +661,7 @@ void main() {
       Map<dynamic, dynamic> renewedCredentials = {
         'accessToken': 'renewedAccessToken',
         'idToken': 'idToken',
+        'refreshToken':'refreshToken',
         'expiresAt': '2023-11-01T22:16:35.760Z',
         'scopes': ['a', 'b'],
         'userProfile': {'sub': '123', 'name': 'John Doe'},
@@ -710,7 +711,7 @@ void main() {
     });
 
     test(
-        'throws an ApiException when method channel throws a PlatformException',
+        'throws an CredentialsManagerException when method channel throws a PlatformException',
         () async {
       when(mocked.methodCallHandler(any))
           .thenThrow(PlatformException(code: '123'));
