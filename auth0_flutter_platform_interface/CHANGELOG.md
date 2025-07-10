@@ -1,5 +1,14 @@
 # Change Log
 
+## [afpi-v1.12.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.12.0) (2025-07-10)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.11.0...afpi-v1.12.0)
+
+**Added**
+- chore: added new renewCredentials method to fetch a new set of credentials [\#610](https://github.com/auth0/auth0-flutter/pull/610) ([pmathew92](https://github.com/pmathew92))
+- dart api to input allowed browser packages for web auth login [\#611](https://github.com/auth0/auth0-flutter/pull/611) ([NandanPrabhu](https://github.com/NandanPrabhu))
+- chore : added new properties to web_authentication_exception and credentials_manager_exception class [\#609](https://github.com/auth0/auth0-flutter/pull/609) ([pmathew92](https://github.com/pmathew92))
+- Added webAuth cancel for ios to prevent active transaction errors [\#573](https://github.com/auth0/auth0-flutter/pull/573) ([pmathew92](https://github.com/pmathew92))
+
 ## [afpi-v1.11.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.11.0) (2025-06-11)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.10.0...afpi-v1.11.0)
 
