@@ -4,8 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('WebAuthLoginOptions', () {
     test('toMap should include all fields correctly', () {
-      final safariViewController = SafariViewController(presentationStyle: SafariViewControllerPresentationStyle.automatic);
-      final idTokenValidationConfig = IdTokenValidationConfig(leeway: 0, maxAge: 0, issuer: "issuer");
+      const safariViewController = SafariViewController(
+          presentationStyle: SafariViewControllerPresentationStyle.automatic);
+      const idTokenValidationConfig =
+          IdTokenValidationConfig(leeway: 0, maxAge: 0, issuer: 'issuer');
       final options = WebAuthLoginOptions(
         audience: 'https://myapi.com',
         idTokenValidationConfig: idTokenValidationConfig,

@@ -658,7 +658,7 @@ void main() {
     });
 
     test('correctly returns the response from the Method Channel', () async {
-      Map<dynamic, dynamic> renewedCredentials = {
+      final Map<dynamic, dynamic> renewedCredentials = {
         'accessToken': 'renewedAccessToken',
         'idToken': 'idToken',
         'refreshToken':'refreshToken',
