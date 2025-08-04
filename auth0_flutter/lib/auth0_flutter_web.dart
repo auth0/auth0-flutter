@@ -7,17 +7,27 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 /// Primary interface for interacting with Auth0 on web platforms.
 class Auth0Web {
   final Account _account;
+  final String? _redirectUrl;
+  final CacheLocation? _cacheLocation;
 
   final UserAgent _userAgent =
       UserAgent(name: 'auth0-flutter', version: version);
 
-  /// Creates an instance of the [Auth0Web] client with the provided [domain]
-  /// and [clientId] properties.
+  /// Creates an instance of the [Auth0Web] client with the provided
+  /// [domain], [clientId], and optional [redirectUrl] and [cacheLocation] properties.
+  ///
+  /// [redirectUrl] is used for silent authentication in [onLoad].
+  /// [cacheLocation] is used to specify where the SDK should store
+  /// its authentication state. Defaults to `memory`. Setting this to `localStorage`
+  /// is often required for seamless silent authentication on page reloads.
   ///
   /// [domain] and [clientId] are both values that can be retrieved from the
   /// **Settings** page of your [Auth0 application](https://manage.auth0.com/#/applications/).
-  Auth0Web(final String domain, final String clientId)
-      : _account = Account(domain, clientId);
+  Auth0Web(final String domain, final String clientId,
+      {final String? redirectUrl, final CacheLocation? cacheLocation})
+      : _account = Account(domain, clientId),
+        _redirectUrl = redirectUrl,
+        _cacheLocation = cacheLocation;
 
   /// Get the app state that was provided during a previous call
   /// to [loginWithRedirect].
@@ -63,7 +73,7 @@ class Auth0Web {
         ClientOptions(
             account: _account,
             authorizeTimeoutInSeconds: authorizeTimeoutInSeconds,
-            cacheLocation: cacheLocation,
+            cacheLocation: cacheLocation ?? _cacheLocation,
             cookieDomain: cookieDomain,
             httpTimeoutInSeconds: httpTimeoutInSeconds,
             idTokenValidationConfig:
@@ -76,7 +86,10 @@ class Auth0Web {
             useRefreshTokensFallback: useRefreshTokensFallback,
             audience: audience,
             scopes: scopes,
-            parameters: parameters),
+            parameters: {
+              if (_redirectUrl != null) 'redirect_uri': _redirectUrl!,
+              ...parameters
+            }),
         _userAgent);
 
     if (await hasValidCredentials()) {
