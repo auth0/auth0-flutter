@@ -33,7 +33,6 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   /// Thus clearing this object is not needed,
   /// as the actual state is managed across reloads,
   /// using the transaction manager.
-  // TODO: move the `appState` to the result of `onLoad/initialize`
   Object? _appState;
 
   @override
@@ -57,6 +56,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
 
         _appState = result.appState.dartify();
 
+        window.history.replaceState(null, '', window.location.pathname);
         return;
       } catch (e) {
         throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
