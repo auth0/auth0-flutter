@@ -59,9 +59,10 @@ runs:
         rm strings.xml.bak
       shell: bash
 
+    # Remove this restriction og 8.14.1, once migrated to Java 17 on Android SDK
     - name: Set Gradle wrapper
       working-directory: auth0_flutter/example/android
       run: |
         gradle wrapper --gradle-version 8.14.1 --distribution-type bin
-        chmod +x gradlew             //Remove this restriction once migrated to Java 17 on Android SDK
+        chmod +x gradlew
       shell: bash
