@@ -39,7 +39,7 @@ jobs:
               working-directory: auth0_flutter
               run: cp example/.env.example example/.env
 
-            - name: Analize auth0_flutter package
+            - name: Analyze auth0_flutter package
               working-directory: auth0_flutter
               run: flutter analyze --no-fatal-warnings --no-fatal-infos
 
@@ -58,7 +58,7 @@ jobs:
                   channel: stable
                   cache: true
 
-            - name: Analize auth0_flutter_platform_interface package
+            - name: Analyze auth0_flutter_platform_interface package
               working-directory: auth0_flutter_platform_interface
               run: flutter analyze --no-fatal-warnings --no-fatal-infos
 
