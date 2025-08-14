@@ -41,6 +41,11 @@ runs:
         java-version: ${{ inputs.java }}
         cache: 'gradle'
 
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+          gradle-version: '8.14.1'
+
     - name: Set .env
       working-directory: auth0_flutter/example
       run: printf '%s\n%s\n%s' 'AUTH0_DOMAIN=${{ inputs.auth0-domain }}' 'AUTH0_CLIENT_ID=${{ inputs.auth0-client-id }}' 'AUTH0_CUSTOM_SCHEME=demo' >> .env
@@ -56,5 +61,7 @@ runs:
 
     - name: Set Gradle wrapper
       working-directory: auth0_flutter/example/android
-      run: gradle wrapper
+      run: |
+        gradle wrapper --gradle-version 8.14.1 --distribution-type bin
+        chmod +x gradlew             //Remove this restriction once migrated to Java 17 on Android SDK
       shell: bash
