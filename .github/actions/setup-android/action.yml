@@ -56,5 +56,5 @@ runs:
 
     - name: Set Gradle wrapper
       working-directory: auth0_flutter/example/android
-      run: gradle wrapper
+      run: gradle wrapper --gradle-version 8.14.1   // Remove this once we migrate the Android SDK to gradle 8 and java 17
       shell: bash
