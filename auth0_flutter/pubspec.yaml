@@ -54,6 +54,8 @@ flutter:
       web:
         pluginClass: Auth0FlutterPlugin
         fileName: src/web.dart
+      windows:
+        pluginClass: Auth0FlutterPlugin
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
