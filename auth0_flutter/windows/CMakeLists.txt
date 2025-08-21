@@ -3,6 +3,10 @@
 # version, as doing so will cause the plugin to fail to compile for some
 # customers of the plugin.
 cmake_minimum_required(VERSION 3.14)
+#if (DEFINED ENV{VCPKG_ROOT} AND EXISTS "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+#    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+#        CACHE STRING "Vcpkg toolchain file")
+#endif()
 
 # Project-level configuration.
 set(PROJECT_NAME "auth0_flutter")
@@ -42,59 +46,67 @@ set_target_properties(${PLUGIN_NAME} PROPERTIES
   CXX_VISIBILITY_PRESET hidden)
 target_compile_definitions(${PLUGIN_NAME} PRIVATE FLUTTER_PLUGIN_IMPL)
 
-# Source include directories and library dependencies. Add any plugin-specific
-# dependencies here.
+# Source include directories and library dependencies.
 target_include_directories(${PLUGIN_NAME} INTERFACE
   "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_link_libraries(${PLUGIN_NAME} PRIVATE flutter flutter_wrapper_plugin)
+
+#list(APPEND CMAKE_MODULE_PATH "$ENV{VCPKG_ROOT}/installed/x64-windows/share")
+
+# === vcpkg dependencies ===
+# These are resolved via vcpkg.json automatically (cpprestsdk, boost)
+find_package(cpprestsdk CONFIG REQUIRED)
+find_package(Boost REQUIRED COMPONENTS system date_time regex)
+
+# Link Flutter + vcpkg dependencies
+target_link_libraries(${PLUGIN_NAME} PRIVATE
+  flutter
+  flutter_wrapper_plugin
+  cpprestsdk::cpprest
+  Boost::system
+  Boost::date_time
+  Boost::regex
+)
 
 # List of absolute paths to libraries that should be bundled with the plugin.
-# This list could contain prebuilt libraries, or libraries created by an
-# external build triggered from this build file.
 set(auth0_flutter_bundled_libraries
   ""
   PARENT_SCOPE
 )
 
 # === Tests ===
-# These unit tests can be run from a terminal after building the example, or
-# from Visual Studio after opening the generated solution file.
-
-# Only enable test builds when building the example (which sets this variable)
-# so that plugin clients aren't building the tests.
 if (${include_${PROJECT_NAME}_tests})
-set(TEST_RUNNER "${PROJECT_NAME}_test")
-enable_testing()
+  set(TEST_RUNNER "${PROJECT_NAME}_test")
+  enable_testing()
 
-# Add the Google Test dependency.
-include(FetchContent)
-FetchContent_Declare(
-  googletest
-  URL https://github.com/google/googletest/archive/release-1.11.0.zip
-)
-# Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-# Disable install commands for gtest so it doesn't end up in the bundle.
-set(INSTALL_GTEST OFF CACHE BOOL "Disable installation of googletest" FORCE)
-FetchContent_MakeAvailable(googletest)
+  # Add the Google Test dependency (still FetchContent, not vcpkg)
+  include(FetchContent)
+  FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/release-1.11.0.zip
+  )
+  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+  set(INSTALL_GTEST OFF CACHE BOOL "Disable installation of googletest" FORCE)
+  FetchContent_MakeAvailable(googletest)
 
-# The plugin's C API is not very useful for unit testing, so build the sources
-# directly into the test binary rather than using the DLL.
-add_executable(${TEST_RUNNER}
-  test/auth0_flutter_plugin_test.cpp
-  ${PLUGIN_SOURCES}
-)
-apply_standard_settings(${TEST_RUNNER})
-target_include_directories(${TEST_RUNNER} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
-target_link_libraries(${TEST_RUNNER} PRIVATE flutter_wrapper_plugin)
-target_link_libraries(${TEST_RUNNER} PRIVATE gtest_main gmock)
-# flutter_wrapper_plugin has link dependencies on the Flutter DLL.
-add_custom_command(TARGET ${TEST_RUNNER} POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  "${FLUTTER_LIBRARY}" $<TARGET_FILE_DIR:${TEST_RUNNER}>
-)
+  # Build test runner
+  add_executable(${TEST_RUNNER}
+    test/auth0_flutter_plugin_test.cpp
+    ${PLUGIN_SOURCES}
+  )
+  apply_standard_settings(${TEST_RUNNER})
+  target_include_directories(${TEST_RUNNER} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+  target_link_libraries(${TEST_RUNNER} PRIVATE
+    flutter_wrapper_plugin
+    gtest_main
+    gmock
+  )
 
-# Enable automatic test discovery.
-include(GoogleTest)
-gtest_discover_tests(${TEST_RUNNER})
+  # flutter_wrapper_plugin has link dependencies on the Flutter DLL.
+  add_custom_command(TARGET ${TEST_RUNNER} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${FLUTTER_LIBRARY}" $<TARGET_FILE_DIR:${TEST_RUNNER}>
+  )
+
+  include(GoogleTest)
+  gtest_discover_tests(${TEST_RUNNER})
 endif()
