@@ -69,8 +69,17 @@ class WebAuthentication {
   /// domain –or custom domain, if you have one.
   /// * (iOS/macOS only): [useEphemeralSession] controls whether shared persistent
   /// storage is used for cookies. [Read more on the effects this setting has](https://github.com/auth0/auth0-flutter/blob/main/auth0_flutter/FAQ.md#2-how-can-i-disable-the-ios-login-alert-box).
+  /// * (android only): [allowedBrowsers] Defines an allowlist of browser
+  /// packages
+  /// When the user's default browser is in the allowlist, it uses the default
+  /// browser
+  /// When the user's default browser is not in the allowlist, but the user has
+  /// another allowed browser installed, the allowed browser is used instead
+  /// When the user's default browser is not in the allowlist, and the user has
+  /// no other allowed browser installed, an error is returned
   Future<Credentials> login(
       {final String? audience,
+<<<<<<< HEAD
         final Set<String> scopes = const {
           'openid',
           'profile',
@@ -86,6 +95,24 @@ class WebAuthentication {
         final IdTokenValidationConfig idTokenValidationConfig =
         const IdTokenValidationConfig(),
         final SafariViewController? safariViewController}) async {
+=======
+      final Set<String> scopes = const {
+        'openid',
+        'profile',
+        'email',
+        'offline_access'
+      },
+      final String? redirectUrl,
+      final String? organizationId,
+      final String? invitationUrl,
+      final bool useHTTPS = false,
+      final List<String> allowedBrowsers = const [],
+      final bool useEphemeralSession = false,
+      final Map<String, String> parameters = const {},
+      final IdTokenValidationConfig idTokenValidationConfig =
+          const IdTokenValidationConfig(),
+      final SafariViewController? safariViewController}) async {
+>>>>>>> main
     final credentials = await Auth0FlutterWebAuthPlatform.instance.login(
         _createWebAuthRequest(WebAuthLoginOptions(
             audience: audience,
@@ -98,10 +125,10 @@ class WebAuthentication {
             scheme: _scheme,
             useHTTPS: useHTTPS,
             useEphemeralSession: useEphemeralSession,
-            safariViewController: safariViewController)));
+            safariViewController: safariViewController,
+            allowedBrowsers: allowedBrowsers)));
 
     await _credentialsManager?.storeCredentials(credentials);
-
     return credentials;
   }
 
@@ -121,6 +148,7 @@ class WebAuthentication {
   /// versions of iOS and macOS. Requires an Associated Domain configured with
   /// the `webcredentials` service type, set to your Auth0 domain –or custom
   /// domain, if you have one.
+<<<<<<< HEAD
   /// [logoutParams] parameters to pass to the logout endpoint.
   Future<void> logout(
       {final String? returnTo,
@@ -132,6 +160,20 @@ class WebAuthentication {
           scheme: _scheme,
           useHTTPS: useHTTPS,
           parameters: logoutParams),
+=======
+  Future<void> logout({
+    final String? returnTo,
+    final bool useHTTPS = false,
+    final bool? federated,
+  }) async {
+    await Auth0FlutterWebAuthPlatform.instance.logout(_createWebAuthRequest(
+      WebAuthLogoutOptions(
+        returnTo: returnTo,
+        scheme: _scheme,
+        useHTTPS: useHTTPS,
+        federated: federated,
+      ),
+>>>>>>> main
     ));
     await _credentialsManager?.clearCredentials();
   }

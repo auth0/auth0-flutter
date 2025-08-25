@@ -4,6 +4,7 @@ class WebAuthLogoutOptions implements RequestOptions {
   final bool useHTTPS;
   final String? returnTo;
   final String? scheme;
+<<<<<<< HEAD
   final Map<String, dynamic>? parameters;
 
   WebAuthLogoutOptions({
@@ -20,4 +21,17 @@ class WebAuthLogoutOptions implements RequestOptions {
     'scheme': scheme,
     'parameters': parameters,
   };
+=======
+  final bool? federated;
+
+  WebAuthLogoutOptions({this.useHTTPS = false, this.returnTo, this.scheme, this.federated});
+
+  @override
+  Map<String, dynamic> toMap() => {
+        'useHTTPS': useHTTPS,
+        'returnTo': returnTo,
+        'scheme': scheme,
+        'federated': federated
+      };
+>>>>>>> main
 }

@@ -3,6 +3,8 @@ package com.auth0.auth0_flutter.request_handlers.web_auth
 import android.content.Context
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
+import com.auth0.android.provider.BrowserPicker
+import com.auth0.android.provider.CustomTabsOptions
 import com.auth0.android.provider.WebAuthProvider
 import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
@@ -38,6 +40,16 @@ class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest
 
         if (args["invitationUrl"] is String) {
             builder.withInvitationUrl(args["invitationUrl"] as String)
+        }
+
+        val allowedBrowsers = (args["allowedBrowsers"] as? List<*>)?.filterIsInstance<String>().orEmpty()
+        if(allowedBrowsers.isNotEmpty()) {
+            builder.withCustomTabsOptions(
+                CustomTabsOptions.newBuilder().withBrowserPicker(
+                    BrowserPicker.newBuilder()
+                        .withAllowedPackages(allowedBrowsers).build()
+                ).build()
+            )
         }
 
         if (args["leeway"] is Int) {

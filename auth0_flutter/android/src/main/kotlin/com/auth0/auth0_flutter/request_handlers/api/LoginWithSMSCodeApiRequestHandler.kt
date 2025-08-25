@@ -23,7 +23,7 @@ class LoginWithSMSCodeApiRequestHandler : ApiRequestHandler {
         assertHasProperties(listOf("phoneNumber", "verificationCode"), args)
 
         val builder = api.loginWithPhoneNumber(
-            args["email"] as String,
+            args["phoneNumber"] as String,
             args["verificationCode"] as String
         ).apply {
             val scopes = (args["scopes"] ?: arrayListOf<String>()) as ArrayList<*>
