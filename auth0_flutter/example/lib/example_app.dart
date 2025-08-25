@@ -8,6 +8,12 @@ import 'api_card.dart';
 import 'constants.dart';
 import 'web_auth_card.dart';
 
+Future<void> main() async {
+  await dotenv.load();
+  print('Loaded .env: ${dotenv.env}');
+  runApp(const ExampleApp());
+}
+
 class ExampleApp extends StatefulWidget {
   const ExampleApp({final Key? key}) : super(key: key);
 
@@ -27,6 +33,9 @@ class _ExampleAppState extends State<ExampleApp> {
   void initState() {
     super.initState();
 
+    print('Auth0 domain: \'${dotenv.env['AUTH0_DOMAIN']}\'');
+    print('Auth0 client id: \'${dotenv.env['AUTH0_CLIENT_ID']}\'');
+    print('Auth0 custom scheme: \'${dotenv.env['AUTH0_CUSTOM_SCHEME']}\'');
     auth0 = Auth0(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
     auth0Web =
         Auth0Web(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
@@ -42,30 +51,24 @@ class _ExampleAppState extends State<ExampleApp> {
 
   Future<void> webAuthLogin() async {
     String output = '';
-
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
+    print('webAuthLogin called');
     try {
       if (kIsWeb) {
-        return auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
+        print('webAuthLogin: running on web');
+        return auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:8031');
       }
-
+      print('webAuthLogin: running on mobile');
       final result = await webAuth.login(useHTTPS: true);
-
+      print('webAuthLogin: login result: \'${result.idToken}\'');
       setState(() {
         _isLoggedIn = true;
       });
-
       output = result.idToken;
     } catch (e) {
+      print('webAuthLogin: error: $e');
       output = e.toString();
     }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
     if (!mounted) return;
-
     setState(() {
       _output = output;
     });
@@ -73,28 +76,25 @@ class _ExampleAppState extends State<ExampleApp> {
 
   Future<void> webAuthLogout() async {
     String output;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
+    print('webAuthLogout called');
     try {
       if (kIsWeb) {
-        await auth0Web.logout(returnToUrl: 'http://localhost:3000');
+        print('webAuthLogout: running on web');
+        await auth0Web.logout(returnToUrl: 'http://localhost:8031');
       } else {
+        print('webAuthLogout: running on mobile');
         await webAuth.logout(useHTTPS: true);
-
         setState(() {
           _isLoggedIn = false;
         });
       }
       output = 'Logged out.';
+      print('webAuthLogout: success');
     } catch (e) {
+      print('webAuthLogout: error: $e');
       output = e.toString();
     }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
     if (!mounted) return;
-
     setState(() {
       _output = output;
     });
