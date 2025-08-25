@@ -130,15 +130,21 @@ class WebAuthentication {
   /// versions of iOS and macOS. Requires an Associated Domain configured with
   /// the `webcredentials` service type, set to your Auth0 domain –or custom
   /// domain, if you have one.
-  Future<void> logout(
-      {final String? returnTo, final bool useHTTPS = false}) async {
+  Future<void> logout({
+    final String? returnTo,
+    final bool useHTTPS = false,
+    final bool? federated,
+  }) async {
     await Auth0FlutterWebAuthPlatform.instance.logout(_createWebAuthRequest(
       WebAuthLogoutOptions(
-          returnTo: returnTo, scheme: _scheme, useHTTPS: useHTTPS),
+        returnTo: returnTo,
+        scheme: _scheme,
+        useHTTPS: useHTTPS,
+        federated: federated,
+      ),
     ));
     await _credentialsManager?.clearCredentials();
   }
-
 
   /// Terminates the ongoing web-based operation and reports back that it was
   /// cancelled.

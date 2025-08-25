@@ -11,6 +11,7 @@ struct WebAuthLogoutMethodHandler: MethodHandler {
     enum Argument: String {
         case useHTTPS
         case returnTo
+        case federated
     }
 
     let client: WebAuth
@@ -28,6 +29,10 @@ struct WebAuthLogoutMethodHandler: MethodHandler {
 
         if let returnTo = arguments[Argument.returnTo] as? String, let url = URL(string: returnTo) {
             webAuth = webAuth.redirectURL(url)
+        }
+
+        if let federated = arguments[Argument.federated] as? Bool, federated {
+            webAuth = webAuth.federated()
         }
 
         webAuth.clearSession {
