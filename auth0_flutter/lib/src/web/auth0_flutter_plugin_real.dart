@@ -39,18 +39,21 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   Future<Object?> get appState => Future<Object?>.value(_appState);
 
   String? _getInvitationTicket(final String? invitationUrl) {
-    if (invitationUrl == null) {
+    if (invitationUrl == null || invitationUrl.isEmpty) {
       return null;
     }
 
     final uri = Uri.tryParse(invitationUrl);
-    // If it's a full URL, parse the 'invitation' query parameter.
-    if (uri != null && uri.hasAuthority) {
-      return uri.queryParameters['invitation'];
+
+    // If parsing fails or it's not a valid web/custom scheme URL,
+    // the input string is the ticket ID itself.
+    if (uri == null || !uri.hasAuthority) {
+      return invitationUrl;
     }
 
-    // Otherwise, it's the invitation ticket ID itself.
-    return invitationUrl;
+    // If it is a valid URL, return the 'invitation' query parameter,
+    // which will be the ticket ID if present, or null if not.
+    return uri.queryParameters['invitation'];
   }
 
   @override

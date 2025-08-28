@@ -73,20 +73,20 @@ void main() {
   });
 
   test('handleRedirectCallback is called on load when auth params exist in URL',
-      () async {
-    final interop.RedirectLoginResult mockRedirectResult =
+          () async {
+        final interop.RedirectLoginResult mockRedirectResult =
         interop.RedirectLoginResult();
 
-    when(mockClientProxy.isAuthenticated())
-        .thenAnswer((final _) => Future.value(false));
-    when(mockClientProxy.handleRedirectCallback())
-        .thenAnswer((final _) => Future.value(mockRedirectResult));
+        when(mockClientProxy.isAuthenticated())
+            .thenAnswer((final _) => Future.value(false));
+        when(mockClientProxy.handleRedirectCallback())
+            .thenAnswer((final _) => Future.value(mockRedirectResult));
 
-    plugin.urlSearchProvider = () => '?code=abc&state=123';
-    await auth0.onLoad();
-    verify(mockClientProxy.handleRedirectCallback());
-    verifyNever(mockClientProxy.checkSession());
-  });
+        plugin.urlSearchProvider = () => '?code=abc&state=123';
+        await auth0.onLoad();
+        verify(mockClientProxy.handleRedirectCallback());
+        verifyNever(mockClientProxy.checkSession());
+      });
 
   test('handleRedirectCallback captures appState that was passed', () async {
     final Map<String, Object?> appState = <String, Object?>{
@@ -94,7 +94,7 @@ void main() {
     };
 
     final interop.RedirectLoginResult mockRedirectResult =
-        interop.RedirectLoginResult(
+    interop.RedirectLoginResult(
       appState: appState.jsify(),
     );
 
@@ -124,7 +124,7 @@ void main() {
     };
 
     final interop.RedirectLoginResult mockRedirectResult =
-        interop.RedirectLoginResult(
+    interop.RedirectLoginResult(
       appState: appState.jsify(),
     );
 
@@ -146,22 +146,22 @@ void main() {
   });
 
   test('onLoad throws the correct exception from handleRedirectCallback',
-      () async {
-    when(mockClientProxy.isAuthenticated())
-        .thenAnswer((final _) => Future.value(false));
+          () async {
+        when(mockClientProxy.isAuthenticated())
+            .thenAnswer((final _) => Future.value(false));
 
-    when(mockClientProxy.handleRedirectCallback())
-        .thenThrow(createJsException('test', 'test exception'));
+        when(mockClientProxy.handleRedirectCallback())
+            .thenThrow(createJsException('test', 'test exception'));
 
-    plugin.urlSearchProvider = () => '?code=abc&state=123';
+        plugin.urlSearchProvider = () => '?code=abc&state=123';
 
-    expect(
-        () async => auth0.onLoad(),
-        throwsA(predicate((final e) =>
+        expect(
+                () async => auth0.onLoad(),
+            throwsA(predicate((final e) =>
             e is WebException &&
-            e.code == 'test' &&
-            e.message == 'test exception')));
-  });
+                e.code == 'test' &&
+                e.message == 'test exception')));
+      });
 
   test('loginWithRedirect supports appState parameter', () async {
     when(mockClientProxy.isAuthenticated())
@@ -196,7 +196,7 @@ void main() {
 
     await auth0.loginWithRedirect(
         audience: 'http://localhost',
-        invitationUrl: 'https://invitation.uri',
+        invitationUrl: 'https://my-tenant.com/invite?invitation=real-ticket-id', // Use a realistic URL
         organizationId: 'org-id',
         redirectUrl: 'http://redirect.uri',
         scopes: {'openid', 'read-books'},
@@ -209,7 +209,7 @@ void main() {
 
     expect(params, isNotNull);
     expect(params.audience, 'http://localhost');
-    expect(params.invitation, 'https://invitation.uri');
+    expect(params.invitation, 'real-ticket-id');
     expect(params.organization, 'org-id');
     expect(params.redirect_uri, 'http://redirect.uri');
     expect(params.scope, 'openid read-books');
@@ -309,9 +309,9 @@ void main() {
         .thenThrow(createJsException('test', 'test exception'));
 
     expect(
-        () async => auth0.credentials(),
+            () async => auth0.credentials(),
         throwsA(predicate((final e) =>
-            e is WebException &&
+        e is WebException &&
             e.code == 'test' &&
             e.message == 'test exception')));
   });
@@ -339,7 +339,7 @@ void main() {
     final credentials = await auth0.loginWithPopup(
         audience: 'http://my.api',
         organizationId: 'org123',
-        invitationUrl: 'http://invitation.url',
+        invitationUrl: 'https://my-tenant.com/invite?invitation=real-ticket-id', // Use a realistic URL
         scopes: {'openid'},
         maxAge: 20,
         popupWindow: window,
@@ -352,8 +352,7 @@ void main() {
 
     expect(capture.first.authorizationParams.audience, 'http://my.api');
     expect(capture.first.authorizationParams.organization, 'org123');
-    expect(
-        capture.first.authorizationParams.invitation, 'http://invitation.url');
+    expect(capture.first.authorizationParams.invitation, 'real-ticket-id');
     expect(capture.first.authorizationParams.scope, 'openid');
     expect(capture.first.authorizationParams.max_age, 20);
     expect(capture.last.popup, window);
@@ -375,7 +374,7 @@ void main() {
         .thenAnswer((final _) => Future.value(webCredentials));
 
     final credentials =
-        await auth0.loginWithPopup(parameters: {'screen_hint': 'signup'});
+    await auth0.loginWithPopup(parameters: {'screen_hint': 'signup'});
 
     expect(credentials, isNotNull);
 
@@ -386,70 +385,97 @@ void main() {
   });
 
   test('loginWithPopup throws the correct exception from js.loginWithPopup',
-      () async {
-    when(mockClientProxy.loginWithPopup(any, any))
-        .thenThrow(createJsException('test', 'test exception'));
+          () async {
+        when(mockClientProxy.loginWithPopup(any, any))
+            .thenThrow(createJsException('test', 'test exception'));
 
-    expect(
-        () async => auth0.loginWithPopup(),
-        throwsA(predicate((final e) =>
+        expect(
+                () async => auth0.loginWithPopup(),
+            throwsA(predicate((final e) =>
             e is WebException &&
-            e.code == 'test' &&
-            e.message == 'test exception')));
-  });
+                e.code == 'test' &&
+                e.message == 'test exception')));
+      });
 
   test('loginWithPopup throws the correct exception from getTokenSilently',
-      () async {
-    when(mockClientProxy.loginWithPopup(any, any))
-        .thenAnswer((final _) => Future.value());
+          () async {
+        when(mockClientProxy.loginWithPopup(any, any))
+            .thenAnswer((final _) => Future.value());
 
-    when(mockClientProxy.getTokenSilently(any))
-        .thenThrow(createJsException('test', 'test exception'));
+        when(mockClientProxy.getTokenSilently(any))
+            .thenThrow(createJsException('test', 'test exception'));
 
-    expect(
-        () async => auth0.loginWithPopup(),
-        throwsA(predicate((final e) =>
+        expect(
+                () async => auth0.loginWithPopup(),
+            throwsA(predicate((final e) =>
             e is WebException &&
-            e.code == 'test' &&
-            e.message == 'test exception')));
-  });
+                e.code == 'test' &&
+                e.message == 'test exception')));
+      });
 
   group('invitationUrl handling', () {
     const fullInvitationUrl =
         'https://my-tenant.auth0.com/login/invitation?invitation=abc-123&organization=org_xyz';
     const invitationId = 'abc-123';
+    const invalidUrl = '::not-a-valid-url::';
+    const urlWithoutInvitation = 'https://google.com?q=test';
 
     group('loginWithRedirect', () {
-      test('correctly parses the ticket ID from a full invitation URL',
-          () async {
+      setUp(() {
         when(mockClientProxy.loginWithRedirect(any))
             .thenAnswer((_) => Future.value());
-
-        await auth0.loginWithRedirect(invitationUrl: fullInvitationUrl);
-
-        final captured = verify(mockClientProxy.loginWithRedirect(captureAny))
-            .captured
-            .single as interop.RedirectLoginOptions;
-        expect(captured.authorizationParams!.invitation, invitationId);
       });
 
-      test('correctly uses the ticket ID when it is passed directly',
-          () async {
-        when(mockClientProxy.loginWithRedirect(any))
-            .thenAnswer((_) => Future.value());
+      test('correctly parses the ticket ID from a full invitation URL',
+              () async {
+            await auth0.loginWithRedirect(invitationUrl: fullInvitationUrl);
 
-        await auth0.loginWithRedirect(invitationUrl: invitationId);
+            final captured = verify(mockClientProxy.loginWithRedirect(captureAny))
+                .captured
+                .single as interop.RedirectLoginOptions;
+            expect(captured.authorizationParams!.invitation, invitationId);
+          });
+
+      test('correctly uses the ticket ID when it is passed directly',
+              () async {
+            await auth0.loginWithRedirect(invitationUrl: invitationId);
+
+            final captured = verify(mockClientProxy.loginWithRedirect(captureAny))
+                .captured
+                .single as interop.RedirectLoginOptions;
+            expect(captured.authorizationParams!.invitation, invitationId);
+          });
+
+      test('treats an invalid URL as a ticket ID', () async {
+        await auth0.loginWithRedirect(invitationUrl: invalidUrl);
 
         final captured = verify(mockClientProxy.loginWithRedirect(captureAny))
             .captured
             .single as interop.RedirectLoginOptions;
-        expect(captured.authorizationParams!.invitation, invitationId);
+        expect(captured.authorizationParams!.invitation, invalidUrl);
+      });
+
+      test(
+          'returns null for the ticket when a valid URL without the parameter is passed',
+              () async {
+            await auth0.loginWithRedirect(invitationUrl: urlWithoutInvitation);
+
+            final captured = verify(mockClientProxy.loginWithRedirect(captureAny))
+                .captured
+                .single as interop.RedirectLoginOptions;
+            expect(captured.authorizationParams!.invitation, isNull);
+          });
+
+      test('passes null when invitationUrl is an empty string', () async {
+        await auth0.loginWithRedirect(invitationUrl: '');
+
+        final captured = verify(mockClientProxy.loginWithRedirect(captureAny))
+            .captured
+            .single as interop.RedirectLoginOptions;
+        expect(captured.authorizationParams!.invitation, isNull);
       });
 
       test('passes null when invitationUrl is not provided', () async {
-        when(mockClientProxy.loginWithRedirect(any))
-            .thenAnswer((_) => Future.value());
-
         await auth0.loginWithRedirect();
 
         final captured = verify(mockClientProxy.loginWithRedirect(captureAny))
@@ -468,34 +494,34 @@ void main() {
       });
 
       test('correctly parses the ticket ID from a full invitation URL',
-          () async {
-        await auth0.loginWithPopup(invitationUrl: fullInvitationUrl);
+              () async {
+            await auth0.loginWithPopup(invitationUrl: fullInvitationUrl);
 
-        final captured =
+            final captured =
             verify(mockClientProxy.loginWithPopup(captureAny, any))
                 .captured
                 .single as interop.PopupLoginOptions;
-        expect(captured.authorizationParams!.invitation, invitationId);
-      });
+            expect(captured.authorizationParams!.invitation, invitationId);
+          });
 
       test('correctly uses the ticket ID when it is passed directly',
-          () async {
-        await auth0.loginWithPopup(invitationUrl: invitationId);
+              () async {
+            await auth0.loginWithPopup(invitationUrl: invitationId);
 
-        final captured =
+            final captured =
             verify(mockClientProxy.loginWithPopup(captureAny, any))
                 .captured
                 .single as interop.PopupLoginOptions;
-        expect(captured.authorizationParams!.invitation, invitationId);
-      });
+            expect(captured.authorizationParams!.invitation, invitationId);
+          });
 
       test('passes null when invitationUrl is not provided', () async {
         await auth0.loginWithPopup();
 
         final captured =
-            verify(mockClientProxy.loginWithPopup(captureAny, any))
-                .captured
-                .single as interop.PopupLoginOptions;
+        verify(mockClientProxy.loginWithPopup(captureAny, any))
+            .captured
+            .single as interop.PopupLoginOptions;
         expect(captured.authorizationParams!.invitation, isNull);
       });
     });
