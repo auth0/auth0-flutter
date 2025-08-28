@@ -103,7 +103,7 @@ class MockTextureRegistry: NSObject, FlutterTextureRegistry {
 class SpyPluginRegistrar: NSObject, FlutterPluginRegistrar {
     #if os(iOS)
     var viewController: UIViewController?
-    
+
     func messenger() -> FlutterBinaryMessenger {
         return MockBinaryMessenger()
     }
