@@ -413,4 +413,91 @@ void main() {
             e.code == 'test' &&
             e.message == 'test exception')));
   });
+
+  group('invitationUrl handling', () {
+    const fullInvitationUrl =
+        'https://my-tenant.auth0.com/login/invitation?invitation=abc-123&organization=org_xyz';
+    const invitationId = 'abc-123';
+
+    group('loginWithRedirect', () {
+      test('correctly parses the ticket ID from a full invitation URL',
+          () async {
+        when(mockClientProxy.loginWithRedirect(any))
+            .thenAnswer((_) => Future.value());
+
+        await auth0.loginWithRedirect(invitationUrl: fullInvitationUrl);
+
+        final captured = verify(mockClientProxy.loginWithRedirect(captureAny))
+            .captured
+            .single as interop.RedirectLoginOptions;
+        expect(captured.authorizationParams!.invitation, invitationId);
+      });
+
+      test('correctly uses the ticket ID when it is passed directly',
+          () async {
+        when(mockClientProxy.loginWithRedirect(any))
+            .thenAnswer((_) => Future.value());
+
+        await auth0.loginWithRedirect(invitationUrl: invitationId);
+
+        final captured = verify(mockClientProxy.loginWithRedirect(captureAny))
+            .captured
+            .single as interop.RedirectLoginOptions;
+        expect(captured.authorizationParams!.invitation, invitationId);
+      });
+
+      test('passes null when invitationUrl is not provided', () async {
+        when(mockClientProxy.loginWithRedirect(any))
+            .thenAnswer((_) => Future.value());
+
+        await auth0.loginWithRedirect();
+
+        final captured = verify(mockClientProxy.loginWithRedirect(captureAny))
+            .captured
+            .single as interop.RedirectLoginOptions;
+        expect(captured.authorizationParams!.invitation, isNull);
+      });
+    });
+
+    group('loginWithPopup', () {
+      setUp(() {
+        when(mockClientProxy.loginWithPopup(any, any))
+            .thenAnswer((_) => Future.value());
+        when(mockClientProxy.getTokenSilently(any))
+            .thenAnswer((_) => Future.value(webCredentials));
+      });
+
+      test('correctly parses the ticket ID from a full invitation URL',
+          () async {
+        await auth0.loginWithPopup(invitationUrl: fullInvitationUrl);
+
+        final captured =
+            verify(mockClientProxy.loginWithPopup(captureAny, any))
+                .captured
+                .single as interop.PopupLoginOptions;
+        expect(captured.authorizationParams!.invitation, invitationId);
+      });
+
+      test('correctly uses the ticket ID when it is passed directly',
+          () async {
+        await auth0.loginWithPopup(invitationUrl: invitationId);
+
+        final captured =
+            verify(mockClientProxy.loginWithPopup(captureAny, any))
+                .captured
+                .single as interop.PopupLoginOptions;
+        expect(captured.authorizationParams!.invitation, invitationId);
+      });
+
+      test('passes null when invitationUrl is not provided', () async {
+        await auth0.loginWithPopup();
+
+        final captured =
+            verify(mockClientProxy.loginWithPopup(captureAny, any))
+                .captured
+                .single as interop.PopupLoginOptions;
+        expect(captured.authorizationParams!.invitation, isNull);
+      });
+    });
+  });
 }

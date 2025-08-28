@@ -38,6 +38,21 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   @override
   Future<Object?> get appState => Future<Object?>.value(_appState);
 
+  String? _getInvitationTicket(final String? invitationUrl) {
+    if (invitationUrl == null) {
+      return null;
+    }
+
+    final uri = Uri.tryParse(invitationUrl);
+    // If it's a full URL, parse the 'invitation' query parameter.
+    if (uri != null && uri.hasAuthority) {
+      return uri.queryParameters['invitation'];
+    }
+
+    // Otherwise, it's the invitation ticket ID itself.
+    return invitationUrl;
+  }
+
   @override
   Future<void> initialize(
       final ClientOptions clientOptions, final UserAgent userAgent) async {
@@ -69,12 +84,14 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   @override
   Future<void> loginWithRedirect(final LoginOptions? options) {
     final client = _ensureClient();
+    final invitationTicket = _getInvitationTicket(options?.invitationUrl);
+
     final authParams = JsInteropUtils.stripNulls(JsInteropUtils.addCustomParams(
         interop.AuthorizationParams(
             audience: options?.audience,
             redirect_uri: options?.redirectUrl,
             organization: options?.organizationId,
-            invitation: options?.invitationUrl,
+            invitation: invitationTicket,
             max_age: options?.idTokenValidationConfig?.maxAge,
             scope: options?.scopes.isNotEmpty == true
                 ? options?.scopes.join(' ')
@@ -92,12 +109,13 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   @override
   Future<Credentials> loginWithPopup(final PopupLoginOptions? options) async {
     final client = _ensureClient();
+    final invitationTicket = _getInvitationTicket(options?.invitationUrl);
 
     final authParams = JsInteropUtils.stripNulls(JsInteropUtils.addCustomParams(
         interop.AuthorizationParams(
             audience: options?.audience,
             organization: options?.organizationId,
-            invitation: options?.invitationUrl,
+            invitation: invitationTicket,
             max_age: options?.idTokenValidationConfig?.maxAge,
             scope: options?.scopes.isNotEmpty == true
                 ? options?.scopes.join(' ')
