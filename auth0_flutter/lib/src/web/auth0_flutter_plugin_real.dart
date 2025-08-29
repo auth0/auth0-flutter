@@ -69,7 +69,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   @override
   Future<void> loginWithRedirect(final LoginOptions? options) {
     final client = _ensureClient();
-    final invitationTicket = getInvitationTicket(options?.invitationUrl);
+    final invitationTicket = _getInvitationTicket(options?.invitationUrl);
 
     final authParams = JsInteropUtils.stripNulls(JsInteropUtils.addCustomParams(
         interop.AuthorizationParams(
@@ -94,7 +94,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   @override
   Future<Credentials> loginWithPopup(final PopupLoginOptions? options) async {
     final client = _ensureClient();
-    final invitationTicket = getInvitationTicket(options?.invitationUrl);
+    final invitationTicket = _getInvitationTicket(options?.invitationUrl);
 
     final authParams = JsInteropUtils.stripNulls(JsInteropUtils.addCustomParams(
         interop.AuthorizationParams(
@@ -154,7 +154,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   @override
   Future<bool> hasValidCredentials() => clientProxy!.isAuthenticated();
 
-  String? getInvitationTicket(final String? invitationUrl) {
+  String? _getInvitationTicket(final String? invitationUrl) {
     if (invitationUrl == null || invitationUrl.isEmpty) {
       return null;
     }
