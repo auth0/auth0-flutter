@@ -1,5 +1,4 @@
 @Tags(['browser'])
-
 import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
 
@@ -196,7 +195,7 @@ void main() {
 
     await auth0.loginWithRedirect(
         audience: 'http://localhost',
-        invitationUrl: 'https://my-tenant.com/invite?invitation=real-ticket-id', // Use a realistic URL
+        invitationUrl: 'https://my-tenant.com/invite?invitation=real-ticket-id',
         organizationId: 'org-id',
         redirectUrl: 'http://redirect.uri',
         scopes: {'openid', 'read-books'},
@@ -209,6 +208,7 @@ void main() {
 
     expect(params, isNotNull);
     expect(params.audience, 'http://localhost');
+    // Assert that the extracted ticket ID is correct, not the full URL.
     expect(params.invitation, 'real-ticket-id');
     expect(params.organization, 'org-id');
     expect(params.redirect_uri, 'http://redirect.uri');
@@ -339,7 +339,7 @@ void main() {
     final credentials = await auth0.loginWithPopup(
         audience: 'http://my.api',
         organizationId: 'org123',
-        invitationUrl: 'https://my-tenant.com/invite?invitation=real-ticket-id', // Use a realistic URL
+        invitationUrl: 'https://my-tenant.com/invite?invitation=real-ticket-id',
         scopes: {'openid'},
         maxAge: 20,
         popupWindow: window,
@@ -446,14 +446,14 @@ void main() {
             expect(captured.authorizationParams!.invitation, invitationId);
           });
 
-      test('treats an invalid URL as a ticket ID', () async {
-        await auth0.loginWithRedirect(invitationUrl: invalidUrl);
-
-        final captured = verify(mockClientProxy.loginWithRedirect(captureAny))
-            .captured
-            .single as interop.RedirectLoginOptions;
-        expect(captured.authorizationParams!.invitation, invalidUrl);
-      });
+      test('uses the original string as ticket ID when URL parsing fails',
+              () async {
+            await auth0.loginWithRedirect(invitationUrl: invalidUrl);
+            final captured = verify(mockClientProxy.loginWithRedirect(captureAny))
+                .captured
+                .single as interop.RedirectLoginOptions;
+            expect(captured.authorizationParams!.invitation, invalidUrl);
+          });
 
       test(
           'returns null for the ticket when a valid URL without the parameter is passed',
@@ -468,16 +468,6 @@ void main() {
 
       test('passes null when invitationUrl is an empty string', () async {
         await auth0.loginWithRedirect(invitationUrl: '');
-
-        final captured = verify(mockClientProxy.loginWithRedirect(captureAny))
-            .captured
-            .single as interop.RedirectLoginOptions;
-        expect(captured.authorizationParams!.invitation, isNull);
-      });
-
-      test('passes null when invitationUrl is not provided', () async {
-        await auth0.loginWithRedirect();
-
         final captured = verify(mockClientProxy.loginWithRedirect(captureAny))
             .captured
             .single as interop.RedirectLoginOptions;

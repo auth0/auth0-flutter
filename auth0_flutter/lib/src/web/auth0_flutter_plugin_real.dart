@@ -38,24 +38,6 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   @override
   Future<Object?> get appState => Future<Object?>.value(_appState);
 
-  String? _getInvitationTicket(final String? invitationUrl) {
-    if (invitationUrl == null || invitationUrl.isEmpty) {
-      return null;
-    }
-
-    final uri = Uri.tryParse(invitationUrl);
-
-    // If parsing fails or it's not a valid web/custom scheme URL,
-    // the input string is the ticket ID itself.
-    if (uri == null || !uri.hasAuthority) {
-      return invitationUrl;
-    }
-
-    // If it is a valid URL, return the 'invitation' query parameter,
-    // which will be the ticket ID if present, or null if not.
-    return uri.queryParameters['invitation'];
-  }
-
   @override
   Future<void> initialize(
       final ClientOptions clientOptions, final UserAgent userAgent) async {
@@ -87,7 +69,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   @override
   Future<void> loginWithRedirect(final LoginOptions? options) {
     final client = _ensureClient();
-    final invitationTicket = _getInvitationTicket(options?.invitationUrl);
+    final invitationTicket = getInvitationTicket(options?.invitationUrl);
 
     final authParams = JsInteropUtils.stripNulls(JsInteropUtils.addCustomParams(
         interop.AuthorizationParams(
@@ -112,7 +94,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   @override
   Future<Credentials> loginWithPopup(final PopupLoginOptions? options) async {
     final client = _ensureClient();
-    final invitationTicket = _getInvitationTicket(options?.invitationUrl);
+    final invitationTicket = getInvitationTicket(options?.invitationUrl);
 
     final authParams = JsInteropUtils.stripNulls(JsInteropUtils.addCustomParams(
         interop.AuthorizationParams(
@@ -171,6 +153,24 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
 
   @override
   Future<bool> hasValidCredentials() => clientProxy!.isAuthenticated();
+
+  String? getInvitationTicket(final String? invitationUrl) {
+    if (invitationUrl == null || invitationUrl.isEmpty) {
+      return null;
+    }
+
+    final uri = Uri.tryParse(invitationUrl);
+
+    // If parsing fails or it's not a valid web/custom scheme URL,
+    // the input string is the ticket ID itself.
+    if (uri == null || !uri.hasAuthority) {
+      return invitationUrl;
+    }
+
+    // If it is a valid URL, return the 'invitation' query parameter,
+    // which will be the ticket ID if present, or null if not.
+    return uri.queryParameters['invitation'];
+  }
 
   Auth0FlutterWebClientProxy _ensureClient() {
     if (clientProxy == null) {
