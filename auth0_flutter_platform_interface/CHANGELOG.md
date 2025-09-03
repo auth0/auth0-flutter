@@ -1,5 +1,13 @@
 # Change Log
 
+## [afpi-v1.13.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.13.0) (2025-09-02)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.12.0...afpi-v1.13.0)
+
+**Fixed**
+- Resolves the inconsistency where the web platform required an invitation ticket ID for the  parameter, while mobile platforms required the full URL. [\#645](https://github.com/auth0/auth0-flutter/pull/645) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- fix(android): SMS login to use phoneNumber instead of email [\#633](https://github.com/auth0/auth0-flutter/pull/633) ([hiiiP0wer](https://github.com/hiiiP0wer))
+- Adding fix for OnLoad() for refresh redirecting [\#624](https://github.com/auth0/auth0-flutter/pull/624) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
 ## [afpi-v1.12.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.12.0) (2025-07-10)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.11.0...afpi-v1.12.0)
 
