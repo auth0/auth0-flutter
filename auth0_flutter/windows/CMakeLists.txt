@@ -55,6 +55,7 @@ target_include_directories(${PLUGIN_NAME} INTERFACE
 # === vcpkg dependencies ===
 # These are resolved via vcpkg.json automatically (cpprestsdk, boost)
 find_package(cpprestsdk CONFIG REQUIRED)
+find_package(OpenSSL REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system date_time regex)
 
 # Link Flutter + vcpkg dependencies
@@ -62,6 +63,8 @@ target_link_libraries(${PLUGIN_NAME} PRIVATE
   flutter
   flutter_wrapper_plugin
   cpprestsdk::cpprest
+  OpenSSL::SSL
+  OpenSSL::Crypto
   Boost::system
   Boost::date_time
   Boost::regex

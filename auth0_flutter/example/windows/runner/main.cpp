@@ -1,27 +1,101 @@
 #include <flutter/dart_project.h>
 #include <flutter/flutter_view_controller.h>
 #include <windows.h>
+#include <string>
+#include <thread>
 
 #include "flutter_window.h"
 #include "utils.h"
 
-int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
-                      _In_ wchar_t *command_line, _In_ int show_command) {
-  // Attach to console when present (e.g., 'flutter run') or create a
-  // new console when running with a debugger.
+const wchar_t* kSingleInstanceMutex = L"auth0flutter_single_instance_mutex";
+const wchar_t* kRedirectPipeName    = L"\\\\.\\pipe\\auth0flutter_pipe";
+
+// Forward URI to first instance (pipe client)
+void ForwardToFirstInstance(const wchar_t* uri) {
+  HANDLE hPipe = CreateFileW(
+      kRedirectPipeName, GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+
+  if (hPipe != INVALID_HANDLE_VALUE) {
+    DWORD written = 0;
+    size_t len = (wcslen(uri) + 1) * sizeof(wchar_t);
+    WriteFile(hPipe, uri, (DWORD)len, &written, NULL);
+    CloseHandle(hPipe);
+  }
+}
+
+// Bring first instance window to foreground
+void BringExistingWindowToFront() {
+  HWND hwnd = FindWindowW(L"FLUTTER_RUNNER_WIN32_WINDOW", NULL);
+  if (hwnd) {
+    ShowWindow(hwnd, SW_RESTORE);
+    SetForegroundWindow(hwnd);
+  }
+}
+
+// Pipe server (runs in first instance)
+void StartPipeServer() {
+  std::thread([] {
+    while (true) {
+      HANDLE hPipe = CreateNamedPipeW(
+          kRedirectPipeName,
+          PIPE_ACCESS_INBOUND,
+          PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,
+          1, 0, 0, 0, NULL);
+
+      if (hPipe == INVALID_HANDLE_VALUE) {
+        return;
+      }
+
+      if (ConnectNamedPipe(hPipe, NULL)) {
+        wchar_t buffer[2048];
+        DWORD read = 0;
+        if (ReadFile(hPipe, buffer, sizeof(buffer), &read, NULL)) {
+          buffer[read / sizeof(wchar_t)] = L'\0';
+
+          // Expose to plugin
+          SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", buffer);
+
+          // Bring app to front when redirect arrives
+          BringExistingWindowToFront();
+        }
+      }
+      DisconnectNamedPipe(hPipe);
+      CloseHandle(hPipe);
+    }
+  }).detach();
+}
+
+int APIENTRY wWinMain(_In_ HINSTANCE instance,
+                      _In_opt_ HINSTANCE prev,
+                      _In_ wchar_t* command_line,
+                      _In_ int show_command) {
   if (!::AttachConsole(ATTACH_PARENT_PROCESS) && ::IsDebuggerPresent()) {
     CreateAndAttachConsole();
   }
-
-  // Initialize COM, so that it is available for use in the library and/or
-  // plugins.
   ::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
 
+  // Ensure single instance
+  HANDLE hMutex = CreateMutexW(NULL, TRUE, kSingleInstanceMutex);
+  if (hMutex && GetLastError() == ERROR_ALREADY_EXISTS) {
+    // Already running → forward URI (if present) and exit
+    if (command_line && wcslen(command_line) > 0) {
+      ForwardToFirstInstance(command_line);
+    }
+    return 0;
+  }
+
+  // First instance
+  if (command_line && wcslen(command_line) > 0) {
+    SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", command_line);
+  } else {
+    SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
+  }
+
+  StartPipeServer();
+
+  // Flutter bootstrap
   flutter::DartProject project(L"data");
-
-  std::vector<std::string> command_line_arguments =
-      GetCommandLineArguments();
-
+  std::vector<std::string> command_line_arguments = GetCommandLineArguments();
   project.set_dart_entrypoint_arguments(std::move(command_line_arguments));
 
   FlutterWindow window(project);
