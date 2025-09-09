@@ -390,7 +390,7 @@ await webAuth.logout();
 
 ## 📱 Credentials Manager
 
-> This feature is mobile/desktop only; on web, the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter keeps its own cache. See [Handling Credentials on the Web](#-handling-credentials-on-the-web) for more details.
+> This feature is mobile/macOS only; on web, the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter keeps its own cache. See [Handling Credentials on the Web](#-handling-credentials-on-the-web) for more details.
 
 - [Check for stored credentials](#check-for-stored-credentials)
 - [Retrieve stored credentials](#retrieve-stored-credentials)
@@ -501,7 +501,7 @@ try {
 
 ## 🌐 Handling Credentials on the Web
 
-> This section describes handling credentials for the web platform. For mobile/desktop, see [Credentials Manager](#-credentials-manager).
+> This section describes handling credentials for the web platform. For mobile/macOS, see [Credentials Manager](#-credentials-manager).
 
 The management and storage of credentials is handled internally by the underlying [Auth0 SPA SDK](https://github.com/auth0/auth0-spa-js), including refreshing the access token when it expires. The Flutter SDK provides an API for checking whether credentials are available, and the retrieval of those credentials.
 
@@ -539,7 +539,7 @@ final credentials = await auth0Web.credentials();
 
 ## 📱 Authentication API
 
-> This feature is mobile/desktop only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
+> This feature is mobile/macOS only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
 
 - [Login with database connection](#login-with-database-connection)
 - [Sign up with database connection](#sign-up-with-database-connection)
@@ -756,7 +756,7 @@ await auth0Web.loginWithRedirect(
 
 ## 📱 Bot detection
 
-> This example is mobile/desktop only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
+> This example is mobile/macOS only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
 
 If you are performing database login/signup via the Authentication API and would like to use the [Bot Detection](https://auth0.com/docs/secure/attack-protection/bot-detection) feature, you need to handle the `isVerificationRequired` error. It indicates that the request was flagged as suspicious and an additional verification step is necessary to log the user in. That verification step is web-based, so you need to use Web Auth to complete it.
 

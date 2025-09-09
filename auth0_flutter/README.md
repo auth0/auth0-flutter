@@ -38,7 +38,7 @@ flutter pub add auth0_flutter
 
 ### Configure Auth0
 
-#### 📱 Mobile/Desktop
+#### 📱 Mobile/macOS
 
 Head to the [Auth0 Dashboard](https://manage.auth0.com/#/applications/) and create a new **Native** application.
 
@@ -121,7 +121,7 @@ Take note of the **client ID** and **domain** values under the **Basic Informati
 
 ### Configure the SDK
 
-#### 📱 Mobile/Desktop
+#### 📱 Mobile/macOS
 
 Start by importing `auth0_flutter/auth0_flutter.dart`.
 
@@ -261,7 +261,7 @@ Finally, in your `index.html` add the following `<script>` tag:
 
 ### Logging in
 
-#### 📱 Mobile/Desktop
+#### 📱 Mobile/macOS
 
 Present the [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login) page in the `onPressed` callback of your **Login** button.
 
@@ -353,7 +353,7 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 
 ### Common Tasks
 
-### 📱 Mobile/Desktop
+### 📱 Mobile/macOS
 
 - [Check for stored credentials](EXAMPLES.md#check-for-stored-credentials) - check if the user is already logged in when your app starts up.
 - [Retrieve stored credentials](EXAMPLES.md#retrieve-stored-credentials) - fetch the user's credentials from the storage, automatically renewing them if they have expired.
@@ -365,7 +365,7 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 
 ## API reference
 
-### 📱 Mobile/Desktop
+### 📱 Mobile/macOS
 
 #### Web Authentication
 
