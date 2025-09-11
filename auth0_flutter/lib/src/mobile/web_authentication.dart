@@ -79,6 +79,23 @@ class WebAuthentication {
   /// no other allowed browser installed, an error is returned
   Future<Credentials> login(
       {final String? audience,
+<<<<<<< HEAD
+        final Set<String> scopes = const {
+          'openid',
+          'profile',
+          'email',
+          'offline_access'
+        },
+        final String? redirectUrl,
+        final String? organizationId,
+        final String? invitationUrl,
+        final bool useHTTPS = false,
+        final bool useEphemeralSession = false,
+        final Map<String, String> parameters = const {},
+        final IdTokenValidationConfig idTokenValidationConfig =
+        const IdTokenValidationConfig(),
+        final SafariViewController? safariViewController}) async {
+=======
       final Set<String> scopes = const {
         'openid',
         'profile',
@@ -95,6 +112,7 @@ class WebAuthentication {
       final IdTokenValidationConfig idTokenValidationConfig =
           const IdTokenValidationConfig(),
       final SafariViewController? safariViewController}) async {
+>>>>>>> main
     final credentials = await Auth0FlutterWebAuthPlatform.instance.login(
         _createWebAuthRequest(WebAuthLoginOptions(
             audience: audience,
@@ -130,27 +148,47 @@ class WebAuthentication {
   /// versions of iOS and macOS. Requires an Associated Domain configured with
   /// the `webcredentials` service type, set to your Auth0 domain –or custom
   /// domain, if you have one.
+<<<<<<< HEAD
+  /// [logoutParams] parameters to pass to the logout endpoint.
   Future<void> logout(
-      {final String? returnTo, final bool useHTTPS = false}) async {
+      {final String? returnTo,
+        final bool useHTTPS = false,
+        final Map<String, dynamic>? logoutParams}) async {
     await Auth0FlutterWebAuthPlatform.instance.logout(_createWebAuthRequest(
       WebAuthLogoutOptions(
-          returnTo: returnTo, scheme: _scheme, useHTTPS: useHTTPS),
+          returnTo: returnTo,
+          scheme: _scheme,
+          useHTTPS: useHTTPS,
+          parameters: logoutParams),
+=======
+  Future<void> logout({
+    final String? returnTo,
+    final bool useHTTPS = false,
+    final bool? federated,
+  }) async {
+    await Auth0FlutterWebAuthPlatform.instance.logout(_createWebAuthRequest(
+      WebAuthLogoutOptions(
+        returnTo: returnTo,
+        scheme: _scheme,
+        useHTTPS: useHTTPS,
+        federated: federated,
+      ),
+>>>>>>> main
     ));
     await _credentialsManager?.clearCredentials();
   }
-
 
   /// Terminates the ongoing web-based operation and reports back that it was
   /// cancelled.
   /// ## Note: This is an iOS specific API
   ///
- static void cancel() {
+  static void cancel() {
     Auth0FlutterWebAuthPlatform.instance.cancel();
   }
 
   WebAuthRequest<TOptions>
-      _createWebAuthRequest<TOptions extends RequestOptions>(
-              final TOptions options) =>
-          WebAuthRequest<TOptions>(
-              account: _account, options: options, userAgent: _userAgent);
+  _createWebAuthRequest<TOptions extends RequestOptions>(
+      final TOptions options) =>
+      WebAuthRequest<TOptions>(
+          account: _account, options: options, userAgent: _userAgent);
 }
