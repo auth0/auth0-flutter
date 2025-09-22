@@ -24,7 +24,7 @@ GEM
     nokogiri (1.18.9-x86_64-darwin)
       racc (~> 1.4)
     racc (1.8.1)
-    rexml (3.3.9)
+    rexml (3.4.2)
     slather (2.7.4)
       CFPropertyList (>= 2.2, < 4)
       activesupport
