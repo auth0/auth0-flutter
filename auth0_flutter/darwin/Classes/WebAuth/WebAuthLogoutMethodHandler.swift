@@ -11,6 +11,7 @@ struct WebAuthLogoutMethodHandler: MethodHandler {
     enum Argument: String {
         case useHTTPS
         case returnTo
+        case federated // Add this
     }
 
     let client: WebAuth
@@ -19,6 +20,9 @@ struct WebAuthLogoutMethodHandler: MethodHandler {
         guard let useHTTPS = arguments[Argument.useHTTPS] as? Bool else {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.useHTTPS.rawValue)))
         }
+
+        // Extract federated parameter, default to false if not provided
+        let federated = arguments[Argument.federated.rawValue] as? Bool ?? false
 
         var webAuth = client
 
@@ -30,7 +34,7 @@ struct WebAuthLogoutMethodHandler: MethodHandler {
             webAuth = webAuth.redirectURL(url)
         }
 
-        webAuth.clearSession {
+        webAuth.clearSession(federated: federated) { // Pass federated here
             switch $0 {
             case .success: callback(nil)
             case let .failure(error): callback(FlutterError(from: error))
