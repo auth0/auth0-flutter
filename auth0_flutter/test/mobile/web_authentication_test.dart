@@ -193,6 +193,33 @@ void main() {
   });
 
   group('logout', () {
+    test('passes the federated flag to the platform', () async {
+      when(mockedPlatform.logout(any)).thenAnswer((final _) async => {});
+      when(mockedCMPlatform.clearCredentials(any))
+          .thenAnswer((final _) async => true);
+
+      await Auth0('test-domain', 'test-clientId')
+          .webAuthentication()
+          .logout(federated: true);
+
+      final verificationResult = verify(mockedPlatform.logout(captureAny))
+          .captured
+          .single as WebAuthRequest<WebAuthLogoutOptions>;
+      expect(verificationResult.options.federated, true);
+    });
+
+    test('defaults federated flag to false when omitted', () async {
+      when(mockedPlatform.logout(any)).thenAnswer((final _) async => {});
+      when(mockedCMPlatform.clearCredentials(any))
+          .thenAnswer((final _) async => true);
+
+      await Auth0('test-domain', 'test-clientId').webAuthentication().logout();
+
+      final verificationResult = verify(mockedPlatform.logout(captureAny))
+          .captured
+          .single as WebAuthRequest<WebAuthLogoutOptions>;
+      expect(verificationResult.options.federated, false);
+    });
     test('calls the platform to logout', () async {
       when(mockedPlatform.logout(any)).thenAnswer((final _) async => {});
       when(mockedCMPlatform.clearCredentials(any))

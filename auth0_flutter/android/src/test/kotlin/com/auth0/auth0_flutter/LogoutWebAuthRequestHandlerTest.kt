@@ -15,6 +15,31 @@ import kotlin.collections.HashMap
 
 @RunWith(RobolectricTestRunner::class)
 class LogoutWebAuthRequestHandlerTest {
+    @Test
+    fun `handler does not call withFederated when specified as false in arguments`() {
+        val args = hashMapOf<String, Any?>("federated" to false)
+
+        runHandler(args) { _, builder ->
+            verify(builder, never()).withFederated()
+        }
+    }
+    @Test
+    fun `handler calls withFederated when specified in arguments`() {
+        val args = hashMapOf<String, Any?>("federated" to true)
+
+        runHandler(args) { _, builder ->
+            verify(builder).withFederated()
+        }
+    }
+
+    @Test
+    fun `handler does not call withFederated when not specified in arguments`() {
+        val args = hashMapOf<String, Any?>()
+
+        runHandler(args) { _, builder ->
+            verify(builder, never()).withFederated()
+        }
+    }
     private fun runHandler(args: HashMap<String, Any?> = hashMapOf(), resultCallback: (Result, WebAuthProvider.LogoutBuilder) -> Unit) {
         val mockBuilder = mock<WebAuthProvider.LogoutBuilder>()
         val mockResult = mock<Result>()
