@@ -1,5 +1,11 @@
 # Change Log
 
+## [afpi-v1.13.1](https://github.com/auth0/auth0-flutter/tree/afpi-v1.13.1) (2025-09-24)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.13.0...afpi-v1.13.1)
+
+**Added**
+- Add support for logoutParams [\#608](https://github.com/auth0/auth0-flutter/pull/608) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
 ## [afpi-v1.13.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.13.0) (2025-09-02)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.12.0...afpi-v1.13.0)
 
