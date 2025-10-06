@@ -7,6 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'api_card.dart';
 import 'constants.dart';
 import 'web_auth_card.dart';
+import 'dpop_poc_page.dart';
 
 class ExampleApp extends StatefulWidget {
   const ExampleApp({final Key? key}) : super(key: key);
@@ -146,6 +147,17 @@ class _ExampleAppState extends State<ExampleApp> {
                       else
                         WebAuthCard(
                             label: 'Web Auth Login', action: webAuthLogin),
+                      const SizedBox(height: 10),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const DpopPocPage()),
+                          );
+                        },
+                        child: const Text('DPoP PoC'),
+                      ),
                     ]),
               )),
               SliverFillRemaining(

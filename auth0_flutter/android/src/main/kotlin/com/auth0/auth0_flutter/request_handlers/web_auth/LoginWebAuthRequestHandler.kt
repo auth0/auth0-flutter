@@ -1,6 +1,7 @@
 package com.auth0.auth0_flutter.request_handlers.web_auth
 
 import android.content.Context
+import android.util.Log
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
 import com.auth0.android.provider.BrowserPicker
@@ -23,6 +24,13 @@ class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest
         val builder = builderResolver(request)
         val args = request.data
         val scopes = (args["scopes"] ?: arrayListOf<String>()) as ArrayList<*>
+
+        if (args["useDPoP"] as? Boolean == true) {
+            Log.d("Auth0Flutter", "[DPoP PoC - Android] 'useDPoP' is true. Calling .useDPoP() on WebAuthProvider.")
+            builder.useDPoP(context)
+        } else {
+            Log.d("Auth0Flutter", "[DPoP PoC - Android] 'useDPoP' is false or not provided.")
+        }
 
         builder.withScope(scopes.joinToString(separator = " "))
 
