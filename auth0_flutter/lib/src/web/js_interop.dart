@@ -106,6 +106,7 @@ extension type Auth0ClientOptions._(JSObject _) implements JSObject {
       final bool? useFormData,
       final bool? useRefreshTokens,
       final bool? useRefreshTokensFallback,
+      final bool? useDpop,
       final AuthorizationParams? authorizationParams});
 }
 

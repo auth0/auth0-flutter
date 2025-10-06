@@ -108,6 +108,9 @@ class ClientOptions {
   /// The default additional parameters to be sent to Auth0.
   final Map<String, String> parameters;
 
+  /// If true, DPoP will be used to cryptographically bind tokens.
+  final bool useDPoP;
+
   ClientOptions(
       {required this.account,
       this.authorizeTimeoutInSeconds,
@@ -123,5 +126,6 @@ class ClientOptions {
       this.idTokenValidationConfig,
       this.audience,
       this.scopes,
-      this.parameters = const {}});
+      this.parameters = const {},
+      this.useDPoP = false});
 }

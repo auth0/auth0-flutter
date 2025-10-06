@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'src/version.dart';
 
@@ -9,6 +10,7 @@ class Auth0Web {
   final Account _account;
   final String? _redirectUrl;
   final CacheLocation? _cacheLocation;
+  final bool _useDPoP;
 
   final UserAgent _userAgent =
       UserAgent(name: 'auth0-flutter', version: version);
@@ -24,10 +26,13 @@ class Auth0Web {
   /// [domain] and [clientId] are both values that can be retrieved from the
   /// **Settings** page of your [Auth0 application](https://manage.auth0.com/#/applications/).
   Auth0Web(final String domain, final String clientId,
-      {final String? redirectUrl, final CacheLocation? cacheLocation})
+      {final String? redirectUrl,
+      final CacheLocation? cacheLocation,
+      final bool useDPoP = false})
       : _account = Account(domain, clientId),
         _redirectUrl = redirectUrl,
-        _cacheLocation = cacheLocation;
+        _cacheLocation = cacheLocation,
+        _useDPoP = useDPoP;
 
   /// Get the app state that was provided during a previous call
   /// to [loginWithRedirect].
@@ -69,9 +74,11 @@ class Auth0Web {
       final String? audience,
       final Set<String>? scopes,
       final Map<String, String> parameters = const {}}) async {
+    log('[DPoP PoC - Dart Web] Initializing Auth0Web with useDPoP: $_useDPoP');
     await Auth0FlutterWebPlatform.instance.initialize(
         ClientOptions(
             account: _account,
+            useDPoP: _useDPoP,
             authorizeTimeoutInSeconds: authorizeTimeoutInSeconds,
             cacheLocation: cacheLocation ?? _cacheLocation,
             cookieDomain: cookieDomain,
