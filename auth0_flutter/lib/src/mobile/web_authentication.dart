@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 
 import '../../auth0_flutter.dart';
@@ -94,7 +95,8 @@ class WebAuthentication {
       final Map<String, String> parameters = const {},
       final IdTokenValidationConfig idTokenValidationConfig =
           const IdTokenValidationConfig(),
-      final SafariViewController? safariViewController}) async {
+      final SafariViewController? safariViewController,
+      final bool useDPoP = false}) async {
     final credentials = await Auth0FlutterWebAuthPlatform.instance.login(
         _createWebAuthRequest(WebAuthLoginOptions(
             audience: audience,
@@ -108,9 +110,14 @@ class WebAuthentication {
             useHTTPS: useHTTPS,
             useEphemeralSession: useEphemeralSession,
             safariViewController: safariViewController,
-            allowedBrowsers: allowedBrowsers)));
+            allowedBrowsers: allowedBrowsers,
+            useDPoP: useDPoP)));
 
-    await _credentialsManager?.storeCredentials(credentials);
+    if (_credentialsManager != null) {
+      log('[DPoP PoC - Dart] Storing credentials in Credentials Manager.');
+      await _credentialsManager?.storeCredentials(credentials);
+    }
+
     return credentials;
   }
 
