@@ -2,68 +2,70 @@ package com.auth0.auth0_flutter
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import androidx.annotation.NonNull
-import com.auth0.android.authentication.AuthenticationAPIClient
+import androidx.fragment.app.FragmentActivity
+import com.auth0.android.authentication.storage.AuthenticationLevel
+import com.auth0.android.authentication.storage.LocalAuthenticationOptions
 import com.auth0.android.authentication.storage.SecureCredentialsManager
 import com.auth0.android.authentication.storage.SharedPreferencesStorage
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.request_handlers.credentials_manager.CredentialsManagerRequestHandler
-import com.auth0.auth0_flutter.utils.RequestCodes
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import io.flutter.plugin.common.PluginRegistry
 
-class CredentialsManagerMethodCallHandler(private val requestHandlers: List<CredentialsManagerRequestHandler>) :
-    MethodCallHandler, PluginRegistry.ActivityResultListener {
+class CredentialsManagerMethodCallHandler(private val requestHandlers: List<CredentialsManagerRequestHandler>) : MethodCallHandler {
     lateinit var activity: Activity
     lateinit var context: Context
 
-    var credentialsManager: SecureCredentialsManager? = null
-
-    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
+override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         val requestHandler = requestHandlers.find { it.method == call.method }
 
         if (requestHandler != null) {
             val request = MethodCallRequest.fromCall(call)
+            val activity = this.activity
 
-            val configuration =
-                request.data["credentialsManagerConfiguration"] as Map<*, *>?
+            val configuration = request.data["credentialsManagerConfiguration"] as Map<*, *>?
 
             val sharedPreferenceConfiguration = configuration?.get("android")
             val sharedPreferenceName: String? = if (sharedPreferenceConfiguration != null) {
-                (sharedPreferenceConfiguration as Map<String, String>).get("sharedPreferencesName")
+                (sharedPreferenceConfiguration as Map<String, String>)["sharedPreferencesName"]
             } else null
 
-            val api = AuthenticationAPIClient(request.account)
             val storage = sharedPreferenceName?.let {
                 SharedPreferencesStorage(context, it)
             } ?: SharedPreferencesStorage(context)
-            credentialsManager =
-                credentialsManager ?: SecureCredentialsManager(context, api, storage)
 
-            val credentialsManager = credentialsManager as SecureCredentialsManager
-            val localAuthentication =
-                request.data.get("localAuthentication") as Map<String, String>?
+            val localAuthentication = request.data["localAuthentication"] as Map<String, String>?
+            val credentialsManager: SecureCredentialsManager
 
             if (localAuthentication != null) {
-                val title = localAuthentication["title"]
-                val description = localAuthentication["description"]
-                credentialsManager.requireAuthentication(
-                    activity,
-                    RequestCodes.AUTH_REQ_CODE,
-                    title,
-                    description
-                )
+                if (activity !is FragmentActivity) {
+                    result.error(
+                        "credentialsManager#biometric-error",
+                        "The Activity is not a FragmentActivity, which is required for biometric authentication.",
+                        null
+                    )
+                    return
+                }
+
+                val builder = LocalAuthenticationOptions.Builder()
+                localAuthentication["title"]?.let { builder.setTitle(it) }
+                localAuthentication["description"]?.let { builder.setDescription(it) }
+                localAuthentication["cancelTitle"]?.let { builder.setNegativeButtonText(it) }
+
+                builder.setAuthenticationLevel(AuthenticationLevel.STRONG)
+                builder.setDeviceCredentialFallback(true)
+
+            
+                credentialsManager = SecureCredentialsManager(context, request.account, storage, activity, builder.build())
+            } else {
+                credentialsManager = SecureCredentialsManager(context, request.account, storage)
             }
+
             requestHandler.handle(credentialsManager, context, request, result)
         } else {
             result.notImplemented()
         }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
-        return credentialsManager?.checkAuthenticationResult(requestCode, resultCode) ?: true
     }
 }

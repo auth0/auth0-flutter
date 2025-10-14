@@ -31,7 +31,7 @@ class MethodCallRequest {
             )
 
             val accountMap = args["_account"] as Map<String, String>
-            val account = Auth0(
+            val account = Auth0.getInstance(
                 accountMap["clientId"] as String,
                 accountMap["domain"] as String
             )
