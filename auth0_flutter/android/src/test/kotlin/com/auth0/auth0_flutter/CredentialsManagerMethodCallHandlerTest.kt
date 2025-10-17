@@ -2,17 +2,20 @@ package com.auth0.auth0_flutter
 
 import android.app.Activity
 import android.content.Context
-import android.content.SharedPreferences
+import androidx.fragment.app.FragmentActivity
+import com.auth0.android.Auth0
+import com.auth0.android.authentication.storage.AuthenticationLevel
+import com.auth0.android.authentication.storage.LocalAuthenticationOptions
+import com.auth0.android.authentication.storage.SecureCredentialsManager
 import com.auth0.auth0_flutter.request_handlers.credentials_manager.ClearCredentialsRequestHandler
 import com.auth0.auth0_flutter.request_handlers.credentials_manager.CredentialsManagerRequestHandler
-import com.auth0.auth0_flutter.request_handlers.credentials_manager.HasValidCredentialsRequestHandler
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel.Result
-import org.hamcrest.CoreMatchers
-import org.hamcrest.MatcherAssert
+import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.`when`
+import org.mockito.Mockito.mockConstruction
 import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
 
@@ -33,176 +36,88 @@ class CredentialsManagerMethodCallHandlerTest {
         method: String,
         arguments: HashMap<String, Any?> = defaultArguments,
         requestHandlers: List<CredentialsManagerRequestHandler>,
-        activity: Activity? = null,
-        context: Context? = null,
+        activity: Activity,
         onResult: (Result) -> Unit,
     ) {
         val handler = CredentialsManagerMethodCallHandler(requestHandlers)
         val mockResult = mock<Result>()
 
-        handler.activity = if (activity === null)  mock() else activity
-        handler.context = if (context === null)  mock() else context
-
+        handler.activity = activity
+        handler.context = mock()
         handler.onMethodCall(MethodCall(method, arguments), mockResult)
         onResult(mockResult)
     }
 
     @Test
-    fun `handler should result in 'notImplemented' if no handlers`() {
-        runCallHandler("credentialsManager#clearCredentials", requestHandlers = listOf()) { result ->
-            verify(result).notImplemented()
+    fun `handler should instantiate SecureCredentialsManager without biometrics`() {
+        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
+        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
+        val activity: Activity = mock()
+
+        mockConstruction(SecureCredentialsManager::class.java).use {
+            runCallHandler("credentialsManager#clearCredentials", activity = activity, requestHandlers = listOf(clearCredentialsHandler)) {}
+
+            // Verify the simple constructor was called, without FragmentActivity or LocalAuthenticationOptions
+            val constructorInvocations = it.constructorInvocations()
+            assertThat(constructorInvocations.size, `is`(1))
+            val constructorArgs = constructorInvocations[0].arguments()
+            assertThat(constructorArgs[0], isA(Context::class.java))
+            assertThat(constructorArgs[1], isA(Auth0::class.java))
+            assertThat(constructorArgs[2], isA(com.auth0.android.authentication.storage.Storage::class.java))
+            assertThat(constructorArgs.size, `is`(3)) // Should only have 3 arguments
         }
     }
 
     @Test
-    fun `handler should result in 'notImplemented' if no matching handler`() {
+    fun `handler should instantiate SecureCredentialsManager with biometrics`() {
         val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
-
         `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
-
-        runCallHandler("credentialsManager#saveCredentials", requestHandlers = listOf(clearCredentialsHandler)) { result ->
-            verify(result).notImplemented()
-        }
-    }
-
-    @Test
-    fun `handler should not call credentialsManager requireAuthentication`() {
-        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
-
-        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
-
-        val activity: Activity = mock()
-        val context: Context = mock()
-        val mockPrefs: SharedPreferences = mock()
-
-        `when`(context.getSharedPreferences(any(), any()))
-            .thenReturn(mockPrefs)
-
-        val handler = CredentialsManagerMethodCallHandler(listOf(clearCredentialsHandler))
-        val mockResult = mock<Result>()
-
-        handler.activity = activity
-        handler.context = context
-        handler.credentialsManager = mock()
-
-        handler.onMethodCall(MethodCall(clearCredentialsHandler.method, defaultArguments), mockResult)
-
-        verify(handler.credentialsManager, never())?.requireAuthentication(any(), any(), any(), any())
-    }
-
-    @Test
-    fun `handler should extract sharedPreferenceName correctly`() {
-        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
-
-        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
-
-        val activity: Activity = mock()
-        val context: Context = mock()
-        val mockPrefs: SharedPreferences = mock()
-
-        `when`(context.getSharedPreferences(any(), any()))
-            .thenReturn(mockPrefs)
+        val activity: FragmentActivity = mock() // Use FragmentActivity
 
         val arguments = defaultArguments + hashMapOf(
-            "credentialsManagerConfiguration" to mapOf(
-                "android" to mapOf("sharedPreferencesName" to "test_prefs")
+            "localAuthentication" to hashMapOf(
+                "title" to "Test Title",
+                "description" to "Test Description"
             )
         )
 
-        runCallHandler(clearCredentialsHandler.method, arguments as HashMap, listOf(clearCredentialsHandler), activity, context) {
-            verify(context).getSharedPreferences(eq("test_prefs"), any())
+        mockConstruction(SecureCredentialsManager::class.java).use {
+            runCallHandler("credentialsManager#clearCredentials", arguments = arguments, activity = activity, requestHandlers = listOf(clearCredentialsHandler)) {}
+
+            // Verify the complex constructor for biometrics was called
+            val constructorInvocations = it.constructorInvocations()
+            assertThat(constructorInvocations.size, `is`(1))
+            val constructorArgs = constructorInvocations[0].arguments()
+            assertThat(constructorArgs[0], isA(Context::class.java))
+            assertThat(constructorArgs[1], isA(Auth0::class.java))
+            assertThat(constructorArgs[2], isA(com.auth0.android.authentication.storage.Storage::class.java))
+            assertThat(constructorArgs[3], isA(FragmentActivity::class.java))
+            assertThat(constructorArgs[4], isA(LocalAuthenticationOptions::class.java))
+
+            // Verify the options passed to the constructor
+            val localAuthOptions = constructorArgs[4] as LocalAuthenticationOptions
+            assertThat(localAuthOptions.title, `is`("Test Title"))
+            assertThat(localAuthOptions.description, `is`("Test Description"))
+            assertThat(localAuthOptions.authenticationLevel, `is`(AuthenticationLevel.STRONG))
         }
     }
 
     @Test
-    fun `handler should call credentialsManager requireAuthentication`() {
+    fun `handler should throw error if biometrics are requested but activity is not FragmentActivity`() {
         val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
-
         `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
+        val activity: Activity = mock() // Use standard Activity
 
-        val activity: Activity = mock()
-        val context: Context = mock()
-        val mockPrefs: SharedPreferences = mock()
-
-        `when`(context.getSharedPreferences(any(), any()))
-            .thenReturn(mockPrefs)
-
-        val handler = CredentialsManagerMethodCallHandler(listOf(clearCredentialsHandler))
-        val mockResult = mock<Result>()
-
-        handler.activity = activity
-        handler.context = context
-        handler.credentialsManager = mock()
-
-        handler.onMethodCall(MethodCall(clearCredentialsHandler.method, defaultArguments + hashMapOf("localAuthentication" to hashMapOf("title" to "test", "description" to "test description"))), mockResult)
-
-        verify(handler.credentialsManager)?.requireAuthentication(eq(activity), eq(111), eq("test"), eq("test description"))
-    }
-
-    @Test
-    fun `handler should call credentialsManager requireAuthentication with default values`() {
-        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
-
-        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
-
-        val activity: Activity = mock()
-        val context: Context = mock()
-        val mockPrefs: SharedPreferences = mock()
-
-        `when`(context.getSharedPreferences(any(), any()))
-            .thenReturn(mockPrefs)
-
-        val handler = CredentialsManagerMethodCallHandler(listOf(clearCredentialsHandler))
-        val mockResult = mock<Result>()
-
-        handler.activity = activity
-        handler.context = context
-        handler.credentialsManager = mock()
-
-        handler.onMethodCall(MethodCall(clearCredentialsHandler.method, defaultArguments + hashMapOf("localAuthentication" to hashMapOf<String, String>())), mockResult)
-
-        verify(handler.credentialsManager)?.requireAuthentication(eq(activity), eq(111), isNull(), isNull())
-    }
-
-    @Test
-    fun `handler should only run the correct handler`() {
-        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
-        val hasValidCredentialsHandler = mock<HasValidCredentialsRequestHandler>()
-
-        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
-        `when`(hasValidCredentialsHandler.method).thenReturn("credentialsManager#hasValidCredentials")
-
-        val activity: Activity = mock()
-        val context: Context = mock()
-        val mockPrefs: SharedPreferences = mock()
-
-        `when`(context.getSharedPreferences(any(), any()))
-            .thenReturn(mockPrefs)
-
-        runCallHandler(clearCredentialsHandler.method, activity = activity, context = context, requestHandlers = listOf(clearCredentialsHandler, hasValidCredentialsHandler)) {
-            verify(clearCredentialsHandler).handle(any(), eq(context), any(), any())
-            verify(hasValidCredentialsHandler, times(0)).handle(any(), eq(context), any(), any())
-        }
-    }
-
-    @Test
-    fun `should call checkAuthenticationResult in onActivityResult`() {
-        val handler = CredentialsManagerMethodCallHandler(listOf())
-
-        handler.credentialsManager = mock()
-        handler.onActivityResult(1, 2, null)
-
-        verify(handler.credentialsManager)?.checkAuthenticationResult(1, 2)
-    }
-
-    @Test
-    fun `should return true in onActivityResult when no credentialsManager`() {
-        val handler = CredentialsManagerMethodCallHandler(listOf())
-        val result = handler.onActivityResult(1, 2, null)
-
-        MatcherAssert.assertThat(
-            result,
-            CoreMatchers.equalTo(true)
+        val arguments = defaultArguments + hashMapOf(
+            "localAuthentication" to hashMapOf("title" to "Test Title")
         )
+
+        runCallHandler("credentialsManager#clearCredentials", arguments = arguments, activity = activity, requestHandlers = listOf(clearCredentialsHandler)) { result ->
+            val codeCaptor = argumentCaptor<String>()
+            val messageCaptor = argumentCaptor<String>()
+            verify(result).error(codeCaptor.capture(), messageCaptor.capture(), isNull())
+            assertThat(codeCaptor.firstValue, `is`("credentialsManager#biometric-error"))
+            assertThat(messageCaptor.firstValue, `is`("The Activity is not a FragmentActivity, which is required for biometric authentication."))
+        }
     }
 }
