@@ -22,6 +22,7 @@ struct WebAuthLoginMethodHandler: MethodHandler {
         case organizationId
         case invitationUrl
         case leeway
+        case useDPoP 
         case issuer
         case maxAge
         #if os(iOS)
@@ -61,6 +62,13 @@ struct WebAuthLoginMethodHandler: MethodHandler {
         var webAuth = client
             .scope(scopes.asSpaceSeparatedString)
             .parameters(parameters)
+
+        if arguments[Argument.useDPoP.rawValue] as? Bool == true {
+            webAuth = webAuth.useDPoP()
+            print("[DPoP PoC - Darwin] 'useDPoP' is true. Calling .useDPoP() on WebAuth client.")
+        } else {
+            print("[DPoP PoC - Darwin] 'useDPoP' is false or not provided.")
+        }
 
         if useHTTPS {
             webAuth = webAuth.useHTTPS()
