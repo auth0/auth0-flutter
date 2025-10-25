@@ -25,7 +25,7 @@ runs:
       shell: bash
 
     - name: Upload xcresult bundles
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       if: ${{ failure() }}
       with:
         name: '${{ inputs.platform }} xcresult bundles (unit tests)'
