@@ -79,11 +79,15 @@ class DefaultCredentialsManager extends CredentialsManager {
       CredentialsManagerPlatform.instance.saveCredentials(
           _createApiRequest(SaveCredentialsOptions(credentials: credentials)));
 
-  /// Checks if a non-expired pair of credentials can be obtained from this
-  /// manager.
+  /// Checks if there is a valid `accessToken` available.
+  /// If an `accessToken` is present, verifies whether it has expired or will
+  /// expire within the given `minTtl`. On Android devices, if the token has
+  /// expired and a refresh token is present, this returns true if the token
+  /// can be renewed using the refresh token.
   ///
   /// Change the minimum time in seconds that the access token should last
-  /// before expiration by setting the [minTtl].
+  /// before expiration by setting the minTtl
+
   @override
   Future<bool> hasValidCredentials({
     final int minTtl = 0,
