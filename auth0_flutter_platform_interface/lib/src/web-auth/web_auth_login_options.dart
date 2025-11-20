@@ -7,6 +7,10 @@ class WebAuthLoginOptions extends LoginOptions {
   final String? scheme;
   final SafariViewController? safariViewController;
   final List<String> allowedBrowsers;
+
+  /// Whether to use Demonstrating Proof-of-Possession (DPoP) for token binding.
+  /// When enabled, tokens are cryptographically bound to the client to prevent
+  /// token theft and replay attacks. See [RFC 9449](https://datatracker.ietf.org/doc/html/rfc9449).
   final bool useDPoP;
 
   WebAuthLoginOptions(

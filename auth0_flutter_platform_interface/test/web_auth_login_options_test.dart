@@ -39,6 +39,35 @@ void main() {
       expect(map['scheme'], 'demo');
       expect(map['allowedBrowsers'], ['chrome', 'firefox']);
       expect(map['safariViewController'], safariViewController.toMap());
+      expect(map['useDPoP'], false); // Default value when not specified
+    });
+
+    test('toMap should include useDPoP when set to true', () {
+      final options = WebAuthLoginOptions(
+        useDPoP: true,
+      );
+
+      final map = options.toMap();
+
+      expect(map['useDPoP'], true);
+    });
+
+    test('toMap should include useDPoP when explicitly set to false', () {
+      final options = WebAuthLoginOptions(
+        useDPoP: false,
+      );
+
+      final map = options.toMap();
+
+      expect(map['useDPoP'], false);
+    });
+
+    test('toMap should default useDPoP to false when not specified', () {
+      final options = WebAuthLoginOptions();
+
+      final map = options.toMap();
+
+      expect(map['useDPoP'], false);
     });
 
     test('toMap should handle null optional values gracefully', () {
@@ -48,6 +77,7 @@ void main() {
 
       expect(map['useHTTPS'], false);
       expect(map['useEphemeralSession'], false);
+      expect(map['useDPoP'], false);
       expect(map['scheme'], isNull);
       expect(map['safariViewController'], isNull);
       expect(map['allowedBrowsers'], isEmpty);

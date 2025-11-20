@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'src/version.dart';
 
@@ -16,12 +15,30 @@ class Auth0Web {
       UserAgent(name: 'auth0-flutter', version: version);
 
   /// Creates an instance of the [Auth0Web] client with the provided
-  /// [domain], [clientId], and optional [redirectUrl] and [cacheLocation] properties.
+  /// [domain], [clientId], and optional [redirectUrl], [cacheLocation], and [useDPoP] properties.
   ///
   /// [redirectUrl] is used for silent authentication in [onLoad].
   /// [cacheLocation] is used to specify where the SDK should store
   /// its authentication state. Defaults to `memory`. Setting this to `localStorage`
   /// is often required for seamless silent authentication on page reloads.
+  ///
+  /// [useDPoP] enables Demonstrating Proof of Possession (DPoP) as defined in RFC 9449.
+  /// When enabled, the SDK will use DPoP tokens instead of Bearer tokens for enhanced
+  /// security. DPoP binds access tokens to a specific client, preventing token theft
+  /// and replay attacks. Defaults to `false`.
+  ///
+  /// **DPoP Requirements:**
+  /// * Auth0 SPA JS SDK 2.0 or higher (included via CDN)
+  /// * Your Auth0 API must be configured to accept DPoP tokens
+  /// * Only supported on web platform
+  ///
+  /// **When to use DPoP:**
+  /// * Applications requiring enhanced token security
+  /// * Environments where token theft is a concern
+  /// * APIs that require proof-of-possession tokens
+  ///
+  /// See [RFC 9449](https://datatracker.ietf.org/doc/html/rfc9449) for more details
+  /// about DPoP specification.
   ///
   /// [domain] and [clientId] are both values that can be retrieved from the
   /// **Settings** page of your [Auth0 application](https://manage.auth0.com/#/applications/).
@@ -74,7 +91,6 @@ class Auth0Web {
       final String? audience,
       final Set<String>? scopes,
       final Map<String, String> parameters = const {}}) async {
-    log('[DPoP PoC - Dart Web] Initializing Auth0Web with useDPoP: $_useDPoP');
     await Auth0FlutterWebPlatform.instance.initialize(
         ClientOptions(
             account: _account,
