@@ -49,6 +49,24 @@ class CredentialsManagerMethodCallHandlerTest {
     }
 
     @Test
+    fun `handler should result in 'notImplemented' if no handlers`() {
+        runCallHandler("credentialsManager#clearCredentials", requestHandlers = listOf()) { result ->
+            verify(result).notImplemented()
+        }
+    }
+
+    @Test
+    fun `handler should result in 'notImplemented' if no matching handler`() {
+        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
+
+        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
+
+        runCallHandler("credentialsManager#saveCredentials", requestHandlers = listOf(clearCredentialsHandler)) { result ->
+            verify(result).notImplemented()
+        }
+    }
+
+    @Test
     fun `handler should instantiate SecureCredentialsManager without biometrics`() {
         val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
         `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
@@ -65,6 +83,30 @@ class CredentialsManagerMethodCallHandlerTest {
             assertThat(constructorArgs[1], isA(Auth0::class.java))
             assertThat(constructorArgs[2], isA(com.auth0.android.authentication.storage.Storage::class.java))
             assertThat(constructorArgs.size, `is`(3)) // Should only have 3 arguments
+        }
+    }
+
+    @Test
+    fun `handler should extract sharedPreferenceName correctly`() {
+        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
+
+        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
+
+        val activity: Activity = mock()
+        val context: Context = mock()
+        val mockPrefs: SharedPreferences = mock()
+
+        `when`(context.getSharedPreferences(any(), any()))
+            .thenReturn(mockPrefs)
+
+        val arguments = defaultArguments + hashMapOf(
+            "credentialsManagerConfiguration" to mapOf(
+                "android" to mapOf("sharedPreferencesName" to "test_prefs")
+            )
+        )
+
+        runCallHandler(clearCredentialsHandler.method, arguments as HashMap, listOf(clearCredentialsHandler), activity, context) {
+            verify(context).getSharedPreferences(eq("test_prefs"), any())
         }
     }
 
