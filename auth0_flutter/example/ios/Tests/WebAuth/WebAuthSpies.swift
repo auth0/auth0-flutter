@@ -27,6 +27,8 @@ class SpyWebAuth: WebAuth {
     let url = mockURL
     var telemetry = Telemetry()
     var logger: Logger?
+    var sender: String = "auth0-flutter"
+    var dpop: DPoP?
 
     var loginResult: WebAuthResult = .success(Credentials())
     var logoutResult: WebAuthResult = .success(())
@@ -129,6 +131,10 @@ class SpyWebAuth: WebAuth {
     }
 
     func authorizeURL(_ authorizeURL: URL) -> Self {
+        return self
+    }
+
+    func headers(_ headers: [String: String]) -> Self {
         return self
     }
 

@@ -4,14 +4,18 @@ fileprivate let mockCredentials = Credentials()
 fileprivate let mockChallenge = Challenge(challengeType: "", oobCode: nil, bindingMethod: nil)
 fileprivate let mockDatabaseUser: DatabaseUser = (email: "", username: nil, verified: true)
 fileprivate let mockUserInfo = UserInfo(json: ["sub": ""])!
+fileprivate let mockSSOCredentials = SSOCredentials()
 
 class SpyAuthentication: Authentication {
     let clientId = ""
     let url = mockURL
     var telemetry = Telemetry()
     var logger: Logger?
+    var sender: String = "auth0-flutter"
+    var dpop: DPoP?
 
     var credentialsResult: AuthenticationResult<Credentials> = .success(mockCredentials)
+    var ssoCredentialsResult: AuthenticationResult<SSOCredentials> = .success(mockSSOCredentials)
     var challengeResult: AuthenticationResult<Challenge> = .success(mockChallenge)
     var databaseUserResult: AuthenticationResult<DatabaseUser> = .success(mockDatabaseUser)
     var userInfoResult: AuthenticationResult<UserInfo> = .success(mockUserInfo)
@@ -102,6 +106,11 @@ class SpyAuthentication: Authentication {
         arguments["scope"] = scope
         calledRenew = true
         return request(credentialsResult)
+    }
+
+    func ssoExchange(withRefreshToken refreshToken: String) -> Request<SSOCredentials, AuthenticationError> {
+        arguments["refreshToken"] = refreshToken
+        return request(ssoCredentialsResult)
     }
 
     func revoke(refreshToken: String) -> Request<Void, AuthenticationError> {
