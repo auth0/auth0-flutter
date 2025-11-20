@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 
 import '../../auth0_flutter.dart';
@@ -78,6 +77,14 @@ class WebAuthentication {
   /// another allowed browser installed, the allowed browser is used instead
   /// When the user's default browser is not in the allowlist, and the user has
   /// no other allowed browser installed, an error is returned
+  /// * [useDPoP] enables Demonstrating Proof-of-Possession (DPoP) as defined
+  /// in [RFC 9449](https://datatracker.ietf.org/doc/html/rfc9449). When
+  /// enabled, tokens are cryptographically bound to the client, preventing
+  /// token theft and replay attacks. Use this for enhanced security when your
+  /// Auth0 API is configured to accept DPoP tokens. Supported on iOS 14+,
+  /// macOS 11+, and Android API 24+. Requires Auth0.Android 3.0+ (Android) and
+  /// Auth0.Swift 2.0+ (iOS/macOS). Defaults to `false`.
+  /// [Read more about DPoP](https://auth0.com/docs/secure/tokens/token-best-practices#use-demonstrating-proof-of-possession-dpop).
   Future<Credentials> login(
       {final String? audience,
       final Set<String> scopes = const {
@@ -113,10 +120,7 @@ class WebAuthentication {
             allowedBrowsers: allowedBrowsers,
             useDPoP: useDPoP)));
 
-    if (_credentialsManager != null) {
-      log('[DPoP PoC - Dart] Storing credentials in Credentials Manager.');
-      await _credentialsManager?.storeCredentials(credentials);
-    }
+    await _credentialsManager?.storeCredentials(credentials);
 
     return credentials;
   }

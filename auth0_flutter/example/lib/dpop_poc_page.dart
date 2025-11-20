@@ -37,14 +37,13 @@ class _DpopPocPageState extends State<DpopPocPage> {
         if (widget.auth0Web == null) {
           throw Exception('Auth0Web client not available on web platform.');
         }
-        
+
         // For DPoP, loginWithPopup is often simpler as it doesn't require a full page reload.
         result = await widget.auth0Web!.loginWithPopup(
           audience: 'https://DpopFlutterTest/',
         );
         log('[DPoP PoC - Web] Login successful.');
         log('  - Token Type: ${result.tokenType}');
-
       } else {
         // --- MOBILE LOGIC (Unchanged) ---
         result = await widget.auth0.webAuthentication().login(
@@ -91,10 +90,10 @@ class _DpopPocPageState extends State<DpopPocPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                      'Access Token: ${_credentials!.accessToken.substring(0, 20)}...'),
+                      'Access Token: ${_credentials!.accessToken.substring(0, _credentials!.accessToken.length < 20 ? _credentials!.accessToken.length : 20)}...'),
                   if (!kIsWeb)
                     Text(
-                        'ID Token: ${_credentials!.idToken.substring(0, 20)}...'),
+                        'ID Token: ${_credentials!.idToken.substring(0, _credentials!.idToken.length < 20 ? _credentials!.idToken.length : 20)}...'),
                   Text('Token Type: ${_credentials!.tokenType}',
                       style: const TextStyle(fontWeight: FontWeight.bold)),
                   Text('User ID: ${_credentials!.user.sub}'),
