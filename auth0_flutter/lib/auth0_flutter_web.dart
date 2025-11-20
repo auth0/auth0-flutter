@@ -17,31 +17,45 @@ class Auth0Web {
   /// Creates an instance of the [Auth0Web] client with the provided
   /// [domain], [clientId], and optional [redirectUrl], [cacheLocation], and [useDPoP] properties.
   ///
-  /// [redirectUrl] is used for silent authentication in [onLoad].
-  /// [cacheLocation] is used to specify where the SDK should store
-  /// its authentication state. Defaults to `memory`. Setting this to `localStorage`
-  /// is often required for seamless silent authentication on page reloads.
+  /// **Parameters:**
   ///
-  /// [useDPoP] enables Demonstrating Proof of Possession (DPoP) as defined in RFC 9449.
-  /// When enabled, the SDK will use DPoP tokens instead of Bearer tokens for enhanced
-  /// security. DPoP binds access tokens to a specific client, preventing token theft
-  /// and replay attacks. Defaults to `false`.
+  /// * [domain] and [clientId] are both values that can be retrieved from the
+  ///   **Settings** page of your [Auth0 application](https://manage.auth0.com/#/applications/).
   ///
-  /// **DPoP Requirements:**
-  /// * Auth0 SPA JS SDK 2.0 or higher (included via CDN)
-  /// * Your Auth0 API must be configured to accept DPoP tokens
-  /// * Only supported on web platform
+  /// * [redirectUrl] is used for silent authentication in [onLoad].
   ///
-  /// **When to use DPoP:**
-  /// * Applications requiring enhanced token security
-  /// * Environments where token theft is a concern
-  /// * APIs that require proof-of-possession tokens
+  /// * [cacheLocation] specifies where the SDK should store its authentication state.
+  ///   Defaults to `memory`. Setting this to `localStorage` is often required for
+  ///   seamless silent authentication on page reloads.
   ///
-  /// See [RFC 9449](https://datatracker.ietf.org/doc/html/rfc9449) for more details
-  /// about DPoP specification.
+  /// * [useDPoP] enables Demonstrating Proof-of-Possession (DPoP) for enhanced security.
+  ///   When enabled, the SDK uses DPoP tokens instead of Bearer tokens, cryptographically
+  ///   binding access tokens to the client to prevent token theft and replay attacks.
+  ///   Defaults to `false`.
   ///
-  /// [domain] and [clientId] are both values that can be retrieved from the
-  /// **Settings** page of your [Auth0 application](https://manage.auth0.com/#/applications/).
+  ///   **What is DPoP?**
+  ///   DPoP (RFC 9449) is a security mechanism that creates a cryptographic binding
+  ///   between an access token and the client that requested it. Unlike Bearer tokens,
+  ///   DPoP tokens cannot be used by an attacker who steals them, as they require the
+  ///   client's private key to be used.
+  ///
+  ///   **Platform Compatibility:**
+  ///   - ✅ Web (requires Auth0 SPA JS SDK 2.0+)
+  ///   - ❌ iOS/macOS (not supported via this web interface)
+  ///   - ❌ Android (not supported via this web interface)
+  ///
+  ///   **Requirements:**
+  ///   - Auth0 SPA JS SDK 2.0 or higher (automatically loaded via CDN)
+  ///   - Your Auth0 API must be configured to accept DPoP tokens
+  ///
+  ///   **When to enable:**
+  ///   - Applications requiring enhanced token security
+  ///   - Environments where token theft is a concern
+  ///   - APIs configured to require proof-of-possession tokens
+  ///
+  ///   See [RFC 9449](https://datatracker.ietf.org/doc/html/rfc9449) and
+  ///   [Auth0 DPoP Documentation](https://auth0.com/docs/secure/tokens/token-best-practices#use-demonstrating-proof-of-possession-dpop)
+  ///   for more details.
   Auth0Web(final String domain, final String clientId,
       {final String? redirectUrl,
       final CacheLocation? cacheLocation,
@@ -110,7 +124,7 @@ class Auth0Web {
             audience: audience,
             scopes: scopes,
             parameters: {
-              if (_redirectUrl != null) 'redirect_uri': _redirectUrl!,
+              if (_redirectUrl != null) 'redirect_uri': _redirectUrl,
               ...parameters
             }),
         _userAgent);
