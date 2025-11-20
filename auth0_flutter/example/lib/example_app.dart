@@ -7,7 +7,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'api_card.dart';
 import 'constants.dart';
 import 'web_auth_card.dart';
-import 'dpop_poc_page.dart';
 
 class ExampleApp extends StatefulWidget {
   const ExampleApp({final Key? key}) : super(key: key);
@@ -48,7 +47,7 @@ class _ExampleAppState extends State<ExampleApp> {
     // We also handle the message potentially returning null.
     try {
       if (kIsWeb) {
-        return auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
+        return auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3002');
       }
 
       final result = await webAuth.login(useHTTPS: true);
@@ -78,7 +77,7 @@ class _ExampleAppState extends State<ExampleApp> {
     // We also handle the message potentially returning null.
     try {
       if (kIsWeb) {
-        await auth0Web.logout(returnToUrl: 'http://localhost:3000');
+        await auth0Web.logout(returnToUrl: 'http://localhost:3002');
       } else {
         await webAuth.logout(useHTTPS: true);
 
@@ -127,6 +126,68 @@ class _ExampleAppState extends State<ExampleApp> {
     });
   }
 
+  // DPoP Login Function - Works on Web, Android, and iOS
+  Future<void> dpopLogin() async {
+    String output = '';
+
+    try {
+      if (kIsWeb) {
+        // Web: Use popup-based login with DPoP
+        final auth0WebDPoP = Auth0Web(
+          dotenv.env['AUTH0_DOMAIN']!,
+          dotenv.env['AUTH0_CLIENT_ID']!,
+          useDPoP: true,
+        );
+
+        // Initialize SDK
+        await auth0WebDPoP.onLoad(audience: 'https://DpopFlutterTest/');
+
+        // Login with popup
+        final credentials = await auth0WebDPoP.loginWithPopup(
+          audience: 'https://DpopFlutterTest/',
+        );
+
+        setState(() {
+          _isLoggedIn = true;
+        });
+
+        output = 'DPoP Login Successful!\n\n'
+            'Token Type: DPoP\n'
+            'Access Token: ${credentials.accessToken.substring(0, 50)}...\n'
+            'ID Token: ${credentials.idToken.substring(0, 50)}...\n'
+            'Expires At: ${credentials.expiresAt}';
+      } else {
+        // Mobile (Android/iOS): Use WebAuth with DPoP
+        final webAuthDPoP = auth0.webAuthentication(
+          scheme: dotenv.env['AUTH0_CUSTOM_SCHEME'],
+        );
+
+        final result = await webAuthDPoP.login(
+          useHTTPS: true,
+          audience: 'https://DpopFlutterTest/',
+          parameters: {'use_dpop': 'true'}, // Enable DPoP for mobile
+        );
+
+        setState(() {
+          _isLoggedIn = true;
+        });
+
+        output = 'DPoP Login Successful!\n\n'
+            'Token Type: DPoP\n'
+            'Access Token: ${result.accessToken.substring(0, 50)}...\n'
+            'ID Token: ${result.idToken.substring(0, 50)}...';
+      }
+    } catch (e) {
+      output = 'DPoP Login Failed:\n$e';
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      _output = output;
+    });
+  }
+
   @override
   Widget build(final BuildContext context) {
     return MaterialApp(
@@ -148,15 +209,19 @@ class _ExampleAppState extends State<ExampleApp> {
                         WebAuthCard(
                             label: 'Web Auth Login', action: webAuthLogin),
                       const SizedBox(height: 10),
+                      // DPoP Button - Works on Web, Android, and iOS
                       ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const DpopPocPage()),
-                          );
-                        },
-                        child: const Text('DPoP PoC'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepPurple,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 32, vertical: 12),
+                        ),
+                        onPressed: dpopLogin,
+                        child: const Text(
+                          'DPoP Login',
+                          style: TextStyle(fontSize: 16),
+                        ),
                       ),
                     ]),
               )),

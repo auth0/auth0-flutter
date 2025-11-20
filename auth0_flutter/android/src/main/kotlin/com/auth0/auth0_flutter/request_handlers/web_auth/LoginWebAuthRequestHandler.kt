@@ -1,7 +1,6 @@
 package com.auth0.auth0_flutter.request_handlers.web_auth
 
 import android.content.Context
-import android.util.Log
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
 import com.auth0.android.provider.BrowserPicker
@@ -24,13 +23,6 @@ class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest
         val builder = builderResolver(request)
         val args = request.data
         val scopes = (args["scopes"] ?: arrayListOf<String>()) as ArrayList<*>
-
-        if (args["useDPoP"] as? Boolean == true) {
-            Log.d("Auth0Flutter", "[DPoP PoC - Android] 'useDPoP' is true. Calling .useDPoP() on WebAuthProvider.")
-            builder.useDPoP(context)
-        } else {
-            Log.d("Auth0Flutter", "[DPoP PoC - Android] 'useDPoP' is false or not provided.")
-        }
 
         builder.withScope(scopes.joinToString(separator = " "))
 
@@ -78,6 +70,48 @@ class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest
 
         if (args["parameters"] is Map<*, *>) {
             builder.withParameters(args["parameters"] as Map<String, *>)
+        }
+
+        // Enable DPoP when requested from Dart.
+        if (args["useDPoP"] as? Boolean == true) {
+            var enabled = false
+            try {
+                val method = builder.javaClass.getMethod("useDPoP", android.content.Context::class.java)
+                method.invoke(builder, context)
+                enabled = true
+            } catch (ignored: NoSuchMethodException) {
+            } catch (e: Exception) {
+                android.util.Log.w("Auth0Flutter", "Failed to enable DPoP on Builder: ${e.message}")
+            }
+
+            if (!enabled) {
+                try {
+                    val wpClass = WebAuthProvider::class.java
+                    val instanceField = try { wpClass.getField("INSTANCE") } catch (e: NoSuchFieldException) { null }
+                    val instance = instanceField?.get(null)
+                    if (instance != null) {
+                        val method = wpClass.getMethod("useDPoP", android.content.Context::class.java)
+                        method.invoke(instance, context)
+                        enabled = true
+                    } else {
+                        val staticMethod = try { wpClass.getMethod("useDPoP", android.content.Context::class.java) } catch (e: NoSuchMethodException) { null }
+                        if (staticMethod != null) {
+                            staticMethod.invoke(null, context)
+                            enabled = true
+                        }
+                    }
+                } catch (e: NoSuchMethodException) {
+                    android.util.Log.w("Auth0Flutter", "DPoP not supported by this version of Auth0.Android SDK.")
+                } catch (e: Exception) {
+                    android.util.Log.w("Auth0Flutter", "Failed to enable DPoP via WebAuthProvider: ${e.message}")
+                }
+            }
+
+            if (!enabled) {
+                android.util.Log.w("Auth0Flutter", "DPoP was requested but could not be enabled on this SDK version.")
+            } else {
+                android.util.Log.v("Auth0Flutter", "DPoP enabled for this WebAuth flow")
+            }
         }
 
         builder.start(context, object : Callback<Credentials, AuthenticationException> {

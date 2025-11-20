@@ -1,17 +1,19 @@
-// lib/dpop_poc_page.dart
-
 import 'dart:async';
 import 'dart:developer';
 
 import 'package:auth0_flutter/auth0_flutter.dart';
+import 'package:auth0_flutter/auth0_flutter_web.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'constants.dart';
 
 class DpopPocPage extends StatefulWidget {
-  const DpopPocPage({final Key? key}) : super(key: key);
+  final Auth0 auth0;
+  final Auth0Web? auth0Web;
+
+  const DpopPocPage({required this.auth0, this.auth0Web, final Key? key})
+      : super(key: key);
 
   @override
   State<DpopPocPage> createState() => _DpopPocPageState();
@@ -20,13 +22,6 @@ class DpopPocPage extends StatefulWidget {
 class _DpopPocPageState extends State<DpopPocPage> {
   Credentials? _credentials;
   String _errorMessage = '';
-  late Auth0 auth0;
-
-  @override
-  void initState() {
-    super.initState();
-    auth0 = Auth0(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
-  }
 
   Future<void> loginWithDPoP() async {
     setState(() {
@@ -35,27 +30,36 @@ class _DpopPocPageState extends State<DpopPocPage> {
     });
 
     try {
-      log('[DPoP PoC - App] Calling webAuthentication.login with useDPoP: true');
-      final result = await auth0.webAuthentication().login(useDPoP: true);
-      log('[DPoP PoC - App] Login successful.');
-      log('[DPoP PoC - App] Received Credentials:');
-      log('  - Access Token: ${result.accessToken.substring(0, 15)}...');
-      log('  - ID Token: ${result.idToken.substring(0, 15)}...');
-      log('  - Token Type: ${result.tokenType}');
-      log('  - User ID: ${result.user.sub}');
-      log('  - Scopes: ${result.scopes}');
+      Credentials? result;
+
+      if (kIsWeb) {
+        // --- WEB LOGIC ---
+        if (widget.auth0Web == null) {
+          throw Exception('Auth0Web client not available on web platform.');
+        }
+        
+        // For DPoP, loginWithPopup is often simpler as it doesn't require a full page reload.
+        result = await widget.auth0Web!.loginWithPopup(
+          audience: 'https://DpopFlutterTest/',
+        );
+        log('[DPoP PoC - Web] Login successful.');
+        log('  - Token Type: ${result.tokenType}');
+
+      } else {
+        // --- MOBILE LOGIC (Unchanged) ---
+        result = await widget.auth0.webAuthentication().login(
+              useDPoP: true,
+              audience: 'https://DpopFlutterTest/',
+            );
+        log('[DPoP PoC - Mobile] Login successful.');
+        log('  - Token Type: ${result.tokenType}');
+      }
 
       setState(() {
         _credentials = result;
       });
-    } on WebAuthenticationException catch (e) {
-      log('[DPoP PoC - App] Login failed with WebAuthenticationException.',
-          error: e);
-      setState(() {
-        _errorMessage = e.toString();
-      });
     } catch (e) {
-      log('[DPoP PoC - App] Login failed with an unexpected error.', error: e);
+      log('[DPoP PoC - App] Login failed.', error: e);
       setState(() {
         _errorMessage = e.toString();
       });
@@ -88,8 +92,9 @@ class _DpopPocPageState extends State<DpopPocPage> {
                 children: [
                   Text(
                       'Access Token: ${_credentials!.accessToken.substring(0, 20)}...'),
-                  Text(
-                      'ID Token: ${_credentials!.idToken.substring(0, 20)}...'),
+                  if (!kIsWeb)
+                    Text(
+                        'ID Token: ${_credentials!.idToken.substring(0, 20)}...'),
                   Text('Token Type: ${_credentials!.tokenType}',
                       style: const TextStyle(fontWeight: FontWeight.bold)),
                   Text('User ID: ${_credentials!.user.sub}'),

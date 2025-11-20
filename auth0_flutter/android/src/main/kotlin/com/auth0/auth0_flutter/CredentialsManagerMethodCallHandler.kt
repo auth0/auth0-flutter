@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Context
 import androidx.annotation.NonNull
 import androidx.fragment.app.FragmentActivity
+import com.auth0.android.Auth0
+import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.storage.AuthenticationLevel
 import com.auth0.android.authentication.storage.LocalAuthenticationOptions
 import com.auth0.android.authentication.storage.SecureCredentialsManager
@@ -18,52 +20,54 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
     lateinit var activity: Activity
     lateinit var context: Context
 
-override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
+    private var credentialsManagerInstance: SecureCredentialsManager? = null
+
+    override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         val requestHandler = requestHandlers.find { it.method == call.method }
 
         if (requestHandler != null) {
             val request = MethodCallRequest.fromCall(call)
             val activity = this.activity
 
-            val configuration = request.data["credentialsManagerConfiguration"] as Map<*, *>?
+            if (credentialsManagerInstance == null) {
+                val configuration = request.data["credentialsManagerConfiguration"] as Map<*, *>?
 
-            val sharedPreferenceConfiguration = configuration?.get("android")
-            val sharedPreferenceName: String? = if (sharedPreferenceConfiguration != null) {
-                (sharedPreferenceConfiguration as Map<String, String>)["sharedPreferencesName"]
-            } else null
+                val sharedPreferenceConfiguration = configuration?.get("android")
+                val sharedPreferenceName: String? = if (sharedPreferenceConfiguration != null) {
+                    (sharedPreferenceConfiguration as Map<String, String>)["sharedPreferencesName"]
+                } else null
 
-            val storage = sharedPreferenceName?.let {
-                SharedPreferencesStorage(context, it)
-            } ?: SharedPreferencesStorage(context)
+                val storage = sharedPreferenceName?.let {
+                    SharedPreferencesStorage(context, it)
+                } ?: SharedPreferencesStorage(context)
 
-            val localAuthentication = request.data["localAuthentication"] as Map<String, String>?
-            val credentialsManager: SecureCredentialsManager
+                val localAuthentication = request.data["localAuthentication"] as Map<String, String>?
 
-            if (localAuthentication != null) {
-                if (activity !is FragmentActivity) {
-                    result.error(
-                        "credentialsManager#biometric-error",
-                        "The Activity is not a FragmentActivity, which is required for biometric authentication.",
-                        null
-                    )
-                    return
+                if (localAuthentication != null) {
+                    if (activity !is FragmentActivity) {
+                        result.error(
+                            "credentialsManager#biometric-error",
+                            "The Activity is not a FragmentActivity, which is required for biometric authentication.",
+                            null
+                        )
+                        return
+                    }
+
+                    val builder = LocalAuthenticationOptions.Builder()
+                    localAuthentication["title"]?.let { builder.setTitle(it) }
+                    localAuthentication["description"]?.let { builder.setDescription(it) }
+                    localAuthentication["cancelTitle"]?.let { builder.setNegativeButtonText(it) }
+
+                    builder.setAuthenticationLevel(AuthenticationLevel.STRONG)
+                    builder.setDeviceCredentialFallback(true)
+
+                    credentialsManagerInstance = SecureCredentialsManager(context, request.account, storage, activity, builder.build())
+                } else {
+                    credentialsManagerInstance = SecureCredentialsManager(context, request.account, storage)
                 }
-
-                val builder = LocalAuthenticationOptions.Builder()
-                localAuthentication["title"]?.let { builder.setTitle(it) }
-                localAuthentication["description"]?.let { builder.setDescription(it) }
-                localAuthentication["cancelTitle"]?.let { builder.setNegativeButtonText(it) }
-
-                builder.setAuthenticationLevel(AuthenticationLevel.STRONG)
-                builder.setDeviceCredentialFallback(true)
-
-            
-                credentialsManager = SecureCredentialsManager(context, request.account, storage, activity, builder.build())
-            } else {
-                credentialsManager = SecureCredentialsManager(context, request.account, storage)
             }
 
-            requestHandler.handle(credentialsManager, context, request, result)
+            requestHandler.handle(credentialsManagerInstance!!, context, request, result)
         } else {
             result.notImplemented()
         }

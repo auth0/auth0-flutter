@@ -343,6 +343,218 @@ final credentials = await auth0Web.loginWithPopup(popupWindow: popup);
 
 For other comprehensive examples, see the [EXAMPLES.md](EXAMPLES.md) document.
 
+### Using DPoP (Demonstrating Proof of Possession)
+
+Auth0 Flutter SDK supports [DPoP (Demonstrating Proof of Possession)] A security mechanism that binds access tokens to a specific client by using cryptographic proof. This prevents token theft and replay attacks by ensuring tokens can only be used by the client that requested them.
+
+#### What is DPoP?
+
+DPoP is an OAuth 2.0 extension that provides a mechanism for sender-constraining tokens. Instead of bearer tokens (which can be used by anyone who possesses them), DPoP tokens are cryptographically bound to a specific client, making them useless if intercepted.
+
+**Benefits:**
+- 🔒 **Enhanced Security** - Tokens are bound to the client's cryptographic key
+- 🛡️ **Prevents Token Theft** - Stolen tokens cannot be used without the private key
+- ✅ **Replay Attack Protection** - Each request includes a fresh cryptographic proof
+- 🌐 **Cross-Platform Support** - Works on Web, Android, and iOS
+
+#### 📱 Mobile (Android/iOS) - Using DPoP with Web Authentication
+
+To enable DPoP during login, simply add the `useDPoP` parameter:
+
+```dart
+// Login with DPoP enabled
+final credentials = await auth0
+    .webAuthentication()
+    .login(useDPoP: true, useHTTPS: true);
+
+// The returned credentials will have tokenType: 'DPoP'
+print(credentials.tokenType); // 'DPoP'
+
+// Credentials are automatically stored with DPoP token binding
+```
+
+**DPoP with Additional Parameters:**
+
+```dart
+// DPoP with audience and custom scopes
+final credentials = await auth0.webAuthentication().login(
+  useDPoP: true,
+  useHTTPS: true,
+  audience: 'https://api.example.com',
+  scopes: {'openid', 'profile', 'email', 'offline_access'},
+);
+
+// DPoP with organization authentication
+final credentials = await auth0.webAuthentication().login(
+  useDPoP: true,
+  useHTTPS: true,
+  organizationId: 'org_123',
+);
+
+// DPoP with invitation URL
+final credentials = await auth0.webAuthentication().login(
+  useDPoP: true,
+  useHTTPS: true,
+  invitationUrl: 'https://example.com/invite?ticket=abc123',
+);
+```
+
+**Platform-Specific Features with DPoP:**
+
+```dart
+// iOS: Use SafariViewController with DPoP
+final credentials = await auth0.webAuthentication().login(
+  useDPoP: true,
+  useHTTPS: true,
+  useEphemeralSession: true, // Don't persist cookies
+  safariViewController: const SafariViewController(
+    presentationStyle: SafariViewControllerPresentationStyle.fullScreen,
+  ),
+);
+
+// Android: Specify allowed browsers with DPoP
+final credentials = await auth0.webAuthentication().login(
+  useDPoP: true,
+  allowedBrowsers: ['com.android.chrome', 'org.mozilla.firefox'],
+);
+```
+
+#### 🌐 Web - Using DPoP
+
+To enable DPoP on the web platform, set the `useDPoP` parameter when creating the `Auth0Web` instance:
+
+```dart
+// Create Auth0Web instance with DPoP enabled
+final auth0Web = Auth0Web(
+  'YOUR_AUTH0_DOMAIN',
+  'YOUR_AUTH0_CLIENT_ID',
+  useDPoP: true, // Enable DPoP for all operations
+);
+```
+
+**Login with Redirect:**
+
+```dart
+// DPoP is automatically used since it was enabled in the constructor
+await auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
+```
+
+**Login with Popup:**
+
+```dart
+// DPoP works with popup login as well
+final credentials = await auth0Web.loginWithPopup();
+print(credentials.tokenType); // 'DPoP'
+```
+
+**Retrieve Credentials:**
+
+```dart
+// Credentials retrieved will maintain DPoP token binding
+final credentials = await auth0Web.credentials();
+if (credentials != null) {
+  print('Access Token: ${credentials.accessToken}');
+  print('Token Type: ${credentials.tokenType}'); // 'DPoP'
+}
+```
+
+**Check Authentication Status:**
+
+```dart
+@override
+void initState() {
+  super.initState();
+  
+  if (kIsWeb) {
+    auth0Web.onLoad().then((credentials) {
+      if (credentials != null) {
+        // User is authenticated with DPoP
+        setState(() {
+          isAuthenticated = true;
+          accessToken = credentials.accessToken;
+          tokenType = credentials.tokenType; // 'DPoP'
+        });
+      }
+    });
+  }
+}
+```
+
+#### DPoP Configuration Requirements
+
+**Auth0 Dashboard Configuration:**
+
+1. Navigate to your [Auth0 Dashboard](https://manage.auth0.com/#/applications/)
+2. Select your application
+3. Go to **Settings** → **Advanced Settings** → **OAuth**
+4. Ensure the following are configured:
+   - **Token Endpoint Authentication Method**: Set appropriately for your app type
+   - **DPoP Support**: Contact Auth0 support to enable DPoP for your tenant (if required)
+
+**Web Platform Requirements:**
+
+- Auth0 SPA JS SDK 2.0+ (already included via CDN in `index.html`)
+- Modern browser with Web Crypto API support
+
+**Mobile Platform Requirements:**
+
+- **Android**: Auth0.Android SDK with DPoP support
+- **iOS**: Auth0.Swift SDK with DPoP support
+- App Links (Android) or Universal Links (iOS) configured for `useHTTPS: true`
+
+#### Using DPoP Tokens with APIs
+
+When making API calls with DPoP tokens, you must include both the access token and a DPoP proof:
+
+```dart
+// Example: Making an API call with DPoP token
+final credentials = await auth0.credentialsManager.credentials();
+
+if (credentials.tokenType == 'DPoP') {
+  // For DPoP tokens, you'll need to generate a DPoP proof for each request
+  // This is typically handled by your HTTP client or API SDK
+  
+  final response = await http.get(
+    Uri.parse('https://api.example.com/user/profile'),
+    headers: {
+      'Authorization': 'DPoP ${credentials.accessToken}',
+      // 'DPoP': '<dpop-proof-jwt>', // Generated by native SDKs
+    },
+  );
+}
+```
+
+> 💡 The native SDKs (Auth0.Android and Auth0.Swift) automatically handle DPoP proof generation for API requests. On the web, the Auth0 SPA JS SDK manages this automatically.
+
+#### Important Notes
+
+- **Token Type**: When using DPoP, `credentials.tokenType` will be `'DPoP'` instead of `'Bearer'`
+- **Credentials Storage**: DPoP credentials are stored and managed the same way as bearer tokens
+- **Automatic Renewal**: Token renewal with DPoP is handled automatically by the credentials manager
+- **Backward Compatible**: Setting `useDPoP: false` (or omitting it) uses standard bearer tokens
+- **Security**: DPoP provides additional security, but ensure your callback URLs use HTTPS in production
+
+#### Troubleshooting DPoP
+
+**Common Issues:**
+
+1. **"DPoP not supported by SDK version"**
+   - Ensure you're using the latest version of auth0_flutter
+   - Check that native SDKs support DPoP on your platform
+
+2. **Token type is 'Bearer' instead of 'DPoP'**
+   - Verify `useDPoP: true` is set correctly
+   - Check that your Auth0 tenant has DPoP enabled
+   - Ensure the native SDKs support DPoP
+
+3. **API calls fail with DPoP tokens**
+   - Verify your API is configured to accept DPoP tokens
+   - Ensure DPoP proof is included in requests (handled automatically by SDKs)
+
+For more information about DPoP, see:
+- [RFC 9449 - OAuth 2.0 Demonstrating Proof of Possession](https://datatracker.ietf.org/doc/html/rfc9449)
+- [Auth0 DPoP Documentation](https://auth0.com/docs/secure/tokens/token-best-practices#use-demonstrating-proof-of-possession-dpop)
+
 ### iOS SSO Alert Box
 
 ![Screenshot of the SSO alert box](https://user-images.githubusercontent.com/5055789/198689762-8f3459a7-fdde-4c14-a13b-68933ef675e6.png)

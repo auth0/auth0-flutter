@@ -13,7 +13,6 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.plugin.common.MethodChannel.Result
 
 /** Auth0FlutterPlugin */
 class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
@@ -24,6 +23,7 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   private lateinit var webAuthMethodChannel : MethodChannel
   private lateinit var authMethodChannel : MethodChannel
   private lateinit var credentialsManagerMethodChannel : MethodChannel
+  private lateinit var binding: FlutterPlugin.FlutterPluginBinding
   private val webAuthCallHandler = Auth0FlutterWebAuthMethodCallHandler(listOf(
     LoginWebAuthRequestHandler { request: MethodCallRequest -> WebAuthProvider.login(request.account) },
     LogoutWebAuthRequestHandler { request: MethodCallRequest -> WebAuthProvider.logout(request.account) },
@@ -50,19 +50,22 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   ))
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    webAuthMethodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "auth0.com/auth0_flutter/web_auth")
+    binding = flutterPluginBinding
+    val messenger = binding.binaryMessenger
+    val context = binding.applicationContext
+
+    webAuthMethodChannel = MethodChannel(messenger, "auth0.com/auth0_flutter/web_auth")
     webAuthMethodChannel.setMethodCallHandler(webAuthCallHandler)
 
-    authMethodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "auth0.com/auth0_flutter/auth")
-    authMethodChannel.setMethodCallHandler(authCallHandler)
-
-    credentialsManagerMethodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "auth0.com/auth0_flutter/credentials_manager")
+    credentialsManagerMethodChannel = MethodChannel(messenger, "auth0.com/auth0_flutter/credentials_manager")
     credentialsManagerMethodChannel.setMethodCallHandler(credentialsManagerCallHandler)
+    credentialsManagerCallHandler.context = context
 
-    credentialsManagerCallHandler.context = flutterPluginBinding.applicationContext
+    authMethodChannel = MethodChannel(messenger, "auth0.com/auth0_flutter/authentication")
+    authMethodChannel.setMethodCallHandler(authCallHandler)
   }
 
-  override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {}
+  override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result) {}
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
     webAuthMethodChannel.setMethodCallHandler(null)
