@@ -20,8 +20,6 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
     lateinit var activity: Activity
     lateinit var context: Context
 
-    private var credentialsManagerInstance: SecureCredentialsManager? = null
-
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         val requestHandler = requestHandlers.find { it.method == call.method }
 
@@ -29,45 +27,70 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
             val request = MethodCallRequest.fromCall(call)
             val activity = this.activity
 
-            if (credentialsManagerInstance == null) {
-                val configuration = request.data["credentialsManagerConfiguration"] as Map<*, *>?
+            val configuration = request.data["credentialsManagerConfiguration"] as Map<*, *>?
 
-                val sharedPreferenceConfiguration = configuration?.get("android")
-                val sharedPreferenceName: String? = if (sharedPreferenceConfiguration != null) {
-                    (sharedPreferenceConfiguration as Map<String, String>)["sharedPreferencesName"]
-                } else null
+            val sharedPreferenceConfiguration = configuration?.get("android")
+            val sharedPreferenceName: String? = if (sharedPreferenceConfiguration != null) {
+                (sharedPreferenceConfiguration as Map<String, String>)["sharedPreferencesName"]
+            } else null
 
-                val storage = sharedPreferenceName?.let {
-                    SharedPreferencesStorage(context, it)
-                } ?: SharedPreferencesStorage(context)
+            val storage = sharedPreferenceName?.let {
+                SharedPreferencesStorage(context, it)
+            } ?: SharedPreferencesStorage(context)
 
-                val localAuthentication = request.data["localAuthentication"] as Map<String, String>?
+            val localAuthentication = request.data["localAuthentication"] as Map<String, Any>?
+            val useDPoP = request.data["useDPoP"] as? Boolean ?: false
 
-                if (localAuthentication != null) {
-                    if (activity !is FragmentActivity) {
-                        result.error(
-                            "credentialsManager#biometric-error",
-                            "The Activity is not a FragmentActivity, which is required for biometric authentication.",
-                            null
-                        )
-                        return
+            val credentialsManagerInstance: SecureCredentialsManager
+
+            if (localAuthentication != null) {
+                if (activity !is FragmentActivity) {
+                    result.error(
+                        "FragmentActivity required",
+                        "The Activity is not a FragmentActivity, which is required for biometric authentication.",
+                        null
+                    )
+                    return
+                }
+
+                val builder = LocalAuthenticationOptions.Builder()
+                (localAuthentication["title"] as String?)?.let { builder.setTitle(it) }
+                (localAuthentication["description"] as String?)?.let { builder.setDescription(it) }
+                (localAuthentication["cancelTitle"] as String?)?.let { builder.setNegativeButtonText(it) }
+
+                val authenticationLevel = localAuthentication["authenticationLevel"] as Int?
+                if (authenticationLevel != null) {
+                    when (authenticationLevel) {
+                        0 -> builder.setAuthenticationLevel(AuthenticationLevel.STRONG)
+                        1 -> builder.setAuthenticationLevel(AuthenticationLevel.WEAK)
+                        2 -> builder.setAuthenticationLevel(AuthenticationLevel.DEVICE_CREDENTIAL)
                     }
-
-                    val builder = LocalAuthenticationOptions.Builder()
-                    localAuthentication["title"]?.let { builder.setTitle(it) }
-                    localAuthentication["description"]?.let { builder.setDescription(it) }
-                    localAuthentication["cancelTitle"]?.let { builder.setNegativeButtonText(it) }
-
-                    builder.setAuthenticationLevel(AuthenticationLevel.STRONG)
-                    builder.setDeviceCredentialFallback(true)
-
-                    credentialsManagerInstance = SecureCredentialsManager(context, request.account, storage, activity, builder.build())
                 } else {
-                    credentialsManagerInstance = SecureCredentialsManager(context, request.account, storage)
+                    builder.setAuthenticationLevel(AuthenticationLevel.STRONG)
+                }
+                builder.setDeviceCredentialFallback(true)
+
+                credentialsManagerInstance = SecureCredentialsManager(context, request.account, storage, activity, builder.build())
+            } else {
+                credentialsManagerInstance = SecureCredentialsManager(context, request.account, storage)
+            }
+
+            if (useDPoP) {
+                try {
+                    val fields = credentialsManagerInstance.javaClass.declaredFields
+                    val apiField = fields.find { it.type == AuthenticationAPIClient::class.java }
+                    if (apiField != null) {
+                        apiField.isAccessible = true
+                        val api = apiField.get(credentialsManagerInstance)
+                        val method = api.javaClass.getMethod("useDPoP", android.content.Context::class.java)
+                        method.invoke(api, context)
+                    }
+                } catch (e: Exception) {
+                    android.util.Log.w("Auth0Flutter", "Failed to enable DPoP on SecureCredentialsManager: ${e.message}")
                 }
             }
 
-            requestHandler.handle(credentialsManagerInstance!!, context, request, result)
+            requestHandler.handle(credentialsManagerInstance, context, request, result)
         } else {
             result.notImplemented()
         }
