@@ -20,6 +20,7 @@ class CredentialsManagerRequest<TOptions extends RequestOptions?>
     extends BaseRequest<TOptions?> {
   final LocalAuthentication? localAuthentication;
   final CredentialsManagerConfiguration? credentialsManagerConfiguration;
+  final bool useDPoP;
 
   CredentialsManagerRequest({
     required final Account account,
@@ -27,11 +28,13 @@ class CredentialsManagerRequest<TOptions extends RequestOptions?>
     required final UserAgent userAgent,
     this.localAuthentication,
     this.credentialsManagerConfiguration,
+    this.useDPoP = false,
   }) : super(account: account, options: options, userAgent: userAgent);
 
   @override
   Map<String, dynamic> toMap() {
     final map = super.toMap();
+    map['useDPoP'] = useDPoP;
 
     if (localAuthentication != null) {
       map.addAll({
@@ -39,7 +42,8 @@ class CredentialsManagerRequest<TOptions extends RequestOptions?>
           'title': localAuthentication?.title,
           'description': localAuthentication?.description,
           'cancelTitle': localAuthentication?.cancelTitle,
-          'fallbackTitle': localAuthentication?.fallbackTitle
+          'fallbackTitle': localAuthentication?.fallbackTitle,
+          'authenticationLevel': localAuthentication?.authenticationLevel?.index
         }
       });
     }

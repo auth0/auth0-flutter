@@ -1,3 +1,15 @@
+/// The level of authentication required.
+enum LocalAuthenticationLevel {
+  /// Strong authentication (e.g. fingerprint, face scan, iris scan).
+  strong,
+
+  /// Weak authentication (e.g. pattern, PIN, password).
+  weak,
+
+  /// Device credential authentication (e.g. pattern, PIN, password).
+  deviceCredential
+}
+
 /// Settings for local authentication prompts.
 class LocalAuthentication {
   /// Title to display on the local authentication prompt. Defaults to **Please
@@ -14,6 +26,13 @@ class LocalAuthentication {
   ///  after a failed match.
   final String? fallbackTitle;
 
+  /// (Android only): The level of authentication required. Defaults to [LocalAuthenticationLevel.strong].
+  final LocalAuthenticationLevel? authenticationLevel;
+
   const LocalAuthentication(
-      {this.title, this.description, this.cancelTitle, this.fallbackTitle});
+      {this.title,
+      this.description,
+      this.cancelTitle,
+      this.fallbackTitle,
+      this.authenticationLevel});
 }

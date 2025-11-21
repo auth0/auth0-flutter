@@ -18,7 +18,8 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         ChallengeType,
         CredentialsManagerException,
         PasswordlessType,
-        LocalAuthentication;
+        LocalAuthentication,
+        LocalAuthenticationLevel;
 
 export 'src/mobile/authentication_api.dart';
 export 'src/mobile/credentials_manager.dart';
@@ -54,17 +55,15 @@ class Auth0 {
   Auth0(final String domain, final String clientId,
       {final LocalAuthentication? localAuthentication,
       final CredentialsManager? credentialsManager,
-      final CredentialsManagerConfiguration? credentialsManagerConfiguration})
+      final CredentialsManagerConfiguration? credentialsManagerConfiguration,
+      final bool useDPoP = false})
       : _account = Account(domain, clientId) {
     _credentialsManager = credentialsManager ??
-        DefaultCredentialsManager(
-          _account,
-          _userAgent,
-          localAuthentication: localAuthentication,
-          credentialsManagerConfiguration:credentialsManagerConfiguration
-        );
+        DefaultCredentialsManager(_account, _userAgent,
+            localAuthentication: localAuthentication,
+            credentialsManagerConfiguration: credentialsManagerConfiguration,
+            useDPoP: useDPoP);
   }
-
 
   /// An instance of [AuthenticationApi], the primary interface for interacting
   /// with the Auth0 Authentication API

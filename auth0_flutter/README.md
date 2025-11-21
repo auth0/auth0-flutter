@@ -25,7 +25,7 @@
 | Flutter    | Android         | iOS               | macOS             |
 | :--------- | :-------------- | :---------------- | :---------------- |
 | SDK 3.0+   | Android API 21+ | iOS 14+           | macOS 11+         |
-| Dart 2.17+ | Java 8+         | Swift 5.9+        | Swift 5.9+        |
+| Dart 2.17+ | Java 17+        | Swift 5.9+        | Swift 5.9+        |
 |            |                 | Xcode 15.x / 16.x | Xcode 15.x / 16.x |
 
 ### Installation
@@ -202,6 +202,10 @@ Re-declare the activity manually using `tools:node="remove"` in the `android/src
 
 > 💡 If your Android app is using [product flavors](https://developer.android.com/studio/build/build-variants#product-flavors), you might need to specify different manifest placeholders for each flavor.
 
+##### Android: Biometric authentication
+
+> ⚠️ On Android, your app's `MainActivity.kt` file must extend `FlutterFragmentActivity` instead of `FlutterActivity` for biometric prompts to work.
+
 ##### iOS/macOS: Configure the associated domain
 
 > ⚠️ This step requires a paid Apple Developer account. It is needed to use Universal Links as callback and logout URLs.
@@ -345,7 +349,7 @@ For other comprehensive examples, see the [EXAMPLES.md](EXAMPLES.md) document.
 
 ### Using DPoP (Demonstrating Proof of Possession)
 
-Auth0 Flutter SDK supports [DPoP (Demonstrating Proof of Possession)] A security mechanism that binds access tokens to a specific client by using cryptographic proof. This prevents token theft and replay attacks by ensuring tokens can only be used by the client that requested them.
+Auth0 Flutter SDK supports [DPoP (Demonstrating Proof of Possession)](https://datatracker.ietf.org/doc/html/rfc9449), a security mechanism that binds access tokens to a specific client by using cryptographic proof. This prevents token theft and replay attacks by ensuring tokens can only be used by the client that requested them.
 
 #### What is DPoP?
 
