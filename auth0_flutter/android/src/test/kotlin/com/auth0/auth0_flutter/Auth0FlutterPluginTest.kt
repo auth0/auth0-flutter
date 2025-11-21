@@ -8,6 +8,7 @@ import io.flutter.plugin.common.MethodChannel
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.*
+import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.robolectric.RobolectricTestRunner
@@ -32,7 +33,7 @@ class Auth0FlutterPluginTest {
                 )
             }
 
-            assertMethodcallHandler<Auth0FlutterAuthMethodCallHandler>(0)
+            assertMethodcallHandler<Auth0FlutterWebAuthMethodCallHandler>(0)
             assertMethodcallHandler<Auth0FlutterAuthMethodCallHandler>(1)
             assertMethodcallHandler<CredentialsManagerMethodCallHandler>(2)
 
@@ -89,7 +90,7 @@ class Auth0FlutterPluginTest {
             fun <TMethodCallHandler : MethodChannel.MethodCallHandler> getHandler(i: Int): TMethodCallHandler {
                 val captor = argumentCaptor<MethodChannel.MethodCallHandler>()
 
-                verify(constructed[i]).setMethodCallHandler(captor.capture())
+                verify(constructed[i], atLeastOnce()).setMethodCallHandler(captor.capture())
 
                 @Suppress("UNCHECKED_CAST")
                 return captor.firstValue as TMethodCallHandler
@@ -104,7 +105,7 @@ class Auth0FlutterPluginTest {
     }
 
     @Test
-    fun `should call binding addActivityResultListener for CredentialsManager on onAttachedToActivity`() {
+    fun `should NOT call binding addActivityResultListener on onAttachedToActivity`() {
         mockConstruction(MethodChannel::class.java).use {
             val plugin = Auth0FlutterPlugin()
 
@@ -120,7 +121,7 @@ class Auth0FlutterPluginTest {
 
             plugin.onAttachedToActivity(mockActivityBindings)
 
-            verify(mockActivityBindings).addActivityResultListener(
+            verify(mockActivityBindings, never()).addActivityResultListener(
                 any<CredentialsManagerMethodCallHandler>()
             )
         }

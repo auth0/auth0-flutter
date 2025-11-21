@@ -22,6 +22,7 @@ struct WebAuthLoginMethodHandler: MethodHandler {
         case organizationId
         case invitationUrl
         case leeway
+        case useDPoP
         case issuer
         case maxAge
         #if os(iOS)
@@ -105,6 +106,10 @@ struct WebAuthLoginMethodHandler: MethodHandler {
             webAuth = webAuth.provider(self.safariProvider(safariViewController.presentationStyle))
         }
         #endif
+
+        if arguments[Argument.useDPoP.rawValue] as? Bool == true {
+            webAuth = webAuth.useDPoP()
+        }
 
         webAuth.start {
             switch $0 {

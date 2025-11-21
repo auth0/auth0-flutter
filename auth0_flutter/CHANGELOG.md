@@ -1,5 +1,10 @@
 # Change Log
 
+## [Unreleased]
+
+**Breaking Changes**
+- The Android SDK now requires Java 17 to build. This is due to the update to Android Gradle Plugin 8.4.0 which necessitates JDK 17. Apps running on Java 11 will need to upgrade their build environment. See the [Migration Guide](MIGRATION_GUIDE.md) for details.
+
 ## [af-v1.14.0](https://github.com/auth0/auth0-flutter/tree/af-v1.14.0) (2025-09-24)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.13.0...af-v1.14.0)
 
@@ -86,11 +91,6 @@
 - iOS - Bump Auth0 dependency version [\#435](https://github.com/auth0/auth0-flutter/pull/435) ([martin-headspace](https://github.com/martin-headspace))
 
 ## [af-v1.6.0](https://github.com/auth0/auth0-flutter/tree/af-v1.6.0) (2024-03-18)
-[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.5.0...af-v1.6.0)
-
-**Added**
-- Add support for HTTPS redirect URLs [SDK-4754] [\#417](https://github.com/auth0/auth0-flutter/pull/417) ([Widcket](https://github.com/Widcket))
-
 ## [af-v1.5.0](https://github.com/auth0/auth0-flutter/tree/af-v1.5.0) (2023-12-15)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.4.1...af-v1.5.0)
 

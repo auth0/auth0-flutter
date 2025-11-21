@@ -12,7 +12,10 @@ import com.auth0.auth0_flutter.toMap
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
 
-class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest) -> WebAuthProvider.Builder) : WebAuthRequestHandler {
+class LoginWebAuthRequestHandler(
+    private val builderResolver: (MethodCallRequest) -> WebAuthProvider.Builder,
+    private val webAuthProvider: WebAuthProvider = WebAuthProvider
+) : WebAuthRequestHandler {
     override val method: String = "webAuth#login"
 
     override fun handle(
@@ -70,6 +73,28 @@ class LoginWebAuthRequestHandler(private val builderResolver: (MethodCallRequest
 
         if (args["parameters"] is Map<*, *>) {
             builder.withParameters(args["parameters"] as Map<String, *>)
+        }
+
+        // Enable DPoP when requested from Dart.
+        if (args["useDPoP"] as? Boolean == true) {
+            try {
+                // Try to enable DPoP on the builder first (if supported by newer SDKs)
+                val method = builder.javaClass.getMethod("useDPoP", android.content.Context::class.java)
+                method.invoke(builder, context)
+                android.util.Log.v("Auth0Flutter", "DPoP enabled on Builder")
+            } catch (ignored: NoSuchMethodException) {
+                // Fallback to enabling DPoP via WebAuthProvider (for older SDKs or if builder method missing)
+                try {
+                    webAuthProvider.useDPoP(context)
+                    android.util.Log.v("Auth0Flutter", "DPoP enabled via WebAuthProvider")
+                } catch (e: Exception) {
+                    result.error("DPOP_CONFIGURATION_ERROR", "Failed to enable DPoP: ${e.message}", null)
+                    return
+                }
+            } catch (e: Exception) {
+                result.error("DPOP_CONFIGURATION_ERROR", "Failed to enable DPoP: ${e.message}", null)
+                return
+            }
         }
 
         builder.start(context, object : Callback<Credentials, AuthenticationException> {

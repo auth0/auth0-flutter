@@ -38,21 +38,63 @@
   </script>
   <!-- This script adds the flutter initialization JS code -->
   <script src="flutter_bootstrap.js" async></script>
-  <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
+  
+  <!-- Load Auth0 SPA JS SDK v2.9.0 from unpkg CDN (more reliable) -->
+  <script src="https://unpkg.com/@auth0/auth0-spa-js@2.9.0/dist/auth0-spa-js.production.js"></script>
+  <script>
+    console.log('Auth0 SDK script tag loaded, checking for window.auth0...');
+    // Wait for Auth0 SDK to be available before starting Flutter
+    window.auth0SdkReady = new Promise((resolve) => {
+      if (window.auth0 && window.auth0.Auth0Client) {
+        console.log('✓ Auth0 SDK loaded successfully (immediate)');
+        console.log('window.auth0:', window.auth0);
+        resolve();
+      } else {
+        console.log('Waiting for Auth0 SDK to load...');
+        console.log('Current window.auth0:', window.auth0);
+        
+        let attempts = 0;
+        const checkAuth0 = setInterval(() => {
+          attempts++;
+          if (window.auth0 && window.auth0.Auth0Client) {
+            console.log(`✓ Auth0 SDK loaded after ${attempts * 50}ms`);
+            console.log('window.auth0:', window.auth0);
+            clearInterval(checkAuth0);
+            resolve();
+          } else if (attempts % 20 === 0) {
+            // Log every second
+            console.log(`Still waiting... (${attempts * 50}ms elapsed), window.auth0:`, window.auth0);
+          }
+        }, 50);
+        
+        // Timeout after 10 seconds
+        setTimeout(() => {
+          clearInterval(checkAuth0);
+          console.error('✗ Auth0 SDK failed to load within 10 seconds');
+          console.error('Final window.auth0:', window.auth0);
+          console.error('window.auth0 type:', typeof window.auth0);
+          resolve(); // Resolve anyway to let app start
+        }, 10000);
+      }
+    });
+  </script>
 </head>
 <body>
   <script>
     window.addEventListener('load', function(ev) {
-      // Download main.dart.js
-      _flutter.loader.loadEntrypoint({
+      // Wait for Auth0 SDK before starting Flutter
+      window.auth0SdkReady.then(() => {
+        // Download main.dart.js
+        _flutter.loader.loadEntrypoint({
         serviceWorker: {
           serviceWorkerVersion: serviceWorkerVersion,
         },
-        onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
-            appRunner.runApp();
-          });
-        }
+          onEntrypointLoaded: function(engineInitializer) {
+            engineInitializer.initializeEngine().then(function(appRunner) {
+              appRunner.runApp();
+            });
+          }
+        });
       });
     });
   </script>
