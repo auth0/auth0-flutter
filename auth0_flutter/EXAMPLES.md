@@ -443,6 +443,8 @@ final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID',
 
 You can enable an additional level of user authentication before retrieving credentials using the local authentication supported by the device, for example PIN or fingerprint on Android, and Face ID or Touch ID on iOS.
 
+To enable this, pass a `LocalAuthentication` instance when you create your `Auth0` object.
+
 ```dart
 const localAuthentication =
     LocalAuthentication(title: 'Please authenticate to continue');
@@ -450,6 +452,7 @@ final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID',
     localAuthentication: localAuthentication);
 final credentials = await auth0.credentialsManager.credentials();
 ```
+> ⚠️ On Android, your app's MainActivity.kt file must extend FlutterFragmentActivity instead of FlutterActivity for biometric prompts to work.
 
 Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/LocalAuthentication-class.html) to learn more about the available `LocalAuthentication` properties.
 
@@ -490,10 +493,16 @@ The Credentials Manager will only throw `CredentialsManagerException` exceptions
 
 ```dart
 try {
-  final credentials = await auth0.credentialsManager.credentials();
-  // ...
+final credentials = await auth0.credentialsManager.credentials();
+// ...
 } on CredentialsManagerException catch (e) {
-  print(e);
+if (e.isNoCredentialsFound) {
+print("No credentials stored.");
+} else if (e.isTokenRenewFailed) {
+print("Failed to renew tokens.");
+} else {
+print(e);
+}
 }
 ```
 
