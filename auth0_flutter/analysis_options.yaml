@@ -19,6 +19,9 @@ analyzer:
     included_file_warning: warning
     todo: warning
 
+formatter:
+  page_width: 80
+
 linter:
   rules:
     # Common rules (enabled)
