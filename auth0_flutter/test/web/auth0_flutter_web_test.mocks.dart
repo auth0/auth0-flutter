@@ -6,7 +6,8 @@
 import 'dart:async' as _i4;
 import 'dart:js_interop';
 
-import 'package:auth0_flutter/src/web/auth0_flutter_web_platform_proxy.dart' as _i3;
+import 'package:auth0_flutter/src/web/auth0_flutter_web_platform_proxy.dart'
+    as _i3;
 import 'package:auth0_flutter/src/web/js_interop.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 import 'auth0_extension_type_mocks.dart';
@@ -28,49 +29,66 @@ import 'auth0_flutter_web_test.dart' as _i5;
 
 @JSExport()
 class _FakeAuth0Client_0 extends _i1.SmartFake implements Auth0ClientImpl {
-  _FakeAuth0Client_0(Object parent, Invocation parentInvocation) : super(parent, parentInvocation);
+  _FakeAuth0Client_0(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
 }
 
 @JSExport()
-class _FakeWebCredentials_1 extends _i1.SmartFake implements WebCredentialsImpl {
-  _FakeWebCredentials_1(Object parent, Invocation parentInvocation)
-    : super(parent, parentInvocation);
+class _FakeWebCredentials_1 extends _i1.SmartFake
+    implements WebCredentialsImpl {
+  _FakeWebCredentials_1(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
 }
 
 @JSExport()
-class _FakeRedirectLoginResult_2 extends _i1.SmartFake implements RedirectLoginResultImpl {
-  _FakeRedirectLoginResult_2(Object parent, Invocation parentInvocation)
-    : super(parent, parentInvocation);
+class _FakeRedirectLoginResult_2 extends _i1.SmartFake
+    implements RedirectLoginResultImpl {
+  _FakeRedirectLoginResult_2(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
 }
 
 /// A class which mocks [Auth0FlutterWebClientProxy].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAuth0FlutterWebClientProxy extends _i1.Mock implements _i3.Auth0FlutterWebClientProxy {
+class MockAuth0FlutterWebClientProxy extends _i1.Mock
+    implements _i3.Auth0FlutterWebClientProxy {
   MockAuth0FlutterWebClientProxy() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i2.Auth0Client get client =>
-      (super.noSuchMethod(
-            Invocation.getter(#client),
-            returnValue:
-                createJSInteropWrapper<_FakeAuth0Client_0>(
-                      _FakeAuth0Client_0(this, Invocation.getter(#client)),
-                    )
-                    as _i2.Auth0Client,
-          )
-          as _i2.Auth0Client);
+  _i2.Auth0Client get client => (super.noSuchMethod(
+        Invocation.getter(#client),
+        returnValue: createJSInteropWrapper<_FakeAuth0Client_0>(
+          _FakeAuth0Client_0(this, Invocation.getter(#client)),
+        ) as _i2.Auth0Client,
+      ) as _i2.Auth0Client);
 
   @override
   _i4.Future<void> loginWithRedirect(_i2.RedirectLoginOptions? options) =>
       (super.noSuchMethod(
-            Invocation.method(#loginWithRedirect, [options]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #loginWithRedirect,
+          [options],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
   _i4.Future<void> loginWithPopup([
@@ -78,66 +96,82 @@ class MockAuth0FlutterWebClientProxy extends _i1.Mock implements _i3.Auth0Flutte
     _i2.PopupConfigOptions? config,
   ]) =>
       (super.noSuchMethod(
-            Invocation.method(#loginWithPopup, [options, config]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+        Invocation.method(
+          #loginWithPopup,
+          [
+            options,
+            config,
+          ],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<void> checkSession() =>
-      (super.noSuchMethod(
-            Invocation.method(#checkSession, []),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> checkSession() => (super.noSuchMethod(
+        Invocation.method(#checkSession, []),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<_i2.WebCredentials> getTokenSilently([_i2.GetTokenSilentlyOptions? options]) =>
+  _i4.Future<_i2.WebCredentials> getTokenSilently(
+          [_i2.GetTokenSilentlyOptions? options]) =>
       (super.noSuchMethod(
-            Invocation.method(#getTokenSilently, [options]),
-            returnValue: _i4.Future<_i2.WebCredentials>.value(
-              createJSInteropWrapper<_FakeWebCredentials_1>(
-                    _FakeWebCredentials_1(this, Invocation.method(#getTokenSilently, [options])),
-                  )
-                  as _i2.WebCredentials,
-            ),
-          )
-          as _i4.Future<_i2.WebCredentials>);
+        Invocation.method(
+          #getTokenSilently,
+          [options],
+        ),
+        returnValue: _i4.Future<_i2.WebCredentials>.value(
+          createJSInteropWrapper<_FakeWebCredentials_1>(
+            _FakeWebCredentials_1(
+                this,
+                Invocation.method(
+                  #getTokenSilently,
+                  [options],
+                )),
+          ) as _i2.WebCredentials,
+        ),
+      ) as _i4.Future<_i2.WebCredentials>);
 
   @override
   _i4.Future<_i2.RedirectLoginResult> handleRedirectCallback([String? url]) =>
       (super.noSuchMethod(
-            Invocation.method(#handleRedirectCallback, [url]),
-            returnValue: _i4.Future<_i2.RedirectLoginResult>.value(
-              createJSInteropWrapper<_FakeRedirectLoginResult_2>(
-                    _FakeRedirectLoginResult_2(
-                      this,
-                      Invocation.method(#handleRedirectCallback, [url]),
-                    ),
-                  )
-                  as _i2.RedirectLoginResult,
+        Invocation.method(
+          #handleRedirectCallback,
+          [url],
+        ),
+        returnValue: _i4.Future<_i2.RedirectLoginResult>.value(
+          createJSInteropWrapper<_FakeRedirectLoginResult_2>(
+            _FakeRedirectLoginResult_2(
+              this,
+              Invocation.method(
+                #handleRedirectCallback,
+                [url],
+              ),
             ),
-          )
-          as _i4.Future<_i2.RedirectLoginResult>);
+          ) as _i2.RedirectLoginResult,
+        ),
+      ) as _i4.Future<_i2.RedirectLoginResult>);
 
   @override
-  _i4.Future<bool> isAuthenticated() =>
-      (super.noSuchMethod(
-            Invocation.method(#isAuthenticated, []),
-            returnValue: _i4.Future<bool>.value(false),
-          )
-          as _i4.Future<bool>);
+  _i4.Future<bool> isAuthenticated() => (super.noSuchMethod(
+        Invocation.method(
+          #isAuthenticated,
+          [],
+        ),
+        returnValue: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
 
   @override
-  _i4.Future<void> logout(_i2.LogoutOptions? options) =>
-      (super.noSuchMethod(
-            Invocation.method(#logout, [options]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> logout(_i2.LogoutOptions? options) => (super.noSuchMethod(
+        Invocation.method(
+          #logout,
+          [options],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 }
 
 /// A class which mocks [OpenUrl].
@@ -149,11 +183,9 @@ class MockOpenUrl extends _i1.Mock implements _i5.OpenUrl {
   }
 
   @override
-  _i4.Future<void> call(String? url) =>
-      (super.noSuchMethod(
-            Invocation.method(#call, [url]),
-            returnValue: _i4.Future<void>.value(),
-            returnValueForMissingStub: _i4.Future<void>.value(),
-          )
-          as _i4.Future<void>);
+  _i4.Future<void> call(String? url) => (super.noSuchMethod(
+        Invocation.method(#call, [url]),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 }

@@ -11,7 +11,8 @@ class Auth0Web {
   final String? _redirectUrl;
   final CacheLocation? _cacheLocation;
 
-  final UserAgent _userAgent = UserAgent(name: 'auth0-flutter', version: version);
+  final UserAgent _userAgent =
+      UserAgent(name: 'auth0-flutter', version: version);
 
   /// Creates an instance of the [Auth0Web] client with the provided
   /// [domain], [clientId], and optional [redirectUrl] and [cacheLocation] properties.
@@ -23,14 +24,11 @@ class Auth0Web {
   ///
   /// [domain] and [clientId] are both values that can be retrieved from the
   /// **Settings** page of your [Auth0 application](https://manage.auth0.com/#/applications/).
-  Auth0Web(
-    final String domain,
-    final String clientId, {
-    final String? redirectUrl,
-    final CacheLocation? cacheLocation,
-  }) : _account = Account(domain, clientId),
-       _redirectUrl = redirectUrl,
-       _cacheLocation = cacheLocation;
+  Auth0Web(final String domain, final String clientId,
+      {final String? redirectUrl, final CacheLocation? cacheLocation})
+      : _account = Account(domain, clientId),
+        _redirectUrl = redirectUrl,
+        _cacheLocation = cacheLocation;
 
   /// Get the app state that was provided during a previous call
   /// to [loginWithRedirect].
@@ -56,43 +54,45 @@ class Auth0Web {
   /// to learn more.
   /// * [scopes] defaults to `openid profile email`. You can override these
   /// scopes, but `openid` is always requested regardless of this setting.
-  Future<Credentials?> onLoad({
-    final int? authorizeTimeoutInSeconds,
-    final CacheLocation? cacheLocation,
-    final String? cookieDomain,
-    final int? httpTimeoutInSeconds,
-    final String? issuer,
-    final int? leeway,
-    final bool? useLegacySameSiteCookie,
-    final int? sessionCheckExpiryInDays,
-    final bool? useCookiesForTransactions,
-    final bool? useFormData,
-    final bool? useRefreshTokens,
-    final bool? useRefreshTokensFallback,
-    final String? audience,
-    final Set<String>? scopes,
-    final Map<String, String> parameters = const {},
-  }) async {
+  Future<Credentials?> onLoad(
+      {final int? authorizeTimeoutInSeconds,
+      final CacheLocation? cacheLocation,
+      final String? cookieDomain,
+      final int? httpTimeoutInSeconds,
+      final String? issuer,
+      final int? leeway,
+      final bool? useLegacySameSiteCookie,
+      final int? sessionCheckExpiryInDays,
+      final bool? useCookiesForTransactions,
+      final bool? useFormData,
+      final bool? useRefreshTokens,
+      final bool? useRefreshTokensFallback,
+      final String? audience,
+      final Set<String>? scopes,
+      final Map<String, String> parameters = const {}}) async {
     await Auth0FlutterWebPlatform.instance.initialize(
-      ClientOptions(
-        account: _account,
-        authorizeTimeoutInSeconds: authorizeTimeoutInSeconds,
-        cacheLocation: cacheLocation ?? _cacheLocation,
-        cookieDomain: cookieDomain,
-        httpTimeoutInSeconds: httpTimeoutInSeconds,
-        idTokenValidationConfig: IdTokenValidationConfig(issuer: issuer, leeway: leeway),
-        useLegacySameSiteCookie: useLegacySameSiteCookie,
-        sessionCheckExpiryInDays: sessionCheckExpiryInDays,
-        useCookiesForTransactions: useCookiesForTransactions,
-        useFormData: useFormData,
-        useRefreshTokens: useRefreshTokens,
-        useRefreshTokensFallback: useRefreshTokensFallback,
-        audience: audience,
-        scopes: scopes,
-        parameters: {if (_redirectUrl != null) 'redirect_uri': _redirectUrl!, ...parameters},
-      ),
-      _userAgent,
-    );
+        ClientOptions(
+          account: _account,
+          authorizeTimeoutInSeconds: authorizeTimeoutInSeconds,
+          cacheLocation: cacheLocation ?? _cacheLocation,
+          cookieDomain: cookieDomain,
+          httpTimeoutInSeconds: httpTimeoutInSeconds,
+          idTokenValidationConfig:
+              IdTokenValidationConfig(issuer: issuer, leeway: leeway),
+          useLegacySameSiteCookie: useLegacySameSiteCookie,
+          sessionCheckExpiryInDays: sessionCheckExpiryInDays,
+          useCookiesForTransactions: useCookiesForTransactions,
+          useFormData: useFormData,
+          useRefreshTokens: useRefreshTokens,
+          useRefreshTokensFallback: useRefreshTokensFallback,
+          audience: audience,
+          scopes: scopes,
+          parameters: {
+            if (_redirectUrl != null) 'redirect_uri': _redirectUrl!,
+            ...parameters
+          },
+        ),
+        _userAgent);
 
     if (await hasValidCredentials()) {
       return credentials();
@@ -139,19 +139,20 @@ class Auth0Web {
     final Set<String>? scopes,
     final Future<void> Function(String url)? openUrl,
     final Map<String, String> parameters = const {},
-  }) => Auth0FlutterWebPlatform.instance.loginWithRedirect(
-    LoginOptions(
-      appState: appState,
-      audience: audience,
-      redirectUrl: redirectUrl,
-      organizationId: organizationId,
-      invitationUrl: invitationUrl,
-      scopes: scopes ?? {},
-      openUrl: openUrl,
-      idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge),
-      parameters: parameters,
-    ),
-  );
+  }) =>
+      Auth0FlutterWebPlatform.instance.loginWithRedirect(
+        LoginOptions(
+          appState: appState,
+          audience: audience,
+          redirectUrl: redirectUrl,
+          organizationId: organizationId,
+          invitationUrl: invitationUrl,
+          scopes: scopes ?? {},
+          openUrl: openUrl,
+          idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge),
+          parameters: parameters,
+        ),
+      );
 
   /// Opens a popup with the `/authorize` URL using the parameters provided as
   /// parameters.
@@ -203,18 +204,16 @@ class Auth0Web {
     final dynamic popupWindow,
     final int? timeoutInSeconds,
     final Map<String, String> parameters = const {},
-  }) => Auth0FlutterWebPlatform.instance.loginWithPopup(
-    PopupLoginOptions(
-      audience: audience,
-      organizationId: organizationId,
-      invitationUrl: invitationUrl,
-      scopes: scopes ?? {},
-      idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge),
-      popupWindow: popupWindow,
-      timeoutInSeconds: timeoutInSeconds,
-      parameters: parameters,
-    ),
-  );
+  }) =>
+      Auth0FlutterWebPlatform.instance.loginWithPopup(PopupLoginOptions(
+          audience: audience,
+          organizationId: organizationId,
+          invitationUrl: invitationUrl,
+          scopes: scopes ?? {},
+          idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge),
+          popupWindow: popupWindow,
+          timeoutInSeconds: timeoutInSeconds,
+          parameters: parameters));
 
   /// Redirects the browser to the Auth0 logout endpoint to end the user's
   /// session.
@@ -234,9 +233,14 @@ class Auth0Web {
     final bool? federated,
     final String? returnToUrl,
     final Future<void> Function(String url)? openUrl,
-  }) => Auth0FlutterWebPlatform.instance.logout(
-    LogoutOptions(federated: federated, returnTo: returnToUrl, openUrl: openUrl),
-  );
+  }) =>
+      Auth0FlutterWebPlatform.instance.logout(
+        LogoutOptions(
+          federated: federated,
+          returnTo: returnToUrl,
+          openUrl: openUrl,
+        ),
+      );
 
   /// Retrieves a set of credentials for the user.
   ///
@@ -267,16 +271,15 @@ class Auth0Web {
     final Set<String>? scopes,
     final CacheMode? cacheMode,
     final Map<String, String> parameters = const {},
-  }) => Auth0FlutterWebPlatform.instance.credentials(
-    CredentialsOptions(
-      audience: audience,
-      timeoutInSeconds: timeoutInSeconds,
-      scopes: scopes,
-      cacheMode: cacheMode,
-      parameters: parameters,
-    ),
-  );
+  }) =>
+      Auth0FlutterWebPlatform.instance.credentials(CredentialsOptions(
+          audience: audience,
+          timeoutInSeconds: timeoutInSeconds,
+          scopes: scopes,
+          cacheMode: cacheMode,
+          parameters: parameters));
 
   /// Indicates whether a user is currently authenticated.
-  Future<bool> hasValidCredentials() => Auth0FlutterWebPlatform.instance.hasValidCredentials();
+  Future<bool> hasValidCredentials() =>
+      Auth0FlutterWebPlatform.instance.hasValidCredentials();
 }

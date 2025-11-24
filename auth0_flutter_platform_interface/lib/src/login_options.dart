@@ -26,15 +26,15 @@ class LoginOptions implements RequestOptions {
 
   @override
   Map<String, dynamic> toMap() => {
-    'leeway': idTokenValidationConfig?.leeway,
-    'issuer': idTokenValidationConfig?.issuer,
-    'maxAge': idTokenValidationConfig?.maxAge,
-    'audience': audience,
-    'scopes': scopes.toList(),
-    'redirectUrl': redirectUrl,
-    'organizationId': organizationId,
-    'invitationUrl': invitationUrl,
-    'openUrl': openUrl,
-    'parameters': parameters,
-  };
+        'leeway': idTokenValidationConfig?.leeway,
+        'issuer': idTokenValidationConfig?.issuer,
+        'maxAge': idTokenValidationConfig?.maxAge,
+        'audience': audience,
+        'scopes': scopes.toList(),
+        'redirectUrl': redirectUrl,
+        'organizationId': organizationId,
+        'invitationUrl': invitationUrl,
+        'openUrl': openUrl,
+        'parameters': parameters,
+      };
 }
