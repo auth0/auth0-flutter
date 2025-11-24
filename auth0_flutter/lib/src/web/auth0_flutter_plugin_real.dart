@@ -101,14 +101,13 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
 
     final authParams = JsInteropUtils.stripNulls(JsInteropUtils.addCustomParams(
         interop.AuthorizationParams(
-          audience: options?.audience,
-          organization: options?.organizationId,
-          invitation: invitationTicket,
-          max_age: options?.idTokenValidationConfig?.maxAge,
-          scope: options?.scopes.isNotEmpty == true
-              ? options?.scopes.join(' ')
-              : null,
-        ),
+            audience: options?.audience,
+            organization: options?.organizationId,
+            invitation: invitationTicket,
+            max_age: options?.idTokenValidationConfig?.maxAge,
+            scope: options?.scopes.isNotEmpty == true
+                ? options?.scopes.join(' ')
+                : null),
         options?.parameters ?? {}));
 
     final popupConfig = JsInteropUtils.stripNulls(interop.PopupConfigOptions(

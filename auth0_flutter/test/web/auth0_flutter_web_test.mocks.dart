@@ -74,12 +74,11 @@ class MockAuth0FlutterWebClientProxy extends _i1.Mock
   @override
   _i2.Auth0Client get client => (super.noSuchMethod(
         Invocation.getter(#client),
-        returnValue: createJSInteropWrapper<_FakeAuth0Client_0>(
-          _FakeAuth0Client_0(
-            this,
-            Invocation.getter(#client),
-          ),
-        ) as _i2.Auth0Client,
+        returnValue:
+            createJSInteropWrapper<_FakeAuth0Client_0>(_FakeAuth0Client_0(
+          this,
+          Invocation.getter(#client),
+        )) as _i2.Auth0Client,
       ) as _i2.Auth0Client);
 
   @override
@@ -129,14 +128,13 @@ class MockAuth0FlutterWebClientProxy extends _i1.Mock
           [options],
         ),
         returnValue: _i4.Future<_i2.WebCredentials>.value(
-            createJSInteropWrapper<_FakeWebCredentials_1>(
-          _FakeWebCredentials_1(
-              this,
-              Invocation.method(
-                #getTokenSilently,
-                [options],
-              )),
-        ) as _i2.WebCredentials),
+            createJSInteropWrapper<_FakeWebCredentials_1>(_FakeWebCredentials_1(
+          this,
+          Invocation.method(
+            #getTokenSilently,
+            [options],
+          ),
+        )) as _i2.WebCredentials),
       ) as _i4.Future<_i2.WebCredentials>);
 
   @override
@@ -148,14 +146,13 @@ class MockAuth0FlutterWebClientProxy extends _i1.Mock
         ),
         returnValue: _i4.Future<_i2.RedirectLoginResult>.value(
             createJSInteropWrapper<_FakeRedirectLoginResult_2>(
-          _FakeRedirectLoginResult_2(
-            this,
-            Invocation.method(
-              #handleRedirectCallback,
-              [url],
-            ),
+                _FakeRedirectLoginResult_2(
+          this,
+          Invocation.method(
+            #handleRedirectCallback,
+            [url],
           ),
-        ) as _i2.RedirectLoginResult),
+        )) as _i2.RedirectLoginResult),
       ) as _i4.Future<_i2.RedirectLoginResult>);
 
   @override

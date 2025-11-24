@@ -204,22 +204,22 @@ extension type PopupConfigOptions._(JSObject _) implements JSObject {
 @JS()
 extension type Auth0Client._(JSObject _) implements JSObject {
   external Auth0Client(final Auth0ClientOptions options);
-  external Future<void> loginWithRedirect([
+  external JSPromise<JSAny?> loginWithRedirect([
     final RedirectLoginOptions options,
   ]);
-  external Future<void> loginWithPopup([
+  external JSPromise<JSAny?> loginWithPopup([
     final PopupLoginOptions? options,
     final PopupConfigOptions? config,
   ]);
-  external Future<void> handleRedirectCallback([
+  external JSPromise<RedirectLoginResult> handleRedirectCallback([
     final String? url,
   ]);
-  external Future<void> checkSession();
-  external Future<WebCredentials> getTokenSilently([
+  external JSPromise<JSAny?> checkSession();
+  external JSPromise<WebCredentials> getTokenSilently([
     final GetTokenSilentlyOptions? options,
   ]);
-  external Future<bool> isAuthenticated();
-  external Future<void> logout([final LogoutOptions? logoutParams]);
+  external JSPromise<JSBoolean> isAuthenticated();
+  external JSPromise<JSAny?> logout([final LogoutOptions? logoutParams]);
 }
 
 // TODO: remove this extension when updating to Dart 3.6.0
