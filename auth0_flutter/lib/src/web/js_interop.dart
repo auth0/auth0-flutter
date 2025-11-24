@@ -212,14 +212,14 @@ extension type Auth0Client._(JSObject _) implements JSObject {
     final PopupConfigOptions? config,
   ]);
   external JSPromise<RedirectLoginResult> handleRedirectCallback([
-    final String? url,
+    final JSString? url,
   ]);
   external JSPromise<JSAny?> checkSession();
   external JSPromise<WebCredentials> getTokenSilently([
     final GetTokenSilentlyOptions? options,
   ]);
   external JSPromise<JSBoolean> isAuthenticated();
-  external JSPromise<JSAny?> logout([final LogoutOptions? logoutParams]);
+  external JSPromise<JSAny?> logout([final LogoutOptions? logoutOptions]);
 }
 
 // TODO: remove this extension when updating to Dart 3.6.0
