@@ -6,7 +6,7 @@ Flutter app for Android, iOS, macOS, and the web that demonstrates how to use th
 
 ### 1. Configure Auth0 Application
 
-#### 📱 Mobile/Desktop
+#### 📱 Mobile/macOS
 
 Go to the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/) and configure the following URLs under the **Application URIs** section of the **Settings** page, for both **Allowed Callback URLs** and **Allowed Logout URLs**:
 
@@ -58,7 +58,7 @@ If you prefer to use a custom scheme, configure the `com_auth0_scheme` entry wit
 
 Use the [Flutter CLI's](https://docs.flutter.dev/reference/flutter-cli) `run` command.
 
-#### 📱 Mobile/Desktop
+#### 📱 Mobile/macOS
 
 ```sh
 flutter run
@@ -68,6 +68,10 @@ flutter run
 
 ```sh
 flutter run -d chrome --web-port 3000
+```
+> We now support WASM compilation for web on flutter 3.24.0 and above . To compile with WASM run
+ ```sh
+flutter run -d chrome --web-port 3000 --wasm
 ```
 
 ## What is Auth0?

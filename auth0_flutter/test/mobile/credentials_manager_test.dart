@@ -22,6 +22,16 @@ class TestPlatform extends Mock
     'userProfile': {'sub': '123', 'name': 'John Doe'},
     'tokenType': 'Bearer'
   });
+
+  static Credentials renewedCredentials = Credentials.fromMap({
+    'accessToken': 'renewedAccessToken',
+    'idToken': 'idToken',
+    'refreshToken': 'refreshToken',
+    'expiresAt': DateTime.now().toIso8601String(),
+    'scopes': ['a'],
+    'userProfile': {'sub': '123', 'name': 'John Doe'},
+    'tokenType': 'Bearer'
+  });
 }
 
 @GenerateMocks([TestPlatform])
@@ -163,6 +173,37 @@ void main() {
               as CredentialsManagerRequest;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
+    });
+  });
+
+  group('renewCredentials', () {
+    test('renew credentials return new set of credentials', () async {
+      when(mockedPlatform.renewCredentials(any))
+          .thenAnswer((final _) async => TestPlatform.renewedCredentials);
+
+      final result = await DefaultCredentialsManager(account, userAgent)
+          .renewCredentials();
+      expect(result.accessToken, TestPlatform.renewedCredentials.accessToken);
+      expect(result.idToken, TestPlatform.renewedCredentials.idToken);
+      expect(result.refreshToken, TestPlatform.renewedCredentials.refreshToken);
+      expect(result.expiresAt, TestPlatform.renewedCredentials.expiresAt);
+      expect(result.scopes, TestPlatform.renewedCredentials.scopes);
+      expect(result.tokenType, TestPlatform.renewedCredentials.tokenType);
+    });
+
+    test('passes through properties to the platform', () async {
+      when(mockedPlatform.renewCredentials(any))
+          .thenAnswer((final _) async => TestPlatform.renewedCredentials);
+
+      await DefaultCredentialsManager(account, userAgent)
+          .renewCredentials(parameters: {'a': 'b'});
+
+      final verificationResult =
+          verify(mockedPlatform.renewCredentials(captureAny)).captured.single
+              as CredentialsManagerRequest<RenewCredentialsOptions>;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.account.clientId, 'test-clientId');
+      expect(verificationResult.options?.parameters, {'a': 'b'});
     });
   });
 }

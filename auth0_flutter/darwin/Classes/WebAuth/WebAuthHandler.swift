@@ -49,6 +49,12 @@ public class WebAuthHandler: NSObject, FlutterPlugin {
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+
+        if call.method == "webAuth#cancel"  {
+            WebAuthentication.cancel()
+            return
+        }
+
         guard let arguments = call.arguments as? [String: Any] else {
             return result(FlutterError(from: .argumentsMissing))
         }

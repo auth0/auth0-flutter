@@ -1,9 +1,10 @@
 import 'dart:async';
-import 'dart:html';
+import 'dart:js_interop';
 
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:js/js.dart';
+import 'package:web/web.dart';
 
 import 'auth0_flutter_web_platform_proxy.dart';
 import 'extensions/client_options_extensions.dart';
@@ -24,22 +25,41 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   Auth0FlutterWebClientProxy? clientProxy;
   UrlSearchProvider urlSearchProvider = () => window.location.search;
 
+  /// The app state that was passed through [loginWithRedirect]
+  /// and retrieved in [initialize].
+  ///
+  /// This object is always a Dart object, never a JS object.
+  ///
+  /// When the login completes with the redirect, the page is reloaded.
+  /// Thus clearing this object is not needed,
+  /// as the actual state is managed across reloads,
+  /// using the transaction manager.
+  Object? _appState;
+
   @override
-  Future<void> initialize(
-      final ClientOptions clientOptions, final UserAgent userAgent) async {
+  Future<Object?> get appState => Future<Object?>.value(_appState);
+
+  @override
+  Future<void> initialize(final ClientOptions clientOptions, final UserAgent userAgent) async {
     clientProxy ??= Auth0FlutterWebClientProxy(
-        client: interop.Auth0Client(JsInteropUtils.stripNulls(
-            clientOptions.toAuth0ClientOptions(userAgent))));
+      client: interop.Auth0Client(
+        JsInteropUtils.stripNulls(clientOptions.toAuth0ClientOptions(userAgent)),
+      ),
+    );
 
     final search = urlSearchProvider();
 
     if (search?.contains('state=') == true &&
-        (search?.contains('code=') == true ||
-            search?.contains('error=') == true)) {
+        (search?.contains('code=') == true || search?.contains('error=') == true)) {
       try {
-        return await clientProxy!.handleRedirectCallback();
+        final interop.RedirectLoginResult result = await clientProxy!.handleRedirectCallback();
+
+        _appState = result.appState.dartify();
+
+        window.history.replaceState(null, '', window.location.pathname);
+        return;
       } catch (e) {
-        throw WebExceptionExtension.fromJsObject(e);
+        throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
       }
     }
 
@@ -49,25 +69,23 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   @override
   Future<void> loginWithRedirect(final LoginOptions? options) {
     final client = _ensureClient();
+    final invitationTicket = _getInvitationTicket(options?.invitationUrl);
 
-    final authParams = JsInteropUtils.stripNulls(JsInteropUtils.addCustomParams(
+    final authParams = JsInteropUtils.stripNulls(
+      JsInteropUtils.addCustomParams(
         interop.AuthorizationParams(
-            audience: options?.audience,
-            redirect_uri: options?.redirectUrl,
-            organization: options?.organizationId,
-            invitation: options?.invitationUrl,
-            max_age: options?.idTokenValidationConfig?.maxAge,
-            scope: options?.scopes.isNotEmpty == true
-                ? options?.scopes.join(' ')
-                : null),
-        options?.parameters ?? {}));
+          audience: options?.audience,
+          redirect_uri: options?.redirectUrl,
+          organization: options?.organizationId,
+          invitation: invitationTicket,
+          max_age: options?.idTokenValidationConfig?.maxAge,
+          scope: options?.scopes.isNotEmpty == true ? options?.scopes.join(' ') : null,
+        ),
+        options?.parameters ?? {},
+      ),
+    );
 
-    final openUrl = options?.openUrl;
-
-    final loginOptions = JsInteropUtils.stripNulls(interop.RedirectLoginOptions(
-      authorizationParams: authParams,
-      openUrl: openUrl != null ? allowInterop(openUrl) : null,
-    ));
+    final loginOptions = interop.RedirectLoginOptions(authorizationParams: authParams);
 
     return client.loginWithRedirect(loginOptions);
   }
@@ -75,35 +93,49 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   @override
   Future<Credentials> loginWithPopup(final PopupLoginOptions? options) async {
     final client = _ensureClient();
+    final invitationTicket = _getInvitationTicket(options?.invitationUrl);
 
-    final authParams = JsInteropUtils.stripNulls(JsInteropUtils.addCustomParams(
+    final authParams = JsInteropUtils.stripNulls(
+      JsInteropUtils.addCustomParams(
         interop.AuthorizationParams(
-            audience: options?.audience,
-            organization: options?.organizationId,
-            invitation: options?.invitationUrl,
-            max_age: options?.idTokenValidationConfig?.maxAge,
-            scope: options?.scopes.isNotEmpty == true
-                ? options?.scopes.join(' ')
-                : null),
-        options?.parameters ?? {}));
+          audience: options?.audience,
+          organization: options?.organizationId,
+          invitation: invitationTicket,
+          max_age: options?.idTokenValidationConfig?.maxAge,
+          scope: options?.scopes.isNotEmpty == true ? options?.scopes.join(' ') : null,
+        ),
+        options?.parameters ?? {},
+      ),
+    );
 
-    final popupConfig = JsInteropUtils.stripNulls(interop.PopupConfigOptions(
-        popup: options?.popupWindow,
-        timeoutInSeconds: options?.timeoutInSeconds));
+    final popupConfig = JsInteropUtils.stripNulls(
+      interop.PopupConfigOptions(
+        popup: options?.popupWindow as JSAny?,
+        timeoutInSeconds: options?.timeoutInSeconds,
+      ),
+    );
 
     try {
       await client.loginWithPopup(
-          interop.PopupLoginOptions(authorizationParams: authParams),
-          popupConfig);
+        interop.PopupLoginOptions(authorizationParams: authParams),
+        popupConfig,
+      );
 
-      return CredentialsExtension.fromWeb(await client.getTokenSilently(
+      return CredentialsExtension.fromWeb(
+        await client.getTokenSilently(
           interop.GetTokenSilentlyOptions(
-              authorizationParams: JsInteropUtils.stripNulls(
-                  interop.GetTokenSilentlyAuthParams(
-                      scope: authParams.scope, audience: authParams.audience)),
-              detailedResponse: true)));
+            authorizationParams: JsInteropUtils.stripNulls(
+              interop.GetTokenSilentlyAuthParams(
+                scope: authParams.scope,
+                audience: authParams.audience,
+              ),
+            ),
+            detailedResponse: true,
+          ),
+        ),
+      );
     } catch (e) {
-      throw WebExceptionExtension.fromJsObject(e);
+      throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
     }
   }
 
@@ -118,30 +150,43 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   @override
   Future<Credentials> credentials(final CredentialsOptions? options) async {
     final clientProxy = _ensureClient();
-    final tokenOptions = options?.toGetTokenSilentlyOptions() ??
-        interop.GetTokenSilentlyOptions();
-
+    final tokenOptions = options?.toGetTokenSilentlyOptions() ?? interop.GetTokenSilentlyOptions();
     // Force this, as we always want the full detail back so that we can
     // return a full Credentials instance.
     tokenOptions.detailedResponse = true;
-
     try {
       final result = await clientProxy.getTokenSilently(tokenOptions);
-
       return CredentialsExtension.fromWeb(result);
     } catch (e) {
-      throw WebExceptionExtension.fromJsObject(e);
+      throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
     }
   }
 
   @override
   Future<bool> hasValidCredentials() => clientProxy!.isAuthenticated();
 
+  String? _getInvitationTicket(final String? invitationUrl) {
+    if (invitationUrl == null || invitationUrl.isEmpty) {
+      return null;
+    }
+
+    final uri = Uri.tryParse(invitationUrl);
+
+    // If parsing fails or it's not a valid web/custom scheme URL,
+    // the input string is the ticket ID itself.
+    if (uri == null || !uri.hasAuthority) {
+      return invitationUrl;
+    }
+
+    // If it is a valid URL, return the 'invitation' query parameter,
+    // which will be the ticket ID if present, or null if not.
+    return uri.queryParameters['invitation'];
+  }
+
   Auth0FlutterWebClientProxy _ensureClient() {
     if (clientProxy == null) {
       throw ArgumentError('Auth0Client has not been initialized');
     }
-
     return clientProxy!;
   }
 }

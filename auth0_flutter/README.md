@@ -38,7 +38,7 @@ flutter pub add auth0_flutter
 
 ### Configure Auth0
 
-#### 📱 Mobile/Desktop
+#### 📱 Mobile/macOS
 
 Head to the [Auth0 Dashboard](https://manage.auth0.com/#/applications/) and create a new **Native** application.
 
@@ -61,6 +61,8 @@ Finally, if you made any changes don't forget to scroll to the end and press the
 The callback and logout URLs are the URLs that Auth0 invokes to redirect back to your app. Auth0 invokes the callback URL after authenticating the user, and the logout URL after removing the session cookie.
 
 > 💡 On iOS 17.4+ and macOS 14.4+ it is possible to use Universal Links as callback and logout URLs. When enabled, auth0_flutter will fall back to using a custom URL scheme on older iOS / macOS versions.
+>
+> Whenever possible, Auth0 recommends using Universal Links as a secure way to link directly to content within your iOS app. Custom URL schemes can be subject to [client impersonation attacks](https://datatracker.ietf.org/doc/html/rfc8252#section-8.6).
 >
 > **This feature requires Xcode 15.3+ and a paid Apple Developer account**.
 
@@ -113,11 +115,13 @@ Next, configure the following URLs for your application under the **Application 
 
 > 💡 Make sure to use port `3000` when running your app: `flutter run -d chrome --web-port 3000`.
 
+> 💡 Compile with WASM by running the app: `flutter run -d chrome --web-port 3000 --wasm`.
+
 Take note of the **client ID** and **domain** values under the **Basic Information** section. You'll need these values in the next step.
 
 ### Configure the SDK
 
-#### 📱 Mobile/Desktop
+#### 📱 Mobile/macOS
 
 Start by importing `auth0_flutter/auth0_flutter.dart`.
 
@@ -194,6 +198,8 @@ Re-declare the activity manually using `tools:node="remove"` in the `android/src
 > read more about setting this value in the [Auth0.Android SDK
 > README](https://github.com/auth0/Auth0.Android#a-note-about-app-deep-linking).
 
+> Whenever possible, Auth0 recommends using [Android App Links](https://auth0.com/docs/applications/enable-android-app-links) as a secure way to link directly to content within your app. Custom URL schemes can be subject to [client impersonation attacks](https://datatracker.ietf.org/doc/html/rfc8252#section-8.6).
+
 > 💡 If your Android app is using [product flavors](https://developer.android.com/studio/build/build-variants#product-flavors), you might need to specify different manifest placeholders for each flavor.
 
 ##### iOS/macOS: Configure the associated domain
@@ -255,7 +261,7 @@ Finally, in your `index.html` add the following `<script>` tag:
 
 ### Logging in
 
-#### 📱 Mobile/Desktop
+#### 📱 Mobile/macOS
 
 Present the [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login) page in the `onPressed` callback of your **Login** button.
 
@@ -347,7 +353,7 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 
 ### Common Tasks
 
-### 📱 Mobile/Desktop
+### 📱 Mobile/macOS
 
 - [Check for stored credentials](EXAMPLES.md#check-for-stored-credentials) - check if the user is already logged in when your app starts up.
 - [Retrieve stored credentials](EXAMPLES.md#retrieve-stored-credentials) - fetch the user's credentials from the storage, automatically renewing them if they have expired.
@@ -359,7 +365,7 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 
 ## API reference
 
-### 📱 Mobile/Desktop
+### 📱 Mobile/macOS
 
 #### Web Authentication
 

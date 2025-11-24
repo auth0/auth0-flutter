@@ -6,6 +6,7 @@ import '../request/request.dart';
 import 'method_channel_credentials_manager.dart';
 import 'options/get_credentials_options.dart';
 import 'options/has_valid_credentials_options.dart';
+import 'options/renew_credentials_options.dart';
 import 'options/save_credentials_options.dart';
 
 /// The interface that implementations of CredentialsManager must implement.
@@ -34,6 +35,12 @@ abstract class CredentialsManagerPlatform extends PlatformInterface {
   Future<Credentials> getCredentials(
       final CredentialsManagerRequest<GetCredentialsOptions> request) {
     throw UnimplementedError('getCredentials() has not been implemented');
+  }
+
+  /// Fetches new credentials and save them in the native storage.
+  Future<Credentials> renewCredentials(
+      final CredentialsManagerRequest<RenewCredentialsOptions> request) {
+    throw UnimplementedError('renewCredentials() has not been implemented');
   }
 
   /// Removes the credentials from the native storage if present.

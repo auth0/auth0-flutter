@@ -19,29 +19,39 @@ abstract class BaseRequest<TOptions extends RequestOptions?> {
 class CredentialsManagerRequest<TOptions extends RequestOptions?>
     extends BaseRequest<TOptions?> {
   final LocalAuthentication? localAuthentication;
+  final CredentialsManagerConfiguration? credentialsManagerConfiguration;
 
   CredentialsManagerRequest({
     required final Account account,
     final TOptions? options,
     required final UserAgent userAgent,
     this.localAuthentication,
+    this.credentialsManagerConfiguration,
   }) : super(account: account, options: options, userAgent: userAgent);
 
   @override
   Map<String, dynamic> toMap() {
+    final map = super.toMap();
+
     if (localAuthentication != null) {
-      return (super.toMap())
-        ..addAll({
-          'localAuthentication': {
-            'title': localAuthentication?.title,
-            'description': localAuthentication?.description,
-            'cancelTitle': localAuthentication?.cancelTitle,
-            'fallbackTitle': localAuthentication?.fallbackTitle
-          }
-        });
-    } else {
-      return super.toMap();
+      map.addAll({
+        'localAuthentication': {
+          'title': localAuthentication?.title,
+          'description': localAuthentication?.description,
+          'cancelTitle': localAuthentication?.cancelTitle,
+          'fallbackTitle': localAuthentication?.fallbackTitle
+        }
+      });
     }
+
+    if (credentialsManagerConfiguration != null) {
+      map.addAll({
+        'credentialsManagerConfiguration':
+            credentialsManagerConfiguration?.toMap()
+      });
+    }
+
+    return map;
   }
 }
 

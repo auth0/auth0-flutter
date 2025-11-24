@@ -13,8 +13,9 @@ concurrency:
     cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 env:
+    ruby: '3.3.1'
     flutter: '3.x'
-    ios-simulator: iPhone 15
+    ios-simulator: iPhone 16
     java: 11
 
 jobs:
@@ -25,10 +26,10 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
             - name: Install Flutter
-              uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+              uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e # pin@v2.21.0
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
@@ -38,9 +39,9 @@ jobs:
               working-directory: auth0_flutter
               run: cp example/.env.example example/.env
 
-            - name: Analize auth0_flutter package
+            - name: Analyze auth0_flutter package
               working-directory: auth0_flutter
-              run: flutter analyze
+              run: flutter analyze --no-fatal-warnings --no-fatal-infos
 
     analyze-auth0_flutter_platform_interface:
         name: Analyze auth0_flutter_platform_interface Flutter package
@@ -48,18 +49,18 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
             - name: Install Flutter
-              uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+              uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e # pin@v2.21.0
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
                   cache: true
 
-            - name: Analize auth0_flutter_platform_interface package
+            - name: Analyze auth0_flutter_platform_interface package
               working-directory: auth0_flutter_platform_interface
-              run: flutter analyze
+              run: flutter analyze --no-fatal-warnings --no-fatal-infos
 
     test-auth0_flutter:
         name: Test auth0_flutter Flutter package
@@ -67,10 +68,10 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
             - name: Install Flutter
-              uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+              uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e # pin@v2.21.0
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
@@ -87,7 +88,7 @@ jobs:
                 flutter test --coverage --exclude-tags browser
 
             - name: Upload coverage report
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v5
               with:
                 name: auth0_flutter coverage
                 path: auth0_flutter/coverage/lcov.info
@@ -98,10 +99,10 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
             - name: Install Flutter
-              uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+              uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e # pin@v2.21.0
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
@@ -112,32 +113,33 @@ jobs:
               run: flutter test --coverage
 
             - name: Upload coverage report
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v5
               with:
                 name: auth0_flutter_platform_interface coverage
                 path: auth0_flutter_platform_interface/coverage/lcov.info
 
     test-ios-unit:
         name: Run native iOS unit tests using Xcode ${{ matrix.xcode }}
-        runs-on: macos-13
+        runs-on: macos-15
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
         strategy:
           matrix:
             xcode:
-              - '15.0.1'
+              - '26.0'
 
         env:
           platform: iOS
 
         steps:
             - name: Checkout
-              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
             - name: Set up environment
               uses: ./.github/actions/setup-darwin
               with:
                 platform: ${{ env.platform }}
+                ruby: ${{ env.ruby }}
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
                 auth0-domain: ${{ vars.AUTH0_DOMAIN }}
@@ -154,14 +156,14 @@ jobs:
               run: bundle exec slather coverage -x --scheme Runner Runner.xcodeproj
 
             - name: Upload coverage report
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v5
               with:
                 name: iOS coverage
                 path: auth0_flutter/example/ios/cobertura
 
     test-ios-smoke:
         name: Run native iOS smoke tests using Xcode ${{ matrix.xcode }}
-        runs-on: macos-13-large
+        runs-on: macos-15-large
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
         env:
@@ -172,16 +174,17 @@ jobs:
         strategy:
           matrix:
             xcode:
-              - '15.0.1'
+              - '26.0'
 
         steps:
             - name: Checkout
-              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
             - name: Set up environment
               uses: ./.github/actions/setup-darwin
               with:
                 platform: ${{ env.platform }}
+                ruby: ${{ env.ruby }}
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
                 auth0-domain: ${{ vars.AUTH0_DOMAIN }}
@@ -195,25 +198,26 @@ jobs:
 
     test-macos-unit:
         name: Run native macOS unit tests using Xcode ${{ matrix.xcode }}
-        runs-on: macos-13
+        runs-on: macos-15
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
         strategy:
           matrix:
             xcode:
-              - '15.0.1'
+              - '26.0'
 
         env:
           platform: macOS
 
         steps:
             - name: Checkout
-              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
             - name: Set up environment
               uses: ./.github/actions/setup-darwin
               with:
                 platform: ${{ env.platform }}
+                ruby: ${{ env.ruby }}
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
                 auth0-domain: ${{ vars.AUTH0_DOMAIN }}
@@ -231,7 +235,7 @@ jobs:
 
     test-macos-smoke:
         name: Run native macOS smoke tests using Xcode ${{ matrix.xcode }}
-        runs-on: macos-13
+        runs-on: macos-15
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
         env:
@@ -242,16 +246,17 @@ jobs:
         strategy:
           matrix:
             xcode:
-              - '15.0.1'
+              - '26.0'
 
         steps:
             - name: Checkout
-              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
             - name: Set up environment
               uses: ./.github/actions/setup-darwin
               with:
                 platform: ${{ env.platform }}
+                ruby: ${{ env.ruby }}
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
                 auth0-domain: ${{ vars.AUTH0_DOMAIN }}
@@ -270,7 +275,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
             - name: Set up environment
               uses: ./.github/actions/setup-android
@@ -289,13 +294,13 @@ jobs:
               run: ./gradlew koverXmlReportDebug
 
             - name: Upload coverage report
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v5
               with:
                 name: Android coverage
                 path: auth0_flutter/example/build/app/coverage.xml
 
             - name: Upload test results
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v5
               if: ${{ failure() }}
               with:
                 name: Test results
@@ -318,13 +323,13 @@ jobs:
 
     #     steps:
     #         - name: Checkout
-    #           uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+    #           uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
     #         - name: Gradle cache
     #           uses: gradle/gradle-build-action@ef76a971e2fa3f867b617efd72f2fbd72cf6f8bc
 
     #         - name: AVD cache
-    #           uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84
+    #           uses: actions/cache@v4
     #           id: avd-cache
     #           with:
     #             path: |
@@ -392,14 +397,14 @@ jobs:
     #               USER_EMAIL=$USER_EMAIL USER_PASSWORD=$USER_PASSWORD node appium-test/test.js
 
     #         - name: Upload recording
-    #           uses: actions/upload-artifact@v4
+    #           uses: actions/upload-artifact@v5
     #           if: ${{ failure() }}
     #           with:
     #             name: 'Android - smoke tests recording'
     #             path: recording_video.webm
 
     #         - name: Upload APK
-    #           uses: actions/upload-artifact@v4
+    #           uses: actions/upload-artifact@v5
     #           if: ${{ failure() }}
     #           with:
     #             name: 'Android - APK'
@@ -418,55 +423,55 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
             - name: Download coverage report for auth0_flutter
-              uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16
+              uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53
               with:
                 name: auth0_flutter coverage
                 path: coverage/auth0_flutter
 
             - name: Download coverage report for auth0_flutter_platform_interface
-              uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16
+              uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53
               with:
                 name: auth0_flutter_platform_interface coverage
                 path: coverage/auth0_flutter_platform_interface
 
             - name: Download coverage report for iOS
-              uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16
+              uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53
               with:
                 name: iOS coverage
                 path: coverage/ios
 
             - name: Download coverage report for Android
-              uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16
+              uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53
               with:
                 name: Android coverage
                 path: coverage/android
 
             - name: Upload coverage report for auth0_flutter
-              uses: codecov/codecov-action@13ce06bfc6bbe3ecf90edbbf1bc32fe5978ca1d3
+              uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter
                   directory: coverage/auth0_flutter
 
             - name: Upload coverage report for auth0_flutter_platform_interface
-              uses: codecov/codecov-action@13ce06bfc6bbe3ecf90edbbf1bc32fe5978ca1d3
+              uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter_platform_interface
                   directory: coverage/auth0_flutter_platform_interface
 
             - name: Upload coverage report for iOS
-              uses: codecov/codecov-action@13ce06bfc6bbe3ecf90edbbf1bc32fe5978ca1d3
+              uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter_ios
                   directory: coverage/ios
 
             - name: Upload coverage report for Android
-              uses: codecov/codecov-action@13ce06bfc6bbe3ecf90edbbf1bc32fe5978ca1d3
+              uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter_android

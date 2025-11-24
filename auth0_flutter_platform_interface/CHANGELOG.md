@@ -1,7 +1,58 @@
 # Change Log
 
+## [afpi-v1.14.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.14.0) (2025-09-24)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.13.0...afpi-v1.14.0)
+
+**Added**
+- Add support for logoutParams [\#608](https://github.com/auth0/auth0-flutter/pull/608) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
+## [afpi-v1.13.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.13.0) (2025-09-02)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.12.0...afpi-v1.13.0)
+
+**Fixed**
+- Resolves the inconsistency where the web platform required an invitation ticket ID for the  parameter, while mobile platforms required the full URL. [\#645](https://github.com/auth0/auth0-flutter/pull/645) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- fix(android): SMS login to use phoneNumber instead of email [\#633](https://github.com/auth0/auth0-flutter/pull/633) ([hiiiP0wer](https://github.com/hiiiP0wer))
+- Adding fix for OnLoad() for refresh redirecting [\#624](https://github.com/auth0/auth0-flutter/pull/624) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
+## [afpi-v1.12.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.12.0) (2025-07-10)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.11.0...afpi-v1.12.0)
+
+**Added**
+- chore: added new renewCredentials method to fetch a new set of credentials [\#610](https://github.com/auth0/auth0-flutter/pull/610) ([pmathew92](https://github.com/pmathew92))
+- dart api to input allowed browser packages for web auth login [\#611](https://github.com/auth0/auth0-flutter/pull/611) ([NandanPrabhu](https://github.com/NandanPrabhu))
+- chore : added new properties to web_authentication_exception and credentials_manager_exception class [\#609](https://github.com/auth0/auth0-flutter/pull/609) ([pmathew92](https://github.com/pmathew92))
+- Added webAuth cancel for ios to prevent active transaction errors [\#573](https://github.com/auth0/auth0-flutter/pull/573) ([pmathew92](https://github.com/pmathew92))
+
+## [afpi-v1.11.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.11.0) (2025-06-11)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.10.0...afpi-v1.11.0)
+
+**Added**
+- Added support to configure credentials manager for iOS and Android  [\#576](https://github.com/auth0/auth0-flutter/pull/576) ([pmathew92](https://github.com/pmathew92))
+
+## [afpi-v1.10.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.10.0) (2025-04-29)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.9.0...afpi-v1.10.0)
+
+**Added**
+- implement app state getter for web [\#509](https://github.com/auth0/auth0-flutter/pull/509) ([navaronbracke](https://github.com/navaronbracke))
+- feat(auth): 🔐 Add UserProfile serialization and include in Credentials [\#556](https://github.com/auth0/auth0-flutter/pull/556) ([Rohithgilla12](https://github.com/Rohithgilla12))
+
+**Fixed**
+- Fixed the WASM compilation issue on 3.24 version of flutter [\#547](https://github.com/auth0/auth0-flutter/pull/547) ([pmathew92](https://github.com/pmathew92))
+
+## [afpi-v1.9.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.9.0) (2025-03-05)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.8.0...afpi-v1.9.0)
+
+**Added**
+- Added support for WASM compilation [\#516](https://github.com/auth0/auth0-flutter/pull/516) ([pmathew92](https://github.com/pmathew92))
+
+**Updated**
+- Updated Flutter version to 3.24.0 ([pmathew92](https://github.com/pmathew92))
+- Updated Dart sdk version to 3.5.0 ([pmathew92](https://github.com/pmathew92))
+
 ## [afpi-v1.8.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.8.0) (2025-02-10)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.7.0...afpi-v1.8.0)
+
+**This release updates the minimum required version for iOS to 14**
 
 **Added**
 - feat: Added support for passwordless authentication [\#503](https://github.com/auth0/auth0-flutter/pull/503) ([pmathew92](https://github.com/pmathew92))

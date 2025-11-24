@@ -1,5 +1,6 @@
 @Tags(['browser'])
 
+import 'dart:js_interop';
 import 'package:auth0_flutter/src/web/extensions/credentials_extension.dart';
 import 'package:auth0_flutter/src/web/extensions/string_extension.dart';
 import 'package:auth0_flutter/src/web/js_interop.dart';
@@ -17,14 +18,18 @@ void main() {
       const expiresIn = 8400;
       const expectedTokenType = 'Bearer';
       final webCredentials = WebCredentials(
-          access_token: accessToken, id_token: idToken, expires_in: expiresIn);
+        access_token: accessToken,
+        id_token: idToken,
+        expires_in: expiresIn.toJS,
+      );
       final result = CredentialsExtension.fromWeb(webCredentials);
 
       expect(result.accessToken, accessToken);
       expect(result.idToken, idToken);
       expect(
           result.expiresAt.difference(
-              DateTime.now().add(const Duration(seconds: expiresIn))),
+            DateTime.now().add(const Duration(seconds: expiresIn)),
+          ),
           lessThan(const Duration(seconds: 1)));
       expect(result.user.sub, JWT.decode(idToken)['sub']);
       expect(result.tokenType, expectedTokenType);
@@ -40,7 +45,7 @@ void main() {
       final webCredentials = WebCredentials(
           access_token: accessToken,
           id_token: idToken,
-          expires_in: expiresIn,
+          expires_in: expiresIn.toJS,
           refresh_token: refreshToken,
           scope: scope);
       final result = CredentialsExtension.fromWeb(webCredentials);

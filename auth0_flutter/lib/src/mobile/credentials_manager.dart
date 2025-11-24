@@ -9,6 +9,10 @@ abstract class CredentialsManager {
     final Map<String, String> parameters = const {},
   });
 
+  Future<Credentials> renewCredentials({
+    final Map<String, String> parameters = const {},
+  });
+
   Future<bool> storeCredentials(final Credentials credentials);
 
   Future<bool> hasValidCredentials({
@@ -25,10 +29,13 @@ class DefaultCredentialsManager extends CredentialsManager {
   final Account _account;
   final UserAgent _userAgent;
   final LocalAuthentication? _localAuthentication;
+  final CredentialsManagerConfiguration? _credentialsManagerConfiguration;
 
   DefaultCredentialsManager(this._account, this._userAgent,
-      {final LocalAuthentication? localAuthentication})
-      : _localAuthentication = localAuthentication;
+      {final LocalAuthentication? localAuthentication,
+      final CredentialsManagerConfiguration? credentialsManagerConfiguration})
+      : _localAuthentication = localAuthentication,
+        _credentialsManagerConfiguration = credentialsManagerConfiguration;
 
   /// Retrieves the credentials from the storage and refreshes them if they have
   ///  already expired.
@@ -52,6 +59,19 @@ class DefaultCredentialsManager extends CredentialsManager {
         parameters: parameters,
       )));
 
+  /// Fetches new set of credentials each time and stores them in storage.
+  /// This will replace the existing credentials currently stored
+  /// even if they are not expired.
+  ///
+  /// Use the [parameters] parameter to send additional parameters in the
+  /// request.
+  @override
+  Future<Credentials> renewCredentials({
+    final Map<String, String> parameters = const {},
+  }) =>
+      CredentialsManagerPlatform.instance.renewCredentials(
+          _createApiRequest(RenewCredentialsOptions(parameters: parameters)));
+
   /// Stores the given credentials in the storage. Must have an `access_token`
   /// or `id_token` and a `expires_in` value.
   @override
@@ -59,11 +79,15 @@ class DefaultCredentialsManager extends CredentialsManager {
       CredentialsManagerPlatform.instance.saveCredentials(
           _createApiRequest(SaveCredentialsOptions(credentials: credentials)));
 
-  /// Checks if a non-expired pair of credentials can be obtained from this
-  /// manager.
+  /// Checks if there is a valid `accessToken` available.
+  /// If an `accessToken` is present, verifies whether it has expired or will
+  /// expire within the given `minTtl`. On Android devices, if the token has
+  /// expired and a refresh token is present, this returns true if the token
+  /// can be renewed using the refresh token.
   ///
   /// Change the minimum time in seconds that the access token should last
-  /// before expiration by setting the [minTtl].
+  /// before expiration by setting the minTtl
+
   @override
   Future<bool> hasValidCredentials({
     final int minTtl = 0,
@@ -76,12 +100,12 @@ class DefaultCredentialsManager extends CredentialsManager {
   Future<bool> clearCredentials() => CredentialsManagerPlatform.instance
       .clearCredentials(_createApiRequest(null));
 
-  CredentialsManagerRequest<TOptions>
-      _createApiRequest<TOptions extends RequestOptions>(
-              final TOptions? options) =>
-          CredentialsManagerRequest<TOptions>(
-              account: _account,
-              options: options,
-              userAgent: _userAgent,
-              localAuthentication: _localAuthentication);
+  CredentialsManagerRequest<TOptions> _createApiRequest<
+          TOptions extends RequestOptions>(final TOptions? options) =>
+      CredentialsManagerRequest<TOptions>(
+          account: _account,
+          options: options,
+          userAgent: _userAgent,
+          localAuthentication: _localAuthentication,
+          credentialsManagerConfiguration: _credentialsManagerConfiguration);
 }

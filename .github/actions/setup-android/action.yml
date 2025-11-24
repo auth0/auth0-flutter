@@ -23,11 +23,11 @@ runs:
 
   steps:
     - name: Install Flutter
-      uses: subosito/flutter-action@48cafc24713cca54bbe03cdc3a423187d413aafa
+      uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e  #pin@v2.21.0
       with:
-          flutter-version: ${{ inputs.flutter }}
-          channel: stable
-          cache: true
+        flutter-version: 3.29.3
+        channel: stable
+        cache: true
 
     - name: Install Flutter dependencies
       working-directory: auth0_flutter/example
@@ -35,11 +35,41 @@ runs:
       shell: bash
 
     - name: Setup Java
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v5
       with:
         distribution: 'temurin'
         java-version: ${{ inputs.java }}
         cache: 'gradle'
+
+    - name: Read Gradle version from gradle.properties
+      id: gradle-version
+      working-directory: auth0_flutter/example/android
+      run: |
+        if [ ! -f "gradle/wrapper/gradle-wrapper.properties" ]; then
+          echo "ERROR: gradle-wrapper.properties file not found!"
+          exit 1
+        fi
+
+        # Reading gradle-wrapper.properties
+        cat gradle/wrapper/gradle-wrapper.properties
+
+        # Extract Gradle version from distributionUrl
+        GRADLE_VERSION=$(grep "distributionUrl" gradle/wrapper/gradle-wrapper.properties | sed -n 's/.*gradle-\([0-9]\+\.[0-9]\+\(\.[0-9]\+\)\?\).*/\1/p')
+
+        if [ -z "$GRADLE_VERSION" ]; then
+          echo "ERROR: Could not extract Gradle version from gradle-wrapper.properties"
+          echo "Please check the distributionUrl format in gradle/wrapper/gradle-wrapper.properties"
+          exit 1
+        fi
+
+        echo "Extracted Gradle version: $GRADLE_VERSION"
+        echo "gradle-version=$GRADLE_VERSION" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v3
+      with:
+          gradle-version: ${{ steps.gradle-version.outputs.gradle-version }}
 
     - name: Set .env
       working-directory: auth0_flutter/example
@@ -56,5 +86,7 @@ runs:
 
     - name: Set Gradle wrapper
       working-directory: auth0_flutter/example/android
-      run: gradle wrapper
+      run: |
+        gradle wrapper --gradle-version ${{ steps.gradle-version.outputs.gradle-version }} --distribution-type bin
+        chmod +x gradlew
       shell: bash

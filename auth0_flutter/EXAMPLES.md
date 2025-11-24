@@ -17,6 +17,7 @@
   - [Retrieve stored credentials](#retrieve-stored-credentials)
   - [Custom implementations](#custom-implementations)
   - [Local authentication](#local-authentication)
+  - [Credentials Manager configuration](#credentials-manager-configuration)
   - [Disable credentials storage](#disable-credentials-storage)
   - [Errors](#errors-1)
 - [🌐 Handling Credentials on the Web](#-handling-credentials-on-the-web)
@@ -365,6 +366,8 @@ try {
 
 ### Android: Custom schemes
 
+> Whenever possible, Auth0 recommends using [Android App Links](https://auth0.com/docs/applications/enable-android-app-links) as a secure way to link directly to content within your app. Custom URL schemes can be subject to [client impersonation attacks](https://datatracker.ietf.org/doc/html/rfc8252#section-8.6).
+
 On Android, `https` is used by default as the callback URL scheme. This works best for Android API 23+ if you're using [Android App Links](https://auth0.com/docs/get-started/applications/enable-android-app-links-support), but in previous Android versions, this may show the intent chooser dialog prompting the user to choose either your app or the browser. You can change this behavior by using a custom unique scheme so that Android opens the link directly with your app.
 
 1. Update the `auth0Scheme` manifest placeholder on the `android/build.gradle` file.
@@ -387,12 +390,13 @@ await webAuth.logout();
 
 ## 📱 Credentials Manager
 
-> This feature is mobile/desktop only; on web, the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter keeps its own cache. See [Handling Credentials on the Web](#-handling-credentials-on-the-web) for more details.
+> This feature is mobile/macOS only; on web, the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter keeps its own cache. See [Handling Credentials on the Web](#-handling-credentials-on-the-web) for more details.
 
 - [Check for stored credentials](#check-for-stored-credentials)
 - [Retrieve stored credentials](#retrieve-stored-credentials)
 - [Custom implementations](#custom-implementations)
 - [Local authentication](#local-authentication)
+- [Credentials Manager configuration](#credentials-manager-configuration)
 - [Credentials Manager errors](#credentials-manager-errors)
 - [Disable credentials storage](#disable-credentials-storage)
 
@@ -451,6 +455,26 @@ Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platfo
 
 > ⚠️ Enabling local authentication will not work if you're using a custom Credentials Manager implementation. In that case, you will need to build support for local authentication into your custom implementation.
 
+### Credentials Manager configuration
+
+You can set platform specific configuration on the CredentialManager while initialising it.
+On iOS, this would mean configuring the `storeKey` of the Auth0.swift Credentials Manager, and the `accessGroup` and `accessibilty` of SimpleKeychain. If these are not set, the default values will be used.
+On Android , you can configure the `sharedpreferences`  name used to store the credentials.
+
+```dart
+const configuration = CredentialsManagerConfiguration(
+    androidConfiguration: AndroidCredentialsConfiguration("testSharedPreference"),
+    iosConfiguration: IOSCredentialsConfiguration(
+        storeKey: "iosStoreKey",
+        accessGroup: "com.example.accessGroup",
+        accessibility: Accessibility.afterFirstUnlock));
+
+final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID',
+    credentialsManagerConfiguration: configuration);
+final credentials = await auth0.credentialsManager.credentials();
+
+```
+
 ### Disable credentials storage
 
 By default, `auth0_flutter` will automatically store the user's credentials after login and delete them after logout, using the built-in [Credentials Manager](#credentials-manager) instance. If you prefer to use your own credentials storage, you need to disable the built-in Credentials Manager.
@@ -477,7 +501,7 @@ try {
 
 ## 🌐 Handling Credentials on the Web
 
-> This section describes handling credentials for the web platform. For mobile/desktop, see [Credentials Manager](#-credentials-manager).
+> This section describes handling credentials for the web platform. For mobile/macOS, see [Credentials Manager](#-credentials-manager).
 
 The management and storage of credentials is handled internally by the underlying [Auth0 SPA SDK](https://github.com/auth0/auth0-spa-js), including refreshing the access token when it expires. The Flutter SDK provides an API for checking whether credentials are available, and the retrieval of those credentials.
 
@@ -515,7 +539,7 @@ final credentials = await auth0Web.credentials();
 
 ## 📱 Authentication API
 
-> This feature is mobile/desktop only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
+> This feature is mobile/macOS only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
 
 - [Login with database connection](#login-with-database-connection)
 - [Sign up with database connection](#sign-up-with-database-connection)
@@ -732,7 +756,7 @@ await auth0Web.loginWithRedirect(
 
 ## 📱 Bot detection
 
-> This example is mobile/desktop only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
+> This example is mobile/macOS only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
 
 If you are performing database login/signup via the Authentication API and would like to use the [Bot Detection](https://auth0.com/docs/secure/attack-protection/bot-detection) feature, you need to handle the `isVerificationRequired` error. It indicates that the request was flagged as suspicious and an additional verification step is necessary to log the user in. That verification step is web-based, so you need to use Web Auth to complete it.
 

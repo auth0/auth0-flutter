@@ -204,7 +204,6 @@ class SaveCredentialsRequestHandlerTest {
 
         val captor = argumentCaptor<Credentials>()
         verify(mockCredentialsManager).saveCredentials(captor.capture())
-
         assertThat((captor.firstValue).accessToken, equalTo(credentials.accessToken))
         assertThat((captor.firstValue).idToken, equalTo(credentials.idToken))
         assertThat((captor.firstValue).refreshToken, equalTo(credentials.refreshToken))

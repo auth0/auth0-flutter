@@ -8,17 +8,35 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 /// Primary interface for interacting with Auth0 on web platforms.
 class Auth0Web {
   final Account _account;
+  final String? _redirectUrl;
+  final CacheLocation? _cacheLocation;
 
-  final UserAgent _userAgent =
-      UserAgent(name: 'auth0-flutter', version: version);
+  final UserAgent _userAgent = UserAgent(name: 'auth0-flutter', version: version);
 
-  /// Creates an instance of the [Auth0Web] client with the provided [domain]
-  /// and [clientId] properties.
+  /// Creates an instance of the [Auth0Web] client with the provided
+  /// [domain], [clientId], and optional [redirectUrl] and [cacheLocation] properties.
+  ///
+  /// [redirectUrl] is used for silent authentication in [onLoad].
+  /// [cacheLocation] is used to specify where the SDK should store
+  /// its authentication state. Defaults to `memory`. Setting this to `localStorage`
+  /// is often required for seamless silent authentication on page reloads.
   ///
   /// [domain] and [clientId] are both values that can be retrieved from the
   /// **Settings** page of your [Auth0 application](https://manage.auth0.com/#/applications/).
-  Auth0Web(final String domain, final String clientId)
-      : _account = Account(domain, clientId);
+  Auth0Web(
+    final String domain,
+    final String clientId, {
+    final String? redirectUrl,
+    final CacheLocation? cacheLocation,
+  }) : _account = Account(domain, clientId),
+       _redirectUrl = redirectUrl,
+       _cacheLocation = cacheLocation;
+
+  /// Get the app state that was provided during a previous call
+  /// to [loginWithRedirect].
+  ///
+  /// This method should be called after calling [onLoad].
+  Future<Object?> get appState => Auth0FlutterWebPlatform.instance.appState;
 
   /// Initializes the client.
   ///
@@ -38,41 +56,43 @@ class Auth0Web {
   /// to learn more.
   /// * [scopes] defaults to `openid profile email`. You can override these
   /// scopes, but `openid` is always requested regardless of this setting.
-  Future<Credentials?> onLoad(
-      {final int? authorizeTimeoutInSeconds,
-      final CacheLocation? cacheLocation,
-      final String? cookieDomain,
-      final int? httpTimeoutInSeconds,
-      final String? issuer,
-      final int? leeway,
-      final bool? useLegacySameSiteCookie,
-      final int? sessionCheckExpiryInDays,
-      final bool? useCookiesForTransactions,
-      final bool? useFormData,
-      final bool? useRefreshTokens,
-      final bool? useRefreshTokensFallback,
-      final String? audience,
-      final Set<String>? scopes,
-      final Map<String, String> parameters = const {}}) async {
+  Future<Credentials?> onLoad({
+    final int? authorizeTimeoutInSeconds,
+    final CacheLocation? cacheLocation,
+    final String? cookieDomain,
+    final int? httpTimeoutInSeconds,
+    final String? issuer,
+    final int? leeway,
+    final bool? useLegacySameSiteCookie,
+    final int? sessionCheckExpiryInDays,
+    final bool? useCookiesForTransactions,
+    final bool? useFormData,
+    final bool? useRefreshTokens,
+    final bool? useRefreshTokensFallback,
+    final String? audience,
+    final Set<String>? scopes,
+    final Map<String, String> parameters = const {},
+  }) async {
     await Auth0FlutterWebPlatform.instance.initialize(
-        ClientOptions(
-            account: _account,
-            authorizeTimeoutInSeconds: authorizeTimeoutInSeconds,
-            cacheLocation: cacheLocation,
-            cookieDomain: cookieDomain,
-            httpTimeoutInSeconds: httpTimeoutInSeconds,
-            idTokenValidationConfig:
-                IdTokenValidationConfig(issuer: issuer, leeway: leeway),
-            useLegacySameSiteCookie: useLegacySameSiteCookie,
-            sessionCheckExpiryInDays: sessionCheckExpiryInDays,
-            useCookiesForTransactions: useCookiesForTransactions,
-            useFormData: useFormData,
-            useRefreshTokens: useRefreshTokens,
-            useRefreshTokensFallback: useRefreshTokensFallback,
-            audience: audience,
-            scopes: scopes,
-            parameters: parameters),
-        _userAgent);
+      ClientOptions(
+        account: _account,
+        authorizeTimeoutInSeconds: authorizeTimeoutInSeconds,
+        cacheLocation: cacheLocation ?? _cacheLocation,
+        cookieDomain: cookieDomain,
+        httpTimeoutInSeconds: httpTimeoutInSeconds,
+        idTokenValidationConfig: IdTokenValidationConfig(issuer: issuer, leeway: leeway),
+        useLegacySameSiteCookie: useLegacySameSiteCookie,
+        sessionCheckExpiryInDays: sessionCheckExpiryInDays,
+        useCookiesForTransactions: useCookiesForTransactions,
+        useFormData: useFormData,
+        useRefreshTokens: useRefreshTokens,
+        useRefreshTokensFallback: useRefreshTokensFallback,
+        audience: audience,
+        scopes: scopes,
+        parameters: {if (_redirectUrl != null) 'redirect_uri': _redirectUrl!, ...parameters},
+      ),
+      _userAgent,
+    );
 
     if (await hasValidCredentials()) {
       return credentials();
@@ -97,31 +117,41 @@ class Auth0Web {
   /// * [scopes] defaults to `openid profile email`. You can override these
   /// scopes, but `openid` is always requested regardless of this setting.
   /// * If you want to log into a specific organization, provide the
+  /// * Use [openUrl] to control the redirect and not rely on the SDK to do the
+  /// actual redirect. Required *auth0-spa-js* `2.0.1` or later.
   /// [organizationId]. Provide [invitationUrl] if a user has been invited
   /// to join an organization.
   /// * Arbitrary [parameters] can be specified and then picked up in a custom
   /// Auth0 [Action](https://auth0.com/docs/customize/actions) or
   /// [Rule](https://auth0.com/docs/customize/rules).
-  /// * Use [openUrl] to control the redirect and not rely on the SDK to do the
-  /// actual redirect. Required *auth0-spa-js* `2.0.1` or later.
-  Future<void> loginWithRedirect(
-          {final String? audience,
-          final String? redirectUrl,
-          final String? organizationId,
-          final String? invitationUrl,
-          final int? maxAge,
-          final Set<String>? scopes,
-          final Future<void> Function(String url)? openUrl,
-          final Map<String, String> parameters = const {}}) =>
-      Auth0FlutterWebPlatform.instance.loginWithRedirect(LoginOptions(
-          audience: audience,
-          redirectUrl: redirectUrl,
-          organizationId: organizationId,
-          invitationUrl: invitationUrl,
-          scopes: scopes ?? {},
-          openUrl: openUrl,
-          idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge),
-          parameters: parameters));
+  /// * The [appState] can be used to pass custom state to the callback URL.
+  /// This app state can be any value,
+  /// as long as it can be converted into a Javascript literal.
+  ///
+  /// See https://api.dart.dev/dart-js_interop/NullableObjectUtilExtension/jsify.html
+  Future<void> loginWithRedirect({
+    final Object? appState,
+    final String? audience,
+    final String? redirectUrl,
+    final String? organizationId,
+    final String? invitationUrl,
+    final int? maxAge,
+    final Set<String>? scopes,
+    final Future<void> Function(String url)? openUrl,
+    final Map<String, String> parameters = const {},
+  }) => Auth0FlutterWebPlatform.instance.loginWithRedirect(
+    LoginOptions(
+      appState: appState,
+      audience: audience,
+      redirectUrl: redirectUrl,
+      organizationId: organizationId,
+      invitationUrl: invitationUrl,
+      scopes: scopes ?? {},
+      openUrl: openUrl,
+      idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge),
+      parameters: parameters,
+    ),
+  );
 
   /// Opens a popup with the `/authorize` URL using the parameters provided as
   /// parameters.
@@ -164,24 +194,27 @@ class Auth0Web {
   /// **Note:** This requires that `dart:html` be imported into the plugin
   /// package, which may generate [the warning](https://dart-lang.github.io/linter/lints/avoid_web_libraries_in_flutter.html)
   /// 'avoid_web_libraries_in_flutter'.
-  Future<Credentials> loginWithPopup(
-          {final String? audience,
-          final String? organizationId,
-          final String? invitationUrl,
-          final int? maxAge,
-          final Set<String>? scopes,
-          final dynamic popupWindow,
-          final int? timeoutInSeconds,
-          final Map<String, String> parameters = const {}}) =>
-      Auth0FlutterWebPlatform.instance.loginWithPopup(PopupLoginOptions(
-          audience: audience,
-          organizationId: organizationId,
-          invitationUrl: invitationUrl,
-          scopes: scopes ?? {},
-          idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge),
-          popupWindow: popupWindow,
-          timeoutInSeconds: timeoutInSeconds,
-          parameters: parameters));
+  Future<Credentials> loginWithPopup({
+    final String? audience,
+    final String? organizationId,
+    final String? invitationUrl,
+    final int? maxAge,
+    final Set<String>? scopes,
+    final dynamic popupWindow,
+    final int? timeoutInSeconds,
+    final Map<String, String> parameters = const {},
+  }) => Auth0FlutterWebPlatform.instance.loginWithPopup(
+    PopupLoginOptions(
+      audience: audience,
+      organizationId: organizationId,
+      invitationUrl: invitationUrl,
+      scopes: scopes ?? {},
+      idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge),
+      popupWindow: popupWindow,
+      timeoutInSeconds: timeoutInSeconds,
+      parameters: parameters,
+    ),
+  );
 
   /// Redirects the browser to the Auth0 logout endpoint to end the user's
   /// session.
@@ -201,12 +234,9 @@ class Auth0Web {
     final bool? federated,
     final String? returnToUrl,
     final Future<void> Function(String url)? openUrl,
-  }) =>
-      Auth0FlutterWebPlatform.instance.logout(LogoutOptions(
-        federated: federated,
-        returnTo: returnToUrl,
-        openUrl: openUrl,
-      ));
+  }) => Auth0FlutterWebPlatform.instance.logout(
+    LogoutOptions(federated: federated, returnTo: returnToUrl, openUrl: openUrl),
+  );
 
   /// Retrieves a set of credentials for the user.
   ///
@@ -231,20 +261,22 @@ class Auth0Web {
   /// * Arbitrary [parameters] can be specified and then picked up in a custom
   /// Auth0 [Action](https://auth0.com/docs/customize/actions) or
   /// [Rule](https://auth0.com/docs/customize/rules).
-  Future<Credentials> credentials(
-          {final String? audience,
-          final num? timeoutInSeconds,
-          final Set<String>? scopes,
-          final CacheMode? cacheMode,
-          final Map<String, String> parameters = const {}}) =>
-      Auth0FlutterWebPlatform.instance.credentials(CredentialsOptions(
-          audience: audience,
-          timeoutInSeconds: timeoutInSeconds,
-          scopes: scopes,
-          cacheMode: cacheMode,
-          parameters: parameters));
+  Future<Credentials> credentials({
+    final String? audience,
+    final num? timeoutInSeconds,
+    final Set<String>? scopes,
+    final CacheMode? cacheMode,
+    final Map<String, String> parameters = const {},
+  }) => Auth0FlutterWebPlatform.instance.credentials(
+    CredentialsOptions(
+      audience: audience,
+      timeoutInSeconds: timeoutInSeconds,
+      scopes: scopes,
+      cacheMode: cacheMode,
+      parameters: parameters,
+    ),
+  );
 
   /// Indicates whether a user is currently authenticated.
-  Future<bool> hasValidCredentials() =>
-      Auth0FlutterWebPlatform.instance.hasValidCredentials();
+  Future<bool> hasValidCredentials() => Auth0FlutterWebPlatform.instance.hasValidCredentials();
 }

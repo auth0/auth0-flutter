@@ -1,20 +1,19 @@
 @Tags(['browser'])
-
-import 'dart:js';
-import 'dart:js_util';
+import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
 import 'package:auth0_flutter/src/web/extensions/web_exception_extensions.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  Object createJsException(final String error, final String description,
+  JSObject createJsException(final String error, final String description,
       {final Map<String, dynamic>? additionalProps}) {
-    final jsObject = newObject<JsObject>();
-    setProperty(jsObject, 'error', error);
-    setProperty(jsObject, 'error_description', description);
+    final jsObject = JSObject();
+    jsObject.setProperty('error'.toJS, error.toJS);
+    jsObject.setProperty('error_description'.toJS, description.toJS);
 
     if (additionalProps != null) {
       for (final element in additionalProps.entries) {
-        setProperty(jsObject, element.key, element.value);
+        jsObject.setProperty(element.key.toJS, element.value as JSAny);
       }
     }
 
@@ -23,8 +22,13 @@ void main() {
 
   test('additional props are added to the details collection', () {
     final exception = createJsException(
-        'authentication_error', 'A test authentication error',
-        additionalProps: {'prop-1': 'Property 1', 'prop-2': 'Property 2'});
+      'authentication_error',
+      'A test authentication error',
+      additionalProps: {
+        'prop-1': 'Property 1',
+        'prop-2': 'Property 2',
+      },
+    );
 
     final webException = WebExceptionExtension.fromJsObject(exception);
 
@@ -35,11 +39,13 @@ void main() {
   });
 
   test('mfa_required exception is created', () {
-    final exception = createJsException('mfa_required', 'MFA is required',
-        additionalProps: {'mfaToken': 'abc123'});
+    final exception = createJsException(
+      'mfa_required',
+      'MFA is required',
+      additionalProps: {'mfaToken': 'abc123'},
+    );
 
     final webException = WebExceptionExtension.fromJsObject(exception);
-
     expect(webException.code, 'MFA_REQUIRED');
     expect(webException.message, 'MFA is required');
     expect(webException.details['mfaToken'], 'abc123');
@@ -55,8 +61,10 @@ void main() {
   });
 
   test('missing_refresh_token is created', () {
-    final exception =
-        createJsException('missing_refresh_token', 'Missing refresh token');
+    final exception = createJsException(
+      'missing_refresh_token',
+      'Missing refresh token',
+    );
     final webException = WebExceptionExtension.fromJsObject(exception);
 
     expect(webException.code, 'MISSING_REFRESH_TOKEN');
@@ -101,8 +109,11 @@ void main() {
   }
 
   test('AUTHENTICATION_ERROR is captured with state only', () {
-    final exception = createJsException('invalid_grant', 'Invalid grant',
-        additionalProps: {'state': '123', 'appState': '456'});
+    final exception = createJsException(
+      'invalid_grant',
+      'Invalid grant',
+      additionalProps: {'state': '123', 'appState': '456'},
+    );
 
     final webException = WebExceptionExtension.fromJsObject(exception);
 

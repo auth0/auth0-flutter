@@ -41,3 +41,51 @@ updates:
     labels:
       - ignore title check
       - dependencies
+
+  - package-ecosystem: github-actions
+    directory: /.github/actions/rl-scanner
+    schedule:
+      interval: daily
+    labels:
+      - ignore title check
+      - dependencies
+
+  - package-ecosystem: github-actions
+    directory: /.github/actions/setup-android
+    schedule:
+      interval: daily
+    labels:
+      - ignore title check
+      - dependencies
+
+  - package-ecosystem: github-actions
+    directory: /.github/actions/setup-darwin
+    schedule:
+      interval: daily
+    labels:
+      - ignore title check
+      - dependencies
+
+  - package-ecosystem: github-actions
+    directory: /.github/actions/setup-publish
+    schedule:
+      interval: daily
+    labels:
+      - ignore title check
+      - dependencies
+
+  - package-ecosystem: github-actions
+    directory: /.github/actions/smoke-tests-darwin
+    schedule:
+      interval: daily
+    labels:
+      - ignore title check
+      - dependencies
+
+  - package-ecosystem: github-actions
+    directory: /.github/actions/unit-tests-darwin
+    schedule:
+      interval: daily
+    labels:
+      - ignore title check
+      - dependencies

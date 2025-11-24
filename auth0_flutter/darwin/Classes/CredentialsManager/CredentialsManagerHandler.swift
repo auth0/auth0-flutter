@@ -1,4 +1,6 @@
 import Auth0
+import SimpleKeychain
+
 
 #if os(iOS)
 import Flutter
@@ -19,6 +21,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         case save = "credentialsManager#saveCredentials"
         case hasValid = "credentialsManager#hasValidCredentials"
         case get = "credentialsManager#getCredentials"
+        case renew = "credentialsManager#renewCredentials"
         case clear = "credentialsManager#clearCredentials"
     }
 
@@ -38,15 +41,37 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
 
         registrar.addMethodCallDelegate(handler, channel: channel)
     }
+    
+      func createCredentialManager(_ apiClient: Authentication, _ arguments: [String: Any]) -> CredentialsManager {
+        if let configuration = arguments["credentialsManagerConfiguration"] as? [String: Any],
+           let iosConfiguration = configuration["ios"] as? [String: String] {
+
+            let storeKey = iosConfiguration["storeKey"] ?? "credentials"
+            let accessGroup = iosConfiguration["accessGroup"]
+            let accessibilityString = iosConfiguration["accessibility"] ?? "afterFirstUnlock"
+            let accessibility = Accessibility(rawValue: accessibilityString as CFString)
+
+            let storage = SimpleKeychain(
+                accessGroup: accessGroup,
+                accessibility: accessibility
+            )
+            return CredentialsManager(authentication: apiClient, storeKey: storeKey, storage: storage)
+        } else {
+            return CredentialsManager(authentication: apiClient)
+        }
+    }
 
     var apiClientProvider: AuthAPIClientProvider = { account, userAgent in
         var client = Auth0.authentication(clientId: account.clientId, domain: account.domain)
         client.using(inLibrary: userAgent.name, version: userAgent.version)
         return client
     }
+    
 
-    var credentialsManagerProvider: CredentialsManagerProvider = { apiClient, arguments in
-        var instance = CredentialsManagerHandler.credentialsManager ?? CredentialsManager(authentication: apiClient)
+    lazy var credentialsManagerProvider: CredentialsManagerProvider = { apiClient, arguments in
+        
+        var instance = CredentialsManagerHandler.credentialsManager ??
+        self.createCredentialManager(apiClient,arguments)
 
         if let localAuthenticationDictionary = arguments[LocalAuthentication.key] as? [String: String?] {
             let localAuthentication = LocalAuthentication(from: localAuthenticationDictionary)
@@ -65,6 +90,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         case .hasValid: return CredentialsManagerHasValidMethodHandler(credentialsManager: credentialsManager)
         case .get: return CredentialsManagerGetMethodHandler(credentialsManager: credentialsManager)
         case .clear: return CredentialsManagerClearMethodHandler(credentialsManager: credentialsManager)
+        case .renew: return CredentialsManagerRenewMethodHandler(credentialsManager: credentialsManager)
         }
     }
 
@@ -89,4 +115,5 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         let methodHandler = methodHandlerProvider(method, credentialsManager)
         methodHandler.handle(with: arguments, callback: result)
     }
+  
 }
