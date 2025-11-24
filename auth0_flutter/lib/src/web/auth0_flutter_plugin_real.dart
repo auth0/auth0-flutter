@@ -73,15 +73,14 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
 
     final authParams = JsInteropUtils.stripNulls(JsInteropUtils.addCustomParams(
         interop.AuthorizationParams(
-          audience: options?.audience,
-          redirect_uri: options?.redirectUrl,
-          organization: options?.organizationId,
-          invitation: invitationTicket,
-          max_age: options?.idTokenValidationConfig?.maxAge,
-          scope: options?.scopes.isNotEmpty == true
-              ? options?.scopes.join(' ')
-              : null,
-        ),
+            audience: options?.audience,
+            redirect_uri: options?.redirectUrl,
+            organization: options?.organizationId,
+            invitation: invitationTicket,
+            max_age: options?.idTokenValidationConfig?.maxAge,
+            scope: options?.scopes.isNotEmpty == true
+                ? options?.scopes.join(' ')
+                : null),
         options?.parameters ?? {}));
 
     final openUrl = options?.openUrl;
@@ -100,8 +99,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     final client = _ensureClient();
     final invitationTicket = _getInvitationTicket(options?.invitationUrl);
 
-    final authParams = JsInteropUtils.stripNulls(
-      JsInteropUtils.addCustomParams(
+    final authParams = JsInteropUtils.stripNulls(JsInteropUtils.addCustomParams(
         interop.AuthorizationParams(
           audience: options?.audience,
           organization: options?.organizationId,
@@ -111,9 +109,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
               ? options?.scopes.join(' ')
               : null,
         ),
-        options?.parameters ?? {},
-      ),
-    );
+        options?.parameters ?? {}));
 
     final popupConfig = JsInteropUtils.stripNulls(interop.PopupConfigOptions(
         popup: options?.popupWindow as JSAny?,
@@ -124,14 +120,11 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
           interop.PopupLoginOptions(authorizationParams: authParams),
           popupConfig);
 
-      return CredentialsExtension.fromWeb(
-          await client.getTokenSilently(interop.GetTokenSilentlyOptions(
+      return CredentialsExtension.fromWeb(await client.getTokenSilently(
+          interop.GetTokenSilentlyOptions(
               authorizationParams: JsInteropUtils.stripNulls(
-                interop.GetTokenSilentlyAuthParams(
-                  scope: authParams.scope,
-                  audience: authParams.audience,
-                ),
-              ),
+                  interop.GetTokenSilentlyAuthParams(
+                      scope: authParams.scope, audience: authParams.audience)),
               detailedResponse: true)));
     } catch (e) {
       throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));

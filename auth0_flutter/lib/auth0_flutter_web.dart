@@ -72,26 +72,25 @@ class Auth0Web {
       final Map<String, String> parameters = const {}}) async {
     await Auth0FlutterWebPlatform.instance.initialize(
         ClientOptions(
-          account: _account,
-          authorizeTimeoutInSeconds: authorizeTimeoutInSeconds,
-          cacheLocation: cacheLocation ?? _cacheLocation,
-          cookieDomain: cookieDomain,
-          httpTimeoutInSeconds: httpTimeoutInSeconds,
-          idTokenValidationConfig:
-              IdTokenValidationConfig(issuer: issuer, leeway: leeway),
-          useLegacySameSiteCookie: useLegacySameSiteCookie,
-          sessionCheckExpiryInDays: sessionCheckExpiryInDays,
-          useCookiesForTransactions: useCookiesForTransactions,
-          useFormData: useFormData,
-          useRefreshTokens: useRefreshTokens,
-          useRefreshTokensFallback: useRefreshTokensFallback,
-          audience: audience,
-          scopes: scopes,
-          parameters: {
-            if (_redirectUrl != null) 'redirect_uri': _redirectUrl!,
-            ...parameters
-          },
-        ),
+            account: _account,
+            authorizeTimeoutInSeconds: authorizeTimeoutInSeconds,
+            cacheLocation: cacheLocation ?? _cacheLocation,
+            cookieDomain: cookieDomain,
+            httpTimeoutInSeconds: httpTimeoutInSeconds,
+            idTokenValidationConfig:
+                IdTokenValidationConfig(issuer: issuer, leeway: leeway),
+            useLegacySameSiteCookie: useLegacySameSiteCookie,
+            sessionCheckExpiryInDays: sessionCheckExpiryInDays,
+            useCookiesForTransactions: useCookiesForTransactions,
+            useFormData: useFormData,
+            useRefreshTokens: useRefreshTokens,
+            useRefreshTokensFallback: useRefreshTokensFallback,
+            audience: audience,
+            scopes: scopes,
+            parameters: {
+              if (_redirectUrl != null) 'redirect_uri': _redirectUrl!,
+              ...parameters
+            }),
         _userAgent);
 
     if (await hasValidCredentials()) {
@@ -195,16 +194,15 @@ class Auth0Web {
   /// **Note:** This requires that `dart:html` be imported into the plugin
   /// package, which may generate [the warning](https://dart-lang.github.io/linter/lints/avoid_web_libraries_in_flutter.html)
   /// 'avoid_web_libraries_in_flutter'.
-  Future<Credentials> loginWithPopup({
-    final String? audience,
-    final String? organizationId,
-    final String? invitationUrl,
-    final int? maxAge,
-    final Set<String>? scopes,
-    final dynamic popupWindow,
-    final int? timeoutInSeconds,
-    final Map<String, String> parameters = const {},
-  }) =>
+  Future<Credentials> loginWithPopup(
+          {final String? audience,
+          final String? organizationId,
+          final String? invitationUrl,
+          final int? maxAge,
+          final Set<String>? scopes,
+          final dynamic popupWindow,
+          final int? timeoutInSeconds,
+          final Map<String, String> parameters = const {}}) =>
       Auth0FlutterWebPlatform.instance.loginWithPopup(PopupLoginOptions(
           audience: audience,
           organizationId: organizationId,
@@ -265,13 +263,12 @@ class Auth0Web {
   /// * Arbitrary [parameters] can be specified and then picked up in a custom
   /// Auth0 [Action](https://auth0.com/docs/customize/actions) or
   /// [Rule](https://auth0.com/docs/customize/rules).
-  Future<Credentials> credentials({
-    final String? audience,
-    final num? timeoutInSeconds,
-    final Set<String>? scopes,
-    final CacheMode? cacheMode,
-    final Map<String, String> parameters = const {},
-  }) =>
+  Future<Credentials> credentials(
+          {final String? audience,
+          final num? timeoutInSeconds,
+          final Set<String>? scopes,
+          final CacheMode? cacheMode,
+          final Map<String, String> parameters = const {}}) =>
       Auth0FlutterWebPlatform.instance.credentials(CredentialsOptions(
           audience: audience,
           timeoutInSeconds: timeoutInSeconds,
