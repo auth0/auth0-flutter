@@ -47,7 +47,7 @@ class _ExampleAppState extends State<ExampleApp> {
     // We also handle the message potentially returning null.
     try {
       if (kIsWeb) {
-        return auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3002');
+        return auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
       }
 
       final result = await webAuth.login(useHTTPS: true);
@@ -77,7 +77,7 @@ class _ExampleAppState extends State<ExampleApp> {
     // We also handle the message potentially returning null.
     try {
       if (kIsWeb) {
-        await auth0Web.logout(returnToUrl: 'http://localhost:3002');
+        await auth0Web.logout(returnToUrl: 'http://localhost:3000');
       } else {
         await webAuth.logout(useHTTPS: true);
 

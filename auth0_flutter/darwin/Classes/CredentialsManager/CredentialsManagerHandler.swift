@@ -69,9 +69,18 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
     
 
     lazy var credentialsManagerProvider: CredentialsManagerProvider = { apiClient, arguments in
+        let useDPoP = arguments["useDPoP"] as? Bool ?? false
+        
+        // Use DPoP-enabled apiClient if useDPoP is true
+        let authClient: Authentication
+        if useDPoP {
+            authClient = apiClient.useDPoP()
+        } else {
+            authClient = apiClient
+        }
         
         var instance = CredentialsManagerHandler.credentialsManager ??
-        self.createCredentialManager(apiClient,arguments)
+        self.createCredentialManager(authClient, arguments)
 
         if let localAuthenticationDictionary = arguments[LocalAuthentication.key] as? [String: String?] {
             let localAuthentication = LocalAuthentication(from: localAuthenticationDictionary)

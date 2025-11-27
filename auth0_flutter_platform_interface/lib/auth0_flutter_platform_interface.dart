@@ -1,6 +1,8 @@
 export 'src/account.dart';
 export 'src/auth/api_exception.dart';
+export 'src/auth/auth_dpop_headers_options.dart';
 export 'src/auth/auth_login_code_options.dart';
+export 'src/auth/empty_request_options.dart';
 export 'src/auth/auth_login_options.dart';
 export 'src/auth/auth_login_with_otp_options.dart';
 export 'src/auth/auth_multifactor_challenge_options.dart';
@@ -12,6 +14,7 @@ export 'src/auth/auth_signup_options.dart';
 export 'src/auth/auth_user_info_options.dart';
 export 'src/auth/challenge.dart';
 export 'src/auth/challenge_type.dart';
+export 'src/auth/dpop_headers.dart';
 export 'src/auth0_exception.dart';
 export 'src/auth0_flutter_auth_platform.dart';
 export 'src/auth0_flutter_web_auth_platform.dart';

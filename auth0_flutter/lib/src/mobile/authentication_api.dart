@@ -369,6 +369,69 @@ class AuthenticationApi {
           AuthResetPasswordOptions(
               email: email, connection: connection, parameters: parameters)));
 
+  /// Generates DPoP (Demonstrating Proof-of-Possession) headers for making
+  /// authenticated API requests with enhanced security.
+  ///
+  /// DPoP binds access tokens to the client's cryptographic key, preventing
+  /// token theft and replay attacks. This method generates both the
+  /// `Authorization` and `DPoP` headers needed for secure API requests.
+  ///
+  /// ## Parameters
+  /// * [url] - The full URL of the API endpoint you're requesting
+  /// * [method] - The HTTP method (e.g., 'GET', 'POST', 'PUT', 'DELETE')
+  /// * [accessToken] - The access token obtained from authentication
+  /// * [tokenType] - The token type, defaults to 'Bearer'
+  ///
+  /// ## Returns
+  /// A map containing two headers:
+  /// * `authorization`: Contains the token type and access token
+  /// * `dpop`: Contains the DPoP proof JWT
+  ///
+  /// ## Usage example
+  ///
+  /// ```dart
+  /// final headers = await auth0.api.getDPoPHeaders(
+  ///   url: 'https://api.example.com/resource',
+  ///   method: 'GET',
+  ///   accessToken: credentials.accessToken,
+  /// );
+  ///
+  /// // Use headers in your HTTP request
+  /// final response = await http.get(
+  ///   Uri.parse('https://api.example.com/resource'),
+  ///   headers: headers,
+  /// );
+  /// ```
+  Future<Map<String, String>> getDPoPHeaders({
+    required final String url,
+    required final String method,
+    required final String accessToken,
+    final String tokenType = 'Bearer',
+  }) =>
+      Auth0FlutterAuthPlatform.instance.getDPoPHeaders(_createApiRequest(
+          AuthDPoPHeadersOptions(
+              url: url,
+              method: method,
+              accessToken: accessToken,
+              tokenType: tokenType)));
+
+  /// Clears the DPoP (Demonstrating Proof-of-Possession) private key from
+  /// secure storage.
+  ///
+  /// This method should be called when logging out to ensure that the DPoP
+  /// key pair is properly removed from the device's secure storage. This is
+  /// important for security as it prevents the key from being reused after
+  /// logout.
+  ///
+  /// ## Usage example
+  ///
+  /// ```dart
+  /// // Clear DPoP key on logout
+  /// await auth0.api.clearDPoPKey();
+  /// ```
+  Future<void> clearDPoPKey() => Auth0FlutterAuthPlatform.instance
+      .clearDPoPKey(_createApiRequest(const EmptyRequestOptions()));
+
   ApiRequest<TOptions> _createApiRequest<TOptions extends RequestOptions>(
           final TOptions options) =>
       ApiRequest<TOptions>(
