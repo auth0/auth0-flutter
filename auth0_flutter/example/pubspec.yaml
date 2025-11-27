@@ -1,6 +1,5 @@
 name: auth0_flutter_example
 description: Demonstrates how to use the auth0_flutter plugin.
-version: 1.0.0+1
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.

@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 
 import 'auth/api_exception.dart';
+import 'auth/auth_dpop_headers_options.dart';
 import 'auth/auth_login_code_options.dart';
 import 'auth/auth_login_options.dart';
 import 'auth/auth_login_with_otp_options.dart';
@@ -32,6 +33,8 @@ const String authUserInfoMethod = 'auth#userInfo';
 const String authSignUpMethod = 'auth#signUp';
 const String authRenewMethod = 'auth#renew';
 const String authResetPasswordMethod = 'auth#resetPassword';
+const String authGetDPoPHeadersMethod = 'auth#getDPoPHeaders';
+const String authClearDPoPKeyMethod = 'auth#clearDPoPKey';
 
 class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   @override
@@ -60,35 +63,36 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
     return Challenge.fromMap(result);
   }
 
-
   @override
   Future<void> startPasswordlessWithEmail(
       final ApiRequest<AuthPasswordlessLoginOptions> request) async {
-     await invokeRequest(method: authStartPasswordlessWithEmailMethod,
-         request: request,throwOnNull: false);
+    await invokeRequest(
+        method: authStartPasswordlessWithEmailMethod,
+        request: request,
+        throwOnNull: false);
   }
-
 
   @override
   Future<Credentials> loginWithEmailCode(
-      final ApiRequest<AuthLoginWithCodeOptions> request)  async{
-      final Map<String,dynamic> result = await invokeRequest(
-          method: authLoginWithEmailCodeMethod, request: request);
-      return Credentials.fromMap(result);
+      final ApiRequest<AuthLoginWithCodeOptions> request) async {
+    final Map<String, dynamic> result = await invokeRequest(
+        method: authLoginWithEmailCodeMethod, request: request);
+    return Credentials.fromMap(result);
   }
-
 
   @override
   Future<void> startPasswordlessWithPhoneNumber(
-      final ApiRequest<AuthPasswordlessLoginOptions> request)  async{
-    await invokeRequest(method: authStartPasswordlessWithPhoneNumberMethod,
-        request: request,throwOnNull: false);
+      final ApiRequest<AuthPasswordlessLoginOptions> request) async {
+    await invokeRequest(
+        method: authStartPasswordlessWithPhoneNumberMethod,
+        request: request,
+        throwOnNull: false);
   }
 
   @override
   Future<Credentials> loginWithSmsCode(
       final ApiRequest<AuthLoginWithCodeOptions> request) async {
-    final Map<String,dynamic> result = await invokeRequest(
+    final Map<String, dynamic> result = await invokeRequest(
         method: authLoginWithSmsCodeMethod, request: request);
     return Credentials.fromMap(result);
   }
@@ -126,6 +130,26 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
       final ApiRequest<AuthResetPasswordOptions> request) async {
     await invokeRequest(
       method: authResetPasswordMethod,
+      request: request,
+      throwOnNull: false,
+    );
+  }
+
+  @override
+  Future<Map<String, String>> getDPoPHeaders(
+      final ApiRequest<AuthDPoPHeadersOptions> request) async {
+    final Map<String, dynamic> result = await invokeRequest(
+      method: authGetDPoPHeadersMethod,
+      request: request,
+    );
+
+    return result.map((key, value) => MapEntry(key, value.toString()));
+  }
+
+  @override
+  Future<void> clearDPoPKey(final ApiRequest<RequestOptions> request) async {
+    await invokeRequest(
+      method: authClearDPoPKeyMethod,
       request: request,
       throwOnNull: false,
     );

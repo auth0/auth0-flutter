@@ -108,28 +108,7 @@ class ClientOptions {
   /// The default additional parameters to be sent to Auth0.
   final Map<String, String> parameters;
 
-  /// Whether to use Demonstrating Proof-of-Possession (DPoP) for token binding.
-  ///
-  /// DPoP (defined in [RFC 9449](https://datatracker.ietf.org/doc/html/rfc9449))
-  /// is a security mechanism that cryptographically binds access tokens to the
-  /// client that requested them. This prevents token theft and replay attacks,
-  /// as tokens can only be used by the client that possesses the corresponding
-  /// private key.
-  ///
-  /// **When to enable:**
-  /// - Your application requires enhanced security for API access
-  /// - You want to prevent token theft and replay attacks
-  /// - Your Auth0 API is configured to accept DPoP tokens
-  ///
-  /// **Requirements:**
-  /// - Auth0 SPA JS SDK 2.0 or higher (web platform only)
-  /// - Your Auth0 API must be configured to accept DPoP tokens
-  ///
-  /// Defaults to `false`.
-  ///
-  /// See also:
-  /// - [Auth0 DPoP Documentation](https://auth0.com/docs/secure/tokens/token-best-practices#use-demonstrating-proof-of-possession-dpop)
-  /// - [RFC 9449](https://datatracker.ietf.org/doc/html/rfc9449)
+  /// Whether to use DPoP for token binding. Defaults to `false`.
   final bool useDPoP;
 
   ClientOptions(

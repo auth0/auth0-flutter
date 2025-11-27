@@ -530,6 +530,58 @@ if (credentials.tokenType == 'DPoP') {
 
 > 💡 The native SDKs (Auth0.Android and Auth0.Swift) automatically handle DPoP proof generation for API requests. On the web, the Auth0 SPA JS SDK manages this automatically.
 
+#### DPoP API Methods (iOS Only)
+
+For advanced scenarios where you need manual control over DPoP proof generation, the SDK provides these API methods:
+
+**Generate DPoP Headers:**
+
+```dart
+// Get DPoP headers for a specific API request
+final headers = await auth0.api.getDPoPHeaders(
+  url: 'https://api.example.com/user/profile',
+  method: 'GET',
+  accessToken: credentials.accessToken,
+  tokenType: credentials.tokenType,
+);
+
+// Use the headers in your HTTP request
+final response = await http.get(
+  Uri.parse('https://api.example.com/user/profile'),
+  headers: headers,
+);
+
+// The headers map contains:
+// {
+//   'Authorization': 'DPoP <access-token>',
+//   'DPoP': '<dpop-proof-jwt>'
+// }
+```
+
+**Clear DPoP Key:**
+
+```dart
+// Clear the DPoP key from secure storage (e.g., on logout)
+await auth0.api.clearDPoPKey();
+```
+
+> ⚠️ **Platform Availability**: These methods are currently available on **iOS only**. Android support will be added in a future SDK release.
+
+> 💡 **Note**: In most cases, you don't need to call these methods directly. The SDK automatically manages DPoP proofs when you use the CredentialsManager or make authenticated requests.
+
+#### Platform Support
+
+| Feature | Web | iOS | Android |
+|---------|-----|-----|---------|
+| Login with DPoP | ✅ | ✅ | ✅ |
+| CredentialsManager with DPoP | ✅ | ✅ | ✅ |
+| Token Refresh with DPoP | ✅ | ✅ | ✅ |
+| `getDPoPHeaders()` | ✅* | ✅ | ❌** |
+| `clearDPoPKey()` | ✅* | ✅ | ❌** |
+
+\* Handled automatically by Auth0 SPA JS SDK  
+\*\* Coming in a future Android SDK release
+
 #### Important Notes
 
 - **Token Type**: When using DPoP, `credentials.tokenType` will be `'DPoP'` instead of `'Bearer'`
@@ -554,6 +606,11 @@ if (credentials.tokenType == 'DPoP') {
 3. **API calls fail with DPoP tokens**
    - Verify your API is configured to accept DPoP tokens
    - Ensure DPoP proof is included in requests (handled automatically by SDKs)
+
+4. **"getDPoPHeaders() or clearDPoPKey() not available on Android"**
+   - These API methods are currently iOS-only
+   - Android support will be added in a future SDK release
+   - For now, use the automatic DPoP management via WebAuth and CredentialsManager
 
 For more information about DPoP, see:
 - [RFC 9449 - OAuth 2.0 Demonstrating Proof of Possession](https://datatracker.ietf.org/doc/html/rfc9449)
@@ -597,6 +654,8 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 - [resetPassword](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/resetPassword.html)
 - [signup](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/signup.html)
 - [userProfile](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/userProfile.html)
+- [getDPoPHeaders](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/getDPoPHeaders.html) (iOS only)
+- [clearDPoPKey](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/clearDPoPKey.html) (iOS only)
 
 #### Credentials Manager
 

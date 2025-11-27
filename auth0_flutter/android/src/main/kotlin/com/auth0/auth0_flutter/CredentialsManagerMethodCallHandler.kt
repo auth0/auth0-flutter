@@ -43,50 +43,81 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
 
             val credentialsManagerInstance: SecureCredentialsManager
 
-            if (localAuthentication != null) {
-                if (activity !is FragmentActivity) {
-                    result.error(
-                        "FragmentActivity required",
-                        "The Activity is not a FragmentActivity, which is required for biometric authentication.",
-                        null
-                    )
-                    return
-                }
-
-                val builder = LocalAuthenticationOptions.Builder()
-                (localAuthentication["title"] as String?)?.let { builder.setTitle(it) }
-                (localAuthentication["description"] as String?)?.let { builder.setDescription(it) }
-                (localAuthentication["cancelTitle"] as String?)?.let { builder.setNegativeButtonText(it) }
-
-                val authenticationLevel = localAuthentication["authenticationLevel"] as Int?
-                if (authenticationLevel != null) {
-                    when (authenticationLevel) {
-                        0 -> builder.setAuthenticationLevel(AuthenticationLevel.STRONG)
-                        1 -> builder.setAuthenticationLevel(AuthenticationLevel.WEAK)
-                        2 -> builder.setAuthenticationLevel(AuthenticationLevel.DEVICE_CREDENTIAL)
-                    }
-                } else {
-                    builder.setAuthenticationLevel(AuthenticationLevel.STRONG)
-                }
-                builder.setDeviceCredentialFallback(true)
-
-                credentialsManagerInstance = SecureCredentialsManager(context, request.account, storage, activity, builder.build())
-            } else {
-                credentialsManagerInstance = SecureCredentialsManager(context, request.account, storage)
-            }
-
             if (useDPoP) {
-                try {
-                    val fields = credentialsManagerInstance.javaClass.declaredFields
-                    val apiField = fields.find { it.type == AuthenticationAPIClient::class.java }
-                    if (apiField != null) {
-                        apiField.isAccessible = true
-                        val api = apiField.get(credentialsManagerInstance)
-                        val method = api.javaClass.getMethod("useDPoP", android.content.Context::class.java)
-                        method.invoke(api, context)
+                // Create an AuthenticationAPIClient with DPoP enabled
+                val apiClient = AuthenticationAPIClient(request.account).useDPoP(context)
+                
+                if (localAuthentication != null) {
+                    if (activity !is FragmentActivity) {
+                        result.error(
+                            "FragmentActivity required",
+                            "The Activity is not a FragmentActivity, which is required for biometric authentication.",
+                            null
+                        )
+                        return
                     }
-                } catch (e: Exception) {
-                    android.util.Log.w("Auth0Flutter", "Failed to enable DPoP on SecureCredentialsManager: ${e.message}")
+
+                    val builder = LocalAuthenticationOptions.Builder()
+                    (localAuthentication["title"] as String?)?.let { builder.setTitle(it) }
+                    (localAuthentication["description"] as String?)?.let { builder.setDescription(it) }
+                    (localAuthentication["cancelTitle"] as String?)?.let { builder.setNegativeButtonText(it) }
+
+                    val authenticationLevel = localAuthentication["authenticationLevel"] as Int?
+                    if (authenticationLevel != null) {
+                        when (authenticationLevel) {
+                            0 -> builder.setAuthenticationLevel(AuthenticationLevel.STRONG)
+                            1 -> builder.setAuthenticationLevel(AuthenticationLevel.WEAK)
+                            2 -> builder.setAuthenticationLevel(AuthenticationLevel.DEVICE_CREDENTIAL)
+                        }
+                    } else {
+                        builder.setAuthenticationLevel(AuthenticationLevel.STRONG)
+                    }
+                    builder.setDeviceCredentialFallback(true)
+
+                    credentialsManagerInstance = SecureCredentialsManager(
+                        apiClient, context, request.account, storage, activity, builder.build()
+                    )
+                } else {
+                    credentialsManagerInstance = SecureCredentialsManager(
+                        apiClient, context, request.account, storage
+                    )
+                }
+            } else {
+                // Use default constructors when DPoP is not enabled
+                if (localAuthentication != null) {
+                    if (activity !is FragmentActivity) {
+                        result.error(
+                            "FragmentActivity required",
+                            "The Activity is not a FragmentActivity, which is required for biometric authentication.",
+                            null
+                        )
+                        return
+                    }
+
+                    val builder = LocalAuthenticationOptions.Builder()
+                    (localAuthentication["title"] as String?)?.let { builder.setTitle(it) }
+                    (localAuthentication["description"] as String?)?.let { builder.setDescription(it) }
+                    (localAuthentication["cancelTitle"] as String?)?.let { builder.setNegativeButtonText(it) }
+
+                    val authenticationLevel = localAuthentication["authenticationLevel"] as Int?
+                    if (authenticationLevel != null) {
+                        when (authenticationLevel) {
+                            0 -> builder.setAuthenticationLevel(AuthenticationLevel.STRONG)
+                            1 -> builder.setAuthenticationLevel(AuthenticationLevel.WEAK)
+                            2 -> builder.setAuthenticationLevel(AuthenticationLevel.DEVICE_CREDENTIAL)
+                        }
+                    } else {
+                        builder.setAuthenticationLevel(AuthenticationLevel.STRONG)
+                    }
+                    builder.setDeviceCredentialFallback(true)
+
+                    credentialsManagerInstance = SecureCredentialsManager(
+                        context, request.account, storage, activity, builder.build()
+                    )
+                } else {
+                    credentialsManagerInstance = SecureCredentialsManager(
+                        context, request.account, storage
+                    )
                 }
             }
 

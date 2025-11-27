@@ -77,31 +77,8 @@ class WebAuthentication {
   /// another allowed browser installed, the allowed browser is used instead
   /// When the user's default browser is not in the allowlist, and the user has
   /// no other allowed browser installed, an error is returned
-  /// * [useDPoP] enables **Demonstrating Proof-of-Possession (DPoP)**, a security
-  /// mechanism defined in [RFC 9449](https://datatracker.ietf.org/doc/html/rfc9449)
-  /// that cryptographically binds access tokens to the client that requested them.
-  ///
-  ///   **What is DPoP?**
-  ///   DPoP prevents token theft and replay attacks by creating a cryptographic
-  ///   binding between the token and the client's private key. Unlike Bearer tokens,
-  ///   stolen DPoP tokens cannot be used by attackers as they lack the private key.
-  ///
-  ///   **When to use it:**
-  ///   - Your application requires enhanced token security
-  ///   - You want to prevent token theft and replay attacks
-  ///   - Your Auth0 API is configured to accept DPoP tokens
-  ///
-  ///   **Platform Compatibility:**
-  ///   - ✅ iOS 14+ (requires Auth0.Swift 2.0+)
-  ///   - ✅ macOS 11+ (requires Auth0.Swift 2.0+)
-  ///   - ✅ Android API 24+ (requires Auth0.Android 3.0+)
-  ///   - ❌ Web (use [Auth0Web] class with `useDPoP` parameter instead)
-  ///
-  ///   Defaults to `false`.
-  ///
-  ///   See also:
-  ///   - [Auth0 DPoP Documentation](https://auth0.com/docs/secure/tokens/token-best-practices#use-demonstrating-proof-of-possession-dpop)
-  ///   - [RFC 9449](https://datatracker.ietf.org/doc/html/rfc9449)
+  /// * [useDPoP] enables Demonstrating Proof-of-Possession (DPoP) for enhanced token security.
+  /// See [Auth0 DPoP Documentation](https://auth0.com/docs/secure/tokens/token-best-practices#use-demonstrating-proof-of-possession-dpop) for details. Defaults to `false`.
   Future<Credentials> login(
       {final String? audience,
       final Set<String> scopes = const {

@@ -24,22 +24,10 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   private lateinit var authMethodChannel : MethodChannel
   private lateinit var credentialsManagerMethodChannel : MethodChannel
   private lateinit var binding: FlutterPlugin.FlutterPluginBinding
+  private lateinit var authCallHandler: Auth0FlutterAuthMethodCallHandler
   private val webAuthCallHandler = Auth0FlutterWebAuthMethodCallHandler(listOf(
-    LoginWebAuthRequestHandler({ request: MethodCallRequest -> WebAuthProvider.login(request.account) }, WebAuthProvider),
+    LoginWebAuthRequestHandler(WebAuthProvider),
     LogoutWebAuthRequestHandler { request: MethodCallRequest -> WebAuthProvider.logout(request.account) },
-  ))
-  private val authCallHandler = Auth0FlutterAuthMethodCallHandler(listOf(
-    LoginApiRequestHandler(),
-    LoginWithOtpApiRequestHandler(),
-    MultifactorChallengeApiRequestHandler(),
-    EmailPasswordlessApiRequestHandler(),
-    PhoneNumberPasswordlessApiRequestHandler(),
-    LoginWithEmailCodeApiRequestHandler(),
-    LoginWithSMSCodeApiRequestHandler(),
-    SignupApiRequestHandler(),
-    UserInfoApiRequestHandler(),
-    RenewApiRequestHandler(),
-    ResetPasswordApiRequestHandler()
   ))
   private val credentialsManagerCallHandler = CredentialsManagerMethodCallHandler(listOf(
     GetCredentialsRequestHandler(),
@@ -61,7 +49,23 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     credentialsManagerMethodChannel.setMethodCallHandler(credentialsManagerCallHandler)
     credentialsManagerCallHandler.context = context
 
-    authMethodChannel = MethodChannel(messenger, "auth0.com/auth0_flutter/authentication")
+    authCallHandler = Auth0FlutterAuthMethodCallHandler(listOf(
+      LoginApiRequestHandler(),
+      LoginWithOtpApiRequestHandler(),
+      MultifactorChallengeApiRequestHandler(),
+      EmailPasswordlessApiRequestHandler(),
+      PhoneNumberPasswordlessApiRequestHandler(),
+      LoginWithEmailCodeApiRequestHandler(),
+      LoginWithSMSCodeApiRequestHandler(),
+      SignupApiRequestHandler(),
+      UserInfoApiRequestHandler(),
+      RenewApiRequestHandler(),
+      ResetPasswordApiRequestHandler()
+      // TODO: Add GetDPoPHeadersApiRequestHandler and ClearDPoPKeyApiRequestHandler 
+      // when Auth0 Android SDK exposes these methods publicly
+    ))
+
+    authMethodChannel = MethodChannel(messenger, "auth0.com/auth0_flutter/auth")
     authMethodChannel.setMethodCallHandler(authCallHandler)
   }
 
