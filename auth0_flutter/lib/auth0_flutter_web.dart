@@ -28,9 +28,7 @@ class Auth0Web {
   ///   Defaults to `memory`. Setting this to `localStorage` is often required for
   ///   seamless silent authentication on page reloads.
   ///
-  /// * [useDPoP] enables Demonstrating Proof-of-Possession (DPoP) for enhanced security.
-  ///   When enabled, the SDK uses DPoP tokens instead of Bearer tokens, cryptographically
-  ///   binding access tokens to the client to prevent token theft and replay attacks.
+  /// * [useDPoP] enables DPoP for enhanced token security. See README for details.
   ///   Defaults to `false`.
   Auth0Web(final String domain, final String clientId,
       {final String? redirectUrl,

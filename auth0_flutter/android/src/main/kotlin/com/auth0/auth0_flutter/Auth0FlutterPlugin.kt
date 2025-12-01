@@ -61,8 +61,6 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       UserInfoApiRequestHandler(),
       RenewApiRequestHandler(),
       ResetPasswordApiRequestHandler()
-      // TODO: Add GetDPoPHeadersApiRequestHandler and ClearDPoPKeyApiRequestHandler 
-      // when Auth0 Android SDK exposes these methods publicly
     ))
 
     authMethodChannel = MethodChannel(messenger, "auth0.com/auth0_flutter/auth")

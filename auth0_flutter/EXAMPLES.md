@@ -452,7 +452,7 @@ final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID',
     localAuthentication: localAuthentication);
 final credentials = await auth0.credentialsManager.credentials();
 ```
-> ⚠️ On Android, your app's MainActivity.kt file must extend FlutterFragmentActivity instead of FlutterActivity for biometric prompts to work.
+> ⚠️ On Android, your app's `MainActivity.kt` file must extend `FlutterFragmentActivity` instead of `FlutterActivity` for biometric prompts to work.
 
 Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/LocalAuthentication-class.html) to learn more about the available `LocalAuthentication` properties.
 

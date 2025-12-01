@@ -74,12 +74,16 @@ class LoginWebAuthRequestHandler(
             builder.withParameters(args["parameters"] as Map<String, *>)
         }
 
-        // Enable DPoP when requested from Dart.
-        if (args["useDPoP"] as? Boolean == true) {
+        // Enable DPoP if requested - Available in Auth0.Android SDK 3.9.0+
+        if (args["useDPoP"] == true) {
             try {
                 webAuthProvider.useDPoP(context)
             } catch (e: Exception) {
-                result.error("DPOP_CONFIGURATION_ERROR", "Failed to enable DPoP: ${e.message}", null)
+                result.error(
+                    "dpop-configuration-error",
+                    "Failed to enable DPoP: ${e.message}",
+                    null
+                )
                 return
             }
         }

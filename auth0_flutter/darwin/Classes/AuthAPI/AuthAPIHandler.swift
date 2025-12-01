@@ -65,8 +65,8 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
         case .passwordlessWithPhoneNumber: return AuthAPIPasswordlessPhoneNumberMethodHandler(client: client)
         case .loginWithEmailCode: return AuthAPILoginWithEmailMethodHandler(client: client)
         case .loginWithSMSCode: return AuthAPILoginWithPhoneNumberMethodHandler(client: client)
-        case .getDPoPHeaders: return AuthAPIGetDPoPHeadersMethodHandler(client: client)
-        case .clearDPoPKey: return AuthAPIClearDPoPKeyMethodHandler(client: client)
+        case .getDPoPHeaders: fatalError("getDPoPHeaders is not supported - use useDPoP parameter instead")
+        case .clearDPoPKey: fatalError("clearDPoPKey is not supported - DPoP keys are managed by the SDK")
         }
     }
 

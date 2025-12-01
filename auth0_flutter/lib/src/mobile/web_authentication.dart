@@ -77,8 +77,8 @@ class WebAuthentication {
   /// another allowed browser installed, the allowed browser is used instead
   /// When the user's default browser is not in the allowlist, and the user has
   /// no other allowed browser installed, an error is returned
-  /// * [useDPoP] enables Demonstrating Proof-of-Possession (DPoP) for enhanced token security.
-  /// See [Auth0 DPoP Documentation](https://auth0.com/docs/secure/tokens/token-best-practices#use-demonstrating-proof-of-possession-dpop) for details. Defaults to `false`.
+  /// * [useDPoP] enables DPoP for enhanced token security. See README for details.
+  /// Defaults to `false`.
   Future<Credentials> login(
       {final String? audience,
       final Set<String> scopes = const {

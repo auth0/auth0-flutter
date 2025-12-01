@@ -27,6 +27,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
 
     private static let channelName = "auth0.com/auth0_flutter/credentials_manager"
     private static var credentialsManager: CredentialsManager?
+    private static var cachedUseDPoP: Bool = false
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let handler = CredentialsManagerHandler()
@@ -71,6 +72,11 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
     lazy var credentialsManagerProvider: CredentialsManagerProvider = { apiClient, arguments in
         let useDPoP = arguments["useDPoP"] as? Bool ?? false
         
+        // Invalidate cached instance if DPoP setting has changed
+        if CredentialsManagerHandler.credentialsManager != nil && CredentialsManagerHandler.cachedUseDPoP != useDPoP {
+            CredentialsManagerHandler.credentialsManager = nil
+        }
+        
         // Use DPoP-enabled apiClient if useDPoP is true
         let authClient: Authentication
         if useDPoP {
@@ -90,6 +96,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         }
 
         CredentialsManagerHandler.credentialsManager = instance
+        CredentialsManagerHandler.cachedUseDPoP = useDPoP
         return instance
     }
 
