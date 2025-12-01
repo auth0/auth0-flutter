@@ -16,7 +16,7 @@ env:
     ruby: '3.3.1'
     flutter: '3.x'
     ios-simulator: iPhone 16
-    java: 17
+    java: 11
 
 jobs:
 

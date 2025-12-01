@@ -8,7 +8,7 @@ class WebAuthLoginOptions extends LoginOptions {
   final SafariViewController? safariViewController;
   final List<String> allowedBrowsers;
 
-  /// Whether to use DPoP for enhanced token security. Defaults to `false`.
+  /// Enables DPoP for token security. Defaults to `false`.
   final bool useDPoP;
 
   WebAuthLoginOptions(

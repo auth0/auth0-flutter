@@ -16,9 +16,37 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
+/**
+ * Constants for mapping biometric authentication levels between Dart and Kotlin.
+ * These values must match the BiometricAuthenticationLevel enum in lib/src/credentials_manager.dart
+ */
+private object BiometricAuthLevel {
+    const val STRONG = 0
+    const val WEAK = 1
+    const val DEVICE_CREDENTIAL = 2
+}
+
 class CredentialsManagerMethodCallHandler(private val requestHandlers: List<CredentialsManagerRequestHandler>) : MethodCallHandler {
     lateinit var activity: Activity
     lateinit var context: Context
+
+    private fun buildLocalAuthenticationOptions(localAuthentication: Map<String, Any>): LocalAuthenticationOptions {
+        val builder = LocalAuthenticationOptions.Builder()
+        (localAuthentication["title"] as String?)?.let { builder.setTitle(it) }
+        (localAuthentication["description"] as String?)?.let { builder.setDescription(it) }
+        (localAuthentication["cancelTitle"] as String?)?.let { builder.setNegativeButtonText(it) }
+
+        val authenticationLevel = localAuthentication["authenticationLevel"] as Int?
+        when (authenticationLevel) {
+            BiometricAuthLevel.STRONG -> builder.setAuthenticationLevel(AuthenticationLevel.STRONG)
+            BiometricAuthLevel.WEAK -> builder.setAuthenticationLevel(AuthenticationLevel.WEAK)
+            BiometricAuthLevel.DEVICE_CREDENTIAL -> builder.setAuthenticationLevel(AuthenticationLevel.DEVICE_CREDENTIAL)
+            else -> builder.setAuthenticationLevel(AuthenticationLevel.STRONG) // Default to STRONG
+        }
+        builder.setDeviceCredentialFallback(true)
+        
+        return builder.build()
+    }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         val requestHandler = requestHandlers.find { it.method == call.method }
@@ -50,32 +78,18 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
                 if (localAuthentication != null) {
                     if (activity !is FragmentActivity) {
                         result.error(
-                            "FragmentActivity required",
-                            "The Activity is not a FragmentActivity, which is required for biometric authentication.",
+                            "credentialsManager#fragment-activity-required",
+                            "The Activity must extend FlutterFragmentActivity (not FlutterActivity) for biometric authentication. " +
+                            "Update your MainActivity.kt to extend FlutterFragmentActivity. " +
+                            "See: https://developer.android.com/reference/androidx/fragment/app/FragmentActivity",
                             null
                         )
                         return
                     }
 
-                    val builder = LocalAuthenticationOptions.Builder()
-                    (localAuthentication["title"] as String?)?.let { builder.setTitle(it) }
-                    (localAuthentication["description"] as String?)?.let { builder.setDescription(it) }
-                    (localAuthentication["cancelTitle"] as String?)?.let { builder.setNegativeButtonText(it) }
-
-                    val authenticationLevel = localAuthentication["authenticationLevel"] as Int?
-                    if (authenticationLevel != null) {
-                        when (authenticationLevel) {
-                            0 -> builder.setAuthenticationLevel(AuthenticationLevel.STRONG)
-                            1 -> builder.setAuthenticationLevel(AuthenticationLevel.WEAK)
-                            2 -> builder.setAuthenticationLevel(AuthenticationLevel.DEVICE_CREDENTIAL)
-                        }
-                    } else {
-                        builder.setAuthenticationLevel(AuthenticationLevel.STRONG)
-                    }
-                    builder.setDeviceCredentialFallback(true)
-
+                    val options = buildLocalAuthenticationOptions(localAuthentication)
                     credentialsManagerInstance = SecureCredentialsManager(
-                        apiClient, context, request.account, storage, activity, builder.build()
+                        apiClient, context, request.account, storage, activity, options
                     )
                 } else {
                     credentialsManagerInstance = SecureCredentialsManager(
@@ -87,32 +101,18 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
                 if (localAuthentication != null) {
                     if (activity !is FragmentActivity) {
                         result.error(
-                            "FragmentActivity required",
-                            "The Activity is not a FragmentActivity, which is required for biometric authentication.",
+                            "credentialsManager#fragment-activity-required",
+                            "The Activity must extend FlutterFragmentActivity (not FlutterActivity) for biometric authentication. " +
+                            "Update your MainActivity.kt to extend FlutterFragmentActivity. " +
+                            "See: https://developer.android.com/reference/androidx/fragment/app/FragmentActivity",
                             null
                         )
                         return
                     }
 
-                    val builder = LocalAuthenticationOptions.Builder()
-                    (localAuthentication["title"] as String?)?.let { builder.setTitle(it) }
-                    (localAuthentication["description"] as String?)?.let { builder.setDescription(it) }
-                    (localAuthentication["cancelTitle"] as String?)?.let { builder.setNegativeButtonText(it) }
-
-                    val authenticationLevel = localAuthentication["authenticationLevel"] as Int?
-                    if (authenticationLevel != null) {
-                        when (authenticationLevel) {
-                            0 -> builder.setAuthenticationLevel(AuthenticationLevel.STRONG)
-                            1 -> builder.setAuthenticationLevel(AuthenticationLevel.WEAK)
-                            2 -> builder.setAuthenticationLevel(AuthenticationLevel.DEVICE_CREDENTIAL)
-                        }
-                    } else {
-                        builder.setAuthenticationLevel(AuthenticationLevel.STRONG)
-                    }
-                    builder.setDeviceCredentialFallback(true)
-
+                    val options = buildLocalAuthenticationOptions(localAuthentication)
                     credentialsManagerInstance = SecureCredentialsManager(
-                        context, request.account, storage, activity, builder.build()
+                        context, request.account, storage, activity, options
                     )
                 } else {
                     credentialsManagerInstance = SecureCredentialsManager(

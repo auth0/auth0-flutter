@@ -108,7 +108,7 @@ class ClientOptions {
   /// The default additional parameters to be sent to Auth0.
   final Map<String, String> parameters;
 
-  /// Whether to use DPoP for token binding. Defaults to `false`.
+  /// Enables DPoP for token security. Defaults to `false`.
   final bool useDPoP;
 
   ClientOptions(
