@@ -55,7 +55,7 @@ class UserInfoApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        doReturn(mockBuilder).`when`(mockApi).userInfo(any())
+        whenever(mockApi.userInfo("test-token")).thenReturn(mockBuilder)
 
         handler.handle(
             mockApi,
@@ -80,8 +80,8 @@ class UserInfoApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        doReturn(mockBuilder).`when`(mockApi).userInfo(any())
-        doReturn(mockBuilder).`when`(mockBuilder).addParameters(any())
+        whenever(mockApi.userInfo("test-token")).thenReturn(mockBuilder)
+        whenever(mockBuilder.addParameters(any())).thenReturn(mockBuilder)
 
         handler.handle(
             mockApi,
@@ -95,6 +95,7 @@ class UserInfoApiRequestHandlerTest {
                 "test2" to "test-value"
             )
         )
+        verify(mockBuilder).start(any())
     }
 
     @Test
@@ -109,8 +110,7 @@ class UserInfoApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        doReturn(mockBuilder).`when`(mockApi).userInfo(any())
-        doReturn(mockBuilder).`when`(mockBuilder).addParameters(any())
+        whenever(mockApi.userInfo("test-token")).thenReturn(mockBuilder)
 
         handler.handle(
             mockApi,
@@ -119,6 +119,7 @@ class UserInfoApiRequestHandlerTest {
         )
 
         verify(mockBuilder, times(0)).addParameters(any())
+        verify(mockBuilder).start(any())
     }
 
     @Test
@@ -135,11 +136,11 @@ class UserInfoApiRequestHandlerTest {
         val exception =
             AuthenticationException(code = "test-code", description = "test-description")
 
-        doReturn(mockBuilder).`when`(mockApi).userInfo(any())
-        doAnswer {
-            val ob = it.getArgument<Callback<UserProfile, AuthenticationException>>(0)
-            ob.onFailure(exception)
-        }.`when`(mockBuilder).start(any())
+        whenever(mockApi.userInfo("test-token")).thenReturn(mockBuilder)
+        whenever(mockBuilder.start(any())).thenAnswer {
+            val callback = it.getArgument<Callback<UserProfile, AuthenticationException>>(0)
+            callback.onFailure(exception)
+        }
 
         handler.handle(
             mockApi,
@@ -177,11 +178,11 @@ class UserInfoApiRequestHandlerTest {
             null
         )
 
-        doReturn(mockBuilder).`when`(mockApi).userInfo(any())
-        doAnswer {
-            val ob = it.getArgument<Callback<UserProfile, AuthenticationException>>(0)
-            ob.onSuccess(user)
-        }.`when`(mockBuilder).start(any())
+        whenever(mockApi.userInfo("test-token")).thenReturn(mockBuilder)
+        whenever(mockBuilder.start(any())).thenAnswer {
+            val callback = it.getArgument<Callback<UserProfile, AuthenticationException>>(0)
+            callback.onSuccess(user)
+        }
 
         handler.handle(
             mockApi,
@@ -189,11 +190,13 @@ class UserInfoApiRequestHandlerTest {
             mockResult
         )
 
-        val captor = argumentCaptor<() -> Map<String, *>>()
+        val captor = argumentCaptor<Map<String, *>>()
         verify(mockResult).success(captor.capture())
+        
+        val resultMap = captor.firstValue
 
-        assertThat((captor.firstValue as Map<*, *>)["sub"], equalTo(user.sub))
-        assertThat((captor.firstValue as Map<*, *>)["name"], equalTo(user.name))
+        assertThat(resultMap["sub"], equalTo(user.sub))
+        assertThat(resultMap["name"], equalTo(user.name))
 
     }
 }

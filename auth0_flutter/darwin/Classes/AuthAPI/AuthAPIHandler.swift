@@ -8,7 +8,7 @@ import FlutterMacOS
 
 // MARK: - Providers
 
-typealias AuthAPIClientProvider = (_ account: Account, _ userAgent: UserAgent) -> Authentication
+typealias AuthAPIClientProvider = (_ account: Account, _ userAgent: UserAgent, _ arguments: [String: Any]) -> Authentication
 typealias AuthAPIMethodHandlerProvider = (_ method: AuthAPIHandler.Method, _ client: Authentication) -> MethodHandler
 
 // MARK: - Auth Auth Handler
@@ -46,9 +46,16 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
         registrar.addMethodCallDelegate(handler, channel: channel)
     }
 
-    var clientProvider: AuthAPIClientProvider = { account, userAgent in
+    var clientProvider: AuthAPIClientProvider = { account, userAgent, arguments in
         var client = Auth0.authentication(clientId: account.clientId, domain: account.domain)
         client.using(inLibrary: userAgent.name, version: userAgent.version)
+        
+        // Enable DPoP if requested
+        let useDPoP = arguments["useDPoP"] as? Bool ?? false
+        if useDPoP {
+            client = client.useDPoP()
+        }
+        
         return client
     }
 
@@ -65,8 +72,8 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
         case .passwordlessWithPhoneNumber: return AuthAPIPasswordlessPhoneNumberMethodHandler(client: client)
         case .loginWithEmailCode: return AuthAPILoginWithEmailMethodHandler(client: client)
         case .loginWithSMSCode: return AuthAPILoginWithPhoneNumberMethodHandler(client: client)
-        case .getDPoPHeaders: fatalError("getDPoPHeaders is not supported - use useDPoP parameter instead")
-        case .clearDPoPKey: fatalError("clearDPoPKey is not supported - DPoP keys are managed by the SDK")
+        case .getDPoPHeaders: return AuthAPIGetDPoPHeadersMethodHandler(client: client)
+        case .clearDPoPKey: return AuthAPIClearDPoPKeyMethodHandler(client: client)
         }
     }
 
@@ -86,7 +93,7 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
             return result(FlutterMethodNotImplemented)
         }
 
-        let client = clientProvider(account, userAgent)
+        let client = clientProvider(account, userAgent, arguments)
         let methodHandler = methodHandlerProvider(method, client)
 
         methodHandler.handle(with: arguments, callback: result)

@@ -379,8 +379,9 @@ final auth0Web = Auth0Web(
 | Login with DPoP | ✅ | ✅ | ✅ |
 | CredentialsManager with DPoP | ✅ | ✅ | ✅ |
 | Token Refresh with DPoP | ✅ | ✅ | ✅ |
+| Manual DPoP APIs (`getDPoPHeaders()`, `clearDPoPKey()`) | ✅ | ✅ | ✅ |
 
-> **Note:** Manual DPoP key/header management APIs (`getDPoPHeaders()`, `clearDPoPKey()`) are not available as these are internal SDK methods. DPoP is managed automatically when `useDPoP: true` is enabled.
+> **Note:** In most cases, DPoP is managed automatically when `useDPoP: true` is enabled. Manual DPoP APIs are available for advanced use cases where you need direct control over DPoP proof generation.
 
 📖 **For complete DPoP documentation, examples, and troubleshooting, see [DPOP.md](DPOP.md)**
 

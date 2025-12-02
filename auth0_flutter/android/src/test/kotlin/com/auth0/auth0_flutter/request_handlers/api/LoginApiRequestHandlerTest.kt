@@ -331,12 +331,12 @@ class LoginApiRequestHandlerTest {
         val idToken = JwtTestUtils.createJwt(claims = mapOf("name" to "John Doe"))
         val credentials = Credentials(idToken, "test", "", null, Date(), "scope1 scope2")
 
-        doReturn(mockLoginBuilder).`when`(mockApi).login(any(), any(), any())
-        doReturn(mockLoginBuilder).`when`(mockLoginBuilder).addParameters(any())
-        doAnswer {
-            val ob = it.getArgument<Callback<Credentials, AuthenticationException>>(0)
-            ob.onSuccess(credentials)
-        }.`when`(mockLoginBuilder).start(any())
+        whenever(mockApi.login(any(), any(), any())).thenReturn(mockLoginBuilder)
+        whenever(mockLoginBuilder.addParameters(any())).thenReturn(mockLoginBuilder)
+        whenever(mockLoginBuilder.start(any())).thenAnswer {
+            val callback = it.getArgument<Callback<Credentials, AuthenticationException>>(0)
+            callback.onSuccess(credentials)
+        }
 
         handler.handle(
             mockApi,
@@ -344,19 +344,18 @@ class LoginApiRequestHandlerTest {
             mockResult
         )
 
-        val captor = argumentCaptor<() -> Map<String, *>>()
+        val captor = argumentCaptor<Map<String, *>>()
         verify(mockResult).success(captor.capture())
 
-        val sdf =
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+        val formattedDate = credentials.expiresAt.toInstant().toString()
+        
+        val resultMap = captor.firstValue
 
-        val formattedDate = sdf.format(credentials.expiresAt)
-
-        assertThat((captor.firstValue as Map<*, *>)["accessToken"], equalTo(credentials.accessToken))
-        assertThat((captor.firstValue as Map<*, *>)["idToken"], equalTo(credentials.idToken))
-        assertThat((captor.firstValue as Map<*, *>)["refreshToken"], equalTo(credentials.refreshToken))
-        assertThat((captor.firstValue as Map<*, *>)["expiresAt"] as String, equalTo(formattedDate))
-        assertThat((captor.firstValue as Map<*, *>)["scopes"], equalTo(listOf("scope1", "scope2")))
-        assertThat(((captor.firstValue as Map<*, *>)["userProfile"] as Map<*, *>)["name"], equalTo("John Doe"))
+        assertThat(resultMap["accessToken"], equalTo(credentials.accessToken))
+        assertThat(resultMap["idToken"], equalTo(credentials.idToken))
+        assertThat(resultMap["refreshToken"], equalTo(credentials.refreshToken))
+        assertThat(resultMap["expiresAt"] as String, equalTo(formattedDate))
+        assertThat(resultMap["scopes"], equalTo(listOf("scope1", "scope2")))
+        assertThat((resultMap["userProfile"] as Map<*, *>)["name"], equalTo("John Doe"))
     }
 }

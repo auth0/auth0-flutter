@@ -27,7 +27,6 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
 
     private static let channelName = "auth0.com/auth0_flutter/credentials_manager"
     private static var credentialsManager: CredentialsManager?
-    private static var cachedUseDPoP: Bool = false
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let handler = CredentialsManagerHandler()
@@ -62,31 +61,17 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         }
     }
 
-    var apiClientProvider: AuthAPIClientProvider = { account, userAgent in
+    var apiClientProvider: AuthAPIClientProvider = { account, userAgent, arguments in
+        let useDPoP = arguments["useDPoP"] as? Bool ?? false
         var client = Auth0.authentication(clientId: account.clientId, domain: account.domain)
         client.using(inLibrary: userAgent.name, version: userAgent.version)
-        return client
+        return useDPoP ? client.useDPoP() : client
     }
     
 
     lazy var credentialsManagerProvider: CredentialsManagerProvider = { apiClient, arguments in
-        let useDPoP = arguments["useDPoP"] as? Bool ?? false
-        
-        // Invalidate cached instance if DPoP setting has changed
-        if CredentialsManagerHandler.credentialsManager != nil && CredentialsManagerHandler.cachedUseDPoP != useDPoP {
-            CredentialsManagerHandler.credentialsManager = nil
-        }
-        
-        // Use DPoP-enabled apiClient if useDPoP is true
-        let authClient: Authentication
-        if useDPoP {
-            authClient = apiClient.useDPoP()
-        } else {
-            authClient = apiClient
-        }
-        
         var instance = CredentialsManagerHandler.credentialsManager ??
-        self.createCredentialManager(authClient, arguments)
+        self.createCredentialManager(apiClient, arguments)
 
         if let localAuthenticationDictionary = arguments[LocalAuthentication.key] as? [String: String?] {
             let localAuthentication = LocalAuthentication(from: localAuthenticationDictionary)
@@ -96,7 +81,6 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         }
 
         CredentialsManagerHandler.credentialsManager = instance
-        CredentialsManagerHandler.cachedUseDPoP = useDPoP
         return instance
     }
 
@@ -126,7 +110,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
             return result(FlutterMethodNotImplemented)
         }
 
-        let apiClient = apiClientProvider(account, userAgent)
+        let apiClient = apiClientProvider(account, userAgent, arguments)
         let credentialsManager = credentialsManagerProvider(apiClient, arguments)
         let methodHandler = methodHandlerProvider(method, credentialsManager)
         methodHandler.handle(with: arguments, callback: result)

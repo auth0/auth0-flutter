@@ -114,9 +114,6 @@ class SpyPluginRegistrar: NSObject, FlutterPluginRegistrar {
 
     func addApplicationDelegate(_ delegate: FlutterPlugin) {}
 
-    @available(iOS 13.0, *)
-    func addSceneDelegate(_ delegate: any FlutterSceneLifeCycleDelegate) {}
-
     func register(_ factory: FlutterPlatformViewFactory,
                   withId: String,
                   gestureRecognizersBlockingPolicy: FlutterPlatformViewGestureRecognizersBlockingPolicy) {}

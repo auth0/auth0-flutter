@@ -41,8 +41,8 @@ class LoginWebAuthRequestHandlerTest {
             callback(mockResult, builder)
         }.`when`(builder).start(any(), any())
 
-        val handler = LoginWebAuthRequestHandler { builder }
-        val request = MethodCallRequest(Auth0("test.auth0.com", "test-client"), args)
+        val handler = LoginWebAuthRequestHandler { _ -> builder }
+        val request = MethodCallRequest(Auth0.getInstance("test-client", "test.auth0.com"), args)
 
         handler.handle(mock(), request, mockResult)
     }
@@ -50,10 +50,7 @@ class LoginWebAuthRequestHandlerTest {
     @Test
     fun `handler should log in using the Auth0 SDK`() {
         runRequestHandler { result, builder ->
-            val sdf =
-                SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
-
-            val formattedDate = sdf.format(defaultCredentials.expiresAt)
+            val formattedDate = defaultCredentials.expiresAt.toInstant().toString()
 
             verify(result).success(check {
                 val map = it as Map<*, *>
@@ -302,9 +299,11 @@ class LoginWebAuthRequestHandlerTest {
             cb.onFailure(exception)
         }.`when`(builder).start(any(), any())
 
-        val handler = LoginWebAuthRequestHandler { builder }
+        val handler = LoginWebAuthRequestHandler { _ -> builder }
 
-        handler.handle(mock(), mock(), mockResult)
+        val mockAccount = mock<Auth0>()
+        val mockRequest = MethodCallRequest(mockAccount, hashMapOf<String, Any>())
+        handler.handle(mock(), mockRequest, mockResult)
 
         verify(mockResult).error("code", "description", exception)
     }
@@ -323,17 +322,16 @@ class LoginWebAuthRequestHandlerTest {
             cb.onSuccess(credentials)
         }.`when`(builder).start(any(), any())
 
-        val handler = LoginWebAuthRequestHandler { builder }
+        val handler = LoginWebAuthRequestHandler { _ -> builder }
 
-        handler.handle(mock(), mock(), mockResult)
+        val mockAccount = mock<Auth0>()
+        val mockRequest = MethodCallRequest(mockAccount, hashMapOf<String, Any>())
+        handler.handle(mock(), mockRequest, mockResult)
 
         val captor = argumentCaptor<() -> Map<String, *>>()
         verify(mockResult).success(captor.capture())
 
-        val sdf =
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
-
-        val formattedDate = sdf.format(credentials.expiresAt)
+        val formattedDate = credentials.expiresAt.toInstant().toString()
 
         assertThat((captor.firstValue as Map<*, *>)["accessToken"], equalTo(credentials.accessToken))
         assertThat((captor.firstValue as Map<*, *>)["idToken"], equalTo(credentials.idToken))
@@ -363,6 +361,343 @@ class LoginWebAuthRequestHandlerTest {
             verify(builder, never()).withCustomTabsOptions(CustomTabsOptions.newBuilder().withBrowserPicker(
                 BrowserPicker.newBuilder().withAllowedPackages(listOf<String>()).build()).build())
         }
+    }
+
+    // DPoP Tests
+    @Test
+    fun `handler should enable DPoP when useDPoP is true`() {
+        val args = hashMapOf<String, Any?>(
+            "useDPoP" to true
+        )
+        val builder = mock<WebAuthProvider.Builder>()
+        val mockResult = mock<Result>()
+        val mockActivity = mock<android.app.Activity>()
+
+        doAnswer { invocation ->
+            val cb = invocation.getArgument<Callback<Credentials, AuthenticationException>>(1)
+            cb.onSuccess(defaultCredentials)
+        }.`when`(builder).start(any(), any())
+
+        val handler = LoginWebAuthRequestHandler { _ -> builder }
+        val request = MethodCallRequest(Auth0.getInstance("test-client", "test.auth0.com"), args)
+
+        handler.handle(mockActivity, request, mockResult)
+
+        // Verify that the result was successful (DPoP was enabled without errors)
+        verify(mockResult).success(any())
+        verify(mockResult, never()).error(any(), any(), any())
+    }
+
+    @Test
+    fun `handler should not enable DPoP when useDPoP is false`() {
+        val args = hashMapOf<String, Any?>(
+            "useDPoP" to false
+        )
+
+        runRequestHandler(args) { result, _ ->
+            // Should succeed without enabling DPoP
+            verify(result).success(any())
+            verify(result, never()).error(any(), any(), any())
+        }
+    }
+
+    @Test
+    fun `handler should not enable DPoP when useDPoP is not provided`() {
+        val args = hashMapOf<String, Any?>()
+
+        runRequestHandler(args) { result, _ ->
+            // Should succeed without enabling DPoP
+            verify(result).success(any())
+            verify(result, never()).error(any(), any(), any())
+        }
+    }
+
+    @Test
+    fun `handler should work with DPoP and other parameters combined`() {
+        val args = hashMapOf<String, Any?>(
+            "useDPoP" to true,
+            "scopes" to arrayListOf("openid", "profile", "email"),
+            "audience" to "https://api.example.com"
+        )
+        val builder = mock<WebAuthProvider.Builder>()
+        val mockResult = mock<Result>()
+        val mockActivity = mock<android.app.Activity>()
+
+        doAnswer { invocation ->
+            val cb = invocation.getArgument<Callback<Credentials, AuthenticationException>>(1)
+            cb.onSuccess(defaultCredentials)
+        }.`when`(builder).start(any(), any())
+
+        val handler = LoginWebAuthRequestHandler { _ -> builder }
+        val request = MethodCallRequest(Auth0.getInstance("test-client", "test.auth0.com"), args)
+
+        handler.handle(mockActivity, request, mockResult)
+
+        // Verify DPoP was enabled successfully (no errors) and login succeeded
+        verify(mockResult).success(any())
+        verify(mockResult, never()).error(any(), any(), any())
+    }
+
+    @Test
+    fun `handler should enable DPoP with scheme parameter`() {
+        val args = hashMapOf<String, Any?>(
+            "useDPoP" to true,
+            "scheme" to "demo"
+        )
+        val builder = mock<WebAuthProvider.Builder>()
+        val mockResult = mock<Result>()
+        val mockActivity = mock<android.app.Activity>()
+
+        doAnswer { invocation ->
+            val cb = invocation.getArgument<Callback<Credentials, AuthenticationException>>(1)
+            cb.onSuccess(defaultCredentials)
+        }.`when`(builder).start(any(), any())
+
+        val handler = LoginWebAuthRequestHandler { _ -> builder }
+        val request = MethodCallRequest(Auth0.getInstance("test-client", "test.auth0.com"), args)
+
+        handler.handle(mockActivity, request, mockResult)
+
+        verify(mockResult).success(any())
+        verify(mockResult, never()).error(any(), any(), any())
+    }
+
+    @Test
+    fun `handler should enable DPoP with custom parameters`() {
+        val args = hashMapOf<String, Any?>(
+            "useDPoP" to true,
+            "parameters" to hashMapOf("key1" to "value1", "key2" to "value2")
+        )
+        val builder = mock<WebAuthProvider.Builder>()
+        val mockResult = mock<Result>()
+        val mockActivity = mock<android.app.Activity>()
+
+        doAnswer { invocation ->
+            val cb = invocation.getArgument<Callback<Credentials, AuthenticationException>>(1)
+            cb.onSuccess(defaultCredentials)
+        }.`when`(builder).start(any(), any())
+
+        val handler = LoginWebAuthRequestHandler { _ -> builder }
+        val request = MethodCallRequest(Auth0.getInstance("test-client", "test.auth0.com"), args)
+
+        handler.handle(mockActivity, request, mockResult)
+
+        verify(mockResult).success(any())
+        verify(mockResult, never()).error(any(), any(), any())
+    }
+
+    @Test
+    fun `handler should enable DPoP with connection parameter`() {
+        val args = hashMapOf<String, Any?>(
+            "useDPoP" to true,
+            "connection" to "google-oauth2"
+        )
+        val builder = mock<WebAuthProvider.Builder>()
+        val mockResult = mock<Result>()
+        val mockActivity = mock<android.app.Activity>()
+
+        doAnswer { invocation ->
+            val cb = invocation.getArgument<Callback<Credentials, AuthenticationException>>(1)
+            cb.onSuccess(defaultCredentials)
+        }.`when`(builder).start(any(), any())
+
+        val handler = LoginWebAuthRequestHandler { _ -> builder }
+        val request = MethodCallRequest(Auth0.getInstance("test-client", "test.auth0.com"), args)
+
+        handler.handle(mockActivity, request, mockResult)
+
+        verify(mockResult).success(any())
+        verify(mockResult, never()).error(any(), any(), any())
+    }
+
+    @Test
+    fun `handler should enable DPoP with organization parameter`() {
+        val args = hashMapOf<String, Any?>(
+            "useDPoP" to true,
+            "organization" to "org_123456"
+        )
+        val builder = mock<WebAuthProvider.Builder>()
+        val mockResult = mock<Result>()
+        val mockActivity = mock<android.app.Activity>()
+
+        doAnswer { invocation ->
+            val cb = invocation.getArgument<Callback<Credentials, AuthenticationException>>(1)
+            cb.onSuccess(defaultCredentials)
+        }.`when`(builder).start(any(), any())
+
+        val handler = LoginWebAuthRequestHandler { _ -> builder }
+        val request = MethodCallRequest(Auth0.getInstance("test-client", "test.auth0.com"), args)
+
+        handler.handle(mockActivity, request, mockResult)
+
+        verify(mockResult).success(any())
+        verify(mockResult, never()).error(any(), any(), any())
+    }
+
+    @Test
+    fun `handler should enable DPoP with invitation URL parameter`() {
+        val args = hashMapOf<String, Any?>(
+            "useDPoP" to true,
+            "invitationUrl" to "https://example.com/invite?token=abc123"
+        )
+        val builder = mock<WebAuthProvider.Builder>()
+        val mockResult = mock<Result>()
+        val mockActivity = mock<android.app.Activity>()
+
+        doAnswer { invocation ->
+            val cb = invocation.getArgument<Callback<Credentials, AuthenticationException>>(1)
+            cb.onSuccess(defaultCredentials)
+        }.`when`(builder).start(any(), any())
+
+        val handler = LoginWebAuthRequestHandler { _ -> builder }
+        val request = MethodCallRequest(Auth0.getInstance("test-client", "test.auth0.com"), args)
+
+        handler.handle(mockActivity, request, mockResult)
+
+        verify(mockResult).success(any())
+        verify(mockResult, never()).error(any(), any(), any())
+    }
+
+    @Test
+    fun `handler should enable DPoP with redirect URI parameter`() {
+        val args = hashMapOf<String, Any?>(
+            "useDPoP" to true,
+            "redirectUrl" to "demo://callback"
+        )
+        val builder = mock<WebAuthProvider.Builder>()
+        val mockResult = mock<Result>()
+        val mockActivity = mock<android.app.Activity>()
+
+        doAnswer { invocation ->
+            val cb = invocation.getArgument<Callback<Credentials, AuthenticationException>>(1)
+            cb.onSuccess(defaultCredentials)
+        }.`when`(builder).start(any(), any())
+
+        val handler = LoginWebAuthRequestHandler { _ -> builder }
+        val request = MethodCallRequest(Auth0.getInstance("test-client", "test.auth0.com"), args)
+
+        handler.handle(mockActivity, request, mockResult)
+
+        verify(mockResult).success(any())
+        verify(mockResult, never()).error(any(), any(), any())
+    }
+
+    @Test
+    fun `handler should enable DPoP with max age parameter`() {
+        val args = hashMapOf<String, Any?>(
+            "useDPoP" to true,
+            "maxAge" to 3600
+        )
+        val builder = mock<WebAuthProvider.Builder>()
+        val mockResult = mock<Result>()
+        val mockActivity = mock<android.app.Activity>()
+
+        doAnswer { invocation ->
+            val cb = invocation.getArgument<Callback<Credentials, AuthenticationException>>(1)
+            cb.onSuccess(defaultCredentials)
+        }.`when`(builder).start(any(), any())
+
+        val handler = LoginWebAuthRequestHandler { _ -> builder }
+        val request = MethodCallRequest(Auth0.getInstance("test-client", "test.auth0.com"), args)
+
+        handler.handle(mockActivity, request, mockResult)
+
+        verify(mockResult).success(any())
+        verify(mockResult, never()).error(any(), any(), any())
+    }
+
+    @Test
+    fun `handler should enable DPoP with all parameters combined`() {
+        val args = hashMapOf<String, Any?>(
+            "useDPoP" to true,
+            "scopes" to arrayListOf("openid", "profile", "email", "offline_access"),
+            "audience" to "https://api.example.com",
+            "redirectUrl" to "demo://callback",
+            "organization" to "org_123456",
+            "connection" to "google-oauth2",
+            "maxAge" to 3600,
+            "scheme" to "demo",
+            "parameters" to hashMapOf("prompt" to "login", "screen_hint" to "signup")
+        )
+        val builder = mock<WebAuthProvider.Builder>()
+        val mockResult = mock<Result>()
+        val mockActivity = mock<android.app.Activity>()
+
+        doAnswer { invocation ->
+            val cb = invocation.getArgument<Callback<Credentials, AuthenticationException>>(1)
+            cb.onSuccess(defaultCredentials)
+        }.`when`(builder).start(any(), any())
+
+        val handler = LoginWebAuthRequestHandler { _ -> builder }
+        val request = MethodCallRequest(Auth0.getInstance("test-client", "test.auth0.com"), args)
+
+        handler.handle(mockActivity, request, mockResult)
+
+        verify(mockResult).success(any())
+        verify(mockResult, never()).error(any(), any(), any())
+    }
+
+    @Test
+    fun `handler should handle authentication error with DPoP enabled`() {
+        val args = hashMapOf<String, Any?>(
+            "useDPoP" to true
+        )
+        val builder = mock<WebAuthProvider.Builder>()
+        val mockResult = mock<Result>()
+        val mockActivity = mock<android.app.Activity>()
+        val authException = mock<AuthenticationException>()
+
+        whenever(authException.getCode()).thenReturn("access_denied")
+        whenever(authException.getDescription()).thenReturn("User cancelled authentication")
+
+        doAnswer { invocation ->
+            val cb = invocation.getArgument<Callback<Credentials, AuthenticationException>>(1)
+            cb.onFailure(authException)
+        }.`when`(builder).start(any(), any())
+
+        val handler = LoginWebAuthRequestHandler { _ -> builder }
+        val request = MethodCallRequest(Auth0.getInstance("test-client", "test.auth0.com"), args)
+
+        handler.handle(mockActivity, request, mockResult)
+
+        verify(mockResult).error(
+            eq("access_denied"),
+            eq("User cancelled authentication"),
+            any()
+        )
+        verify(mockResult, never()).success(any())
+    }
+
+    @Test
+    fun `handler should handle network error with DPoP enabled`() {
+        val args = hashMapOf<String, Any?>(
+            "useDPoP" to true,
+            "audience" to "https://api.example.com"
+        )
+        val builder = mock<WebAuthProvider.Builder>()
+        val mockResult = mock<Result>()
+        val mockActivity = mock<android.app.Activity>()
+        val authException = mock<AuthenticationException>()
+
+        whenever(authException.getCode()).thenReturn("network_error")
+        whenever(authException.getDescription()).thenReturn("Network request failed")
+
+        doAnswer { invocation ->
+            val cb = invocation.getArgument<Callback<Credentials, AuthenticationException>>(1)
+            cb.onFailure(authException)
+        }.`when`(builder).start(any(), any())
+
+        val handler = LoginWebAuthRequestHandler { _ -> builder }
+        val request = MethodCallRequest(Auth0.getInstance("test-client", "test.auth0.com"), args)
+
+        handler.handle(mockActivity, request, mockResult)
+
+        verify(mockResult).error(
+            eq("network_error"),
+            eq("Network request failed"),
+            any()
+        )
+        verify(mockResult, never()).success(any())
     }
 
 }

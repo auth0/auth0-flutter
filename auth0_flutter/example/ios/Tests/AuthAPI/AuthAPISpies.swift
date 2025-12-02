@@ -4,7 +4,13 @@ fileprivate let mockCredentials = Credentials()
 fileprivate let mockChallenge = Challenge(challengeType: "", oobCode: nil, bindingMethod: nil)
 fileprivate let mockDatabaseUser: DatabaseUser = (email: "", username: nil, verified: true)
 fileprivate let mockUserInfo = UserInfo(json: ["sub": ""])!
-fileprivate let mockSSOCredentials = SSOCredentials()
+fileprivate let mockSSOCredentials = SSOCredentials(
+    sessionTransferToken: "token",
+    issuedTokenType: "type",
+    expiresIn: Date(),
+    idToken: testIdToken,
+    refreshToken: nil
+)
 
 class SpyAuthentication: Authentication {
     let clientId = ""

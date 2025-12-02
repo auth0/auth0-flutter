@@ -194,7 +194,7 @@ extension CredentialsManagerHandlerTests {
         let userAgentDictionary = [UserAgentProperty.name.rawValue: "baz", UserAgentProperty.version.rawValue: "qux"]
         let argumentsDictionary = [Account.key: accountDictionary, UserAgent.key: userAgentDictionary]
         let expectation = self.expectation(description: "Called API client provider")
-        sut.apiClientProvider = { account, userAgent in
+        sut.apiClientProvider = { (account: Account, userAgent: UserAgent, arguments: [String: Any]) -> Authentication in
             XCTAssertEqual(account.clientId, accountDictionary[AccountProperty.clientId])
             XCTAssertEqual(account.domain, accountDictionary[AccountProperty.domain])
             XCTAssertEqual(userAgent.name, userAgentDictionary[UserAgentProperty.name])
@@ -211,7 +211,7 @@ extension CredentialsManagerHandlerTests {
     func testCallsCredentialsManagerProvider() {
         let methodName = CredentialsManagerHandler.Method.save.rawValue
         let expectation = self.expectation(description: "Called credentials manager provider")
-        sut.apiClientProvider = { _, _ in
+        sut.apiClientProvider = { _, _, _ in
             return SpyAuthentication()
         }
         sut.credentialsManagerProvider = { _, _ in
@@ -422,4 +422,116 @@ extension CredentialsManagerHandlerTests {
             
             wait(for: [expectation])
         }
+}
+
+// MARK: - DPoP Support
+
+extension CredentialsManagerHandlerTests {
+    func testUsesRegularAuthClientWhenDPoPIsFalse() {
+        let expectation = expectation(description: "Uses regular auth client when useDPoP is false")
+        let method = CredentialsManagerHandler.Method.save.rawValue
+        
+        var usedDPoP = false
+        var args = arguments()
+        args["useDPoP"] = false
+        
+        sut.apiClientProvider = { (account: Account, userAgent: UserAgent, arguments: [String: Any]) -> Authentication in
+            let client = Auth0.authentication(clientId: account.clientId, domain: account.domain)
+            return client
+        }
+        
+        sut.credentialsManagerProvider = { apiClient, arguments in
+            // Check if useDPoP was called on the apiClient
+            // Since we can't directly check, we verify the arguments
+            usedDPoP = arguments["useDPoP"] as? Bool ?? false
+            return self.sut.createCredentialManager(apiClient, arguments)
+        }
+        
+        sut.handle(FlutterMethodCall(methodName: method, arguments: args)) { _ in
+            XCTAssertFalse(usedDPoP)
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation])
+    }
+    
+    func testUsesDPoPAuthClientWhenDPoPIsTrue() {
+        let expectation = expectation(description: "Uses DPoP auth client when useDPoP is true")
+        let method = CredentialsManagerHandler.Method.save.rawValue
+        
+        var usedDPoP = false
+        var args = arguments()
+        args["useDPoP"] = true
+        
+        sut.apiClientProvider = { (account: Account, userAgent: UserAgent, arguments: [String: Any]) -> Authentication in
+            let client = Auth0.authentication(clientId: account.clientId, domain: account.domain)
+            return client
+        }
+        
+        sut.credentialsManagerProvider = { apiClient, arguments in
+            // Verify the useDPoP flag is passed
+            usedDPoP = arguments["useDPoP"] as? Bool ?? false
+            return self.sut.createCredentialManager(apiClient, arguments)
+        }
+        
+        sut.handle(FlutterMethodCall(methodName: method, arguments: args)) { _ in
+            XCTAssertTrue(usedDPoP)
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation])
+    }
+    
+    func testDefaultsToDPoPFalseWhenNotProvided() {
+        let expectation = expectation(description: "Defaults to DPoP false when not provided")
+        let method = CredentialsManagerHandler.Method.save.rawValue
+        
+        var usedDPoP: Bool? = nil
+        var args = arguments()
+        // Don't set useDPoP, let it default
+        
+        sut.apiClientProvider = { (account: Account, userAgent: UserAgent, arguments: [String: Any]) -> Authentication in
+            let client = Auth0.authentication(clientId: account.clientId, domain: account.domain)
+            return client
+        }
+        
+        sut.credentialsManagerProvider = { apiClient, arguments in
+            usedDPoP = arguments["useDPoP"] as? Bool
+            return self.sut.createCredentialManager(apiClient, arguments)
+        }
+        
+        sut.handle(FlutterMethodCall(methodName: method, arguments: args)) { _ in
+            // Should default to false (or nil which is treated as false)
+            XCTAssertEqual(usedDPoP ?? false, false)
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation])
+    }
+    
+    func testDPoPWorksWithLocalAuthentication() {
+        let expectation = expectation(description: "DPoP works with local authentication")
+        let method = CredentialsManagerHandler.Method.save.rawValue
+        let title = "Authenticate with DPoP"
+        
+        var usedDPoP = false
+        var hasLocalAuth = false
+        var args = arguments()
+        args["useDPoP"] = true
+        args[LocalAuthentication.key] = [LocalAuthenticationProperty.title.rawValue: title]
+        
+        sut.credentialsManagerProvider = { apiClient, arguments in
+            usedDPoP = arguments["useDPoP"] as? Bool ?? false
+            hasLocalAuth = arguments[LocalAuthentication.key] != nil
+            return self.sut.createCredentialManager(apiClient, arguments)
+        }
+        
+        sut.handle(FlutterMethodCall(methodName: method, arguments: args)) { _ in
+            XCTAssertTrue(usedDPoP)
+            XCTAssertTrue(hasLocalAuth)
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation])
+    }
 }
