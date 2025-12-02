@@ -30,6 +30,18 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
     lateinit var activity: Activity
     lateinit var context: Context
 
+    // Cache key components to determine if we need to recreate the manager
+    private data class ManagerCacheKey(
+        val accountDomain: String,
+        val accountClientId: String,
+        val sharedPreferenceName: String?,
+        val useDPoP: Boolean,
+        val hasLocalAuth: Boolean
+    )
+
+    private var cachedManager: SecureCredentialsManager? = null
+    private var cachedKey: ManagerCacheKey? = null
+
     private fun buildLocalAuthenticationOptions(localAuthentication: Map<String, Any>): LocalAuthenticationOptions {
         val builder = LocalAuthenticationOptions.Builder()
         (localAuthentication["title"] as String?)?.let { builder.setTitle(it) }
@@ -69,56 +81,57 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
             val localAuthentication = request.data["localAuthentication"] as Map<String, Any>?
             val useDPoP = request.data["useDPoP"] as? Boolean ?: false
 
-            val credentialsManagerInstance: SecureCredentialsManager
+            // Create cache key to determine if we can reuse existing manager
+            val currentKey = ManagerCacheKey(
+                accountDomain = request.account.domain,
+                accountClientId = request.account.clientId,
+                sharedPreferenceName = sharedPreferenceName,
+                useDPoP = useDPoP,
+                hasLocalAuth = localAuthentication != null
+            )
 
-            if (useDPoP) {
-                // Create an AuthenticationAPIClient with DPoP enabled
-                val apiClient = AuthenticationAPIClient(request.account).useDPoP(context)
+            // Reuse cached manager if configuration hasn't changed
+            val credentialsManagerInstance: SecureCredentialsManager = if (cachedKey == currentKey && cachedManager != null) {
+                cachedManager!!
+            } else {
+                // Configuration changed or no cached manager - create new one
                 
-                if (localAuthentication != null) {
-                    if (activity !is FragmentActivity) {
-                        result.error(
-                            "credentialsManager#fragment-activity-required",
-                            "The Activity must extend FlutterFragmentActivity (not FlutterActivity) for biometric authentication. " +
-                            "Update your MainActivity.kt to extend FlutterFragmentActivity. " +
-                            "See: https://developer.android.com/reference/androidx/fragment/app/FragmentActivity",
-                            null
-                        )
-                        return
-                    }
+                // Validate activity type early if biometric auth is required
+                if (localAuthentication != null && activity !is FragmentActivity) {
+                    result.error(
+                        "credentialsManager#fragment-activity-required",
+                        "The Activity must extend FlutterFragmentActivity (not FlutterActivity) for biometric authentication. " +
+                        "Update your MainActivity.kt to extend FlutterFragmentActivity. " +
+                        "See: https://developer.android.com/reference/androidx/fragment/app/FragmentActivity",
+                        null
+                    )
+                    return
+                }
 
-                    val options = buildLocalAuthenticationOptions(localAuthentication)
-                    credentialsManagerInstance = SecureCredentialsManager(
-                        apiClient, context, request.account, storage, activity, options
+                // Build local authentication options if needed
+                val options = localAuthentication?.let { buildLocalAuthenticationOptions(it) }
+
+                // Create API client and enable DPoP if requested
+                val apiClient = AuthenticationAPIClient(request.account)
+                if (useDPoP) {
+                    apiClient.useDPoP(context)
+                }
+
+                // Create the credentials manager with appropriate constructor
+                val newManager = if (options != null) {
+                    SecureCredentialsManager(
+                        apiClient, context, request.account, storage, activity as FragmentActivity, options
                     )
                 } else {
-                    credentialsManagerInstance = SecureCredentialsManager(
+                    SecureCredentialsManager(
                         apiClient, context, request.account, storage
                     )
                 }
-            } else {
-                // Use default constructors when DPoP is not enabled
-                if (localAuthentication != null) {
-                    if (activity !is FragmentActivity) {
-                        result.error(
-                            "credentialsManager#fragment-activity-required",
-                            "The Activity must extend FlutterFragmentActivity (not FlutterActivity) for biometric authentication. " +
-                            "Update your MainActivity.kt to extend FlutterFragmentActivity. " +
-                            "See: https://developer.android.com/reference/androidx/fragment/app/FragmentActivity",
-                            null
-                        )
-                        return
-                    }
 
-                    val options = buildLocalAuthenticationOptions(localAuthentication)
-                    credentialsManagerInstance = SecureCredentialsManager(
-                        context, request.account, storage, activity, options
-                    )
-                } else {
-                    credentialsManagerInstance = SecureCredentialsManager(
-                        context, request.account, storage
-                    )
-                }
+                // Cache the new manager
+                cachedManager = newManager
+                cachedKey = currentKey
+                newManager
             }
 
             requestHandler.handle(credentialsManagerInstance, context, request, result)

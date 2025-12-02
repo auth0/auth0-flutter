@@ -140,11 +140,11 @@ class _ExampleAppState extends State<ExampleApp> {
         );
 
         // Initialize SDK
-        await auth0WebDPoP.onLoad(audience: 'https://DpopFlutterTest/');
+        await auth0WebDPoP.onLoad(audience: dotenv.env['AUTH0_AUDIENCE']);
 
         // Login with popup
         final credentials = await auth0WebDPoP.loginWithPopup(
-          audience: 'https://DpopFlutterTest/',
+          audience: dotenv.env['AUTH0_AUDIENCE'],
         );
 
         setState(() {
@@ -152,7 +152,7 @@ class _ExampleAppState extends State<ExampleApp> {
         });
 
         output = 'DPoP Login Successful!\n\n'
-            'Token Type: DPoP\n'
+            'Token Type: ${credentials.tokenType}\n'
             'Access Token: ${credentials.accessToken.substring(0, 50)}...\n'
             'ID Token: ${credentials.idToken.substring(0, 50)}...\n'
             'Expires At: ${credentials.expiresAt}';
@@ -163,9 +163,9 @@ class _ExampleAppState extends State<ExampleApp> {
         );
 
         final result = await webAuthDPoP.login(
+          useDPoP: true, // Enable DPoP for mobile
           useHTTPS: true,
-          audience: 'https://DpopFlutterTest/',
-          parameters: {'use_dpop': 'true'}, // Enable DPoP for mobile
+          audience: dotenv.env['AUTH0_AUDIENCE'],
         );
 
         setState(() {
@@ -173,7 +173,7 @@ class _ExampleAppState extends State<ExampleApp> {
         });
 
         output = 'DPoP Login Successful!\n\n'
-            'Token Type: DPoP\n'
+            'Token Type: ${result.tokenType}\n'
             'Access Token: ${result.accessToken.substring(0, 50)}...\n'
             'ID Token: ${result.idToken.substring(0, 50)}...';
       }

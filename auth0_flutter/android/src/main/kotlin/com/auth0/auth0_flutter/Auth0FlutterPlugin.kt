@@ -26,7 +26,7 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   private lateinit var binding: FlutterPlugin.FlutterPluginBinding
   private lateinit var authCallHandler: Auth0FlutterAuthMethodCallHandler
   private val webAuthCallHandler = Auth0FlutterWebAuthMethodCallHandler(listOf(
-    LoginWebAuthRequestHandler(WebAuthProvider),
+    LoginWebAuthRequestHandler(),
     LogoutWebAuthRequestHandler { request: MethodCallRequest -> WebAuthProvider.logout(request.account) },
   ))
   private val credentialsManagerCallHandler = CredentialsManagerMethodCallHandler(listOf(
@@ -60,8 +60,11 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       SignupApiRequestHandler(),
       UserInfoApiRequestHandler(),
       RenewApiRequestHandler(),
-      ResetPasswordApiRequestHandler()
+      ResetPasswordApiRequestHandler(),
+      GetDPoPHeadersApiRequestHandler(context),
+      ClearDPoPKeyApiRequestHandler(context)
     ))
+    authCallHandler.context = context
 
     authMethodChannel = MethodChannel(messenger, "auth0.com/auth0_flutter/auth")
     authMethodChannel.setMethodCallHandler(authCallHandler)

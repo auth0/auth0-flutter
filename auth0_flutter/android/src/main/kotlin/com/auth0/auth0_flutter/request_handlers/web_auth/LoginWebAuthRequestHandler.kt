@@ -13,7 +13,7 @@ import io.flutter.plugin.common.MethodChannel
 import java.util.*
 
 class LoginWebAuthRequestHandler(
-    private val webAuthProvider: WebAuthProvider = WebAuthProvider
+    private val builderProvider: (com.auth0.android.Auth0) -> WebAuthProvider.Builder = { account -> WebAuthProvider.login(account) }
 ) : WebAuthRequestHandler {
     override val method: String = "webAuth#login"
 
@@ -22,7 +22,7 @@ class LoginWebAuthRequestHandler(
         request: MethodCallRequest,
         result: MethodChannel.Result
     ) {
-        val builder = webAuthProvider.login(request.account)
+        val builder = builderProvider(request.account)
         val args = request.data
         val scopes = (args["scopes"] ?: arrayListOf<String>()) as ArrayList<*>
 
@@ -76,16 +76,7 @@ class LoginWebAuthRequestHandler(
 
         // Enable DPoP if requested - Available in Auth0.Android SDK 3.9.0+
         if (args["useDPoP"] == true) {
-            try {
-                webAuthProvider.useDPoP(context)
-            } catch (e: Exception) {
-                result.error(
-                    "dpop-configuration-error",
-                    "Failed to enable DPoP: ${e.message}",
-                    null
-                )
-                return
-            }
+            WebAuthProvider.useDPoP(context)
         }
 
         builder.start(context, object : Callback<Credentials, AuthenticationException> {
