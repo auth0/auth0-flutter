@@ -30,7 +30,7 @@ extension CredentialsManagerGetMethodHandlerTests {
                 currentExpectation.fulfill()
             }
         }
-        wait(for: expectations)
+        wait(for: expectations, timeout: 5.0)
     }
 }
 
@@ -55,7 +55,7 @@ extension CredentialsManagerGetMethodHandlerTests {
             XCTAssertEqual(self.spyAuthentication.arguments["scope"] as? String, value.asSpaceSeparatedString)
             expectation.fulfill()
         }
-        wait(for: [expectation])
+        wait(for: [expectation], timeout: 5.0)
     }
 
     func testAddsNilScopeWhenEmpty() {
@@ -72,7 +72,7 @@ extension CredentialsManagerGetMethodHandlerTests {
             XCTAssertNil(self.spyAuthentication.arguments["scope"] as? String)
             expectation.fulfill()
         }
-        wait(for: [expectation])
+        wait(for: [expectation], timeout: 5.0)
     }
 }
 
@@ -85,7 +85,7 @@ extension CredentialsManagerGetMethodHandlerTests {
             XCTAssertTrue(self.spyStorage.calledGetEntry)
             expectation.fulfill()
         }
-        wait(for: [expectation])
+        wait(for: [expectation], timeout: 5.0)
     }
 
     func testProducesCredentials() {
@@ -102,7 +102,7 @@ extension CredentialsManagerGetMethodHandlerTests {
             assert(result: result, has: CredentialsProperty.allCases)
             expectation.fulfill()
         }
-        wait(for: [expectation])
+        wait(for: [expectation], timeout: 5.0)
     }
 
     func testProducesCredentialsManagerError() {
@@ -113,7 +113,7 @@ extension CredentialsManagerGetMethodHandlerTests {
             assert(result: result, isError: error)
             expectation.fulfill()
         }
-        wait(for: [expectation])
+        wait(for: [expectation], timeout: 5.0)
     }
 }
 
