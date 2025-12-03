@@ -27,7 +27,7 @@ extension AuthAPIRenewMethodHandlerTests {
                 currentExpectation.fulfill()
             }
         }
-        wait(for: expectations)
+        wait(for: expectations, timeout: 5.0)
     }
 }
 
@@ -42,7 +42,7 @@ extension AuthAPIRenewMethodHandlerTests {
             assert(result: result, isError: .idTokenDecodingFailed)
             expectation.fulfill()
         }
-        wait(for: [expectation])
+        wait(for: [expectation], timeout: 5.0)
     }
 }
 
@@ -55,7 +55,11 @@ extension AuthAPIRenewMethodHandlerTests {
     func testAddsAccessToken() {
         let key = Argument.refreshToken
         let value = "foo"
-        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
+        let expectation = self.expectation(description: "Handler completes")
+        sut.handle(with: arguments(withKey: key, value: value)) { _ in
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 5.0)
         XCTAssertEqual(spy.arguments[key] as? String, value)
     }
 
@@ -63,12 +67,20 @@ extension AuthAPIRenewMethodHandlerTests {
 
     func testAddsScopes() {
         let value = ["foo", "bar"]
-        sut.handle(with: arguments(withKey: Argument.scopes, value: value)) { _ in }
+        let expectation = self.expectation(description: "Handler completes")
+        sut.handle(with: arguments(withKey: Argument.scopes, value: value)) { _ in
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 5.0)
         XCTAssertEqual(spy.arguments["scope"] as? String, value.asSpaceSeparatedString)
     }
 
     func testDoesNotAddScopesWhenEmpty() {
-        sut.handle(with: arguments(withKey: Argument.scopes, value:  [])) { _ in }
+        let expectation = self.expectation(description: "Handler completes")
+        sut.handle(with: arguments(withKey: Argument.scopes, value:  [])) { _ in
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 5.0)
         XCTAssertNil(spy.arguments["scope"])
     }
 }
@@ -77,7 +89,11 @@ extension AuthAPIRenewMethodHandlerTests {
 
 extension AuthAPIRenewMethodHandlerTests {
     func testCallsSDKRenewMethod() {
-        sut.handle(with: arguments()) { _ in }
+        let expectation = self.expectation(description: "Handler completes")
+        sut.handle(with: arguments()) { _ in
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 5.0)
         XCTAssertTrue(spy.calledRenew)
     }
 
@@ -94,7 +110,7 @@ extension AuthAPIRenewMethodHandlerTests {
             assert(result: result, has: CredentialsProperty.allCases)
             expectation.fulfill()
         }
-        wait(for: [expectation])
+        wait(for: [expectation], timeout: 5.0)
     }
 
     func testProducesAuthenticationError() {
@@ -105,7 +121,7 @@ extension AuthAPIRenewMethodHandlerTests {
             assert(result: result, isError: error)
             expectation.fulfill()
         }
-        wait(for: [expectation])
+        wait(for: [expectation], timeout: 5.0)
     }
 }
 
