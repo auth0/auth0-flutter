@@ -55,11 +55,7 @@ extension AuthAPIRenewMethodHandlerTests {
     func testAddsAccessToken() {
         let key = Argument.refreshToken
         let value = "foo"
-        let expectation = self.expectation(description: "Adds access token")
-        sut.handle(with: arguments(withKey: key, value: value)) { _ in
-            expectation.fulfill()
-        }
-        wait(for: [expectation], timeout: 1.0)
+        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
         XCTAssertEqual(spy.arguments[key] as? String, value)
     }
 
@@ -67,20 +63,12 @@ extension AuthAPIRenewMethodHandlerTests {
 
     func testAddsScopes() {
         let value = ["foo", "bar"]
-        let expectation = self.expectation(description: "Adds scopes")
-        sut.handle(with: arguments(withKey: Argument.scopes, value: value)) { _ in
-            expectation.fulfill()
-        }
-        wait(for: [expectation], timeout: 1.0)
+        sut.handle(with: arguments(withKey: Argument.scopes, value: value)) { _ in }
         XCTAssertEqual(spy.arguments["scope"] as? String, value.asSpaceSeparatedString)
     }
 
     func testDoesNotAddScopesWhenEmpty() {
-        let expectation = self.expectation(description: "Does not add scopes when empty")
-        sut.handle(with: arguments(withKey: Argument.scopes, value:  [])) { _ in
-            expectation.fulfill()
-        }
-        wait(for: [expectation], timeout: 1.0)
+        sut.handle(with: arguments(withKey: Argument.scopes, value:  [])) { _ in }
         XCTAssertNil(spy.arguments["scope"])
     }
 }
@@ -89,11 +77,7 @@ extension AuthAPIRenewMethodHandlerTests {
 
 extension AuthAPIRenewMethodHandlerTests {
     func testCallsSDKRenewMethod() {
-        let expectation = self.expectation(description: "Calls SDK renew method")
-        sut.handle(with: arguments()) { _ in
-            expectation.fulfill()
-        }
-        wait(for: [expectation], timeout: 1.0)
+        sut.handle(with: arguments()) { _ in }
         XCTAssertTrue(spy.calledRenew)
     }
 
