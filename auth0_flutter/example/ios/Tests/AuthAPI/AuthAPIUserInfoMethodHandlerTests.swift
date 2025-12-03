@@ -40,12 +40,12 @@ extension AuthAPIUserInfoMethodHandlerTests {
     func testAddsAccessToken() {
         let key = Argument.accessToken
         let value = "foo"
-        let expectation = self.expectation(description: "Handler completes")
+        let expectation = self.expectation(description: "Adds access token")
         sut.handle(with: arguments(withKey: key, value: value)) { _ in
-            XCTAssertEqual(self.spy.arguments[key] as? String, value)
             expectation.fulfill()
         }
-        wait(for: [expectation], timeout: 2.0)
+        wait(for: [expectation], timeout: 1.0)
+        XCTAssertEqual(spy.arguments[key] as? String, value)
     }
 }
 
@@ -55,10 +55,10 @@ extension AuthAPIUserInfoMethodHandlerTests {
     func testCallsSDKUserInfoMethod() {
         let expectation = self.expectation(description: "Calls SDK userInfo method")
         sut.handle(with: arguments()) { _ in
-            XCTAssertTrue(self.spy.calledUserInfo)
             expectation.fulfill()
         }
-        wait(for: [expectation], timeout: 2.0)
+        wait(for: [expectation], timeout: 1.0)
+        XCTAssertTrue(spy.calledUserInfo)
     }
 
     func testProducesUserProfile() {
