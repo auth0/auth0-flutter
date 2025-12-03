@@ -6,15 +6,13 @@ import Flutter
 import FlutterMacOS
 #endif
 
-struct AuthAPIGetDPoPHeadersMethodHandler: MethodHandler {
+struct DPoPGetHeadersMethodHandler: MethodHandler {
     enum Argument: String {
         case url
         case method
         case accessToken
         case tokenType
     }
-
-    let client: Authentication
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
         guard let urlString = arguments[Argument.url] as? String,

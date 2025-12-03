@@ -1,7 +1,5 @@
 package com.auth0.auth0_flutter.request_handlers.api
 
-import android.content.Context
-import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.dpop.DPoP
 import com.auth0.android.dpop.DPoPException
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
@@ -13,11 +11,10 @@ private const val AUTH_CLEAR_DPOP_KEY_METHOD = "auth#clearDPoPKey"
  * Handles clearDPoPKey method call. Uses the DPoP utility class directly
  * to clear the stored DPoP key pair, matching the approach used in React Native Auth0.
  */
-class ClearDPoPKeyApiRequestHandler(private val context: Context) : ApiRequestHandler {
+class ClearDPoPKeyApiRequestHandler : UtilityRequestHandler {
     override val method: String = AUTH_CLEAR_DPOP_KEY_METHOD
 
     override fun handle(
-        api: AuthenticationAPIClient,
         request: MethodCallRequest,
         result: MethodChannel.Result
     ) {

@@ -6,9 +6,7 @@ import Flutter
 import FlutterMacOS
 #endif
 
-struct AuthAPIClearDPoPKeyMethodHandler: MethodHandler {
-    let client: Authentication
-
+struct DPoPClearKeyMethodHandler: MethodHandler {
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
         // Clear the DPoP key pair from the keychain using the static DPoP.clearKeypair method
         do {

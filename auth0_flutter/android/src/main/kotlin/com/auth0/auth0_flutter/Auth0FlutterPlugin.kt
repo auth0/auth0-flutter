@@ -36,6 +36,10 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     HasValidCredentialsRequestHandler(),
     ClearCredentialsRequestHandler()
   ))
+  private val dpopCallHandler = Auth0FlutterDPoPMethodCallHandler(listOf(
+    GetDPoPHeadersApiRequestHandler(),
+    ClearDPoPKeyApiRequestHandler()
+  ))
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     binding = flutterPluginBinding
@@ -49,25 +53,28 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     credentialsManagerMethodChannel.setMethodCallHandler(credentialsManagerCallHandler)
     credentialsManagerCallHandler.context = context
 
-    authCallHandler = Auth0FlutterAuthMethodCallHandler(listOf(
-      LoginApiRequestHandler(),
-      LoginWithOtpApiRequestHandler(),
-      MultifactorChallengeApiRequestHandler(),
-      EmailPasswordlessApiRequestHandler(),
-      PhoneNumberPasswordlessApiRequestHandler(),
-      LoginWithEmailCodeApiRequestHandler(),
-      LoginWithSMSCodeApiRequestHandler(),
-      SignupApiRequestHandler(),
-      UserInfoApiRequestHandler(),
-      RenewApiRequestHandler(),
-      ResetPasswordApiRequestHandler(),
-      GetDPoPHeadersApiRequestHandler(context),
-      ClearDPoPKeyApiRequestHandler(context)
-    ))
+    authCallHandler = Auth0FlutterAuthMethodCallHandler(
+      listOf(
+        LoginApiRequestHandler(),
+        LoginWithOtpApiRequestHandler(),
+        MultifactorChallengeApiRequestHandler(),
+        EmailPasswordlessApiRequestHandler(),
+        PhoneNumberPasswordlessApiRequestHandler(),
+        LoginWithEmailCodeApiRequestHandler(),
+        LoginWithSMSCodeApiRequestHandler(),
+        SignupApiRequestHandler(),
+        UserInfoApiRequestHandler(),
+        RenewApiRequestHandler(),
+        ResetPasswordApiRequestHandler()
+      )
+    )
     authCallHandler.context = context
 
     authMethodChannel = MethodChannel(messenger, "auth0.com/auth0_flutter/auth")
-    authMethodChannel.setMethodCallHandler(authCallHandler)
+    // Create a composite handler that delegates to either DPoP or Auth handlers
+    authMethodChannel.setMethodCallHandler(
+      Auth0FlutterCompositeMethodCallHandler(dpopCallHandler, authCallHandler)
+    )
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result) {}

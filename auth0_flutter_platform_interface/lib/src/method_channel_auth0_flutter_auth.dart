@@ -20,6 +20,8 @@ import 'request/request_options.dart';
 import 'user_profile.dart';
 
 const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter/auth');
+
+// Authentication API methods
 const String authLoginMethod = 'auth#login';
 const String authLoginWithOtpMethod = 'auth#loginOtp';
 const String authMultifactorChallengeMethod = 'auth#multifactorChallenge';
@@ -33,6 +35,8 @@ const String authUserInfoMethod = 'auth#userInfo';
 const String authSignUpMethod = 'auth#signUp';
 const String authRenewMethod = 'auth#renew';
 const String authResetPasswordMethod = 'auth#resetPassword';
+
+// DPoP utility methods
 const String authGetDPoPHeadersMethod = 'auth#getDPoPHeaders';
 const String authClearDPoPKeyMethod = 'auth#clearDPoPKey';
 

@@ -8,7 +8,7 @@ This release includes updates to the underlying native Auth0 SDKs to support new
 
 | Platform | Previous Version | New Version | Changes |
 |----------|-----------------|-------------|---------|
-| **Android** | Auth0.Android 2.11.0 | Auth0.Android 3.11.0 | DPoP support, enhanced security |
+| **Android** | Auth0.Android 2.11.0 | Auth0.Android 3.11.0 | DPoP support, **biometric auth requires FlutterFragmentActivity** |
 | **iOS/macOS** | Auth0.swift 2.10.0 | Auth0.swift 2.14.0 | DPoP support, improved APIs |
 | **Web** | auth0-spa-js 2.0 | auth0-spa-js 2.9.0 | DPoP support, bug fixes |
 
@@ -32,7 +32,38 @@ For complete DPoP documentation, see the [README](README.md#using-dpop-demonstra
 
 ### Do I Need to Make Changes?
 
-**No code changes are required** for existing functionality. The SDK updates are backward compatible.
+**Most users do not need to make changes.** However, there is one breaking change that affects users of biometric authentication on Android.
+
+#### ⚠️ Breaking Change: Android Biometric Authentication
+
+**If you use biometric authentication on Android**, your `MainActivity.kt` must now extend `FlutterFragmentActivity` instead of `FlutterActivity`.
+
+This requirement comes from Auth0.Android SDK 3.x, which changed its biometric authentication implementation.
+
+**Who is affected:**
+- ✅ Users who call `credentialsManager.credentials()` with `localAuthentication` parameter
+- ✅ Only on Android platform
+- ✅ Only if your `MainActivity.kt` currently extends `FlutterActivity`
+
+**Required change:**
+
+```kotlin
+// Before (will cause error)
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity: FlutterActivity() {
+}
+
+// After (required for biometric auth)
+import io.flutter.embedding.android.FlutterFragmentActivity
+
+class MainActivity: FlutterFragmentActivity() {
+}
+```
+
+**If you don't use biometric authentication,** no changes are needed.
+
+#### Optional New Features
 
 You only need to make changes if you want to:
 - ✅ Enable DPoP for enhanced security (optional)
