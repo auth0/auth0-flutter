@@ -55,21 +55,33 @@ extension AuthAPIRenewMethodHandlerTests {
     func testAddsAccessToken() {
         let key = Argument.refreshToken
         let value = "foo"
-        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
-        XCTAssertEqual(spy.arguments[key] as? String, value)
+        let expectation = self.expectation(description: "Handler completes")
+        sut.handle(with: arguments(withKey: key, value: value)) { _ in
+            XCTAssertEqual(self.spy.arguments[key] as? String, value)
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 2.0)
     }
 
     // MARK: scopes
 
     func testAddsScopes() {
         let value = ["foo", "bar"]
-        sut.handle(with: arguments(withKey: Argument.scopes, value: value)) { _ in }
-        XCTAssertEqual(spy.arguments["scope"] as? String, value.asSpaceSeparatedString)
+        let expectation = self.expectation(description: "Handler completes")
+        sut.handle(with: arguments(withKey: Argument.scopes, value: value)) { _ in
+            XCTAssertEqual(self.spy.arguments["scope"] as? String, value.asSpaceSeparatedString)
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 2.0)
     }
 
     func testDoesNotAddScopesWhenEmpty() {
-        sut.handle(with: arguments(withKey: Argument.scopes, value:  [])) { _ in }
-        XCTAssertNil(spy.arguments["scope"])
+        let expectation = self.expectation(description: "Handler completes")
+        sut.handle(with: arguments(withKey: Argument.scopes, value:  [])) { _ in
+            XCTAssertNil(self.spy.arguments["scope"])
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 2.0)
     }
 }
 
@@ -77,8 +89,12 @@ extension AuthAPIRenewMethodHandlerTests {
 
 extension AuthAPIRenewMethodHandlerTests {
     func testCallsSDKRenewMethod() {
-        sut.handle(with: arguments()) { _ in }
-        XCTAssertTrue(spy.calledRenew)
+        let expectation = self.expectation(description: "Calls SDK renew method")
+        sut.handle(with: arguments()) { _ in
+            XCTAssertTrue(self.spy.calledRenew)
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 2.0)
     }
 
     func testProducesCredentials() {
