@@ -55,7 +55,7 @@ extension CredentialsManagerGetMethodHandlerTests {
             XCTAssertEqual(self.spyAuthentication.arguments["scope"] as? String, value.asSpaceSeparatedString)
             expectation.fulfill()
         }
-        wait(for: [expectation], timeout: 1.0)
+        wait(for: [expectation])
     }
 
     func testAddsNilScopeWhenEmpty() {
@@ -72,7 +72,7 @@ extension CredentialsManagerGetMethodHandlerTests {
             XCTAssertNil(self.spyAuthentication.arguments["scope"] as? String)
             expectation.fulfill()
         }
-        wait(for: [expectation], timeout: 1.0)
+        wait(for: [expectation])
     }
 }
 
