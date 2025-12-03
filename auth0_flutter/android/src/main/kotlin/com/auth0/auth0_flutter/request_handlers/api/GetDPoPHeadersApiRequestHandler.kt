@@ -1,7 +1,5 @@
 package com.auth0.auth0_flutter.request_handlers.api
 
-import android.content.Context
-import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.dpop.DPoP
 import com.auth0.android.dpop.DPoPException
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
@@ -13,11 +11,10 @@ private const val AUTH_GET_DPOP_HEADERS_METHOD = "auth#getDPoPHeaders"
  * Handles getDPoPHeaders method call. Uses the DPoP utility class directly
  * to generate DPoP proof headers, matching the approach used in React Native Auth0.
  */
-class GetDPoPHeadersApiRequestHandler(private val context: Context) : ApiRequestHandler {
+class GetDPoPHeadersApiRequestHandler : UtilityRequestHandler {
     override val method: String = AUTH_GET_DPOP_HEADERS_METHOD
 
     override fun handle(
-        api: AuthenticationAPIClient,
         request: MethodCallRequest,
         result: MethodChannel.Result
     ) {
