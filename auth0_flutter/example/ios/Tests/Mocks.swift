@@ -113,7 +113,7 @@ class SpyPluginRegistrar: NSObject, FlutterPluginRegistrar {
     }
 
     func addApplicationDelegate(_ delegate: FlutterPlugin) {}
-
+    func addSceneDelegate(_ delegate: any FlutterSceneLifeCycleDelegate) {}
     func register(_ factory: FlutterPlatformViewFactory,
                   withId: String,
                   gestureRecognizersBlockingPolicy: FlutterPlatformViewGestureRecognizersBlockingPolicy) {}
