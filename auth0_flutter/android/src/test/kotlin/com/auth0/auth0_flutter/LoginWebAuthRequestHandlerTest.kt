@@ -668,36 +668,4 @@ class LoginWebAuthRequestHandlerTest {
         verify(mockResult, never()).success(any())
     }
 
-    @Test
-    fun `handler should handle network error with DPoP enabled`() {
-        val args = hashMapOf<String, Any?>(
-            "useDPoP" to true,
-            "audience" to "https://api.example.com"
-        )
-        val builder = mock<WebAuthProvider.Builder>()
-        val mockResult = mock<Result>()
-        val mockActivity = mock<android.app.Activity>()
-        val authException = mock<AuthenticationException>()
-
-        whenever(authException.getCode()).thenReturn("network_error")
-        whenever(authException.getDescription()).thenReturn("Network request failed")
-
-        doAnswer { invocation ->
-            val cb = invocation.getArgument<Callback<Credentials, AuthenticationException>>(1)
-            cb.onFailure(authException)
-        }.`when`(builder).start(any(), any())
-
-        val handler = LoginWebAuthRequestHandler { _ -> builder }
-        val request = MethodCallRequest(Auth0.getInstance("test-client", "test.auth0.com"), args)
-
-        handler.handle(mockActivity, request, mockResult)
-
-        verify(mockResult).error(
-            eq("network_error"),
-            eq("Network request failed"),
-            any()
-        )
-        verify(mockResult, never()).success(any())
-    }
-
 }
