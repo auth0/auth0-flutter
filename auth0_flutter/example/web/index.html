@@ -39,43 +39,59 @@
   <!-- This script adds the flutter initialization JS code -->
   <script src="flutter_bootstrap.js" async></script>
   
-  <!-- Load Auth0 SPA JS SDK v2.9.0 from unpkg CDN (more reliable) -->
-  <script src="https://unpkg.com/@auth0/auth0-spa-js@2.9.0/dist/auth0-spa-js.production.js"></script>
+  <!-- Load Auth0 SPA JS SDK v2.9.0 from unpkg CDN -->
   <script>
-    console.log('Auth0 SDK script tag loaded, checking for window.auth0...');
-    // Wait for Auth0 SDK to be available before starting Flutter
-    window.auth0SdkReady = new Promise((resolve) => {
-      if (window.auth0 && window.auth0.Auth0Client) {
-        console.log('✓ Auth0 SDK loaded successfully (immediate)');
-        console.log('window.auth0:', window.auth0);
-        resolve();
-      } else {
-        console.log('Waiting for Auth0 SDK to load...');
-        console.log('Current window.auth0:', window.auth0);
-        
-        let attempts = 0;
-        const checkAuth0 = setInterval(() => {
-          attempts++;
-          if (window.auth0 && window.auth0.Auth0Client) {
-            console.log(`✓ Auth0 SDK loaded after ${attempts * 50}ms`);
-            console.log('window.auth0:', window.auth0);
-            clearInterval(checkAuth0);
-            resolve();
-          } else if (attempts % 20 === 0) {
-            // Log every second
-            console.log(`Still waiting... (${attempts * 50}ms elapsed), window.auth0:`, window.auth0);
-          }
-        }, 50);
-        
-        // Timeout after 10 seconds
-        setTimeout(() => {
-          clearInterval(checkAuth0);
-          console.error('✗ Auth0 SDK failed to load within 10 seconds');
-          console.error('Final window.auth0:', window.auth0);
-          console.error('window.auth0 type:', typeof window.auth0);
-          resolve(); // Resolve anyway to let app start
-        }, 10000);
-      }
+    // Create promise that resolves when Auth0 SDK is loaded
+    window.auth0SdkReady = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://unpkg.com/@auth0/auth0-spa-js@2.9.0/dist/auth0-spa-js.production.js';
+      
+      // Success handler - SDK loaded successfully
+      script.onload = () => {
+        if (window.auth0 && window.auth0.Auth0Client) {
+          console.log('✓ Auth0 SDK loaded successfully');
+          resolve();
+        } else {
+          // SDK script loaded but Auth0 not available - fallback to polling with short timeout
+          console.warn('⚠ Script loaded but Auth0 SDK not ready, waiting...');
+          let attempts = 0;
+          const checkAuth0 = setInterval(() => {
+            attempts++;
+            if (window.auth0 && window.auth0.Auth0Client) {
+              console.log(`✓ Auth0 SDK ready after ${attempts * 50}ms`);
+              clearInterval(checkAuth0);
+              resolve();
+            } else if (attempts >= 40) { // 2 second timeout
+              clearInterval(checkAuth0);
+              console.error('✗ Auth0 SDK not available after script load');
+              reject(new Error('Auth0 SDK initialization timeout'));
+            }
+          }, 50);
+        }
+      };
+      
+      // Error handler - script failed to load
+      script.onerror = () => {
+        console.error('✗ Failed to load Auth0 SDK script');
+        reject(new Error('Auth0 SDK script load failed'));
+      };
+      
+      document.head.appendChild(script);
+    }).catch(error => {
+      // Show user-friendly error message
+      console.error('Auth0 SDK Error:', error);
+      document.body.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif;">
+          <div style="text-align: center; max-width: 500px; padding: 20px;">
+            <h2 style="color: #e53935;">⚠️ Unable to Load Authentication SDK</h2>
+            <p style="color: #666;">The Auth0 SDK failed to load. Please check your internet connection and try refreshing the page.</p>
+            <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #1976d2; color: white; border: none; border-radius: 4px; cursor: pointer;">
+              Reload Page
+            </button>
+          </div>
+        </div>
+      `;
+      throw error; // Prevent app from loading with broken auth
     });
   </script>
 </head>
