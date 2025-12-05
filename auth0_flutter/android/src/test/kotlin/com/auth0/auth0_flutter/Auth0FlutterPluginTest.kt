@@ -104,8 +104,8 @@ class Auth0FlutterPluginTest {
             }
 
             assert(getHandler<Auth0FlutterWebAuthMethodCallHandler>(0).activity == mockActivity)
-            assert(getHandler<CredentialsManagerMethodCallHandler>(2).activity == mockActivity)
-            assert(getHandler<CredentialsManagerMethodCallHandler>(2).context == mockContext)
+            assert(getHandler<CredentialsManagerMethodCallHandler>(1).activity == mockActivity)
+            assert(getHandler<CredentialsManagerMethodCallHandler>(1).context == mockContext)
 
             assert(constructed.size == 4)
         }
