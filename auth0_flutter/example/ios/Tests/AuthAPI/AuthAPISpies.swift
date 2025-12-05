@@ -95,8 +95,9 @@ class SpyAuthentication: Authentication {
         return request(voidResult)
     }
 
-    func userInfo(withAccessToken accessToken: String) -> Request<UserInfo, AuthenticationError> {
+    func userInfo(withAccessToken accessToken: String, tokenType: String) -> Request<UserInfo, AuthenticationError> {
         arguments["accessToken"] = accessToken
+        arguments["tokenType"] = tokenType
         calledUserInfo = true
         return request(userInfoResult)
     }
@@ -106,10 +107,11 @@ class SpyAuthentication: Authentication {
                       redirectURI: String) -> Request<Credentials, AuthenticationError> {
         return request(credentialsResult)
     }
-
-    func renew(withRefreshToken refreshToken: String, scope: String?) -> Request<Credentials, AuthenticationError> {
+    
+    func renew(withRefreshToken refreshToken: String, audience: String?, scope: String?) -> Request<Credentials, AuthenticationError> {
         arguments["refreshToken"] = refreshToken
         arguments["scope"] = scope
+        arguments["audience"] = audience
         calledRenew = true
         return request(credentialsResult)
     }
