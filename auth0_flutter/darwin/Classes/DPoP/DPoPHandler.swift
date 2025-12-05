@@ -14,7 +14,7 @@ public class DPoPHandler: NSObject, FlutterPlugin {
         case clearDPoPKey = "auth#clearDPoPKey"
     }
 
-    private static let channelName = "auth0.com/auth0_flutter/auth"
+    private static let channelName = "auth0.com/auth0_flutter/dpop"
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let handler = DPoPHandler()

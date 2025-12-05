@@ -23,6 +23,7 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   private lateinit var webAuthMethodChannel : MethodChannel
   private lateinit var authMethodChannel : MethodChannel
   private lateinit var credentialsManagerMethodChannel : MethodChannel
+  private lateinit var dpopMethodChannel : MethodChannel
   private lateinit var binding: FlutterPlugin.FlutterPluginBinding
   private lateinit var authCallHandler: Auth0FlutterAuthMethodCallHandler
   private val webAuthCallHandler = Auth0FlutterWebAuthMethodCallHandler(listOf(
@@ -71,10 +72,10 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     authCallHandler.context = context
 
     authMethodChannel = MethodChannel(messenger, "auth0.com/auth0_flutter/auth")
-    // Create a composite handler that delegates to either DPoP or Auth handlers
-    authMethodChannel.setMethodCallHandler(
-      Auth0FlutterCompositeMethodCallHandler(dpopCallHandler, authCallHandler)
-    )
+    authMethodChannel.setMethodCallHandler(authCallHandler)
+
+    dpopMethodChannel = MethodChannel(messenger, "auth0.com/auth0_flutter/dpop")
+    dpopMethodChannel.setMethodCallHandler(dpopCallHandler)
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result) {}
@@ -83,6 +84,7 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     webAuthMethodChannel.setMethodCallHandler(null)
     authMethodChannel.setMethodCallHandler(null)
     credentialsManagerMethodChannel.setMethodCallHandler(null)
+    dpopMethodChannel.setMethodCallHandler(null)
   }
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {

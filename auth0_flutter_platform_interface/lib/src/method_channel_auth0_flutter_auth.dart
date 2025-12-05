@@ -20,6 +20,7 @@ import 'request/request_options.dart';
 import 'user_profile.dart';
 
 const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter/auth');
+const MethodChannel _dpopChannel = MethodChannel('auth0.com/auth0_flutter/dpop');
 
 // Authentication API methods
 const String authLoginMethod = 'auth#login';
@@ -142,7 +143,7 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   @override
   Future<Map<String, String>> getDPoPHeaders(
       final ApiRequest<AuthDPoPHeadersOptions> request) async {
-    final Map<String, dynamic> result = await invokeRequest(
+    final Map<String, dynamic> result = await invokeDPoPRequest(
       method: authGetDPoPHeadersMethod,
       request: request,
     );
@@ -152,7 +153,7 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
 
   @override
   Future<void> clearDPoPKey(final ApiRequest<RequestOptions> request) async {
-    await invokeRequest(
+    await invokeDPoPRequest(
       method: authClearDPoPKeyMethod,
       request: request,
       throwOnNull: false,
@@ -167,6 +168,25 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
     final Map<String, dynamic>? result;
     try {
       result = await _channel.invokeMapMethod(method, request.toMap());
+    } on PlatformException catch (e) {
+      throw ApiException.fromPlatformException(e);
+    }
+
+    if (result == null && throwOnNull == true) {
+      throw const ApiException.unknown('Channel returned null.');
+    }
+
+    return result ?? {};
+  }
+
+  Future<Map<String, dynamic>> invokeDPoPRequest<TOptions extends RequestOptions>({
+    required final String method,
+    required final ApiRequest<TOptions> request,
+    final bool? throwOnNull = true,
+  }) async {
+    final Map<String, dynamic>? result;
+    try {
+      result = await _dpopChannel.invokeMapMethod(method, request.toMap());
     } on PlatformException catch (e) {
       throw ApiException.fromPlatformException(e);
     }
