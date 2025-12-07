@@ -131,20 +131,24 @@ class WebAuthentication {
   /// the `webcredentials` service type, set to your Auth0 domain –or custom
   /// domain, if you have one.
   Future<void> logout(
-      {final String? returnTo, final bool useHTTPS = false}) async {
+      {final String? returnTo,
+      final bool useHTTPS = false,
+      final bool federated = false}) async {
     await Auth0FlutterWebAuthPlatform.instance.logout(_createWebAuthRequest(
       WebAuthLogoutOptions(
-          returnTo: returnTo, scheme: _scheme, useHTTPS: useHTTPS),
+          returnTo: returnTo,
+          scheme: _scheme,
+          useHTTPS: useHTTPS,
+          federated: federated),
     ));
     await _credentialsManager?.clearCredentials();
   }
-
 
   /// Terminates the ongoing web-based operation and reports back that it was
   /// cancelled.
   /// ## Note: This is an iOS specific API
   ///
- static void cancel() {
+  static void cancel() {
     Auth0FlutterWebAuthPlatform.instance.cancel();
   }
 
