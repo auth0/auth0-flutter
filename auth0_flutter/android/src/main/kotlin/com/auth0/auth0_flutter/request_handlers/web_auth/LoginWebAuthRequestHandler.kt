@@ -74,7 +74,6 @@ class LoginWebAuthRequestHandler(
             builder.withParameters(args["parameters"] as Map<String, *>)
         }
 
-        // Enable DPoP if requested - Available in Auth0.Android SDK 3.9.0+
         if (args["useDPoP"] == true) {
             WebAuthProvider.useDPoP(context)
         }
@@ -85,7 +84,6 @@ class LoginWebAuthRequestHandler(
             }
 
             override fun onSuccess(credentials: Credentials) {
-                // Success! Access token and ID token are presents
                 val scopes = credentials.scope?.split(" ") ?: listOf()
                 val formattedDate = credentials.expiresAt.toInstant().toString()
 

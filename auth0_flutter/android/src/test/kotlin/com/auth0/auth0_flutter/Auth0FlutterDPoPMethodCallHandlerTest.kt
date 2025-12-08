@@ -39,7 +39,7 @@ class Auth0FlutterDPoPMethodCallHandlerTest {
 
     @Test
     fun `handler should result in 'notImplemented' if no handlers`() {
-        runCallHandler("auth#getDPoPHeaders") { result ->
+        runCallHandler("dpop#getDPoPHeaders") { result ->
             verify(result).notImplemented()
         }
     }
@@ -48,9 +48,9 @@ class Auth0FlutterDPoPMethodCallHandlerTest {
     fun `handler should result in 'notImplemented' if no matching handler`() {
         val clearHandler = mock<ClearDPoPKeyApiRequestHandler>()
 
-        `when`(clearHandler.method).thenReturn("auth#clearDPoPKey")
+        `when`(clearHandler.method).thenReturn("dpop#clearDPoPKey")
 
-        runCallHandler("auth#getDPoPHeaders", dpopRequestHandlers = listOf(clearHandler)) { result ->
+        runCallHandler("dpop#getDPoPHeaders", dpopRequestHandlers = listOf(clearHandler)) { result ->
             verify(result).notImplemented()
         }
     }
@@ -60,8 +60,8 @@ class Auth0FlutterDPoPMethodCallHandlerTest {
         val getDPoPHeadersHandler = mock<GetDPoPHeadersApiRequestHandler>()
         val clearDPoPKeyHandler = mock<ClearDPoPKeyApiRequestHandler>()
 
-        `when`(getDPoPHeadersHandler.method).thenReturn("auth#getDPoPHeaders")
-        `when`(clearDPoPKeyHandler.method).thenReturn("auth#clearDPoPKey")
+        `when`(getDPoPHeadersHandler.method).thenReturn("dpop#getDPoPHeaders")
+        `when`(clearDPoPKeyHandler.method).thenReturn("dpop#clearDPoPKey")
 
         runCallHandler(getDPoPHeadersHandler.method, dpopRequestHandlers = listOf(getDPoPHeadersHandler, clearDPoPKeyHandler)) {
             verify(getDPoPHeadersHandler).handle(any(), any())

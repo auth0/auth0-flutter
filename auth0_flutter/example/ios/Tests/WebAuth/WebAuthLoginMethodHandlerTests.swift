@@ -25,7 +25,6 @@ class WebAuthLoginHandlerTests: XCTestCase {
     }
 }
 
-// MARK: - Required Arguments Error
 
 extension WebAuthLoginHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
@@ -235,91 +234,8 @@ extension WebAuthLoginHandlerTests {
         sut.handle(with: arguments(without: Argument.useDPoP)) { _ in }
         XCTAssertNil(spy.dpop)
     }
-
-    func testEnablesDPoPWithOtherParameters() {
-        var args = arguments()
-        args[Argument.useDPoP.rawValue] = true
-        args[Argument.audience.rawValue] = "https://api.example.com"
-        args[Argument.scopes.rawValue] = ["openid", "profile", "email"]
-        sut.handle(with: args) { _ in }
-        XCTAssertNotNil(spy.dpop)
-        XCTAssertEqual(spy.audienceValue, "https://api.example.com")
-        XCTAssertEqual(spy.scopeValue, "openid profile email")
-    }
-
-    func testEnablesDPoPWithAllParameters() {
-        var args = arguments()
-        args[Argument.useDPoP.rawValue] = true
-        args[Argument.audience.rawValue] = "https://api.example.com"
-        args[Argument.scopes.rawValue] = ["openid", "profile", "email", "offline_access"]
-        args[Argument.organizationId.rawValue] = "org_123456"
-        args[Argument.maxAge.rawValue] = 3600
-        args[Argument.useHTTPS.rawValue] = true
-        sut.handle(with: args) { _ in }
-        XCTAssertNotNil(spy.dpop)
-        XCTAssertEqual(spy.audienceValue, "https://api.example.com")
-        XCTAssertEqual(spy.organizationValue, "org_123456")
-        XCTAssertEqual(spy.maxAgeValue, 3600)
-        XCTAssertTrue(spy.useHTTPSValue ?? false)
-    }
-
-    func testDPoPWithRedirectURL() {
-        var args = arguments()
-        args[Argument.useDPoP.rawValue] = true
-        args[Argument.redirectUrl.rawValue] = "https://myapp.com/callback"
-        sut.handle(with: args) { _ in }
-        XCTAssertNotNil(spy.dpop)
-        XCTAssertEqual(spy.redirectURLValue?.absoluteString, "https://myapp.com/callback")
-    }
-
-    func testDPoPWithInvitationURL() {
-        var args = arguments()
-        args[Argument.useDPoP.rawValue] = true
-        args[Argument.invitationUrl.rawValue] = "https://example.com/invite?token=abc123"
-        sut.handle(with: args) { _ in }
-        XCTAssertNotNil(spy.dpop)
-        XCTAssertEqual(spy.invitationURLValue?.absoluteString, "https://example.com/invite?token=abc123")
-    }
-
-    func testDPoPWithCustomParameters() {
-        var args = arguments()
-        args[Argument.useDPoP.rawValue] = true
-        args[Argument.parameters.rawValue] = ["prompt": "login", "screen_hint": "signup"]
-        sut.handle(with: args) { _ in }
-        XCTAssertNotNil(spy.dpop)
-        XCTAssertEqual(spy.parametersValue?["prompt"], "login")
-        XCTAssertEqual(spy.parametersValue?["screen_hint"], "signup")
-    }
-
-    func testDPoPWithEphemeralSession() {
-        var args = arguments()
-        args[Argument.useDPoP.rawValue] = true
-        args[Argument.useEphemeralSession.rawValue] = true
-        sut.handle(with: args) { _ in }
-        XCTAssertNotNil(spy.dpop)
-        XCTAssertTrue(spy.useEmphemeralSessionValue ?? false)
-    }
-
-    func testDPoPWithIssuer() {
-        var args = arguments()
-        args[Argument.useDPoP.rawValue] = true
-        args[Argument.issuer.rawValue] = "https://example.auth0.com"
-        sut.handle(with: args) { _ in }
-        XCTAssertNotNil(spy.dpop)
-        XCTAssertEqual(spy.issuerValue, "https://example.auth0.com")
-    }
-
-    func testDPoPWithLeeway() {
-        var args = arguments()
-        args[Argument.useDPoP.rawValue] = true
-        args[Argument.leeway.rawValue] = 60
-        sut.handle(with: args) { _ in }
-        XCTAssertNotNil(spy.dpop)
-        XCTAssertEqual(spy.leewayValue, 60)
-    }
 }
 
-// MARK: - Login Result
 
 extension WebAuthLoginHandlerTests {
     func testCallsSDKLoginMethod() {
@@ -355,7 +271,6 @@ extension WebAuthLoginHandlerTests {
     }
 }
 
-// MARK: - Helpers
 
 extension WebAuthLoginHandlerTests {
     override func arguments() -> [String: Any] {

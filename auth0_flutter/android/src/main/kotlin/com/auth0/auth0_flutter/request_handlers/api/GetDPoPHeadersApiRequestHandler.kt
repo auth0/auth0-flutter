@@ -5,7 +5,7 @@ import com.auth0.android.dpop.DPoPException
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodChannel
 
-private const val AUTH_GET_DPOP_HEADERS_METHOD = "auth#getDPoPHeaders"
+private const val AUTH_GET_DPOP_HEADERS_METHOD = "dpop#getDPoPHeaders"
 
 /**
  * Handles getDPoPHeaders method call. Uses the DPoP utility class directly
@@ -24,7 +24,6 @@ class GetDPoPHeadersApiRequestHandler : UtilityRequestHandler {
         val tokenType = request.data["tokenType"] as? String
         val nonce = request.data["nonce"] as? String
 
-        // Validate required parameters
         if (url == null || httpMethod == null || accessToken == null || tokenType == null) {
             result.error(
                 "INVALID_ARGUMENTS",
@@ -35,35 +34,28 @@ class GetDPoPHeadersApiRequestHandler : UtilityRequestHandler {
         }
 
         try {
-            // Check if token type is DPoP (case insensitive)
             if (!tokenType.equals("DPoP", ignoreCase = true)) {
-                // If not DPoP, return Bearer token format
                 val headers = mutableMapOf<String, String>()
                 headers["authorization"] = "Bearer $accessToken"
                 result.success(headers)
                 return
             }
 
-            // Use DPoP class directly (same approach as React Native Auth0)
-            // This class is available in Auth0 Android SDK
             val headerData = if (!nonce.isNullOrEmpty()) {
                 DPoP.getHeaderData(httpMethod, url, accessToken, tokenType, nonce)
             } else {
                 DPoP.getHeaderData(httpMethod, url, accessToken, tokenType)
             }
             
-            // Build result map with headers
             val resultMap = mutableMapOf<String, String>()
             resultMap["authorization"] = headerData.authorizationHeader
             
-            // Add DPoP proof if available
             headerData.dpopProof?.let { proof ->
                 resultMap["dpop"] = proof
             }
             
             result.success(resultMap)
         } catch (e: DPoPException) {
-            // Handle DPoP-specific exceptions
             result.error(
                 "DPOP_ERROR",
                 e.message ?: "Failed to generate DPoP headers",
@@ -72,7 +64,6 @@ class GetDPoPHeadersApiRequestHandler : UtilityRequestHandler {
                 )
             )
         } catch (e: Exception) {
-            // Handle general exceptions
             result.error(
                 "GET_DPOP_HEADERS_ERROR",
                 e.message ?: "Failed to generate DPoP headers",

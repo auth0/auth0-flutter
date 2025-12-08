@@ -30,7 +30,6 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
     lateinit var activity: Activity
     lateinit var context: Context
 
-    // Cache key components to determine if we need to recreate the manager
     private data class ManagerCacheKey(
         val accountDomain: String,
         val accountClientId: String,
@@ -53,7 +52,7 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
             BiometricAuthLevel.STRONG -> builder.setAuthenticationLevel(AuthenticationLevel.STRONG)
             BiometricAuthLevel.WEAK -> builder.setAuthenticationLevel(AuthenticationLevel.WEAK)
             BiometricAuthLevel.DEVICE_CREDENTIAL -> builder.setAuthenticationLevel(AuthenticationLevel.DEVICE_CREDENTIAL)
-            else -> builder.setAuthenticationLevel(AuthenticationLevel.STRONG) // Default to STRONG
+            else -> builder.setAuthenticationLevel(AuthenticationLevel.STRONG)
         }
         builder.setDeviceCredentialFallback(true)
         
@@ -81,7 +80,6 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
             val localAuthentication = request.data["localAuthentication"] as Map<String, Any>?
             val useDPoP = request.data["useDPoP"] as? Boolean ?: false
 
-            // Create cache key to determine if we can reuse existing manager
             val currentKey = ManagerCacheKey(
                 accountDomain = request.account.domain,
                 accountClientId = request.account.clientId,
@@ -90,13 +88,9 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
                 hasLocalAuth = localAuthentication != null
             )
 
-            // Reuse cached manager if configuration hasn't changed
             val credentialsManagerInstance: SecureCredentialsManager = if (cachedKey == currentKey && cachedManager != null) {
                 cachedManager!!
             } else {
-                // Configuration changed or no cached manager - create new one
-                
-                // Validate activity type early if biometric auth is required
                 if (localAuthentication != null && activity !is FragmentActivity) {
                     result.error(
                         "credentialsManager#fragment-activity-required",
@@ -108,16 +102,13 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
                     return
                 }
 
-                // Build local authentication options if needed
                 val options = localAuthentication?.let { buildLocalAuthenticationOptions(it) }
 
-                // Create API client and enable DPoP if requested
                 val apiClient = AuthenticationAPIClient(request.account)
                 if (useDPoP) {
                     apiClient.useDPoP(context)
                 }
 
-                // Create the credentials manager with appropriate constructor
                 val newManager = if (options != null) {
                     SecureCredentialsManager(
                         apiClient, context, request.account, storage, activity as FragmentActivity, options
@@ -128,7 +119,6 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
                     )
                 }
 
-                // Cache the new manager
                 cachedManager = newManager
                 cachedKey = currentKey
                 newManager

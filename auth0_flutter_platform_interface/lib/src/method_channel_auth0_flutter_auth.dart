@@ -1,7 +1,6 @@
 import 'package:flutter/services.dart';
 
 import 'auth/api_exception.dart';
-import 'auth/auth_dpop_headers_options.dart';
 import 'auth/auth_login_code_options.dart';
 import 'auth/auth_login_options.dart';
 import 'auth/auth_login_with_otp_options.dart';
@@ -20,9 +19,7 @@ import 'request/request_options.dart';
 import 'user_profile.dart';
 
 const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter/auth');
-const MethodChannel _dpopChannel = MethodChannel('auth0.com/auth0_flutter/dpop');
 
-// Authentication API methods
 const String authLoginMethod = 'auth#login';
 const String authLoginWithOtpMethod = 'auth#loginOtp';
 const String authMultifactorChallengeMethod = 'auth#multifactorChallenge';
@@ -36,10 +33,6 @@ const String authUserInfoMethod = 'auth#userInfo';
 const String authSignUpMethod = 'auth#signUp';
 const String authRenewMethod = 'auth#renew';
 const String authResetPasswordMethod = 'auth#resetPassword';
-
-// DPoP utility methods
-const String authGetDPoPHeadersMethod = 'auth#getDPoPHeaders';
-const String authClearDPoPKeyMethod = 'auth#clearDPoPKey';
 
 class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   @override
@@ -130,34 +123,10 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
     return Credentials.fromMap(result);
   }
 
-  @override
   Future<void> resetPassword(
       final ApiRequest<AuthResetPasswordOptions> request) async {
     await invokeRequest(
-      method: authResetPasswordMethod,
-      request: request,
-      throwOnNull: false,
-    );
-  }
-
-  @override
-  Future<Map<String, String>> getDPoPHeaders(
-      final ApiRequest<AuthDPoPHeadersOptions> request) async {
-    final Map<String, dynamic> result = await invokeDPoPRequest(
-      method: authGetDPoPHeadersMethod,
-      request: request,
-    );
-
-    return result.map((key, value) => MapEntry(key, value.toString()));
-  }
-
-  @override
-  Future<void> clearDPoPKey(final ApiRequest<RequestOptions> request) async {
-    await invokeDPoPRequest(
-      method: authClearDPoPKeyMethod,
-      request: request,
-      throwOnNull: false,
-    );
+        method: authResetPasswordMethod, request: request, throwOnNull: false);
   }
 
   Future<Map<String, dynamic>> invokeRequest<TOptions extends RequestOptions>({
@@ -168,25 +137,6 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
     final Map<String, dynamic>? result;
     try {
       result = await _channel.invokeMapMethod(method, request.toMap());
-    } on PlatformException catch (e) {
-      throw ApiException.fromPlatformException(e);
-    }
-
-    if (result == null && throwOnNull == true) {
-      throw const ApiException.unknown('Channel returned null.');
-    }
-
-    return result ?? {};
-  }
-
-  Future<Map<String, dynamic>> invokeDPoPRequest<TOptions extends RequestOptions>({
-    required final String method,
-    required final ApiRequest<TOptions> request,
-    final bool? throwOnNull = true,
-  }) async {
-    final Map<String, dynamic>? result;
-    try {
-      result = await _dpopChannel.invokeMapMethod(method, request.toMap());
     } on PlatformException catch (e) {
       throw ApiException.fromPlatformException(e);
     }

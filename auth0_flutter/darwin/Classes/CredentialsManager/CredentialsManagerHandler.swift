@@ -25,7 +25,6 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         case clear = "credentialsManager#clearCredentials"
     }
     
-    // Cache key to track CredentialsManager configuration
     private struct ManagerCacheKey: Equatable {
         let accountDomain: String
         let accountClientId: String
@@ -81,7 +80,6 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
     
 
     lazy var credentialsManagerProvider: CredentialsManagerProvider = { apiClient, arguments in
-        // Extract configuration to build cache key
         let configuration = arguments["credentialsManagerConfiguration"] as? [String: Any]
         let iosConfiguration = configuration?["ios"] as? [String: String]
         let storeKey = iosConfiguration?["storeKey"] ?? "credentials"
@@ -89,14 +87,11 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         let useDPoP = arguments["useDPoP"] as? Bool ?? false
         let hasLocalAuth = arguments[LocalAuthentication.key] != nil
         
-        // Get account details from arguments
         guard let accountDictionary = arguments[Account.key] as? [String: String],
               let account = Account(from: accountDictionary) else {
-            // Fallback to creating new manager if account missing
             return self.createCredentialManager(apiClient, arguments)
         }
         
-        // Build current cache key
         let currentKey = ManagerCacheKey(
             accountDomain: account.domain,
             accountClientId: account.clientId,
@@ -106,22 +101,18 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
             hasLocalAuth: hasLocalAuth
         )
         
-        // Reuse cached manager if configuration hasn't changed
         var instance: CredentialsManager
         if let cachedKey = CredentialsManagerHandler.cachedKey,
            cachedKey == currentKey,
            let cachedManager = CredentialsManagerHandler.credentialsManager {
             instance = cachedManager
         } else {
-            // Configuration changed or no cached manager - create new one
             instance = self.createCredentialManager(apiClient, arguments)
             
-            // Cache the new manager and key
             CredentialsManagerHandler.credentialsManager = instance
             CredentialsManagerHandler.cachedKey = currentKey
         }
         
-        // Apply local authentication if needed (always apply to ensure it's current)
         if let localAuthenticationDictionary = arguments[LocalAuthentication.key] as? [String: String?] {
             let localAuthentication = LocalAuthentication(from: localAuthenticationDictionary)
             instance.enableBiometrics(withTitle: localAuthentication.title,

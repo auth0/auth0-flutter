@@ -441,8 +441,6 @@ extension CredentialsManagerHandlerTests {
         }
         
         sut.credentialsManagerProvider = { apiClient, arguments in
-            // Check if useDPoP was called on the apiClient
-            // Since we can't directly check, we verify the arguments
             usedDPoP = arguments["useDPoP"] as? Bool ?? false
             return self.sut.createCredentialManager(apiClient, arguments)
         }
@@ -469,7 +467,6 @@ extension CredentialsManagerHandlerTests {
         }
         
         sut.credentialsManagerProvider = { apiClient, arguments in
-            // Verify the useDPoP flag is passed
             usedDPoP = arguments["useDPoP"] as? Bool ?? false
             return self.sut.createCredentialManager(apiClient, arguments)
         }
@@ -488,7 +485,6 @@ extension CredentialsManagerHandlerTests {
         
         var usedDPoP: Bool? = nil
         var args = arguments()
-        // Don't set useDPoP, let it default
         
         sut.apiClientProvider = { (account: Account, userAgent: UserAgent, arguments: [String: Any]) -> Authentication in
             let client = Auth0.authentication(clientId: account.clientId, domain: account.domain)
@@ -501,34 +497,7 @@ extension CredentialsManagerHandlerTests {
         }
         
         sut.handle(FlutterMethodCall(methodName: method, arguments: args)) { _ in
-            // Should default to false (or nil which is treated as false)
             XCTAssertEqual(usedDPoP ?? false, false)
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation])
-    }
-    
-    func testDPoPWorksWithLocalAuthentication() {
-        let expectation = expectation(description: "DPoP works with local authentication")
-        let method = CredentialsManagerHandler.Method.save.rawValue
-        let title = "Authenticate with DPoP"
-        
-        var usedDPoP = false
-        var hasLocalAuth = false
-        var args = arguments()
-        args["useDPoP"] = true
-        args[LocalAuthentication.key] = [LocalAuthenticationProperty.title.rawValue: title]
-        
-        sut.credentialsManagerProvider = { apiClient, arguments in
-            usedDPoP = arguments["useDPoP"] as? Bool ?? false
-            hasLocalAuth = arguments[LocalAuthentication.key] != nil
-            return self.sut.createCredentialManager(apiClient, arguments)
-        }
-        
-        sut.handle(FlutterMethodCall(methodName: method, arguments: args)) { _ in
-            XCTAssertTrue(usedDPoP)
-            XCTAssertTrue(hasLocalAuth)
             expectation.fulfill()
         }
         

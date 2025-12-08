@@ -144,7 +144,7 @@ class Auth0 {
     required final String accessToken,
     final String tokenType = 'Bearer',
   }) =>
-      Auth0FlutterAuthPlatform.instance.getDPoPHeaders(ApiRequest(
+      Auth0FlutterDPoPPlatform.instance.getDPoPHeaders(ApiRequest(
           account: _account,
           options: AuthDPoPHeadersOptions(
               url: url,
@@ -168,8 +168,8 @@ class Auth0 {
   /// // Clear DPoP key on logout
   /// await auth0.clearDPoPKey();
   /// ```
-  Future<void> clearDPoPKey() => Auth0FlutterAuthPlatform.instance
-      .clearDPoPKey(ApiRequest(
+  Future<void> clearDPoPKey() =>
+      Auth0FlutterDPoPPlatform.instance.clearDPoPKey(ApiRequest(
           account: _account,
           options: const EmptyRequestOptions(),
           userAgent: _userAgent));

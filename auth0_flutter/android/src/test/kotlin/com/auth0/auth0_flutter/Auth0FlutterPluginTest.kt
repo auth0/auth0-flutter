@@ -110,7 +110,4 @@ class Auth0FlutterPluginTest {
             assert(constructed.size == 4)
         }
     }
-
-    // Test removed: CredentialsManagerMethodCallHandler no longer implements ActivityResultListener
-    // as it's no longer needed with the updated Auth0 Android SDK 3.11.0
 }

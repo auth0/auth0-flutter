@@ -48,7 +48,6 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
         var client = Auth0.authentication(clientId: account.clientId, domain: account.domain)
         client.using(inLibrary: userAgent.name, version: userAgent.version)
         
-        // Enable DPoP if requested
         let useDPoP = arguments["useDPoP"] as? Bool ?? false
         if useDPoP {
             client = client.useDPoP()

@@ -46,13 +46,11 @@
       const script = document.createElement('script');
       script.src = 'https://unpkg.com/@auth0/auth0-spa-js@2.9.0/dist/auth0-spa-js.production.js';
       
-      // Success handler - SDK loaded successfully
       script.onload = () => {
         if (window.auth0 && window.auth0.Auth0Client) {
           console.log('✓ Auth0 SDK loaded successfully');
           resolve();
         } else {
-          // SDK script loaded but Auth0 not available - fallback to polling with short timeout
           console.warn('⚠ Script loaded but Auth0 SDK not ready, waiting...');
           let attempts = 0;
           const checkAuth0 = setInterval(() => {
@@ -61,7 +59,7 @@
               console.log(`✓ Auth0 SDK ready after ${attempts * 50}ms`);
               clearInterval(checkAuth0);
               resolve();
-            } else if (attempts >= 40) { // 2 second timeout
+            } else if (attempts >= 40) {
               clearInterval(checkAuth0);
               console.error('✗ Auth0 SDK not available after script load');
               reject(new Error('Auth0 SDK initialization timeout'));
@@ -70,7 +68,6 @@
         }
       };
       
-      // Error handler - script failed to load
       script.onerror = () => {
         console.error('✗ Failed to load Auth0 SDK script');
         reject(new Error('Auth0 SDK script load failed'));
@@ -78,7 +75,6 @@
       
       document.head.appendChild(script);
     }).catch(error => {
-      // Show user-friendly error message
       console.error('Auth0 SDK Error:', error);
       document.body.innerHTML = `
         <div style="display: flex; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif;">
@@ -91,16 +87,14 @@
           </div>
         </div>
       `;
-      throw error; // Prevent app from loading with broken auth
+      throw error;
     });
   </script>
 </head>
 <body>
   <script>
     window.addEventListener('load', function(ev) {
-      // Wait for Auth0 SDK before starting Flutter
       window.auth0SdkReady.then(() => {
-        // Download main.dart.js
         _flutter.loader.loadEntrypoint({
         serviceWorker: {
           serviceWorkerVersion: serviceWorkerVersion,

@@ -67,7 +67,7 @@ class MainActivity: FlutterFragmentActivity() {
 
 You only need to make changes if you want to:
 - ✅ Enable DPoP for enhanced security (optional)
-- ✅ Use new iOS-only DPoP API methods: `getDPoPHeaders()` and `clearDPoPKey()` (optional)
+- ✅ Use new DPoP API methods: `getDPoPHeaders()` and `clearDPoPKey()` (optional)
 
 ### Java Version Requirement (Android)
 

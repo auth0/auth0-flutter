@@ -31,11 +31,9 @@ struct DPoPGetHeadersMethodHandler: MethodHandler {
         
         let nonce = arguments["nonce"] as? String
 
-        // Create a URLRequest to use with DPoP.addHeaders
         var request = URLRequest(url: url)
         request.httpMethod = method
         
-        // Generate DPoP headers using the static DPoP.addHeaders method
         do {
             try DPoP.addHeaders(to: &request,
                               accessToken: accessToken,
