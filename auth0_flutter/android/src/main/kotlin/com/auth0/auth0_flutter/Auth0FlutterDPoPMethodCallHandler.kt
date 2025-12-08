@@ -19,7 +19,6 @@ class Auth0FlutterDPoPMethodCallHandler(
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         val request = MethodCallRequest.fromCall(call)
         
-        // Find the matching DPoP handler
         val dpopHandler = dpopRequestHandlers.find { it.method == call.method }
         
         if (dpopHandler != null) {

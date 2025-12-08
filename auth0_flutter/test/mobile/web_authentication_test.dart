@@ -552,7 +552,6 @@ void main() {
             .webAuthentication()
             .login(useDPoP: true);
 
-        // Verify it doesn't call the platform credentials manager
         verifyNever(mockedCMPlatform.saveCredentials(any));
 
         final verificationResult = verify(mockCm.storeCredentials(captureAny))
@@ -562,7 +561,6 @@ void main() {
         expect(verificationResult.accessToken,
             TestPlatform.loginResult.accessToken);
 
-        // Verify the login request had useDPoP enabled
         final loginRequest = verify(mockedPlatform.login(captureAny))
             .captured
             .single as WebAuthRequest<WebAuthLoginOptions>;

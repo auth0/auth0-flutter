@@ -6,12 +6,11 @@ import Flutter
 import FlutterMacOS
 #endif
 
-// MARK: - DPoP Handler
 
 public class DPoPHandler: NSObject, FlutterPlugin {
     enum Method: String, CaseIterable {
-        case getDPoPHeaders = "auth#getDPoPHeaders"
-        case clearDPoPKey = "auth#clearDPoPKey"
+        case getDPoPHeaders = "dpop#getDPoPHeaders"
+        case clearDPoPKey = "dpop#clearDPoPKey"
     }
 
     private static let channelName = "auth0.com/auth0_flutter/dpop"

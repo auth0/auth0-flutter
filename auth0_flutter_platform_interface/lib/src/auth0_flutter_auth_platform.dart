@@ -1,7 +1,6 @@
 // coverage:ignore-file
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'auth/auth_dpop_headers_options.dart';
 import 'auth/auth_login_code_options.dart';
 import 'auth/auth_login_options.dart';
 import 'auth/auth_login_with_otp_options.dart';
@@ -16,7 +15,6 @@ import 'credentials.dart';
 import 'database_user.dart';
 import 'method_channel_auth0_flutter_auth.dart';
 import 'request/request.dart';
-import 'request/request_options.dart';
 import 'user_profile.dart';
 
 abstract class Auth0FlutterAuthPlatform extends PlatformInterface {
@@ -81,14 +79,5 @@ abstract class Auth0FlutterAuthPlatform extends PlatformInterface {
   Future<void> resetPassword(
       final ApiRequest<AuthResetPasswordOptions> request) {
     throw UnimplementedError('authResetPassword() has not been implemented');
-  }
-
-  Future<Map<String, String>> getDPoPHeaders(
-      final ApiRequest<AuthDPoPHeadersOptions> request) {
-    throw UnimplementedError('getDPoPHeaders() has not been implemented');
-  }
-
-  Future<void> clearDPoPKey(final ApiRequest<RequestOptions> request) {
-    throw UnimplementedError('clearDPoPKey() has not been implemented');
   }
 }

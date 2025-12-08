@@ -580,7 +580,6 @@ void main() {
             await auth0WithDPoP.onLoad(audience: 'https://test-api.com');
 
         expect(result?.accessToken, jwt);
-        // Verify getTokenSilently was called (audience parameter handling verified in implementation)
         verify(mockClientProxy.getTokenSilently(any)).called(1);
       });
     });
@@ -728,7 +727,6 @@ void main() {
         final jsError = createJsException('logout_error', 'Logout failed');
         when(mockClientProxy.logout(any)).thenThrow(jsError);
 
-        // Verify that logout throws an exception (exact type may vary due to mock behavior)
         expect(() => auth0WithDPoP.logout(), throwsA(anything));
       });
     });
@@ -784,7 +782,6 @@ void main() {
 
         expect(result.accessToken, isNotNull);
         expect(result.accessToken, isNotEmpty);
-        // Token should be a valid JWT format
         expect(result.accessToken.split('.').length, 3);
       });
 
