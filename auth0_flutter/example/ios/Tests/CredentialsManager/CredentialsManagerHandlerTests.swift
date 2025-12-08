@@ -504,3 +504,60 @@ extension CredentialsManagerHandlerTests {
         wait(for: [expectation])
     }
 }
+
+extension CredentialsManagerHandlerTests {
+    func testReusesCachedCredentialsManagerWhenConfigurationIsIdentical() {
+        let expectation = expectation(description: "Reuses cached CredentialsManager when configuration is identical")
+        let method = CredentialsManagerHandler.Method.save.rawValue
+        
+        var creationCount = 0
+        var args = arguments()
+        args["useDPoP"] = true
+        
+        let originalCredentialsManagerProvider = sut.credentialsManagerProvider
+        sut.credentialsManagerProvider = { apiClient, arguments in
+            creationCount += 1
+            return originalCredentialsManagerProvider(apiClient, arguments)
+        }
+        
+        sut.handle(FlutterMethodCall(methodName: method, arguments: args)) { _ in
+            XCTAssertEqual(creationCount, 1, "First call should create a new manager")
+            
+            self.sut.handle(FlutterMethodCall(methodName: method, arguments: args)) { _ in
+                XCTAssertEqual(creationCount, 1, "Second call should reuse cached manager, not create a new one")
+                expectation.fulfill()
+            }
+        }
+        
+        wait(for: [expectation], timeout: 5.0)
+    }
+    
+    func testCreatesNewCredentialsManagerWhenConfigurationChanges() {
+        let expectation = expectation(description: "Creates new CredentialsManager when configuration changes")
+        let method = CredentialsManagerHandler.Method.save.rawValue
+        
+        var creationCount = 0
+        var args = arguments()
+        args["useDPoP"] = false
+        
+        let originalCredentialsManagerProvider = sut.credentialsManagerProvider
+        sut.credentialsManagerProvider = { apiClient, arguments in
+            creationCount += 1
+            return originalCredentialsManagerProvider(apiClient, arguments)
+        }
+        
+        sut.handle(FlutterMethodCall(methodName: method, arguments: args)) { _ in
+            XCTAssertEqual(creationCount, 1, "First call should create a new manager")
+            
+            var args2 = self.arguments()
+            args2["useDPoP"] = true
+            
+            self.sut.handle(FlutterMethodCall(methodName: method, arguments: args2)) { _ in
+                XCTAssertEqual(creationCount, 2, "Configuration change should create a new manager")
+                expectation.fulfill()
+            }
+        }
+        
+        wait(for: [expectation], timeout: 5.0)
+    }
+}
