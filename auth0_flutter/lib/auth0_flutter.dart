@@ -166,7 +166,6 @@ class Auth0 {
   /// // Clear DPoP key on logout
   /// await auth0.clearDPoPKey();
   /// ```
-  Future<void> clearDPoPKey() =>
-      Auth0FlutterDPoPPlatform.instance
-          .clearDPoPKey(const DPoPRequest(options: EmptyRequestOptions()));
+  Future<void> clearDPoPKey() => Auth0FlutterDPoPPlatform.instance
+      .clearDPoPKey(const DPoPRequest(options: EmptyRequestOptions()));
 }

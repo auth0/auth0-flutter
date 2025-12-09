@@ -32,9 +32,8 @@ struct AuthAPIUserInfoMethodHandler: MethodHandler {
         let tokenType = arguments[Argument.tokenType] as? String ?? "Bearer"
 
         client
-            .userInfo(withAccessToken: accessToken)
+            .userInfo(withAccessToken: accessToken, tokenType: tokenType)
             .parameters(parameters)
-            .headers(["Authorization": "\(tokenType) \(accessToken)"])
             .start {
                 switch $0 {
                 case let .success(userInfo): callback(result(from: userInfo))
