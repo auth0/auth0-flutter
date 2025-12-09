@@ -144,14 +144,12 @@ class Auth0 {
     required final String accessToken,
     final String tokenType = 'Bearer',
   }) =>
-      Auth0FlutterDPoPPlatform.instance.getDPoPHeaders(ApiRequest(
-          account: _account,
+      Auth0FlutterDPoPPlatform.instance.getDPoPHeaders(DPoPRequest(
           options: AuthDPoPHeadersOptions(
               url: url,
               method: method,
               accessToken: accessToken,
-              tokenType: tokenType),
-          userAgent: _userAgent));
+              tokenType: tokenType)));
 
   /// Clears the DPoP (Demonstrating Proof-of-Possession) private key from
   /// secure storage.
@@ -169,8 +167,6 @@ class Auth0 {
   /// await auth0.clearDPoPKey();
   /// ```
   Future<void> clearDPoPKey() =>
-      Auth0FlutterDPoPPlatform.instance.clearDPoPKey(ApiRequest(
-          account: _account,
-          options: const EmptyRequestOptions(),
-          userAgent: _userAgent));
+      Auth0FlutterDPoPPlatform.instance
+          .clearDPoPKey(const DPoPRequest(options: EmptyRequestOptions()));
 }

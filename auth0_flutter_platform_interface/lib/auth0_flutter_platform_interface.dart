@@ -34,6 +34,7 @@ export 'src/id_token_validation_config.dart';
 export 'src/login_options.dart';
 export 'src/method_channel_auth0_flutter_auth.dart';
 export 'src/method_channel_auth0_flutter_web_auth.dart';
+export 'src/request/dpop_request.dart';
 export 'src/request/request.dart';
 export 'src/request/request_options.dart';
 export 'src/user_agent.dart';

@@ -278,10 +278,13 @@ class AuthenticationApi {
   /// ```
   Future<UserProfile> userProfile(
           {required final String accessToken,
+          final String tokenType = 'Bearer',
           final Map<String, String> parameters = const {}}) =>
       Auth0FlutterAuthPlatform.instance.userInfo(_createApiRequest(
           AuthUserInfoOptions(
-              accessToken: accessToken, parameters: parameters)));
+              accessToken: accessToken,
+              tokenType: tokenType,
+              parameters: parameters)));
 
   /// Registers a new user with the specified [email] address and [password] in
   /// the specified [connection].

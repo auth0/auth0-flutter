@@ -16,6 +16,7 @@ struct AuthAPIUserInfoMethodHandler: MethodHandler {
     enum Argument: String {
         case accessToken
         case parameters
+        case tokenType
     }
 
     let client: Authentication
@@ -27,10 +28,13 @@ struct AuthAPIUserInfoMethodHandler: MethodHandler {
         guard let parameters = arguments[Argument.parameters] as? [String: Any] else {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.parameters.rawValue)))
         }
+        
+        let tokenType = arguments[Argument.tokenType] as? String ?? "Bearer"
 
         client
             .userInfo(withAccessToken: accessToken)
             .parameters(parameters)
+            .headers(["Authorization": "\(tokenType) \(accessToken)"])
             .start {
                 switch $0 {
                 case let .success(userInfo): callback(result(from: userInfo))
