@@ -510,21 +510,28 @@ extension CredentialsManagerHandlerTests {
         let expectation = expectation(description: "Reuses cached CredentialsManager when configuration is identical")
         let method = CredentialsManagerHandler.Method.save.rawValue
         
-        var creationCount = 0
+        var firstManager: CredentialsManager? = nil
+        var secondManager: CredentialsManager? = nil
         var args = arguments()
         args["useDPoP"] = true
         
         let originalCredentialsManagerProvider = sut.credentialsManagerProvider
         sut.credentialsManagerProvider = { apiClient, arguments in
-            creationCount += 1
-            return originalCredentialsManagerProvider(apiClient, arguments)
+            let manager = originalCredentialsManagerProvider(apiClient, arguments)
+            if firstManager == nil {
+                firstManager = manager
+            } else {
+                secondManager = manager
+            }
+            return manager
         }
         
         sut.handle(FlutterMethodCall(methodName: method, arguments: args)) { _ in
-            XCTAssertEqual(creationCount, 1, "First call should create a new manager")
+            XCTAssertNotNil(firstManager, "First call should create a manager")
             
             self.sut.handle(FlutterMethodCall(methodName: method, arguments: args)) { _ in
-                XCTAssertEqual(creationCount, 1, "Second call should reuse cached manager, not create a new one")
+                XCTAssertNotNil(secondManager, "Second call should return a manager")
+                XCTAssertTrue(firstManager === secondManager, "Second call should reuse the same cached manager instance")
                 expectation.fulfill()
             }
         }
@@ -536,24 +543,31 @@ extension CredentialsManagerHandlerTests {
         let expectation = expectation(description: "Creates new CredentialsManager when configuration changes")
         let method = CredentialsManagerHandler.Method.save.rawValue
         
-        var creationCount = 0
+        var firstManager: CredentialsManager? = nil
+        var secondManager: CredentialsManager? = nil
         var args = arguments()
         args["useDPoP"] = false
         
         let originalCredentialsManagerProvider = sut.credentialsManagerProvider
         sut.credentialsManagerProvider = { apiClient, arguments in
-            creationCount += 1
-            return originalCredentialsManagerProvider(apiClient, arguments)
+            let manager = originalCredentialsManagerProvider(apiClient, arguments)
+            if firstManager == nil {
+                firstManager = manager
+            } else if secondManager == nil {
+                secondManager = manager
+            }
+            return manager
         }
         
         sut.handle(FlutterMethodCall(methodName: method, arguments: args)) { _ in
-            XCTAssertEqual(creationCount, 1, "First call should create a new manager")
+            XCTAssertNotNil(firstManager, "First call should create a manager")
             
             var args2 = self.arguments()
             args2["useDPoP"] = true
             
             self.sut.handle(FlutterMethodCall(methodName: method, arguments: args2)) { _ in
-                XCTAssertEqual(creationCount, 2, "Configuration change should create a new manager")
+                XCTAssertNotNil(secondManager, "Second call should create a manager")
+                XCTAssertFalse(firstManager === secondManager, "Configuration change should create a different manager instance")
                 expectation.fulfill()
             }
         }
