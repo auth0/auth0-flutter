@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'auth0_flutter_dpop_platform.dart';
 import 'auth/auth_dpop_headers_options.dart';
 import 'auth/api_exception.dart';
-import 'request/request.dart';
+import 'request/dpop_request.dart';
 import 'request/request_options.dart';
 
 const String dpopGetHeadersMethod = 'dpop#getDPoPHeaders';
@@ -17,7 +17,7 @@ class MethodChannelAuth0FlutterDPoP extends Auth0FlutterDPoPPlatform {
 
   @override
   Future<Map<String, String>> getDPoPHeaders(
-      final ApiRequest<AuthDPoPHeadersOptions> request) async {
+      final DPoPRequest<AuthDPoPHeadersOptions> request) async {
     final Map<String, dynamic> result =
         await _invokeRequest(method: dpopGetHeadersMethod, request: request);
 
@@ -25,19 +25,19 @@ class MethodChannelAuth0FlutterDPoP extends Auth0FlutterDPoPPlatform {
   }
 
   @override
-  Future<void> clearDPoPKey(final ApiRequest<RequestOptions> request) async {
+  Future<void> clearDPoPKey(final DPoPRequest<RequestOptions> request) async {
     await _invokeRequest(
         method: dpopClearKeyMethod, request: request, throwOnNull: false);
   }
 
   Future<Map<String, dynamic>> _invokeRequest<TOptions extends RequestOptions>({
     required final String method,
-    required final ApiRequest<TOptions> request,
+    required final DPoPRequest<TOptions> request,
     final bool? throwOnNull = true,
   }) async {
     final Map<String, dynamic>? result;
     try {
-      result = await _channel.invokeMapMethod(method, request.toMap());
+      result = await _channel.invokeMapMethod(method, request.options.toMap());
     } on PlatformException catch (e) {
       throw ApiException.fromPlatformException(e);
     }

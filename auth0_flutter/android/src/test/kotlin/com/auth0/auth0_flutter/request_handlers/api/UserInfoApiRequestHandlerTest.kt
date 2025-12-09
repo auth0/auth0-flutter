@@ -123,6 +123,57 @@ class UserInfoApiRequestHandlerTest {
     }
 
     @Test
+    fun `should default tokenType to Bearer when not provided`() {
+        val options = hashMapOf(
+            "accessToken" to "test-token",
+        )
+        val handler = UserInfoApiRequestHandler()
+        val mockBuilder = mock<Request<UserProfile, AuthenticationException>>()
+        val mockApi = mock<AuthenticationAPIClient>()
+        val mockAccount = mock<Auth0>()
+        val mockResult = mock<Result>()
+        val request = MethodCallRequest(account = mockAccount, options)
+
+        whenever(mockApi.userInfo("test-token")).thenReturn(mockBuilder)
+        whenever(mockBuilder.addHeader(any(), any())).thenReturn(mockBuilder)
+
+        handler.handle(
+            mockApi,
+            request,
+            mockResult
+        )
+
+        verify(mockBuilder).addHeader("Authorization", "Bearer test-token")
+        verify(mockBuilder).start(any())
+    }
+
+    @Test
+    fun `should use custom tokenType when provided`() {
+        val options = hashMapOf(
+            "accessToken" to "test-token",
+            "tokenType" to "DPoP"
+        )
+        val handler = UserInfoApiRequestHandler()
+        val mockBuilder = mock<Request<UserProfile, AuthenticationException>>()
+        val mockApi = mock<AuthenticationAPIClient>()
+        val mockAccount = mock<Auth0>()
+        val mockResult = mock<Result>()
+        val request = MethodCallRequest(account = mockAccount, options)
+
+        whenever(mockApi.userInfo("test-token")).thenReturn(mockBuilder)
+        whenever(mockBuilder.addHeader(any(), any())).thenReturn(mockBuilder)
+
+        handler.handle(
+            mockApi,
+            request,
+            mockResult
+        )
+
+        verify(mockBuilder).addHeader("Authorization", "DPoP test-token")
+        verify(mockBuilder).start(any())
+    }
+
+    @Test
     fun `should call result error on failure`() {
         val options = hashMapOf(
             "accessToken" to "test-token",

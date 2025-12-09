@@ -668,8 +668,22 @@ Fetch the latest user information from the `/userinfo` endpoint.
 This method will yield a `UserProfile` instance. Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/UserProfile-class.html) to learn more about its available properties.
 
 ```dart
-final userProfile = await auth0.api.userInfo(accessToken: accessToken);
+// Basic usage with Bearer token (default)
+final userProfile = await auth0.api.userProfile(accessToken: accessToken);
+
+// With explicit token type (useful for DPoP tokens)
+final credentials = await auth0.credentialsManager.credentials();
+final userProfile = await auth0.api.userProfile(
+  accessToken: credentials.accessToken,
+  tokenType: credentials.tokenType, // 'Bearer' or 'DPoP'
+);
 ```
+
+The `tokenType` parameter specifies the type of token being used:
+- `'Bearer'` (default): Standard OAuth 2.0 bearer tokens
+- `'DPoP'`: DPoP (Demonstrating Proof of Possession) tokens for enhanced security
+
+> 💡 When using DPoP tokens, the SDK automatically handles proof generation. See the [DPoP documentation](DPOP.md) for more information.
 
 ### Renew credentials
 
