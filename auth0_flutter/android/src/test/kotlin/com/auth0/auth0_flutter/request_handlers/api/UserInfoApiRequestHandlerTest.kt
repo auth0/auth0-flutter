@@ -55,7 +55,7 @@ class UserInfoApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        whenever(mockApi.userInfo("test-token")).thenReturn(mockBuilder)
+        whenever(mockApi.userInfo("test-token", "Bearer")).thenReturn(mockBuilder)
 
         handler.handle(
             mockApi,
@@ -63,7 +63,7 @@ class UserInfoApiRequestHandlerTest {
             mockResult
         )
 
-        verify(mockApi).userInfo("test-token")
+        verify(mockApi).userInfo("test-token", "Bearer")
         verify(mockBuilder).start(any())
     }
 
@@ -80,7 +80,7 @@ class UserInfoApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        whenever(mockApi.userInfo("test-token")).thenReturn(mockBuilder)
+        whenever(mockApi.userInfo("test-token", "Bearer")).thenReturn(mockBuilder)
         whenever(mockBuilder.addParameters(any())).thenReturn(mockBuilder)
 
         handler.handle(
@@ -110,7 +110,7 @@ class UserInfoApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        whenever(mockApi.userInfo("test-token")).thenReturn(mockBuilder)
+        whenever(mockApi.userInfo("test-token", "Bearer")).thenReturn(mockBuilder)
 
         handler.handle(
             mockApi,
@@ -134,8 +134,7 @@ class UserInfoApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        whenever(mockApi.userInfo("test-token")).thenReturn(mockBuilder)
-        whenever(mockBuilder.addHeader(any(), any())).thenReturn(mockBuilder)
+        whenever(mockApi.userInfo("test-token", "Bearer")).thenReturn(mockBuilder)
 
         handler.handle(
             mockApi,
@@ -143,7 +142,7 @@ class UserInfoApiRequestHandlerTest {
             mockResult
         )
 
-        verify(mockBuilder).addHeader("Authorization", "Bearer test-token")
+        verify(mockApi).userInfo("test-token", "Bearer")
         verify(mockBuilder).start(any())
     }
 
@@ -160,8 +159,7 @@ class UserInfoApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        whenever(mockApi.userInfo("test-token")).thenReturn(mockBuilder)
-        whenever(mockBuilder.addHeader(any(), any())).thenReturn(mockBuilder)
+        whenever(mockApi.userInfo("test-token", "DPoP")).thenReturn(mockBuilder)
 
         handler.handle(
             mockApi,
@@ -169,7 +167,7 @@ class UserInfoApiRequestHandlerTest {
             mockResult
         )
 
-        verify(mockBuilder).addHeader("Authorization", "DPoP test-token")
+        verify(mockApi).userInfo("test-token", "DPoP")
         verify(mockBuilder).start(any())
     }
 
@@ -187,7 +185,7 @@ class UserInfoApiRequestHandlerTest {
         val exception =
             AuthenticationException(code = "test-code", description = "test-description")
 
-        whenever(mockApi.userInfo("test-token")).thenReturn(mockBuilder)
+        whenever(mockApi.userInfo("test-token", "Bearer")).thenReturn(mockBuilder)
         whenever(mockBuilder.start(any())).thenAnswer {
             val callback = it.getArgument<Callback<UserProfile, AuthenticationException>>(0)
             callback.onFailure(exception)
@@ -229,7 +227,7 @@ class UserInfoApiRequestHandlerTest {
             null
         )
 
-        whenever(mockApi.userInfo("test-token")).thenReturn(mockBuilder)
+        whenever(mockApi.userInfo("test-token", "Bearer")).thenReturn(mockBuilder)
         whenever(mockBuilder.start(any())).thenAnswer {
             val callback = it.getArgument<Callback<UserProfile, AuthenticationException>>(0)
             callback.onSuccess(user)
