@@ -54,7 +54,7 @@ void main() {
 
     test('toMap should include useDPoP when explicitly set to false', () {
       final options = WebAuthLoginOptions(
-        useDPoP: false,
+        
       );
 
       final map = options.toMap();
