@@ -15,21 +15,24 @@ class Auth0Web {
       UserAgent(name: 'auth0-flutter', version: version);
 
   /// Creates an instance of the [Auth0Web] client with the provided
-  /// [domain], [clientId], and optional [redirectUrl], [cacheLocation], and [useDPoP] properties.
+  /// [domain], [clientId], and optional [redirectUrl], [cacheLocation],
+  /// and [useDPoP] properties.
   ///
   /// **Parameters:**
   ///
-  /// * [domain] and [clientId] are both values that can be retrieved from the
-  ///   **Settings** page of your [Auth0 application](https://manage.auth0.com/#/applications/).
+  /// * [domain] and [clientId] are both values that can be retrieved
+  ///   from the **Settings** page of your
+  ///   [Auth0 application](https://manage.auth0.com/#/applications/).
   ///
   /// * [redirectUrl] is used for silent authentication in [onLoad].
   ///
-  /// * [cacheLocation] specifies where the SDK should store its authentication state.
-  ///   Defaults to `memory`. Setting this to `localStorage` is often required for
-  ///   seamless silent authentication on page reloads.
+  /// * [cacheLocation] specifies where the SDK should store its
+  ///   authentication state. Defaults to `memory`. Setting this to
+  ///   `localStorage` is often required for seamless silent
+  ///   authentication on page reloads.
   ///
-  /// * [useDPoP] enables DPoP for enhanced token security. See README for details.
-  ///   Defaults to `false`.
+  /// * [useDPoP] enables DPoP for enhanced token security.
+  ///   See README for details. Defaults to `false`.
   Auth0Web(final String domain, final String clientId,
       {final String? redirectUrl,
       final CacheLocation? cacheLocation,
