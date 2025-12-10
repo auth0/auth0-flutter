@@ -26,7 +26,8 @@ class LocalAuthentication {
   ///  after a failed match.
   final String? fallbackTitle;
 
-  /// (Android only): The level of authentication required. Defaults to [LocalAuthenticationLevel.strong].
+  /// (Android only): The level of authentication required. Defaults to
+  /// [LocalAuthenticationLevel.strong].
   final LocalAuthenticationLevel? authenticationLevel;
 
   const LocalAuthentication(
