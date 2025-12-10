@@ -9,6 +9,12 @@
 📚 <a href="#documentation">Documentation</a> • 🚀 <a href="#getting-started">Getting started</a> • 🌐 <a href="#api-reference">API reference</a> • 💬 <a href="#feedback">Feedback</a>
 </div>
 
+## ⚠️ Important Migration Notice: v2.0.0
+
+We're excited to announce the release of auth0_flutter v2.0.0!
+
+**For v2.0.0 users:** This version includes updates to the underlying native Auth0 SDKs to support **DPoP (Demonstrating Proof of Possession)** and other improvements. See the 👉 [Migration Guide](https://github.com/auth0/auth0-flutter/blob/main/auth0_flutter/MIGRATION_GUIDE.md) 👈 for compatibility requirements and upgrade instructions.
+
 ## Documentation
 
 - Quickstarts: [Native](https://auth0.com/docs/quickstart/native/flutter/interactive) / [Web](https://auth0.com/docs/quickstart/spa/flutter/interactive) - our interactive guide for quickly adding login, logout and user information to your app using Auth0
@@ -22,11 +28,11 @@
 
 ### Requirements
 
-| Flutter    | Android         | iOS               | macOS             |
-| :--------- | :-------------- | :---------------- | :---------------- |
-| SDK 3.0+   | Android API 21+ | iOS 14+           | macOS 11+         |
-| Dart 2.17+ | Java 8+         | Swift 5.9+        | Swift 5.9+        |
-|            |                 | Xcode 15.x / 16.x | Xcode 15.x / 16.x |
+| Flutter     | Android         | iOS               | macOS             |
+| :---------- | :-------------- | :---------------- | :---------------- |
+| SDK 3.24.0+ | Android API 21+ | iOS 14+           | macOS 11+         |
+| Dart 3.5.0+ | Java 8+         | Swift 5.9+        | Swift 5.9+        |
+|             |                 | Xcode 15.x / 16.x | Xcode 15.x / 16.x |
 
 ### Installation
 
@@ -260,7 +266,7 @@ final auth0Web = Auth0Web('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID');
 Finally, in your `index.html` add the following `<script>` tag:
 
 ```html
-<script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js" defer></script>
+<script src="https://cdn.auth0.com/js/auth0-spa-js/2.9/auth0-spa-js.production.js" defer></script>
 ```
 
 ### Logging in
