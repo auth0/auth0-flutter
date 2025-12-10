@@ -314,5 +314,34 @@ void main() {
           verify(mockedPlatform.userInfo(captureAny)).captured.single;
       expect(verificationResult.options.parameters, isEmpty);
     });
+
+    test('defaults tokenType to Bearer when not specified', () async {
+      when(mockedPlatform.userInfo(any))
+          .thenAnswer((final _) async => const UserProfile(sub: 'sub'));
+
+      await Auth0('test-domain', 'test-clientId')
+          .api
+          .userProfile(accessToken: 'test-token');
+
+      final verificationResult =
+          verify(mockedPlatform.userInfo(captureAny)).captured.single;
+      expect(verificationResult.options.tokenType, 'Bearer');
+    });
+
+    test('passes through custom tokenType to the platform', () async {
+      when(mockedPlatform.userInfo(any))
+          .thenAnswer((final _) async => const UserProfile(sub: 'sub'));
+
+      await Auth0('test-domain', 'test-clientId')
+          .api
+          .userProfile(accessToken: 'test-token', tokenType: 'DPoP');
+
+      final verificationResult =
+          verify(mockedPlatform.userInfo(captureAny)).captured.single;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.account.clientId, 'test-clientId');
+      expect(verificationResult.options?.accessToken, 'test-token');
+      expect(verificationResult.options?.tokenType, 'DPoP');
+    });
   });
 }

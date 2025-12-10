@@ -38,21 +38,73 @@
   </script>
   <!-- This script adds the flutter initialization JS code -->
   <script src="flutter_bootstrap.js" async></script>
-  <script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js"></script>
+  
+  <!-- Load Auth0 SPA JS SDK v2.9.0 from unpkg CDN -->
+  <script>
+    // Create promise that resolves when Auth0 SDK is loaded
+    window.auth0SdkReady = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://unpkg.com/@auth0/auth0-spa-js@2.9.0/dist/auth0-spa-js.production.js';
+      
+      script.onload = () => {
+        if (window.auth0 && window.auth0.Auth0Client) {
+          console.log('✓ Auth0 SDK loaded successfully');
+          resolve();
+        } else {
+          console.warn('⚠ Script loaded but Auth0 SDK not ready, waiting...');
+          let attempts = 0;
+          const checkAuth0 = setInterval(() => {
+            attempts++;
+            if (window.auth0 && window.auth0.Auth0Client) {
+              console.log(`✓ Auth0 SDK ready after ${attempts * 50}ms`);
+              clearInterval(checkAuth0);
+              resolve();
+            } else if (attempts >= 40) {
+              clearInterval(checkAuth0);
+              console.error('✗ Auth0 SDK not available after script load');
+              reject(new Error('Auth0 SDK initialization timeout'));
+            }
+          }, 50);
+        }
+      };
+      
+      script.onerror = () => {
+        console.error('✗ Failed to load Auth0 SDK script');
+        reject(new Error('Auth0 SDK script load failed'));
+      };
+      
+      document.head.appendChild(script);
+    }).catch(error => {
+      console.error('Auth0 SDK Error:', error);
+      document.body.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif;">
+          <div style="text-align: center; max-width: 500px; padding: 20px;">
+            <h2 style="color: #e53935;">⚠️ Unable to Load Authentication SDK</h2>
+            <p style="color: #666;">The Auth0 SDK failed to load. Please check your internet connection and try refreshing the page.</p>
+            <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #1976d2; color: white; border: none; border-radius: 4px; cursor: pointer;">
+              Reload Page
+            </button>
+          </div>
+        </div>
+      `;
+      throw error;
+    });
+  </script>
 </head>
 <body>
   <script>
     window.addEventListener('load', function(ev) {
-      // Download main.dart.js
-      _flutter.loader.loadEntrypoint({
+      window.auth0SdkReady.then(() => {
+        _flutter.loader.loadEntrypoint({
         serviceWorker: {
           serviceWorkerVersion: serviceWorkerVersion,
         },
-        onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
-            appRunner.runApp();
-          });
-        }
+          onEntrypointLoaded: function(engineInitializer) {
+            engineInitializer.initializeEngine().then(function(appRunner) {
+              appRunner.runApp();
+            });
+          }
+        });
       });
     });
   </script>

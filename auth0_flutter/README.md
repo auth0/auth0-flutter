@@ -202,6 +202,10 @@ Re-declare the activity manually using `tools:node="remove"` in the `android/src
 
 > 💡 If your Android app is using [product flavors](https://developer.android.com/studio/build/build-variants#product-flavors), you might need to specify different manifest placeholders for each flavor.
 
+##### Android: Biometric authentication
+
+> ⚠️ On Android, your app's `MainActivity.kt` file must extend `FlutterFragmentActivity` instead of `FlutterActivity` for biometric prompts to work.
+
 ##### iOS/macOS: Configure the associated domain
 
 > ⚠️ This step requires a paid Apple Developer account. It is needed to use Universal Links as callback and logout URLs.
@@ -342,6 +346,44 @@ final credentials = await auth0Web.loginWithPopup(popupWindow: popup);
 > 💡 You need to import the `'flutter/foundation.dart'` library to access the `kIsWeb` constant. If your app does not support other platforms, you can remove this condition.
 
 For other comprehensive examples, see the [EXAMPLES.md](EXAMPLES.md) document.
+
+### Using DPoP (Demonstrating Proof of Possession)
+
+Auth0 Flutter SDK supports [DPoP (Demonstrating Proof of Possession)](https://datatracker.ietf.org/doc/html/rfc9449), a security mechanism that cryptographically binds access tokens to your client, preventing token theft and replay attacks.
+
+**Quick Start:**
+
+```dart
+// Mobile (Android/iOS)
+final credentials = await auth0
+    .webAuthentication()
+    .login(useDPoP: true, useHTTPS: true);
+
+// Web
+final auth0Web = Auth0Web(
+  'YOUR_AUTH0_DOMAIN',
+  'YOUR_AUTH0_CLIENT_ID',
+  useDPoP: true,
+);
+```
+
+**Key Benefits:**
+- 🔒 Enhanced security through cryptographic token binding
+- 🛡️ Protection against token theft and replay attacks
+- 🌐 Full cross-platform support (Web, Android, iOS)
+
+**Platform Support:**
+
+| Feature | Web | iOS | Android |
+|---------|-----|-----|---------|
+| Login with DPoP | ✅ | ✅ | ✅ |
+| CredentialsManager with DPoP | ✅ | ✅ | ✅ |
+| Token Refresh with DPoP | ✅ | ✅ | ✅ |
+| Manual DPoP APIs (`getDPoPHeaders()`, `clearDPoPKey()`) | ✅ | ✅ | ✅ |
+
+> **Note:** In most cases, DPoP is managed automatically when `useDPoP: true` is enabled. Manual DPoP APIs are available for advanced use cases where you need direct control over DPoP proof generation.
+
+📖 **For complete DPoP documentation, examples, and troubleshooting, see [DPOP.md](DPOP.md)**
 
 ### iOS SSO Alert Box
 

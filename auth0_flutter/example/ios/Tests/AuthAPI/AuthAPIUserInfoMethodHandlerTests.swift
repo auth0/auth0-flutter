@@ -27,7 +27,7 @@ extension AuthAPIUserInfoMethodHandlerTests {
                 currentExpectation.fulfill()
             }
         }
-        wait(for: expectations)
+        wait(for: expectations, timeout: 5.0)
     }
 }
 
@@ -84,7 +84,7 @@ extension AuthAPIUserInfoMethodHandlerTests {
             assert(result: result, has: UserInfoProperty.allCases)
             expectation.fulfill()
         }
-        wait(for: [expectation])
+        wait(for: [expectation], timeout: 5.0)
     }
 
     func testProducesAuthenticationError() {
@@ -95,7 +95,7 @@ extension AuthAPIUserInfoMethodHandlerTests {
             assert(result: result, isError: error)
             expectation.fulfill()
         }
-        wait(for: [expectation])
+        wait(for: [expectation], timeout: 5.0)
     }
 }
 

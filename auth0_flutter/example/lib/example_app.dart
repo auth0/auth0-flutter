@@ -126,6 +126,68 @@ class _ExampleAppState extends State<ExampleApp> {
     });
   }
 
+  // DPoP Login Function - Works on Web, Android, and iOS
+  Future<void> dpopLogin() async {
+    String output = '';
+
+    try {
+      if (kIsWeb) {
+        // Web: Use popup-based login with DPoP
+        final auth0WebDPoP = Auth0Web(
+          dotenv.env['AUTH0_DOMAIN']!,
+          dotenv.env['AUTH0_CLIENT_ID']!,
+          useDPoP: true,
+        );
+
+        // Initialize SDK
+        await auth0WebDPoP.onLoad(audience: dotenv.env['AUTH0_AUDIENCE']);
+
+        // Login with popup
+        final credentials = await auth0WebDPoP.loginWithPopup(
+          audience: dotenv.env['AUTH0_AUDIENCE'],
+        );
+
+        setState(() {
+          _isLoggedIn = true;
+        });
+
+        output = 'DPoP Login Successful!\n\n'
+            'Token Type: ${credentials.tokenType}\n'
+            'Access Token: ${credentials.accessToken.substring(0, 50)}...\n'
+            'ID Token: ${credentials.idToken.substring(0, 50)}...\n'
+            'Expires At: ${credentials.expiresAt}';
+      } else {
+        // Mobile (Android/iOS): Use WebAuth with DPoP
+        final webAuthDPoP = auth0.webAuthentication(
+          scheme: dotenv.env['AUTH0_CUSTOM_SCHEME'],
+        );
+
+        final result = await webAuthDPoP.login(
+          useDPoP: true, // Enable DPoP for mobile
+          useHTTPS: true,
+          audience: dotenv.env['AUTH0_AUDIENCE'],
+        );
+
+        setState(() {
+          _isLoggedIn = true;
+        });
+
+        output = 'DPoP Login Successful!\n\n'
+            'Token Type: ${result.tokenType}\n'
+            'Access Token: ${result.accessToken.substring(0, 50)}...\n'
+            'ID Token: ${result.idToken.substring(0, 50)}...';
+      }
+    } catch (e) {
+      output = 'DPoP Login Failed:\n$e';
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      _output = output;
+    });
+  }
+
   @override
   Widget build(final BuildContext context) {
     return MaterialApp(
@@ -146,6 +208,21 @@ class _ExampleAppState extends State<ExampleApp> {
                       else
                         WebAuthCard(
                             label: 'Web Auth Login', action: webAuthLogin),
+                      const SizedBox(height: 10),
+                      // DPoP Button - Works on Web, Android, and iOS
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepPurple,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 32, vertical: 12),
+                        ),
+                        onPressed: dpopLogin,
+                        child: const Text(
+                          'DPoP Login',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
                     ]),
               )),
               SliverFillRemaining(

@@ -21,7 +21,9 @@ class Auth0FlutterPluginTest {
 
             val mockBindings = mock<FlutterPluginBinding>()
             val mockContext = mock<Context>()
+            val mockMessenger = mock<io.flutter.plugin.common.BinaryMessenger>()
             `when`(mockBindings.applicationContext).thenReturn(mockContext)
+            `when`(mockBindings.binaryMessenger).thenReturn(mockMessenger)
             plugin.onAttachedToEngine(mockBindings)
 
             val constructed: List<MethodChannel> = m.constructed()
@@ -32,11 +34,12 @@ class Auth0FlutterPluginTest {
                 )
             }
 
-            assertMethodcallHandler<Auth0FlutterAuthMethodCallHandler>(0)
+            assertMethodcallHandler<Auth0FlutterWebAuthMethodCallHandler>(0)
             assertMethodcallHandler<Auth0FlutterAuthMethodCallHandler>(1)
             assertMethodcallHandler<CredentialsManagerMethodCallHandler>(2)
+            assertMethodcallHandler<Auth0FlutterDPoPMethodCallHandler>(3)
 
-            assert(constructed.size == 3)
+            assert(constructed.size == 4)
         }
     }
 
@@ -47,7 +50,9 @@ class Auth0FlutterPluginTest {
 
             val mockBindings = mock<FlutterPluginBinding>()
             val mockContext = mock<Context>()
+            val mockMessenger = mock<io.flutter.plugin.common.BinaryMessenger>()
             `when`(mockBindings.applicationContext).thenReturn(mockContext)
+            `when`(mockBindings.binaryMessenger).thenReturn(mockMessenger)
             plugin.onAttachedToEngine(mockBindings)
 
             val constructed: List<MethodChannel> = m.constructed()
@@ -63,8 +68,9 @@ class Auth0FlutterPluginTest {
             assertMethodcallHandler(0)
             assertMethodcallHandler(1)
             assertMethodcallHandler(2)
+            assertMethodcallHandler(3)
 
-            assert(constructed.size == 3)
+            assert(constructed.size == 4)
         }
     }
 
@@ -75,7 +81,9 @@ class Auth0FlutterPluginTest {
 
             val mockBindings = mock<FlutterPluginBinding>()
             val mockContext = mock<Context>()
+            val mockMessenger = mock<io.flutter.plugin.common.BinaryMessenger>()
             `when`(mockBindings.applicationContext).thenReturn(mockContext)
+            `when`(mockBindings.binaryMessenger).thenReturn(mockMessenger)
             plugin.onAttachedToEngine(mockBindings)
 
             val constructed: List<MethodChannel> = m.constructed()
@@ -96,33 +104,10 @@ class Auth0FlutterPluginTest {
             }
 
             assert(getHandler<Auth0FlutterWebAuthMethodCallHandler>(0).activity == mockActivity)
-            assert(getHandler<CredentialsManagerMethodCallHandler>(2).activity == mockActivity)
-            assert(getHandler<CredentialsManagerMethodCallHandler>(2).context == mockContext)
+            assert(getHandler<CredentialsManagerMethodCallHandler>(1).activity == mockActivity)
+            assert(getHandler<CredentialsManagerMethodCallHandler>(1).context == mockContext)
 
-            assert(constructed.size == 3)
-        }
-    }
-
-    @Test
-    fun `should call binding addActivityResultListener for CredentialsManager on onAttachedToActivity`() {
-        mockConstruction(MethodChannel::class.java).use {
-            val plugin = Auth0FlutterPlugin()
-
-            val mockBindings = mock<FlutterPluginBinding>()
-            val mockContext = mock<Context>()
-            `when`(mockBindings.applicationContext).thenReturn(mockContext)
-            plugin.onAttachedToEngine(mockBindings)
-
-            val mockActivityBindings = mock<ActivityPluginBinding>()
-            val mockActivity = mock<Activity>()
-
-            `when`(mockActivityBindings.activity).thenReturn(mockActivity)
-
-            plugin.onAttachedToActivity(mockActivityBindings)
-
-            verify(mockActivityBindings).addActivityResultListener(
-                any<CredentialsManagerMethodCallHandler>()
-            )
+            assert(constructed.size == 4)
         }
     }
 }

@@ -77,6 +77,8 @@ class WebAuthentication {
   /// another allowed browser installed, the allowed browser is used instead
   /// When the user's default browser is not in the allowlist, and the user has
   /// no other allowed browser installed, an error is returned
+  /// * [useDPoP] enables DPoP for enhanced token security. See README for details.
+  /// Defaults to `false`.
   Future<Credentials> login(
       {final String? audience,
       final Set<String> scopes = const {
@@ -94,7 +96,8 @@ class WebAuthentication {
       final Map<String, String> parameters = const {},
       final IdTokenValidationConfig idTokenValidationConfig =
           const IdTokenValidationConfig(),
-      final SafariViewController? safariViewController}) async {
+      final SafariViewController? safariViewController,
+      final bool useDPoP = false}) async {
     final credentials = await Auth0FlutterWebAuthPlatform.instance.login(
         _createWebAuthRequest(WebAuthLoginOptions(
             audience: audience,
@@ -108,9 +111,11 @@ class WebAuthentication {
             useHTTPS: useHTTPS,
             useEphemeralSession: useEphemeralSession,
             safariViewController: safariViewController,
-            allowedBrowsers: allowedBrowsers)));
+            allowedBrowsers: allowedBrowsers,
+            useDPoP: useDPoP)));
 
     await _credentialsManager?.storeCredentials(credentials);
+
     return credentials;
   }
 

@@ -20,6 +20,6 @@ extension CredentialsExtension on Credentials {
         user: user,
         refreshToken: webCredentials.refresh_token,
         scopes: {...webCredentials.scope?.splitBySingleSpace() ?? []},
-        tokenType: 'Bearer');
+        tokenType: webCredentials.token_type ?? 'Bearer');
   }
 }
