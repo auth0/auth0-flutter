@@ -1,9 +1,9 @@
 // coverage:ignore-file
 import 'package:flutter/services.dart';
 
-import 'auth0_flutter_dpop_platform.dart';
-import 'auth/auth_dpop_headers_options.dart';
 import 'auth/api_exception.dart';
+import 'auth/auth_dpop_headers_options.dart';
+import 'auth0_flutter_dpop_platform.dart';
 import 'request/dpop_request.dart';
 import 'request/request_options.dart';
 

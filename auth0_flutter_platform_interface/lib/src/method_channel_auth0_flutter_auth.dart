@@ -123,6 +123,7 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
     return Credentials.fromMap(result);
   }
 
+  @override
   Future<void> resetPassword(
       final ApiRequest<AuthResetPasswordOptions> request) async {
     await invokeRequest(
