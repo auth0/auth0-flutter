@@ -1,5 +1,14 @@
 # Change Log
 
+## [afpi-v2.0.0](https://github.com/auth0/auth0-flutter/tree/afpi-v2.0.0) (2025-12-10)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.14.0...afpi-v2.0.0)
+
+**Added**
+- Adding DPoP feature for flutter [\#667](https://github.com/auth0/auth0-flutter/pull/667) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- Updated the doc on hasValidCredentials [\#679](https://github.com/auth0/auth0-flutter/pull/679) ([pmathew92](https://github.com/pmathew92))
+- docs: Add Ask DeepWiki badge to README [\#672](https://github.com/auth0/auth0-flutter/pull/672) ([arpit-jn](https://github.com/arpit-jn))
+- Adds claude-code-review github workflow [\#666](https://github.com/auth0/auth0-flutter/pull/666) ([NandanPrabhu](https://github.com/NandanPrabhu))
+
 ## [afpi-v1.14.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.14.0) (2025-09-24)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.13.0...afpi-v1.14.0)
 
