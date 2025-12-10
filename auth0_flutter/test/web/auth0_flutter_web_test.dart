@@ -423,7 +423,7 @@ void main() {
     group('loginWithRedirect', () {
       setUp(() {
         when(mockClientProxy.loginWithRedirect(any))
-            .thenAnswer((_) => Future.value());
+            .thenAnswer((final _) => Future.value());
       });
 
       test('correctly parses the ticket ID from a full invitation URL',
@@ -455,8 +455,8 @@ void main() {
       });
 
       test(
-          'returns null for the ticket when a valid URL without the parameter is passed',
-          () async {
+          'returns null for the ticket when a valid URL without the '
+          'parameter is passed', () async {
         await auth0.loginWithRedirect(invitationUrl: urlWithoutInvitation);
 
         final captured = verify(mockClientProxy.loginWithRedirect(captureAny))
@@ -477,9 +477,9 @@ void main() {
     group('loginWithPopup', () {
       setUp(() {
         when(mockClientProxy.loginWithPopup(any, any))
-            .thenAnswer((_) => Future.value());
+            .thenAnswer((final _) => Future.value());
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((_) => Future.value(webCredentials));
+            .thenAnswer((final _) => Future.value(webCredentials));
       });
 
       test('correctly parses the ticket ID from a full invitation URL',
@@ -538,7 +538,7 @@ void main() {
 
       test('creates Auth0Web instance with explicit DPoP false', () {
         final auth0NoDPoP =
-            Auth0Web('test-domain', 'test-client-id', useDPoP: false);
+            Auth0Web('test-domain', 'test-client-id');
         expect(auth0NoDPoP, isNotNull);
       });
     });
@@ -587,9 +587,9 @@ void main() {
     group('loginWithPopup with DPoP', () {
       setUp(() {
         when(mockClientProxy.loginWithPopup(any, any))
-            .thenAnswer((_) => Future.value());
+            .thenAnswer((final _) => Future.value());
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((_) => Future.value(webCredentials));
+            .thenAnswer((final _) => Future.value(webCredentials));
       });
 
       test('loginWithPopup with DPoP returns valid credentials', () async {
@@ -653,9 +653,9 @@ void main() {
         when(mockClientProxy.loginWithPopup(any, any)).thenThrow(jsError);
 
         expect(
-          () => auth0WithDPoP.loginWithPopup(),
+          auth0WithDPoP.loginWithPopup,
           throwsA(predicate(
-              (e) => e is WebException && e.code == 'login_required')),
+              (final e) => e is WebException && e.code == 'login_required')),
         );
       });
     });
@@ -663,7 +663,7 @@ void main() {
     group('loginWithRedirect with DPoP', () {
       setUp(() {
         when(mockClientProxy.loginWithRedirect(any))
-            .thenAnswer((_) => Future.value());
+            .thenAnswer((final _) => Future.value());
       });
 
       test('loginWithRedirect with DPoP is called successfully', () async {
@@ -704,7 +704,8 @@ void main() {
 
     group('logout with DPoP', () {
       setUp(() {
-        when(mockClientProxy.logout(any)).thenAnswer((_) => Future.value());
+        when(mockClientProxy.logout(any))
+            .thenAnswer((final _) => Future.value());
       });
 
       test('logout with DPoP is called successfully', () async {
@@ -727,14 +728,14 @@ void main() {
         final jsError = createJsException('logout_error', 'Logout failed');
         when(mockClientProxy.logout(any)).thenThrow(jsError);
 
-        expect(() => auth0WithDPoP.logout(), throwsA(anything));
+        expect(auth0WithDPoP.logout, throwsA(anything));
       });
     });
 
     group('getTokenSilently with DPoP', () {
       setUp(() {
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((_) => Future.value(webCredentials));
+            .thenAnswer((final _) => Future.value(webCredentials));
       });
 
       test('getTokenSilently with DPoP returns valid credentials', () async {
@@ -762,9 +763,9 @@ void main() {
         when(mockClientProxy.getTokenSilently(any)).thenThrow(jsError);
 
         expect(
-          () => auth0WithDPoP.credentials(),
+          auth0WithDPoP.credentials,
           throwsA(predicate(
-              (e) => e is WebException && e.code == 'consent_required')),
+              (final e) => e is WebException && e.code == 'consent_required')),
         );
       });
     });
@@ -772,9 +773,9 @@ void main() {
     group('DPoP Token Verification', () {
       test('verifies DPoP token type is included in response', () async {
         when(mockClientProxy.loginWithPopup(any, any))
-            .thenAnswer((_) => Future.value());
+            .thenAnswer((final _) => Future.value());
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((_) => Future.value(webCredentials));
+            .thenAnswer((final _) => Future.value(webCredentials));
 
         final result = await auth0WithDPoP.loginWithPopup(
           audience: 'https://DpopFlutterTest/',
@@ -788,7 +789,7 @@ void main() {
       test('verifies credentials contain all required fields with DPoP',
           () async {
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((_) => Future.value(webCredentials));
+            .thenAnswer((final _) => Future.value(webCredentials));
 
         final result = await auth0WithDPoP.credentials();
 
@@ -808,9 +809,9 @@ void main() {
         when(mockClientProxy.loginWithPopup(any, any)).thenThrow(jsError);
 
         expect(
-          () => auth0WithDPoP.loginWithPopup(),
-          throwsA(predicate(
-              (e) => e is WebException && e.code == 'AUTHENTICATION_ERROR')),
+          auth0WithDPoP.loginWithPopup,
+          throwsA(predicate((final e) =>
+              e is WebException && e.code == 'AUTHENTICATION_ERROR')),
         );
       });
 
@@ -820,9 +821,9 @@ void main() {
         when(mockClientProxy.getTokenSilently(any)).thenThrow(jsError);
 
         expect(
-          () => auth0WithDPoP.credentials(),
-          throwsA(predicate(
-              (e) => e is WebException && e.code == 'invalid_dpop_proof')),
+          auth0WithDPoP.credentials,
+          throwsA(predicate((final e) =>
+              e is WebException && e.code == 'invalid_dpop_proof')),
         );
       });
 
@@ -832,9 +833,9 @@ void main() {
         when(mockClientProxy.loginWithPopup(any, any)).thenThrow(jsError);
 
         expect(
-          () => auth0WithDPoP.loginWithPopup(),
-          throwsA(
-              predicate((e) => e is WebException && e.code == 'network_error')),
+          auth0WithDPoP.loginWithPopup,
+          throwsA(predicate(
+              (final e) => e is WebException && e.code == 'network_error')),
         );
       });
 
@@ -844,9 +845,9 @@ void main() {
         when(mockClientProxy.getTokenSilently(any)).thenThrow(jsError);
 
         expect(
-          () => auth0WithDPoP.credentials(),
-          throwsA(predicate(
-              (e) => e is WebException && e.code == 'use_dpop_nonce')),
+          auth0WithDPoP.credentials,
+          throwsA(predicate((final e) =>
+              e is WebException && e.code == 'use_dpop_nonce')),
         );
       });
 
@@ -856,9 +857,9 @@ void main() {
         when(mockClientProxy.loginWithPopup(any, any)).thenThrow(jsError);
 
         expect(
-          () => auth0WithDPoP.loginWithPopup(),
-          throwsA(predicate(
-              (e) => e is WebException && e.code == 'invalid_dpop_proof')),
+          auth0WithDPoP.loginWithPopup,
+          throwsA(predicate((final e) =>
+              e is WebException && e.code == 'invalid_dpop_proof')),
         );
       });
     });
@@ -872,16 +873,16 @@ void main() {
 
       test('Non-DPoP instance does not have DPoP enabled', () {
         final regularAuth0 =
-            Auth0Web('test-domain', 'test-client-id', useDPoP: false);
+            Auth0Web('test-domain', 'test-client-id');
         expect(regularAuth0, isNotNull);
       });
 
       test('DPoP loginWithPopup with custom audience', () async {
         const customAudience = 'https://custom-api.example.com/';
         when(mockClientProxy.loginWithPopup(any, any))
-            .thenAnswer((_) => Future.value());
+            .thenAnswer((final _) => Future.value());
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((_) => Future.value(webCredentials));
+            .thenAnswer((final _) => Future.value(webCredentials));
 
         await auth0WithDPoP.loginWithPopup(audience: customAudience);
 
@@ -894,7 +895,7 @@ void main() {
       test('DPoP loginWithRedirect with custom audience', () async {
         const customAudience = 'https://custom-api.example.com/';
         when(mockClientProxy.loginWithRedirect(any))
-            .thenAnswer((_) => Future.value());
+            .thenAnswer((final _) => Future.value());
 
         await auth0WithDPoP.loginWithRedirect(audience: customAudience);
 
@@ -906,7 +907,7 @@ void main() {
 
       test('DPoP credentials with cacheMode parameter', () async {
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((_) => Future.value(webCredentials));
+            .thenAnswer((final _) => Future.value(webCredentials));
 
         await auth0WithDPoP.credentials(cacheMode: CacheMode.on);
 
@@ -918,8 +919,9 @@ void main() {
 
       test('DPoP onLoad initializes correctly', () async {
         when(mockClientProxy.isAuthenticated())
-            .thenAnswer((_) => Future.value(false));
-        when(mockClientProxy.checkSession()).thenAnswer((_) => Future.value());
+            .thenAnswer((final _) => Future.value(false));
+        when(mockClientProxy.checkSession())
+            .thenAnswer((final _) => Future.value());
 
         final result = await auth0WithDPoP.onLoad();
 
@@ -929,9 +931,9 @@ void main() {
 
       test('DPoP onLoad returns credentials when authenticated', () async {
         when(mockClientProxy.isAuthenticated())
-            .thenAnswer((_) => Future.value(true));
+            .thenAnswer((final _) => Future.value(true));
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((_) => Future.value(webCredentials));
+            .thenAnswer((final _) => Future.value(webCredentials));
 
         final result = await auth0WithDPoP.onLoad();
 
@@ -944,7 +946,7 @@ void main() {
     group('DPoP Token Management', () {
       test('DPoP credentials refresh with cacheMode off', () async {
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((_) => Future.value(webCredentials));
+            .thenAnswer((final _) => Future.value(webCredentials));
 
         final result = await auth0WithDPoP.credentials(
           cacheMode: CacheMode.off,
@@ -967,7 +969,7 @@ void main() {
         );
 
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((_) => Future.value(expiredCredentials));
+            .thenAnswer((final _) => Future.value(expiredCredentials));
 
         final result = await auth0WithDPoP.credentials();
 
@@ -985,7 +987,7 @@ void main() {
         );
 
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((_) => Future.value(multiScopeCredentials));
+            .thenAnswer((final _) => Future.value(multiScopeCredentials));
 
         final result = await auth0WithDPoP.credentials();
 

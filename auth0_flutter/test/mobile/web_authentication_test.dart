@@ -314,7 +314,7 @@ void main() {
 
         await Auth0('test-domain', 'test-clientId')
             .webAuthentication()
-            .login(useDPoP: false);
+            .login();
 
         final verificationResult = verify(mockedPlatform.login(captureAny))
             .captured
