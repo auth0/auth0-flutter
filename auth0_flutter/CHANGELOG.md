@@ -4,7 +4,6 @@
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.14.0...af-v2.0.0-beta.1)
 
 **Added**
-- Fix linting issue in auth0_flutter folder [\#693](https://github.com/auth0/auth0-flutter/pull/693) ([utkrishtsahu](https://github.com/utkrishtsahu))
 - Docs: Add v2.0.0 migration notice and update documentation [\#692](https://github.com/auth0/auth0-flutter/pull/692) ([utkrishtsahu](https://github.com/utkrishtsahu))
 - Adding DPoP feature for flutter [\#667](https://github.com/auth0/auth0-flutter/pull/667) ([utkrishtsahu](https://github.com/utkrishtsahu))
 - Updated the doc on hasValidCredentials [\#679](https://github.com/auth0/auth0-flutter/pull/679) ([pmathew92](https://github.com/pmathew92))
