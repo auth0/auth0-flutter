@@ -1,5 +1,7 @@
 package com.auth0.auth0_flutter
 
+import android.content.Context
+import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.auth0_flutter.request_handlers.api.ApiRequestHandler
 import com.auth0.auth0_flutter.request_handlers.api.LoginApiRequestHandler
 import com.auth0.auth0_flutter.request_handlers.api.SignupApiRequestHandler
@@ -10,6 +12,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.RuntimeEnvironment
 
 @RunWith(RobolectricTestRunner::class)
 class Auth0FlutterAuthMethodCallHandlerTest {
@@ -27,10 +30,10 @@ class Auth0FlutterAuthMethodCallHandlerTest {
     private fun runCallHandler(
         method: String,
         arguments: HashMap<String, Any?> = defaultArguments,
-        requestHandlers: List<ApiRequestHandler>,
+        apiRequestHandlers: List<ApiRequestHandler> = emptyList(),
         onResult: (Result) -> Unit
     ) {
-        val handler = Auth0FlutterAuthMethodCallHandler(requestHandlers)
+        val handler = Auth0FlutterAuthMethodCallHandler(apiRequestHandlers)
         val mockResult = mock<Result>()
 
         handler.onMethodCall(MethodCall(method, arguments), mockResult)
@@ -39,7 +42,7 @@ class Auth0FlutterAuthMethodCallHandlerTest {
 
     @Test
     fun `handler should result in 'notImplemented' if no handlers`() {
-        runCallHandler("auth#login", requestHandlers = listOf()) { result ->
+        runCallHandler("auth#login") { result ->
             verify(result).notImplemented()
         }
     }
@@ -50,7 +53,7 @@ class Auth0FlutterAuthMethodCallHandlerTest {
 
         `when`(signupHandler.method).thenReturn("auth#signup")
 
-        runCallHandler("auth#login", requestHandlers = listOf(signupHandler)) { result ->
+        runCallHandler("auth#login", apiRequestHandlers = listOf(signupHandler)) { result ->
             verify(result).notImplemented()
         }
     }
@@ -63,7 +66,7 @@ class Auth0FlutterAuthMethodCallHandlerTest {
         `when`(loginHandler.method).thenReturn("auth#login")
         `when`(signupHandler.method).thenReturn("auth#signup")
 
-        runCallHandler(loginHandler.method, requestHandlers = listOf(loginHandler, signupHandler)) {
+        runCallHandler(loginHandler.method, apiRequestHandlers = listOf(loginHandler, signupHandler)) {
             verify(loginHandler).handle(any(), any(), any())
             verify(signupHandler, times(0)).handle(any(), any(), any())
         }

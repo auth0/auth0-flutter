@@ -65,30 +65,6 @@ class CredentialsManagerMethodCallHandlerTest {
         }
     }
 
-    @Test
-    fun `handler should not call credentialsManager requireAuthentication`() {
-        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
-
-        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
-
-        val activity: Activity = mock()
-        val context: Context = mock()
-        val mockPrefs: SharedPreferences = mock()
-
-        `when`(context.getSharedPreferences(any(), any()))
-            .thenReturn(mockPrefs)
-
-        val handler = CredentialsManagerMethodCallHandler(listOf(clearCredentialsHandler))
-        val mockResult = mock<Result>()
-
-        handler.activity = activity
-        handler.context = context
-        handler.credentialsManager = mock()
-
-        handler.onMethodCall(MethodCall(clearCredentialsHandler.method, defaultArguments), mockResult)
-
-        verify(handler.credentialsManager, never())?.requireAuthentication(any(), any(), any(), any())
-    }
 
     @Test
     fun `handler should extract sharedPreferenceName correctly`() {
@@ -115,56 +91,6 @@ class CredentialsManagerMethodCallHandlerTest {
     }
 
     @Test
-    fun `handler should call credentialsManager requireAuthentication`() {
-        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
-
-        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
-
-        val activity: Activity = mock()
-        val context: Context = mock()
-        val mockPrefs: SharedPreferences = mock()
-
-        `when`(context.getSharedPreferences(any(), any()))
-            .thenReturn(mockPrefs)
-
-        val handler = CredentialsManagerMethodCallHandler(listOf(clearCredentialsHandler))
-        val mockResult = mock<Result>()
-
-        handler.activity = activity
-        handler.context = context
-        handler.credentialsManager = mock()
-
-        handler.onMethodCall(MethodCall(clearCredentialsHandler.method, defaultArguments + hashMapOf("localAuthentication" to hashMapOf("title" to "test", "description" to "test description"))), mockResult)
-
-        verify(handler.credentialsManager)?.requireAuthentication(eq(activity), eq(111), eq("test"), eq("test description"))
-    }
-
-    @Test
-    fun `handler should call credentialsManager requireAuthentication with default values`() {
-        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
-
-        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
-
-        val activity: Activity = mock()
-        val context: Context = mock()
-        val mockPrefs: SharedPreferences = mock()
-
-        `when`(context.getSharedPreferences(any(), any()))
-            .thenReturn(mockPrefs)
-
-        val handler = CredentialsManagerMethodCallHandler(listOf(clearCredentialsHandler))
-        val mockResult = mock<Result>()
-
-        handler.activity = activity
-        handler.context = context
-        handler.credentialsManager = mock()
-
-        handler.onMethodCall(MethodCall(clearCredentialsHandler.method, defaultArguments + hashMapOf("localAuthentication" to hashMapOf<String, String>())), mockResult)
-
-        verify(handler.credentialsManager)?.requireAuthentication(eq(activity), eq(111), isNull(), isNull())
-    }
-
-    @Test
     fun `handler should only run the correct handler`() {
         val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
         val hasValidCredentialsHandler = mock<HasValidCredentialsRequestHandler>()
@@ -186,23 +112,354 @@ class CredentialsManagerMethodCallHandlerTest {
     }
 
     @Test
-    fun `should call checkAuthenticationResult in onActivityResult`() {
-        val handler = CredentialsManagerMethodCallHandler(listOf())
+    fun `handler should reuse cached manager when configuration is identical`() {
+        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
+        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
 
-        handler.credentialsManager = mock()
-        handler.onActivityResult(1, 2, null)
+        val handler = CredentialsManagerMethodCallHandler(listOf(clearCredentialsHandler))
+        val mockResult = mock<Result>()
+        val activity: Activity = mock()
+        val context: Context = mock()
+        val mockPrefs: SharedPreferences = mock()
 
-        verify(handler.credentialsManager)?.checkAuthenticationResult(1, 2)
+        `when`(context.getSharedPreferences(any(), any())).thenReturn(mockPrefs)
+
+        handler.activity = activity
+        handler.context = context
+
+        val arguments = defaultArguments.toMutableMap()
+        val call1 = MethodCall("credentialsManager#clearCredentials", arguments)
+        val call2 = MethodCall("credentialsManager#clearCredentials", arguments)
+
+        handler.onMethodCall(call1, mockResult)
+        verify(clearCredentialsHandler, times(1)).handle(any(), eq(context), any(), any())
+
+        handler.onMethodCall(call2, mockResult)
+        verify(clearCredentialsHandler, times(2)).handle(any(), eq(context), any(), any())
+
+        val managerCaptor = argumentCaptor<com.auth0.android.authentication.storage.SecureCredentialsManager>()
+        verify(clearCredentialsHandler, times(2)).handle(managerCaptor.capture(), any(), any(), any())
+        
+        MatcherAssert.assertThat(
+            "Manager should be reused when configuration is identical",
+            managerCaptor.firstValue,
+            CoreMatchers.sameInstance(managerCaptor.secondValue)
+        )
     }
 
     @Test
-    fun `should return true in onActivityResult when no credentialsManager`() {
-        val handler = CredentialsManagerMethodCallHandler(listOf())
-        val result = handler.onActivityResult(1, 2, null)
+    fun `handler should create new manager when domain changes`() {
+        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
+        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
 
+        val handler = CredentialsManagerMethodCallHandler(listOf(clearCredentialsHandler))
+        val mockResult = mock<Result>()
+        val activity: Activity = mock()
+        val context: Context = mock()
+        val mockPrefs: SharedPreferences = mock()
+
+        `when`(context.getSharedPreferences(any(), any())).thenReturn(mockPrefs)
+
+        handler.activity = activity
+        handler.context = context
+
+        val arguments1 = hashMapOf<String, Any?>(
+            "_account" to mapOf(
+                "domain" to "test1.auth0.com",
+                "clientId" to "test-client",
+            ),
+            "_userAgent" to mapOf(
+                "name" to "auth0-flutter",
+                "version" to "1.0.0"
+            )
+        )
+        val call1 = MethodCall("credentialsManager#clearCredentials", arguments1)
+        handler.onMethodCall(call1, mockResult)
+
+        val arguments2 = hashMapOf<String, Any?>(
+            "_account" to mapOf(
+                "domain" to "test2.auth0.com",
+                "clientId" to "test-client",
+            ),
+            "_userAgent" to mapOf(
+                "name" to "auth0-flutter",
+                "version" to "1.0.0"
+            )
+        )
+        val call2 = MethodCall("credentialsManager#clearCredentials", arguments2)
+        handler.onMethodCall(call2, mockResult)
+
+        verify(clearCredentialsHandler, times(2)).handle(any(), eq(context), any(), any())
+
+        val managerCaptor = argumentCaptor<com.auth0.android.authentication.storage.SecureCredentialsManager>()
+        verify(clearCredentialsHandler, times(2)).handle(managerCaptor.capture(), any(), any(), any())
+        
         MatcherAssert.assertThat(
-            result,
-            CoreMatchers.equalTo(true)
+            "New manager should be created when domain changes",
+            managerCaptor.firstValue,
+            CoreMatchers.not(CoreMatchers.sameInstance(managerCaptor.secondValue))
+        )
+    }
+
+    @Test
+    fun `handler should create new manager when clientId changes`() {
+        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
+        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
+
+        val handler = CredentialsManagerMethodCallHandler(listOf(clearCredentialsHandler))
+        val mockResult = mock<Result>()
+        val activity: Activity = mock()
+        val context: Context = mock()
+        val mockPrefs: SharedPreferences = mock()
+
+        `when`(context.getSharedPreferences(any(), any())).thenReturn(mockPrefs)
+
+        handler.activity = activity
+        handler.context = context
+
+        val arguments1 = hashMapOf<String, Any?>(
+            "_account" to mapOf(
+                "domain" to "test.auth0.com",
+                "clientId" to "client-1",
+            ),
+            "_userAgent" to mapOf(
+                "name" to "auth0-flutter",
+                "version" to "1.0.0"
+            )
+        )
+        val call1 = MethodCall("credentialsManager#clearCredentials", arguments1)
+        handler.onMethodCall(call1, mockResult)
+
+        val arguments2 = hashMapOf<String, Any?>(
+            "_account" to mapOf(
+                "domain" to "test.auth0.com",
+                "clientId" to "client-2", 
+            ),
+            "_userAgent" to mapOf(
+                "name" to "auth0-flutter",
+                "version" to "1.0.0"
+            )
+        )
+        val call2 = MethodCall("credentialsManager#clearCredentials", arguments2)
+        handler.onMethodCall(call2, mockResult)
+
+        val managerCaptor = argumentCaptor<com.auth0.android.authentication.storage.SecureCredentialsManager>()
+        verify(clearCredentialsHandler, times(2)).handle(managerCaptor.capture(), any(), any(), any())
+        
+        MatcherAssert.assertThat(
+            "New manager should be created when clientId changes",
+            managerCaptor.firstValue,
+            CoreMatchers.not(CoreMatchers.sameInstance(managerCaptor.secondValue))
+        )
+    }
+
+    @Test
+    fun `handler should create new manager when sharedPreferencesName changes`() {
+        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
+        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
+
+        val handler = CredentialsManagerMethodCallHandler(listOf(clearCredentialsHandler))
+        val mockResult = mock<Result>()
+        val activity: Activity = mock()
+        val context: Context = mock()
+        val mockPrefs: SharedPreferences = mock()
+
+        `when`(context.getSharedPreferences(any(), any())).thenReturn(mockPrefs)
+
+        handler.activity = activity
+        handler.context = context
+        val arguments1 = hashMapOf<String, Any?>(
+            "_account" to mapOf(
+                "domain" to "test.auth0.com",
+                "clientId" to "test-client",
+            ),
+            "_userAgent" to mapOf(
+                "name" to "auth0-flutter",
+                "version" to "1.0.0"
+            ),
+            "credentialsManagerConfiguration" to mapOf(
+                "android" to mapOf("sharedPreferencesName" to "prefs_1")
+            )
+        )
+        val call1 = MethodCall("credentialsManager#clearCredentials", arguments1)
+        handler.onMethodCall(call1, mockResult)
+
+        val arguments2 = hashMapOf<String, Any?>(
+            "_account" to mapOf(
+                "domain" to "test.auth0.com",
+                "clientId" to "test-client",
+            ),
+            "_userAgent" to mapOf(
+                "name" to "auth0-flutter",
+                "version" to "1.0.0"
+            ),
+            "credentialsManagerConfiguration" to mapOf(
+                "android" to mapOf("sharedPreferencesName" to "prefs_2") 
+            )
+        )
+        val call2 = MethodCall("credentialsManager#clearCredentials", arguments2)
+        handler.onMethodCall(call2, mockResult)
+
+        val managerCaptor = argumentCaptor<com.auth0.android.authentication.storage.SecureCredentialsManager>()
+        verify(clearCredentialsHandler, times(2)).handle(managerCaptor.capture(), any(), any(), any())
+        
+        MatcherAssert.assertThat(
+            "New manager should be created when sharedPreferencesName changes",
+            managerCaptor.firstValue,
+            CoreMatchers.not(CoreMatchers.sameInstance(managerCaptor.secondValue))
+        )
+    }
+
+    @Test
+    fun `handler should create new manager when useDPoP flag changes`() {
+        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
+        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
+
+        val handler = CredentialsManagerMethodCallHandler(listOf(clearCredentialsHandler))
+        val mockResult = mock<Result>()
+        val activity: Activity = mock()
+        val context: Context = mock()
+        val mockPrefs: SharedPreferences = mock()
+
+        `when`(context.getSharedPreferences(any(), any())).thenReturn(mockPrefs)
+
+        handler.activity = activity
+        handler.context = context
+
+        val arguments1 = hashMapOf<String, Any?>(
+            "_account" to mapOf(
+                "domain" to "test.auth0.com",
+                "clientId" to "test-client",
+            ),
+            "_userAgent" to mapOf(
+                "name" to "auth0-flutter",
+                "version" to "1.0.0"
+            ),
+            "useDPoP" to false
+        )
+        val call1 = MethodCall("credentialsManager#clearCredentials", arguments1)
+        handler.onMethodCall(call1, mockResult)
+
+        val arguments2 = hashMapOf<String, Any?>(
+            "_account" to mapOf(
+                "domain" to "test.auth0.com",
+                "clientId" to "test-client",
+            ),
+            "_userAgent" to mapOf(
+                "name" to "auth0-flutter",
+                "version" to "1.0.0"
+            ),
+            "useDPoP" to true 
+        )
+        val call2 = MethodCall("credentialsManager#clearCredentials", arguments2)
+        handler.onMethodCall(call2, mockResult)
+
+        val managerCaptor = argumentCaptor<com.auth0.android.authentication.storage.SecureCredentialsManager>()
+        verify(clearCredentialsHandler, times(2)).handle(managerCaptor.capture(), any(), any(), any())
+        
+        MatcherAssert.assertThat(
+            "New manager should be created when useDPoP flag changes",
+            managerCaptor.firstValue,
+            CoreMatchers.not(CoreMatchers.sameInstance(managerCaptor.secondValue))
+        )
+    }
+
+    @Test
+    fun `handler should create new manager when localAuthentication changes`() {
+        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
+        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
+
+        val handler = CredentialsManagerMethodCallHandler(listOf(clearCredentialsHandler))
+        val mockResult = mock<Result>()
+        val activity: androidx.fragment.app.FragmentActivity = mock()
+        val context: Context = mock()
+        val mockPrefs: SharedPreferences = mock()
+
+        `when`(context.getSharedPreferences(any(), any())).thenReturn(mockPrefs)
+
+        handler.activity = activity
+        handler.context = context
+
+        val arguments1 = hashMapOf<String, Any?>(
+            "_account" to mapOf(
+                "domain" to "test.auth0.com",
+                "clientId" to "test-client",
+            ),
+            "_userAgent" to mapOf(
+                "name" to "auth0-flutter",
+                "version" to "1.0.0"
+            )
+        )
+        val call1 = MethodCall("credentialsManager#clearCredentials", arguments1)
+        handler.onMethodCall(call1, mockResult)
+
+        val arguments2 = hashMapOf<String, Any?>(
+            "_account" to mapOf(
+                "domain" to "test.auth0.com",
+                "clientId" to "test-client",
+            ),
+            "_userAgent" to mapOf(
+                "name" to "auth0-flutter",
+                "version" to "1.0.0"
+            ),
+            "localAuthentication" to mapOf(
+                "title" to "Authenticate",
+                "description" to "Biometric auth required",
+                "cancelTitle" to "Cancel",
+                "authenticationLevel" to 0
+            )
+        )
+        val call2 = MethodCall("credentialsManager#clearCredentials", arguments2)
+        handler.onMethodCall(call2, mockResult)
+
+        val managerCaptor = argumentCaptor<com.auth0.android.authentication.storage.SecureCredentialsManager>()
+        verify(clearCredentialsHandler, times(2)).handle(managerCaptor.capture(), any(), any(), any())
+        
+        MatcherAssert.assertThat(
+            "New manager should be created when localAuthentication changes",
+            managerCaptor.firstValue,
+            CoreMatchers.not(CoreMatchers.sameInstance(managerCaptor.secondValue))
+        )
+    }
+
+    @Test
+    fun `handler should reuse manager across different method calls with same configuration`() {
+        val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
+        val hasValidCredentialsHandler = mock<HasValidCredentialsRequestHandler>()
+        
+        `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
+        `when`(hasValidCredentialsHandler.method).thenReturn("credentialsManager#hasValidCredentials")
+
+        val handler = CredentialsManagerMethodCallHandler(listOf(clearCredentialsHandler, hasValidCredentialsHandler))
+        val mockResult = mock<Result>()
+        val activity: Activity = mock()
+        val context: Context = mock()
+        val mockPrefs: SharedPreferences = mock()
+
+        `when`(context.getSharedPreferences(any(), any())).thenReturn(mockPrefs)
+
+        handler.activity = activity
+        handler.context = context
+
+        val arguments = defaultArguments.toMutableMap()
+
+        val call1 = MethodCall("credentialsManager#clearCredentials", arguments)
+        handler.onMethodCall(call1, mockResult)
+
+        val call2 = MethodCall("credentialsManager#hasValidCredentials", arguments)
+        handler.onMethodCall(call2, mockResult)
+
+        val clearManagerCaptor = argumentCaptor<com.auth0.android.authentication.storage.SecureCredentialsManager>()
+        val hasValidManagerCaptor = argumentCaptor<com.auth0.android.authentication.storage.SecureCredentialsManager>()
+        
+        verify(clearCredentialsHandler).handle(clearManagerCaptor.capture(), any(), any(), any())
+        verify(hasValidCredentialsHandler).handle(hasValidManagerCaptor.capture(), any(), any(), any())
+        
+        MatcherAssert.assertThat(
+            "Same manager should be reused across different method calls with identical configuration",
+            clearManagerCaptor.firstValue,
+            CoreMatchers.sameInstance(hasValidManagerCaptor.firstValue)
         )
     }
 }
+

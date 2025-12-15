@@ -1,23 +1,33 @@
 package com.auth0.auth0_flutter
 
+import android.content.Context
 import androidx.annotation.NonNull
 import com.auth0.android.authentication.AuthenticationAPIClient
-import com.auth0.auth0_flutter.request_handlers.api.*
+import com.auth0.auth0_flutter.request_handlers.api.ApiRequestHandler
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
 
-class Auth0FlutterAuthMethodCallHandler(private val requestHandlers: List<ApiRequestHandler>) : MethodCallHandler {
+class Auth0FlutterAuthMethodCallHandler(
+    private val apiRequestHandlers: List<ApiRequestHandler>
+) : MethodCallHandler {
+    lateinit var context: Context
+    
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
-        val requestHandler = requestHandlers.find { it.method == call.method }
-
-        if (requestHandler != null) {
-            val request = MethodCallRequest.fromCall(call)
+        val request = MethodCallRequest.fromCall(call)
+        
+        val apiHandler = apiRequestHandlers.find { it.method == call.method }
+        if (apiHandler != null) {
             val api = AuthenticationAPIClient(request.account)
+            
+            val useDPoP = request.data["useDPoP"] as? Boolean ?: false
+            if (useDPoP) {
+                api.useDPoP(context)
+            }
 
-            requestHandler.handle(api, request, result)
+            apiHandler.handle(api, request, result)
         } else {
             result.notImplemented()
         }
