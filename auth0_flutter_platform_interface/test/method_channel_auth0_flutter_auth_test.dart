@@ -912,6 +912,35 @@ void main() {
       expect(verificationResult.arguments['parameters']['test'], 'test-123');
     });
 
+    test('defaults tokenType to Bearer when not specified', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => {'sub': 'test-id'});
+
+      await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
+          account: const Account('test-domain', 'test-clientId'),
+          userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+          options: AuthUserInfoOptions(accessToken: 'test-token')));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['tokenType'], 'Bearer');
+    });
+
+    test('correctly passes custom tokenType', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => {'sub': 'test-id'});
+
+      await MethodChannelAuth0FlutterAuth().userInfo(ApiRequest(
+          account: const Account('test-domain', 'test-clientId'),
+          userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+          options: AuthUserInfoOptions(
+              accessToken: 'test-token', tokenType: 'DPoP')));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['tokenType'], 'DPoP');
+    });
+
     test('correctly returns the response from the Method Channel', () async {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
             'sub': 'test-id',

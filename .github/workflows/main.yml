@@ -16,7 +16,7 @@ env:
     ruby: '3.3.1'
     flutter: '3.x'
     ios-simulator: iPhone 16
-    java: 11
+    java: 17
 
 jobs:
 
@@ -88,7 +88,7 @@ jobs:
                 flutter test --coverage --exclude-tags browser
 
             - name: Upload coverage report
-              uses: actions/upload-artifact@v5
+              uses: actions/upload-artifact@v6
               with:
                 name: auth0_flutter coverage
                 path: auth0_flutter/coverage/lcov.info
@@ -113,7 +113,7 @@ jobs:
               run: flutter test --coverage
 
             - name: Upload coverage report
-              uses: actions/upload-artifact@v5
+              uses: actions/upload-artifact@v6
               with:
                 name: auth0_flutter_platform_interface coverage
                 path: auth0_flutter_platform_interface/coverage/lcov.info
@@ -156,7 +156,7 @@ jobs:
               run: bundle exec slather coverage -x --scheme Runner Runner.xcodeproj
 
             - name: Upload coverage report
-              uses: actions/upload-artifact@v5
+              uses: actions/upload-artifact@v6
               with:
                 name: iOS coverage
                 path: auth0_flutter/example/ios/cobertura
@@ -294,13 +294,13 @@ jobs:
               run: ./gradlew koverXmlReportDebug
 
             - name: Upload coverage report
-              uses: actions/upload-artifact@v5
+              uses: actions/upload-artifact@v6
               with:
                 name: Android coverage
                 path: auth0_flutter/example/build/app/coverage.xml
 
             - name: Upload test results
-              uses: actions/upload-artifact@v5
+              uses: actions/upload-artifact@v6
               if: ${{ failure() }}
               with:
                 name: Test results
@@ -397,14 +397,14 @@ jobs:
     #               USER_EMAIL=$USER_EMAIL USER_PASSWORD=$USER_PASSWORD node appium-test/test.js
 
     #         - name: Upload recording
-    #           uses: actions/upload-artifact@v5
+    #           uses: actions/upload-artifact@v6
     #           if: ${{ failure() }}
     #           with:
     #             name: 'Android - smoke tests recording'
     #             path: recording_video.webm
 
     #         - name: Upload APK
-    #           uses: actions/upload-artifact@v5
+    #           uses: actions/upload-artifact@v6
     #           if: ${{ failure() }}
     #           with:
     #             name: 'Android - APK'
@@ -426,52 +426,52 @@ jobs:
               uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
             - name: Download coverage report for auth0_flutter
-              uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53
+              uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
               with:
                 name: auth0_flutter coverage
                 path: coverage/auth0_flutter
 
             - name: Download coverage report for auth0_flutter_platform_interface
-              uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53
+              uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
               with:
                 name: auth0_flutter_platform_interface coverage
                 path: coverage/auth0_flutter_platform_interface
 
             - name: Download coverage report for iOS
-              uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53
+              uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
               with:
                 name: iOS coverage
                 path: coverage/ios
 
             - name: Download coverage report for Android
-              uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53
+              uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
               with:
                 name: Android coverage
                 path: coverage/android
 
             - name: Upload coverage report for auth0_flutter
-              uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7
+              uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter
                   directory: coverage/auth0_flutter
 
             - name: Upload coverage report for auth0_flutter_platform_interface
-              uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7
+              uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter_platform_interface
                   directory: coverage/auth0_flutter_platform_interface
 
             - name: Upload coverage report for iOS
-              uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7
+              uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter_ios
                   directory: coverage/ios
 
             - name: Upload coverage report for Android
-              uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7
+              uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter_android

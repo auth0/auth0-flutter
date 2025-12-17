@@ -4,14 +4,24 @@ fileprivate let mockCredentials = Credentials()
 fileprivate let mockChallenge = Challenge(challengeType: "", oobCode: nil, bindingMethod: nil)
 fileprivate let mockDatabaseUser: DatabaseUser = (email: "", username: nil, verified: true)
 fileprivate let mockUserInfo = UserInfo(json: ["sub": ""])!
+fileprivate let mockSSOCredentials = SSOCredentials(
+    sessionTransferToken: "token",
+    issuedTokenType: "type",
+    expiresIn: Date(),
+    idToken: testIdToken,
+    refreshToken: nil
+)
 
 class SpyAuthentication: Authentication {
     let clientId = ""
     let url = mockURL
     var telemetry = Telemetry()
     var logger: Logger?
+    var sender: String = "auth0-flutter"
+    var dpop: DPoP?
 
     var credentialsResult: AuthenticationResult<Credentials> = .success(mockCredentials)
+    var ssoCredentialsResult: AuthenticationResult<SSOCredentials> = .success(mockSSOCredentials)
     var challengeResult: AuthenticationResult<Challenge> = .success(mockChallenge)
     var databaseUserResult: AuthenticationResult<DatabaseUser> = .success(mockDatabaseUser)
     var userInfoResult: AuthenticationResult<UserInfo> = .success(mockUserInfo)
@@ -85,8 +95,9 @@ class SpyAuthentication: Authentication {
         return request(voidResult)
     }
 
-    func userInfo(withAccessToken accessToken: String) -> Request<UserInfo, AuthenticationError> {
+    func userInfo(withAccessToken accessToken: String, tokenType: String) -> Request<UserInfo, AuthenticationError> {
         arguments["accessToken"] = accessToken
+        arguments["tokenType"] = tokenType
         calledUserInfo = true
         return request(userInfoResult)
     }
@@ -96,12 +107,18 @@ class SpyAuthentication: Authentication {
                       redirectURI: String) -> Request<Credentials, AuthenticationError> {
         return request(credentialsResult)
     }
-
-    func renew(withRefreshToken refreshToken: String, scope: String?) -> Request<Credentials, AuthenticationError> {
+    
+    func renew(withRefreshToken refreshToken: String, audience: String?, scope: String?) -> Request<Credentials, AuthenticationError> {
         arguments["refreshToken"] = refreshToken
         arguments["scope"] = scope
+        arguments["audience"] = audience
         calledRenew = true
         return request(credentialsResult)
+    }
+
+    func ssoExchange(withRefreshToken refreshToken: String) -> Request<SSOCredentials, AuthenticationError> {
+        arguments["refreshToken"] = refreshToken
+        return request(ssoCredentialsResult)
     }
 
     func revoke(refreshToken: String) -> Request<Void, AuthenticationError> {

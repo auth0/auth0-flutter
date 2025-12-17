@@ -301,10 +301,10 @@ class GetCredentialsRequestHandlerTest {
         val idToken = JwtTestUtils.createJwt(claims = mapOf("name" to "John Doe"))
         val credentials = Credentials(idToken, "test", "", null, Date(), "scope1 scope2")
 
-        doAnswer {
-            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(3)
-            ob.onSuccess(credentials)
-        }.`when`(mockCredentialsManager).getCredentials(isNull(), anyInt(), anyMap(), any())
+        whenever(mockCredentialsManager.getCredentials(isNull(), anyInt(), anyMap(), any())).thenAnswer {
+            val callback = it.getArgument<Callback<Credentials, CredentialsManagerException>>(3)
+            callback.onSuccess(credentials)
+        }
 
         handler.handle(
             mockCredentialsManager,
@@ -313,36 +313,35 @@ class GetCredentialsRequestHandlerTest {
             mockResult
         )
 
-        val captor = argumentCaptor<() -> Map<String, *>>()
+        val captor = argumentCaptor<Map<String, *>>()
         verify(mockResult).success(captor.capture())
 
-        val sdf =
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
-
-        val formattedDate = sdf.format(credentials.expiresAt)
+        val formattedDate = credentials.expiresAt.toInstant().toString()
+        
+        val resultMap = captor.firstValue
 
         MatcherAssert.assertThat(
-            (captor.firstValue as Map<*, *>)["accessToken"],
+            resultMap["accessToken"],
             CoreMatchers.equalTo(credentials.accessToken)
         )
         MatcherAssert.assertThat(
-            (captor.firstValue as Map<*, *>)["idToken"],
+            resultMap["idToken"],
             CoreMatchers.equalTo(credentials.idToken)
         )
         MatcherAssert.assertThat(
-            (captor.firstValue as Map<*, *>)["refreshToken"],
+            resultMap["refreshToken"],
             CoreMatchers.equalTo(credentials.refreshToken)
         )
         MatcherAssert.assertThat(
-            (captor.firstValue as Map<*, *>)["expiresAt"] as String,
+            resultMap["expiresAt"] as String,
             CoreMatchers.equalTo(formattedDate)
         )
         MatcherAssert.assertThat(
-            (captor.firstValue as Map<*, *>)["scopes"],
+            resultMap["scopes"],
             CoreMatchers.equalTo(listOf("scope1", "scope2"))
         )
         MatcherAssert.assertThat(
-            ((captor.firstValue as Map<*, *>)["userProfile"] as Map<*, *>)["name"],
+            (resultMap["userProfile"] as Map<*, *>)["name"],
             CoreMatchers.equalTo("John Doe")
         )
     }

@@ -64,7 +64,7 @@ extension AuthAPIHandlerTests {
         let userAgentDictionary = [UserAgentProperty.name.rawValue: "baz", UserAgentProperty.version.rawValue: "qux"]
         let argumentsDictionary = [Account.key: accountDictionary, UserAgent.key: userAgentDictionary]
         let expectation = self.expectation(description: "Called client provider")
-        sut.clientProvider = { account, userAgent in
+        sut.clientProvider = { (account: Account, userAgent: UserAgent, arguments: [String: Any]) -> Authentication in
             XCTAssertEqual(account.clientId, accountDictionary[AccountProperty.clientId])
             XCTAssertEqual(account.domain, accountDictionary[AccountProperty.domain])
             XCTAssertEqual(userAgent.name, userAgentDictionary[UserAgentProperty.name])

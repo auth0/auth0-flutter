@@ -24,9 +24,19 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         case renew = "credentialsManager#renewCredentials"
         case clear = "credentialsManager#clearCredentials"
     }
+    
+    private struct ManagerCacheKey: Equatable {
+        let accountDomain: String
+        let accountClientId: String
+        let storeKey: String
+        let accessGroup: String?
+        let useDPoP: Bool
+        let hasLocalAuth: Bool
+    }
 
     private static let channelName = "auth0.com/auth0_flutter/credentials_manager"
     private static var credentialsManager: CredentialsManager?
+    private static var cachedKey: ManagerCacheKey?
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let handler = CredentialsManagerHandler()
@@ -61,26 +71,55 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         }
     }
 
-    var apiClientProvider: AuthAPIClientProvider = { account, userAgent in
+    var apiClientProvider: AuthAPIClientProvider = { account, userAgent, arguments in
+        let useDPoP = arguments["useDPoP"] as? Bool ?? false
         var client = Auth0.authentication(clientId: account.clientId, domain: account.domain)
         client.using(inLibrary: userAgent.name, version: userAgent.version)
-        return client
+        return useDPoP ? client.useDPoP() : client
     }
     
 
     lazy var credentialsManagerProvider: CredentialsManagerProvider = { apiClient, arguments in
+        let configuration = arguments["credentialsManagerConfiguration"] as? [String: Any]
+        let iosConfiguration = configuration?["ios"] as? [String: String]
+        let storeKey = iosConfiguration?["storeKey"] ?? "credentials"
+        let accessGroup = iosConfiguration?["accessGroup"]
+        let useDPoP = arguments["useDPoP"] as? Bool ?? false
+        let hasLocalAuth = arguments[LocalAuthentication.key] != nil
         
-        var instance = CredentialsManagerHandler.credentialsManager ??
-        self.createCredentialManager(apiClient,arguments)
-
+        guard let accountDictionary = arguments[Account.key] as? [String: String],
+              let account = Account(from: accountDictionary) else {
+            return self.createCredentialManager(apiClient, arguments)
+        }
+        
+        let currentKey = ManagerCacheKey(
+            accountDomain: account.domain,
+            accountClientId: account.clientId,
+            storeKey: storeKey,
+            accessGroup: accessGroup,
+            useDPoP: useDPoP,
+            hasLocalAuth: hasLocalAuth
+        )
+        
+        var instance: CredentialsManager
+        if let cachedKey = CredentialsManagerHandler.cachedKey,
+           cachedKey == currentKey,
+           let cachedManager = CredentialsManagerHandler.credentialsManager {
+            instance = cachedManager
+        } else {
+            instance = self.createCredentialManager(apiClient, arguments)
+            
+            CredentialsManagerHandler.credentialsManager = instance
+            CredentialsManagerHandler.cachedKey = currentKey
+        }
+        
         if let localAuthenticationDictionary = arguments[LocalAuthentication.key] as? [String: String?] {
             let localAuthentication = LocalAuthentication(from: localAuthenticationDictionary)
             instance.enableBiometrics(withTitle: localAuthentication.title,
                                       cancelTitle: localAuthentication.cancelTitle,
                                       fallbackTitle: localAuthentication.fallbackTitle)
         }
-
-        CredentialsManagerHandler.credentialsManager = instance
+        
         return instance
     }
 
@@ -110,7 +149,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
             return result(FlutterMethodNotImplemented)
         }
 
-        let apiClient = apiClientProvider(account, userAgent)
+        let apiClient = apiClientProvider(account, userAgent, arguments)
         let credentialsManager = credentialsManagerProvider(apiClient, arguments)
         let methodHandler = methodHandlerProvider(method, credentialsManager)
         methodHandler.handle(with: arguments, callback: result)

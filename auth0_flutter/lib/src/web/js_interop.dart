@@ -106,6 +106,7 @@ extension type Auth0ClientOptions._(JSObject _) implements JSObject {
       final bool? useFormData,
       final bool? useRefreshTokens,
       final bool? useRefreshTokensFallback,
+      final bool? useDpop,
       final AuthorizationParams? authorizationParams});
 }
 
@@ -144,13 +145,15 @@ extension type WebCredentials._(JSObject _) implements JSObject {
   external JSNumber expires_in;
   external String? get refresh_token;
   external String? get scope;
+  external String? get token_type;
 
   external factory WebCredentials(
       {final String access_token,
       final String id_token,
       final JSNumber expires_in,
       final String? refresh_token,
-      final String? scope});
+      final String? scope,
+      final String? token_type});
 }
 
 @JS()

@@ -30,12 +30,15 @@ class DefaultCredentialsManager extends CredentialsManager {
   final UserAgent _userAgent;
   final LocalAuthentication? _localAuthentication;
   final CredentialsManagerConfiguration? _credentialsManagerConfiguration;
+  final bool _useDPoP;
 
   DefaultCredentialsManager(this._account, this._userAgent,
       {final LocalAuthentication? localAuthentication,
-      final CredentialsManagerConfiguration? credentialsManagerConfiguration})
+      final CredentialsManagerConfiguration? credentialsManagerConfiguration,
+      final bool useDPoP = false})
       : _localAuthentication = localAuthentication,
-        _credentialsManagerConfiguration = credentialsManagerConfiguration;
+        _credentialsManagerConfiguration = credentialsManagerConfiguration,
+        _useDPoP = useDPoP;
 
   /// Retrieves the credentials from the storage and refreshes them if they have
   ///  already expired.
@@ -100,12 +103,14 @@ class DefaultCredentialsManager extends CredentialsManager {
   Future<bool> clearCredentials() => CredentialsManagerPlatform.instance
       .clearCredentials(_createApiRequest(null));
 
-  CredentialsManagerRequest<TOptions> _createApiRequest<
-          TOptions extends RequestOptions>(final TOptions? options) =>
-      CredentialsManagerRequest<TOptions>(
-          account: _account,
-          options: options,
-          userAgent: _userAgent,
-          localAuthentication: _localAuthentication,
-          credentialsManagerConfiguration: _credentialsManagerConfiguration);
+  CredentialsManagerRequest<TOptions>
+      _createApiRequest<TOptions extends RequestOptions>(
+              final TOptions? options) =>
+          CredentialsManagerRequest<TOptions>(
+              account: _account,
+              options: options,
+              userAgent: _userAgent,
+              localAuthentication: _localAuthentication,
+              credentialsManagerConfiguration: _credentialsManagerConfiguration,
+              useDPoP: _useDPoP);
 }

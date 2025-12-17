@@ -57,7 +57,7 @@ class RenewApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        doReturn(mockBuilder).`when`(mockApi).renewAuth(any())
+        whenever(mockApi.renewAuth("test-token")).thenReturn(mockBuilder)
 
         handler.handle(
             mockApi,
@@ -77,13 +77,13 @@ class RenewApiRequestHandlerTest {
         )
         val handler = RenewApiRequestHandler()
         val mockBuilder = mock<Request<Credentials, AuthenticationException>>()
-        val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
+        val mockApi = mock<AuthenticationAPIClient>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        doReturn(mockBuilder).`when`(mockApi).renewAuth(any())
-        doReturn(mockBuilder).`when`(mockBuilder).addParameter(any(), any())
+        whenever(mockApi.renewAuth("test-token")).thenReturn(mockBuilder)
+        whenever(mockBuilder.addParameter("scope", "scope1 scope2")).thenReturn(mockBuilder)
 
         handler.handle(
             mockApi,
@@ -92,6 +92,7 @@ class RenewApiRequestHandlerTest {
         )
 
         verify(mockBuilder).addParameter("scope", "scope1 scope2")
+        verify(mockBuilder).start(any())
     }
 
     @Test
@@ -101,13 +102,12 @@ class RenewApiRequestHandlerTest {
         )
         val handler = RenewApiRequestHandler()
         val mockBuilder = mock<Request<Credentials, AuthenticationException>>()
-        val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
+        val mockApi = mock<AuthenticationAPIClient>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        doReturn(mockBuilder).`when`(mockApi).renewAuth(any())
-        doReturn(mockBuilder).`when`(mockBuilder).addParameter(any(), any())
+        whenever(mockApi.renewAuth("test-token")).thenReturn(mockBuilder)
 
         handler.handle(
             mockApi,
@@ -116,6 +116,7 @@ class RenewApiRequestHandlerTest {
         )
 
         verify(mockBuilder, times(0)).addParameter(any(), any())
+        verify(mockBuilder).start(any())
     }
 
     @Test
@@ -126,13 +127,13 @@ class RenewApiRequestHandlerTest {
         )
         val handler = RenewApiRequestHandler()
         val mockBuilder = mock<Request<Credentials, AuthenticationException>>()
-        val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
+        val mockApi = mock<AuthenticationAPIClient>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        doReturn(mockBuilder).`when`(mockApi).renewAuth(any())
-        doReturn(mockBuilder).`when`(mockBuilder).addParameters(any())
+        whenever(mockApi.renewAuth("test-token")).thenReturn(mockBuilder)
+        whenever(mockBuilder.addParameters(any())).thenReturn(mockBuilder)
 
         handler.handle(
             mockApi,
@@ -146,6 +147,7 @@ class RenewApiRequestHandlerTest {
                 "test2" to "test-value"
             )
         )
+        verify(mockBuilder).start(any())
     }
 
     @Test
@@ -155,13 +157,12 @@ class RenewApiRequestHandlerTest {
         )
         val handler = RenewApiRequestHandler()
         val mockBuilder = mock<Request<Credentials, AuthenticationException>>()
-        val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
+        val mockApi = mock<AuthenticationAPIClient>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        doReturn(mockBuilder).`when`(mockApi).renewAuth(any())
-        doReturn(mockBuilder).`when`(mockBuilder).addParameters(any())
+        whenever(mockApi.renewAuth("test-token")).thenReturn(mockBuilder)
 
         handler.handle(
             mockApi,
@@ -170,6 +171,7 @@ class RenewApiRequestHandlerTest {
         )
 
         verify(mockBuilder, times(0)).addParameters(any())
+        verify(mockBuilder).start(any())
     }
 
     @Test
@@ -178,20 +180,20 @@ class RenewApiRequestHandlerTest {
             "refreshToken" to "test-token",
         )
         val handler = RenewApiRequestHandler()
-        val mockBuilder = mock<Request<Credentials, AuthenticationException>>()
-        val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
         val exception =
             AuthenticationException(code = "test-code", description = "test-description")
 
-        doReturn(mockBuilder).`when`(mockApi).renewAuth(any())
-        doReturn(mockBuilder).`when`(mockBuilder).addParameters(any())
-        doAnswer {
-            val ob = it.getArgument<Callback<Credentials, AuthenticationException>>(0)
-            ob.onFailure(exception)
-        }.`when`(mockBuilder).start(any())
+        val mockBuilder = mock<Request<Credentials, AuthenticationException>>()
+        val mockApi = mock<AuthenticationAPIClient>()
+
+        whenever(mockApi.renewAuth("test-token")).thenReturn(mockBuilder)
+        whenever(mockBuilder.start(any())).thenAnswer {
+            val callback = it.getArgument<Callback<Credentials, AuthenticationException>>(0)
+            callback.onFailure(exception)
+        }
 
         handler.handle(
             mockApi,
@@ -208,20 +210,20 @@ class RenewApiRequestHandlerTest {
             "refreshToken" to "test-token",
         )
         val handler = RenewApiRequestHandler()
-        val mockBuilder = mock<Request<Credentials, AuthenticationException>>()
-        val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
         val idToken = JwtTestUtils.createJwt(claims = mapOf("name" to "John Doe"))
         val credentials = Credentials(idToken, "test", "", null, Date(), "scope1 scope2")
 
-        doReturn(mockBuilder).`when`(mockApi).renewAuth(any())
-        doReturn(mockBuilder).`when`(mockBuilder).addParameters(any())
-        doAnswer {
-            val ob = it.getArgument<Callback<Credentials, AuthenticationException>>(0)
-            ob.onSuccess(credentials)
-        }.`when`(mockBuilder).start(any())
+        val mockBuilder = mock<Request<Credentials, AuthenticationException>>()
+        val mockApi = mock<AuthenticationAPIClient>()
+
+        whenever(mockApi.renewAuth("test-token")).thenReturn(mockBuilder)
+        whenever(mockBuilder.start(any())).thenAnswer {
+            val callback = it.getArgument<Callback<Credentials, AuthenticationException>>(0)
+            callback.onSuccess(credentials)
+        }
 
         handler.handle(
             mockApi,
@@ -229,33 +231,32 @@ class RenewApiRequestHandlerTest {
             mockResult
         )
 
-        val captor = argumentCaptor<() -> Map<String, *>>()
+        val captor = argumentCaptor<Map<String, *>>()
         verify(mockResult).success(captor.capture())
 
-        val sdf =
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
-
-        val formattedDate = sdf.format(credentials.expiresAt)
+        val formattedDate = credentials.expiresAt.toInstant().toString()
+        
+        val resultMap = captor.firstValue
 
         assertThat(
-            (captor.firstValue as Map<*, *>)["accessToken"],
+            resultMap["accessToken"],
             equalTo(credentials.accessToken)
         )
-        assertThat((captor.firstValue as Map<*, *>)["idToken"], equalTo(credentials.idToken))
+        assertThat(resultMap["idToken"], equalTo(credentials.idToken))
         assertThat(
-            (captor.firstValue as Map<*, *>)["refreshToken"],
+            resultMap["refreshToken"],
             equalTo(credentials.refreshToken)
         )
         assertThat(
-            (captor.firstValue as Map<*, *>)["expiresAt"] as String,
+            resultMap["expiresAt"] as String,
             equalTo(formattedDate)
         )
         assertThat(
-            (captor.firstValue as Map<*, *>)["scopes"],
+            resultMap["scopes"],
             equalTo(listOf("scope1", "scope2"))
         )
         assertThat(
-            ((captor.firstValue as Map<*, *>)["userProfile"] as Map<*, *>)["name"],
+            (resultMap["userProfile"] as Map<*, *>)["name"],
             equalTo("John Doe")
         )
     }

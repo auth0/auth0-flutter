@@ -22,6 +22,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -151,11 +152,10 @@ class RenewCredentialsRequestHandlerTest {
         val idToken = JwtTestUtils.createJwt(claims = mapOf("name" to "John Doe"))
         val credentials = Credentials(idToken, "accessToken", "Bearer", null, Date(), "scope1")
 
-        doAnswer {
-            val ob = it.getArgument<Callback<Credentials, CredentialsManagerException>>(4)
-            ob.onSuccess(credentials)
-        }.`when`(mockCredentialsManager)
-            .getCredentials(isNull(), anyInt(), anyMap(), eq(true), any())
+        whenever(mockCredentialsManager.getCredentials(isNull(), anyInt(), anyMap(), eq(true), any())).thenAnswer {
+            val callback = it.getArgument<Callback<Credentials, CredentialsManagerException>>(4)
+            callback.onSuccess(credentials)
+        }
 
         handler.handle(
             mockCredentialsManager,
@@ -164,37 +164,35 @@ class RenewCredentialsRequestHandlerTest {
             mockResult
         )
 
-        val captor = argumentCaptor<() -> Map<String, *>>()
+        val captor = argumentCaptor<Map<String, *>>()
         verify(mockResult).success(captor.capture())
 
-        val sdf =
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+        val formattedDate = credentials.expiresAt.toInstant().toString()
 
-        val formattedDate = sdf.format(credentials.expiresAt)
-
+        val resultMap = captor.firstValue
 
         MatcherAssert.assertThat(
-            (captor.firstValue as Map<*, *>)["accessToken"],
+            resultMap["accessToken"],
             CoreMatchers.equalTo(credentials.accessToken)
         )
         MatcherAssert.assertThat(
-            (captor.firstValue as Map<*, *>)["idToken"],
+            resultMap["idToken"],
             CoreMatchers.equalTo(credentials.idToken)
         )
         MatcherAssert.assertThat(
-            (captor.firstValue as Map<*, *>)["refreshToken"],
+            resultMap["refreshToken"],
             CoreMatchers.equalTo(credentials.refreshToken)
         )
         MatcherAssert.assertThat(
-            (captor.firstValue as Map<*, *>)["expiresAt"] as String,
+            resultMap["expiresAt"] as String,
             CoreMatchers.equalTo(formattedDate)
         )
         MatcherAssert.assertThat(
-            (captor.firstValue as Map<*, *>)["scopes"],
+            resultMap["scopes"],
             CoreMatchers.equalTo(listOf("scope1"))
         )
         MatcherAssert.assertThat(
-            ((captor.firstValue as Map<*, *>)["userProfile"] as Map<*, *>)["name"],
+            (resultMap["userProfile"] as Map<*, *>)["name"],
             CoreMatchers.equalTo("John Doe")
         )
     }

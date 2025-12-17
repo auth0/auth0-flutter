@@ -55,8 +55,8 @@ abstract class Auth0FlutterAuthPlatform extends PlatformInterface {
 
   Future<void> startPasswordlessWithPhoneNumber(
       final ApiRequest<AuthPasswordlessLoginOptions> request) {
-    throw UnimplementedError
-      ('startPasswordlessWithPhoneNumber() has not been implemented');
+    throw UnimplementedError(
+        'startPasswordlessWithPhoneNumber() has not been implemented');
   }
 
   Future<Credentials> loginWithSmsCode(

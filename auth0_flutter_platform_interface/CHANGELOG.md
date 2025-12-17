@@ -1,5 +1,13 @@
 # Change Log
 
+## [afpi-v2.0.0-beta.1](https://github.com/auth0/auth0-flutter/tree/afpi-v2.0.0-beta.1) (2025-12-10)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.14.0...afpi-v2.0.0-beta.1)
+
+**Added**
+- Docs: Add v2.0.0 migration notice and update documentation [\#692](https://github.com/auth0/auth0-flutter/pull/692) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- Adding DPoP feature for flutter [\#667](https://github.com/auth0/auth0-flutter/pull/667) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- Updated the doc on hasValidCredentials [\#679](https://github.com/auth0/auth0-flutter/pull/679) ([pmathew92](https://github.com/pmathew92))
+
 ## [afpi-v1.14.0](https://github.com/auth0/auth0-flutter/tree/afpi-v1.14.0) (2025-09-24)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.13.0...afpi-v1.14.0)
 

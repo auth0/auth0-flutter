@@ -8,7 +8,7 @@ import FlutterMacOS
 
 // MARK: - Providers
 
-typealias AuthAPIClientProvider = (_ account: Account, _ userAgent: UserAgent) -> Authentication
+typealias AuthAPIClientProvider = (_ account: Account, _ userAgent: UserAgent, _ arguments: [String: Any]) -> Authentication
 typealias AuthAPIMethodHandlerProvider = (_ method: AuthAPIHandler.Method, _ client: Authentication) -> MethodHandler
 
 // MARK: - Auth Auth Handler
@@ -44,9 +44,15 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
         registrar.addMethodCallDelegate(handler, channel: channel)
     }
 
-    var clientProvider: AuthAPIClientProvider = { account, userAgent in
+    var clientProvider: AuthAPIClientProvider = { account, userAgent, arguments in
         var client = Auth0.authentication(clientId: account.clientId, domain: account.domain)
         client.using(inLibrary: userAgent.name, version: userAgent.version)
+        
+        let useDPoP = arguments["useDPoP"] as? Bool ?? false
+        if useDPoP {
+            client = client.useDPoP()
+        }
+        
         return client
     }
 
@@ -82,7 +88,7 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
             return result(FlutterMethodNotImplemented)
         }
 
-        let client = clientProvider(account, userAgent)
+        let client = clientProvider(account, userAgent, arguments)
         let methodHandler = methodHandlerProvider(method, client)
 
         methodHandler.handle(with: arguments, callback: result)

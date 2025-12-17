@@ -25,7 +25,6 @@ class WebAuthLoginHandlerTests: XCTestCase {
     }
 }
 
-// MARK: - Required Arguments Error
 
 extension WebAuthLoginHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
@@ -217,9 +216,26 @@ extension WebAuthLoginHandlerTests {
         XCTAssertEqual(spySafariProvider.presentationStyle, UIModalPresentationStyle.formSheet)
     }
     #endif
+
+    // MARK: useDPoP
+
+    func testEnablesDPoPWhenTrue() {
+        let value = true
+        sut.handle(with: arguments(withKey: Argument.useDPoP, value: value)) { _ in }
+        XCTAssertNotNil(spy.dpop)
+    }
+
+    func testDoesNotEnableDPoPWhenFalse() {
+        sut.handle(with: arguments(withKey: Argument.useDPoP, value: false)) { _ in }
+        XCTAssertNil(spy.dpop)
+    }
+
+    func testDoesNotEnableDPoPWhenNil() {
+        sut.handle(with: arguments(without: Argument.useDPoP)) { _ in }
+        XCTAssertNil(spy.dpop)
+    }
 }
 
-// MARK: - Login Result
 
 extension WebAuthLoginHandlerTests {
     func testCallsSDKLoginMethod() {
@@ -255,7 +271,6 @@ extension WebAuthLoginHandlerTests {
     }
 }
 
-// MARK: - Helpers
 
 extension WebAuthLoginHandlerTests {
     override func arguments() -> [String: Any] {
