@@ -282,10 +282,11 @@ web::json::value exchangeCodeForTokens(
   body[U("code")] = web::json::value::string(utility::conversions::to_string_t(code));
   body[U("redirect_uri")] = web::json::value::string(utility::conversions::to_string_t(redirectUri));
   body[U("code_verifier")] = web::json::value::string(utility::conversions::to_string_t(codeVerifier));
-    DebugPrint("codeVerifier = " + codeVerifier);
-      DebugPrint("redirect_uri = " + redirectUri);  
+  DebugPrint("codeVerifier = " + codeVerifier);
+  DebugPrint("redirect_uri = " + redirectUri);  
   request.set_body(body);
-
+DebugPrint("➡️ POST https://" + domain + "/oauth/token");
+DebugPrint("Request body: " + utility::conversions::to_utf8string(body.serialize()));
   auto response = client.request(request).get();
 
   // ---- Debug: status & headers ----
@@ -409,6 +410,7 @@ void Auth0FlutterPlugin::HandleMethodCall(
     }
     
     std::string redirectUri = "auth0flutter://callback";
+// authUrl = https://int-dx-enterprise-test.us.auth0.com/authorize?response_type=code&client_id=GGUVoHL5nseaacSzqB810HWYGHZI34m8&redirect_uri=auth0flutter://callback&scope=openid%20profile%20email&code_challenge=JnkpdGGqlvYT_BiinnxwrVK6ocB1PtYEERW4Akttaw0&code_challenge_method=S256
 
 
     try {
