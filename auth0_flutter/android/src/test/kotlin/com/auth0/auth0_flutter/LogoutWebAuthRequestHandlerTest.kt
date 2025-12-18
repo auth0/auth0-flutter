@@ -52,7 +52,7 @@ class LogoutWebAuthRequestHandlerTest {
             resultCallback(mockResult, mockBuilder)
         }.`when`(mockBuilder).start(any(), any())
 
-        handler.handle(mock(), MethodCallRequest(Auth0("test-domain", "test-client"), args), mockResult)
+        handler.handle(mock(), MethodCallRequest(Auth0.getInstance("test-client", "test-domain"), args), mockResult)
     }
 
     @Test
@@ -118,7 +118,7 @@ class LogoutWebAuthRequestHandlerTest {
             callback.onFailure(exception)
         }.`when`(mockBuilder).start(any(), any())
 
-        handler.handle(mock(), MethodCallRequest(Auth0("test-domain", "test-client"), mock()), mockResult)
+        handler.handle(mock(), MethodCallRequest(Auth0.getInstance("test-client", "test-domain"), mock()), mockResult)
 
         verify(mockResult).error("code", "description", exception)
     }
@@ -134,7 +134,7 @@ class LogoutWebAuthRequestHandlerTest {
             callback.onSuccess(null)
         }.`when`(mockBuilder).start(any(), any())
 
-        handler.handle(mock(), MethodCallRequest(Auth0("test-domain", "test-client"), mock()), mockResult)
+        handler.handle(mock(), MethodCallRequest(Auth0.getInstance("test-client", "test-domain"), mock()), mockResult)
 
         verify(mockResult).success(null)
     }

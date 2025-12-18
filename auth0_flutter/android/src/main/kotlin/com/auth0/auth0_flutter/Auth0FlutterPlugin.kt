@@ -13,7 +13,6 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.plugin.common.MethodChannel.Result
 
 /** Auth0FlutterPlugin */
 class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
@@ -24,22 +23,12 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   private lateinit var webAuthMethodChannel : MethodChannel
   private lateinit var authMethodChannel : MethodChannel
   private lateinit var credentialsManagerMethodChannel : MethodChannel
+  private lateinit var dpopMethodChannel : MethodChannel
+  private lateinit var binding: FlutterPlugin.FlutterPluginBinding
+  private lateinit var authCallHandler: Auth0FlutterAuthMethodCallHandler
   private val webAuthCallHandler = Auth0FlutterWebAuthMethodCallHandler(listOf(
-    LoginWebAuthRequestHandler { request: MethodCallRequest -> WebAuthProvider.login(request.account) },
+    LoginWebAuthRequestHandler(),
     LogoutWebAuthRequestHandler { request: MethodCallRequest -> WebAuthProvider.logout(request.account) },
-  ))
-  private val authCallHandler = Auth0FlutterAuthMethodCallHandler(listOf(
-    LoginApiRequestHandler(),
-    LoginWithOtpApiRequestHandler(),
-    MultifactorChallengeApiRequestHandler(),
-    EmailPasswordlessApiRequestHandler(),
-    PhoneNumberPasswordlessApiRequestHandler(),
-    LoginWithEmailCodeApiRequestHandler(),
-    LoginWithSMSCodeApiRequestHandler(),
-    SignupApiRequestHandler(),
-    UserInfoApiRequestHandler(),
-    RenewApiRequestHandler(),
-    ResetPasswordApiRequestHandler()
   ))
   private val credentialsManagerCallHandler = CredentialsManagerMethodCallHandler(listOf(
     GetCredentialsRequestHandler(),
@@ -48,33 +37,59 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     HasValidCredentialsRequestHandler(),
     ClearCredentialsRequestHandler()
   ))
+  private val dpopCallHandler = Auth0FlutterDPoPMethodCallHandler(listOf(
+    GetDPoPHeadersApiRequestHandler(),
+    ClearDPoPKeyApiRequestHandler()
+  ))
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    webAuthMethodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "auth0.com/auth0_flutter/web_auth")
+    binding = flutterPluginBinding
+    val messenger = binding.binaryMessenger
+    val context = binding.applicationContext
+
+    webAuthMethodChannel = MethodChannel(messenger, "auth0.com/auth0_flutter/web_auth")
     webAuthMethodChannel.setMethodCallHandler(webAuthCallHandler)
 
-    authMethodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "auth0.com/auth0_flutter/auth")
+    credentialsManagerMethodChannel = MethodChannel(messenger, "auth0.com/auth0_flutter/credentials_manager")
+    credentialsManagerMethodChannel.setMethodCallHandler(credentialsManagerCallHandler)
+    credentialsManagerCallHandler.context = context
+
+    authCallHandler = Auth0FlutterAuthMethodCallHandler(
+      listOf(
+        LoginApiRequestHandler(),
+        LoginWithOtpApiRequestHandler(),
+        MultifactorChallengeApiRequestHandler(),
+        EmailPasswordlessApiRequestHandler(),
+        PhoneNumberPasswordlessApiRequestHandler(),
+        LoginWithEmailCodeApiRequestHandler(),
+        LoginWithSMSCodeApiRequestHandler(),
+        SignupApiRequestHandler(),
+        UserInfoApiRequestHandler(),
+        RenewApiRequestHandler(),
+        ResetPasswordApiRequestHandler()
+      )
+    )
+    authCallHandler.context = context
+
+    authMethodChannel = MethodChannel(messenger, "auth0.com/auth0_flutter/auth")
     authMethodChannel.setMethodCallHandler(authCallHandler)
 
-    credentialsManagerMethodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "auth0.com/auth0_flutter/credentials_manager")
-    credentialsManagerMethodChannel.setMethodCallHandler(credentialsManagerCallHandler)
-
-    credentialsManagerCallHandler.context = flutterPluginBinding.applicationContext
+    dpopMethodChannel = MethodChannel(messenger, "auth0.com/auth0_flutter/dpop")
+    dpopMethodChannel.setMethodCallHandler(dpopCallHandler)
   }
 
-  override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {}
+  override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result) {}
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
     webAuthMethodChannel.setMethodCallHandler(null)
     authMethodChannel.setMethodCallHandler(null)
     credentialsManagerMethodChannel.setMethodCallHandler(null)
+    dpopMethodChannel.setMethodCallHandler(null)
   }
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     webAuthCallHandler.activity = binding.activity
     credentialsManagerCallHandler.activity = binding.activity
-
-    binding.addActivityResultListener(credentialsManagerCallHandler)
   }
 
   override fun onDetachedFromActivityForConfigChanges() {

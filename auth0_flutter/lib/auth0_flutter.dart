@@ -18,7 +18,8 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         ChallengeType,
         CredentialsManagerException,
         PasswordlessType,
-        LocalAuthentication;
+        LocalAuthentication,
+        LocalAuthenticationLevel;
 
 export 'src/mobile/authentication_api.dart';
 export 'src/mobile/credentials_manager.dart';
@@ -54,17 +55,15 @@ class Auth0 {
   Auth0(final String domain, final String clientId,
       {final LocalAuthentication? localAuthentication,
       final CredentialsManager? credentialsManager,
-      final CredentialsManagerConfiguration? credentialsManagerConfiguration})
+      final CredentialsManagerConfiguration? credentialsManagerConfiguration,
+      final bool useDPoP = false})
       : _account = Account(domain, clientId) {
     _credentialsManager = credentialsManager ??
-        DefaultCredentialsManager(
-          _account,
-          _userAgent,
-          localAuthentication: localAuthentication,
-          credentialsManagerConfiguration:credentialsManagerConfiguration
-        );
+        DefaultCredentialsManager(_account, _userAgent,
+            localAuthentication: localAuthentication,
+            credentialsManagerConfiguration: credentialsManagerConfiguration,
+            useDPoP: useDPoP);
   }
-
 
   /// An instance of [AuthenticationApi], the primary interface for interacting
   /// with the Auth0 Authentication API
@@ -103,4 +102,70 @@ class Auth0 {
           {final String? scheme, final bool useCredentialsManager = true}) =>
       WebAuthentication(_account, _userAgent, scheme,
           useCredentialsManager ? credentialsManager : null);
+
+  /// Generates DPoP (Demonstrating Proof-of-Possession) headers for making
+  /// authenticated API calls with DPoP-bound tokens.
+  ///
+  /// DPoP is a security mechanism that binds access tokens to a specific
+  /// cryptographic key pair. When making API calls with DPoP-bound tokens,
+  /// you must include both the access token and a DPoP proof JWT in your
+  /// request headers.
+  ///
+  /// ## Parameters
+  /// * [url] - The full URL of the API endpoint you're requesting
+  /// * [method] - The HTTP method (e.g., 'GET', 'POST', 'PUT', 'DELETE')
+  /// * [accessToken] - The access token obtained from authentication
+  /// * [tokenType] - The token type, defaults to 'Bearer'
+  ///
+  /// ## Returns
+  /// A map containing two headers:
+  /// * `authorization`: Contains the token type and access token
+  /// * `dpop`: Contains the DPoP proof JWT
+  ///
+  /// ## Usage example
+  ///
+  /// ```dart
+  /// final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
+  /// final headers = await auth0.getDPoPHeaders(
+  ///   url: 'https://api.example.com/resource',
+  ///   method: 'GET',
+  ///   accessToken: credentials.accessToken,
+  /// );
+  ///
+  /// // Use headers in your HTTP request
+  /// final response = await http.get(
+  ///   Uri.parse('https://api.example.com/resource'),
+  ///   headers: headers,
+  /// );
+  /// ```
+  Future<Map<String, String>> getDPoPHeaders({
+    required final String url,
+    required final String method,
+    required final String accessToken,
+    final String tokenType = 'Bearer',
+  }) =>
+      Auth0FlutterDPoPPlatform.instance.getDPoPHeaders(DPoPRequest(
+          options: AuthDPoPHeadersOptions(
+              url: url,
+              method: method,
+              accessToken: accessToken,
+              tokenType: tokenType)));
+
+  /// Clears the DPoP (Demonstrating Proof-of-Possession) private key from
+  /// secure storage.
+  ///
+  /// This method should be called when logging out to ensure that the DPoP
+  /// key pair is properly removed from the device's secure storage. This is
+  /// important for security as it prevents the key from being reused after
+  /// logout.
+  ///
+  /// ## Usage example
+  ///
+  /// ```dart
+  /// final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
+  /// // Clear DPoP key on logout
+  /// await auth0.clearDPoPKey();
+  /// ```
+  Future<void> clearDPoPKey() => Auth0FlutterDPoPPlatform.instance
+      .clearDPoPKey(const DPoPRequest(options: EmptyRequestOptions()));
 }

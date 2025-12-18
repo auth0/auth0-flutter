@@ -116,11 +116,19 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
           interop.PopupLoginOptions(authorizationParams: authParams),
           popupConfig);
 
+      // Use cache-only mode to avoid making a new token request.
+      // loginWithPopup() internally awaits _requestToken() which caches
+      // the token (including DPoP tokens) before resolving, so the token
+      // is guaranteed to be in cache at this point. This ensures we
+      // return the exact same token that was just obtained, maintaining
+      // DPoP proof binding consistency.
+      // See: https://github.com/auth0/auth0-spa-js/blob/main/...
       return CredentialsExtension.fromWeb(await client.getTokenSilently(
           interop.GetTokenSilentlyOptions(
               authorizationParams: JsInteropUtils.stripNulls(
                   interop.GetTokenSilentlyAuthParams(
                       scope: authParams.scope, audience: authParams.audience)),
+              cacheMode: 'cache-only',
               detailedResponse: true)));
     } catch (e) {
       throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));

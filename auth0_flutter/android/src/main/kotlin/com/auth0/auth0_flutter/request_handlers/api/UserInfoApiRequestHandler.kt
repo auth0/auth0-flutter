@@ -21,7 +21,9 @@ class UserInfoApiRequestHandler : ApiRequestHandler {
     ) {
         assertHasProperties(listOf("accessToken"), request.data)
 
-        val builder = api.userInfo(request.data["accessToken"] as String)
+        val accessToken = request.data["accessToken"] as String
+        val tokenType = request.data["tokenType"] as? String ?: "Bearer"
+        val builder = api.userInfo(accessToken, tokenType)
 
         if (request.data["parameters"] is HashMap<*, *>) {
             builder.addParameters(request.data["parameters"] as Map<String, String>)
