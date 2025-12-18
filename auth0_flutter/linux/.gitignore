@@ -1,0 +1,15 @@
+flutter/
+
+# Build artifacts
+*.o
+*.so
+*.a
+build/
+cmake-build-*/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

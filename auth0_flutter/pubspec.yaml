@@ -48,6 +48,8 @@ flutter:
       ios:
         pluginClass: Auth0FlutterPlugin
         sharedDarwinSource: true
+      linux:
+        pluginClass: Auth0FlutterPluginCApi
       macos:
         pluginClass: Auth0FlutterPlugin
         sharedDarwinSource: true
