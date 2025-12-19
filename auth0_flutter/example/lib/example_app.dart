@@ -18,7 +18,8 @@ class ExampleApp extends StatefulWidget {
 class _ExampleAppState extends State<ExampleApp> {
   bool _isLoggedIn = false;
   String _output = '';
-
+String clientId = 'GGUVoHL5nseaacSzqB810HWYGHZI34m8';
+String domain = 'int-dx-enterprise-test.us.auth0.com';
   late Auth0 auth0;
   late WebAuthentication webAuth;
   late Auth0Web auth0Web;
@@ -27,11 +28,11 @@ class _ExampleAppState extends State<ExampleApp> {
   void initState() {
     super.initState();
 
-    auth0 = Auth0(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
+    auth0 = Auth0(domain, clientId);
     auth0Web =
-        Auth0Web(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
+        Auth0Web(domain, clientId);
     webAuth =
-        auth0.webAuthentication(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
+        auth0.webAuthentication(scheme: 'https');
     if (kIsWeb) {
       auth0Web.onLoad().then((final credentials) => setState(() {
             _output = credentials?.idToken ?? '';
@@ -159,7 +160,7 @@ class _ExampleAppState extends State<ExampleApp> {
       } else {
         // Mobile (Android/iOS): Use WebAuth with DPoP
         final webAuthDPoP = auth0.webAuthentication(
-          scheme: dotenv.env['AUTH0_CUSTOM_SCHEME'],
+          scheme: 'https',
         );
 
         final result = await webAuthDPoP.login(
