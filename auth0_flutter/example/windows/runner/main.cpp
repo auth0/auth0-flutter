@@ -65,37 +65,64 @@ void StartPipeServer() {
   }).detach();
 }
 
-int APIENTRY wWinMain(_In_ HINSTANCE instance,
-                      _In_opt_ HINSTANCE prev,
-                      _In_ wchar_t* command_line,
-                      _In_ int show_command) {
+int APIENTRY wWinMain(
+    _In_ HINSTANCE instance,
+    _In_opt_ HINSTANCE prev,
+    _In_ wchar_t* /*command_line*/,
+    _In_ int show_command) {
+
   if (!::AttachConsole(ATTACH_PARENT_PROCESS) && ::IsDebuggerPresent()) {
     CreateAndAttachConsole();
   }
+
   ::CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
 
+  // -----------------------------
+  // Parse command line properly
+  // -----------------------------
+  int argc = 0;
+  LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+
+  std::wstring startupUri;
+  if (argv && argc > 1) {
+    // argv[1] is already de-quoted by Windows
+    startupUri = argv[1];
+  }
+
+  if (argv) {
+    LocalFree(argv);
+  }
+
+  // -----------------------------
   // Ensure single instance
+  // -----------------------------
   HANDLE hMutex = CreateMutexW(NULL, TRUE, kSingleInstanceMutex);
   if (hMutex && GetLastError() == ERROR_ALREADY_EXISTS) {
     // Already running → forward URI (if present) and exit
-    if (command_line && wcslen(command_line) > 0) {
-      ForwardToFirstInstance(command_line);
+    if (!startupUri.empty()) {
+      ForwardToFirstInstance(startupUri.c_str());
     }
     return 0;
   }
 
-  // First instance
-  if (command_line && wcslen(command_line) > 0) {
-    SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", command_line);
+  // -----------------------------
+  // First instance: store startup URI
+  // -----------------------------
+  if (!startupUri.empty()) {
+    SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", startupUri.c_str());
   } else {
     SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
   }
 
   StartPipeServer();
 
+  // -----------------------------
   // Flutter bootstrap
+  // -----------------------------
   flutter::DartProject project(L"data");
-  std::vector<std::string> command_line_arguments = GetCommandLineArguments();
+
+  std::vector<std::string> command_line_arguments =
+      GetCommandLineArguments();
   project.set_dart_entrypoint_arguments(std::move(command_line_arguments));
 
   FlutterWindow window(project);
