@@ -1,0 +1,8 @@
+## This file is required to prevent deleting the mock file for the `auth0_flutter_web_test.dart` when running the build_runner command
+targets:
+  $default:
+    builders:
+      mockito|mockBuilder:
+        generate_for:
+          exclude:
+            - test/web/auth0_flutter_web_test.dart
