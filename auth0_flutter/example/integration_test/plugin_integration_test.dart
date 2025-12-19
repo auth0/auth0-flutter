@@ -15,7 +15,7 @@ import 'package:auth0_flutter/auth0_flutter.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('getPlatformVersion test', (WidgetTester tester) async {
+  testWidgets('getPlatformVersion test', (final WidgetTester tester) async {
     final Auth0Flutter plugin = Auth0Flutter();
     final String? version = await plugin.getPlatformVersion();
     // The version string depends on the host platform running the test, so
