@@ -35,6 +35,7 @@ add_library(${PLUGIN_NAME} SHARED
   "auth0_flutter_plugin_c_api.cpp"
   "auth0_client.cpp"
   "token_decoder.cpp"
+  "time_util.cpp"
   ${PLUGIN_SOURCES}
 )
 

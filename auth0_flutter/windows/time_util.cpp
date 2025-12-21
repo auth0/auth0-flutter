@@ -1,30 +1,44 @@
 #include "time_util.h"
+
 #include <iomanip>
 #include <sstream>
+#include <ctime>
 
-std::string ToIso8601(
-    const std::chrono::system_clock::time_point& tp) {
-  std::time_t t = std::chrono::system_clock::to_time_t(tp);
-  std::tm utc{};
-  gmtime_s(&utc, &t);
+std::optional<std::chrono::system_clock::time_point>
+ParseIso8601(const std::string& iso) {
+  if (iso.empty()) {
+    return std::nullopt;
+  }
 
-  std::ostringstream oss;
-  oss << std::put_time(&utc, "%Y-%m-%dT%H:%M:%SZ");
-  return oss.str();
-}
+  std::tm tm{};
+  std::istringstream ss(iso);
+  ss >> std::get_time(&tm, "%Y-%m-%dT%H:%M:%SZ");
 
-static std::string ToIso8601(
-    const std::chrono::system_clock::time_point& tp) {
-  std::time_t t = std::chrono::system_clock::to_time_t(tp);
+  if (ss.fail()) {
+    return std::nullopt;
+  }
 
-  std::tm utc_tm{};
 #if defined(_WIN32)
-  gmtime_s(&utc_tm, &t);
+  std::time_t t = _mkgmtime(&tm);   // Windows UTC
 #else
-  gmtime_r(&t, &utc_tm);
+  std::time_t t = timegm(&tm);      // POSIX UTC
 #endif
 
-  std::ostringstream oss;
-  oss << std::put_time(&utc_tm, "%Y-%m-%dT%H:%M:%SZ");
-  return oss.str();
+  return std::chrono::system_clock::from_time_t(t);
+}
+
+std::string
+ToIso8601(const std::chrono::system_clock::time_point& tp) {
+  std::time_t t = std::chrono::system_clock::to_time_t(tp);
+  std::tm tm{};
+
+#if defined(_WIN32)
+  gmtime_s(&tm, &t);
+#else
+  gmtime_r(&t, &tm);
+#endif
+
+  std::ostringstream ss;
+  ss << std::put_time(&tm, "%Y-%m-%dT%H:%M:%SZ");
+  return ss.str();
 }
