@@ -18,7 +18,7 @@ abstract class Auth0FlutterPlatform extends PlatformInterface {
   /// Platform-specific implementations should set this with their own
   /// platform-specific class that extends [Auth0FlutterPlatform] when
   /// they register themselves.
-  static set instance(Auth0FlutterPlatform instance) {
+  static set instance(final Auth0FlutterPlatform instance) {
     PlatformInterface.verifyToken(instance, _token);
     _instance = instance;
   }

@@ -96,14 +96,16 @@ int APIENTRY wWinMain(
   // -----------------------------
   // Ensure single instance
   // -----------------------------
-  HANDLE hMutex = CreateMutexW(NULL, TRUE, kSingleInstanceMutex);
-  if (hMutex && GetLastError() == ERROR_ALREADY_EXISTS) {
-    // Already running → forward URI (if present) and exit
-    if (!startupUri.empty()) {
-      ForwardToFirstInstance(startupUri.c_str());
-    }
-    return 0;
-  }
+  bool hasUri = !startupUri.empty();
+
+HANDLE hMutex = CreateMutexW(NULL, TRUE, kSingleInstanceMutex);
+bool alreadyRunning = (hMutex && GetLastError() == ERROR_ALREADY_EXISTS);
+
+if (alreadyRunning && hasUri) {
+  // This is a protocol activation → forward and exit
+  ForwardToFirstInstance(startupUri.c_str());
+  return 0;
+}
 
   // -----------------------------
   // First instance: store startup URI

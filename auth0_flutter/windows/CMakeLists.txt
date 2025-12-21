@@ -2,7 +2,10 @@
 # installed that includes CMake 3.14 or later. You should not increase this
 # version, as doing so will cause the plugin to fail to compile for some
 # customers of the plugin.
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.15)
+cmake_policy(SET CMP0167 NEW)
+project(auth0_flutter LANGUAGES CXX)
+
 #if (DEFINED ENV{VCPKG_ROOT} AND EXISTS "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
 #    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
 #        CACHE STRING "Vcpkg toolchain file")
@@ -19,7 +22,6 @@ cmake_policy(VERSION 3.14...3.25)
 # This value is used when generating builds using this plugin, so it must
 # not be changed
 set(PLUGIN_NAME "auth0_flutter_plugin")
-
 # Any new source files that you add to the plugin should be added here.
 list(APPEND PLUGIN_SOURCES
   "auth0_flutter_plugin.cpp"
@@ -31,6 +33,8 @@ list(APPEND PLUGIN_SOURCES
 add_library(${PLUGIN_NAME} SHARED
   "include/auth0_flutter/auth0_flutter_plugin_c_api.h"
   "auth0_flutter_plugin_c_api.cpp"
+  "auth0_client.cpp"
+  "token_decoder.cpp"
   ${PLUGIN_SOURCES}
 )
 
@@ -45,7 +49,10 @@ apply_standard_settings(${PLUGIN_NAME})
 set_target_properties(${PLUGIN_NAME} PROPERTIES
   CXX_VISIBILITY_PRESET hidden)
 target_compile_definitions(${PLUGIN_NAME} PRIVATE FLUTTER_PLUGIN_IMPL)
-
+target_compile_definitions(${PLUGIN_NAME}
+  PRIVATE
+    _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
+)
 # Source include directories and library dependencies.
 target_include_directories(${PLUGIN_NAME} INTERFACE
   "${CMAKE_CURRENT_SOURCE_DIR}/include")

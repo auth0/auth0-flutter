@@ -20,8 +20,8 @@ void main() {
   });
 
   test('getPlatformVersion', () async {
-    Auth0Flutter auth0FlutterPlugin = Auth0Flutter();
-    MockAuth0FlutterPlatform fakePlatform = MockAuth0FlutterPlatform();
+    final Auth0Flutter auth0FlutterPlugin = Auth0Flutter();
+    final MockAuth0FlutterPlatform fakePlatform = MockAuth0FlutterPlatform();
     Auth0FlutterPlatform.instance = fakePlatform;
 
     expect(await auth0FlutterPlugin.getPlatformVersion(), '42');
