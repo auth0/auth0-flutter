@@ -1,9 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
-#define _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
 #define NOMINMAX
 #include "auth0_flutter_plugin.h"
-
 // This must be included before many other Windows headers.
 #include <windows.h>
 
@@ -30,6 +28,10 @@
 #include <cpprest/uri.h>
 #include <cpprest/http_client.h>
 #include <cpprest/json.h>
+
+#include "auth0_client.h"
+#include "time_util.h"
+#include "credentials.h"
 
 using namespace web;
 using namespace web::http;
@@ -168,15 +170,6 @@ static std::string WideToUtf8(const std::wstring& wstr) {
   return str;
 }
 
-static std::wstring Utf8ToWide(const std::string& str) {
-  if (str.empty()) return {};
-  int size_needed = ::MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), nullptr, 0);
-  if (size_needed <= 0) return {};
-  std::wstring wstr(size_needed, 0);
-  ::MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), &wstr[0], size_needed);
-  return wstr;
-}
-
 // Poll environment variable PLUGIN_STARTUP_URL for redirect URI (set by runner/main on startup or IPC).
 // Example stored value: auth0flutter://callback?code=AUTH_CODE&state=xyz
 static std::string waitForAuthCode_CustomScheme(const std::string& expectedRedirectBase, int timeoutSeconds = 180) {
@@ -268,40 +261,8 @@ std::string waitForAuthCode(const std::string& redirectUri) {
 }
 
 // -------------------- Token Exchange --------------------
-web::json::value exchangeCodeForTokens(
-    const std::string& domain,
-    const std::string& clientId,
-    const std::string& redirectUri,
-    const std::string& code,
-    const std::string& codeVerifier) {
-  
-  http_client client(
-      U("https://" + utility::conversions::to_string_t(domain)));
 
-  http_request request(methods::POST);
-  request.set_request_uri(U("/oauth/token"));
-  request.headers().set_content_type(U("application/json"));
 
-  web::json::value body;
-  body[U("grant_type")] = web::json::value::string(U("authorization_code"));
-  body[U("client_id")] =
-      web::json::value::string(utility::conversions::to_string_t(clientId));
-  body[U("code")] =
-      web::json::value::string(utility::conversions::to_string_t(code));
-  body[U("redirect_uri")] =
-      web::json::value::string(utility::conversions::to_string_t(redirectUri));
-  body[U("code_verifier")] =
-      web::json::value::string(utility::conversions::to_string_t(codeVerifier));
-
-  request.set_body(body);
-
-  auto response = client.request(request).get();
-  if (response.status_code() != status_codes::OK) {
-    throw std::runtime_error("Token request failed");
-  }
-
-  return response.extract_json().get();
-}
 
 // -------------------- Plugin Impl --------------------
 
@@ -369,7 +330,6 @@ void Auth0FlutterPlugin::HandleMethodCall(
     
     std::string redirectUri = "auth0flutter://callback";
 
-
     try {
       // 1. PKCE
       std::string codeVerifier = generateCodeVerifier();
@@ -393,17 +353,37 @@ void Auth0FlutterPlugin::HandleMethodCall(
       std::string code = waitForAuthCode_CustomScheme(redirectUri, 180);
 
       // 5. Exchange code for tokens
-      auto tokens =
-          exchangeCodeForTokens(domain, clientId, redirectUri, code, codeVerifier);
+      Auth0Client client(domain, clientId);
+      Credentials creds = client.ExchangeCodeForTokens(redirectUri, code, codeVerifier);
+      flutter::EncodableMap response;
 
-      result->Success(flutter::EncodableValue(
-          utility::conversions::to_utf8string(tokens.serialize())));
+      response[flutter::EncodableValue("accessToken")] =
+    flutter::EncodableValue(creds.accessToken);
+
+response[flutter::EncodableValue("idToken")] =
+    flutter::EncodableValue(creds.idToken);
+
+response[flutter::EncodableValue("refreshToken")] =
+    flutter::EncodableValue(creds.refreshToken);
+
+response[flutter::EncodableValue("tokenType")] =
+    flutter::EncodableValue(creds.tokenType);
+
+
+//        if (creds.expiresAt.has_value()) {
+//   response[flutter::EncodableValue("expiresAt")] =
+//       flutter::EncodableValue(ToIso8601(creds.expiresAt.value()));
+// }
+
+// response[flutter::EncodableValue("scopes")] =
+//     flutter::EncodableValue(creds.scopes);
+        result->Success(flutter::EncodableValue(response));
     } catch (const std::exception& e) {
-      result->Error("auth_failed", e.what());
+        result->Error("auth_failed", e.what());
     }
-  } else {
-    result->NotImplemented();
-  }
-}
+    } else {
+        result->NotImplemented();
+    }
+    }
 
 }  // namespace auth0_flutter
