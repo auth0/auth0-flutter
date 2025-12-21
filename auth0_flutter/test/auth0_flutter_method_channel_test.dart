@@ -5,15 +5,13 @@ import 'package:auth0_flutter/auth0_flutter_method_channel.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  MethodChannelAuth0Flutter platform = MethodChannelAuth0Flutter();
+  final MethodChannelAuth0Flutter platform = MethodChannelAuth0Flutter();
   const MethodChannel channel = MethodChannel('auth0_flutter');
 
   setUp(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(
       channel,
-      (MethodCall methodCall) async {
-        return '42';
-      },
+      (final MethodCall methodCall) async => '42',
     );
   });
 

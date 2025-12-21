@@ -37,9 +37,6 @@ using namespace web::http::client;
 using namespace web::http::experimental::listener;
 
 namespace auth0_flutter {
-  void DebugPrint(const std::string& msg) {
-    OutputDebugStringA((msg + "\n").c_str());
-}
 
 // -------------------- PKCE Helpers --------------------
 
@@ -171,6 +168,15 @@ static std::string WideToUtf8(const std::wstring& wstr) {
   return str;
 }
 
+static std::wstring Utf8ToWide(const std::string& str) {
+  if (str.empty()) return {};
+  int size_needed = ::MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), nullptr, 0);
+  if (size_needed <= 0) return {};
+  std::wstring wstr(size_needed, 0);
+  ::MultiByteToWideChar(CP_UTF8, 0, str.data(), (int)str.size(), &wstr[0], size_needed);
+  return wstr;
+}
+
 // Poll environment variable PLUGIN_STARTUP_URL for redirect URI (set by runner/main on startup or IPC).
 // Example stored value: auth0flutter://callback?code=AUTH_CODE&state=xyz
 static std::string waitForAuthCode_CustomScheme(const std::string& expectedRedirectBase, int timeoutSeconds = 180) {
@@ -194,7 +200,6 @@ auto readAndClearEnv = []() -> std::string {
   std::wstring wstr(buf.data(), ret);
   return WideToUtf8(wstr);
 };
-
 
     while (elapsed < timeoutSeconds * 1000) {
         std::string uri = readAndClearEnv();
@@ -270,7 +275,8 @@ web::json::value exchangeCodeForTokens(
     const std::string& code,
     const std::string& codeVerifier) {
   
-  http_client client(U("https://" + utility::conversions::to_string_t(domain)));
+  http_client client(
+      U("https://" + utility::conversions::to_string_t(domain)));
 
   http_request request(methods::POST);
   request.set_request_uri(U("/oauth/token"));
@@ -278,74 +284,24 @@ web::json::value exchangeCodeForTokens(
 
   web::json::value body;
   body[U("grant_type")] = web::json::value::string(U("authorization_code"));
-  body[U("client_id")] = web::json::value::string(utility::conversions::to_string_t(clientId));
-  body[U("code")] = web::json::value::string(utility::conversions::to_string_t(code));
-  body[U("redirect_uri")] = web::json::value::string(utility::conversions::to_string_t(redirectUri));
-  body[U("code_verifier")] = web::json::value::string(utility::conversions::to_string_t(codeVerifier));
-  DebugPrint("codeVerifier = " + codeVerifier);
-  DebugPrint("redirect_uri = " + redirectUri);  
+  body[U("client_id")] =
+      web::json::value::string(utility::conversions::to_string_t(clientId));
+  body[U("code")] =
+      web::json::value::string(utility::conversions::to_string_t(code));
+  body[U("redirect_uri")] =
+      web::json::value::string(utility::conversions::to_string_t(redirectUri));
+  body[U("code_verifier")] =
+      web::json::value::string(utility::conversions::to_string_t(codeVerifier));
+
   request.set_body(body);
-DebugPrint("➡️ POST https://" + domain + "/oauth/token");
-DebugPrint("Request body: " + utility::conversions::to_utf8string(body.serialize()));
+
   auto response = client.request(request).get();
-
-  // ---- Debug: status & headers ----
-  DebugPrint("HTTP Status: " + std::to_string(response.status_code()));
-  for (const auto& h : response.headers()) {
-    DebugPrint("Header: " + utility::conversions::to_utf8string(h.first) + 
-               " = " + utility::conversions::to_utf8string(h.second));
-  }
-
-  // ---- Read response body as string ----
-  auto bodyStr = response.extract_string().get();
-  DebugPrint("Response Body: " + utility::conversions::to_utf8string(bodyStr));
-
   if (response.status_code() != status_codes::OK) {
-    throw std::runtime_error("Token request failed: " + utility::conversions::to_utf8string(bodyStr));
+    throw std::runtime_error("Token request failed");
   }
 
-  // ---- Parse JSON if successful ----
-  return web::json::value::parse(bodyStr);
+  return response.extract_json().get();
 }
-
-// web::json::value exchangeCodeForTokens(
-//     const std::string& domain,
-//     const std::string& clientId,
-//     const std::string& redirectUri,
-//     const std::string& code,
-//     const std::string& codeVerifier) {
-//   DebugPrint("domain=" + domain);
-// DebugPrint("clientId=" + clientId);
-// DebugPrint("redirectUri=" + redirectUri);
-// DebugPrint("code=" + code);
-// DebugPrint("codeVerifier=" + codeVerifier);
-//   http_client client(
-//       U("https://" + utility::conversions::to_string_t(domain)));
-
-//   http_request request(methods::POST);
-//   request.set_request_uri(U("/oauth/token"));
-//   request.headers().set_content_type(U("application/json"));
-
-//   web::json::value body;
-//   body[U("grant_type")] = web::json::value::string(U("authorization_code"));
-//   body[U("client_id")] =
-//       web::json::value::string(utility::conversions::to_string_t(clientId));
-//   body[U("code")] =
-//       web::json::value::string(utility::conversions::to_string_t(code));
-//   body[U("redirect_uri")] =
-//       web::json::value::string(utility::conversions::to_string_t(redirectUri));
-//   body[U("code_verifier")] =
-//       web::json::value::string(utility::conversions::to_string_t(codeVerifier));
-
-//   request.set_body(body);
-
-//   auto response = client.request(request).get();
-//   if (response.status_code() != status_codes::OK) {
-//     throw std::runtime_error("Token request failed");
-//   }
-
-//   return response.extract_json().get();
-// }
 
 // -------------------- Plugin Impl --------------------
 
@@ -369,7 +325,9 @@ void Auth0FlutterPlugin::RegisterWithRegistrar(
 Auth0FlutterPlugin::Auth0FlutterPlugin() {}
 Auth0FlutterPlugin::~Auth0FlutterPlugin() {}
 
-
+void DebugPrint(const std::string& msg) {
+    OutputDebugStringA((msg + "\n").c_str());
+}
 
 void Auth0FlutterPlugin::HandleMethodCall(
     const flutter::MethodCall<flutter::EncodableValue> &method_call,
@@ -410,7 +368,6 @@ void Auth0FlutterPlugin::HandleMethodCall(
     }
     
     std::string redirectUri = "auth0flutter://callback";
-// authUrl = https://int-dx-enterprise-test.us.auth0.com/authorize?response_type=code&client_id=GGUVoHL5nseaacSzqB810HWYGHZI34m8&redirect_uri=auth0flutter://callback&scope=openid%20profile%20email&code_challenge=JnkpdGGqlvYT_BiinnxwrVK6ocB1PtYEERW4Akttaw0&code_challenge_method=S256
 
 
     try {
@@ -428,7 +385,6 @@ void Auth0FlutterPlugin::HandleMethodCall(
               << "&scope=openid%20profile%20email"
               << "&code_challenge=" << codeChallenge
               << "&code_challenge_method=S256";
-      DebugPrint("authUrl = " + authUrl.str());
 
       // 3. Open browser
       ShellExecuteA(NULL, "open", authUrl.str().c_str(), NULL, NULL, SW_SHOWNORMAL);
