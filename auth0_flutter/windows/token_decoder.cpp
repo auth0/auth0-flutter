@@ -1,6 +1,6 @@
 #include "token_decoder.h"
 #include <chrono>
-
+#include "time_util.h"
 Credentials DecodeTokenResponse(
     const web::json::value& json) {
 
@@ -28,32 +28,42 @@ Credentials DecodeTokenResponse(
             json.at(U("refresh_token")).as_string());
   }
 
-  // ---- Scopes (space-separated) ----
-  if (json.has_field(U("scope"))) {
-    auto scopeStr =
-        utility::conversions::to_utf8string(
-            json.at(U("scope")).as_string());
+    if (json.has_field(U("expires_in")) &&
+      json.at(U("expires_in")).is_integer()) {
+    creds.expiresIn = json.at(U("expires_in")).as_integer();
+  }
+  
+  // Try expires_at from JSON
+  if (json.has_field(U("expires_at")) &&
+      json.at(U("expires_at")).is_string()) {
 
-    size_t pos = 0;
-    while ((pos = scopeStr.find(' ')) != std::string::npos) {
-      creds.scopes.push_back(scopeStr.substr(0, pos));
-      scopeStr.erase(0, pos + 1);
-    }
-    if (!scopeStr.empty()) {
-      creds.scopes.push_back(scopeStr);
-    }
+    auto iso = utility::conversions::to_utf8string(
+        json.at(U("expires_at")).as_string());
+
+    creds.expiresAt = ParseIso8601(iso);
   }
 
-  // ---- expires_in → expiresAt (Kotlin-equivalent logic) ----
-  if (json.has_field(U("expires_in"))) {
-    long long expiresIn =
-        json.at(U("expires_in")).as_integer();
-
-    creds.expiresIn = expiresIn;
-
-    auto now = std::chrono::system_clock::now();
+  // If expires_at missing, compute from expires_in
+  if (!creds.expiresAt.has_value() && creds.expiresIn.has_value()) {
     creds.expiresAt =
-        now + std::chrono::seconds(expiresIn);
+        std::chrono::system_clock::now() +
+        std::chrono::seconds(creds.expiresIn.value());
+  }
+
+  // --------------------------------------------------
+
+  // scope (optional, space-separated string)
+  if (json.has_field(U("scope")) &&
+      json.at(U("scope")).is_string()) {
+
+    auto scopeStr = utility::conversions::to_utf8string(
+        json.at(U("scope")).as_string());
+
+    std::istringstream iss(scopeStr);
+    std::string s;
+    while (iss >> s) {
+      creds.scopes.push_back(s);
+    }
   }
 
   return creds;

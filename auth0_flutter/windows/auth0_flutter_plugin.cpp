@@ -327,7 +327,33 @@ void Auth0FlutterPlugin::HandleMethodCall(
         it != accountMap->end()) {
       domain = std::get<std::string>(it->second);
     }
-    
+
+std::string scopeStr = "openid profile email"; // default
+
+auto scopesIt = args->find(flutter::EncodableValue("scopes"));
+if (scopesIt != args->end()) {
+    const auto* scopeList =
+        std::get_if<flutter::EncodableList>(&scopesIt->second);
+    if (!scopeList) {
+        result->Error("bad_args", "'scopes' must be a List<String>");
+        return;
+    }
+
+    std::ostringstream oss;
+    bool first = true;
+    for (const auto& v : *scopeList) {
+        const auto* s = std::get_if<std::string>(&v);
+        if (!s) {
+            result->Error("bad_args", "Each scope must be a String");
+            return;
+        }
+        if (!first) oss << " ";
+        oss << *s;
+        first = false;
+    }
+
+    scopeStr = oss.str();
+}
     std::string redirectUri = "auth0flutter://callback";
 
     try {
@@ -342,7 +368,7 @@ void Auth0FlutterPlugin::HandleMethodCall(
               << "response_type=code"
               << "&client_id=" << clientId
               << "&redirect_uri=" << redirectUri
-              << "&scope=openid%20profile%20email"
+              << "&scope=" << scopeStr
               << "&code_challenge=" << codeChallenge
               << "&code_challenge_method=S256";
 
@@ -369,14 +395,17 @@ response[flutter::EncodableValue("refreshToken")] =
 response[flutter::EncodableValue("tokenType")] =
     flutter::EncodableValue(creds.tokenType);
 
+if (creds.expiresAt.has_value()) {
+  response[flutter::EncodableValue("expiresAt")] =
+      flutter::EncodableValue(ToIso8601(creds.expiresAt.value()));
+}
+        flutter::EncodableList scopes;
+        for (const auto& credscope : creds.scopes) {
+        scopes.emplace_back(credscope); // scope must be std::string
+        }
 
-//        if (creds.expiresAt.has_value()) {
-//   response[flutter::EncodableValue("expiresAt")] =
-//       flutter::EncodableValue(ToIso8601(creds.expiresAt.value()));
-// }
-
-// response[flutter::EncodableValue("scopes")] =
-//     flutter::EncodableValue(creds.scopes);
+    response[flutter::EncodableValue("scopes")] =
+        flutter::EncodableValue(scopes);
         result->Success(flutter::EncodableValue(response));
     } catch (const std::exception& e) {
         result->Error("auth_failed", e.what());
