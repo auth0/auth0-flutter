@@ -1,9 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
-#define _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
 #define NOMINMAX
 #include "auth0_flutter_plugin.h"
-
 // This must be included before many other Windows headers.
 #include <windows.h>
 
@@ -31,15 +29,16 @@
 #include <cpprest/http_client.h>
 #include <cpprest/json.h>
 
+#include "auth0_client.h"
+#include "time_util.h"
+#include "credentials.h"
+
 using namespace web;
 using namespace web::http;
 using namespace web::http::client;
 using namespace web::http::experimental::listener;
 
 namespace auth0_flutter {
-  void DebugPrint(const std::string& msg) {
-    OutputDebugStringA((msg + "\n").c_str());
-}
 
 // -------------------- PKCE Helpers --------------------
 
@@ -195,7 +194,6 @@ auto readAndClearEnv = []() -> std::string {
   return WideToUtf8(wstr);
 };
 
-
     while (elapsed < timeoutSeconds * 1000) {
         std::string uri = readAndClearEnv();
         if (!uri.empty()) {
@@ -263,89 +261,8 @@ std::string waitForAuthCode(const std::string& redirectUri) {
 }
 
 // -------------------- Token Exchange --------------------
-web::json::value exchangeCodeForTokens(
-    const std::string& domain,
-    const std::string& clientId,
-    const std::string& redirectUri,
-    const std::string& code,
-    const std::string& codeVerifier) {
-  
-  http_client client(U("https://" + utility::conversions::to_string_t(domain)));
 
-  http_request request(methods::POST);
-  request.set_request_uri(U("/oauth/token"));
-  request.headers().set_content_type(U("application/json"));
 
-  web::json::value body;
-  body[U("grant_type")] = web::json::value::string(U("authorization_code"));
-  body[U("client_id")] = web::json::value::string(utility::conversions::to_string_t(clientId));
-  body[U("code")] = web::json::value::string(utility::conversions::to_string_t(code));
-  body[U("redirect_uri")] = web::json::value::string(utility::conversions::to_string_t(redirectUri));
-  body[U("code_verifier")] = web::json::value::string(utility::conversions::to_string_t(codeVerifier));
-  DebugPrint("codeVerifier = " + codeVerifier);
-  DebugPrint("redirect_uri = " + redirectUri);  
-  request.set_body(body);
-DebugPrint("➡️ POST https://" + domain + "/oauth/token");
-DebugPrint("Request body: " + utility::conversions::to_utf8string(body.serialize()));
-  auto response = client.request(request).get();
-
-  // ---- Debug: status & headers ----
-  DebugPrint("HTTP Status: " + std::to_string(response.status_code()));
-  for (const auto& h : response.headers()) {
-    DebugPrint("Header: " + utility::conversions::to_utf8string(h.first) + 
-               " = " + utility::conversions::to_utf8string(h.second));
-  }
-
-  // ---- Read response body as string ----
-  auto bodyStr = response.extract_string().get();
-  DebugPrint("Response Body: " + utility::conversions::to_utf8string(bodyStr));
-
-  if (response.status_code() != status_codes::OK) {
-    throw std::runtime_error("Token request failed: " + utility::conversions::to_utf8string(bodyStr));
-  }
-
-  // ---- Parse JSON if successful ----
-  return web::json::value::parse(bodyStr);
-}
-
-// web::json::value exchangeCodeForTokens(
-//     const std::string& domain,
-//     const std::string& clientId,
-//     const std::string& redirectUri,
-//     const std::string& code,
-//     const std::string& codeVerifier) {
-//   DebugPrint("domain=" + domain);
-// DebugPrint("clientId=" + clientId);
-// DebugPrint("redirectUri=" + redirectUri);
-// DebugPrint("code=" + code);
-// DebugPrint("codeVerifier=" + codeVerifier);
-//   http_client client(
-//       U("https://" + utility::conversions::to_string_t(domain)));
-
-//   http_request request(methods::POST);
-//   request.set_request_uri(U("/oauth/token"));
-//   request.headers().set_content_type(U("application/json"));
-
-//   web::json::value body;
-//   body[U("grant_type")] = web::json::value::string(U("authorization_code"));
-//   body[U("client_id")] =
-//       web::json::value::string(utility::conversions::to_string_t(clientId));
-//   body[U("code")] =
-//       web::json::value::string(utility::conversions::to_string_t(code));
-//   body[U("redirect_uri")] =
-//       web::json::value::string(utility::conversions::to_string_t(redirectUri));
-//   body[U("code_verifier")] =
-//       web::json::value::string(utility::conversions::to_string_t(codeVerifier));
-
-//   request.set_body(body);
-
-//   auto response = client.request(request).get();
-//   if (response.status_code() != status_codes::OK) {
-//     throw std::runtime_error("Token request failed");
-//   }
-
-//   return response.extract_json().get();
-// }
 
 // -------------------- Plugin Impl --------------------
 
@@ -369,7 +286,9 @@ void Auth0FlutterPlugin::RegisterWithRegistrar(
 Auth0FlutterPlugin::Auth0FlutterPlugin() {}
 Auth0FlutterPlugin::~Auth0FlutterPlugin() {}
 
-
+void DebugPrint(const std::string& msg) {
+    OutputDebugStringA((msg + "\n").c_str());
+}
 
 void Auth0FlutterPlugin::HandleMethodCall(
     const flutter::MethodCall<flutter::EncodableValue> &method_call,
@@ -410,8 +329,6 @@ void Auth0FlutterPlugin::HandleMethodCall(
     }
     
     std::string redirectUri = "auth0flutter://callback";
-// authUrl = https://int-dx-enterprise-test.us.auth0.com/authorize?response_type=code&client_id=GGUVoHL5nseaacSzqB810HWYGHZI34m8&redirect_uri=auth0flutter://callback&scope=openid%20profile%20email&code_challenge=JnkpdGGqlvYT_BiinnxwrVK6ocB1PtYEERW4Akttaw0&code_challenge_method=S256
-
 
     try {
       // 1. PKCE
@@ -428,7 +345,6 @@ void Auth0FlutterPlugin::HandleMethodCall(
               << "&scope=openid%20profile%20email"
               << "&code_challenge=" << codeChallenge
               << "&code_challenge_method=S256";
-      DebugPrint("authUrl = " + authUrl.str());
 
       // 3. Open browser
       ShellExecuteA(NULL, "open", authUrl.str().c_str(), NULL, NULL, SW_SHOWNORMAL);
@@ -437,17 +353,37 @@ void Auth0FlutterPlugin::HandleMethodCall(
       std::string code = waitForAuthCode_CustomScheme(redirectUri, 180);
 
       // 5. Exchange code for tokens
-      auto tokens =
-          exchangeCodeForTokens(domain, clientId, redirectUri, code, codeVerifier);
+      Auth0Client client(domain, clientId);
+      Credentials creds = client.ExchangeCodeForTokens(redirectUri, code, codeVerifier);
+      flutter::EncodableMap response;
 
-      result->Success(flutter::EncodableValue(
-          utility::conversions::to_utf8string(tokens.serialize())));
+      response[flutter::EncodableValue("accessToken")] =
+    flutter::EncodableValue(creds.accessToken);
+
+response[flutter::EncodableValue("idToken")] =
+    flutter::EncodableValue(creds.idToken);
+
+response[flutter::EncodableValue("refreshToken")] =
+    flutter::EncodableValue(creds.refreshToken);
+
+response[flutter::EncodableValue("tokenType")] =
+    flutter::EncodableValue(creds.tokenType);
+
+
+//        if (creds.expiresAt.has_value()) {
+//   response[flutter::EncodableValue("expiresAt")] =
+//       flutter::EncodableValue(ToIso8601(creds.expiresAt.value()));
+// }
+
+// response[flutter::EncodableValue("scopes")] =
+//     flutter::EncodableValue(creds.scopes);
+        result->Success(flutter::EncodableValue(response));
     } catch (const std::exception& e) {
-      result->Error("auth_failed", e.what());
+        result->Error("auth_failed", e.what());
     }
-  } else {
-    result->NotImplemented();
-  }
-}
+    } else {
+        result->NotImplemented();
+    }
+    }
 
 }  // namespace auth0_flutter
