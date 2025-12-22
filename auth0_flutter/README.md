@@ -9,6 +9,12 @@
 📚 <a href="#documentation">Documentation</a> • 🚀 <a href="#getting-started">Getting started</a> • 🌐 <a href="#api-reference">API reference</a> • 💬 <a href="#feedback">Feedback</a>
 </div>
 
+## ⚠️ Important Migration Notice: v2.0.0
+
+We're excited to announce the release of auth0_flutter v2.0.0!
+
+**For v2.0.0 users:** This version includes updates to the underlying native Auth0 SDKs to support **DPoP (Demonstrating Proof of Possession)** and other improvements. See the 👉 [Migration Guide](https://github.com/auth0/auth0-flutter/blob/main/auth0_flutter/MIGRATION_GUIDE.md) 👈 for compatibility requirements and upgrade instructions.
+
 ## Documentation
 
 - Quickstarts: [Native](https://auth0.com/docs/quickstart/native/flutter/interactive) / [Web](https://auth0.com/docs/quickstart/spa/flutter/interactive) - our interactive guide for quickly adding login, logout and user information to your app using Auth0
@@ -22,11 +28,11 @@
 
 ### Requirements
 
-| Flutter    | Android         | iOS               | macOS             |
-| :--------- | :-------------- | :---------------- | :---------------- |
-| SDK 3.0+   | Android API 21+ | iOS 14+           | macOS 11+         |
-| Dart 2.17+ | Java 8+         | Swift 5.9+        | Swift 5.9+        |
-|            |                 | Xcode 15.x / 16.x | Xcode 15.x / 16.x |
+| Flutter     | Android         | iOS               | macOS             |
+| :---------- | :-------------- | :---------------- | :---------------- |
+| SDK 3.24.0+ | Android API 21+ | iOS 14+           | macOS 11+         |
+| Dart 3.5.0+ | Java 8+         | Swift 5.9+        | Swift 5.9+        |
+|             |                 | Xcode 15.x / 16.x | Xcode 15.x / 16.x |
 
 ### Installation
 
@@ -38,7 +44,7 @@ flutter pub add auth0_flutter
 
 ### Configure Auth0
 
-#### 📱 Mobile/Desktop
+#### 📱 Mobile/macOS
 
 Head to the [Auth0 Dashboard](https://manage.auth0.com/#/applications/) and create a new **Native** application.
 
@@ -121,7 +127,7 @@ Take note of the **client ID** and **domain** values under the **Basic Informati
 
 ### Configure the SDK
 
-#### 📱 Mobile/Desktop
+#### 📱 Mobile/macOS
 
 Start by importing `auth0_flutter/auth0_flutter.dart`.
 
@@ -202,6 +208,10 @@ Re-declare the activity manually using `tools:node="remove"` in the `android/src
 
 > 💡 If your Android app is using [product flavors](https://developer.android.com/studio/build/build-variants#product-flavors), you might need to specify different manifest placeholders for each flavor.
 
+##### Android: Biometric authentication
+
+> ⚠️ On Android, your app's `MainActivity.kt` file must extend `FlutterFragmentActivity` instead of `FlutterActivity` for biometric prompts to work.
+
 ##### iOS/macOS: Configure the associated domain
 
 > ⚠️ This step requires a paid Apple Developer account. It is needed to use Universal Links as callback and logout URLs.
@@ -256,12 +266,12 @@ final auth0Web = Auth0Web('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID');
 Finally, in your `index.html` add the following `<script>` tag:
 
 ```html
-<script src="https://cdn.auth0.com/js/auth0-spa-js/2.0/auth0-spa-js.production.js" defer></script>
+<script src="https://cdn.auth0.com/js/auth0-spa-js/2.9/auth0-spa-js.production.js" defer></script>
 ```
 
 ### Logging in
 
-#### 📱 Mobile/Desktop
+#### 📱 Mobile/macOS
 
 Present the [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login) page in the `onPressed` callback of your **Login** button.
 
@@ -343,6 +353,44 @@ final credentials = await auth0Web.loginWithPopup(popupWindow: popup);
 
 For other comprehensive examples, see the [EXAMPLES.md](EXAMPLES.md) document.
 
+### Using DPoP (Demonstrating Proof of Possession)
+
+Auth0 Flutter SDK supports [DPoP (Demonstrating Proof of Possession)](https://datatracker.ietf.org/doc/html/rfc9449), a security mechanism that cryptographically binds access tokens to your client, preventing token theft and replay attacks.
+
+**Quick Start:**
+
+```dart
+// Mobile (Android/iOS)
+final credentials = await auth0
+    .webAuthentication()
+    .login(useDPoP: true, useHTTPS: true);
+
+// Web
+final auth0Web = Auth0Web(
+  'YOUR_AUTH0_DOMAIN',
+  'YOUR_AUTH0_CLIENT_ID',
+  useDPoP: true,
+);
+```
+
+**Key Benefits:**
+- 🔒 Enhanced security through cryptographic token binding
+- 🛡️ Protection against token theft and replay attacks
+- 🌐 Full cross-platform support (Web, Android, iOS)
+
+**Platform Support:**
+
+| Feature | Web | iOS | Android |
+|---------|-----|-----|---------|
+| Login with DPoP | ✅ | ✅ | ✅ |
+| CredentialsManager with DPoP | ✅ | ✅ | ✅ |
+| Token Refresh with DPoP | ✅ | ✅ | ✅ |
+| Manual DPoP APIs (`getDPoPHeaders()`, `clearDPoPKey()`) | ✅ | ✅ | ✅ |
+
+> **Note:** In most cases, DPoP is managed automatically when `useDPoP: true` is enabled. Manual DPoP APIs are available for advanced use cases where you need direct control over DPoP proof generation.
+
+📖 **For complete DPoP documentation, examples, and troubleshooting, see [DPOP.md](DPOP.md)**
+
 ### iOS SSO Alert Box
 
 ![Screenshot of the SSO alert box](https://user-images.githubusercontent.com/5055789/198689762-8f3459a7-fdde-4c14-a13b-68933ef675e6.png)
@@ -353,7 +401,7 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 
 ### Common Tasks
 
-### 📱 Mobile/Desktop
+### 📱 Mobile/macOS
 
 - [Check for stored credentials](EXAMPLES.md#check-for-stored-credentials) - check if the user is already logged in when your app starts up.
 - [Retrieve stored credentials](EXAMPLES.md#retrieve-stored-credentials) - fetch the user's credentials from the storage, automatically renewing them if they have expired.
@@ -365,7 +413,7 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 
 ## API reference
 
-### 📱 Mobile/Desktop
+### 📱 Mobile/macOS
 
 #### Web Authentication
 

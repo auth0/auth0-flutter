@@ -5,6 +5,7 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 import 'method_channel_credentials_manager.dart';
 import 'options/get_credentials_options.dart';
 import 'options/has_valid_credentials_options.dart';
+import 'options/renew_credentials_options.dart';
 import 'options/save_credentials_options.dart';
 
 /// The interface that implementations of CredentialsManager must implement.
@@ -31,13 +32,21 @@ abstract class CredentialsManagerPlatform extends PlatformInterface {
 
   /// Retrieves the credentials from the native storage.
   Future<Credentials> getCredentials(
-      final CredentialsManagerRequest<GetCredentialsOptions> request) {
+    final CredentialsManagerRequest<GetCredentialsOptions> request,
+  ) {
     throw UnimplementedError('getCredentials() has not been implemented');
   }
 
   /// Retrieves the credentials from the native storage.
   Future<UserInfo> getIDTokenContents(final CredentialsManagerRequest request) {
     throw UnimplementedError('getIDTokenContents() has not been implemented');
+  }
+
+  /// Fetches new credentials and save them in the native storage.
+  Future<Credentials> renewCredentials(
+    final CredentialsManagerRequest<RenewCredentialsOptions> request,
+  ) {
+    throw UnimplementedError('renewCredentials() has not been implemented');
   }
 
   /// Removes the credentials from the native storage if present.
@@ -48,14 +57,16 @@ abstract class CredentialsManagerPlatform extends PlatformInterface {
   /// Stores the given credentials in the native storage. Must have an
   /// access_token or id_token and a expires_in value.
   Future<bool> saveCredentials(
-      final CredentialsManagerRequest<SaveCredentialsOptions> request) {
+    final CredentialsManagerRequest<SaveCredentialsOptions> request,
+  ) {
     throw UnimplementedError('saveCredentials() has not been implemented');
   }
 
   /// Checks if a non-expired pair of credentials can be obtained from the
   /// native storage.
   Future<bool> hasValidCredentials(
-      final CredentialsManagerRequest<HasValidCredentialsOptions> request) {
+    final CredentialsManagerRequest<HasValidCredentialsOptions> request,
+  ) {
     throw UnimplementedError('hasValidCredentials() has not been implemented');
   }
 }

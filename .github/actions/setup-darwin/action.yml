@@ -36,7 +36,7 @@ runs:
       shell: bash
 
     - name: Set up Ruby
-      uses: ruby/setup-ruby@a4effe49ee8ee5b8b5091268c473a4628afb5651 # pin@v1.245.0
+      uses: ruby/setup-ruby@a25f1e45f0e65a92fcb1e95e8847f78fb0a7197a # pin@v1.273.0
       with:
         ruby-version: ${{ inputs.ruby }}
         bundler-cache: true
@@ -65,7 +65,7 @@ runs:
 
     - id: restore-pods-cache
       name: Restore Pods cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}/Pods
         key: pods-${{ hashFiles('Podfile.lock') }}-${{ hashFiles('.xcode-version') }}-v1

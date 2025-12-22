@@ -22,4 +22,19 @@ class CredentialsManagerException extends Auth0Exception {
 
     return CredentialsManagerException(e.code, e.messageString, errorDetails);
   }
+
+  bool get isTokenRenewFailed =>
+      code == 'RENEW_FAILED' ||
+      code ==
+          '''
+An error occurred while trying to use the Refresh Token to renew the Credentials.''';
+
+  bool get isNoCredentialsFound =>
+      code == 'NO_CREDENTIALS' || code == 'No Credentials were previously set.';
+
+  bool get isNoRefreshTokenFound =>
+      code == 'NO_REFRESH_TOKEN' ||
+      code ==
+          '''
+Credentials need to be renewed but no Refresh Token is available to renew them.''';
 }

@@ -69,6 +69,16 @@ class WebAuthentication {
   /// domain –or custom domain, if you have one.
   /// * (iOS/macOS only): [useEphemeralSession] controls whether shared persistent
   /// storage is used for cookies. [Read more on the effects this setting has](https://github.com/auth0/auth0-flutter/blob/main/auth0_flutter/FAQ.md#2-how-can-i-disable-the-ios-login-alert-box).
+  /// * (android only): [allowedBrowsers] Defines an allowlist of browser
+  /// packages
+  /// When the user's default browser is in the allowlist, it uses the default
+  /// browser
+  /// When the user's default browser is not in the allowlist, but the user has
+  /// another allowed browser installed, the allowed browser is used instead
+  /// When the user's default browser is not in the allowlist, and the user has
+  /// no other allowed browser installed, an error is returned
+  /// * [useDPoP] enables DPoP for enhanced token security.
+  /// See README for details. Defaults to `false`.
   Future<Credentials> login(
       {final String? audience,
       final Set<String> scopes = const {
@@ -81,11 +91,13 @@ class WebAuthentication {
       final String? organizationId,
       final String? invitationUrl,
       final bool useHTTPS = false,
+      final List<String> allowedBrowsers = const [],
       final bool useEphemeralSession = false,
       final Map<String, String> parameters = const {},
       final IdTokenValidationConfig idTokenValidationConfig =
           const IdTokenValidationConfig(),
-      final SafariViewController? safariViewController}) async {
+      final SafariViewController? safariViewController,
+      final bool useDPoP = false}) async {
     final credentials = await Auth0FlutterWebAuthPlatform.instance.login(
         _createWebAuthRequest(WebAuthLoginOptions(
             audience: audience,
@@ -98,7 +110,9 @@ class WebAuthentication {
             scheme: _scheme,
             useHTTPS: useHTTPS,
             useEphemeralSession: useEphemeralSession,
-            safariViewController: safariViewController)));
+            safariViewController: safariViewController,
+            allowedBrowsers: allowedBrowsers,
+            useDPoP: useDPoP)));
 
     await _credentialsManager?.storeCredentials(credentials);
 
@@ -122,20 +136,24 @@ class WebAuthentication {
   /// the `webcredentials` service type, set to your Auth0 domain –or custom
   /// domain, if you have one.
   Future<void> logout(
-      {final String? returnTo, final bool useHTTPS = false}) async {
+      {final String? returnTo,
+      final bool useHTTPS = false,
+      final bool federated = false}) async {
     await Auth0FlutterWebAuthPlatform.instance.logout(_createWebAuthRequest(
       WebAuthLogoutOptions(
-          returnTo: returnTo, scheme: _scheme, useHTTPS: useHTTPS),
+          returnTo: returnTo,
+          scheme: _scheme,
+          useHTTPS: useHTTPS,
+          federated: federated),
     ));
     await _credentialsManager?.clearCredentials();
   }
-
 
   /// Terminates the ongoing web-based operation and reports back that it was
   /// cancelled.
   /// ## Note: This is an iOS specific API
   ///
- static void cancel() {
+  static void cancel() {
     Auth0FlutterWebAuthPlatform.instance.cancel();
   }
 

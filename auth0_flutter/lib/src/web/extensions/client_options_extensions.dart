@@ -21,6 +21,7 @@ extension ClientOptionsExtension on ClientOptions {
           useFormData: useFormData,
           useRefreshTokens: useRefreshTokens,
           useRefreshTokensFallback: useRefreshTokensFallback,
+          useDpop: useDPoP,
           authorizationParams: JsInteropUtils.stripNulls(
               JsInteropUtils.addCustomParams(
                   AuthorizationParams(

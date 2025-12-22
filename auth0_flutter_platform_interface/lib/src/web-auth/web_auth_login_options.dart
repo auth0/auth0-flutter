@@ -6,6 +6,8 @@ class WebAuthLoginOptions extends LoginOptions {
   final bool useEphemeralSession;
   final String? scheme;
   final SafariViewController? safariViewController;
+  final List<String> allowedBrowsers;
+  final bool useDPoP;
 
   WebAuthLoginOptions(
       {super.audience,
@@ -18,15 +20,19 @@ class WebAuthLoginOptions extends LoginOptions {
       this.useHTTPS = false,
       this.useEphemeralSession = false,
       this.scheme,
-      this.safariViewController});
+      this.safariViewController,
+      this.allowedBrowsers = const [],
+      this.useDPoP = false});
 
   @override
   Map<String, dynamic> toMap() {
     final map = {
       ...super.toMap(),
+      'allowedBrowsers': allowedBrowsers,
       'useHTTPS': useHTTPS,
       'useEphemeralSession': useEphemeralSession,
       'scheme': scheme,
+      'useDPoP': useDPoP,
       ...safariViewController != null
           ? {'safariViewController': safariViewController?.toMap()}
           : <String, dynamic>{}

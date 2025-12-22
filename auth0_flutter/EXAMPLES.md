@@ -390,7 +390,7 @@ await webAuth.logout();
 
 ## 📱 Credentials Manager
 
-> This feature is mobile/desktop only; on web, the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter keeps its own cache. See [Handling Credentials on the Web](#-handling-credentials-on-the-web) for more details.
+> This feature is mobile/macOS only; on web, the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter keeps its own cache. See [Handling Credentials on the Web](#-handling-credentials-on-the-web) for more details.
 
 - [Check for stored credentials](#check-for-stored-credentials)
 - [Retrieve stored credentials](#retrieve-stored-credentials)
@@ -443,6 +443,8 @@ final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID',
 
 You can enable an additional level of user authentication before retrieving credentials using the local authentication supported by the device, for example PIN or fingerprint on Android, and Face ID or Touch ID on iOS.
 
+To enable this, pass a `LocalAuthentication` instance when you create your `Auth0` object.
+
 ```dart
 const localAuthentication =
     LocalAuthentication(title: 'Please authenticate to continue');
@@ -450,6 +452,7 @@ final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID',
     localAuthentication: localAuthentication);
 final credentials = await auth0.credentialsManager.credentials();
 ```
+> ⚠️ On Android, your app's `MainActivity.kt` file must extend `FlutterFragmentActivity` instead of `FlutterActivity` for biometric prompts to work.
 
 Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/LocalAuthentication-class.html) to learn more about the available `LocalAuthentication` properties.
 
@@ -490,10 +493,16 @@ The Credentials Manager will only throw `CredentialsManagerException` exceptions
 
 ```dart
 try {
-  final credentials = await auth0.credentialsManager.credentials();
-  // ...
+final credentials = await auth0.credentialsManager.credentials();
+// ...
 } on CredentialsManagerException catch (e) {
-  print(e);
+if (e.isNoCredentialsFound) {
+print("No credentials stored.");
+} else if (e.isTokenRenewFailed) {
+print("Failed to renew tokens.");
+} else {
+print(e);
+}
 }
 ```
 
@@ -501,7 +510,7 @@ try {
 
 ## 🌐 Handling Credentials on the Web
 
-> This section describes handling credentials for the web platform. For mobile/desktop, see [Credentials Manager](#-credentials-manager).
+> This section describes handling credentials for the web platform. For mobile/macOS, see [Credentials Manager](#-credentials-manager).
 
 The management and storage of credentials is handled internally by the underlying [Auth0 SPA SDK](https://github.com/auth0/auth0-spa-js), including refreshing the access token when it expires. The Flutter SDK provides an API for checking whether credentials are available, and the retrieval of those credentials.
 
@@ -539,7 +548,7 @@ final credentials = await auth0Web.credentials();
 
 ## 📱 Authentication API
 
-> This feature is mobile/desktop only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
+> This feature is mobile/macOS only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
 
 - [Login with database connection](#login-with-database-connection)
 - [Sign up with database connection](#sign-up-with-database-connection)
@@ -659,8 +668,22 @@ Fetch the latest user information from the `/userinfo` endpoint.
 This method will yield a `UserProfile` instance. Check the [API documentation](https://pub.dev/documentation/auth0_flutter_platform_interface/latest/auth0_flutter_platform_interface/UserProfile-class.html) to learn more about its available properties.
 
 ```dart
-final userProfile = await auth0.api.userInfo(accessToken: accessToken);
+// Basic usage with Bearer token (default)
+final userProfile = await auth0.api.userProfile(accessToken: accessToken);
+
+// With explicit token type (useful for DPoP tokens)
+final credentials = await auth0.credentialsManager.credentials();
+final userProfile = await auth0.api.userProfile(
+  accessToken: credentials.accessToken,
+  tokenType: credentials.tokenType, // 'Bearer' or 'DPoP'
+);
 ```
+
+The `tokenType` parameter specifies the type of token being used:
+- `'Bearer'` (default): Standard OAuth 2.0 bearer tokens
+- `'DPoP'`: DPoP (Demonstrating Proof of Possession) tokens for enhanced security
+
+> 💡 When using DPoP tokens, the SDK automatically handles proof generation. See the [DPoP documentation](DPOP.md) for more information.
 
 ### Renew credentials
 
@@ -756,7 +779,7 @@ await auth0Web.loginWithRedirect(
 
 ## 📱 Bot detection
 
-> This example is mobile/desktop only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
+> This example is mobile/macOS only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
 
 If you are performing database login/signup via the Authentication API and would like to use the [Bot Detection](https://auth0.com/docs/secure/attack-protection/bot-detection) feature, you need to handle the `isVerificationRequired` error. It indicates that the request was flagged as suspicious and an additional verification step is necessary to log the user in. That verification step is web-based, so you need to use Web Auth to complete it.
 

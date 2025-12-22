@@ -1,5 +1,36 @@
 # Change Log
 
+## [af-v2.0.0-beta.1](https://github.com/auth0/auth0-flutter/tree/af-v2.0.0-beta.1) (2025-12-10)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.14.0...af-v2.0.0-beta.1)
+
+**Added**
+- Docs: Add v2.0.0 migration notice and update documentation [\#692](https://github.com/auth0/auth0-flutter/pull/692) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- Adding DPoP feature for flutter [\#667](https://github.com/auth0/auth0-flutter/pull/667) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- Updated the doc on hasValidCredentials [\#679](https://github.com/auth0/auth0-flutter/pull/679) ([pmathew92](https://github.com/pmathew92))
+
+## [af-v1.14.0](https://github.com/auth0/auth0-flutter/tree/af-v1.14.0) (2025-09-24)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.13.0...af-v1.14.0)
+
+**Added**
+- Add support for logoutParams [\#608](https://github.com/auth0/auth0-flutter/pull/608) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
+## [af-v1.13.0](https://github.com/auth0/auth0-flutter/tree/af-v1.13.0) (2025-09-02)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.12.0...af-v1.13.0)
+
+**Fixed**
+- Resolves the inconsistency where the web platform required an invitation ticket ID for the  parameter, while mobile platforms required the full URL. [\#645](https://github.com/auth0/auth0-flutter/pull/645) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- fix(android): SMS login to use phoneNumber instead of email [\#633](https://github.com/auth0/auth0-flutter/pull/633) ([hiiiP0wer](https://github.com/hiiiP0wer))
+- Adding fix for OnLoad() for refresh redirecting [\#624](https://github.com/auth0/auth0-flutter/pull/624) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
+## [af-v1.12.0](https://github.com/auth0/auth0-flutter/tree/af-v1.12.0) (2025-07-10)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.11.0...af-v1.12.0)
+
+**Added**
+- chore: added new renewCredentials method to fetch a new set of credentials [\#610](https://github.com/auth0/auth0-flutter/pull/610) ([pmathew92](https://github.com/pmathew92))
+- dart api to input allowed browser packages for web auth login [\#611](https://github.com/auth0/auth0-flutter/pull/611) ([NandanPrabhu](https://github.com/NandanPrabhu))
+- chore : added new properties to web_authentication_exception and credentials_manager_exception class [\#609](https://github.com/auth0/auth0-flutter/pull/609) ([pmathew92](https://github.com/pmathew92))
+- Added webAuth cancel for ios to prevent active transaction errors [\#573](https://github.com/auth0/auth0-flutter/pull/573) ([pmathew92](https://github.com/pmathew92))
+
 ## [af-v1.11.0](https://github.com/auth0/auth0-flutter/tree/af-v1.11.0) (2025-06-11)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v1.10.0...af-v1.11.0)
 

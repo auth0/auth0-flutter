@@ -33,7 +33,6 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   /// Thus clearing this object is not needed,
   /// as the actual state is managed across reloads,
   /// using the transaction manager.
-  // TODO: move the `appState` to the result of `onLoad/initialize`
   Object? _appState;
 
   @override
@@ -57,6 +56,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
 
         _appState = result.appState.dartify();
 
+        window.history.replaceState(null, '', window.location.pathname);
         return;
       } catch (e) {
         throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
@@ -69,12 +69,14 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   @override
   Future<void> loginWithRedirect(final LoginOptions? options) {
     final client = _ensureClient();
+    final invitationTicket = _getInvitationTicket(options?.invitationUrl);
+
     final authParams = JsInteropUtils.stripNulls(JsInteropUtils.addCustomParams(
         interop.AuthorizationParams(
             audience: options?.audience,
             redirect_uri: options?.redirectUrl,
             organization: options?.organizationId,
-            invitation: options?.invitationUrl,
+            invitation: invitationTicket,
             max_age: options?.idTokenValidationConfig?.maxAge,
             scope: options?.scopes.isNotEmpty == true
                 ? options?.scopes.join(' ')
@@ -92,12 +94,13 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   @override
   Future<Credentials> loginWithPopup(final PopupLoginOptions? options) async {
     final client = _ensureClient();
+    final invitationTicket = _getInvitationTicket(options?.invitationUrl);
 
     final authParams = JsInteropUtils.stripNulls(JsInteropUtils.addCustomParams(
         interop.AuthorizationParams(
             audience: options?.audience,
             organization: options?.organizationId,
-            invitation: options?.invitationUrl,
+            invitation: invitationTicket,
             max_age: options?.idTokenValidationConfig?.maxAge,
             scope: options?.scopes.isNotEmpty == true
                 ? options?.scopes.join(' ')
@@ -113,11 +116,19 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
           interop.PopupLoginOptions(authorizationParams: authParams),
           popupConfig);
 
+      // Use cache-only mode to avoid making a new token request.
+      // loginWithPopup() internally awaits _requestToken() which caches
+      // the token (including DPoP tokens) before resolving, so the token
+      // is guaranteed to be in cache at this point. This ensures we
+      // return the exact same token that was just obtained, maintaining
+      // DPoP proof binding consistency.
+      // See: https://github.com/auth0/auth0-spa-js/blob/main/...
       return CredentialsExtension.fromWeb(await client.getTokenSilently(
           interop.GetTokenSilentlyOptions(
               authorizationParams: JsInteropUtils.stripNulls(
                   interop.GetTokenSilentlyAuthParams(
                       scope: authParams.scope, audience: authParams.audience)),
+              cacheMode: 'cache-only',
               detailedResponse: true)));
     } catch (e) {
       throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
@@ -150,6 +161,24 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
 
   @override
   Future<bool> hasValidCredentials() => clientProxy!.isAuthenticated();
+
+  String? _getInvitationTicket(final String? invitationUrl) {
+    if (invitationUrl == null || invitationUrl.isEmpty) {
+      return null;
+    }
+
+    final uri = Uri.tryParse(invitationUrl);
+
+    // If parsing fails or it's not a valid web/custom scheme URL,
+    // the input string is the ticket ID itself.
+    if (uri == null || !uri.hasAuthority) {
+      return invitationUrl;
+    }
+
+    // If it is a valid URL, return the 'invitation' query parameter,
+    // which will be the ticket ID if present, or null if not.
+    return uri.queryParameters['invitation'];
+  }
 
   Auth0FlutterWebClientProxy _ensureClient() {
     if (clientProxy == null) {

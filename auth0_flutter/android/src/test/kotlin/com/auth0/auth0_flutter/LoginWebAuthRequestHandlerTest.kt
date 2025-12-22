@@ -3,6 +3,8 @@ package com.auth0.auth0_flutter
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
+import com.auth0.android.provider.BrowserPicker
+import com.auth0.android.provider.CustomTabsOptions
 import com.auth0.android.provider.WebAuthProvider
 import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
@@ -39,8 +41,8 @@ class LoginWebAuthRequestHandlerTest {
             callback(mockResult, builder)
         }.`when`(builder).start(any(), any())
 
-        val handler = LoginWebAuthRequestHandler { builder }
-        val request = MethodCallRequest(Auth0("test.auth0.com", "test-client"), args)
+        val handler = LoginWebAuthRequestHandler { _ -> builder }
+        val request = MethodCallRequest(Auth0.getInstance("test-client", "test.auth0.com"), args)
 
         handler.handle(mock(), request, mockResult)
     }
@@ -48,10 +50,7 @@ class LoginWebAuthRequestHandlerTest {
     @Test
     fun `handler should log in using the Auth0 SDK`() {
         runRequestHandler { result, builder ->
-            val sdf =
-                SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
-
-            val formattedDate = sdf.format(defaultCredentials.expiresAt)
+            val formattedDate = defaultCredentials.expiresAt.toInstant().toString()
 
             verify(result).success(check {
                 val map = it as Map<*, *>
@@ -300,9 +299,11 @@ class LoginWebAuthRequestHandlerTest {
             cb.onFailure(exception)
         }.`when`(builder).start(any(), any())
 
-        val handler = LoginWebAuthRequestHandler { builder }
+        val handler = LoginWebAuthRequestHandler { _ -> builder }
 
-        handler.handle(mock(), mock(), mockResult)
+        val mockAccount = mock<Auth0>()
+        val mockRequest = MethodCallRequest(mockAccount, hashMapOf<String, Any>())
+        handler.handle(mock(), mockRequest, mockResult)
 
         verify(mockResult).error("code", "description", exception)
     }
@@ -321,17 +322,16 @@ class LoginWebAuthRequestHandlerTest {
             cb.onSuccess(credentials)
         }.`when`(builder).start(any(), any())
 
-        val handler = LoginWebAuthRequestHandler { builder }
+        val handler = LoginWebAuthRequestHandler { _ -> builder }
 
-        handler.handle(mock(), mock(), mockResult)
+        val mockAccount = mock<Auth0>()
+        val mockRequest = MethodCallRequest(mockAccount, hashMapOf<String, Any>())
+        handler.handle(mock(), mockRequest, mockResult)
 
         val captor = argumentCaptor<() -> Map<String, *>>()
         verify(mockResult).success(captor.capture())
 
-        val sdf =
-            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
-
-        val formattedDate = sdf.format(credentials.expiresAt)
+        val formattedDate = credentials.expiresAt.toInstant().toString()
 
         assertThat((captor.firstValue as Map<*, *>)["accessToken"], equalTo(credentials.accessToken))
         assertThat((captor.firstValue as Map<*, *>)["idToken"], equalTo(credentials.idToken))
@@ -340,4 +340,27 @@ class LoginWebAuthRequestHandlerTest {
         assertThat((captor.firstValue as Map<*, *>)["scopes"], equalTo(listOf("scope1", "scope2")))
         assertThat(((captor.firstValue as Map<*, *>)["userProfile"] as Map<*, *>)["name"], equalTo("John Doe"))
     }
+
+    @Test
+    fun `handler should not add an empty allowedPackages when given an empty array`() {
+        val args = hashMapOf<String, Any?>(
+            "allowedBrowsers" to listOf<String>()
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder, never()).withCustomTabsOptions(CustomTabsOptions.newBuilder().withBrowserPicker(
+                BrowserPicker.newBuilder().withAllowedPackages(listOf<String>()).build()).build())
+        }
+    }
+
+    @Test
+    fun `handler should not add an empty allowedPackages when not specified`() {
+        val args = hashMapOf<String, Any?>()
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder, never()).withCustomTabsOptions(CustomTabsOptions.newBuilder().withBrowserPicker(
+                BrowserPicker.newBuilder().withAllowedPackages(listOf<String>()).build()).build())
+        }
+    }
+
 }

@@ -7,6 +7,7 @@ import 'credentials_manager_exception.dart';
 import 'credentials_manager_platform.dart';
 import 'options/get_credentials_options.dart';
 import 'options/has_valid_credentials_options.dart';
+import 'options/renew_credentials_options.dart';
 import 'options/save_credentials_options.dart';
 
 const MethodChannel _channel =
@@ -21,6 +22,8 @@ const String credentialsManagerClearCredentialsMethod =
     'credentialsManager#clearCredentials';
 const String credentialsManagerHasValidCredentialsMethod =
     'credentialsManager#hasValidCredentials';
+const String credentialsManagerRenewCredentialsMethod =
+    'credentialsManager#renewCredentials';
 
 /// Method Channel implementation to communicate with the Native
 /// CredentialsManager
@@ -34,6 +37,18 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
       final CredentialsManagerRequest<GetCredentialsOptions> request) async {
     final Map<String, dynamic> result = await _invokeMapRequest(
         method: credentialsManagerGetCredentialsMethod, request: request);
+
+    return Credentials.fromMap(result);
+  }
+
+  /// Fetches new set of credentials and saves them in the native storage.
+  ///
+  /// Uses the [MethodChannel] to communicate with the Native platforms.
+  @override
+  Future<Credentials> renewCredentials(
+      final CredentialsManagerRequest<RenewCredentialsOptions> request) async {
+    final Map<String, dynamic> result = await _invokeMapRequest(
+        method: credentialsManagerRenewCredentialsMethod, request: request);
 
     return Credentials.fromMap(result);
   }
