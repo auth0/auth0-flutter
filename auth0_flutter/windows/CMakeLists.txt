@@ -36,6 +36,10 @@ add_library(${PLUGIN_NAME} SHARED
   "auth0_client.cpp"
   "token_decoder.cpp"
   "time_util.cpp"
+  "user_profile.cpp"
+  "user_identity.cpp"
+  "credentials.cpp"
+  "jwt_util.cpp"
   ${PLUGIN_SOURCES}
 )
 

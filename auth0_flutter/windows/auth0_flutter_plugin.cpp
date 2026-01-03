@@ -32,6 +32,9 @@
 #include "auth0_client.h"
 #include "time_util.h"
 #include "credentials.h"
+#include "user_identity.h"
+#include "user_profile.h"
+#include "jwt_util.h"
 
 using namespace web;
 using namespace web::http;
@@ -389,8 +392,10 @@ if (scopesIt != args->end()) {
 response[flutter::EncodableValue("idToken")] =
     flutter::EncodableValue(creds.idToken);
 
+    if (creds.refreshToken.has_value()) {
 response[flutter::EncodableValue("refreshToken")] =
-    flutter::EncodableValue(creds.refreshToken);
+    flutter::EncodableValue(creds.refreshToken.value());
+    }
 
 response[flutter::EncodableValue("tokenType")] =
     flutter::EncodableValue(creds.tokenType);
@@ -400,12 +405,18 @@ if (creds.expiresAt.has_value()) {
       flutter::EncodableValue(ToIso8601(creds.expiresAt.value()));
 }
         flutter::EncodableList scopes;
-        for (const auto& credscope : creds.scopes) {
+        for (const auto& credscope : creds.scope) {
         scopes.emplace_back(credscope); // scope must be std::string
         }
 
-    response[flutter::EncodableValue("scopes")] =
-        flutter::EncodableValue(scopes);
+        response[flutter::EncodableValue("scopes")] = flutter::EncodableValue(scopes);
+
+        web::json::value payload_json = DecodeJwtPayload(creds.idToken);
+        auto ev = JsonToEncodable(payload_json);
+        auto payload_map = std::get<flutter::EncodableMap>(ev);
+        UserProfile user = UserProfile::DeserializeUserProfile(payload_map);
+        response[flutter::EncodableValue("userProfile")] = flutter::EncodableValue(user.ToMap());
+
         result->Success(flutter::EncodableValue(response));
     } catch (const std::exception& e) {
         result->Error("auth_failed", e.what());
