@@ -62,7 +62,7 @@ Credentials DecodeTokenResponse(
     std::istringstream iss(scopeStr);
     std::string s;
     while (iss >> s) {
-      creds.scopes.push_back(s);
+      creds.scope.push_back(s);
     }
   }
 
