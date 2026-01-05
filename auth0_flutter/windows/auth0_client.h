@@ -3,14 +3,15 @@
 #include <string>
 #include "credentials.h"
 
-class Auth0Client {
+class Auth0Client
+{
 public:
   Auth0Client(std::string domain, std::string clientId);
 
   Credentials ExchangeCodeForTokens(
-      const std::string& redirectUri,
-      const std::string& code,
-      const std::string& codeVerifier);
+      const std::string &redirectUri,
+      const std::string &code,
+      const std::string &codeVerifier);
 
 private:
   std::string domain_;
