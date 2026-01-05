@@ -21,10 +21,4 @@ class Credentials {
   std::optional<std::chrono::system_clock::time_point> expiresAt;
 
   std::vector<std::string> scope;
-
-  // // ===== Computed properties =====
-  // UserProfile GetUser() const;
-
-  // // ===== Serialization =====
-  // flutter::EncodableMap ToEncodableMap() const;
 };

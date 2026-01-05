@@ -3,4 +3,4 @@
 #include "credentials.h"
 
 Credentials DecodeTokenResponse(
-    const web::json::value& json);
+    const web::json::value &json);
