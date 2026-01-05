@@ -38,7 +38,6 @@ add_library(${PLUGIN_NAME} SHARED
   "time_util.cpp"
   "user_profile.cpp"
   "user_identity.cpp"
-  "credentials.cpp"
   "jwt_util.cpp"
   ${PLUGIN_SOURCES}
 )
