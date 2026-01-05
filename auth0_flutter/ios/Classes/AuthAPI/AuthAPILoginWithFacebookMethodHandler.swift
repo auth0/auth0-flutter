@@ -12,7 +12,6 @@ struct AuthAPILoginWithFacebookMethodHandler: MethodHandler {
         case scopes
         case parameters
         case audience
-        case profile
     }
 
     let client: Authentication
@@ -29,11 +28,9 @@ struct AuthAPILoginWithFacebookMethodHandler: MethodHandler {
         }
 
         let audience = arguments[Argument.audience] as? String
-        let profile = arguments[Argument.profile] as? [String: Any] ?? [:]
 
         client
             .login(facebookSessionAccessToken: accessToken,
-                   profile: profile,
                    audience: audience,
                    scope: scopes.asSpaceSeparatedString)
             .parameters(parameters)

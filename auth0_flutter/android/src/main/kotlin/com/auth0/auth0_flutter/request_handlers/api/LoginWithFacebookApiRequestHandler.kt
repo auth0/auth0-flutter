@@ -18,7 +18,12 @@ class LoginWithFacebookApiRequestHandler : ApiRequestHandler {
         assertHasProperties(listOf("accessToken"), request.data)
 
         val accessToken = request.data["accessToken"] as String
-        val builder = api.loginWithNativeSocialToken(accessToken, "facebook")
+        val profile = request.data["profile"] as? Map<String, Any>
+        val builder = if (profile != null) {
+            api.loginWithNativeSocialToken(accessToken, "facebook", profile)
+        } else {
+            api.loginWithNativeSocialToken(accessToken, "facebook")
+        }
 
         // Add optional parameters
         (request.data["scopes"] as? List<*>)?.let { scopes ->

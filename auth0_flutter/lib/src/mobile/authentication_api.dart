@@ -128,8 +128,10 @@ class AuthenticationApi {
   /// access tokens. See [API settings](https://auth0.com/docs/get-started/apis/api-settings)
   /// to learn more.
   /// * [scopes] defaults to `openid profile email offline_access`. You can
-  /// override these scopes, but `openid` is always requested regardless of this
-  /// setting.
+  /// override these scopes, but `openid` and `profile` are always requested 
+  /// regardless of this setting.
+  /// * [profile] contains user profile data from Facebook. This should be the
+  /// profile object obtained from the Facebook SDK.
   /// * [parameters] can be used to send through custom parameters to the
   /// endpoint to be picked up in a Rule or Action.
   ///
@@ -138,10 +140,12 @@ class AuthenticationApi {
   /// ```dart
   /// // First, get Facebook access token from Facebook SDK
   /// final facebookToken = await getFacebookAccessToken();
+  /// final facebookProfile = await getFacebookProfile();
   ///
   /// // Then authenticate with Auth0
   /// final result = await auth0.api.loginWithFacebook(
-  ///   accessToken: facebookToken
+  ///   accessToken: facebookToken,
+  ///   profile: facebookProfile
   /// );
   /// ```
   Future<Credentials> loginWithFacebook({
@@ -154,14 +158,20 @@ class AuthenticationApi {
       'offline_access'
     },
     final Map<String, String> parameters = const {},
-  }) =>
-      Auth0FlutterAuthPlatform.instance
-          .loginWithFacebook(_createApiRequest(AuthLoginWithSocialTokenOptions(
-        accessToken: accessToken,
-        audience: audience,
-        scopes: scopes,
-        parameters: parameters,
-      )));
+    final Map<String, dynamic>? profile,
+  }) {
+    // Ensure openid and profile are always included
+    final effectiveScopes = {...scopes, 'openid', 'profile'};
+    
+    return Auth0FlutterAuthPlatform.instance
+        .loginWithFacebook(_createApiRequest(AuthLoginWithSocialTokenOptions(
+      accessToken: accessToken,
+      audience: audience,
+      scopes: effectiveScopes,
+      parameters: parameters,
+      profile: profile,
+    )));
+  }
 
   /// Requests a challenge for multi-factor authentication (MFA) based on the
   /// challenge types supported by the app and user.

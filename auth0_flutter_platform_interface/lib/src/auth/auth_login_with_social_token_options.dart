@@ -5,12 +5,14 @@ class AuthLoginWithSocialTokenOptions implements RequestOptions {
   final String? audience;
   final Set<String> scopes;
   final Map<String, String> parameters;
+  final Map<String, dynamic>? profile;
 
   AuthLoginWithSocialTokenOptions({
     required this.accessToken,
     this.audience,
     this.scopes = const {},
     this.parameters = const {},
+    this.profile,
   });
 
   @override
@@ -18,6 +20,7 @@ class AuthLoginWithSocialTokenOptions implements RequestOptions {
         'accessToken': accessToken,
         'audience': audience,
         'scopes': scopes.toList(),
-        'parameters': parameters
+        'parameters': parameters,
+        'profile': profile
       };
 }
