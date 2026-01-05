@@ -17,6 +17,7 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
     enum Method: String, CaseIterable {
         case loginWithUsernameOrEmail = "auth#login"
         case loginWithOTP = "auth#loginOtp"
+        case loginWithFacebook = "auth#loginWithFacebook"
         case multifactorChallenge = "auth#multifactorChallenge"
         case signup = "auth#signUp"
         case userInfo = "auth#userInfo"
@@ -60,6 +61,7 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
         switch method {
         case .loginWithUsernameOrEmail: return AuthAPILoginUsernameOrEmailMethodHandler(client: client)
         case .loginWithOTP: return AuthAPILoginWithOTPMethodHandler(client: client)
+        case .loginWithFacebook: return AuthAPILoginWithFacebookMethodHandler(client: client)
         case .multifactorChallenge: return AuthAPIMultifactorChallengeMethodHandler(client: client)
         case .signup: return AuthAPISignupMethodHandler(client: client)
         case .userInfo: return AuthAPIUserInfoMethodHandler(client: client)

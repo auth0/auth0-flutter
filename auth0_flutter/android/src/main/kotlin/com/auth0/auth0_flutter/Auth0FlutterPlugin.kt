@@ -58,6 +58,7 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       listOf(
         LoginApiRequestHandler(),
         LoginWithOtpApiRequestHandler(),
+        LoginWithFacebookApiRequestHandler(),
         MultifactorChallengeApiRequestHandler(),
         EmailPasswordlessApiRequestHandler(),
         PhoneNumberPasswordlessApiRequestHandler(),

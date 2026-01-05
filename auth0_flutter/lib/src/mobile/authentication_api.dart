@@ -112,6 +112,57 @@ class AuthenticationApi {
         mfaToken: mfaToken,
       )));
 
+  /// Authenticates the user with a Facebook access token.
+  /// If successful, it returns a set of tokens, as well as the user's profile
+  /// (constructed from ID token claims).
+  ///
+  /// This method requires that you've already obtained a valid Facebook access
+  /// token from the Facebook SDK. The token will be exchanged for Auth0 tokens.
+  ///
+  /// ## Endpoint
+  /// https://auth0.com/docs/api/authentication#social-login-with-provider-s-access-token
+  ///
+  /// ## Notes
+  ///
+  /// * [audience] relates to the API Identifier you want to reference in your
+  /// access tokens. See [API settings](https://auth0.com/docs/get-started/apis/api-settings)
+  /// to learn more.
+  /// * [scopes] defaults to `openid profile email offline_access`. You can
+  /// override these scopes, but `openid` is always requested regardless of this
+  /// setting.
+  /// * [parameters] can be used to send through custom parameters to the
+  /// endpoint to be picked up in a Rule or Action.
+  ///
+  /// ## Usage example
+  ///
+  /// ```dart
+  /// // First, get Facebook access token from Facebook SDK
+  /// final facebookToken = await getFacebookAccessToken();
+  ///
+  /// // Then authenticate with Auth0
+  /// final result = await auth0.api.loginWithFacebook(
+  ///   accessToken: facebookToken
+  /// );
+  /// ```
+  Future<Credentials> loginWithFacebook({
+    required final String accessToken,
+    final String? audience,
+    final Set<String> scopes = const {
+      'openid',
+      'profile',
+      'email',
+      'offline_access'
+    },
+    final Map<String, String> parameters = const {},
+  }) =>
+      Auth0FlutterAuthPlatform.instance
+          .loginWithFacebook(_createApiRequest(AuthLoginWithSocialTokenOptions(
+        accessToken: accessToken,
+        audience: audience,
+        scopes: scopes,
+        parameters: parameters,
+      )));
+
   /// Requests a challenge for multi-factor authentication (MFA) based on the
   /// challenge types supported by the app and user.
   ///

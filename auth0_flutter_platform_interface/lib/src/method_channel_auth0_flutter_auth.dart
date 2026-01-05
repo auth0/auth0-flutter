@@ -4,6 +4,7 @@ import 'auth/api_exception.dart';
 import 'auth/auth_login_code_options.dart';
 import 'auth/auth_login_options.dart';
 import 'auth/auth_login_with_otp_options.dart';
+import 'auth/auth_login_with_social_token_options.dart';
 import 'auth/auth_multifactor_challenge_options.dart';
 import 'auth/auth_passwordless_login_options.dart';
 import 'auth/auth_renew_access_token_options.dart';
@@ -22,6 +23,7 @@ const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter/auth');
 
 const String authLoginMethod = 'auth#login';
 const String authLoginWithOtpMethod = 'auth#loginOtp';
+const String authLoginWithFacebookMethod = 'auth#loginWithFacebook';
 const String authMultifactorChallengeMethod = 'auth#multifactorChallenge';
 const String authStartPasswordlessWithEmailMethod =
     'auth#passwordlessWithEmail';
@@ -48,6 +50,15 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
       final ApiRequest<AuthLoginWithOtpOptions> request) async {
     final Map<String, dynamic> result =
         await invokeRequest(method: authLoginWithOtpMethod, request: request);
+
+    return Credentials.fromMap(result);
+  }
+
+  @override
+  Future<Credentials> loginWithFacebook(
+      final ApiRequest<AuthLoginWithSocialTokenOptions> request) async {
+    final Map<String, dynamic> result =
+        await invokeRequest(method: authLoginWithFacebookMethod, request: request);
 
     return Credentials.fromMap(result);
   }

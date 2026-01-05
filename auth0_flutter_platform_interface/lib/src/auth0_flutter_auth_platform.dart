@@ -4,6 +4,7 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'auth/auth_login_code_options.dart';
 import 'auth/auth_login_options.dart';
 import 'auth/auth_login_with_otp_options.dart';
+import 'auth/auth_login_with_social_token_options.dart';
 import 'auth/auth_multifactor_challenge_options.dart';
 import 'auth/auth_passwordless_login_options.dart';
 import 'auth/auth_renew_access_token_options.dart';
@@ -35,6 +36,11 @@ abstract class Auth0FlutterAuthPlatform extends PlatformInterface {
   Future<Credentials> loginWithOtp(
       final ApiRequest<AuthLoginWithOtpOptions> request) {
     throw UnimplementedError('authLoginWithOtp() has not been implemented');
+  }
+
+  Future<Credentials> loginWithFacebook(
+      final ApiRequest<AuthLoginWithSocialTokenOptions> request) {
+    throw UnimplementedError('loginWithFacebook() has not been implemented');
   }
 
   Future<Challenge> multifactorChallenge(
