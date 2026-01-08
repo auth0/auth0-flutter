@@ -32,11 +32,13 @@ struct AuthAPICustomTokenExchangeMethodHandler: MethodHandler {
         }
 
         let audience = arguments[Argument.audience] as? String
+        let scope = scopes.isEmpty ? "openid profile email" : scopes.asSpaceSeparatedString
 
         client
             .customTokenExchange(subjectToken: subjectToken,
                                subjectTokenType: subjectTokenType,
-                               audience: audience)
+                               audience: audience,
+                               scope: scope)
             .parameters(parameters)
             .start {
                 switch $0 {
