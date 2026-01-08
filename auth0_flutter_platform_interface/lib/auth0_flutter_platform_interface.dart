@@ -1,5 +1,6 @@
 export 'src/account.dart';
 export 'src/auth/api_exception.dart';
+export 'src/auth/auth_custom_token_exchange_options.dart';
 export 'src/auth/auth_dpop_headers_options.dart';
 export 'src/auth/auth_login_code_options.dart';
 export 'src/auth/auth_login_options.dart';
