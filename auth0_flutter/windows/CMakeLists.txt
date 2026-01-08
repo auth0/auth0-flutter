@@ -88,37 +88,51 @@ set(auth0_flutter_bundled_libraries
 )
 
 # === Tests ===
-if (${include_${PROJECT_NAME}_tests})
-  set(TEST_RUNNER "${PROJECT_NAME}_test")
+option(AUTH0_FLUTTER_ENABLE_TESTS "Build auth0_flutter unit tests" ON)
+
+if (AUTH0_FLUTTER_ENABLE_TESTS)
   enable_testing()
 
-  # Add the Google Test dependency (still FetchContent, not vcpkg)
+  set(TEST_RUNNER auth0_flutter_tests)
+
   include(FetchContent)
   FetchContent_Declare(
     googletest
     URL https://github.com/google/googletest/archive/release-1.11.0.zip
   )
   set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-  set(INSTALL_GTEST OFF CACHE BOOL "Disable installation of googletest" FORCE)
+  set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
   FetchContent_MakeAvailable(googletest)
 
-  # Build test runner
   add_executable(${TEST_RUNNER}
-    test/auth0_flutter_plugin_test.cpp
-    ${PLUGIN_SOURCES}
+    test/jwt_util_test.cpp
+
+    # Reuse plugin sources directly (NO flutter plugin entrypoints)
+    auth0_client.cpp
+    token_decoder.cpp
+    time_util.cpp
+    user_profile.cpp
+    user_identity.cpp
+    jwt_util.cpp
   )
-  apply_standard_settings(${TEST_RUNNER})
-  target_include_directories(${TEST_RUNNER} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+
+  target_compile_features(${TEST_RUNNER} PRIVATE cxx_std_17)
+
+  target_include_directories(${TEST_RUNNER} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+  )
+
   target_link_libraries(${TEST_RUNNER} PRIVATE
     flutter_wrapper_plugin
     gtest_main
     gmock
-  )
-
-  # flutter_wrapper_plugin has link dependencies on the Flutter DLL.
-  add_custom_command(TARGET ${TEST_RUNNER} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    "${FLUTTER_LIBRARY}" $<TARGET_FILE_DIR:${TEST_RUNNER}>
+    cpprestsdk::cpprest
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    Boost::system
+    Boost::date_time
+    Boost::regex
   )
 
   include(GoogleTest)
