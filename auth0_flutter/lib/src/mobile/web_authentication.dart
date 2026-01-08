@@ -114,7 +114,7 @@ class WebAuthentication {
             allowedBrowsers: allowedBrowsers,
             useDPoP: useDPoP)));
 
-    await _credentialsManager?.storeCredentials(credentials);
+   await _credentialsManager?.storeCredentials(credentials);
 
     return credentials;
   }

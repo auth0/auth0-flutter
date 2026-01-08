@@ -109,6 +109,37 @@ namespace auth0_flutter
         return result;
     }
 
+    void BringFlutterWindowToFront()
+    {
+        HWND hwnd = GetActiveWindow();
+
+        if (!hwnd)
+        {
+            hwnd = GetForegroundWindow();
+        }
+
+        if (!hwnd)
+            return;
+
+        // Restore if minimized
+        if (IsIconic(hwnd))
+        {
+            ShowWindow(hwnd, SW_RESTORE);
+        }
+
+        // Required trick to bypass foreground lock
+        DWORD currentThread = GetCurrentThreadId();
+        DWORD foregroundThread = GetWindowThreadProcessId(GetForegroundWindow(), NULL);
+
+        AttachThreadInput(foregroundThread, currentThread, TRUE);
+
+        SetForegroundWindow(hwnd);
+        SetFocus(hwnd);
+        SetActiveWindow(hwnd);
+
+        AttachThreadInput(foregroundThread, currentThread, FALSE);
+    }
+
     // Generate random code verifier (32 bytes -> URL-safe string)
     std::string generateCodeVerifier()
     {
@@ -472,7 +503,7 @@ namespace auth0_flutter
 
                 // 4. Wait for callback
                 std::string code = waitForAuthCode_CustomScheme(redirectUri, 180);
-
+BringFlutterWindowToFront();
                 // 5. Exchange code for tokens
                 Auth0Client client(domain, clientId);
                 Credentials creds = client.ExchangeCodeForTokens(redirectUri, code, codeVerifier);
