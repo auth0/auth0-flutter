@@ -316,6 +316,65 @@ void main() {
             e.message == 'test exception')));
   });
 
+  test('customTokenExchange is called and succeeds', () async {
+    when(mockClientProxy.exchangeToken(any))
+        .thenAnswer((final _) => Future.value(webCredentials));
+
+    final result = await auth0.customTokenExchange(
+      subjectToken: 'external-token-123',
+      subjectTokenType: 'urn:ietf:params:oauth:token-type:jwt',
+    );
+
+    expect(result.accessToken, jwt);
+    expect(result.idToken, jwt);
+    expect(result.refreshToken, jwt);
+    expect(result.user.sub, jwtPayload['sub']);
+    expect(result.scopes, {'openid', 'read_messages'});
+
+    final options =
+        verify(mockClientProxy.exchangeToken(captureAny)).captured.first;
+    expect(options.subject_token, 'external-token-123');
+    expect(options.subject_token_type, 'urn:ietf:params:oauth:token-type:jwt');
+  });
+
+  test('customTokenExchange is called with all options and succeeds',
+      () async {
+    when(mockClientProxy.exchangeToken(any))
+        .thenAnswer((final _) => Future.value(webCredentials));
+
+    await auth0.customTokenExchange(
+      subjectToken: 'external-token-456',
+      subjectTokenType: 'urn:example:custom-token',
+      audience: 'https://myapi.example.com',
+      scopes: {'openid', 'profile', 'read:data'},
+      organizationId: 'org_abc123',
+      parameters: {'custom_param': 'value'},
+    );
+
+    final options =
+        verify(mockClientProxy.exchangeToken(captureAny)).captured.first;
+    expect(options.subject_token, 'external-token-456');
+    expect(options.subject_token_type, 'urn:example:custom-token');
+    expect(options.audience, 'https://myapi.example.com');
+    expect(options.scope, 'openid profile read:data');
+    expect(options.organization, 'org_abc123');
+  });
+
+  test('customTokenExchange is called and throws', () async {
+    when(mockClientProxy.exchangeToken(any))
+        .thenThrow(createJsException('invalid_token', 'token validation failed'));
+
+    expect(
+        () async => auth0.customTokenExchange(
+              subjectToken: 'bad-token',
+              subjectTokenType: 'urn:ietf:params:oauth:token-type:jwt',
+            ),
+        throwsA(predicate((final e) =>
+            e is WebException &&
+            e.code == 'invalid_token' &&
+            e.message == 'token validation failed')));
+  });
+
   test('logout is called and succeeds', () async {
     when(mockClientProxy.logout(any)).thenAnswer((final _) => Future.value());
     await auth0.logout(federated: true, returnToUrl: 'http://returnto.url');
