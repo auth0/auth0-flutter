@@ -168,8 +168,8 @@ jobs:
 
         env:
             platform: iOS
-            USER_EMAIL: ${{ secrets.USER_EMAIL }}
-            USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
+            USER_EMAIL: ${{ vars.USER_EMAIL }}
+            USER_PASSWORD: ${{ vars.USER_PASSWORD }}
 
         strategy:
           matrix:
