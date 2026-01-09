@@ -317,7 +317,7 @@ void main() {
   });
 
   test('customTokenExchange is called and succeeds', () async {
-    when(mockClientProxy.exchangeToken(any))
+    when(mockClientProxy.exchangeToken(any as interop.ExchangeTokenOptions))
         .thenAnswer((final _) => Future.value(webCredentials));
 
     final result = await auth0.customTokenExchange(
@@ -331,15 +331,17 @@ void main() {
     expect(result.user.sub, jwtPayload['sub']);
     expect(result.scopes, {'openid', 'read_messages'});
 
-    final options =
-        verify(mockClientProxy.exchangeToken(captureAny)).captured.first;
+    final options = verify(mockClientProxy
+            .exchangeToken(captureAny as interop.ExchangeTokenOptions))
+        .captured
+        .first;
     expect(options.subject_token, 'external-token-123');
     expect(options.subject_token_type, 'urn:ietf:params:oauth:token-type:jwt');
   });
 
   test('customTokenExchange is called with all options and succeeds',
       () async {
-    when(mockClientProxy.exchangeToken(any))
+    when(mockClientProxy.exchangeToken(any as interop.ExchangeTokenOptions))
         .thenAnswer((final _) => Future.value(webCredentials));
 
     await auth0.customTokenExchange(
@@ -351,8 +353,10 @@ void main() {
       parameters: {'custom_param': 'value'},
     );
 
-    final options =
-        verify(mockClientProxy.exchangeToken(captureAny)).captured.first;
+    final options = verify(mockClientProxy
+            .exchangeToken(captureAny as interop.ExchangeTokenOptions))
+        .captured
+        .first;
     expect(options.subject_token, 'external-token-456');
     expect(options.subject_token_type, 'urn:example:custom-token');
     expect(options.audience, 'https://myapi.example.com');
@@ -361,7 +365,7 @@ void main() {
   });
 
   test('customTokenExchange is called and throws', () async {
-    when(mockClientProxy.exchangeToken(any))
+    when(mockClientProxy.exchangeToken(any as interop.ExchangeTokenOptions))
         .thenThrow(createJsException('invalid_token', 'token validation failed'));
 
     expect(
