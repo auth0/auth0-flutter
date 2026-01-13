@@ -29,6 +29,7 @@
   - [Passwordless Login](#passwordless-login)
   - [Retrieve user information](#retrieve-user-information)
   - [Renew credentials](#renew-credentials)
+  - [Custom Token Exchange](#custom-token-exchange)
   - [Errors](#errors-2)
 - [🌐📱 Organizations](#-organizations)
   - [Log in to an organization](#log-in-to-an-organization)
@@ -699,6 +700,51 @@ final didStore =
 ```
 
 > 💡 To obtain a refresh token, make sure your Auth0 application has the **refresh token** [grant enabled](https://auth0.com/docs/get-started/applications/update-grant-types). If you are also specifying an audience value, make sure that the corresponding Auth0 API has the **Allow Offline Access** [setting enabled](https://auth0.com/docs/get-started/apis/api-settings#access-settings).
+
+### Custom Token Exchange
+
+[Custom Token Exchange](https://auth0.com/docs/authenticate/custom-token-exchange) allows you to exchange tokens from external identity providers for Auth0 tokens. This is useful for migrating users from legacy systems or integrating with third-party identity providers.
+
+> **Note:** This feature is currently available in [Early Access](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#early-access). Please reach out to Auth0 support to enable it for your tenant.
+
+<details>
+  <summary>Mobile (Android/iOS)</summary>
+
+```dart
+final credentials = await auth0.api.customTokenExchange(
+  subjectToken: 'external-idp-token',
+  subjectTokenType: 'urn:ietf:params:oauth:token-type:jwt',
+  audience: 'https://api.example.com',
+  scopes: {'openid', 'profile', 'email'},
+  organization: 'org_abc123', // Optional
+  parameters: {'custom_param': 'value'} // Optional
+);
+```
+
+</details>
+
+<details>
+  <summary>Web</summary>
+
+```dart
+final credentials = await auth0Web.customTokenExchange(
+  subjectToken: 'external-idp-token',
+  subjectTokenType: 'urn:ietf:params:oauth:token-type:jwt',
+  audience: 'https://api.example.com',
+  scopes: {'openid', 'profile', 'email'},
+  organizationId: 'org_abc123', // Optional
+  parameters: {'custom_param': 'value'} // Optional
+);
+```
+
+</details>
+
+**Required setup:**
+1. Configure a Custom Token Exchange profile in your Auth0 Dashboard
+2. Implement validation logic in an Auth0 Action to verify the external token
+3. Grant your Auth0 application the `urn:auth0:oauth2:grant-type:token-exchange` permission
+
+> 💡 For more information, see the [Custom Token Exchange documentation](https://auth0.com/docs/authenticate/custom-token-exchange) and [RFC 8693](https://tools.ietf.org/html/rfc8693).
 
 ### Errors
 

@@ -76,7 +76,7 @@ class CustomTokenExchangeApiRequestHandlerTest {
             "openid profile email"
         )
 
-        whenever(mockApi.customTokenExchange(any(), any())).thenReturn(mockRequest)
+        whenever(mockApi.customTokenExchange(any(), any(), isNull())).thenReturn(mockRequest)
         whenever(mockRequest.validateClaims()).thenReturn(mockRequest)
 
         doAnswer {
@@ -89,7 +89,8 @@ class CustomTokenExchangeApiRequestHandlerTest {
 
         verify(mockApi).customTokenExchange(
             "urn:ietf:params:oauth:token-type:jwt",
-            "external-token-123"
+            "external-token-123",
+            null
         )
         verify(mockRequest).validateClaims()
         verify(mockRequest).start(any())
@@ -114,7 +115,7 @@ class CustomTokenExchangeApiRequestHandlerTest {
             on { getDescription() } doReturn "Token validation failed"
         }
 
-        whenever(mockApi.customTokenExchange(any(), any())).thenReturn(mockRequest)
+        whenever(mockApi.customTokenExchange(any(), any(), isNull())).thenReturn(mockRequest)
         whenever(mockRequest.validateClaims()).thenReturn(mockRequest)
 
         doAnswer {
@@ -151,7 +152,7 @@ class CustomTokenExchangeApiRequestHandlerTest {
             "openid"
         )
 
-        whenever(mockApi.customTokenExchange(any(), any())).thenReturn(mockRequest)
+        whenever(mockApi.customTokenExchange(any(), any(), isNull())).thenReturn(mockRequest)
         whenever(mockRequest.setAudience(any())).thenReturn(mockRequest)
         whenever(mockRequest.validateClaims()).thenReturn(mockRequest)
 
@@ -190,7 +191,7 @@ class CustomTokenExchangeApiRequestHandlerTest {
             "openid profile email read:data"
         )
 
-        whenever(mockApi.customTokenExchange(any(), any())).thenReturn(mockRequest)
+        whenever(mockApi.customTokenExchange(any(), any(), isNull())).thenReturn(mockRequest)
         whenever(mockRequest.setScope(any())).thenReturn(mockRequest)
         whenever(mockRequest.validateClaims()).thenReturn(mockRequest)
 
@@ -230,7 +231,7 @@ class CustomTokenExchangeApiRequestHandlerTest {
             "openid"
         )
 
-        whenever(mockApi.customTokenExchange(any(), any())).thenReturn(mockRequest)
+        whenever(mockApi.customTokenExchange(any(), any(), isNull())).thenReturn(mockRequest)
         whenever(mockRequest.addParameters(any())).thenReturn(mockRequest)
         whenever(mockRequest.validateClaims()).thenReturn(mockRequest)
 
@@ -272,7 +273,7 @@ class CustomTokenExchangeApiRequestHandlerTest {
             "openid profile email"
         )
 
-        whenever(mockApi.customTokenExchange(any(), any())).thenReturn(mockRequest)
+        whenever(mockApi.customTokenExchange(any(), any(), isNull())).thenReturn(mockRequest)
         whenever(mockRequest.setAudience(any())).thenReturn(mockRequest)
         whenever(mockRequest.setScope(any())).thenReturn(mockRequest)
         whenever(mockRequest.addParameters(any())).thenReturn(mockRequest)
@@ -290,6 +291,48 @@ class CustomTokenExchangeApiRequestHandlerTest {
         verify(mockRequest).setScope("openid profile email")
         verify(mockRequest).addParameters(customParams)
         verify(mockRequest).validateClaims()
+        verify(mockResult).success(any())
+    }
+
+    @Test
+    fun `should include organization when provided`() {
+        val options = hashMapOf(
+            "subjectToken" to "external-token-org",
+            "subjectTokenType" to "urn:ietf:params:oauth:token-type:jwt",
+            "organization" to "org_abc123"
+        )
+        val handler = CustomTokenExchangeApiRequestHandler()
+        val mockApi = mock<AuthenticationAPIClient>()
+        val mockAccount = mock<Auth0>()
+        val mockResult = mock<Result>()
+        val mockRequest = mock<AuthenticationRequest>()
+        val request = MethodCallRequest(account = mockAccount, options)
+
+        val credentials = Credentials(
+            JwtTestUtils.createJwt("openid"),
+            JwtTestUtils.createJwt("openid"),
+            "Bearer",
+            "refresh-token",
+            Date(),
+            "openid"
+        )
+
+        whenever(mockApi.customTokenExchange(any(), any(), eq("org_abc123"))).thenReturn(mockRequest)
+        whenever(mockRequest.validateClaims()).thenReturn(mockRequest)
+
+        doAnswer {
+            val callback = it.arguments[0] as Callback<Credentials, AuthenticationException>
+            callback.onSuccess(credentials)
+            null
+        }.whenever(mockRequest).start(any())
+
+        handler.handle(mockApi, request, mockResult)
+
+        verify(mockApi).customTokenExchange(
+            "urn:ietf:params:oauth:token-type:jwt",
+            "external-token-org",
+            "org_abc123"
+        )
         verify(mockResult).success(any())
     }
 
