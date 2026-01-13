@@ -380,7 +380,8 @@ class AuthenticationApi {
   ///   subjectToken: 'existing-identity-provider-token',
   ///   subjectTokenType: 'http://acme.com/legacy-token',
   ///   audience: 'https://my-api.example.com',
-  ///   scopes: {'openid', 'profile', 'email'}
+  ///   scopes: {'openid', 'profile', 'email'},
+  ///   organization: 'org_abc123'
   /// );
   ///
   /// final accessToken = result.accessToken;
@@ -394,6 +395,7 @@ class AuthenticationApi {
     required final String subjectTokenType,
     final String? audience,
     final Set<String> scopes = const {'openid', 'profile', 'email'},
+    final String? organization,
     final Map<String, String> parameters = const {},
   }) =>
       Auth0FlutterAuthPlatform.instance.customTokenExchange(_createApiRequest(
@@ -402,6 +404,7 @@ class AuthenticationApi {
               subjectTokenType: subjectTokenType,
               audience: audience,
               scopes: scopes,
+              organization: organization,
               parameters: parameters)));
 
   /// Initiates a reset of password of the user with the specific [email]

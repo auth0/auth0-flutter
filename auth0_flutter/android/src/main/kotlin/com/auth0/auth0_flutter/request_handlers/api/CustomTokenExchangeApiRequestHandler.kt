@@ -23,9 +23,12 @@ class CustomTokenExchangeApiRequestHandler : ApiRequestHandler {
         val args = request.data
         assertHasProperties(listOf("subjectToken", "subjectTokenType"), args)
 
+        val organization = if (args["organization"] is String) args["organization"] as String else null
+
         val builder = api.customTokenExchange(
             args["subjectTokenType"] as String,
-            args["subjectToken"] as String
+            args["subjectToken"] as String,
+            organization
         ).apply {
             val scopes = (args["scopes"] ?: arrayListOf<String>()) as ArrayList<*>
             if (scopes.isNotEmpty()) {
