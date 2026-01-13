@@ -50,7 +50,7 @@ class _ExampleAppState extends State<ExampleApp> {
         return auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
       }
 
-      final result = await webAuth.login(useHTTPS: false);
+      final result = await webAuth.login(useHTTPS: true);
 
       setState(() {
         _isLoggedIn = true;
@@ -79,7 +79,7 @@ class _ExampleAppState extends State<ExampleApp> {
       if (kIsWeb) {
         await auth0Web.logout(returnToUrl: 'http://localhost:3000');
       } else {
-        await webAuth.logout(useHTTPS: false);
+        await webAuth.logout(useHTTPS: true);
 
         setState(() {
           _isLoggedIn = false;
