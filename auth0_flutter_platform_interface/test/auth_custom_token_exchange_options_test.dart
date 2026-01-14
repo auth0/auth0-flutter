@@ -33,6 +33,8 @@ void main() {
       expect(options.scopes, {'openid', 'profile', 'email'});
       expect(options.organization, 'org_abc123');
       expect(options.parameters, {'test': 'test-123'});
+    });
+
     test('toMap includes all properties', () {
       final options = AuthCustomTokenExchangeOptions(
         subjectToken: 'existing-token',
@@ -51,6 +53,8 @@ void main() {
       expect(map['scopes'], ['openid', 'profile', 'email']);
       expect(map['organization'], 'org_abc123');
       expect(map['parameters'], {'test': 'test-123'});
+    });
+
     test('toMap excludes null audience', () {
       final options = AuthCustomTokenExchangeOptions(
         subjectToken: 'existing-token',
@@ -84,10 +88,6 @@ void main() {
 
       expect(map['organization'], 'org_abc123');
       expect(map.containsKey('organization'), isTrue);
-    });
-
-    test('toMap includes empty scopes and parameters', () {
-      expect(map.containsKey('audience'), isFalse);
     });
 
     test('toMap includes empty scopes and parameters', () {
