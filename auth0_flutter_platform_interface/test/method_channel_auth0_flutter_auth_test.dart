@@ -900,8 +900,7 @@ void main() {
                   subjectToken: 'existing-token',
                   subjectTokenType: 'http://acme.com/legacy-token',
                   audience: 'https://example.com/api',
-                  scopes: {'openid', 'profile', 'email'},
-                  parameters: {'test': 'test-123'})));
+                  scopes: {'openid', 'profile', 'email'})));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -917,7 +916,6 @@ void main() {
           'http://acme.com/legacy-token');
       expect(verificationResult.arguments['audience'], 'https://example.com/api');
       expect(verificationResult.arguments['scopes'], ['openid', 'profile', 'email']);
-      expect(verificationResult.arguments['parameters']['test'], 'test-123');
     });
 
     test(
@@ -936,7 +934,6 @@ void main() {
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
       expect(verificationResult.arguments['scopes'], isEmpty);
-      expect(verificationResult.arguments['parameters'], isEmpty);
       expect(verificationResult.arguments.containsKey('audience'), isFalse);
       expect(verificationResult.arguments.containsKey('organization'), isFalse);
     });

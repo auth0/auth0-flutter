@@ -208,54 +208,12 @@ class CustomTokenExchangeApiRequestHandlerTest {
     }
 
     @Test
-    fun `should include custom parameters when provided`() {
-        val customParams = hashMapOf("custom_param" to "value", "another_param" to "test")
-        val options = hashMapOf(
-            "subjectToken" to "external-token-abc",
-            "subjectTokenType" to "urn:ietf:params:oauth:token-type:jwt",
-            "parameters" to customParams
-        )
-        val handler = CustomTokenExchangeApiRequestHandler()
-        val mockApi = mock<AuthenticationAPIClient>()
-        val mockAccount = mock<Auth0>()
-        val mockResult = mock<Result>()
-        val mockRequest = mock<AuthenticationRequest>()
-        val request = MethodCallRequest(account = mockAccount, options)
-
-        val credentials = Credentials(
-            JwtTestUtils.createJwt("openid"),
-            JwtTestUtils.createJwt("openid"),
-            "Bearer",
-            null,
-            Date(),
-            "openid"
-        )
-
-        whenever(mockApi.customTokenExchange(any(), any(), isNull())).thenReturn(mockRequest)
-        whenever(mockRequest.addParameters(any())).thenReturn(mockRequest)
-        whenever(mockRequest.validateClaims()).thenReturn(mockRequest)
-
-        doAnswer {
-            val callback = it.arguments[0] as Callback<Credentials, AuthenticationException>
-            callback.onSuccess(credentials)
-            null
-        }.whenever(mockRequest).start(any())
-
-        handler.handle(mockApi, request, mockResult)
-
-        verify(mockRequest).addParameters(customParams)
-        verify(mockResult).success(any())
-    }
-
-    @Test
     fun `should include all optional parameters when provided`() {
-        val customParams = hashMapOf("org_id" to "org_123")
         val options = hashMapOf(
             "subjectToken" to "external-token-full",
             "subjectTokenType" to "urn:example:full-token",
             "audience" to "https://api.example.com",
-            "scopes" to arrayListOf("openid", "profile", "email"),
-            "parameters" to customParams
+            "scopes" to arrayListOf("openid", "profile", "email")
         )
         val handler = CustomTokenExchangeApiRequestHandler()
         val mockApi = mock<AuthenticationAPIClient>()
@@ -276,7 +234,6 @@ class CustomTokenExchangeApiRequestHandlerTest {
         whenever(mockApi.customTokenExchange(any(), any(), isNull())).thenReturn(mockRequest)
         whenever(mockRequest.setAudience(any())).thenReturn(mockRequest)
         whenever(mockRequest.setScope(any())).thenReturn(mockRequest)
-        whenever(mockRequest.addParameters(any())).thenReturn(mockRequest)
         whenever(mockRequest.validateClaims()).thenReturn(mockRequest)
 
         doAnswer {
@@ -289,7 +246,6 @@ class CustomTokenExchangeApiRequestHandlerTest {
 
         verify(mockRequest).setAudience("https://api.example.com")
         verify(mockRequest).setScope("openid profile email")
-        verify(mockRequest).addParameters(customParams)
         verify(mockRequest).validateClaims()
         verify(mockResult).success(any())
     }

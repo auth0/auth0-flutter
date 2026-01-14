@@ -6,7 +6,6 @@ class AuthCustomTokenExchangeOptions implements RequestOptions {
   final String? audience;
   final Set<String> scopes;
   final String? organization;
-  final Map<String, String> parameters;
 
   const AuthCustomTokenExchangeOptions({
     required this.subjectToken,
@@ -14,7 +13,6 @@ class AuthCustomTokenExchangeOptions implements RequestOptions {
     this.audience,
     this.scopes = const {},
     this.organization,
-    this.parameters = const {},
   });
 
   @override
@@ -24,6 +22,5 @@ class AuthCustomTokenExchangeOptions implements RequestOptions {
         if (audience != null) 'audience': audience,
         'scopes': scopes.toList(),
         if (organization != null) 'organization': organization,
-        'parameters': parameters
       };
 }

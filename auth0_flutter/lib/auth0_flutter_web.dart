@@ -299,9 +299,8 @@ class Auth0Web {
   ///   access token. If not specified, uses the audience from [onLoad] configuration
   ///   or the default audience configured in your Auth0 application.
   ///
-  /// * [scopes] - Optional set of scopes to request. Defaults to
-  ///   `{'openid', 'profile', 'email'}`. These scopes determine what information
-  ///   and permissions the resulting tokens will have.
+  /// * [scopes] - Optional set of scopes to request.
+  ///   These scopes determine what information and permissions the resulting tokens will have.
   ///
   /// * [organizationId] - Optional organization ID or name to associate the
   ///   token exchange with a specific organization context.
@@ -353,16 +352,14 @@ class Auth0Web {
     final String? audience,
     final Set<String>? scopes,
     final String? organizationId,
-    final Map<String, String> parameters = const {},
   }) =>
       Auth0FlutterWebPlatform.instance.customTokenExchange(
         ExchangeTokenOptions(
           subjectToken: subjectToken,
           subjectTokenType: subjectTokenType,
           audience: audience,
-          scopes: scopes ?? {'openid', 'profile', 'email'},
+          scopes: scopes,
           organizationId: organizationId,
-          parameters: parameters,
         ),
       );
 
