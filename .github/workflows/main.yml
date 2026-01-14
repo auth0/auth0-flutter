@@ -142,8 +142,8 @@ jobs:
                 ruby: ${{ env.ruby }}
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
-                auth0-domain: ${{ vars.AUTH0_DOMAIN }}
-                auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
+                auth0-domain: ${{ vars.AUTH_DOMAIN }}
+                auth0-client-id: ${{ vars.AUTH_CLIENT_ID }}
 
             - name: Run iOS unit tests
               uses: ./.github/actions/unit-tests-darwin
@@ -187,8 +187,8 @@ jobs:
                 ruby: ${{ env.ruby }}
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
-                auth0-domain: ${{ vars.AUTH0_DOMAIN }}
-                auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
+                auth0-domain: ${{ vars.AUTH_DOMAIN }}
+                auth0-client-id: ${{ vars.AUTH_CLIENT_ID }}
 
             - name: Run iOS smoke tests
               uses: ./.github/actions/smoke-tests-darwin
@@ -220,8 +220,8 @@ jobs:
                 ruby: ${{ env.ruby }}
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
-                auth0-domain: ${{ vars.AUTH0_DOMAIN }}
-                auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
+                auth0-domain: ${{ vars.AUTH_DOMAIN }}
+                auth0-client-id: ${{ vars.AUTH_CLIENT_ID }}
 
             - name: Build macOS example app
               working-directory: auth0_flutter/example
@@ -259,8 +259,8 @@ jobs:
                 ruby: ${{ env.ruby }}
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
-                auth0-domain: ${{ vars.AUTH0_DOMAIN }}
-                auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
+                auth0-domain: ${{ vars.AUTH_DOMAIN }}
+                auth0-client-id: ${{ vars.AUTH_CLIENT_ID }}
 
             - name: Run macOS smoke tests
               uses: ./.github/actions/smoke-tests-darwin
@@ -282,8 +282,8 @@ jobs:
               with:
                 flutter: ${{ env.flutter }}
                 java: ${{ env.java }}
-                auth0-domain: ${{ vars.AUTH0_DOMAIN }}
-                auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
+                auth0-domain: ${{ vars.AUTH_DOMAIN }}
+                auth0-client-id: ${{ vars.AUTH_CLIENT_ID }}
 
             - name: Build Android example app
               working-directory: auth0_flutter/example
@@ -342,14 +342,14 @@ jobs:
     #           with:
     #             flutter: ${{ env.flutter }}
     #             java: ${{ env.java }}
-    #             auth0-domain: ${{ vars.AUTH0_DOMAIN }}
-    #             auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
+    #             auth0-domain: ${{ vars.AUTH_DOMAIN }}
+    #             auth0-client-id: ${{ vars.AUTH_CLIENT_ID }}
 
     #         - name: Build Android example app
     #           working-directory: auth0_flutter/example
     #           run: flutter build apk --split-per-abi
     #           env:
-    #             AUTH0_DOMAIN: ${{ vars.AUTH0_DOMAIN }}
+    #             AUTH_DOMAIN: ${{ vars.AUTH_DOMAIN }}
     #             USER_EMAIL: ${{ vars.USER_EMAIL }}
     #             USER_PASSWORD: ${{ vars.USER_PASSWORD }}
 
