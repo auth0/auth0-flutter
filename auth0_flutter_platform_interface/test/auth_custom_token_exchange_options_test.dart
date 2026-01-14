@@ -14,7 +14,6 @@ void main() {
       expect(options.audience, isNull);
       expect(options.scopes, isEmpty);
       expect(options.organization, isNull);
-      expect(options.parameters, isEmpty);
     });
 
     test('creates options with all parameters', () {
@@ -24,7 +23,6 @@ void main() {
         audience: 'https://example.com/api',
         scopes: {'openid', 'profile', 'email'},
         organization: 'org_abc123',
-        parameters: {'test': 'test-123'},
       );
 
       expect(options.subjectToken, 'existing-token');
@@ -32,7 +30,6 @@ void main() {
       expect(options.audience, 'https://example.com/api');
       expect(options.scopes, {'openid', 'profile', 'email'});
       expect(options.organization, 'org_abc123');
-      expect(options.parameters, {'test': 'test-123'});
     });
 
     test('toMap includes all properties', () {
@@ -42,7 +39,6 @@ void main() {
         audience: 'https://example.com/api',
         scopes: {'openid', 'profile', 'email'},
         organization: 'org_abc123',
-        parameters: {'test': 'test-123'},
       );
 
       final map = options.toMap();
@@ -52,7 +48,6 @@ void main() {
       expect(map['audience'], 'https://example.com/api');
       expect(map['scopes'], ['openid', 'profile', 'email']);
       expect(map['organization'], 'org_abc123');
-      expect(map['parameters'], {'test': 'test-123'});
     });
 
     test('toMap excludes null audience', () {
@@ -90,18 +85,16 @@ void main() {
       expect(map.containsKey('organization'), isTrue);
     });
 
-    test('toMap includes empty scopes and parameters', () {
+    test('toMap includes empty scopes', () {
       final options = AuthCustomTokenExchangeOptions(
         subjectToken: 'existing-token',
         subjectTokenType: 'http://acme.com/legacy-token',
         scopes: {},
-        parameters: {},
       );
 
       final map = options.toMap();
 
       expect(map['scopes'], isEmpty);
-      expect(map['parameters'], isEmpty);
     });
   });
 }

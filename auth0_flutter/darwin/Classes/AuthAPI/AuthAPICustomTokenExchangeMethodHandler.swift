@@ -12,7 +12,6 @@ struct AuthAPICustomTokenExchangeMethodHandler: MethodHandler {
         case subjectTokenType
         case audience
         case scopes
-        case parameters
         case organization
     }
 
@@ -28,13 +27,10 @@ struct AuthAPICustomTokenExchangeMethodHandler: MethodHandler {
         guard let scopes = arguments[Argument.scopes] as? [String] else {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.scopes.rawValue)))
         }
-        guard let parameters = arguments[Argument.parameters] as? [String: Any] else {
-            return callback(FlutterError(from: .requiredArgumentMissing(Argument.parameters.rawValue)))
-        }
 
         let audience = arguments[Argument.audience] as? String
         let organization = arguments[Argument.organization] as? String
-        let scope = scopes.isEmpty ? "openid profile email" : scopes.asSpaceSeparatedString
+        let scope: String = scopes.isEmpty ? "openid profile email" : scopes.asSpaceSeparatedString
 
         client
             .customTokenExchange(subjectToken: subjectToken,
@@ -42,7 +38,6 @@ struct AuthAPICustomTokenExchangeMethodHandler: MethodHandler {
                                audience: audience,
                                scope: scope,
                                organization: organization)
-            .parameters(parameters)
             .start {
                 switch $0 {
                 case .success(let credentials): callback(self.result(from: credentials))

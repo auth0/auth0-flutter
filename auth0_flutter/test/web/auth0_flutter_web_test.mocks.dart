@@ -136,6 +136,23 @@ class MockAuth0FlutterWebClientProxy extends _i1.Mock
       ) as _i4.Future<_i2.WebCredentials>);
 
   @override
+  _i4.Future<_i2.WebCredentials> exchangeToken(_i2.ExchangeTokenOptions? options) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #exchangeToken,
+          [options],
+        ),
+        returnValue: _i4.Future<_i2.WebCredentials>.value(
+            createJSInteropWrapper<_FakeWebCredentials_1>(_FakeWebCredentials_1(
+          this,
+          Invocation.method(
+            #exchangeToken,
+            [options],
+          ),
+        )) as _i2.WebCredentials),
+      ) as _i4.Future<_i2.WebCredentials>);
+
+  @override
   _i4.Future<_i2.RedirectLoginResult> handleRedirectCallback([String? url]) =>
       (super.noSuchMethod(
         Invocation.method(

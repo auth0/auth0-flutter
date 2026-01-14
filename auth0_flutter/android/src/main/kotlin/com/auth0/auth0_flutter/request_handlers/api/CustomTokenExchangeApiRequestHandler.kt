@@ -37,9 +37,6 @@ class CustomTokenExchangeApiRequestHandler : ApiRequestHandler {
             if (args["audience"] is String) {
                 setAudience(args["audience"] as String)
             }
-            if (args["parameters"] is HashMap<*, *>) {
-                addParameters(args["parameters"] as Map<String, String>)
-            }
             validateClaims()
         }
 

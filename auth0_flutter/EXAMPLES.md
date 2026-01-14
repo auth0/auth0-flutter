@@ -703,7 +703,10 @@ final didStore =
 
 ### Custom Token Exchange
 
-[Custom Token Exchange](https://auth0.com/docs/authenticate/custom-token-exchange) allows you to exchange tokens from external identity providers for Auth0 tokens. This is useful for migrating users from legacy systems or integrating with third-party identity providers.
+[Custom Token Exchange](https://auth0.com/docs/authenticate/custom-token-exchange) allows you to enable applications to exchange their existing tokens for Auth0 tokens when calling the /oauth/token endpoint. This is useful for advanced integration use cases, such as:
+- Get Auth0 tokens for another audience
+- Integrate an external identity provider 
+- Migrate to Auth0
 
 > **Note:** This feature is currently available in [Early Access](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#early-access). Please reach out to Auth0 support to enable it for your tenant.
 
@@ -738,11 +741,6 @@ final credentials = await auth0Web.customTokenExchange(
 ```
 
 </details>
-
-**Required setup:**
-1. Configure a Custom Token Exchange profile in your Auth0 Dashboard
-2. Implement validation logic in an Auth0 Action to verify the external token
-3. Grant your Auth0 application the `urn:auth0:oauth2:grant-type:token-exchange` permission
 
 > 💡 For more information, see the [Custom Token Exchange documentation](https://auth0.com/docs/authenticate/custom-token-exchange) and [RFC 8693](https://tools.ietf.org/html/rfc8693).
 

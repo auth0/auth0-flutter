@@ -369,9 +369,6 @@ class AuthenticationApi {
   ///   to learn more.
   /// * [scopes] defaults to `openid profile email`. You can override this to
   ///   specify a different set of scopes.
-  /// * Arbitrary [parameters] can be specified and then picked up in a custom
-  ///   Auth0 [Action](https://auth0.com/docs/customize/actions) or
-  ///   [Rule](https://auth0.com/docs/customize/rules).
   ///
   /// ## Usage example
   ///
@@ -396,7 +393,6 @@ class AuthenticationApi {
     final String? audience,
     final Set<String> scopes = const {'openid', 'profile', 'email'},
     final String? organization,
-    final Map<String, String> parameters = const {},
   }) =>
       Auth0FlutterAuthPlatform.instance.customTokenExchange(_createApiRequest(
           AuthCustomTokenExchangeOptions(
@@ -404,8 +400,7 @@ class AuthenticationApi {
               subjectTokenType: subjectTokenType,
               audience: audience,
               scopes: scopes,
-              organization: organization,
-              parameters: parameters)));
+              organization: organization)));
 
   /// Initiates a reset of password of the user with the specific [email]
   /// address in the specific [connection].
