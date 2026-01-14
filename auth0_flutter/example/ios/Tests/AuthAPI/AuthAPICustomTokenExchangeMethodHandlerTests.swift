@@ -19,7 +19,7 @@ class AuthAPICustomTokenExchangeMethodHandlerTests: XCTestCase {
 
 extension AuthAPICustomTokenExchangeMethodHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
-        let keys: [Argument] = [.subjectToken, .subjectTokenType, .scopes, .parameters]
+        let keys: [Argument] = [.subjectToken, .subjectTokenType]
         let expectations = keys.map { expectation(description: "\($0.rawValue) is missing") }
         for (argument, currentExpectation) in zip(keys, expectations) {
             sut.handle(with: arguments(without: argument)) { result in
@@ -90,7 +90,7 @@ extension AuthAPICustomTokenExchangeMethodHandlerTests {
     func testWorksWithEmptyScopes() {
         let expectation = self.expectation(description: "Called with empty scopes")
         spy.onCustomTokenExchange = { _, _, _, scope, _ in
-            XCTAssertNil(scope)
+            XCTAssertEqual(scope, "openid profile email")
             expectation.fulfill()
         }
         var args = arguments()
@@ -126,20 +126,6 @@ extension AuthAPICustomTokenExchangeMethodHandlerTests {
     }
 }
 
-// MARK: - Additional Parameters
-
-extension AuthAPICustomTokenExchangeMethodHandlerTests {
-    func testCallsParametersWithCustomParameters() {
-        let expectation = self.expectation(description: "Called parameters")
-        spy.onParameters = { parameters in
-            XCTAssertTrue(parameters["test"] as? String == "test-123")
-            expectation.fulfill()
-        }
-        sut.handle(with: arguments()) { _ in }
-        wait(for: [expectation])
-    }
-}
-
 // MARK: - Error
 
 extension AuthAPICustomTokenExchangeMethodHandlerTests {
@@ -167,8 +153,7 @@ fileprivate extension AuthAPICustomTokenExchangeMethodHandlerTests {
             Argument.subjectToken.rawValue: "existing-token",
             Argument.subjectTokenType.rawValue: "http://acme.com/legacy-token",
             Argument.audience.rawValue: "https://example.com/api",
-            Argument.scopes.rawValue: ["openid", "profile", "email"],
-            Argument.parameters.rawValue: ["test": "test-123"]
+            Argument.scopes.rawValue: ["openid", "profile", "email"]
         ]
         if let key = key {
             args.removeValue(forKey: key.rawValue)

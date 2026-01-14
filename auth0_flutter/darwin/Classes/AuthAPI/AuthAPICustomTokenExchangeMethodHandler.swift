@@ -24,13 +24,11 @@ struct AuthAPICustomTokenExchangeMethodHandler: MethodHandler {
         guard let subjectTokenType = arguments[Argument.subjectTokenType] as? String else {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.subjectTokenType.rawValue)))
         }
-        guard let scopes = arguments[Argument.scopes] as? [String] else {
-            return callback(FlutterError(from: .requiredArgumentMissing(Argument.scopes.rawValue)))
-        }
-
+        
+        let scopes = arguments[Argument.scopes] as? [String] ?? []
+        let scope = scopes.isEmpty ? "openid profile email" : scopes.asSpaceSeparatedString
         let audience = arguments[Argument.audience] as? String
         let organization = arguments[Argument.organization] as? String
-        let scope: String = scopes.isEmpty ? "openid profile email" : scopes.asSpaceSeparatedString
 
         client
             .customTokenExchange(subjectToken: subjectToken,
