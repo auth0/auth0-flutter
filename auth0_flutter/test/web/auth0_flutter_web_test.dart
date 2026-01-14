@@ -416,7 +416,7 @@ void main() {
   group('customTokenExchange', () {
     test('customTokenExchange is called with required parameters and succeeds',
         () async {
-      when(mockClientProxy.exchangeToken(any<interop.ExchangeTokenOptions>()))
+      when(mockClientProxy.exchangeToken(argThat(anything)))
           .thenAnswer((final _) => Future.value(webCredentials));
 
       final result = await auth0.customTokenExchange(
@@ -440,7 +440,7 @@ void main() {
 
     test('customTokenExchange is called with all optional parameters',
         () async {
-      when(mockClientProxy.exchangeToken(any<interop.ExchangeTokenOptions>()))
+      when(mockClientProxy.exchangeToken(argThat(anything)))
           .thenAnswer((final _) => Future.value(webCredentials));
 
       await auth0.customTokenExchange(
@@ -460,7 +460,7 @@ void main() {
     });
 
     test('customTokenExchange is called with custom parameters', () async {
-      when(mockClientProxy.exchangeToken(any<interop.ExchangeTokenOptions>()))
+      when(mockClientProxy.exchangeToken(argThat(anything)))
           .thenAnswer((final _) => Future.value(webCredentials));
 
       await auth0.customTokenExchange(
@@ -479,7 +479,7 @@ void main() {
     });
 
     test('customTokenExchange handles empty scopes correctly', () async {
-      when(mockClientProxy.exchangeToken(any<interop.ExchangeTokenOptions>()))
+      when(mockClientProxy.exchangeToken(argThat(anything)))
           .thenAnswer((final _) => Future.value(webCredentials));
 
       await auth0.customTokenExchange(
@@ -493,7 +493,7 @@ void main() {
     });
 
     test('customTokenExchange throws WebException on error', () async {
-      when(mockClientProxy.exchangeToken(any<interop.ExchangeTokenOptions>()))
+      when(mockClientProxy.exchangeToken(argThat(anything)))
           .thenThrow(createJsException('invalid_token', 'Token is invalid'));
 
       expect(
@@ -515,7 +515,7 @@ void main() {
       ];
 
       for (final errorCase in errorCases) {
-        when(mockClientProxy.exchangeToken(any<interop.ExchangeTokenOptions>()))
+        when(mockClientProxy.exchangeToken(argThat(anything)))
             .thenThrow(createJsException(errorCase['code']!, errorCase['message']!));
 
         expect(
@@ -539,7 +539,7 @@ void main() {
           scope: 'openid profile email read:data write:data',
           expires_in: 0.toJS);
 
-      when(mockClientProxy.exchangeToken(any<interop.ExchangeTokenOptions>()))
+      when(mockClientProxy.exchangeToken(argThat(anything)))
           .thenAnswer((final _) => Future.value(customScopeCredentials));
 
       final result = await auth0.customTokenExchange(
@@ -558,7 +558,7 @@ void main() {
           scope: 'openid',
           expires_in: 0.toJS);
 
-      when(mockClientProxy.exchangeToken(any<interop.ExchangeTokenOptions>()))
+      when(mockClientProxy.exchangeToken(argThat(anything)))
           .thenAnswer((final _) => Future.value(credentialsNoRefresh));
 
       final result = await auth0.customTokenExchange(
@@ -571,7 +571,7 @@ void main() {
 
     test('customTokenExchange converts JS credentials to Dart Credentials',
         () async {
-      when(mockClientProxy.exchangeToken(any<interop.ExchangeTokenOptions>()))
+      when(mockClientProxy.exchangeToken(argThat(anything)))
           .thenAnswer((final _) => Future.value(webCredentials));
 
       final result = await auth0.customTokenExchange(
