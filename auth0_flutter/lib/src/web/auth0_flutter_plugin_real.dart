@@ -9,6 +9,7 @@ import 'auth0_flutter_web_platform_proxy.dart';
 import 'extensions/client_options_extensions.dart';
 import 'extensions/credentials_extension.dart';
 import 'extensions/credentials_options_extension.dart';
+import 'extensions/exchange_token_options_extension.dart';
 import 'extensions/logout_options.extension.dart';
 import 'extensions/web_exception_extensions.dart';
 import 'js_interop.dart' as interop;
@@ -153,6 +154,19 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     tokenOptions.detailedResponse = true;
     try {
       final result = await clientProxy.getTokenSilently(tokenOptions);
+      return CredentialsExtension.fromWeb(result);
+    } catch (e) {
+      throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
+    }
+  }
+
+  @override
+  Future<Credentials> customTokenExchange(
+      final ExchangeTokenOptions options) async {
+    final client = _ensureClient();
+    try {
+      final result =
+          await client.exchangeToken(options.toInteropExchangeTokenOptions());
       return CredentialsExtension.fromWeb(result);
     } catch (e) {
       throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
