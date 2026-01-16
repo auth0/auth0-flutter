@@ -9,14 +9,14 @@ void main() {
     test('converts ExchangeTokenOptions with required fields only', () {
       final options = ExchangeTokenOptions(
         subjectToken: 'external-token-123',
-        subjectTokenType: 'urn:ietf:params:oauth:token-type:jwt',
+        subjectTokenType: 'urn:acme:legacy-token',
       );
 
       final result = options.toInteropExchangeTokenOptions();
 
       expect(result.subject_token, 'external-token-123');
       expect(result.subject_token_type,
-          'urn:ietf:params:oauth:token-type:jwt');
+          'urn:acme:legacy-token');
       expect(result.audience, isNull);
       expect(result.scope, isNull);
       expect(result.organization, isNull);

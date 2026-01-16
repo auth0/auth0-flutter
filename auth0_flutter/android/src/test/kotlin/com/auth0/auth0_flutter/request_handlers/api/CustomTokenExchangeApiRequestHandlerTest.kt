@@ -23,7 +23,7 @@ import java.util.*
 class CustomTokenExchangeApiRequestHandlerTest {
     @Test
     fun `should throw when missing subjectToken`() {
-        val options = hashMapOf("subjectTokenType" to "urn:ietf:params:oauth:token-type:jwt")
+        val options = hashMapOf("subjectTokenType" to "urn:acme:legacy-token")
         val handler = CustomTokenExchangeApiRequestHandler()
         val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
@@ -53,7 +53,7 @@ class CustomTokenExchangeApiRequestHandlerTest {
     fun `should call success with required parameters only`() {
         val options = hashMapOf(
             "subjectToken" to "external-token-123",
-            "subjectTokenType" to "urn:ietf:params:oauth:token-type:jwt"
+            "subjectTokenType" to "urn:acme:legacy-token"
         )
         val handler = CustomTokenExchangeApiRequestHandler()
         val mockApi = mock<AuthenticationAPIClient>()
@@ -88,7 +88,7 @@ class CustomTokenExchangeApiRequestHandlerTest {
         handler.handle(mockApi, request, mockResult)
 
         verify(mockApi).customTokenExchange(
-            "urn:ietf:params:oauth:token-type:jwt",
+            "urn:acme:legacy-token",
             "external-token-123",
             null
         )
@@ -101,7 +101,7 @@ class CustomTokenExchangeApiRequestHandlerTest {
     fun `should handle error callback`() {
         val options = hashMapOf(
             "subjectToken" to "invalid-token",
-            "subjectTokenType" to "urn:ietf:params:oauth:token-type:jwt"
+            "subjectTokenType" to "urn:acme:legacy-token"
         )
         val handler = CustomTokenExchangeApiRequestHandler()
         val mockApi = mock<AuthenticationAPIClient>()
@@ -172,7 +172,7 @@ class CustomTokenExchangeApiRequestHandlerTest {
     fun `should include scopes when provided`() {
         val options = hashMapOf(
             "subjectToken" to "external-token-789",
-            "subjectTokenType" to "urn:ietf:params:oauth:token-type:jwt",
+            "subjectTokenType" to "urn:acme:legacy-token",
             "scopes" to arrayListOf("openid", "profile", "email", "read:data")
         )
         val handler = CustomTokenExchangeApiRequestHandler()
@@ -254,7 +254,7 @@ class CustomTokenExchangeApiRequestHandlerTest {
     fun `should include organization when provided`() {
         val options = hashMapOf(
             "subjectToken" to "external-token-org",
-            "subjectTokenType" to "urn:ietf:params:oauth:token-type:jwt",
+            "subjectTokenType" to "urn:acme:legacy-token",
             "organization" to "org_abc123"
         )
         val handler = CustomTokenExchangeApiRequestHandler()
@@ -285,7 +285,7 @@ class CustomTokenExchangeApiRequestHandlerTest {
         handler.handle(mockApi, request, mockResult)
 
         verify(mockApi).customTokenExchange(
-            "urn:ietf:params:oauth:token-type:jwt",
+            "urn:acme:legacy-token",
             "external-token-org",
             "org_abc123"
         )

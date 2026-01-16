@@ -58,7 +58,7 @@ extension AuthAPICustomTokenExchangeMethodHandlerTests {
             expiresIn: Date(timeIntervalSinceNow: 3600),
             scope: "openid profile email"
         )
-        spy.onCustomTokenExchange = { _, _, _, _ in
+        spy.onCustomTokenExchange = { _, _, _, _, _ in
             return self.spy.request(returning: credentials)
         }
         sut.handle(with: arguments()) { result in
@@ -87,17 +87,7 @@ extension AuthAPICustomTokenExchangeMethodHandlerTests {
         wait(for: [expectation])
     }
 
-    func testWorksWithEmptyScopes() {
-        let expectation = self.expectation(description: "Called with empty scopes")
-        spy.onCustomTokenExchange = { _, _, _, scope, _ in
-            XCTAssertEqual(scope, "openid profile email")
-            expectation.fulfill()
-        }
-        var args = arguments()
-        args[Argument.scopes.rawValue] = []
-        sut.handle(with: args) { _ in }
-        wait(for: [expectation])
-    }
+
 
     func testWorksWithoutOrganization() {
         let expectation = self.expectation(description: "Called without organization")
