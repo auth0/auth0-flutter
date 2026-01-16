@@ -704,7 +704,6 @@ final didStore =
 ### Custom Token Exchange
 
 [Custom Token Exchange](https://auth0.com/docs/authenticate/custom-token-exchange) allows you to enable applications to exchange their existing tokens for Auth0 tokens when calling the /oauth/token endpoint. This is useful for advanced integration use cases, such as:
-- Get Auth0 tokens for another audience
 - Integrate an external identity provider 
 - Migrate to Auth0
 
@@ -716,11 +715,10 @@ final didStore =
 ```dart
 final credentials = await auth0.api.customTokenExchange(
   subjectToken: 'external-idp-token',
-  subjectTokenType: 'urn:ietf:params:oauth:token-type:jwt',
-  audience: 'https://api.example.com',
-  scopes: {'openid', 'profile', 'email'},
+  subjectTokenType: 'urn:acme:legacy-token',
+  audience: 'https://api.example.com', // Optional
+  scopes: {'openid', 'profile', 'email'}, // Optional, defaults to {'openid', 'profile', 'email'}
   organization: 'org_abc123', // Optional
-  parameters: {'custom_param': 'value'} // Optional
 );
 ```
 
@@ -732,11 +730,10 @@ final credentials = await auth0.api.customTokenExchange(
 ```dart
 final credentials = await auth0Web.customTokenExchange(
   subjectToken: 'external-idp-token',
-  subjectTokenType: 'urn:ietf:params:oauth:token-type:jwt',
-  audience: 'https://api.example.com',
-  scopes: {'openid', 'profile', 'email'},
+  subjectTokenType: 'urn:acme:legacy-token',
+  audience: 'https://api.example.com', // Optional
+  scopes: {'openid', 'profile', 'email'}, // Optional
   organizationId: 'org_abc123', // Optional
-  parameters: {'custom_param': 'value'} // Optional
 );
 ```
 

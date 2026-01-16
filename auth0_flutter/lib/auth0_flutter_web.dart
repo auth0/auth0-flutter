@@ -289,24 +289,27 @@ class Auth0Web {
   ///   system or another identity provider.
   ///
   /// * [subjectTokenType] (required) - A URI identifying the type of the
-  ///   subject token according to RFC 8693. Common examples:
-  ///   - `urn:ietf:params:oauth:token-type:jwt` for JWT tokens
-  ///   - `urn:ietf:params:oauth:token-type:id_token` for OIDC ID tokens
-  ///   - `urn:ietf:params:oauth:token-type:access_token` for OAuth access tokens
-  ///   - Custom URNs like `urn:example:external-token` for custom token types
+  ///   subject token according to RFC 8693. Must be a namespaced URI under your
+  ///   organization's control.
+  ///
+  ///   **Forbidden patterns:**
+  ///   - `^urn:ietf:params:oauth:*` (IETF reserved)
+  ///   - `^https://auth0.com/*` (Auth0 reserved)
+  ///   - `^urn:auth0:*` (Auth0 reserved)
+  ///
+  ///   **Example:** `urn:acme:legacy-system-token`
   ///
   /// * [audience] - Optional API identifier for which you want to receive an
-  ///   access token. If not specified, uses the audience from [onLoad] configuration
-  ///   or the default audience configured in your Auth0 application.
+  ///   access token. Must match exactly with an API identifier configured in
+  ///   your Auth0 tenant. If not provided, falls back to the client's default audience.
   ///
   /// * [scopes] - Optional set of scopes to request.
-  ///   These scopes determine what information and permissions the resulting tokens will have.
+  ///   These scopes determine what permissions the resulting tokens will have.
+  ///   Subject to API authorization policies configured in Auth0.
   ///
   /// * [organizationId] - Optional organization ID or name to associate the
-  ///   token exchange with a specific organization context.
-  ///
-  /// * [parameters] - Additional custom parameters to include in the token
-  ///   exchange request. These can be processed by Auth0 Actions or Rules.
+  ///   token exchange with a specific organization context. The organization ID
+  ///   will be present in the access token payload.
   ///
   /// **Returns** a [Credentials] object containing:
   /// * `accessToken` - The new Auth0 access token
@@ -327,7 +330,7 @@ class Auth0Web {
   /// try {
   ///   final credentials = await auth0Web.customTokenExchange(
   ///     subjectToken: externalToken,
-  ///     subjectTokenType: 'urn:ietf:params:oauth:token-type:jwt',
+  ///     subjectTokenType: 'urn:acme:legacy-system-token',
   ///     audience: 'https://myapi.example.com',
   ///     scopes: {'openid', 'profile', 'email', 'read:data'},
   ///   );
@@ -344,7 +347,7 @@ class Auth0Web {
   /// * Network issues prevent the exchange request
   ///
   /// See also:
-  /// * [Token Exchange Documentation](https://auth0.com/docs/authenticate/login/token-exchange)
+  /// * [Token Exchange Documentation](https://auth0.com/docs/authenticate/custom-token-exchange)
   /// * [RFC 8693 Specification](https://tools.ietf.org/html/rfc8693)
   Future<Credentials> customTokenExchange({
     required final String subjectToken,
