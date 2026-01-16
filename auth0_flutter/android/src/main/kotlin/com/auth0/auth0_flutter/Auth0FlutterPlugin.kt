@@ -66,6 +66,7 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
         SignupApiRequestHandler(),
         UserInfoApiRequestHandler(),
         RenewApiRequestHandler(),
+        CustomTokenExchangeApiRequestHandler(),
         ResetPasswordApiRequestHandler()
       )
     )
