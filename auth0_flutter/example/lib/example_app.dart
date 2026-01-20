@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'package:auth0_flutter/auth0_flutter.dart';
 import 'package:auth0_flutter/auth0_flutter_web.dart';
 import 'package:flutter/foundation.dart';
@@ -18,21 +19,23 @@ class ExampleApp extends StatefulWidget {
 class _ExampleAppState extends State<ExampleApp> {
   bool _isLoggedIn = false;
   String _output = '';
-String clientId = 'GGUVoHL5nseaacSzqB810HWYGHZI34m8';
-String domain = 'int-dx-enterprise-test.us.auth0.com';
+
   late Auth0 auth0;
   late WebAuthentication webAuth;
+  late WindowsWebAuthentication windowsWebAuth;
   late Auth0Web auth0Web;
 
   @override
   void initState() {
     super.initState();
 
-    auth0 = Auth0(domain, clientId);
+    auth0 = Auth0(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
     auth0Web =
-        Auth0Web(domain, clientId);
+        Auth0Web(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
     webAuth =
-        auth0.webAuthentication(scheme: 'https');
+        auth0.webAuthentication(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
+    windowsWebAuth = auth0.windowsWebAuthentication(
+        scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
     if (kIsWeb) {
       auth0Web.onLoad().then((final credentials) => setState(() {
             _output = credentials?.idToken ?? '';
@@ -51,17 +54,33 @@ String domain = 'int-dx-enterprise-test.us.auth0.com';
         return auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
       }
 
-      final result = await webAuth.login(
-        useHTTPS: true,
-        scopes: {'openid', 'profile', 'email', 'offline_access'},
-      );
-      await auth0.credentialsManager.storeCredentials(result);
+      // Use Windows-specific authentication for Windows platform
+      if (Platform.isWindows) {
+        final result = await windowsWebAuth.login(
+          redirectUrl: 'http://localhost:3000/destination',
+          parameters: {
+            'appCallbackUrl': 'auth0flutter://callback',
+            'authTimeoutSeconds': '300', // 5 minutes for demo
+          },
+        );
 
-      setState(() {
-        _isLoggedIn = true;
-      });
+        setState(() {
+          _isLoggedIn = true;
+        });
 
-      output = result.idToken;
+        output = result.idToken;
+      } else {
+        // Use mobile authentication for iOS/Android
+        final result = await webAuth.login(
+          useHTTPS: true,
+        );
+
+        setState(() {
+          _isLoggedIn = true;
+        });
+
+        output = result.idToken;
+      }
     } catch (e) {
       output = e.toString();
     }
@@ -83,7 +102,17 @@ String domain = 'int-dx-enterprise-test.us.auth0.com';
     try {
       if (kIsWeb) {
         await auth0Web.logout(returnToUrl: 'http://localhost:3000');
+      } else if (Platform.isWindows) {
+        // Use Windows-specific logout
+        await windowsWebAuth.logout(
+          returnTo: 'http://localhost:8080/callback',
+        );
+
+        setState(() {
+          _isLoggedIn = false;
+        });
       } else {
+        // Use mobile logout for iOS/Android
         await webAuth.logout(useHTTPS: true);
 
         setState(() {

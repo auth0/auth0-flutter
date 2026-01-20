@@ -4,20 +4,12 @@
 #include <cpprest/json.h>
 
 #include "token_decoder.h"
+#include "authentication_error.h"
+
 using namespace web;
 using namespace web::http;
 using namespace web::http::client;
-
-static std::string GetJsonString(
-    const web::json::value &json,
-    const utility::string_t &key)
-{
-  if (json.has_field(key) && json.at(key).is_string())
-  {
-    return utility::conversions::to_utf8string(json.at(key).as_string());
-  }
-  return {};
-}
+using namespace auth0_flutter;
 
 Auth0Client::Auth0Client(std::string domain, std::string clientId)
     : domain_(std::move(domain)),
@@ -54,9 +46,9 @@ Credentials Auth0Client::ExchangeCodeForTokens(
 
   if (response.status_code() != status_codes::OK)
   {
-    throw std::runtime_error(
-        "Token request failed: " +
-        GetJsonString(json, U("error_description")));
+    // Throw AuthenticationError with full error details:
+    // error code, description, and status code
+    throw AuthenticationError(json, response.status_code());
   }
 
   return DecodeTokenResponse(json);

@@ -20,7 +20,6 @@ import 'authentication_api_test.dart' as _i4;
 // ignore_for_file: deprecated_member_use_from_same_package
 // ignore_for_file: implementation_imports
 // ignore_for_file: invalid_use_of_visible_for_testing_member
-// ignore_for_file: must_be_immutable
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
