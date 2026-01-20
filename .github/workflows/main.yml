@@ -306,6 +306,48 @@ jobs:
                 name: Test results
                 path: 'auth0_flutter/example/build/app/reports/androidTests/*.xml'
 
+    test-windows-unit:
+        name: Run native Windows unit tests
+        runs-on: windows-latest
+        environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+
+            - name: Install Flutter
+              uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e # pin@v2.21.0
+              with:
+                  flutter-version: ${{ env.flutter }}
+                  channel: stable
+                  cache: true
+
+            - name: Add example/.env
+              working-directory: auth0_flutter
+              run: Copy-Item example/.env.example example/.env
+              shell: powershell
+
+            - name: Build Windows example app
+              working-directory: auth0_flutter/example
+              run: flutter build windows --debug
+
+            - name: Set up vcpkg
+              uses: lukka/run-vcpkg@beb6564f0aeb229060c2cdb32d04a1190e92f18f # pin@v11
+              with:
+                vcpkgDirectory: '${{ github.workspace }}/vcpkg'
+                vcpkgGitCommitId: '7a26ed4ca1cc6eafc66666166f8f36c49dc5ec18'
+
+            - name: Build Windows unit tests
+              working-directory: auth0_flutter/windows
+              run: |
+                cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Debug
+                cmake --build build --config Debug
+              shell: cmd
+
+            - name: Run Windows unit tests
+              working-directory: auth0_flutter/windows/build
+              run: ctest -C Debug --output-on-failure
+
     # test-android-smoke:
     #     name: Run native Android smoke tests using API-level ${{ matrix.android-api }}
     #     runs-on: macos-latest-xl
