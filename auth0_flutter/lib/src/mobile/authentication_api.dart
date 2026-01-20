@@ -349,6 +349,59 @@ class AuthenticationApi {
               scopes: scopes,
               parameters: parameters)));
 
+  /// Performs a custom token exchange to obtain Auth0 credentials using an
+  /// existing identity provider token.
+  ///
+  /// This method allows you to exchange tokens from external identity providers
+  /// for Auth0 tokens, enabling seamless integration with existing
+  /// authentication systems.
+  ///
+  /// ## Endpoint
+  /// https://auth0.com/docs/api/authentication#token-exchange
+  ///
+  /// ## Notes
+  ///
+  /// * [subjectToken] the token obtained from the external identity provider.
+  /// * [subjectTokenType] specifies the format of the subject token (e.g.,
+  ///   'http://acme.com/legacy-token').
+  /// * [audience] relates to the API Identifier you want to reference in your
+  ///   access tokens. See [API settings](https://auth0.com/docs/get-started/apis/api-settings)
+  ///   to learn more.
+  /// * [scopes] defaults to `openid profile email`. You can override this to
+  ///   specify a different set of scopes.
+  ///
+  /// ## Usage example
+  ///
+  /// ```dart
+  /// final result = await auth0.api.customTokenExchange(
+  ///   subjectToken: 'existing-identity-provider-token',
+  ///   subjectTokenType: 'http://acme.com/legacy-token',
+  ///   audience: 'https://my-api.example.com',
+  ///   scopes: {'openid', 'profile', 'email'},
+  ///   organization: 'org_abc123'
+  /// );
+  ///
+  /// final accessToken = result.accessToken;
+  /// ```
+  ///
+  /// ## Further reading
+  ///
+  /// * [Custom Token Exchange Documentation](https://auth0.com/docs/authenticate/custom-token-exchange)
+  Future<Credentials> customTokenExchange({
+    required final String subjectToken,
+    required final String subjectTokenType,
+    final String? audience,
+    final Set<String> scopes = const {'openid', 'profile', 'email'},
+    final String? organization,
+  }) =>
+      Auth0FlutterAuthPlatform.instance.customTokenExchange(_createApiRequest(
+          AuthCustomTokenExchangeOptions(
+              subjectToken: subjectToken,
+              subjectTokenType: subjectTokenType,
+              audience: audience,
+              scopes: scopes,
+              organization: organization)));
+
   /// Initiates a reset of password of the user with the specific [email]
   /// address in the specific [connection].
   ///

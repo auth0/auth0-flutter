@@ -3,6 +3,8 @@ package com.auth0.auth0_flutter
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
+import com.auth0.android.provider.BrowserPicker
+import com.auth0.android.provider.CustomTabsOptions
 import com.auth0.android.provider.WebAuthProvider
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.request_handlers.web_auth.LogoutWebAuthRequestHandler
@@ -137,5 +139,38 @@ class LogoutWebAuthRequestHandlerTest {
         handler.handle(mock(), MethodCallRequest(Auth0.getInstance("test-client", "test-domain"), mock()), mockResult)
 
         verify(mockResult).success(null)
+    }
+
+    @Test
+    fun `handler should add allowedPackages when given a non-empty array`() {
+        val args = hashMapOf<String, Any?>(
+            "allowedBrowsers" to listOf("com.android.chrome", "org.mozilla.firefox")
+        )
+
+        runHandler(args) { _, builder ->
+            verify(builder).withCustomTabsOptions(argThat { options ->
+                options != null
+            })
+        }
+    }
+
+    @Test
+    fun `handler should not add an empty allowedPackages when given an empty array`() {
+        val args = hashMapOf<String, Any?>(
+            "allowedBrowsers" to listOf<String>()
+        )
+
+        runHandler(args) { _, builder ->
+            verify(builder, never()).withCustomTabsOptions(any())
+        }
+    }
+
+    @Test
+    fun `handler should not add allowedPackages when not specified`() {
+        val args = hashMapOf<String, Any?>()
+
+        runHandler(args) { _, builder ->
+            verify(builder, never()).withCustomTabsOptions(any())
+        }
     }
 }

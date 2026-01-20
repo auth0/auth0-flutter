@@ -870,6 +870,159 @@ void main() {
     });
   });
 
+  group('customTokenExchange', () {
+    test('calls the correct MethodChannel method', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.renewResult);
+
+      await MethodChannelAuth0FlutterAuth().customTokenExchange(
+          ApiRequest<AuthCustomTokenExchangeOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: const AuthCustomTokenExchangeOptions(
+                  subjectToken: 'existing-token',
+                  subjectTokenType: 'http://acme.com/legacy-token')));
+
+      expect(
+          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          'auth#customTokenExchange');
+    });
+
+    test('correctly maps all properties to the method channel', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.renewResult);
+
+      await MethodChannelAuth0FlutterAuth().customTokenExchange(
+          ApiRequest<AuthCustomTokenExchangeOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: const AuthCustomTokenExchangeOptions(
+                  subjectToken: 'existing-token',
+                  subjectTokenType: 'http://acme.com/legacy-token',
+                  audience: 'https://example.com/api',
+                  scopes: {'openid', 'profile', 'email'})));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['_account']['domain'], 'test-domain');
+      expect(verificationResult.arguments['_account']['clientId'],
+          'test-clientId');
+      expect(verificationResult.arguments['_userAgent']['name'], 'test-name');
+      expect(verificationResult.arguments['_userAgent']['version'],
+          'test-version');
+      expect(
+          verificationResult.arguments['subjectToken'], 'existing-token');
+      expect(verificationResult.arguments['subjectTokenType'],
+          'http://acme.com/legacy-token');
+      expect(verificationResult.arguments['audience'], 'https://example.com/api');
+      expect(verificationResult.arguments['scopes'], ['openid', 'profile', 'email']);
+    });
+
+    test(
+        'correctly assigns default values to all non-required properties when missing',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.renewResult);
+
+      await MethodChannelAuth0FlutterAuth().customTokenExchange(
+          ApiRequest<AuthCustomTokenExchangeOptions>(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: '', version: ''),
+              options: const AuthCustomTokenExchangeOptions(
+                  subjectToken: 'existing-token',
+                  subjectTokenType: 'http://acme.com/legacy-token')));
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['scopes'], isEmpty);
+      expect(verificationResult.arguments.containsKey('audience'), isFalse);
+      expect(verificationResult.arguments.containsKey('organization'), isFalse);
+    });
+
+    test('correctly maps organization parameter when provided', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.renewResult);
+
+      await MethodChannelAuth0FlutterAuth().customTokenExchange(
+          ApiRequest<AuthCustomTokenExchangeOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: const AuthCustomTokenExchangeOptions(
+                  subjectToken: 'existing-token',
+                  subjectTokenType: 'http://acme.com/legacy-token',
+                  organization: 'org_abc123')));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['organization'], 'org_abc123');
+    });
+
+    test('correctly returns the response from the Method Channel', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.renewResult);
+
+      final result = await MethodChannelAuth0FlutterAuth().customTokenExchange(
+          ApiRequest<AuthCustomTokenExchangeOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: const AuthCustomTokenExchangeOptions(
+                  subjectToken: 'existing-token',
+                  subjectTokenType: 'http://acme.com/legacy-token')));
+
+      expect(result.accessToken, MethodCallHandler.renewResult['accessToken']);
+      expect(result.idToken, MethodCallHandler.renewResult['idToken']);
+      expect(
+          result.refreshToken, MethodCallHandler.renewResult['refreshToken']);
+      expect(result.scopes, MethodCallHandler.renewResult['scopes']);
+      expect(result.expiresAt,
+          DateTime.parse(MethodCallHandler.renewResult['expiresAt'] as String));
+      expect(result.user.name,
+          MethodCallHandler.renewResult['userProfile']['name']);
+    });
+
+    test('throws an ApiException when method channel returns null', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      Future<Credentials> actual() async {
+        final result =
+            await MethodChannelAuth0FlutterAuth().customTokenExchange(
+                ApiRequest<AuthCustomTokenExchangeOptions>(
+                    account: const Account('test-domain', 'test-clientId'),
+                    userAgent:
+                        UserAgent(name: 'test-name', version: 'test-version'),
+                    options: const AuthCustomTokenExchangeOptions(
+                        subjectToken: 'existing-token',
+                        subjectTokenType: 'http://acme.com/legacy-token')));
+
+        return result;
+      }
+
+      await expectLater(actual, throwsA(isA<ApiException>()));
+    });
+
+    test(
+        'throws an ApiException when method channel throws a PlatformException',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenThrow(PlatformException(code: '123'));
+
+      Future<Credentials> actual() async {
+        final result =
+            await MethodChannelAuth0FlutterAuth().customTokenExchange(
+                ApiRequest<AuthCustomTokenExchangeOptions>(
+                    account: const Account('test-domain', 'test-clientId'),
+                    userAgent:
+                        UserAgent(name: 'test-name', version: 'test-version'),
+                    options: const AuthCustomTokenExchangeOptions(
+                        subjectToken: 'existing-token',
+                        subjectTokenType: 'http://acme.com/legacy-token')));
+
+        return result;
+      }
+
+      await expectLater(actual, throwsA(isA<ApiException>()));
+    });
+  });
+
   group('userInfo', () {
     test('calls the correct MethodChannel method', () async {
       when(mocked.methodCallHandler(any))

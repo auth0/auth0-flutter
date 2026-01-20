@@ -21,6 +21,7 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
         case signup = "auth#signUp"
         case userInfo = "auth#userInfo"
         case renew = "auth#renew"
+        case customTokenExchange = "auth#customTokenExchange"
         case resetPassword = "auth#resetPassword"
         case passwordlessWithEmail = "auth#passwordlessWithEmail"
         case passwordlessWithPhoneNumber = "auth#passwordlessWithPhoneNumber"
@@ -64,6 +65,7 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
         case .signup: return AuthAPISignupMethodHandler(client: client)
         case .userInfo: return AuthAPIUserInfoMethodHandler(client: client)
         case .renew: return AuthAPIRenewMethodHandler(client: client)
+        case .customTokenExchange: return AuthAPICustomTokenExchangeMethodHandler(client: client)
         case .resetPassword: return AuthAPIResetPasswordMethodHandler(client: client)
         case .passwordlessWithEmail: return AuthAPIPasswordlessEmailMethodHandler(client: client)
         case .passwordlessWithPhoneNumber: return AuthAPIPasswordlessPhoneNumberMethodHandler(client: client)

@@ -35,7 +35,8 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     RenewCredentialsRequestHandler(),
     SaveCredentialsRequestHandler(),
     HasValidCredentialsRequestHandler(),
-    ClearCredentialsRequestHandler()
+    ClearCredentialsRequestHandler(),
+    GetCredentialsUserInfoRequestHandler()
   ))
   private val dpopCallHandler = Auth0FlutterDPoPMethodCallHandler(listOf(
     GetDPoPHeadersApiRequestHandler(),
@@ -66,6 +67,7 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
         SignupApiRequestHandler(),
         UserInfoApiRequestHandler(),
         RenewApiRequestHandler(),
+        CustomTokenExchangeApiRequestHandler(),
         ResetPasswordApiRequestHandler()
       )
     )

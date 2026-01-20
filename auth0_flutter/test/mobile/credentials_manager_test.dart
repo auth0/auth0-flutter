@@ -2,7 +2,7 @@ import 'package:auth0_flutter/auth0_flutter.dart';
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mockito/mockito.dart' hide Fake;
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'credentials_manager_test.mocks.dart';
@@ -204,6 +204,80 @@ void main() {
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
       expect(verificationResult.options?.parameters, {'a': 'b'});
+    });
+  });
+
+  group('user', () {
+    test('passes through properties to the platform', () async {
+      final userProfile = UserProfile.fromMap({
+        'sub': 'auth0|123456',
+        'name': 'John Doe',
+        'email': 'john.doe@example.com',
+        'nickname': 'johndoe'
+      });
+
+      when(mockedPlatform.user(argThat(isA<CredentialsManagerRequest>())))
+          .thenAnswer((final _) async => userProfile);
+
+      final result = await DefaultCredentialsManager(account, userAgent).user();
+
+      final verificationResult =
+          verify(mockedPlatform.user(captureAny)).captured.single
+              as CredentialsManagerRequest;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.account.clientId, 'test-clientId');
+      expect(result, isNotNull);
+      expect(result!.sub, userProfile.sub);
+      expect(result.name, userProfile.name);
+    });
+
+    test('returns UserProfile when platform returns profile', () async {
+      final userProfile = UserProfile.fromMap({
+        'sub': 'auth0|123456',
+        'name': 'John Doe',
+        'email': 'john.doe@example.com',
+        'email_verified': true,
+        'nickname': 'johndoe',
+        'picture': 'https://example.com/picture.jpg',
+      });
+
+      when(mockedPlatform.user(argThat(isA<CredentialsManagerRequest>())))
+          .thenAnswer((final _) async => userProfile);
+
+      final result = await DefaultCredentialsManager(account, userAgent).user();
+
+      expect(result, isNotNull);
+      expect(result!.sub, 'auth0|123456');
+      expect(result.name, 'John Doe');
+      expect(result.email, 'john.doe@example.com');
+      expect(result.isEmailVerified, true);
+      expect(result.nickname, 'johndoe');
+      expect(result.pictureUrl.toString(), 'https://example.com/picture.jpg');
+    });
+
+    test('returns null when platform returns null', () async {
+      when(mockedPlatform.user(argThat(isA<CredentialsManagerRequest>())))
+          .thenAnswer((final _) async => null);
+
+      final result = await DefaultCredentialsManager(account, userAgent).user();
+
+      expect(result, isNull);
+    });
+
+    test('propagates exceptions from platform', () async {
+      when(mockedPlatform.user(argThat(isA<CredentialsManagerRequest>())))
+          .thenThrow(const CredentialsManagerException(
+              'FAILED', 'No credentials stored', {}));
+
+      Future<UserProfile?> actual() async => DefaultCredentialsManager(
+          account, userAgent).user();
+
+      await expectLater(
+          actual,
+          throwsA(predicate((final e) =>
+              e is CredentialsManagerException &&
+              e.code == 'FAILED' &&
+              e.message == 'No credentials stored')));
     });
   });
 }

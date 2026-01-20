@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.auth0.auth0_flutter.request_handlers.credentials_manager.ClearCredentialsRequestHandler
 import com.auth0.auth0_flutter.request_handlers.credentials_manager.CredentialsManagerRequestHandler
+import com.auth0.auth0_flutter.request_handlers.credentials_manager.GetCredentialsUserInfoRequestHandler
 import com.auth0.auth0_flutter.request_handlers.credentials_manager.HasValidCredentialsRequestHandler
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel.Result
@@ -41,7 +42,16 @@ class CredentialsManagerMethodCallHandlerTest {
         val mockResult = mock<Result>()
 
         handler.activity = if (activity === null)  mock() else activity
-        handler.context = if (context === null)  mock() else context
+        
+        val mockContext = if (context === null) {
+            val ctx: Context = mock()
+            val mockPrefs: SharedPreferences = mock()
+            `when`(ctx.getSharedPreferences(any(), any())).thenReturn(mockPrefs)
+            ctx
+        } else {
+            context
+        }
+        handler.context = mockContext
 
         handler.onMethodCall(MethodCall(method, arguments), mockResult)
         onResult(mockResult)
@@ -139,7 +149,7 @@ class CredentialsManagerMethodCallHandlerTest {
 
         val managerCaptor = argumentCaptor<com.auth0.android.authentication.storage.SecureCredentialsManager>()
         verify(clearCredentialsHandler, times(2)).handle(managerCaptor.capture(), any(), any(), any())
-        
+
         MatcherAssert.assertThat(
             "Manager should be reused when configuration is identical",
             managerCaptor.firstValue,
@@ -193,7 +203,7 @@ class CredentialsManagerMethodCallHandlerTest {
 
         val managerCaptor = argumentCaptor<com.auth0.android.authentication.storage.SecureCredentialsManager>()
         verify(clearCredentialsHandler, times(2)).handle(managerCaptor.capture(), any(), any(), any())
-        
+
         MatcherAssert.assertThat(
             "New manager should be created when domain changes",
             managerCaptor.firstValue,
@@ -233,7 +243,7 @@ class CredentialsManagerMethodCallHandlerTest {
         val arguments2 = hashMapOf<String, Any?>(
             "_account" to mapOf(
                 "domain" to "test.auth0.com",
-                "clientId" to "client-2", 
+                "clientId" to "client-2",
             ),
             "_userAgent" to mapOf(
                 "name" to "auth0-flutter",
@@ -245,7 +255,7 @@ class CredentialsManagerMethodCallHandlerTest {
 
         val managerCaptor = argumentCaptor<com.auth0.android.authentication.storage.SecureCredentialsManager>()
         verify(clearCredentialsHandler, times(2)).handle(managerCaptor.capture(), any(), any(), any())
-        
+
         MatcherAssert.assertThat(
             "New manager should be created when clientId changes",
             managerCaptor.firstValue,
@@ -294,7 +304,7 @@ class CredentialsManagerMethodCallHandlerTest {
                 "version" to "1.0.0"
             ),
             "credentialsManagerConfiguration" to mapOf(
-                "android" to mapOf("sharedPreferencesName" to "prefs_2") 
+                "android" to mapOf("sharedPreferencesName" to "prefs_2")
             )
         )
         val call2 = MethodCall("credentialsManager#clearCredentials", arguments2)
@@ -302,7 +312,7 @@ class CredentialsManagerMethodCallHandlerTest {
 
         val managerCaptor = argumentCaptor<com.auth0.android.authentication.storage.SecureCredentialsManager>()
         verify(clearCredentialsHandler, times(2)).handle(managerCaptor.capture(), any(), any(), any())
-        
+
         MatcherAssert.assertThat(
             "New manager should be created when sharedPreferencesName changes",
             managerCaptor.firstValue,
@@ -349,14 +359,14 @@ class CredentialsManagerMethodCallHandlerTest {
                 "name" to "auth0-flutter",
                 "version" to "1.0.0"
             ),
-            "useDPoP" to true 
+            "useDPoP" to true
         )
         val call2 = MethodCall("credentialsManager#clearCredentials", arguments2)
         handler.onMethodCall(call2, mockResult)
 
         val managerCaptor = argumentCaptor<com.auth0.android.authentication.storage.SecureCredentialsManager>()
         verify(clearCredentialsHandler, times(2)).handle(managerCaptor.capture(), any(), any(), any())
-        
+
         MatcherAssert.assertThat(
             "New manager should be created when useDPoP flag changes",
             managerCaptor.firstValue,
@@ -414,7 +424,7 @@ class CredentialsManagerMethodCallHandlerTest {
 
         val managerCaptor = argumentCaptor<com.auth0.android.authentication.storage.SecureCredentialsManager>()
         verify(clearCredentialsHandler, times(2)).handle(managerCaptor.capture(), any(), any(), any())
-        
+
         MatcherAssert.assertThat(
             "New manager should be created when localAuthentication changes",
             managerCaptor.firstValue,
@@ -426,7 +436,7 @@ class CredentialsManagerMethodCallHandlerTest {
     fun `handler should reuse manager across different method calls with same configuration`() {
         val clearCredentialsHandler = mock<ClearCredentialsRequestHandler>()
         val hasValidCredentialsHandler = mock<HasValidCredentialsRequestHandler>()
-        
+
         `when`(clearCredentialsHandler.method).thenReturn("credentialsManager#clearCredentials")
         `when`(hasValidCredentialsHandler.method).thenReturn("credentialsManager#hasValidCredentials")
 
@@ -451,15 +461,58 @@ class CredentialsManagerMethodCallHandlerTest {
 
         val clearManagerCaptor = argumentCaptor<com.auth0.android.authentication.storage.SecureCredentialsManager>()
         val hasValidManagerCaptor = argumentCaptor<com.auth0.android.authentication.storage.SecureCredentialsManager>()
-        
+
         verify(clearCredentialsHandler).handle(clearManagerCaptor.capture(), any(), any(), any())
         verify(hasValidCredentialsHandler).handle(hasValidManagerCaptor.capture(), any(), any(), any())
-        
+
         MatcherAssert.assertThat(
             "Same manager should be reused across different method calls with identical configuration",
             clearManagerCaptor.firstValue,
             CoreMatchers.sameInstance(hasValidManagerCaptor.firstValue)
         )
+    }
+
+    @Test
+    fun `handler invokes GetCredentialsUserInfoRequestHandler for credentialsManager#user`() {
+        val getUserInfoHandler = mock<GetCredentialsUserInfoRequestHandler>()
+        `when`(getUserInfoHandler.method).thenReturn("credentialsManager#user")
+
+        runCallHandler(
+            "credentialsManager#user",
+            requestHandlers = listOf(getUserInfoHandler)
+        ) { result ->
+            verify(getUserInfoHandler).handle(any(), any(), any(), any())
+        }
+    }
+
+    @Test
+    fun `handler returns UserProfile result from GetCredentialsUserInfoRequestHandler`() {
+        val getUserInfoHandler = mock<GetCredentialsUserInfoRequestHandler>()
+        `when`(getUserInfoHandler.method).thenReturn("credentialsManager#user")
+
+        val userProfileMap = mapOf(
+            "sub" to "auth0|123456",
+            "name" to "John Doe",
+            "email" to "john.doe@example.com"
+        )
+
+        doAnswer { invocation ->
+            val result = invocation.getArgument<Result>(3)
+            result.success(userProfileMap)
+        }.`when`(getUserInfoHandler).handle(any(), any(), any(), any())
+
+        val mockResult = mock<Result>()
+        val handler = CredentialsManagerMethodCallHandler(listOf(getUserInfoHandler))
+        handler.activity = mock()
+        
+        val mockContext: Context = mock()
+        val mockPrefs: SharedPreferences = mock()
+        `when`(mockContext.getSharedPreferences(any(), any())).thenReturn(mockPrefs)
+        handler.context = mockContext
+
+        handler.onMethodCall(MethodCall("credentialsManager#user", defaultArguments), mockResult)
+
+        verify(mockResult).success(userProfileMap)
     }
 }
 

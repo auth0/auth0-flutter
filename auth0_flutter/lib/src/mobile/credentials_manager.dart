@@ -13,6 +13,8 @@ abstract class CredentialsManager {
     final Map<String, String> parameters = const {},
   });
 
+  Future<UserProfile?> user();
+
   Future<bool> storeCredentials(final Credentials credentials);
 
   Future<bool> hasValidCredentials({
@@ -74,6 +76,12 @@ class DefaultCredentialsManager extends CredentialsManager {
   }) =>
       CredentialsManagerPlatform.instance.renewCredentials(
           _createApiRequest(RenewCredentialsOptions(parameters: parameters)));
+
+  /// Fetches the user profile associated with the stored credentials.
+  /// Returns null if no credentials are present in storage.
+  @override
+  Future<UserProfile?> user() =>
+      CredentialsManagerPlatform.instance.user(_createApiRequest(null));
 
   /// Stores the given credentials in the storage. Must have an `access_token`
   /// or `id_token` and a `expires_in` value.

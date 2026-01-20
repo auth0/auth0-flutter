@@ -1,13 +1,7 @@
 // coverage:ignore-file
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import '../credentials.dart';
-import '../request/request.dart';
-import 'method_channel_credentials_manager.dart';
-import 'options/get_credentials_options.dart';
-import 'options/has_valid_credentials_options.dart';
-import 'options/renew_credentials_options.dart';
-import 'options/save_credentials_options.dart';
+import '../../auth0_flutter_platform_interface.dart';
 
 /// The interface that implementations of CredentialsManager must implement.
 abstract class CredentialsManagerPlatform extends PlatformInterface {
@@ -33,14 +27,21 @@ abstract class CredentialsManagerPlatform extends PlatformInterface {
 
   /// Retrieves the credentials from the native storage.
   Future<Credentials> getCredentials(
-      final CredentialsManagerRequest<GetCredentialsOptions> request) {
+    final CredentialsManagerRequest<GetCredentialsOptions> request,
+  ) {
     throw UnimplementedError('getCredentials() has not been implemented');
   }
 
   /// Fetches new credentials and save them in the native storage.
   Future<Credentials> renewCredentials(
-      final CredentialsManagerRequest<RenewCredentialsOptions> request) {
+    final CredentialsManagerRequest<RenewCredentialsOptions> request,
+  ) {
     throw UnimplementedError('renewCredentials() has not been implemented');
+  }
+
+  /// Retrieves the user info contents from the native storage.
+  Future<UserProfile?> user(final CredentialsManagerRequest request) {
+    throw UnimplementedError('user() has not been implemented');
   }
 
   /// Removes the credentials from the native storage if present.
@@ -51,14 +52,16 @@ abstract class CredentialsManagerPlatform extends PlatformInterface {
   /// Stores the given credentials in the native storage. Must have an
   /// access_token or id_token and a expires_in value.
   Future<bool> saveCredentials(
-      final CredentialsManagerRequest<SaveCredentialsOptions> request) {
+    final CredentialsManagerRequest<SaveCredentialsOptions> request,
+  ) {
     throw UnimplementedError('saveCredentials() has not been implemented');
   }
 
   /// Checks if a non-expired pair of credentials can be obtained from the
   /// native storage.
   Future<bool> hasValidCredentials(
-      final CredentialsManagerRequest<HasValidCredentialsOptions> request) {
+    final CredentialsManagerRequest<HasValidCredentialsOptions> request,
+  ) {
     throw UnimplementedError('hasValidCredentials() has not been implemented');
   }
 }

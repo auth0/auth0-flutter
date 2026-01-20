@@ -16,25 +16,33 @@ static std::string Base64UrlDecode(const std::string &input)
   while (padded.size() % 4 != 0)
     padded.push_back('=');
 
+  // First call: determine required buffer size
   DWORD out_len = 0;
-  CryptStringToBinaryA(
-      padded.c_str(),
-      static_cast<DWORD>(padded.size()),
-      CRYPT_STRING_BASE64,
-      nullptr,
-      &out_len,
-      nullptr,
-      nullptr);
+  if (!CryptStringToBinaryA(
+          padded.c_str(),
+          static_cast<DWORD>(padded.size()),
+          CRYPT_STRING_BASE64,
+          nullptr,
+          &out_len,
+          nullptr,
+          nullptr))
+  {
+    throw std::runtime_error("Base64 decode failed: unable to determine output size");
+  }
 
+  // Second call: perform actual decoding
   std::string output(out_len, '\0');
-  CryptStringToBinaryA(
-      padded.c_str(),
-      static_cast<DWORD>(padded.size()),
-      CRYPT_STRING_BASE64,
-      reinterpret_cast<BYTE *>(&output[0]),
-      &out_len,
-      nullptr,
-      nullptr);
+  if (!CryptStringToBinaryA(
+          padded.c_str(),
+          static_cast<DWORD>(padded.size()),
+          CRYPT_STRING_BASE64,
+          reinterpret_cast<BYTE *>(&output[0]),
+          &out_len,
+          nullptr,
+          nullptr))
+  {
+    throw std::runtime_error("Base64 decode failed: decoding error");
+  }
 
   return output;
 }
@@ -69,6 +77,9 @@ web::json::value DecodeJwtPayload(const std::string &token)
   auto decoded = Base64UrlDecode(parts.payload);
   return web::json::value::parse(decoded);
 }
+
+// Flutter conversion functions (only compiled when building with Flutter)
+#ifndef AUTH0_FLUTTER_STANDALONE_BUILD
 
 flutter::EncodableValue JsonToEncodable(const web::json::value &v)
 {
@@ -112,3 +123,5 @@ flutter::EncodableMap ParseJsonToEncodableMap(const std::string &json)
   auto ev = JsonToEncodable(parsed);
   return std::get<flutter::EncodableMap>(ev);
 }
+
+#endif // AUTH0_FLUTTER_STANDALONE_BUILD

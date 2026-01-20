@@ -274,6 +274,101 @@ class Auth0Web {
           cacheMode: cacheMode,
           parameters: parameters));
 
+  /// Exchanges an external subject token for Auth0 access and ID tokens using
+  /// RFC 8693 Token Exchange.
+  ///
+  /// This method implements the OAuth 2.0 Token Exchange flow, allowing you to
+  /// exchange a token from an external provider for Auth0 tokens.
+  /// This is useful when integrating with external identity providers or
+  /// custom authentication systems.
+  ///
+  /// **Parameters:**
+  ///
+  /// * [subjectToken] (required) - The token being exchanged from the external
+  ///   provider. For example, this might be a JWT from your
+  ///   custom authentication system or another identity provider.
+  ///
+  /// * [subjectTokenType] (required) - A URI identifying the type of the
+  ///   subject token according to RFC 8693. Must be a namespaced URI under your
+  ///   organization's control.
+  ///
+  ///   **Forbidden patterns:**
+  ///   - `^urn:ietf:params:oauth:*` (IETF reserved)
+  ///   - `^https://auth0.com/*` (Auth0 reserved)
+  ///   - `^urn:auth0:*` (Auth0 reserved)
+  ///
+  ///   **Example:** `urn:acme:legacy-system-token`
+  ///
+  /// * [audience] - Optional API identifier for which you want to receive an
+  ///   access token. Must match exactly with an API identifier configured in
+  ///   your Auth0 tenant. If not provided, falls back to the client's default
+  ///   audience.
+  ///
+  /// * [scopes] - Optional set of scopes to request.
+  ///   These scopes determine what permissions the resulting tokens will have.
+  ///   Subject to API authorization policies configured in Auth0.
+  ///
+  /// * [organizationId] - Optional organization ID or name to associate the
+  ///   token exchange with a specific organization context. The organization ID
+  ///   will be present in the access token payload.
+  ///
+  /// **Returns** a [Credentials] object containing:
+  /// * `accessToken` - The new Auth0 access token
+  /// * `idToken` - The Auth0 ID token with user information
+  /// * `expiresAt` - When the access token expires
+  /// * `scopes` - The granted scopes
+  /// * `refreshToken` - Optional refresh token
+  ///
+  /// **Requirements:**
+  ///
+  /// 1. Configure a Token Exchange profile in your Auth0 Dashboard
+  /// 2. Implement validation logic in an Auth0 Action to verify the external
+  /// token
+  /// 3. Grant your Auth0 application the
+  /// `urn:auth0:oauth2:grant-type:token-exchange` permission
+  ///
+  /// **Example:**
+  ///
+  /// ```dart
+  /// try {
+  ///   final credentials = await auth0Web.customTokenExchange(
+  ///     subjectToken: externalToken,
+  ///     subjectTokenType: 'urn:acme:legacy-system-token',
+  ///     audience: 'https://myapi.example.com',
+  ///     scopes: {'openid', 'profile', 'email', 'read:data'},
+  ///   );
+  ///   print('Access token: ${credentials.accessToken}');
+  /// } catch (e) {
+  ///   print('Token exchange failed: $e');
+  /// }
+  /// ```
+  ///
+  /// **Throws** a [WebException] if:
+  /// * The subject token is invalid or expired
+  /// * Token exchange is not properly configured in Auth0
+  /// * The external token fails validation in your Auth0 Action
+  /// * Network issues prevent the exchange request
+  ///
+  /// See also:
+  /// * [Token Exchange Documentation](https://auth0.com/docs/authenticate/custom-token-exchange)
+  /// * [RFC 8693 Specification](https://tools.ietf.org/html/rfc8693)
+  Future<Credentials> customTokenExchange({
+    required final String subjectToken,
+    required final String subjectTokenType,
+    final String? audience,
+    final Set<String>? scopes,
+    final String? organizationId,
+  }) =>
+      Auth0FlutterWebPlatform.instance.customTokenExchange(
+        ExchangeTokenOptions(
+          subjectToken: subjectToken,
+          subjectTokenType: subjectTokenType,
+          audience: audience,
+          scopes: scopes,
+          organizationId: organizationId,
+        ),
+      );
+
   /// Indicates whether a user is currently authenticated.
   Future<bool> hasValidCredentials() =>
       Auth0FlutterWebPlatform.instance.hasValidCredentials();
