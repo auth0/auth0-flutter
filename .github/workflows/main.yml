@@ -327,15 +327,20 @@ jobs:
               run: Copy-Item example/.env.example example/.env
               shell: powershell
 
-            - name: Build Windows example app
-              working-directory: auth0_flutter/example
-              run: flutter build windows --debug
-
             - name: Set up vcpkg
               uses: lukka/run-vcpkg@v11 # pin@v11
               with:
                 vcpkgDirectory: '${{ github.workspace }}/vcpkg'
                 vcpkgGitCommitId: '7a26ed4ca1cc6eafc66666166f8f36c49dc5ec18'
+
+            - name: Install cpprestsdk via vcpkg
+              run: |
+                ${{ github.workspace }}\vcpkg\vcpkg install cpprestsdk
+              shell: cmd
+
+            - name: Build Windows example app
+              working-directory: auth0_flutter/example
+              run: flutter build windows --debug
 
             - name: Build Windows unit tests
               working-directory: auth0_flutter/windows
