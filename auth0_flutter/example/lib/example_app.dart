@@ -18,8 +18,7 @@ class ExampleApp extends StatefulWidget {
 class _ExampleAppState extends State<ExampleApp> {
   bool _isLoggedIn = false;
   String _output = '';
-  String clientId = 'GGUVoHL5nseaacSzqB810HWYGHZI34m8';
-  String domain = 'int-dx-enterprise-test.us.auth0.com';
+
   late Auth0 auth0;
   late WebAuthentication webAuth;
   late Auth0Web auth0Web;
@@ -28,16 +27,16 @@ class _ExampleAppState extends State<ExampleApp> {
   void initState() {
     super.initState();
 
-    auth0 = Auth0(domain, clientId);
-    auth0Web = Auth0Web(domain, clientId);
-    webAuth = auth0.webAuthentication(scheme: 'https');
+    auth0 = Auth0(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
+    auth0Web =
+        Auth0Web(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
+    webAuth =
+        auth0.webAuthentication(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
     if (kIsWeb) {
-      auth0Web.onLoad().then(
-        (final credentials) => setState(() {
-          _output = credentials?.idToken ?? '';
-          _isLoggedIn = credentials != null;
-        }),
-      );
+      auth0Web.onLoad().then((final credentials) => setState(() {
+            _output = credentials?.idToken ?? '';
+            _isLoggedIn = credentials != null;
+          }));
     }
   }
 
@@ -102,18 +101,15 @@ class _ExampleAppState extends State<ExampleApp> {
   }
 
   Future<void> apiLogin(
-    final String usernameOrEmail,
-    final String password,
-  ) async {
+      final String usernameOrEmail, final String password) async {
     String output;
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
       final result = await auth0.api.login(
-        usernameOrEmail: usernameOrEmail,
-        password: password,
-        connectionOrRealm: 'Username-Password-Authentication',
-      );
+          usernameOrEmail: usernameOrEmail,
+          password: password,
+          connectionOrRealm: 'Username-Password-Authentication');
       output = result.accessToken;
     } on ApiException catch (e) {
       output = e.toString();
@@ -155,8 +151,7 @@ class _ExampleAppState extends State<ExampleApp> {
           _isLoggedIn = true;
         });
 
-        output =
-            'DPoP Login Successful!\n\n'
+        output = 'DPoP Login Successful!\n\n'
             'Token Type: ${credentials.tokenType}\n'
             'Access Token: ${credentials.accessToken.substring(0, 50)}...\n'
             'ID Token: ${credentials.idToken.substring(0, 50)}...\n'
@@ -177,8 +172,7 @@ class _ExampleAppState extends State<ExampleApp> {
           _isLoggedIn = true;
         });
 
-        output =
-            'DPoP Login Successful!\n\n'
+        output = 'DPoP Login Successful!\n\n'
             'Token Type: ${result.tokenType}\n'
             'Access Token: ${result.accessToken.substring(0, 50)}...\n'
             'ID Token: ${result.idToken.substring(0, 50)}...';
@@ -198,61 +192,46 @@ class _ExampleAppState extends State<ExampleApp> {
   Widget build(final BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: const Text('Auth0 Example')),
-        body: CustomScrollView(
-          slivers: <Widget>[
-            SliverToBoxAdapter(
-              child: Padding(
+          appBar: AppBar(title: const Text('Auth0 Example')),
+          body: CustomScrollView(
+            slivers: <Widget>[
+              SliverToBoxAdapter(
+                  child: Padding(
                 padding: const EdgeInsets.all(padding),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ApiCard(action: apiLogin),
-                    if (_isLoggedIn)
-                      WebAuthCard(
-                        label: 'Web Auth Logout',
-                        action: webAuthLogout,
-                      )
-                    else
-                      WebAuthCard(
-                        label: 'Web Auth Login',
-                        action: webAuthLogin,
-                      ),
-                    const SizedBox(height: 10),
-                    // DPoP Button - Works on Web, Android, and iOS
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 32,
-                          vertical: 12,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ApiCard(action: apiLogin),
+                      if (_isLoggedIn)
+                        WebAuthCard(
+                            label: 'Web Auth Logout', action: webAuthLogout)
+                      else
+                        WebAuthCard(
+                            label: 'Web Auth Login', action: webAuthLogin),
+                      const SizedBox(height: 10),
+                      // DPoP Button - Works on Web, Android, and iOS
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepPurple,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 32, vertical: 12),
+                        ),
+                        onPressed: dpopLogin,
+                        child: const Text(
+                          'DPoP Login',
+                          style: TextStyle(fontSize: 16),
                         ),
                       ),
-                      onPressed: dpopLogin,
-                      child: const Text(
-                        'DPoP Login',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SliverFillRemaining(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  padding,
-                  0.0,
-                  padding,
-                  padding,
-                ),
-                child: Center(child: Text(_output)),
-              ),
-            ),
-          ],
-        ),
-      ),
+                    ]),
+              )),
+              SliverFillRemaining(
+                  child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                          padding, 0.0, padding, padding),
+                      child: Center(child: Text(_output)))),
+            ],
+          )),
     );
   }
 }
