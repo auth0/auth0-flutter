@@ -332,7 +332,7 @@ jobs:
               run: flutter build windows --debug
 
             - name: Set up vcpkg
-              uses: lukka/run-vcpkg@beb6564f0aeb229060c2cdb32d04a1190e92f18f # pin@v11
+              uses: lukka/run-vcpkg@v11 # pin@v11
               with:
                 vcpkgDirectory: '${{ github.workspace }}/vcpkg'
                 vcpkgGitCommitId: '7a26ed4ca1cc6eafc66666166f8f36c49dc5ec18'

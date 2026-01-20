@@ -26,6 +26,13 @@ set(PLUGIN_NAME "auth0_flutter_plugin")
 list(APPEND PLUGIN_SOURCES
   "auth0_flutter_plugin.cpp"
   "auth0_flutter_plugin.h"
+  "Auth0FlutterWebAuthMethodCallHandler.cpp"
+  "Auth0FlutterWebAuthMethodCallHandler.h"
+  "request_handlers/web_auth/WebAuthRequestHandler.h"
+  "request_handlers/web_auth/LoginWebAuthRequestHandler.cpp"
+  "request_handlers/web_auth/LoginWebAuthRequestHandler.h"
+  "request_handlers/web_auth/LogoutWebAuthRequestHandler.cpp"
+  "request_handlers/web_auth/LogoutWebAuthRequestHandler.h"
 )
 
 # Define the plugin library target. Its name must not be changed (see comment

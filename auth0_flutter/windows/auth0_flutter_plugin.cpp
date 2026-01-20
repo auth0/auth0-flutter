@@ -1,3 +1,24 @@
+/**
+ * @file auth0_flutter_plugin.cpp
+ * @brief Main plugin implementation for Auth0 Flutter Windows
+ *
+ * This file contains the main plugin class and helper utilities for WebAuth operations.
+ * The plugin follows a handler pattern similar to the Android and iOS implementations,
+ * delegating method calls to specialized handlers.
+ *
+ * Architecture:
+ * - Auth0FlutterPlugin: Main plugin class, registers with Flutter engine
+ * - Auth0FlutterWebAuthMethodCallHandler: Routes method calls to appropriate handlers
+ * - LoginWebAuthRequestHandler: Handles webAuth#login
+ * - LogoutWebAuthRequestHandler: Handles webAuth#logout
+ *
+ * Helper utilities:
+ * - PKCE functions for OAuth security
+ * - Base64 URL encoding
+ * - Custom scheme callback handling
+ * - Window management
+ */
+
 #define _CRT_SECURE_NO_WARNINGS
 #define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 #define NOMINMAX
@@ -36,6 +57,11 @@
 #include "user_profile.h"
 #include "jwt_util.h"
 
+// WebAuth handlers
+#include "Auth0FlutterWebAuthMethodCallHandler.h"
+#include "request_handlers/web_auth/LoginWebAuthRequestHandler.h"
+#include "request_handlers/web_auth/LogoutWebAuthRequestHandler.h"
+
 using namespace web;
 using namespace web::http;
 using namespace web::http::client;
@@ -46,8 +72,19 @@ namespace auth0_flutter
 
     // -------------------- PKCE Helpers --------------------
 
-    // Base64 URL-safe encode without padding
-    // Helper: Base64 URL-safe encode (no padding, + → -, / → _)
+    /**
+     * @brief Base64 URL-safe encode without padding
+     *
+     * Encodes binary data to base64 URL-safe format as required by OAuth 2.0 PKCE.
+     *
+     * Transformations:
+     * - '+' → '-'
+     * - '/' → '_'
+     * - Removes padding '='
+     *
+     * @param data Binary data to encode
+     * @return Base64 URL-safe encoded string
+     */
     std::string base64UrlEncode(const std::vector<unsigned char> &data)
     {
         static const char *b64chars =
@@ -109,6 +146,18 @@ namespace auth0_flutter
         return result;
     }
 
+    /**
+     * @brief Brings the Flutter window to the foreground
+     *
+     * After the user completes authentication in the browser, this function
+     * brings the Flutter app window back to focus. Uses Windows-specific APIs
+     * to bypass foreground lock restrictions.
+     *
+     * Technique:
+     * 1. Restore window if minimized
+     * 2. Attach input threads to bypass foreground restrictions
+     * 3. Set window as foreground and focused
+     */
     void BringFlutterWindowToFront()
     {
         HWND hwnd = GetActiveWindow();
@@ -140,7 +189,15 @@ namespace auth0_flutter
         AttachThreadInput(foregroundThread, currentThread, FALSE);
     }
 
-    // Generate random code verifier (32 bytes -> URL-safe string)
+    /**
+     * @brief Generate random code verifier for PKCE flow
+     *
+     * Creates a cryptographically random 32-byte value and encodes it as a
+     * base64 URL-safe string. This is the code verifier used in OAuth 2.0 PKCE.
+     *
+     * @return Base64 URL-safe encoded random string (43 characters)
+     * @throws std::runtime_error if random generation fails
+     */
     std::string generateCodeVerifier()
     {
         std::vector<unsigned char> buffer(32);
@@ -151,7 +208,18 @@ namespace auth0_flutter
         return base64UrlEncode(buffer);
     }
 
-    // Generate code challenge from verifier (SHA256 + base64URL)
+    /**
+     * @brief Generate code challenge from verifier for PKCE flow
+     *
+     * Creates the code challenge by hashing the verifier with SHA256 and
+     * encoding the result as base64 URL-safe. This challenge is sent in the
+     * authorization request, and the verifier is sent during token exchange.
+     *
+     * Formula: BASE64URL(SHA256(ASCII(verifier)))
+     *
+     * @param verifier The code verifier string
+     * @return Base64 URL-safe encoded SHA256 hash of the verifier
+     */
     std::string generateCodeChallenge(const std::string &verifier)
     {
         unsigned char hash[SHA256_DIGEST_LENGTH];
@@ -165,6 +233,14 @@ namespace auth0_flutter
 
     // ---------- Helpers: URL-decode, safe query parse, and waitForAuthCode (custom scheme) ----------
 
+    /**
+     * @brief Decodes a URL-encoded string
+     *
+     * Handles percent-encoding (%XX) and plus-to-space conversion.
+     *
+     * @param str URL-encoded string
+     * @return Decoded string
+     */
     static std::string UrlDecode(const std::string &str)
     {
         std::string out;
@@ -195,6 +271,15 @@ namespace auth0_flutter
         return out;
     }
 
+    /**
+     * @brief Safely parses URL query parameters
+     *
+     * Parses a query string (without leading '?') into a map of key-value pairs.
+     * Handles URL-decoded keys and values.
+     *
+     * @param query Query string (e.g., "code=ABC&state=XYZ")
+     * @return Map of decoded parameter names to values
+     */
     static std::map<std::string, std::string> SafeParseQuery(const std::string &query)
     {
         std::map<std::string, std::string> params;
@@ -224,7 +309,15 @@ namespace auth0_flutter
         return params;
     }
 
-    // Safe UTF conversions (wchar_t <-> UTF-8)
+    /**
+     * @brief Converts wide string (wchar_t) to UTF-8
+     *
+     * Safely converts Windows wide strings to UTF-8 encoded strings.
+     * Used for converting environment variable values from Windows API.
+     *
+     * @param wstr Wide string to convert
+     * @return UTF-8 encoded string
+     */
     static std::string WideToUtf8(const std::wstring &wstr)
     {
         if (wstr.empty())
@@ -238,8 +331,25 @@ namespace auth0_flutter
         return str;
     }
 
-    // Poll environment variable PLUGIN_STARTUP_URL for redirect URI (set by runner/main on startup or IPC).
-    // Example stored value: auth0flutter://callback?code=AUTH_CODE&state=xyz
+    /**
+     * @brief Wait for OAuth callback via custom scheme (environment variable polling)
+     *
+     * Polls the PLUGIN_STARTUP_URL environment variable for the OAuth redirect URI.
+     * The Windows runner sets this variable when the app is launched via custom scheme
+     * (auth0flutter://callback?code=...).
+     *
+     * Process:
+     * 1. Poll environment variable every 200ms
+     * 2. When found, clear the variable and parse the URI
+     * 3. Extract the 'code' parameter from query string
+     * 4. Return authorization code or empty string on timeout/error
+     *
+     * @param expectedRedirectBase Expected redirect URI prefix (e.g., "auth0flutter://callback")
+     * @param timeoutSeconds Maximum time to wait (default: 180 seconds / 3 minutes)
+     * @return Authorization code on success, empty string on timeout/error
+     *
+     * Example stored value: auth0flutter://callback?code=AUTH_CODE&state=xyz
+     */
     static std::string waitForAuthCode_CustomScheme(const std::string &expectedRedirectBase, int timeoutSeconds = 180)
     {
         const int sleepMs = 200;
@@ -314,6 +424,17 @@ namespace auth0_flutter
 
     // -------------------- Local Redirect Listener --------------------
 
+    /**
+     * @brief Wait for OAuth callback via local HTTP listener (alternative approach)
+     *
+     * Creates a local HTTP server to receive the OAuth redirect. This is an
+     * alternative to the custom scheme approach, but requires localhost redirect URIs.
+     *
+     * Note: Currently not used in favor of custom scheme approach.
+     *
+     * @param redirectUri The redirect URI (e.g., "http://localhost:8080/callback")
+     * @return Authorization code from the callback
+     */
     std::string waitForAuthCode(const std::string &redirectUri)
     {
         uri u(utility::conversions::to_string_t(redirectUri));
@@ -342,10 +463,22 @@ namespace auth0_flutter
         return authCode;
     }
 
-    // -------------------- Token Exchange --------------------
-
     // -------------------- Plugin Impl --------------------
 
+    /**
+     * @brief Registers the plugin with the Flutter engine
+     *
+     * Sets up the WebAuth method channel and initializes the plugin with
+     * all required handlers. This follows the same channel name and architecture
+     * as Android and iOS implementations.
+     *
+     * Channel: "auth0.com/auth0_flutter/web_auth"
+     * Methods supported:
+     * - webAuth#login: Handled by LoginWebAuthRequestHandler
+     * - webAuth#logout: Handled by LogoutWebAuthRequestHandler
+     *
+     * @param registrar The Flutter plugin registrar
+     */
     void Auth0FlutterPlugin::RegisterWithRegistrar(
         flutter::PluginRegistrarWindows *registrar)
     {
@@ -365,15 +498,47 @@ namespace auth0_flutter
         registrar->AddPlugin(std::move(plugin));
     }
 
-    Auth0FlutterPlugin::Auth0FlutterPlugin() {}
+    /**
+     * @brief Constructor - initializes the plugin with WebAuth handlers
+     *
+     * Creates and registers all WebAuth request handlers following the
+     * strategy pattern used in Android and iOS implementations.
+     */
+    Auth0FlutterPlugin::Auth0FlutterPlugin()
+    {
+        // Initialize WebAuth method call handler with all request handlers
+        std::vector<std::unique_ptr<WebAuthRequestHandler>> handlers;
+        handlers.push_back(std::make_unique<LoginWebAuthRequestHandler>());
+        handlers.push_back(std::make_unique<LogoutWebAuthRequestHandler>());
+
+        webAuthCallHandler_ = std::make_unique<Auth0FlutterWebAuthMethodCallHandler>(
+            std::move(handlers));
+    }
+
     Auth0FlutterPlugin::~Auth0FlutterPlugin() {}
 
+    /**
+     * @brief Debug logging utility
+     *
+     * Prints debug messages to the Visual Studio Output window using
+     * OutputDebugString. Visible when debugging in Visual Studio.
+     *
+     * @param msg Message to log
+     */
     void DebugPrint(const std::string &msg)
     {
         OutputDebugStringA((msg + "\n").c_str());
     }
 
-       static std::ostringstream BuildLogoutUrl(
+    /**
+     * @brief Builds Auth0 logout URL (helper function, now moved to LogoutWebAuthRequestHandler)
+     *
+     * This function is deprecated and kept for backward compatibility.
+     * New code should use LogoutWebAuthRequestHandler instead.
+     *
+     * @deprecated Use LogoutWebAuthRequestHandler::BuildLogoutUrl instead
+     */
+    static std::ostringstream BuildLogoutUrl(
         const std::string &domain,
         const std::string &clientId,
         const std::string &returnTo,
@@ -403,227 +568,26 @@ namespace auth0_flutter
         return url;
     }
 
+    /**
+     * @brief Handles method calls from Flutter
+     *
+     * Delegates all method calls to the appropriate handler. This implementation
+     * follows the same pattern as Android and iOS, using a handler-based architecture
+     * for clean separation of concerns.
+     *
+     * All WebAuth methods (login, logout) are handled by webAuthCallHandler_,
+     * which routes to specialized handlers based on the method name.
+     *
+     * @param method_call The method call from Flutter
+     * @param result Callback to return results to Flutter
+     */
     void Auth0FlutterPlugin::HandleMethodCall(
         const flutter::MethodCall<flutter::EncodableValue> &method_call,
         std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
     {
-        if (method_call.method_name().compare("webAuth#login") == 0)
-        {
-            // Top-level args should be a map
-            const auto *args = std::get_if<flutter::EncodableMap>(method_call.arguments());
-            if (!args)
-            {
-                result->Error("bad_args", "Expected a map as arguments");
-                return;
-            }
-
-            // Extract "account" map
-            auto accountIt = args->find(flutter::EncodableValue("_account"));
-            if (accountIt == args->end())
-            {
-                result->Error("bad_args", "Missing 'account' key");
-                return;
-            }
-
-            const auto *accountMap = std::get_if<flutter::EncodableMap>(&accountIt->second);
-            if (!accountMap)
-            {
-                result->Error("bad_args", "'account' is not a map");
-                return;
-            }
-
-            // Extract clientId and domain
-            std::string clientId;
-            std::string domain;
-
-            if (auto it = accountMap->find(flutter::EncodableValue("clientId"));
-                it != accountMap->end())
-            {
-                clientId = std::get<std::string>(it->second);
-            }
-
-            if (auto it = accountMap->find(flutter::EncodableValue("domain"));
-                it != accountMap->end())
-            {
-                domain = std::get<std::string>(it->second);
-            }
-
-            std::string scopeStr = "openid profile email"; // default
-
-            auto scopesIt = args->find(flutter::EncodableValue("scopes"));
-            if (scopesIt != args->end())
-            {
-                const auto *scopeList =
-                    std::get_if<flutter::EncodableList>(&scopesIt->second);
-                if (!scopeList)
-                {
-                    result->Error("bad_args", "'scopes' must be a List<String>");
-                    return;
-                }
-
-                std::ostringstream oss;
-                bool first = true;
-                for (const auto &v : *scopeList)
-                {
-                    const auto *s = std::get_if<std::string>(&v);
-                    if (!s)
-                    {
-                        result->Error("bad_args", "Each scope must be a String");
-                        return;
-                    }
-                    if (!first)
-                        oss << " ";
-                    oss << *s;
-                    first = false;
-                }
-
-                scopeStr = oss.str();
-            }
-            std::string redirectUri = "auth0flutter://callback";
-
-            try
-            {
-                // 1. PKCE
-                std::string codeVerifier = generateCodeVerifier();
-                std::string codeChallenge = generateCodeChallenge(codeVerifier);
-                DebugPrint("codeVerifier = " + codeVerifier);
-                DebugPrint("codeChallenge = " + codeChallenge);
-                // 2. Build Auth URL
-                std::ostringstream authUrl;
-                authUrl << "https://" << domain << "/authorize?"
-                        << "response_type=code"
-                        << "&client_id=" << clientId
-                        << "&redirect_uri=" << redirectUri
-                        << "&scope=" << scopeStr
-                        << "&code_challenge=" << codeChallenge
-                        << "&code_challenge_method=S256";
-
-                // 3. Open browser
-                ShellExecuteA(NULL, "open", authUrl.str().c_str(), NULL, NULL, SW_SHOWNORMAL);
-
-                // 4. Wait for callback
-                std::string code = waitForAuthCode_CustomScheme(redirectUri, 180);
-BringFlutterWindowToFront();
-                // 5. Exchange code for tokens
-                Auth0Client client(domain, clientId);
-                Credentials creds = client.ExchangeCodeForTokens(redirectUri, code, codeVerifier);
-                flutter::EncodableMap response;
-
-                response[flutter::EncodableValue("accessToken")] =
-                    flutter::EncodableValue(creds.accessToken);
-
-                response[flutter::EncodableValue("idToken")] =
-                    flutter::EncodableValue(creds.idToken);
-
-                if (creds.refreshToken.has_value())
-                {
-                    response[flutter::EncodableValue("refreshToken")] =
-                        flutter::EncodableValue(creds.refreshToken.value());
-                }
-
-                response[flutter::EncodableValue("tokenType")] =
-                    flutter::EncodableValue(creds.tokenType);
-
-                if (creds.expiresAt.has_value())
-                {
-                    response[flutter::EncodableValue("expiresAt")] =
-                        flutter::EncodableValue(ToIso8601(creds.expiresAt.value()));
-                }
-                flutter::EncodableList scopes;
-                for (const auto &credscope : creds.scope)
-                {
-                    scopes.emplace_back(credscope); // scope must be std::string
-                }
-
-                response[flutter::EncodableValue("scopes")] = flutter::EncodableValue(scopes);
-
-                web::json::value payload_json = DecodeJwtPayload(creds.idToken);
-                auto ev = JsonToEncodable(payload_json);
-                auto payload_map = std::get<flutter::EncodableMap>(ev);
-                UserProfile user = UserProfile::DeserializeUserProfile(payload_map);
-                response[flutter::EncodableValue("userProfile")] = flutter::EncodableValue(user.ToMap());
-
-                result->Success(flutter::EncodableValue(response));
-            }
-            catch (const std::exception &e)
-            {
-                result->Error("auth_failed", e.what());
-            }
-        }
-        else if (method_call.method_name().compare("webAuth#logout") == 0)
-        {
-            // Top-level args should be a map
-            const auto *args = std::get_if<flutter::EncodableMap>(method_call.arguments());
-            if (!args)
-            {
-                result->Error("bad_args", "Expected a map as arguments");
-                return;
-            }
-
-            // Extract "account" map
-            auto accountIt = args->find(flutter::EncodableValue("_account"));
-            if (accountIt == args->end())
-            {
-                result->Error("bad_args", "Missing 'account' key");
-                return;
-            }
-
-            const auto *accountMap = std::get_if<flutter::EncodableMap>(&accountIt->second);
-            if (!accountMap)
-            {
-                result->Error("bad_args", "'account' is not a map");
-                return;
-            }
-
-            // Extract clientId and domain
-            std::string clientId;
-            std::string domain;
-
-            if (auto it = accountMap->find(flutter::EncodableValue("clientId"));
-                it != accountMap->end())
-            {
-                clientId = std::get<std::string>(it->second);
-            }
-
-            if (auto it = accountMap->find(flutter::EncodableValue("domain"));
-                it != accountMap->end())
-            {
-                domain = std::get<std::string>(it->second);
-            }
-
-            std::string returnTo = "auth0flutter://callback";
-
-            auto it = args->find(flutter::EncodableValue("returnTo"));
-            if (it != args->end())
-            {
-                if (auto s = std::get_if<std::string>(&it->second))
-                {
-                    returnTo = *s;
-                }
-            }
-            bool federated = false;
-            auto fedIt = args->find(flutter::EncodableValue("federated"));
-            if (fedIt != args->end())
-            {
-                if (auto b = std::get_if<bool>(&fedIt->second))
-                {
-                    federated = *b;
-                }
-            }
-
-            std::ostringstream logoutUrl = BuildLogoutUrl(
-                domain,
-                clientId,
-                returnTo,
-                federated);
-
-            ShellExecuteA(NULL, "open", logoutUrl.str().c_str(), NULL, NULL, SW_SHOWNORMAL);
-            result->Success(flutter::EncodableValue());
-        }
-        else
-        {
-            result->NotImplemented();
-        }
+        // Delegate all method calls to the WebAuth handler
+        // The handler will route to appropriate specialized handlers based on method name
+        webAuthCallHandler_->HandleMethodCall(method_call, std::move(result));
     }
 
 } // namespace auth0_flutter
