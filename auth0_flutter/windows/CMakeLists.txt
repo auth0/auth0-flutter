@@ -106,6 +106,10 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
 
   add_executable(${TEST_RUNNER}
     test/jwt_util_test.cpp
+    test/time_util_test.cpp
+    test/token_decoder_test.cpp
+    test/user_identity_test.cpp
+    test/user_profile_test.cpp
 
     # Reuse plugin sources directly (NO flutter plugin entrypoints)
     auth0_client.cpp
