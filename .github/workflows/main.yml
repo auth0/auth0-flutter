@@ -335,12 +335,14 @@ jobs:
 
             - name: Install cpprestsdk via vcpkg
               run: |
-                ${{ github.workspace }}\vcpkg\vcpkg install cpprestsdk
+                ${{ github.workspace }}\vcpkg\vcpkg install cpprestsdk:x64-windows
               shell: cmd
 
             - name: Build Windows example app
               working-directory: auth0_flutter/example
               run: flutter build windows --debug
+              env:
+                CMAKE_TOOLCHAIN_FILE: ${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
 
             - name: Build Windows unit tests
               working-directory: auth0_flutter/windows
