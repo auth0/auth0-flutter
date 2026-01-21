@@ -278,15 +278,15 @@ class Auth0Web {
   /// RFC 8693 Token Exchange.
   ///
   /// This method implements the OAuth 2.0 Token Exchange flow, allowing you to
-  /// exchange a token from an external provider for Auth0 tokens. This is useful
-  /// when integrating with external identity providers or custom authentication
-  /// systems.
+  /// exchange a token from an external provider for Auth0 tokens.
+  /// This is useful when integrating with external identity providers or
+  /// custom authentication systems.
   ///
   /// **Parameters:**
   ///
   /// * [subjectToken] (required) - The token being exchanged from the external
-  ///   provider. For example, this might be a JWT from your custom authentication
-  ///   system or another identity provider.
+  ///   provider. For example, this might be a JWT from your
+  ///   custom authentication system or another identity provider.
   ///
   /// * [subjectTokenType] (required) - A URI identifying the type of the
   ///   subject token according to RFC 8693. Must be a namespaced URI under your
@@ -301,7 +301,8 @@ class Auth0Web {
   ///
   /// * [audience] - Optional API identifier for which you want to receive an
   ///   access token. Must match exactly with an API identifier configured in
-  ///   your Auth0 tenant. If not provided, falls back to the client's default audience.
+  ///   your Auth0 tenant. If not provided, falls back to the client's default
+  ///   audience.
   ///
   /// * [scopes] - Optional set of scopes to request.
   ///   These scopes determine what permissions the resulting tokens will have.
@@ -316,13 +317,15 @@ class Auth0Web {
   /// * `idToken` - The Auth0 ID token with user information
   /// * `expiresAt` - When the access token expires
   /// * `scopes` - The granted scopes
-  /// * `refreshToken` - Optional refresh token (if offline_access scope was requested)
+  /// * `refreshToken` - Optional refresh token
   ///
   /// **Requirements:**
   ///
   /// 1. Configure a Token Exchange profile in your Auth0 Dashboard
-  /// 2. Implement validation logic in an Auth0 Action to verify the external token
-  /// 3. Grant your Auth0 application the `urn:auth0:oauth2:grant-type:token-exchange` permission
+  /// 2. Implement validation logic in an Auth0 Action to verify the external
+  /// token
+  /// 3. Grant your Auth0 application the
+  /// `urn:auth0:oauth2:grant-type:token-exchange` permission
   ///
   /// **Example:**
   ///

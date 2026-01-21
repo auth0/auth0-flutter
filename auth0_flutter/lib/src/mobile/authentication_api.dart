@@ -349,20 +349,20 @@ class AuthenticationApi {
               scopes: scopes,
               parameters: parameters)));
 
-  /// Performs a custom token exchange to obtain Auth0 credentials using an 
+  /// Performs a custom token exchange to obtain Auth0 credentials using an
   /// existing identity provider token.
   ///
   /// This method allows you to exchange tokens from external identity providers
-  /// for Auth0 tokens, enabling seamless integration with existing authentication
-  /// systems.
+  /// for Auth0 tokens, enabling seamless integration with existing
+  /// authentication systems.
   ///
   /// ## Endpoint
   /// https://auth0.com/docs/api/authentication#token-exchange
   ///
   /// ## Notes
   ///
-  /// * [subjectToken] is the token obtained from the external identity provider.
-  /// * [subjectTokenType] specifies the format of the subject token (e.g., 
+  /// * [subjectToken] the token obtained from the external identity provider.
+  /// * [subjectTokenType] specifies the format of the subject token (e.g.,
   ///   'http://acme.com/legacy-token').
   /// * [audience] relates to the API Identifier you want to reference in your
   ///   access tokens. See [API settings](https://auth0.com/docs/get-started/apis/api-settings)
