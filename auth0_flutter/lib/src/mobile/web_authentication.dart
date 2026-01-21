@@ -134,17 +134,27 @@ class WebAuthentication {
   /// bundle identifier of the app will be used as a custom scheme on older
   /// versions of iOS and macOS. Requires an Associated Domain configured with
   /// the `webcredentials` service type, set to your Auth0 domain –or custom
-  /// domain, if you have one.
+  /// domain, if you have one. 
+  /// /// * (android only): [allowedBrowsers] Defines an allowlist of browser
+  /// packages
+  /// When the user's default browser is in the allowlist, it uses the default
+  /// browser
+  /// When the user's default browser is not in the allowlist, but the user has
+  /// another allowed browser installed, the allowed browser is used instead
+  /// When the user's default browser is not in the allowlist, and the user has
+  /// no other allowed browser installed, an error is returned
   Future<void> logout(
       {final String? returnTo,
       final bool useHTTPS = false,
+      final List<String> allowedBrowsers = const [],
       final bool federated = false}) async {
     await Auth0FlutterWebAuthPlatform.instance.logout(_createWebAuthRequest(
       WebAuthLogoutOptions(
           returnTo: returnTo,
           scheme: _scheme,
           useHTTPS: useHTTPS,
-          federated: federated),
+          federated: federated,
+          allowedBrowsers: allowedBrowsers),
     ));
     await _credentialsManager?.clearCredentials();
   }
