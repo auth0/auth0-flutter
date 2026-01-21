@@ -282,7 +282,8 @@ void main() {
               options: WebAuthLogoutOptions(
                   useHTTPS: true,
                   returnTo: 'http://localhost:1234',
-                  scheme: 'test-scheme')));
+                  scheme: 'test-scheme',
+                  allowedBrowsers: ['com.android.chrome', 'org.mozilla.firefox'])));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -295,6 +296,24 @@ void main() {
       expect(verificationResult.arguments['useHTTPS'], true);
       expect(verificationResult.arguments['returnTo'], 'http://localhost:1234');
       expect(verificationResult.arguments['scheme'], 'test-scheme');
+      expect(verificationResult.arguments['allowedBrowsers'],
+          ['com.android.chrome', 'org.mozilla.firefox']);
+    });
+
+    test('correctly maps allowedBrowsers when specified', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      await MethodChannelAuth0FlutterWebAuth().logout(
+          WebAuthRequest<WebAuthLogoutOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: WebAuthLogoutOptions(
+                  allowedBrowsers: ['com.android.chrome'])));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(
+          verificationResult.arguments['allowedBrowsers'], ['com.android.chrome']);
     });
 
     test(
@@ -313,6 +332,7 @@ void main() {
       expect(verificationResult.arguments['useHTTPS'], false);
       expect(verificationResult.arguments['returnTo'], isNull);
       expect(verificationResult.arguments['scheme'], isNull);
+      expect(verificationResult.arguments['allowedBrowsers'], isEmpty);
     });
 
     test(
