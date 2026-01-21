@@ -7,9 +7,11 @@
 ///
 /// * [subjectToken] - The external token to be exchanged (required)
 /// * [subjectTokenType] - A URI that indicates the type of the subject token,
-/// * [audience] - The API identifier for which the access token is requested (optional)
+/// * [audience] - The API identifier for which the access token is
+///   requested (optional)
 /// * [scopes] - Set of OAuth scopes to request (optional)
-/// * [organizationId] - organization ID or name of the organization to authenticate with (optional)
+/// * [organizationId] - organization ID or name of the organization to
+///   authenticate with (optional)
 class ExchangeTokenOptions {
   final String subjectToken;
   final String subjectTokenType;

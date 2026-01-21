@@ -497,7 +497,8 @@ void main() {
 
       for (final errorCase in errorCases) {
         when(mockClientProxy.exchangeToken(any))
-            .thenThrow(createJsException(errorCase['code']!, errorCase['message']!));
+            .thenThrow(createJsException(errorCase['code']!,
+            errorCase['message']!));
 
         await expectLater(
             auth0.customTokenExchange(

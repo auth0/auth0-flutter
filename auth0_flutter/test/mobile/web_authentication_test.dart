@@ -329,7 +329,8 @@ void main() {
       expect(verificationResult.options.useHTTPS, true);
       expect(verificationResult.options.returnTo, 'https://example.com/logout');
       expect(verificationResult.options.federated, true);
-      expect(verificationResult.options.allowedBrowsers, ['com.android.chrome']);
+      expect(verificationResult.options.allowedBrowsers,
+          ['com.android.chrome']);
     });
   });
 
