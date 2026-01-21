@@ -9,6 +9,8 @@
 #include "../../user_profile.h"
 #include "../../jwt_util.h"
 #include "../../time_util.h"
+#include "../../oauth_helpers.h"
+#include "../../windows_utils.h"
 
 #include <windows.h>
 #include <sstream>
@@ -18,24 +20,12 @@
 #include <thread>
 #include <map>
 
-// OpenSSL for PKCE
-#include <openssl/sha.h>
-#include <openssl/rand.h>
-
 #include <cpprest/json.h>
 
 namespace auth0_flutter
 {
 
-    // Forward declarations of helper functions (defined in auth0_flutter_plugin.cpp)
-    extern std::string base64UrlEncode(const std::vector<unsigned char> &data);
-    extern std::string generateCodeVerifier();
-    extern std::string generateCodeChallenge(const std::string &verifier);
-    extern std::string waitForAuthCode_CustomScheme(const std::string &expectedRedirectBase, int timeoutSeconds, const std::string &expectedState);
-    extern void BringFlutterWindowToFront();
-    extern void DebugPrint(const std::string &msg);
-
-    // Internal helper to URL-encode query parameters (declared static in plugin.cpp, needs wrapper)
+    // Local URL encoding helper (kept here per design requirement)
     static std::string UrlEncode(const std::string &str)
     {
         std::ostringstream encoded;

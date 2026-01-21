@@ -46,6 +46,12 @@ add_library(${PLUGIN_NAME} SHARED
   "user_profile.cpp"
   "user_identity.cpp"
   "jwt_util.cpp"
+  "oauth_helpers.cpp"
+  "oauth_helpers.h"
+  "url_utils.cpp"
+  "url_utils.h"
+  "windows_utils.cpp"
+  "windows_utils.h"
   ${PLUGIN_SOURCES}
 )
 
