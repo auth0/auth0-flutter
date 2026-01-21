@@ -69,6 +69,8 @@ using namespace web::http::experimental::listener;
 
 namespace auth0_flutter
 {
+    // Forward declarations
+    void DebugPrint(const std::string &msg);
 
     // -------------------- PKCE Helpers --------------------
 
