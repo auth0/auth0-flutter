@@ -9,10 +9,15 @@ import com.auth0.android.provider.WebAuthProvider
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodChannel
 
-class LogoutWebAuthRequestHandler(private val builderResolver: (MethodCallRequest) -> WebAuthProvider.LogoutBuilder) : WebAuthRequestHandler {
+class LogoutWebAuthRequestHandler(private val builderResolver: (MethodCallRequest) -> WebAuthProvider.LogoutBuilder) :
+    WebAuthRequestHandler {
     override val method: String = "webAuth#logout"
 
-    override fun handle(context: Context, request: MethodCallRequest, result: MethodChannel.Result) {
+    override fun handle(
+        context: Context,
+        request: MethodCallRequest,
+        result: MethodChannel.Result
+    ) {
         val builder = builderResolver(request)
         val args = request.data
 
@@ -28,8 +33,9 @@ class LogoutWebAuthRequestHandler(private val builderResolver: (MethodCallReques
             builder.withFederated()
         }
 
-        val allowedBrowsers = (args["allowedBrowsers"] as? List<*>)?.filterIsInstance<String>().orEmpty()
-        if(allowedBrowsers.isNotEmpty()) {
+        val allowedBrowsers =
+            (args["allowedBrowsers"] as? List<*>)?.filterIsInstance<String>().orEmpty()
+        if (allowedBrowsers.isNotEmpty()) {
             builder.withCustomTabsOptions(
                 CustomTabsOptions.newBuilder().withBrowserPicker(
                     BrowserPicker.newBuilder()
@@ -38,7 +44,7 @@ class LogoutWebAuthRequestHandler(private val builderResolver: (MethodCallReques
             )
         }
 
-        builder.start(context, object: Callback<Void?, AuthenticationException> {
+        builder.start(context, object : Callback<Void?, AuthenticationException> {
             override fun onFailure(exception: AuthenticationException) {
                 result.error(exception.getCode(), exception.getDescription(), exception)
             }

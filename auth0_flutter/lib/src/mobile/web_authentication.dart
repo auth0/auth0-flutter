@@ -134,8 +134,8 @@ class WebAuthentication {
   /// bundle identifier of the app will be used as a custom scheme on older
   /// versions of iOS and macOS. Requires an Associated Domain configured with
   /// the `webcredentials` service type, set to your Auth0 domain –or custom
-  /// domain, if you have one. 
-  /// /// * (android only): [allowedBrowsers] Defines an allowlist of browser
+  /// domain, if you have one.
+  /// * (android only): [allowedBrowsers] Defines an allowlist of browser
   /// packages
   /// When the user's default browser is in the allowlist, it uses the default
   /// browser
