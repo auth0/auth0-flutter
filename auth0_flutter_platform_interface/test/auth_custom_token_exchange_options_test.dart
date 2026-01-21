@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('AuthCustomTokenExchangeOptions', () {
     test('creates options with required parameters', () {
-      final options = AuthCustomTokenExchangeOptions(
+      const options =  AuthCustomTokenExchangeOptions(
         subjectToken: 'existing-token',
         subjectTokenType: 'http://acme.com/legacy-token',
       );
@@ -17,7 +17,7 @@ void main() {
     });
 
     test('creates options with all parameters', () {
-      final options = AuthCustomTokenExchangeOptions(
+      const options =  AuthCustomTokenExchangeOptions(
         subjectToken: 'existing-token',
         subjectTokenType: 'http://acme.com/legacy-token',
         audience: 'https://example.com/api',
@@ -33,7 +33,7 @@ void main() {
     });
 
     test('toMap includes all properties', () {
-      final options = AuthCustomTokenExchangeOptions(
+      const options =  AuthCustomTokenExchangeOptions(
         subjectToken: 'existing-token',
         subjectTokenType: 'http://acme.com/legacy-token',
         audience: 'https://example.com/api',
@@ -51,7 +51,7 @@ void main() {
     });
 
     test('toMap excludes null audience', () {
-      final options = AuthCustomTokenExchangeOptions(
+      const options =  AuthCustomTokenExchangeOptions(
         subjectToken: 'existing-token',
         subjectTokenType: 'http://acme.com/legacy-token',
       );
@@ -62,7 +62,7 @@ void main() {
     });
 
     test('toMap excludes null organization', () {
-      final options = AuthCustomTokenExchangeOptions(
+      const options =  AuthCustomTokenExchangeOptions(
         subjectToken: 'existing-token',
         subjectTokenType: 'http://acme.com/legacy-token',
       );
@@ -73,7 +73,7 @@ void main() {
     });
 
     test('toMap includes organization when provided', () {
-      final options = AuthCustomTokenExchangeOptions(
+      const options =  AuthCustomTokenExchangeOptions(
         subjectToken: 'existing-token',
         subjectTokenType: 'http://acme.com/legacy-token',
         organization: 'org_abc123',
@@ -86,10 +86,9 @@ void main() {
     });
 
     test('toMap includes empty scopes', () {
-      final options = AuthCustomTokenExchangeOptions(
+      const options =  AuthCustomTokenExchangeOptions(
         subjectToken: 'existing-token',
-        subjectTokenType: 'http://acme.com/legacy-token',
-        scopes: {},
+        subjectTokenType: 'http://acme.com/legacy-token'
       );
 
       final map = options.toMap();
