@@ -283,6 +283,54 @@ void main() {
 
       verify(mockCm.clearCredentials()).called(1);
     });
+
+    test('passes allowedBrowsers to the platform when specified', () async {
+      when(mockedPlatform.logout(any)).thenAnswer((final _) async => {});
+      when(mockedCMPlatform.clearCredentials(any))
+          .thenAnswer((final _) async => true);
+
+      await Auth0('test-domain', 'test-clientId').webAuthentication().logout(
+          allowedBrowsers: ['com.android.chrome', 'org.mozilla.firefox']);
+
+      final verificationResult = verify(mockedPlatform.logout(captureAny))
+          .captured
+          .single as WebAuthRequest<WebAuthLogoutOptions>;
+      expect(verificationResult.options.allowedBrowsers,
+          ['com.android.chrome', 'org.mozilla.firefox']);
+    });
+
+    test('defaults allowedBrowsers to empty list when not specified', () async {
+      when(mockedPlatform.logout(any)).thenAnswer((final _) async => {});
+      when(mockedCMPlatform.clearCredentials(any))
+          .thenAnswer((final _) async => true);
+
+      await Auth0('test-domain', 'test-clientId').webAuthentication().logout();
+
+      final verificationResult = verify(mockedPlatform.logout(captureAny))
+          .captured
+          .single as WebAuthRequest<WebAuthLogoutOptions>;
+      expect(verificationResult.options.allowedBrowsers, isEmpty);
+    });
+
+    test('passes allowedBrowsers with other logout parameters', () async {
+      when(mockedPlatform.logout(any)).thenAnswer((final _) async => {});
+      when(mockedCMPlatform.clearCredentials(any))
+          .thenAnswer((final _) async => true);
+
+      await Auth0('test-domain', 'test-clientId').webAuthentication().logout(
+          useHTTPS: true,
+          returnTo: 'https://example.com/logout',
+          federated: true,
+          allowedBrowsers: ['com.android.chrome']);
+
+      final verificationResult = verify(mockedPlatform.logout(captureAny))
+          .captured
+          .single as WebAuthRequest<WebAuthLogoutOptions>;
+      expect(verificationResult.options.useHTTPS, true);
+      expect(verificationResult.options.returnTo, 'https://example.com/logout');
+      expect(verificationResult.options.federated, true);
+      expect(verificationResult.options.allowedBrowsers, ['com.android.chrome']);
+    });
   });
 
   group('DPoP Authentication', () {
