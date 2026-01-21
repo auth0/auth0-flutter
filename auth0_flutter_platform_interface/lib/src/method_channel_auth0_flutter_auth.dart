@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 
 import 'auth/api_exception.dart';
+import 'auth/auth_custom_token_exchange_options.dart';
 import 'auth/auth_login_code_options.dart';
 import 'auth/auth_login_options.dart';
 import 'auth/auth_login_with_otp_options.dart';
@@ -32,6 +33,7 @@ const String authLoginWithSmsCodeMethod = 'auth#loginWithPhoneNumber';
 const String authUserInfoMethod = 'auth#userInfo';
 const String authSignUpMethod = 'auth#signUp';
 const String authRenewMethod = 'auth#renew';
+const String authCustomTokenExchangeMethod = 'auth#customTokenExchange';
 const String authResetPasswordMethod = 'auth#resetPassword';
 
 class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
@@ -117,6 +119,17 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   Future<Credentials> renew(final ApiRequest<AuthRenewOptions> request) async {
     final Map<String, dynamic> result = await invokeRequest(
       method: authRenewMethod,
+      request: request,
+    );
+
+    return Credentials.fromMap(result);
+  }
+
+  @override
+  Future<Credentials> customTokenExchange(
+      final ApiRequest<AuthCustomTokenExchangeOptions> request) async {
+    final Map<String, dynamic> result = await invokeRequest(
+      method: authCustomTokenExchangeMethod,
       request: request,
     );
 

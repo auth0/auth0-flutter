@@ -21,6 +21,9 @@ class Auth0FlutterWebClientProxy {
           [final GetTokenSilentlyOptions? options]) =>
       JSPromiseToFuture(client.getTokenSilently(options)).toDart;
 
+  Future<WebCredentials> exchangeToken(final ExchangeTokenOptions options) =>
+      JSPromiseToFuture(client.exchangeToken(options)).toDart;
+
   Future<RedirectLoginResult> handleRedirectCallback([final String? url]) {
     // Omit the url if it is not provided, so that the default argument is used.
     if (url == null) {

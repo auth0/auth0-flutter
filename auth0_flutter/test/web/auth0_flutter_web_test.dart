@@ -413,6 +413,159 @@ void main() {
             e.message == 'test exception')));
   });
 
+  group('customTokenExchange', () {
+    test('customTokenExchange is called with required parameters and succeeds',
+        () async {
+      when(mockClientProxy.exchangeToken(any))
+          .thenAnswer((final _) => Future.value(webCredentials));
+
+      final result = await auth0.customTokenExchange(
+          subjectToken: 'external-token-123',
+          subjectTokenType: 'urn:example:external-token');
+
+      expect(result.accessToken, jwt);
+      expect(result.idToken, jwt);
+      expect(result.refreshToken, jwt);
+      expect(result.user.sub, jwtPayload['sub']);
+      expect(result.scopes, {'openid', 'read_messages'});
+
+      final options =
+          verify(mockClientProxy.exchangeToken(captureAny)).captured.first;
+      expect(options.subject_token, 'external-token-123');
+      expect(options.subject_token_type, 'urn:example:external-token');
+      expect(options.audience, null);
+      expect(options.scope, null);
+      expect(options.organization, null);
+    });
+
+    test('customTokenExchange is called with all optional parameters',
+        () async {
+      when(mockClientProxy.exchangeToken(argThat(anything)))
+          .thenAnswer((final _) => Future.value(webCredentials));
+
+      await auth0.customTokenExchange(
+          subjectToken: 'external-token-456',
+          subjectTokenType: 'urn:example:custom-token',
+          audience: 'https://api.example.com',
+          scopes: {'openid', 'profile', 'email'},
+          organizationId: 'org_abc123');
+
+      final options =
+          verify(mockClientProxy.exchangeToken(captureAny)).captured.first;
+      expect(options.subject_token, 'external-token-456');
+      expect(options.subject_token_type, 'urn:example:custom-token');
+      expect(options.audience, 'https://api.example.com');
+      expect(options.scope, 'openid profile email');
+      expect(options.organization, 'org_abc123');
+    });
+
+    test('customTokenExchange handles empty scopes correctly', () async {
+      when(mockClientProxy.exchangeToken(any))
+          .thenAnswer((final _) => Future.value(webCredentials));
+
+      await auth0.customTokenExchange(
+          subjectToken: 'token',
+          subjectTokenType: 'urn:example:token',
+          scopes: {});
+
+      final options =
+          verify(mockClientProxy.exchangeToken(captureAny)).captured.first;
+      expect(options.scope, null);
+    });
+
+    test('customTokenExchange throws WebException on error', () async {
+      when(mockClientProxy.exchangeToken(any))
+          .thenThrow(createJsException('invalid_token', 'Token is invalid'));
+
+      expect(
+          () async => auth0.customTokenExchange(
+              subjectToken: 'invalid-token',
+              subjectTokenType: 'urn:example:token'),
+          throwsA(predicate((final e) =>
+              e is WebException &&
+              e.code == 'invalid_token' &&
+              e.message == 'Token is invalid')));
+    });
+
+    test('customTokenExchange throws WebException with specific error codes',
+        () async {
+      final errorCases = [
+        {'code': 'invalid_grant', 'message': 'Invalid grant type'},
+        {'code': 'unauthorized_client', 'message': 'Client not authorized'},
+        {'code': 'access_denied', 'message': 'Access denied'},
+      ];
+
+      for (final errorCase in errorCases) {
+        when(mockClientProxy.exchangeToken(any))
+            .thenThrow(createJsException(errorCase['code']!, errorCase['message']!));
+
+        await expectLater(
+            auth0.customTokenExchange(
+                subjectToken: 'token', subjectTokenType: 'urn:example:token'),
+            throwsA(predicate((final e) =>
+                e is WebException &&
+                e.code == 'AUTHENTICATION_ERROR' &&
+                e.message == errorCase['message'])));
+
+        reset(mockClientProxy);
+      }
+    });
+
+    test('customTokenExchange returns credentials with correct scopes',
+        () async {
+      final customScopeCredentials = interop.WebCredentials(
+          access_token: jwt,
+          id_token: jwt,
+          refresh_token: jwt,
+          scope: 'openid profile email read:data write:data',
+          expires_in: 0.toJS);
+
+      when(mockClientProxy.exchangeToken(any))
+          .thenAnswer((final _) => Future.value(customScopeCredentials));
+
+      final result = await auth0.customTokenExchange(
+          subjectToken: 'token',
+          subjectTokenType: 'urn:example:token',
+          scopes: {'openid', 'profile', 'email', 'read:data', 'write:data'});
+
+      expect(result.scopes,
+          {'openid', 'profile', 'email', 'read:data', 'write:data'});
+    });
+
+    test('customTokenExchange works without refresh token', () async {
+      final credentialsNoRefresh = interop.WebCredentials(
+          access_token: jwt,
+          id_token: jwt,
+          scope: 'openid',
+          expires_in: 0.toJS);
+
+      when(mockClientProxy.exchangeToken(any))
+          .thenAnswer((final _) => Future.value(credentialsNoRefresh));
+
+      final result = await auth0.customTokenExchange(
+          subjectToken: 'token', subjectTokenType: 'urn:example:token');
+
+      expect(result.accessToken, jwt);
+      expect(result.idToken, jwt);
+      expect(result.refreshToken, null);
+    });
+
+    test('customTokenExchange converts JS credentials to Dart Credentials',
+        () async {
+      when(mockClientProxy.exchangeToken(any))
+          .thenAnswer((final _) => Future.value(webCredentials));
+
+      final result = await auth0.customTokenExchange(
+          subjectToken: 'token', subjectTokenType: 'urn:example:token');
+
+      expect(result, isA<Credentials>());
+      expect(result.accessToken, isNotEmpty);
+      expect(result.idToken, isNotEmpty);
+      expect(result.user, isA<UserProfile>());
+      expect(result.expiresAt, isA<DateTime>());
+    });
+  });
+
   group('invitationUrl handling', () {
     const fullInvitationUrl =
         'https://my-tenant.auth0.com/login/invitation?invitation=abc-123&organization=org_xyz';
