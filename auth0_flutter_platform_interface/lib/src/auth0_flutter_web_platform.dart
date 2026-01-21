@@ -41,7 +41,9 @@ abstract class Auth0FlutterWebPlatform extends PlatformInterface {
   }
 
   Future<Credentials> customTokenExchange(final ExchangeTokenOptions options) {
-    throw UnimplementedError('web.customTokenExchange has not been implemented');
+    throw UnimplementedError(
+        'web.customTokenExchange has not been implemented'
+    );
   }
 
   Future<bool> hasValidCredentials() {
