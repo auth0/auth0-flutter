@@ -272,6 +272,39 @@ namespace auth0_flutter
     }
 
     /**
+     * @brief URL-encodes a string for use in query parameters
+     *
+     * Encodes special characters using percent-encoding (%XX).
+     * Alphanumeric characters, hyphens, underscores, periods, and tildes are not encoded.
+     * All other characters are percent-encoded.
+     *
+     * @param str String to encode
+     * @return URL-encoded string
+     */
+    static std::string UrlEncode(const std::string &str)
+    {
+        std::ostringstream encoded;
+        encoded.fill('0');
+        encoded << std::hex << std::uppercase;
+
+        for (unsigned char c : str)
+        {
+            // Keep alphanumeric and safe characters unchanged
+            if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~')
+            {
+                encoded << c;
+            }
+            else
+            {
+                // Percent-encode everything else
+                encoded << '%' << std::setw(2) << static_cast<int>(c);
+            }
+        }
+
+        return encoded.str();
+    }
+
+    /**
      * @brief Safely parses URL query parameters
      *
      * Parses a query string (without leading '?') into a map of key-value pairs.
@@ -342,15 +375,17 @@ namespace auth0_flutter
      * 1. Poll environment variable every 200ms
      * 2. When found, clear the variable and parse the URI
      * 3. Extract the 'code' parameter from query string
-     * 4. Return authorization code or empty string on timeout/error
+     * 4. Validate state parameter if expectedState is provided (CSRF protection)
+     * 5. Return authorization code or empty string on timeout/error/state mismatch
      *
      * @param expectedRedirectBase Expected redirect URI prefix (e.g., "auth0flutter://callback")
      * @param timeoutSeconds Maximum time to wait (default: 180 seconds / 3 minutes)
-     * @return Authorization code on success, empty string on timeout/error
+     * @param expectedState Expected state value for CSRF protection (empty string to skip validation)
+     * @return Authorization code on success, empty string on timeout/error/state mismatch
      *
      * Example stored value: auth0flutter://callback?code=AUTH_CODE&state=xyz
      */
-    static std::string waitForAuthCode_CustomScheme(const std::string &expectedRedirectBase, int timeoutSeconds = 180)
+    std::string waitForAuthCode_CustomScheme(const std::string &expectedRedirectBase, int timeoutSeconds = 180, const std::string &expectedState = "")
     {
         const int sleepMs = 200;
         int elapsed = 0;
@@ -399,6 +434,19 @@ namespace auth0_flutter
                 }
                 std::string query = uri.substr(qpos + 1);
                 auto params = SafeParseQuery(query);
+
+                // Validate state parameter if expected state is provided (CSRF protection)
+                if (!expectedState.empty())
+                {
+                    auto stateIt = params.find("state");
+                    if (stateIt == params.end() || stateIt->second != expectedState)
+                    {
+                        DebugPrint("State validation failed: expected '" + expectedState +
+                                   "', received '" + (stateIt != params.end() ? stateIt->second : "(missing)") + "'");
+                        return std::string(); // State mismatch - potential CSRF attack
+                    }
+                }
+
                 auto it = params.find("code");
                 if (it != params.end())
                 {
@@ -538,7 +586,7 @@ namespace auth0_flutter
      *
      * @deprecated Use LogoutWebAuthRequestHandler::BuildLogoutUrl instead
      */
-    static std::ostringstream BuildLogoutUrl(
+    std::ostringstream BuildLogoutUrl(
         const std::string &domain,
         const std::string &clientId,
         const std::string &returnTo,
