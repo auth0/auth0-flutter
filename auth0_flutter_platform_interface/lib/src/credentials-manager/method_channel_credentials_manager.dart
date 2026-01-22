@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 
-import '../credentials.dart';
+import '../../auth0_flutter_platform_interface.dart';
 import '../request/request.dart';
 import '../request/request_options.dart';
 import 'credentials_manager_exception.dart';
@@ -16,6 +16,8 @@ const String credentialsManagerSaveCredentialsMethod =
     'credentialsManager#saveCredentials';
 const String credentialsManagerGetCredentialsMethod =
     'credentialsManager#getCredentials';
+const String credentialsManagerGetUserProfileMethod =
+'credentialsManager#getUserInfo';
 const String credentialsManagerClearCredentialsMethod =
     'credentialsManager#clearCredentials';
 const String credentialsManagerHasValidCredentialsMethod =
@@ -61,6 +63,12 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
     final bool? result = await _invokeRequest<bool, RequestOptions?>(
         method: credentialsManagerSaveCredentialsMethod, request: request);
     return result ?? true;
+  }
+
+  @override
+  Future<UserInfo> getIDTokenContents(final CredentialsManagerRequest request) async {
+      final Map<String, dynamic> result = await _invokeMapRequest(method: credentialsManagerGetUserProfileMethod, request: request);
+      return UserInfo.fromJson(result);
   }
 
   /// Removes the credentials from the native storage if present.

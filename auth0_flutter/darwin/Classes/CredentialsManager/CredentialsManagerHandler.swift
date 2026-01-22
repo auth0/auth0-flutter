@@ -23,6 +23,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         case get = "credentialsManager#getCredentials"
         case renew = "credentialsManager#renewCredentials"
         case clear = "credentialsManager#clearCredentials"
+        case userInfo = "credentialsManager#getUserInfo"
     }
     
     private struct ManagerCacheKey: Equatable {
@@ -51,7 +52,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
 
         registrar.addMethodCallDelegate(handler, channel: channel)
     }
-    
+
       func createCredentialManager(_ apiClient: Authentication, _ arguments: [String: Any]) -> CredentialsManager {
         if let configuration = arguments["credentialsManagerConfiguration"] as? [String: Any],
            let iosConfiguration = configuration["ios"] as? [String: String] {
@@ -77,9 +78,10 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         client.using(inLibrary: userAgent.name, version: userAgent.version)
         return useDPoP ? client.useDPoP() : client
     }
-    
+
 
     lazy var credentialsManagerProvider: CredentialsManagerProvider = { apiClient, arguments in
+
         let configuration = arguments["credentialsManagerConfiguration"] as? [String: Any]
         let iosConfiguration = configuration?["ios"] as? [String: String]
         let storeKey = iosConfiguration?["storeKey"] ?? "credentials"
@@ -129,6 +131,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         case .hasValid: return CredentialsManagerHasValidMethodHandler(credentialsManager: credentialsManager)
         case .get: return CredentialsManagerGetMethodHandler(credentialsManager: credentialsManager)
         case .clear: return CredentialsManagerClearMethodHandler(credentialsManager: credentialsManager)
+        case .userInfo: return CredentialsManagerUserInfoMethodHandler(credentialsManager: credentialsManager)
         case .renew: return CredentialsManagerRenewMethodHandler(credentialsManager: credentialsManager)
         }
     }
@@ -154,5 +157,5 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         let methodHandler = methodHandlerProvider(method, credentialsManager)
         methodHandler.handle(with: arguments, callback: result)
     }
-  
+
 }

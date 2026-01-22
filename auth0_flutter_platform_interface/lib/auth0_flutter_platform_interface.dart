@@ -31,6 +31,7 @@ export 'src/credentials-manager/options/local_authentication.dart';
 export 'src/credentials-manager/options/renew_credentials_options.dart';
 export 'src/credentials-manager/options/save_credentials_options.dart';
 export 'src/credentials.dart';
+export 'src/user_info_credentials.dart';
 export 'src/database_user.dart';
 export 'src/id_token_validation_config.dart';
 export 'src/login_options.dart';
