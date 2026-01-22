@@ -1,5 +1,12 @@
 # Change Log
 
+## [afpi-v2.0.0-beta.2](https://github.com/auth0/auth0-flutter/tree/afpi-v2.0.0-beta.2) (2026-01-22)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.0.0-beta.1...afpi-v2.0.0-beta.2)
+
+**Added**
+- feat: add custom token exchange support across all platforms [\#721](https://github.com/auth0/auth0-flutter/pull/721) ([sanchitmehta94](https://github.com/sanchitmehta94))
+- feat: Add allowedBrowsers parameter to logout API  [\#726](https://github.com/auth0/auth0-flutter/pull/726) ([pmathew92](https://github.com/pmathew92))
+
 ## [afpi-v2.0.0-beta.1](https://github.com/auth0/auth0-flutter/tree/afpi-v2.0.0-beta.1) (2025-12-10)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v1.14.0...afpi-v2.0.0-beta.1)
 
