@@ -41,7 +41,7 @@ jobs:
 
             - name: Analyze auth0_flutter package
               working-directory: auth0_flutter
-              run: flutter analyze --no-fatal-warnings --no-fatal-infos
+              run: flutter analyze
 
     analyze-auth0_flutter_platform_interface:
         name: Analyze auth0_flutter_platform_interface Flutter package
