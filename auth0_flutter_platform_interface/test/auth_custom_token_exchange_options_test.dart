@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group('AuthCustomTokenExchangeOptions', () {
     test('creates options with required parameters', () {
-      const options = AuthCustomTokenExchangeOptions(
+      final options = AuthCustomTokenExchangeOptions(
         subjectToken: 'existing-token',
         subjectTokenType: 'http://acme.com/legacy-token',
       );
