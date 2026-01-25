@@ -158,6 +158,29 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
     Boost::regex
   )
 
+  # Register tests with CTest
   include(GoogleTest)
-  gtest_discover_tests(${TEST_RUNNER})
+  gtest_discover_tests(${TEST_RUNNER}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    DISCOVERY_TIMEOUT 60
+  )
+
+  # Fallback: Manual test registration (if gtest_discover_tests fails)
+  # Uncomment the following lines if CTest cannot discover tests automatically:
+  # add_test(NAME auth0_flutter_all_tests COMMAND ${TEST_RUNNER})
+  # set_tests_properties(auth0_flutter_all_tests PROPERTIES
+  #   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  # )
+
+  # Add a custom target to run tests directly
+  add_custom_target(run_tests
+    COMMAND ${TEST_RUNNER}
+    DEPENDS ${TEST_RUNNER}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Running unit tests..."
+  )
+
+  message(STATUS "Auth0 Flutter tests enabled. Test executable: ${TEST_RUNNER}")
+  message(STATUS "Run tests with: cmake --build build --target run_tests")
+  message(STATUS "Or run directly: ./build/Debug/${TEST_RUNNER}.exe")
 endif()

@@ -347,13 +347,19 @@ jobs:
             - name: Build Windows unit tests
               working-directory: auth0_flutter/windows
               run: |
-                cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_BUILD_TYPE=Debug
+                cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake -DAUTH0_FLUTTER_ENABLE_TESTS=ON -DCMAKE_BUILD_TYPE=Debug
                 cmake --build build --config Debug
               shell: cmd
 
-            - name: Run Windows unit tests
+            - name: Run Windows unit tests (direct execution)
+              working-directory: auth0_flutter/windows
+              run: .\build\Debug\auth0_flutter_tests.exe
+              shell: powershell
+
+            - name: Run Windows unit tests (via CTest)
               working-directory: auth0_flutter/windows/build
-              run: ctest -C Debug --output-on-failure
+              run: ctest -C Debug --output-on-failure --verbose
+              continue-on-error: true
 
     # test-android-smoke:
     #     name: Run native Android smoke tests using API-level ${{ matrix.android-api }}
