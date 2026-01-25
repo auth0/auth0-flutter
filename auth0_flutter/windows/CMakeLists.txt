@@ -35,70 +35,75 @@ list(APPEND PLUGIN_SOURCES
   "request_handlers/web_auth/LogoutWebAuthRequestHandler.h"
 )
 
-# Define the plugin library target. Its name must not be changed (see comment
-# on PLUGIN_NAME above).
-add_library(${PLUGIN_NAME} SHARED
-  "include/auth0_flutter/auth0_flutter_plugin_c_api.h"
-  "auth0_flutter_plugin_c_api.cpp"
-  "auth0_client.cpp"
-  "token_decoder.cpp"
-  "time_util.cpp"
-  "user_profile.cpp"
-  "user_identity.cpp"
-  "jwt_util.cpp"
-  "oauth_helpers.cpp"
-  "oauth_helpers.h"
-  "url_utils.cpp"
-  "url_utils.h"
-  "windows_utils.cpp"
-  "windows_utils.h"
-  ${PLUGIN_SOURCES}
-)
-
-# Apply a standard set of build settings that are configured in the
-# application-level CMakeLists.txt. This can be removed for plugins that want
-# full control over build settings.
-apply_standard_settings(${PLUGIN_NAME})
-
-# Symbols are hidden by default to reduce the chance of accidental conflicts
-# between plugins. This should not be removed; any symbols that should be
-# exported should be explicitly exported with the FLUTTER_PLUGIN_EXPORT macro.
-set_target_properties(${PLUGIN_NAME} PROPERTIES
-  CXX_VISIBILITY_PRESET hidden)
-target_compile_definitions(${PLUGIN_NAME} PRIVATE FLUTTER_PLUGIN_IMPL)
-target_compile_definitions(${PLUGIN_NAME}
-  PRIVATE
-    _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
-)
-# Source include directories and library dependencies.
-target_include_directories(${PLUGIN_NAME} INTERFACE
-  "${CMAKE_CURRENT_SOURCE_DIR}/include")
-
-#list(APPEND CMAKE_MODULE_PATH "$ENV{VCPKG_ROOT}/installed/x64-windows/share")
-
 # === vcpkg dependencies ===
 # These are resolved via vcpkg.json automatically (cpprestsdk, boost)
 find_package(cpprestsdk CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system date_time regex)
 
-# Link Flutter + vcpkg dependencies
-target_link_libraries(${PLUGIN_NAME} PRIVATE
-  flutter
-  flutter_wrapper_plugin
-  cpprestsdk::cpprest
-  OpenSSL::SSL
-  OpenSSL::Crypto
-  Boost::system
-  Boost::date_time
-  Boost::regex
-)
+# Define the plugin library target only if flutter targets are available
+if(TARGET flutter)
+  # Define the plugin library target. Its name must not be changed (see comment
+  # on PLUGIN_NAME above).
+  add_library(${PLUGIN_NAME} SHARED
+    "include/auth0_flutter/auth0_flutter_plugin_c_api.h"
+    "auth0_flutter_plugin_c_api.cpp"
+    "auth0_client.cpp"
+    "token_decoder.cpp"
+    "time_util.cpp"
+    "user_profile.cpp"
+    "user_identity.cpp"
+    "jwt_util.cpp"
+    "oauth_helpers.cpp"
+    "oauth_helpers.h"
+    "url_utils.cpp"
+    "url_utils.h"
+    "windows_utils.cpp"
+    "windows_utils.h"
+    ${PLUGIN_SOURCES}
+  )
 
-# List of absolute paths to libraries that should be bundled with the plugin.
-set(auth0_flutter_bundled_libraries
-  ""
-  PARENT_SCOPE
-)
+  # Apply a standard set of build settings that are configured in the
+  # application-level CMakeLists.txt. This can be removed for plugins that want
+  # full control over build settings.
+  if(COMMAND apply_standard_settings)
+    apply_standard_settings(${PLUGIN_NAME})
+  endif()
+
+  # Symbols are hidden by default to reduce the chance of accidental conflicts
+  # between plugins. This should not be removed; any symbols that should be
+  # exported should be explicitly exported with the FLUTTER_PLUGIN_EXPORT macro.
+  set_target_properties(${PLUGIN_NAME} PROPERTIES
+    CXX_VISIBILITY_PRESET hidden)
+  target_compile_definitions(${PLUGIN_NAME} PRIVATE FLUTTER_PLUGIN_IMPL)
+  target_compile_definitions(${PLUGIN_NAME}
+    PRIVATE
+      _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
+  )
+  # Source include directories and library dependencies.
+  target_include_directories(${PLUGIN_NAME} INTERFACE
+    "${CMAKE_CURRENT_SOURCE_DIR}/include")
+
+  #list(APPEND CMAKE_MODULE_PATH "$ENV{VCPKG_ROOT}/installed/x64-windows/share")
+
+  # Link Flutter + vcpkg dependencies
+  target_link_libraries(${PLUGIN_NAME} PRIVATE
+    flutter
+    flutter_wrapper_plugin
+    cpprestsdk::cpprest
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    Boost::system
+    Boost::date_time
+    Boost::regex
+  )
+
+  # List of absolute paths to libraries that should be bundled with the plugin.
+  set(auth0_flutter_bundled_libraries
+    ""
+    PARENT_SCOPE
+  )
+endif()
 
 # === Tests ===
 option(AUTH0_FLUTTER_ENABLE_TESTS "Build auth0_flutter unit tests" ON)
@@ -147,7 +152,6 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
   )
 
   target_link_libraries(${TEST_RUNNER} PRIVATE
-    flutter_wrapper_plugin
     gtest_main
     gmock
     cpprestsdk::cpprest
@@ -157,6 +161,11 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
     Boost::date_time
     Boost::regex
   )
+
+  # Link flutter_wrapper_plugin if available (when building as part of Flutter app)
+  if(TARGET flutter_wrapper_plugin)
+    target_link_libraries(${TEST_RUNNER} PRIVATE flutter_wrapper_plugin)
+  endif()
 
   # Register tests with CTest
   include(GoogleTest)

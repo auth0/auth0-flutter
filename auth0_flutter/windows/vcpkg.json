@@ -4,14 +4,9 @@
   "description": "Auth0 Flutter plugin native C++ dependencies",
   "dependencies": [
     "cpprestsdk",
-    {
-      "name": "boost",
-      "default-features": false,
-      "features": [
-        "system",
-        "date_time",
-        "regex"
-      ]
-    }
+    "openssl",
+    "boost-system",
+    "boost-date-time",
+    "boost-regex"
   ]
 }
