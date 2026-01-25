@@ -123,6 +123,9 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
     test/token_decoder_test.cpp
     test/user_identity_test.cpp
     test/user_profile_test.cpp
+    test/url_utils_test.cpp
+    test/windows_utils_test.cpp
+    test/oauth_helpers_test.cpp
 
     # Reuse plugin sources directly (NO flutter plugin entrypoints)
     auth0_client.cpp
@@ -131,6 +134,9 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
     user_profile.cpp
     user_identity.cpp
     jwt_util.cpp
+    url_utils.cpp
+    windows_utils.cpp
+    oauth_helpers.cpp
   )
 
   target_compile_features(${TEST_RUNNER} PRIVATE cxx_std_17)
