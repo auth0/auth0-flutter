@@ -9,6 +9,8 @@
 #include "../../user_profile.h"
 #include "../../jwt_util.h"
 #include "../../time_util.h"
+#include "../../oauth_helpers.h"
+#include "../../windows_utils.h"
 
 #include <windows.h>
 #include <sstream>
@@ -16,23 +18,36 @@
 #include <array>
 #include <iomanip>
 #include <thread>
-
-// OpenSSL for PKCE
-#include <openssl/sha.h>
-#include <openssl/rand.h>
+#include <map>
 
 #include <cpprest/json.h>
 
 namespace auth0_flutter
 {
 
-    // Forward declarations of helper functions (defined in auth0_flutter_plugin.cpp)
-    extern std::string base64UrlEncode(const std::vector<unsigned char> &data);
-    extern std::string generateCodeVerifier();
-    extern std::string generateCodeChallenge(const std::string &verifier);
-    extern std::string waitForAuthCode_CustomScheme(const std::string &expectedRedirectBase, int timeoutSeconds);
-    extern void BringFlutterWindowToFront();
-    extern void DebugPrint(const std::string &msg);
+    // Local URL encoding helper (kept here per design requirement)
+    static std::string UrlEncode(const std::string &str)
+    {
+        std::ostringstream encoded;
+        encoded.fill('0');
+        encoded << std::hex << std::uppercase;
+
+        for (unsigned char c : str)
+        {
+            // Keep alphanumeric and safe characters unchanged
+            if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~')
+            {
+                encoded << c;
+            }
+            else
+            {
+                // Percent-encode everything else
+                encoded << '%' << std::setw(2) << static_cast<int>(c);
+            }
+        }
+
+        return encoded.str();
+    }
 
     /**
      * @brief Handles the webAuth#login method call
@@ -142,6 +157,57 @@ namespace auth0_flutter
             }
         }
 
+        // Extract optional parameters
+        std::string audience;
+        auto audienceIt = arguments->find(flutter::EncodableValue("audience"));
+        if (audienceIt != arguments->end())
+        {
+            if (auto s = std::get_if<std::string>(&audienceIt->second))
+            {
+                audience = *s;
+            }
+        }
+
+        std::string organizationId;
+        auto orgIt = arguments->find(flutter::EncodableValue("organizationId"));
+        if (orgIt != arguments->end())
+        {
+            if (auto s = std::get_if<std::string>(&orgIt->second))
+            {
+                organizationId = *s;
+            }
+        }
+
+        std::string invitationUrl;
+        auto inviteIt = arguments->find(flutter::EncodableValue("invitationUrl"));
+        if (inviteIt != arguments->end())
+        {
+            if (auto s = std::get_if<std::string>(&inviteIt->second))
+            {
+                invitationUrl = *s;
+            }
+        }
+
+        // Extract additional parameters map
+        std::map<std::string, std::string> additionalParams;
+        auto paramsIt = arguments->find(flutter::EncodableValue("parameters"));
+        if (paramsIt != arguments->end())
+        {
+            const auto *paramsMap = std::get_if<flutter::EncodableMap>(&paramsIt->second);
+            if (paramsMap)
+            {
+                for (const auto &kv : *paramsMap)
+                {
+                    const auto *key = std::get_if<std::string>(&kv.first);
+                    const auto *val = std::get_if<std::string>(&kv.second);
+                    if (key && val)
+                    {
+                        additionalParams[*key] = *val;
+                    }
+                }
+            }
+        }
+
         try
         {
             // Step 1: Generate PKCE parameters for secure OAuth flow
@@ -149,27 +215,55 @@ namespace auth0_flutter
             std::string codeVerifier = generateCodeVerifier();
             std::string codeChallenge = generateCodeChallenge(codeVerifier);
 
+            // Generate state parameter for CSRF protection
+            std::string state = generateCodeVerifier(); // Reuse code verifier generation for random state
+
             DebugPrint("codeVerifier = " + codeVerifier);
             DebugPrint("codeChallenge = " + codeChallenge);
+            DebugPrint("state = " + state);
 
-            // Step 2: Build OAuth 2.0 authorization URL
-            // Uses authorization code flow with PKCE
+            // Step 2: Build OAuth 2.0 authorization URL with properly encoded parameters
+            // Uses authorization code flow with PKCE and state for CSRF protection
             std::ostringstream authUrl;
-            authUrl << "https://" << domain << "/authorize?"
+            authUrl << "https://" << UrlEncode(domain) << "/authorize?"
                     << "response_type=code"
-                    << "&client_id=" << clientId
-                    << "&redirect_uri=" << redirectUri
-                    << "&scope=" << scopeStr
-                    << "&code_challenge=" << codeChallenge
-                    << "&code_challenge_method=S256";
+                    << "&client_id=" << UrlEncode(clientId)
+                    << "&redirect_uri=" << UrlEncode(redirectUri)
+                    << "&scope=" << UrlEncode(scopeStr)
+                    << "&code_challenge=" << UrlEncode(codeChallenge)
+                    << "&code_challenge_method=S256"
+                    << "&state=" << UrlEncode(state);
+
+            // Add optional parameters if provided
+            if (!audience.empty())
+            {
+                authUrl << "&audience=" << UrlEncode(audience);
+            }
+
+            if (!organizationId.empty())
+            {
+                authUrl << "&organization=" << UrlEncode(organizationId);
+            }
+
+            if (!invitationUrl.empty())
+            {
+                authUrl << "&invitation=" << UrlEncode(invitationUrl);
+            }
+
+            // Add any additional custom parameters
+            for (const auto &kv : additionalParams)
+            {
+                authUrl << "&" << UrlEncode(kv.first) << "=" << UrlEncode(kv.second);
+            }
 
             // Step 3: Open system default browser for user authentication
             // User will authenticate with Auth0 in their browser
             ShellExecuteA(NULL, "open", authUrl.str().c_str(), NULL, NULL, SW_SHOWNORMAL);
 
-            // Step 4: Wait for OAuth callback containing authorization code
+            // Step 4: Wait for OAuth callback containing authorization code with state validation
             // Timeout: 180 seconds (3 minutes)
-            std::string code = waitForAuthCode_CustomScheme(redirectUri, 180);
+            // State parameter is validated to prevent CSRF attacks
+            std::string code = waitForAuthCode_CustomScheme(redirectUri, 180, state);
 
             // Step 5: Bring Flutter window back to foreground
             BringFlutterWindowToFront();

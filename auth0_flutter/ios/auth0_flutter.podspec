@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name         = 'auth0_flutter'
-  s.version      = '2.0.0-beta.1'
+  s.version      = '2.0.0-beta.2'
   s.summary      = 'Auth0 SDK for Flutter'
   s.description  = 'Auth0 SDK for Flutter Android and iOS apps.'
   s.homepage     = 'https://auth0.com'
@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
   s.osx.deployment_target = '11.0'
   s.osx.dependency 'FlutterMacOS'
 
-  s.dependency 'Auth0', '2.14.0'
+  s.dependency 'Auth0', '2.16.2'
   s.dependency 'JWTDecode', '3.3.0'
   s.dependency 'SimpleKeychain', '1.3.0'
 

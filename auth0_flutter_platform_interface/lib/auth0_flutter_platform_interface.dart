@@ -1,5 +1,6 @@
 export 'src/account.dart';
 export 'src/auth/api_exception.dart';
+export 'src/auth/auth_custom_token_exchange_options.dart';
 export 'src/auth/auth_dpop_headers_options.dart';
 export 'src/auth/auth_login_code_options.dart';
 export 'src/auth/auth_login_options.dart';
@@ -49,6 +50,7 @@ export 'src/web/cache_location.dart';
 export 'src/web/cache_mode.dart';
 export 'src/web/client_options.dart';
 export 'src/web/credentials_options.dart';
+export 'src/web/exchange_token_options.dart';
 export 'src/web/logout_options.dart';
 export 'src/web/popup_login_options.dart';
 export 'src/web/web_exception.dart';

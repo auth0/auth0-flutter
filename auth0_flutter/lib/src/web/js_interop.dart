@@ -188,6 +188,24 @@ extension type PopupLoginOptions._(JSObject _) implements JSObject {
 
 @JS()
 @anonymous
+extension type ExchangeTokenOptions._(JSObject _) implements JSObject {
+  external String get subject_token;
+  external String get subject_token_type;
+  external String? get audience;
+  external String? get scope;
+  external String? get organization;
+
+  external factory ExchangeTokenOptions({
+    required final String subject_token,
+    required final String subject_token_type,
+    final String? audience,
+    final String? scope,
+    final String? organization,
+  });
+}
+
+@JS()
+@anonymous
 extension type PopupConfigOptions._(JSObject _) implements JSObject {
   external JSAny? get popup;
   external int? get timeoutInSeconds;
@@ -215,6 +233,9 @@ extension type Auth0Client._(JSObject _) implements JSObject {
   external JSPromise<WebCredentials> getTokenSilently([
     final GetTokenSilentlyOptions? options,
   ]);
+  external JSPromise<WebCredentials> exchangeToken(
+    final ExchangeTokenOptions options,
+  );
   external JSPromise<JSBoolean> isAuthenticated();
   external JSPromise<JSAny?> logout([final LogoutOptions? logoutParams]);
 }

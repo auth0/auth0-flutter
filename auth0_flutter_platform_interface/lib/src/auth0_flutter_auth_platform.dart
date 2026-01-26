@@ -1,6 +1,7 @@
 // coverage:ignore-file
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
+import 'auth/auth_custom_token_exchange_options.dart';
 import 'auth/auth_login_code_options.dart';
 import 'auth/auth_login_options.dart';
 import 'auth/auth_login_with_otp_options.dart';
@@ -74,6 +75,11 @@ abstract class Auth0FlutterAuthPlatform extends PlatformInterface {
 
   Future<Credentials> renew(final ApiRequest<AuthRenewOptions> request) {
     throw UnimplementedError('authRenewCredentials() has not been implemented');
+  }
+
+  Future<Credentials> customTokenExchange(
+      final ApiRequest<AuthCustomTokenExchangeOptions> request) {
+    throw UnimplementedError('customTokenExchange() has not been implemented');
   }
 
   Future<void> resetPassword(

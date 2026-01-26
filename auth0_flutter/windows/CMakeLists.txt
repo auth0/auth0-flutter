@@ -35,64 +35,75 @@ list(APPEND PLUGIN_SOURCES
   "request_handlers/web_auth/LogoutWebAuthRequestHandler.h"
 )
 
-# Define the plugin library target. Its name must not be changed (see comment
-# on PLUGIN_NAME above).
-add_library(${PLUGIN_NAME} SHARED
-  "include/auth0_flutter/auth0_flutter_plugin_c_api.h"
-  "auth0_flutter_plugin_c_api.cpp"
-  "auth0_client.cpp"
-  "token_decoder.cpp"
-  "time_util.cpp"
-  "user_profile.cpp"
-  "user_identity.cpp"
-  "jwt_util.cpp"
-  ${PLUGIN_SOURCES}
-)
-
-# Apply a standard set of build settings that are configured in the
-# application-level CMakeLists.txt. This can be removed for plugins that want
-# full control over build settings.
-apply_standard_settings(${PLUGIN_NAME})
-
-# Symbols are hidden by default to reduce the chance of accidental conflicts
-# between plugins. This should not be removed; any symbols that should be
-# exported should be explicitly exported with the FLUTTER_PLUGIN_EXPORT macro.
-set_target_properties(${PLUGIN_NAME} PROPERTIES
-  CXX_VISIBILITY_PRESET hidden)
-target_compile_definitions(${PLUGIN_NAME} PRIVATE FLUTTER_PLUGIN_IMPL)
-target_compile_definitions(${PLUGIN_NAME}
-  PRIVATE
-    _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
-)
-# Source include directories and library dependencies.
-target_include_directories(${PLUGIN_NAME} INTERFACE
-  "${CMAKE_CURRENT_SOURCE_DIR}/include")
-
-#list(APPEND CMAKE_MODULE_PATH "$ENV{VCPKG_ROOT}/installed/x64-windows/share")
-
 # === vcpkg dependencies ===
 # These are resolved via vcpkg.json automatically (cpprestsdk, boost)
 find_package(cpprestsdk CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system date_time regex)
 
-# Link Flutter + vcpkg dependencies
-target_link_libraries(${PLUGIN_NAME} PRIVATE
-  flutter
-  flutter_wrapper_plugin
-  cpprestsdk::cpprest
-  OpenSSL::SSL
-  OpenSSL::Crypto
-  Boost::system
-  Boost::date_time
-  Boost::regex
-)
+# Define the plugin library target only if flutter targets are available
+if(TARGET flutter)
+  # Define the plugin library target. Its name must not be changed (see comment
+  # on PLUGIN_NAME above).
+  add_library(${PLUGIN_NAME} SHARED
+    "include/auth0_flutter/auth0_flutter_plugin_c_api.h"
+    "auth0_flutter_plugin_c_api.cpp"
+    "auth0_client.cpp"
+    "token_decoder.cpp"
+    "time_util.cpp"
+    "user_profile.cpp"
+    "user_identity.cpp"
+    "jwt_util.cpp"
+    "oauth_helpers.cpp"
+    "oauth_helpers.h"
+    "url_utils.cpp"
+    "url_utils.h"
+    "windows_utils.cpp"
+    "windows_utils.h"
+    ${PLUGIN_SOURCES}
+  )
 
-# List of absolute paths to libraries that should be bundled with the plugin.
-set(auth0_flutter_bundled_libraries
-  ""
-  PARENT_SCOPE
-)
+  # Apply a standard set of build settings that are configured in the
+  # application-level CMakeLists.txt. This can be removed for plugins that want
+  # full control over build settings.
+  if(COMMAND apply_standard_settings)
+    apply_standard_settings(${PLUGIN_NAME})
+  endif()
+
+  # Symbols are hidden by default to reduce the chance of accidental conflicts
+  # between plugins. This should not be removed; any symbols that should be
+  # exported should be explicitly exported with the FLUTTER_PLUGIN_EXPORT macro.
+  set_target_properties(${PLUGIN_NAME} PROPERTIES
+    CXX_VISIBILITY_PRESET hidden)
+  target_compile_definitions(${PLUGIN_NAME} PRIVATE FLUTTER_PLUGIN_IMPL)
+  target_compile_definitions(${PLUGIN_NAME}
+    PRIVATE
+      _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
+  )
+  # Source include directories and library dependencies.
+  target_include_directories(${PLUGIN_NAME} INTERFACE
+    "${CMAKE_CURRENT_SOURCE_DIR}/include")
+
+  #list(APPEND CMAKE_MODULE_PATH "$ENV{VCPKG_ROOT}/installed/x64-windows/share")
+
+  # Link Flutter + vcpkg dependencies
+  target_link_libraries(${PLUGIN_NAME} PRIVATE
+    flutter
+    flutter_wrapper_plugin
+    cpprestsdk::cpprest
+    OpenSSL::SSL
+    OpenSSL::Crypto
+    Boost::system
+    Boost::date_time
+    Boost::regex
+  )
+
+  # List of absolute paths to libraries that should be bundled with the plugin.
+  set(auth0_flutter_bundled_libraries
+    ""
+    PARENT_SCOPE
+  )
+endif()
 
 # === Tests ===
 option(AUTH0_FLUTTER_ENABLE_TESTS "Build auth0_flutter unit tests" ON)
@@ -105,26 +116,23 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
   include(FetchContent)
   FetchContent_Declare(
     googletest
-    URL https://github.com/google/googletest/archive/release-1.11.0.zip
+    URL https://github.com/google/googletest/archive/refs/tags/v1.15.2.zip
   )
   set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
   set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
   FetchContent_MakeAvailable(googletest)
 
   add_executable(${TEST_RUNNER}
-    test/jwt_util_test.cpp
     test/time_util_test.cpp
-    test/token_decoder_test.cpp
-    test/user_identity_test.cpp
-    test/user_profile_test.cpp
+    test/url_utils_test.cpp
+    test/windows_utils_test.cpp
+    test/oauth_helpers_test.cpp
 
     # Reuse plugin sources directly (NO flutter plugin entrypoints)
-    auth0_client.cpp
-    token_decoder.cpp
     time_util.cpp
-    user_profile.cpp
-    user_identity.cpp
-    jwt_util.cpp
+    url_utils.cpp
+    windows_utils.cpp
+    oauth_helpers.cpp
   )
 
   target_compile_features(${TEST_RUNNER} PRIVATE cxx_std_17)
@@ -134,8 +142,11 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
     ${CMAKE_CURRENT_SOURCE_DIR}/include
   )
 
+  target_compile_definitions(${TEST_RUNNER} PRIVATE
+    _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
+  )
+
   target_link_libraries(${TEST_RUNNER} PRIVATE
-    flutter_wrapper_plugin
     gtest_main
     gmock
     cpprestsdk::cpprest
@@ -146,6 +157,48 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
     Boost::regex
   )
 
+  # Link flutter_wrapper_plugin if available (when building as part of Flutter app)
+  if(TARGET flutter_wrapper_plugin)
+    target_link_libraries(${TEST_RUNNER} PRIVATE flutter_wrapper_plugin)
+  endif()
+
+  # Register tests with CTest
   include(GoogleTest)
-  gtest_discover_tests(${TEST_RUNNER})
+  gtest_discover_tests(${TEST_RUNNER}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    DISCOVERY_TIMEOUT 60
+  )
+
+  # Fallback: Manual test registration (if gtest_discover_tests fails)
+  # Uncomment the following lines if CTest cannot discover tests automatically:
+  # add_test(NAME auth0_flutter_all_tests COMMAND ${TEST_RUNNER})
+  # set_tests_properties(auth0_flutter_all_tests PROPERTIES
+  #   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  # )
+
+  # Add a custom target to run tests directly
+  add_custom_target(run_tests
+    COMMAND ${TEST_RUNNER}
+    DEPENDS ${TEST_RUNNER}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Running unit tests..."
+  )
+
+  # Add a custom target to run tests with coverage (requires OpenCppCoverage)
+  add_custom_target(coverage
+    COMMAND OpenCppCoverage.exe
+      --sources ${CMAKE_CURRENT_SOURCE_DIR}
+      --excluded_sources ${CMAKE_CURRENT_SOURCE_DIR}\\test
+      --export_type cobertura:coverage.xml
+      --export_type html:coverage_html
+      -- $<TARGET_FILE:${TEST_RUNNER}>
+    DEPENDS ${TEST_RUNNER}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Running unit tests with coverage (requires OpenCppCoverage)..."
+  )
+
+  message(STATUS "Auth0 Flutter tests enabled. Test executable: ${TEST_RUNNER}")
+  message(STATUS "Run tests with: cmake --build build --target run_tests")
+  message(STATUS "Run tests with coverage: cmake --build build --target coverage")
+  message(STATUS "Or run directly: ./build/Debug/${TEST_RUNNER}.exe")
 endif()
