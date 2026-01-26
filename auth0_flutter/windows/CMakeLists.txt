@@ -184,7 +184,21 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
     COMMENT "Running unit tests..."
   )
 
+  # Add a custom target to run tests with coverage (requires OpenCppCoverage)
+  add_custom_target(coverage
+    COMMAND OpenCppCoverage.exe
+      --sources ${CMAKE_CURRENT_SOURCE_DIR}
+      --excluded_sources ${CMAKE_CURRENT_SOURCE_DIR}\\test
+      --export_type cobertura:coverage.xml
+      --export_type html:coverage_html
+      -- $<TARGET_FILE:${TEST_RUNNER}>
+    DEPENDS ${TEST_RUNNER}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Running unit tests with coverage (requires OpenCppCoverage)..."
+  )
+
   message(STATUS "Auth0 Flutter tests enabled. Test executable: ${TEST_RUNNER}")
   message(STATUS "Run tests with: cmake --build build --target run_tests")
+  message(STATUS "Run tests with coverage: cmake --build build --target coverage")
   message(STATUS "Or run directly: ./build/Debug/${TEST_RUNNER}.exe")
 endif()
