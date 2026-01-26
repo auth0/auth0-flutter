@@ -115,6 +115,7 @@ extension AuthAPIHandlerTests {
             .signup: AuthAPISignupMethodHandler.self,
             .userInfo: AuthAPIUserInfoMethodHandler.self,
             .renew: AuthAPIRenewMethodHandler.self,
+            .customTokenExchange: AuthAPICustomTokenExchangeMethodHandler.self,
             .resetPassword: AuthAPIResetPasswordMethodHandler.self
         ]
         methodHandlers.forEach { method, methodHandler in
