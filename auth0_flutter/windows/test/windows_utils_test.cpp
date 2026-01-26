@@ -21,7 +21,11 @@ TEST(WideToUtf8Test, ConvertsAsciiString) {
 }
 
 TEST(WideToUtf8Test, ConvertsUnicodeCharacters) {
-  std::wstring wstr = L"Hello 世界";  // "Hello World" in Chinese
+  // Use explicit Unicode code points instead of literals
+  // 世 = U+4E16, 界 = U+754C
+  std::wstring wstr = L"Hello ";
+  wstr += static_cast<wchar_t>(0x4E16);  // 世
+  wstr += static_cast<wchar_t>(0x754C);  // 界
   std::string result = WideToUtf8(wstr);
 
   // UTF-8 encoding of 世界
@@ -31,7 +35,12 @@ TEST(WideToUtf8Test, ConvertsUnicodeCharacters) {
 }
 
 TEST(WideToUtf8Test, ConvertsEmoji) {
-  std::wstring wstr = L"Hello 😀";  // Emoji
+  // Use explicit Unicode code point for emoji
+  // 😀 = U+1F600 (requires surrogate pair on Windows)
+  std::wstring wstr = L"Hello ";
+  // On Windows, characters above U+FFFF need surrogate pairs
+  wstr += static_cast<wchar_t>(0xD83D);  // High surrogate
+  wstr += static_cast<wchar_t>(0xDE00);  // Low surrogate
   std::string result = WideToUtf8(wstr);
 
   // UTF-8 encoding of 😀 = F0 9F 98 80

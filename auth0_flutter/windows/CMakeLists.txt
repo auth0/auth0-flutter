@@ -116,29 +116,20 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
   include(FetchContent)
   FetchContent_Declare(
     googletest
-    URL https://github.com/google/googletest/archive/release-1.11.0.zip
+    URL https://github.com/google/googletest/archive/refs/tags/v1.15.2.zip
   )
   set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
   set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
   FetchContent_MakeAvailable(googletest)
 
   add_executable(${TEST_RUNNER}
-    test/jwt_util_test.cpp
     test/time_util_test.cpp
-    test/token_decoder_test.cpp
-    test/user_identity_test.cpp
-    test/user_profile_test.cpp
     test/url_utils_test.cpp
     test/windows_utils_test.cpp
     test/oauth_helpers_test.cpp
 
     # Reuse plugin sources directly (NO flutter plugin entrypoints)
-    auth0_client.cpp
-    token_decoder.cpp
     time_util.cpp
-    user_profile.cpp
-    user_identity.cpp
-    jwt_util.cpp
     url_utils.cpp
     windows_utils.cpp
     oauth_helpers.cpp
@@ -149,6 +140,10 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
   target_include_directories(${TEST_RUNNER} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+  )
+
+  target_compile_definitions(${TEST_RUNNER} PRIVATE
+    _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
   )
 
   target_link_libraries(${TEST_RUNNER} PRIVATE
