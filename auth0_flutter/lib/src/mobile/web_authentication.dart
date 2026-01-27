@@ -26,7 +26,11 @@ class WebAuthentication {
   final CredentialsManager? _credentialsManager;
 
   WebAuthentication(
-      this._account, this._userAgent, this._scheme, this._credentialsManager);
+    this._account,
+    this._userAgent,
+    this._scheme,
+    this._credentialsManager,
+  );
 
   /// Redirects the user to the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login) for authentication. If successful, it returns
   /// a set of tokens, as well as the user's profile (constructed from ID token
@@ -79,40 +83,45 @@ class WebAuthentication {
   /// no other allowed browser installed, an error is returned
   /// * [useDPoP] enables DPoP for enhanced token security.
   /// See README for details. Defaults to `false`.
-  Future<Credentials> login(
-      {final String? audience,
-      final Set<String> scopes = const {
-        'openid',
-        'profile',
-        'email',
-        'offline_access'
-      },
-      final String? redirectUrl,
-      final String? organizationId,
-      final String? invitationUrl,
-      final bool useHTTPS = false,
-      final List<String> allowedBrowsers = const [],
-      final bool useEphemeralSession = false,
-      final Map<String, String> parameters = const {},
-      final IdTokenValidationConfig idTokenValidationConfig =
-          const IdTokenValidationConfig(),
-      final SafariViewController? safariViewController,
-      final bool useDPoP = false}) async {
+  Future<Credentials> login({
+    final String? audience,
+    final Set<String> scopes = const {
+      'openid',
+      'profile',
+      'email',
+      'offline_access',
+    },
+    final String? redirectUrl,
+    final String? organizationId,
+    final String? invitationUrl,
+    final bool useHTTPS = false,
+    final List<String> allowedBrowsers = const [],
+    final bool useEphemeralSession = false,
+    final Map<String, String> parameters = const {},
+    final IdTokenValidationConfig idTokenValidationConfig =
+        const IdTokenValidationConfig(),
+    final SafariViewController? safariViewController,
+    final bool useDPoP = false,
+  }) async {
     final credentials = await Auth0FlutterWebAuthPlatform.instance.login(
-        _createWebAuthRequest(WebAuthLoginOptions(
-            audience: audience,
-            scopes: scopes,
-            redirectUrl: redirectUrl,
-            organizationId: organizationId,
-            invitationUrl: invitationUrl,
-            parameters: parameters,
-            idTokenValidationConfig: idTokenValidationConfig,
-            scheme: _scheme,
-            useHTTPS: useHTTPS,
-            useEphemeralSession: useEphemeralSession,
-            safariViewController: safariViewController,
-            allowedBrowsers: allowedBrowsers,
-            useDPoP: useDPoP)));
+      _createWebAuthRequest(
+        WebAuthLoginOptions(
+          audience: audience,
+          scopes: scopes,
+          redirectUrl: redirectUrl,
+          organizationId: organizationId,
+          invitationUrl: invitationUrl,
+          parameters: parameters,
+          idTokenValidationConfig: idTokenValidationConfig,
+          scheme: _scheme,
+          useHTTPS: useHTTPS,
+          useEphemeralSession: useEphemeralSession,
+          safariViewController: safariViewController,
+          allowedBrowsers: allowedBrowsers,
+          useDPoP: useDPoP,
+        ),
+      ),
+    );
 
     await _credentialsManager?.storeCredentials(credentials);
 
@@ -171,5 +180,8 @@ class WebAuthentication {
       _createWebAuthRequest<TOptions extends RequestOptions>(
               final TOptions options) =>
           WebAuthRequest<TOptions>(
-              account: _account, options: options, userAgent: _userAgent);
+            account: _account,
+            options: options,
+            userAgent: _userAgent,
+          );
 }
