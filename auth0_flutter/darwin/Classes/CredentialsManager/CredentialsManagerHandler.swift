@@ -133,6 +133,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         case .clear: return CredentialsManagerClearMethodHandler(credentialsManager: credentialsManager)
         case .userInfo: return CredentialsManagerUserInfoMethodHandler(credentialsManager: credentialsManager)
         case .renew: return CredentialsManagerRenewMethodHandler(credentialsManager: credentialsManager)
+        case .userInfo: return CredentialsManagerUserInfoMethodHandler(credentialsManager: credentialsManager)
         }
     }
 

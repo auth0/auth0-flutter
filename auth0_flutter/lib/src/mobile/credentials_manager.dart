@@ -1,4 +1,5 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
+import 'package:auth0_flutter_platform_interface/src/user_info.dart';
 
 /// Abstract CredentialsManager that can be used to provide a custom
 /// CredentialManager.
@@ -14,6 +15,8 @@ abstract class CredentialsManager {
   Future<Credentials> renewCredentials({
     final Map<String, String> parameters = const {},
   });
+
+  Future<UserInfo> getIDTokenContents();
 
   Future<bool> storeCredentials(final Credentials credentials);
 
@@ -82,6 +85,10 @@ class DefaultCredentialsManager extends CredentialsManager {
       CredentialsManagerPlatform.instance.renewCredentials(
           _createApiRequest(RenewCredentialsOptions(parameters: parameters)));
 >>>>>>> main
+
+  @override
+  Future<UserInfo> getIDTokenContents() =>
+      CredentialsManagerPlatform.instance.getIDTokenContents(_createApiRequest(null));
 
   /// Stores the given credentials in the storage. Must have an `access_token`
   /// or `id_token` and a `expires_in` value.
