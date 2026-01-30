@@ -65,10 +65,12 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
     return result ?? true;
   }
 
+  /// Fetches the user profile associated with the stored credentials.
+  /// Returns null is no credentials are stored
   @override
-  Future<UserInfo> getIDTokenContents(final CredentialsManagerRequest request) async {
+  Future<UserProfile?> user(final CredentialsManagerRequest request) async {
       final Map<String, dynamic> result = await _invokeMapRequest(method: credentialsManagerGetUserProfileMethod, request: request);
-      return UserInfo.fromJson(result);
+      return UserProfile.fromMap(result);
   }
 
   /// Removes the credentials from the native storage if present.

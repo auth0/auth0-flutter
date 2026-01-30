@@ -49,9 +49,9 @@ abstract class CredentialsManagerPlatform extends PlatformInterface {
     throw UnimplementedError('renewCredentials() has not been implemented');
   }
 
-  /// Retrieves the ID token contents from the native storage.
-  Future<UserInfo> getIDTokenContents(final CredentialsManagerRequest request) {
-    throw UnimplementedError('getIDTokenContents() has not been implemented');
+  /// Retrieves the user info contents from the native storage.
+  Future<UserProfile?> user(final CredentialsManagerRequest request) {
+    throw UnimplementedError('user() has not been implemented');
   }
 
   /// Removes the credentials from the native storage if present.
