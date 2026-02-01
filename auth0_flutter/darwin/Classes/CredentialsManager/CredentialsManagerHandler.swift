@@ -23,7 +23,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         case get = "credentialsManager#getCredentials"
         case renew = "credentialsManager#renewCredentials"
         case clear = "credentialsManager#clearCredentials"
-        case userInfo = "credentialsManager#getUserInfo"
+        case userInfo = "credentialsManager#user"
     }
     
     private struct ManagerCacheKey: Equatable {

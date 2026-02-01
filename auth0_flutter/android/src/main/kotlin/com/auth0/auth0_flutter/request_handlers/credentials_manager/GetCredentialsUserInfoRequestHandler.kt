@@ -8,7 +8,7 @@ import io.flutter.plugin.common.MethodChannel
 
 
 class GetCredentialsUserInfoRequestHandler: CredentialsManagerRequestHandler {
-    override val method: String = "credentialsManager#getUserInfo"
+    override val method: String = "credentialsManager#user"
     override fun handle(
         credentialsManager: SecureCredentialsManager,
         context: Context,
