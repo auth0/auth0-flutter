@@ -17,7 +17,7 @@ const String credentialsManagerSaveCredentialsMethod =
 const String credentialsManagerGetCredentialsMethod =
     'credentialsManager#getCredentials';
 const String credentialsManagerGetUserProfileMethod =
-'credentialsManager#getUserInfo';
+    'credentialsManager#user';
 const String credentialsManagerClearCredentialsMethod =
     'credentialsManager#clearCredentials';
 const String credentialsManagerHasValidCredentialsMethod =
@@ -69,8 +69,14 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
   /// Returns null is no credentials are stored
   @override
   Future<UserProfile?> user(final CredentialsManagerRequest request) async {
-      final Map<String, dynamic> result = await _invokeMapRequest(method: credentialsManagerGetUserProfileMethod, request: request);
-      return UserProfile.fromMap(result);
+    final Map<String, dynamic>? result;
+    try {
+      result = await _channel.invokeMapMethod(credentialsManagerGetUserProfileMethod, request.toMap());
+    } on PlatformException catch (e) {
+      throw CredentialsManagerException.fromPlatformException(e);
+    }
+    
+    return result != null ? UserProfile.fromMap(result) : null;
   }
 
   /// Removes the credentials from the native storage if present.

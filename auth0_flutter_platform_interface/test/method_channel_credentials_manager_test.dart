@@ -730,4 +730,136 @@ void main() {
       await expectLater(actual, throwsA(isA<CredentialsManagerException>()));
     });
   });
+
+  group('user', () {
+    test('calls the correct MethodChannel method', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => {'sub': '123', 'name': 'John Doe'});
+
+      await MethodChannelCredentialsManager()
+          .user(CredentialsManagerRequest<RequestOptions?>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: null));
+
+      expect(
+          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          'credentialsManager#user');
+    });
+
+    test('correctly maps all properties', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => {'sub': '123', 'name': 'John Doe'});
+
+      await MethodChannelCredentialsManager()
+          .user(CredentialsManagerRequest<RequestOptions?>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: null));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['_account']['domain'], 'test-domain');
+      expect(verificationResult.arguments['_account']['clientId'],
+          'test-clientId');
+      expect(verificationResult.arguments['_userAgent']['name'], 'test-name');
+      expect(verificationResult.arguments['_userAgent']['version'],
+          'test-version');
+    });
+
+    test('returns UserProfile when native returns profile data', () async {
+      final Map<dynamic, dynamic> userProfileData = {
+        'sub': 'auth0|123456',
+        'name': 'John Doe',
+        'email': 'john.doe@example.com',
+        'email_verified': true,
+        'nickname': 'johndoe',
+        'picture': 'https://example.com/picture.jpg',
+        'given_name': 'John',
+        'family_name': 'Doe',
+        'updated_at': '2023-11-01T22:16:35.760Z',
+        'custom_claims': {'role': 'admin', 'department': 'engineering'}
+      };
+
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => userProfileData);
+
+      final result = await MethodChannelCredentialsManager()
+          .user(CredentialsManagerRequest<RequestOptions?>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: null));
+
+      verify(mocked.methodCallHandler(captureAny));
+
+      expect(result, isNotNull);
+      expect(result!.sub, userProfileData['sub']);
+      expect(result.name, userProfileData['name']);
+      expect(result.email, userProfileData['email']);
+      expect(result.isEmailVerified, userProfileData['email_verified']);
+      expect(result.nickname, userProfileData['nickname']);
+      expect(result.pictureUrl.toString(), userProfileData['picture']);
+      expect(result.givenName, userProfileData['given_name']);
+      expect(result.familyName, userProfileData['family_name']);
+      expect(result.customClaims?['role'], 'admin');
+      expect(result.customClaims?['department'], 'engineering');
+    });
+
+    test('returns null when native returns null', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      final result = await MethodChannelCredentialsManager()
+          .user(CredentialsManagerRequest<RequestOptions?>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: null));
+
+      verify(mocked.methodCallHandler(captureAny));
+      expect(result, isNull);
+    });
+
+    test('throws CredentialsManagerException on PlatformException', () async {
+      when(mocked.methodCallHandler(any))
+          .thenThrow(PlatformException(code: 'FAILED', message: 'No credentials stored'));
+
+      Future<UserProfile?> actual() async {
+        return await MethodChannelCredentialsManager()
+            .user(CredentialsManagerRequest<RequestOptions?>(
+                account: const Account('test-domain', 'test-clientId'),
+                userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+                options: null));
+      }
+
+      await expectLater(
+          actual,
+          throwsA(predicate((final e) =>
+              e is CredentialsManagerException &&
+              e.code == 'FAILED' &&
+              e.message == 'No credentials stored')));
+    });
+
+    test('handles missing optional profile fields gracefully', () async {
+      final Map<dynamic, dynamic> minimalProfile = {
+        'sub': 'auth0|123456',
+      };
+
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => minimalProfile);
+
+      final result = await MethodChannelCredentialsManager()
+          .user(CredentialsManagerRequest<RequestOptions?>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: null));
+
+      verify(mocked.methodCallHandler(captureAny));
+
+      expect(result, isNotNull);
+      expect(result!.sub, 'auth0|123456');
+      expect(result.name, isNull);
+      expect(result.email, isNull);
+      expect(result.nickname, isNull);
+      expect(result.pictureUrl, isNull);
+    });
+  });
 }
