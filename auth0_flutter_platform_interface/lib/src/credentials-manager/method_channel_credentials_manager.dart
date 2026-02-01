@@ -1,14 +1,6 @@
 import 'package:flutter/services.dart';
 
 import '../../auth0_flutter_platform_interface.dart';
-import '../request/request.dart';
-import '../request/request_options.dart';
-import 'credentials_manager_exception.dart';
-import 'credentials_manager_platform.dart';
-import 'options/get_credentials_options.dart';
-import 'options/has_valid_credentials_options.dart';
-import 'options/renew_credentials_options.dart';
-import 'options/save_credentials_options.dart';
 
 const MethodChannel _channel =
     MethodChannel('auth0.com/auth0_flutter/credentials_manager');
@@ -71,11 +63,12 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
   Future<UserProfile?> user(final CredentialsManagerRequest request) async {
     final Map<String, dynamic>? result;
     try {
-      result = await _channel.invokeMapMethod(credentialsManagerGetUserProfileMethod, request.toMap());
+      result = await _channel.invokeMapMethod(
+          credentialsManagerGetUserProfileMethod, request.toMap());
     } on PlatformException catch (e) {
       throw CredentialsManagerException.fromPlatformException(e);
     }
-    
+
     return result != null ? UserProfile.fromMap(result) : null;
   }
 

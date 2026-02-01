@@ -14,7 +14,7 @@ required this.provider,
 this.isSocial,
 this.accessToken,
 this.accessTokenSecret,
-Map<String, dynamic>? profileInfo})
+final Map<String, dynamic>? profileInfo})
     : _profileInfo = profileInfo ;
 factory UserIdentity.fromJson(final Map<String, dynamic> json)
 => UserIdentity(
@@ -101,7 +101,7 @@ createdAt: json['createdAt'] != null
     : null,
 // Handle list of UserIdentity
 identities: (json['identities'] as List<dynamic>?)
-    ?.map((e) => UserIdentity.fromJson(e as Map<String, dynamic>))
+    ?.map((final e) => UserIdentity.fromJson(e as Map<String, dynamic>))
     .toList(),
 extraInfo: Map<String, dynamic>.from(json['extraInfo'] as Map),
 userMetadata: Map<String, dynamic>.from(json['userMetadata'] as Map),

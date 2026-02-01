@@ -269,9 +269,8 @@ void main() {
           .thenThrow(const CredentialsManagerException(
               'FAILED', 'No credentials stored', {}));
 
-      Future<UserProfile?> actual() async {
-        return await DefaultCredentialsManager(account, userAgent).user();
-      }
+      Future<UserProfile?> actual() async => DefaultCredentialsManager(
+          account, userAgent).user();
 
       await expectLater(
           actual,

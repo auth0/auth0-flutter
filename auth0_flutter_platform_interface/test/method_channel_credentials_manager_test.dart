@@ -739,8 +739,7 @@ void main() {
       await MethodChannelCredentialsManager()
           .user(CredentialsManagerRequest<RequestOptions?>(
               account: const Account('test-domain', 'test-clientId'),
-              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: null));
+              userAgent: UserAgent(name: 'test-name', version: 'test-version')));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -754,8 +753,7 @@ void main() {
       await MethodChannelCredentialsManager()
           .user(CredentialsManagerRequest<RequestOptions?>(
               account: const Account('test-domain', 'test-clientId'),
-              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: null));
+              userAgent: UserAgent(name: 'test-name', version: 'test-version')));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -787,8 +785,7 @@ void main() {
       final result = await MethodChannelCredentialsManager()
           .user(CredentialsManagerRequest<RequestOptions?>(
               account: const Account('test-domain', 'test-clientId'),
-              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: null));
+              userAgent: UserAgent(name: 'test-name', version: 'test-version')));
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -811,8 +808,7 @@ void main() {
       final result = await MethodChannelCredentialsManager()
           .user(CredentialsManagerRequest<RequestOptions?>(
               account: const Account('test-domain', 'test-clientId'),
-              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: null));
+              userAgent: UserAgent(name: 'test-name', version: 'test-version')));
 
       verify(mocked.methodCallHandler(captureAny));
       expect(result, isNull);
@@ -822,13 +818,10 @@ void main() {
       when(mocked.methodCallHandler(any))
           .thenThrow(PlatformException(code: 'FAILED', message: 'No credentials stored'));
 
-      Future<UserProfile?> actual() async {
-        return await MethodChannelCredentialsManager()
+      Future<UserProfile?> actual() async => MethodChannelCredentialsManager()
             .user(CredentialsManagerRequest<RequestOptions?>(
                 account: const Account('test-domain', 'test-clientId'),
-                userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-                options: null));
-      }
+                userAgent: UserAgent(name: 'test-name', version: 'test-version')));
 
       await expectLater(
           actual,
@@ -849,8 +842,7 @@ void main() {
       final result = await MethodChannelCredentialsManager()
           .user(CredentialsManagerRequest<RequestOptions?>(
               account: const Account('test-domain', 'test-clientId'),
-              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-              options: null));
+              userAgent: UserAgent(name: 'test-name', version: 'test-version')));
 
       verify(mocked.methodCallHandler(captureAny));
 

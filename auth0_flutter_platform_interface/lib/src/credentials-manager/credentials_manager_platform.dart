@@ -1,12 +1,7 @@
 // coverage:ignore-file
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
-import 'method_channel_credentials_manager.dart';
-import 'options/get_credentials_options.dart';
-import 'options/has_valid_credentials_options.dart';
-import 'options/renew_credentials_options.dart';
-import 'options/save_credentials_options.dart';
+import '../../auth0_flutter_platform_interface.dart';
 
 /// The interface that implementations of CredentialsManager must implement.
 abstract class CredentialsManagerPlatform extends PlatformInterface {
