@@ -22,7 +22,7 @@ class GetCredentialsUserInfoRequestHandlerTest {
     fun `handles returns correct method`() {
         val handler = GetCredentialsUserInfoRequestHandler()
         MatcherAssert.assertThat(
-            handler.handles,
+            handler.method,
             CoreMatchers.`is`("credentialsManager#user")
         )
     }
@@ -37,16 +37,19 @@ class GetCredentialsUserInfoRequestHandlerTest {
         val request = MethodCallRequest(account = mockAccount, options)
 
         val userProfile = UserProfile(
-            "auth0|123456",
+            "",
             "John Doe",
-            "john.doe@example.com",
-            true,
-            "John",
-            "Doe",
             "johndoe",
             "https://example.com/picture.jpg",
-            Date(),
-            mapOf("role" to "admin")
+            "john.doe@example.com",
+            true,
+            "Doe",
+            null,
+            null,
+            mapOf("sub" to "auth0|123456", "role" to "admin"),
+            null,
+            null,
+            "John"
         )
 
         `when`(mockCredentialsManager.userProfile).thenReturn(userProfile)
@@ -114,16 +117,19 @@ class GetCredentialsUserInfoRequestHandlerTest {
 
         val updatedAt = Date()
         val userProfile = UserProfile(
-            "auth0|123456",
+            "",
             "John Doe",
-            "john.doe@example.com",
-            true,
-            "John",
-            "Doe",
             "johndoe",
             "https://example.com/picture.jpg",
-            updatedAt,
-            mapOf("role" to "admin", "department" to "engineering")
+            "john.doe@example.com",
+            true,
+            "Doe",
+            null,
+            null,
+            mapOf("sub" to "auth0|123456", "role" to "admin", "department" to "engineering", "updated_at" to updatedAt.toInstant().toString()),
+            null,
+            null,
+            "John"
         )
 
         `when`(mockCredentialsManager.userProfile).thenReturn(userProfile)
@@ -166,20 +172,24 @@ class GetCredentialsUserInfoRequestHandlerTest {
         val request = MethodCallRequest(account = mockAccount, options)
 
         val userProfile = UserProfile(
-            "auth0|123456",
+            "",
             "John Doe",
+            null,
+            null,
             null,
             false,
             null,
             null,
             null,
-            null,
-            null,
             mapOf(
+                "sub" to "auth0|123456",
                 "custom_field_1" to "value1",
                 "custom_field_2" to 123,
                 "custom_field_3" to true
-            )
+            ),
+            null,
+            null,
+            null
         )
 
         `when`(mockCredentialsManager.userProfile).thenReturn(userProfile)

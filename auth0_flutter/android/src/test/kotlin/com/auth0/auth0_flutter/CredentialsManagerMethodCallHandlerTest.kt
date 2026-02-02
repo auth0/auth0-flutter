@@ -42,7 +42,16 @@ class CredentialsManagerMethodCallHandlerTest {
         val mockResult = mock<Result>()
 
         handler.activity = if (activity === null)  mock() else activity
-        handler.context = if (context === null)  mock() else context
+        
+        val mockContext = if (context === null) {
+            val ctx: Context = mock()
+            val mockPrefs: SharedPreferences = mock()
+            `when`(ctx.getSharedPreferences(any(), any())).thenReturn(mockPrefs)
+            ctx
+        } else {
+            context
+        }
+        handler.context = mockContext
 
         handler.onMethodCall(MethodCall(method, arguments), mockResult)
         onResult(mockResult)
@@ -466,7 +475,7 @@ class CredentialsManagerMethodCallHandlerTest {
     @Test
     fun `handler invokes GetCredentialsUserInfoRequestHandler for credentialsManager#user`() {
         val getUserInfoHandler = mock<GetCredentialsUserInfoRequestHandler>()
-        `when`(getUserInfoHandler.handles).thenReturn("credentialsManager#user")
+        `when`(getUserInfoHandler.method).thenReturn("credentialsManager#user")
 
         runCallHandler(
             "credentialsManager#user",
@@ -479,7 +488,7 @@ class CredentialsManagerMethodCallHandlerTest {
     @Test
     fun `handler returns UserProfile result from GetCredentialsUserInfoRequestHandler`() {
         val getUserInfoHandler = mock<GetCredentialsUserInfoRequestHandler>()
-        `when`(getUserInfoHandler.handles).thenReturn("credentialsManager#user")
+        `when`(getUserInfoHandler.method).thenReturn("credentialsManager#user")
 
         val userProfileMap = mapOf(
             "sub" to "auth0|123456",
@@ -495,7 +504,11 @@ class CredentialsManagerMethodCallHandlerTest {
         val mockResult = mock<Result>()
         val handler = CredentialsManagerMethodCallHandler(listOf(getUserInfoHandler))
         handler.activity = mock()
-        handler.context = mock()
+        
+        val mockContext: Context = mock()
+        val mockPrefs: SharedPreferences = mock()
+        `when`(mockContext.getSharedPreferences(any(), any())).thenReturn(mockPrefs)
+        handler.context = mockContext
 
         handler.onMethodCall(MethodCall("credentialsManager#user", defaultArguments), mockResult)
 
