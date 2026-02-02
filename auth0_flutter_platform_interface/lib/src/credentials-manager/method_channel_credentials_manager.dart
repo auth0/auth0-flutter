@@ -58,7 +58,7 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
   }
 
   /// Fetches the user profile associated with the stored credentials.
-  /// Returns null is no credentials are stored
+  /// Returns null if no credentials are stored
   @override
   Future<UserProfile?> user(final CredentialsManagerRequest request) async {
     final Map<String, dynamic>? result;
@@ -68,7 +68,7 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
     } on PlatformException catch (e) {
       throw CredentialsManagerException.fromPlatformException(e);
     }
-    
+
     return result != null ? UserProfile.fromMap(result) : null;
   }
 

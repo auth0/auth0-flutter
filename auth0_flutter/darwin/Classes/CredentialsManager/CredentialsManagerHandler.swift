@@ -25,7 +25,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         case clear = "credentialsManager#clearCredentials"
         case userInfo = "credentialsManager#user"
     }
-    
+
     private struct ManagerCacheKey: Equatable {
         let accountDomain: String
         let accountClientId: String
@@ -88,12 +88,12 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         let accessGroup = iosConfiguration?["accessGroup"]
         let useDPoP = arguments["useDPoP"] as? Bool ?? false
         let hasLocalAuth = arguments[LocalAuthentication.key] != nil
-        
+
         guard let accountDictionary = arguments[Account.key] as? [String: String],
               let account = Account(from: accountDictionary) else {
             return self.createCredentialManager(apiClient, arguments)
         }
-        
+
         let currentKey = ManagerCacheKey(
             accountDomain: account.domain,
             accountClientId: account.clientId,
@@ -102,7 +102,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
             useDPoP: useDPoP,
             hasLocalAuth: hasLocalAuth
         )
-        
+
         var instance: CredentialsManager
         if let cachedKey = CredentialsManagerHandler.cachedKey,
            cachedKey == currentKey,
@@ -110,18 +110,18 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
             instance = cachedManager
         } else {
             instance = self.createCredentialManager(apiClient, arguments)
-            
+
             CredentialsManagerHandler.credentialsManager = instance
             CredentialsManagerHandler.cachedKey = currentKey
         }
-        
+
         if let localAuthenticationDictionary = arguments[LocalAuthentication.key] as? [String: String?] {
             let localAuthentication = LocalAuthentication(from: localAuthenticationDictionary)
             instance.enableBiometrics(withTitle: localAuthentication.title,
                                       cancelTitle: localAuthentication.cancelTitle,
                                       fallbackTitle: localAuthentication.fallbackTitle)
         }
-        
+
         return instance
     }
 
@@ -133,7 +133,6 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         case .clear: return CredentialsManagerClearMethodHandler(credentialsManager: credentialsManager)
         case .userInfo: return CredentialsManagerUserInfoMethodHandler(credentialsManager: credentialsManager)
         case .renew: return CredentialsManagerRenewMethodHandler(credentialsManager: credentialsManager)
-        case .userInfo: return CredentialsManagerUserInfoMethodHandler(credentialsManager: credentialsManager)
         }
     }
 
