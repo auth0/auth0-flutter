@@ -9,8 +9,6 @@ abstract class CredentialsManager {
     final Map<String, String> parameters = const {},
   });
 
-  Future<UserInfo> getIDTokenContents();
-
   Future<Credentials> renewCredentials({
     final Map<String, String> parameters = const {},
   });
@@ -66,11 +64,6 @@ class DefaultCredentialsManager extends CredentialsManager {
         parameters: parameters,
       )));
 
-<<<<<<< HEAD
-  @override
-  Future<UserInfo> getIDTokenContents() =>
-      CredentialsManagerPlatform.instance.getIDTokenContents(_createApiRequest(null));
-=======
   /// Fetches new set of credentials each time and stores them in storage.
   /// This will replace the existing credentials currently stored
   /// even if they are not expired.
@@ -83,7 +76,6 @@ class DefaultCredentialsManager extends CredentialsManager {
   }) =>
       CredentialsManagerPlatform.instance.renewCredentials(
           _createApiRequest(RenewCredentialsOptions(parameters: parameters)));
->>>>>>> main
 
   /// Fetches the user profile associated with the stored credentials.
   /// Returns null if no credentials are present in storage.

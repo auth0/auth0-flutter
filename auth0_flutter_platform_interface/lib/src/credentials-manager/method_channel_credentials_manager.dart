@@ -64,11 +64,11 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
     final Map<String, dynamic>? result;
     try {
       result = await _channel.invokeMapMethod(
-          credentialsManagerGetUserProfileMethod, request.toMap());
+        credentialsManagerGetUserProfileMethod,request.toMap());
     } on PlatformException catch (e) {
       throw CredentialsManagerException.fromPlatformException(e);
     }
-
+    
     return result != null ? UserProfile.fromMap(result) : null;
   }
 
