@@ -117,18 +117,6 @@ class SpyPluginRegistrar: NSObject, FlutterPluginRegistrar {
     func register(_ factory: FlutterPlatformViewFactory,
                   withId: String,
                   gestureRecognizersBlockingPolicy: FlutterPlatformViewGestureRecognizersBlockingPolicy) {}
-    #else
-    var view: NSView?
-    var viewController: NSViewController?
-
-    let messenger: FlutterBinaryMessenger = MockBinaryMessenger()
-
-    let textures: FlutterTextureRegistry = MockTextureRegistry()
-
-    func addApplicationDelegate(_ delegate: FlutterAppLifecycleDelegate) {}
-    #endif
-
-    private(set) var delegate: FlutterPlugin?
 
     func register(_ factory: FlutterPlatformViewFactory, withId: String) {}
 
@@ -141,6 +129,30 @@ class SpyPluginRegistrar: NSObject, FlutterPluginRegistrar {
     func lookupKey(forAsset: String, fromPackage: String) -> String {
         return ""
     }
+    #else
+    var view: NSView?
+    var viewController: NSViewController?
+
+    let messenger: FlutterBinaryMessenger = MockBinaryMessenger()
+
+    let textures: FlutterTextureRegistry = MockTextureRegistry()
+
+    func addApplicationDelegate(_ delegate: FlutterAppLifecycleDelegate) {}
+
+    func register(_ factory: FlutterPlatformViewFactory, withId: String) {}
+
+    func publish(_ value: NSObject) {}
+
+    func lookupKey(forAsset asset: String) -> String {
+        return ""
+    }
+
+    func lookupKey(forAsset: String, fromPackage: String) -> String {
+        return ""
+    }
+    #endif
+
+    private(set) var delegate: FlutterPlugin?
 
     func addMethodCallDelegate(_ delegate: FlutterPlugin, channel: FlutterMethodChannel) {
         self.delegate = delegate
