@@ -126,7 +126,7 @@ jobs:
         strategy:
           matrix:
             xcode:
-              - '26.0'
+              - '26.2'
 
         env:
           platform: iOS
@@ -174,7 +174,7 @@ jobs:
     #     strategy:
     #       matrix:
     #         xcode:
-    #           - '26.0'
+    #           - '26.2'
 
     #     steps:
     #         - name: Checkout
@@ -204,7 +204,7 @@ jobs:
         strategy:
           matrix:
             xcode:
-              - '26.0'
+              - '26.2'
 
         env:
           platform: macOS
@@ -247,7 +247,7 @@ jobs:
     #     strategy:
     #       matrix:
     #         xcode:
-    #           - '26.0'
+    #           - '26.2'
 
     #     steps:
     #         - name: Checkout
