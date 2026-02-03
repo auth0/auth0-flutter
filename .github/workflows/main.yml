@@ -126,7 +126,7 @@ jobs:
         strategy:
           matrix:
             xcode:
-              - '26.0'
+              - '26.2'
 
         env:
           platform: iOS
@@ -160,7 +160,7 @@ jobs:
               with:
                 name: iOS coverage
                 path: auth0_flutter/example/ios/cobertura
-    # TODO: fix both android and iOS smoke testcases and uncomment them.  
+    # TODO: fix both android and iOS smoke testcases and uncomment them.
     # test-ios-smoke:
     #     name: Run native iOS smoke tests using Xcode ${{ matrix.xcode }}
     #     runs-on: macos-15-large
@@ -174,7 +174,7 @@ jobs:
     #     strategy:
     #       matrix:
     #         xcode:
-    #           - '26.0'
+    #           - '26.2'
 
     #     steps:
     #         - name: Checkout
@@ -204,7 +204,7 @@ jobs:
         strategy:
           matrix:
             xcode:
-              - '26.0'
+              - '26.2'
 
         env:
           platform: macOS
@@ -247,7 +247,7 @@ jobs:
     #     strategy:
     #       matrix:
     #         xcode:
-    #           - '26.0'
+    #           - '26.2'
 
     #     steps:
     #         - name: Checkout
