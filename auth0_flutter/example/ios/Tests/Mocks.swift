@@ -119,17 +119,6 @@ class SpyPluginRegistrar: NSObject, FlutterPluginRegistrar {
                   withId: String,
                   gestureRecognizersBlockingPolicy: FlutterPlatformViewGestureRecognizersBlockingPolicy) {}
 
-//     func register(_ factory: FlutterPlatformViewFactory, withId: String) {}
-//
-//     func publish(_ value: NSObject) {}
-//
-//     func lookupKey(forAsset asset: String) -> String {
-//         return ""
-//     }
-//
-//     func lookupKey(forAsset: String, fromPackage: String) -> String {
-//         return ""
-//     }
     #else
     var view: NSView?
     var viewController: NSViewController?
@@ -154,9 +143,6 @@ class SpyPluginRegistrar: NSObject, FlutterPluginRegistrar {
     func lookupKey(forAsset: String, fromPackage: String) -> String {
         return ""
     }
-//     #endif
-//
-//     private(set) var delegate: FlutterPlugin?
 
     func addMethodCallDelegate(_ delegate: FlutterPlugin, channel: FlutterMethodChannel) {
         self.delegate = delegate
