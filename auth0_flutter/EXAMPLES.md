@@ -15,6 +15,7 @@
 - [📱 Credentials Manager](#-credentials-manager)
   - [Check for stored credentials](#check-for-stored-credentials)
   - [Retrieve stored credentials](#retrieve-stored-credentials)
+  - [Retrieve user profile](#retrieve-user-profile)
   - [Custom implementations](#custom-implementations)
   - [Local authentication](#local-authentication)
   - [Credentials Manager configuration](#credentials-manager-configuration)
@@ -395,6 +396,7 @@ await webAuth.logout();
 
 - [Check for stored credentials](#check-for-stored-credentials)
 - [Retrieve stored credentials](#retrieve-stored-credentials)
+- [Retrieve user profile](#retrieve-user-profile)
 - [Custom implementations](#custom-implementations)
 - [Local authentication](#local-authentication)
 - [Credentials Manager configuration](#credentials-manager-configuration)
@@ -428,6 +430,18 @@ final credentials = await auth0.credentialsManager.credentials();
 ```
 
 > 💡 You do not need to call `credentialsManager.storeCredentials()` afterward. The Credentials Manager automatically persists the renewed credentials.
+
+### Retrieve user profile
+
+Fetch the user profile associated with the stored credentials. This method returns `null` if no credentials are present in storage.
+
+```dart
+final userProfile = await auth0.credentialsManager.user();
+
+if (userProfile != null) {
+  print('Email: ${userProfile.email}');
+}
+```
 
 ### Custom implementations
 
