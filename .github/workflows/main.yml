@@ -135,12 +135,6 @@ jobs:
             - name: Checkout
               uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
-            - name: Select Xcode version
-              run: sudo xcode-select -s '/Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer'
-
-            - name: Install iOS Simulator Runtime
-              run: xcodebuild -downloadPlatform iOS
-
             - name: Set up environment
               uses: ./.github/actions/setup-darwin
               with:
@@ -166,7 +160,7 @@ jobs:
               with:
                 name: iOS coverage
                 path: auth0_flutter/example/ios/cobertura
-    # TODO: fix both android and iOS smoke testcases and uncomment them.  
+    # TODO: fix both android and iOS smoke testcases and uncomment them.
     # test-ios-smoke:
     #     name: Run native iOS smoke tests using Xcode ${{ matrix.xcode }}
     #     runs-on: macos-15-large
