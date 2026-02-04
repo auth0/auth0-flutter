@@ -1,6 +1,7 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 
 import '../../auth0_flutter.dart';
+import 'dart:io' show Platform;
 
 /// An interface for authenticating users using the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login).
 ///
@@ -12,12 +13,39 @@ import '../../auth0_flutter.dart';
 /// It is not intended for you to instantiate this class yourself, as an
 /// instance of it is already exposed as [Auth0.webAuthentication].
 ///
+///
 /// Usage example:
 ///
 /// ```dart
 /// final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
-/// final result = await auth0.webAuthentication.login();
+/// final result = await auth0.webAuthentication().login();
 /// final accessToken = result.accessToken;
+/// ```
+///
+/// Windows custom callback page example:
+///
+/// ```dart
+/// // Option 1: Use a hosted HTML page (recommended)
+/// final result = await auth0.webAuthentication.login(
+///   customCallbackUrl: 'https://auth0.com/success.html',
+/// );
+///
+/// // Option 2: Provide inline HTML
+/// final result = await auth0.webAuthentication.login(
+///   customCallbackHtml: '''
+///     <!DOCTYPE html>
+///     <html>
+///     <head>
+///       <meta charset="UTF-8">
+///       <script>setTimeout(() => window.close(), 3000);</script>
+///     </head>
+///     <body style="text-align: center; padding: 50px;">
+///       <h1>Success!</h1>
+///       <p>You've logged in. Closing in 3 seconds...</p>
+///     </body>
+///     </html>
+///   ''',
+/// );
 /// ```
 class WebAuthentication {
   final Account _account;
@@ -83,6 +111,14 @@ class WebAuthentication {
   /// no other allowed browser installed, an error is returned
   /// * [useDPoP] enables DPoP for enhanced token security.
   /// See README for details. Defaults to `false`.
+  /// * (Windows only): [customCallbackHtml] allows providing custom HTML
+  /// to display on the callback page after successful authentication. The
+  /// HTML should include an auto-close script
+  /// (e.g., `setTimeout(() => window.close(), 3000);`).
+  /// * (Windows only): [customCallbackUrl] allows providing a URL to fetch
+  /// custom HTML from (e.g., `https://your-domain.com/auth-success.html`).
+  /// This takes priority over [customCallbackHtml]. Useful for centralized
+  /// branding across apps.
   Future<Credentials> login({
     final String? audience,
     final Set<String> scopes = const {
@@ -102,7 +138,16 @@ class WebAuthentication {
         const IdTokenValidationConfig(),
     final SafariViewController? safariViewController,
     final bool useDPoP = false,
+    final String? customCallbackHtml,
+    final String? customCallbackUrl,
   }) async {
+    // Merge custom callback parameters into the parameters map for Windows
+    final mergedParameters = <String, String>{
+      ...parameters,
+      if (customCallbackHtml != null) 'customCallbackHtml': customCallbackHtml,
+      if (customCallbackUrl != null) 'customCallbackUrl': customCallbackUrl,
+    };
+
     final credentials = await Auth0FlutterWebAuthPlatform.instance.login(
       _createWebAuthRequest(
         WebAuthLoginOptions(
@@ -111,7 +156,7 @@ class WebAuthentication {
           redirectUrl: redirectUrl,
           organizationId: organizationId,
           invitationUrl: invitationUrl,
-          parameters: parameters,
+          parameters: mergedParameters,
           idTokenValidationConfig: idTokenValidationConfig,
           scheme: _scheme,
           useHTTPS: useHTTPS,
@@ -123,8 +168,9 @@ class WebAuthentication {
       ),
     );
 
-    await _credentialsManager?.storeCredentials(credentials);
-
+    if (!Platform.isWindows) {
+      await _credentialsManager?.storeCredentials(credentials);
+    }
     return credentials;
   }
 
@@ -165,7 +211,10 @@ class WebAuthentication {
           federated: federated,
           allowedBrowsers: allowedBrowsers),
     ));
-    await _credentialsManager?.clearCredentials();
+
+    if (!Platform.isWindows) {
+      await _credentialsManager?.clearCredentials();
+    }
   }
 
   /// Terminates the ongoing web-based operation and reports back that it was
