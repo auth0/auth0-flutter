@@ -147,7 +147,9 @@ namespace auth0_flutter
         }
 
         // Extract redirect URI (default: "auth0flutter://callback")
-        std::string redirectUri = "auth0flutter://callback";
+        // Default to localhost HTTP callback for better user experience
+        // This displays a friendly "redirecting" page instead of leaving browser stuck
+        std::string redirectUri = "http://localhost:8080/callback";
         auto redirectIt = arguments->find(flutter::EncodableValue("redirectUrl"));
         if (redirectIt != arguments->end())
         {
@@ -263,7 +265,22 @@ namespace auth0_flutter
             // Step 4: Wait for OAuth callback containing authorization code with state validation
             // Timeout: 180 seconds (3 minutes)
             // State parameter is validated to prevent CSRF attacks
-            std::string code = waitForAuthCode_CustomScheme(redirectUri, 180, state);
+            std::string code;
+
+            // Auto-detect callback method based on redirect URI scheme
+            if (redirectUri.rfind("http://", 0) == 0 || redirectUri.rfind("https://", 0) == 0)
+            {
+                // Use HTTP listener for localhost callbacks
+                // This provides a better UX with a friendly "redirecting" page
+                DebugPrint("Using HTTP listener for callback: " + redirectUri);
+                code = waitForAuthCode(redirectUri, 180, state);
+            }
+            else
+            {
+                // Use custom scheme (e.g., auth0flutter://) for protocol activation
+                DebugPrint("Using custom scheme for callback: " + redirectUri);
+                code = waitForAuthCode_CustomScheme(redirectUri, 180, state);
+            }
 
             // Step 5: Bring Flutter window back to foreground
             BringFlutterWindowToFront();

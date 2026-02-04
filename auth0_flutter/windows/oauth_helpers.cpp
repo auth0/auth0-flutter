@@ -197,30 +197,288 @@ namespace auth0_flutter
         return std::string();
     }
 
-    std::string waitForAuthCode(const std::string &redirectUri)
+    std::string waitForAuthCode(
+        const std::string &redirectUri,
+        int timeoutSeconds,
+        const std::string &expectedState)
     {
         uri u(utility::conversions::to_string_t(redirectUri));
         http_listener listener(u);
 
         std::string authCode;
+        bool callbackReceived = false;
 
         listener.support(methods::GET, [&](http_request request)
                          {
             auto queries = uri::split_query(request.request_uri().query());
+
+            // Validate state parameter if provided (CSRF protection)
+            if (!expectedState.empty())
+            {
+                auto stateIt = queries.find(U("state"));
+                std::string receivedState;
+                if (stateIt != queries.end())
+                {
+                    receivedState = utility::conversions::to_utf8string(stateIt->second);
+                }
+
+                if (receivedState != expectedState)
+                {
+                    DebugPrint("State validation failed in HTTP listener: expected '" +
+                               expectedState + "', received '" + receivedState + "'");
+
+                    // Return error page for state mismatch
+                    std::string errorHtml = R"html(
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Error</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 400px;
+        }
+        .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #d32f2f;
+            margin: 0 0 16px 0;
+            font-size: 24px;
+        }
+        p {
+            color: #666;
+            margin: 0 0 24px 0;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">⚠️</div>
+        <h1>Authentication Error</h1>
+        <p>Invalid authentication state detected. Please try again.</p>
+    </div>
+</body>
+</html>
+)html";
+                    request.reply(status_codes::BadRequest, errorHtml, U("text/html"));
+                    callbackReceived = true;
+                    return;
+                }
+            }
+
+            // Extract authorization code
             auto it = queries.find(U("code"));
             if (it != queries.end()) {
                 authCode = utility::conversions::to_utf8string(it->second);
             }
 
-            request.reply(status_codes::OK,
-                          U("Login successful! You may close this window.")); });
+            // Check for error parameter
+            auto errorIt = queries.find(U("error"));
+            if (errorIt != queries.end())
+            {
+                std::string errorCode = utility::conversions::to_utf8string(errorIt->second);
+                std::string errorDescription = "Authentication failed";
+
+                auto errorDescIt = queries.find(U("error_description"));
+                if (errorDescIt != queries.end())
+                {
+                    errorDescription = utility::conversions::to_utf8string(errorDescIt->second);
+                }
+
+                DebugPrint("OAuth error received: " + errorCode + " - " + errorDescription);
+
+                // Return error page
+                std::string errorHtml = R"html(
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Failed</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 400px;
+        }
+        .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #d32f2f;
+            margin: 0 0 16px 0;
+            font-size: 24px;
+        }
+        p {
+            color: #666;
+            margin: 0 0 24px 0;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">❌</div>
+        <h1>Authentication Failed</h1>
+        <p>)html" + errorDescription + R"html(</p>
+        <p style="font-size: 14px; color: #999;">You can close this window.</p>
+    </div>
+</body>
+</html>
+)html";
+                request.reply(status_codes::OK, errorHtml, U("text/html"));
+                callbackReceived = true;
+                return;
+            }
+
+            // Success response with auto-close
+            std::string successHtml = R"html(
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Successful</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 400px;
+        }
+        .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            animation: checkmark 0.5s ease-in-out;
+        }
+        @keyframes checkmark {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        h1 {
+            color: #2e7d32;
+            margin: 0 0 16px 0;
+            font-size: 24px;
+        }
+        p {
+            color: #666;
+            margin: 0 0 8px 0;
+            line-height: 1.5;
+        }
+        .countdown {
+            font-size: 14px;
+            color: #999;
+            margin-top: 16px;
+        }
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <script>
+        // Auto-close after 3 seconds
+        let countdown = 3;
+        function updateCountdown() {
+            const countdownEl = document.getElementById('countdown');
+            if (countdown > 0) {
+                countdownEl.textContent = countdown;
+                countdown--;
+                setTimeout(updateCountdown, 1000);
+            } else {
+                window.close();
+                // If window.close() doesn't work (some browsers block it), show message
+                setTimeout(() => {
+                    document.querySelector('.countdown').innerHTML =
+                        'If this window doesn\'t close automatically, you may close it manually.';
+                }, 500);
+            }
+        }
+        window.onload = updateCountdown;
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">✅</div>
+        <h1>Authentication Successful!</h1>
+        <p>You will be redirected in a few moments.</p>
+        <div class="countdown">
+            <span class="spinner"></span>
+            Closing in <span id="countdown">3</span> seconds...
+        </div>
+    </div>
+</body>
+</html>
+)html";
+            request.reply(status_codes::OK, successHtml, U("text/html"));
+            callbackReceived = true; });
 
         listener.open().wait();
 
-        while (authCode.empty())
+        // Wait for callback with timeout
+        const int sleepMs = 100;
+        int elapsed = 0;
+        int maxWait = timeoutSeconds * 1000;
+
+        while (!callbackReceived && elapsed < maxWait)
         {
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            std::this_thread::sleep_for(std::chrono::milliseconds(sleepMs));
+            elapsed += sleepMs;
         }
+
         listener.close().wait();
         return authCode;
     }

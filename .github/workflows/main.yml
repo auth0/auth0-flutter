@@ -331,7 +331,7 @@ jobs:
               uses: lukka/run-vcpkg@v11 # pin@v11
               with:
                 vcpkgDirectory: '${{ github.workspace }}/vcpkg'
-                vcpkgGitCommitId: '7a26ed4ca1cc6eafc66666166f8f36c49dc5ec18'
+                vcpkgGitCommitId: '66c0373dc7fca549e5803087b9487edfe3aca0a1'
 
             - name: Install vcpkg dependencies
               run: |

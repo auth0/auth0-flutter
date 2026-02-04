@@ -28,11 +28,11 @@ We're excited to announce the release of auth0_flutter v2.0.0!
 
 ### Requirements
 
-| Flutter     | Android         | iOS               | macOS             |
-| :---------- | :-------------- | :---------------- | :---------------- |
-| SDK 3.24.0+ | Android API 21+ | iOS 14+           | macOS 11+         |
-| Dart 3.5.0+ | Java 8+         | Swift 5.9+        | Swift 5.9+        |
-|             |                 | Xcode 15.x / 16.x | Xcode 15.x / 16.x |
+| Flutter     | Android         | iOS               | macOS             | Windows           |
+| :---------- | :-------------- | :---------------- | :---------------- | :---------------- |
+| SDK 3.24.0+ | Android API 21+ | iOS 14+           | macOS 11+         | Windows 10+       |
+| Dart 3.5.0+ | Java 8+         | Swift 5.9+        | Swift 5.9+        | C++ 17            |
+|             |                 | Xcode 15.x / 16.x | Xcode 15.x / 16.x |                   |
 
 ### Installation
 
@@ -77,6 +77,7 @@ Under the **Application URIs** section of the **Settings** page, configure the f
 - Android: `SCHEME://YOUR_DOMAIN/android/YOUR_PACKAGE_NAME/callback`
 - iOS: `https://YOUR_DOMAIN/ios/YOUR_BUNDLE_ID/callback,YOUR_BUNDLE_ID://YOUR_DOMAIN/ios/YOUR_BUNDLE_ID/callback`
 - macOS: `https://YOUR_DOMAIN/macos/YOUR_BUNDLE_ID/callback,YOUR_BUNDLE_ID://YOUR_DOMAIN/macos/YOUR_BUNDLE_ID/callback`
+- Windows: `http://localhost:8080/callback`
 
 <details>
   <summary>Example</summary>
@@ -86,8 +87,11 @@ If your Auth0 domain was `company.us.auth0.com` and your package name (Android) 
 - Android: `https://company.us.auth0.com/android/com.company.myapp/callback`
 - iOS: `https://company.us.auth0.com/ios/com.company.myapp/callback,com.company.myapp://company.us.auth0.com/ios/com.company.myapp/callback`
 - macOS: `https://company.us.auth0.com/macos/com.company.myapp/callback,com.company.myapp://company.us.auth0.com/macos/com.company.myapp/callback`
+- Windows: `http://localhost:8080/callback`
 
 </details>
+
+> 💡 **Windows**: The Windows implementation uses a localhost HTTP callback by default, which provides a friendly "Authentication Successful!" page with auto-close functionality instead of leaving the browser tab stuck. See the [Windows README](windows/README.md) for more details.
 
 Take note of the **client ID** and **domain** values under the **Basic Information** section. You'll need these values in the next step.
 
@@ -407,18 +411,24 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 - [Retrieve stored credentials](EXAMPLES.md#retrieve-stored-credentials) - fetch the user's credentials from the storage, automatically renewing them if they have expired.
 - [Retrieve user information](EXAMPLES.md#retrieve-user-information) - fetch the latest user information from the `/userinfo` endpoint.
 
+### 🪟 Windows
+
+- [Windows Authentication Setup](windows/README.md) - detailed guide for Windows-specific authentication configuration with HTTP callback support.
+
 ### 🌐 Web
 
 - [Handling credentials on the web](EXAMPLES.md#handling-credentials-on-the-web) - how to check and retrieve credentials on the web platform.
 
 ## API reference
 
-### 📱 Mobile/macOS
+### 📱 Mobile/macOS/Windows
 
 #### Web Authentication
 
 - [login](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/WebAuthentication/login.html)
 - [logout](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/WebAuthentication/logout.html)
+
+> 💡 **Windows**: Web Authentication on Windows uses a localhost HTTP callback by default for the best user experience. See the [Windows README](windows/README.md) for configuration details.
 
 #### API
 
@@ -431,6 +441,8 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 - [userProfile](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/userProfile.html)
 
 #### Credentials Manager
+
+> ⚠️ **Note**: Credentials Manager is available on Mobile and macOS platforms only. Windows does not currently support credential storage.
 
 - [credentials](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/DefaultCredentialsManager/credentials.html)
 - [hasValidCredentials](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/DefaultCredentialsManager/hasValidCredentials.html)

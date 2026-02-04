@@ -48,7 +48,16 @@ namespace auth0_flutter
      * @brief Wait for OAuth callback with authorization code (HTTP listener flow)
      *
      * Starts a local HTTP server to listen for OAuth callback.
+     * Displays a friendly HTML page with auto-close functionality.
+     *
+     * @param redirectUri The redirect URI (e.g., "http://localhost:8080/callback")
+     * @param timeoutSeconds Maximum time to wait for callback (default: 180 seconds)
+     * @param expectedState Expected state parameter for CSRF validation (optional)
+     * @return Authorization code if successful, empty string on timeout or error
      */
-    std::string waitForAuthCode(const std::string &redirectUri);
+    std::string waitForAuthCode(
+        const std::string &redirectUri,
+        int timeoutSeconds = 180,
+        const std::string &expectedState = "");
 
 } // namespace auth0_flutter
