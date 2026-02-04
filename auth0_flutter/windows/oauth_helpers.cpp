@@ -18,12 +18,14 @@
 #include <openssl/sha.h>
 #include <openssl/rand.h>
 
-// cpprestsdk for HTTP listener
+// cpprestsdk for HTTP listener and client
 #include <cpprest/http_listener.h>
+#include <cpprest/http_client.h>
 #include <cpprest/uri.h>
 
 using namespace web;
 using namespace web::http;
+using namespace web::http::client;
 using namespace web::http::experimental::listener;
 
 namespace auth0_flutter
@@ -197,10 +199,42 @@ namespace auth0_flutter
         return std::string();
     }
 
+    std::string fetchHtmlFromUrl(const std::string &url)
+    {
+        try
+        {
+            http_client client(utility::conversions::to_string_t(url));
+            http_request request(methods::GET);
+
+            // Make the request and wait for response
+            http_response response = client.request(request).get();
+
+            if (response.status_code() == status_codes::OK)
+            {
+                // Extract body as string
+                auto body = response.extract_string().get();
+                return utility::conversions::to_utf8string(body);
+            }
+            else
+            {
+                DebugPrint("Failed to fetch HTML from URL: " + url +
+                           " - Status: " + std::to_string(response.status_code()));
+                return std::string();
+            }
+        }
+        catch (const std::exception &e)
+        {
+            DebugPrint("Exception fetching HTML from URL: " + url + " - " + e.what());
+            return std::string();
+        }
+    }
+
     std::string waitForAuthCode(
         const std::string &redirectUri,
         int timeoutSeconds,
-        const std::string &expectedState)
+        const std::string &expectedState,
+        const std::string &customSuccessHtml,
+        const std::string &customSuccessUrl)
     {
         uri u(utility::conversions::to_string_t(redirectUri));
         http_listener listener(u);
@@ -278,9 +312,10 @@ namespace auth0_flutter
 </body>
 </html>
 )html";
-                    request.reply(status_codes::BadRequest,
-                                  utility::conversions::to_string_t(errorHtml),
-                                  U("text/html"));
+                    http_response response(status_codes::BadRequest);
+                    response.headers().set_content_type(U("text/html; charset=utf-8"));
+                    response.set_body(utility::conversions::to_string_t(errorHtml));
+                    request.reply(response);
                     callbackReceived = true;
                     return;
                 }
@@ -359,15 +394,41 @@ namespace auth0_flutter
 </body>
 </html>
 )html";
-                request.reply(status_codes::OK,
-                              utility::conversions::to_string_t(errorHtml),
-                              U("text/html"));
+                http_response response(status_codes::OK);
+                response.headers().set_content_type(U("text/html; charset=utf-8"));
+                response.set_body(utility::conversions::to_string_t(errorHtml));
+                request.reply(response);
                 callbackReceived = true;
                 return;
             }
 
             // Success response with auto-close
-            std::string successHtml = R"html(
+            // Use custom HTML if provided (priority: URL > custom HTML > default)
+            std::string successHtml;
+
+            if (!customSuccessUrl.empty())
+            {
+                // Fetch HTML from hosted URL
+                DebugPrint("Fetching custom success HTML from URL: " + customSuccessUrl);
+                successHtml = fetchHtmlFromUrl(customSuccessUrl);
+                if (successHtml.empty())
+                {
+                    DebugPrint("Failed to fetch custom HTML from URL, falling back to default");
+                }
+            }
+
+            if (successHtml.empty() && !customSuccessHtml.empty())
+            {
+                // Use custom HTML string provided by Flutter
+                DebugPrint("Using custom success HTML provided by Flutter");
+                successHtml = customSuccessHtml;
+            }
+
+            if (successHtml.empty())
+            {
+                // Use default HTML
+                DebugPrint("Using default success HTML");
+                successHtml = R"html(
 <!DOCTYPE html>
 <html>
 <head>
@@ -467,9 +528,12 @@ namespace auth0_flutter
 </body>
 </html>
 )html";
-            request.reply(status_codes::OK,
-                          utility::conversions::to_string_t(successHtml),
-                          U("text/html"));
+            }
+
+            http_response response(status_codes::OK);
+            response.headers().set_content_type(U("text/html; charset=utf-8"));
+            response.set_body(utility::conversions::to_string_t(successHtml));
+            request.reply(response);
             callbackReceived = true; });
 
         listener.open().wait();

@@ -190,6 +190,27 @@ namespace auth0_flutter
             }
         }
 
+        // Extract custom callback HTML parameters (Windows-specific)
+        std::string customSuccessHtml;
+        auto customHtmlIt = arguments->find(flutter::EncodableValue("customCallbackHtml"));
+        if (customHtmlIt != arguments->end())
+        {
+            if (auto s = std::get_if<std::string>(&customHtmlIt->second))
+            {
+                customSuccessHtml = *s;
+            }
+        }
+
+        std::string customSuccessUrl;
+        auto customUrlIt = arguments->find(flutter::EncodableValue("customCallbackUrl"));
+        if (customUrlIt != arguments->end())
+        {
+            if (auto s = std::get_if<std::string>(&customUrlIt->second))
+            {
+                customSuccessUrl = *s;
+            }
+        }
+
         // Extract additional parameters map
         std::map<std::string, std::string> additionalParams;
         auto paramsIt = arguments->find(flutter::EncodableValue("parameters"));
@@ -273,7 +294,15 @@ namespace auth0_flutter
                 // Use HTTP listener for localhost callbacks
                 // This provides a better UX with a friendly "redirecting" page
                 DebugPrint("Using HTTP listener for callback: " + redirectUri);
-                code = waitForAuthCode(redirectUri, 180, state);
+                if (!customSuccessUrl.empty())
+                {
+                    DebugPrint("Custom callback URL provided: " + customSuccessUrl);
+                }
+                else if (!customSuccessHtml.empty())
+                {
+                    DebugPrint("Custom callback HTML provided (length: " + std::to_string(customSuccessHtml.length()) + ")");
+                }
+                code = waitForAuthCode(redirectUri, 180, state, customSuccessHtml, customSuccessUrl);
             }
             else
             {

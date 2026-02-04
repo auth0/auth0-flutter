@@ -53,11 +53,23 @@ namespace auth0_flutter
      * @param redirectUri The redirect URI (e.g., "http://localhost:8080/callback")
      * @param timeoutSeconds Maximum time to wait for callback (default: 180 seconds)
      * @param expectedState Expected state parameter for CSRF validation (optional)
+     * @param customSuccessHtml Custom HTML for success page (optional, overrides default)
+     * @param customSuccessUrl URL to fetch custom HTML for success page (optional, overrides customSuccessHtml)
      * @return Authorization code if successful, empty string on timeout or error
      */
     std::string waitForAuthCode(
         const std::string &redirectUri,
         int timeoutSeconds = 180,
-        const std::string &expectedState = "");
+        const std::string &expectedState = "",
+        const std::string &customSuccessHtml = "",
+        const std::string &customSuccessUrl = "");
+
+    /**
+     * @brief Fetch HTML content from a URL
+     *
+     * @param url The URL to fetch HTML from
+     * @return HTML content as string, empty string on error
+     */
+    std::string fetchHtmlFromUrl(const std::string &url);
 
 } // namespace auth0_flutter

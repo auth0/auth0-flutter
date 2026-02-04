@@ -91,7 +91,7 @@ If your Auth0 domain was `company.us.auth0.com` and your package name (Android) 
 
 </details>
 
-> 💡 **Windows**: The Windows implementation uses a localhost HTTP callback by default, which provides a friendly "Authentication Successful!" page with auto-close functionality instead of leaving the browser tab stuck. See the [Windows README](windows/README.md) for more details.
+> 💡 **Windows**: The Windows implementation uses a localhost HTTP callback by default, which provides a friendly "Authentication Successful!" page with auto-close functionality instead of leaving the browser tab stuck. **You can customize this page with your own HTML** (inline or hosted URL). See the [Windows README](windows/README.md) for customization details.
 
 Take note of the **client ID** and **domain** values under the **Basic Information** section. You'll need these values in the next step.
 
