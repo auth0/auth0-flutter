@@ -259,7 +259,8 @@ extension CredentialsManagerHandlerTests {
             .save: CredentialsManagerSaveMethodHandler.self,
             .hasValid: CredentialsManagerHasValidMethodHandler.self,
             .get: CredentialsManagerGetMethodHandler.self,
-            .clear: CredentialsManagerClearMethodHandler.self
+            .clear: CredentialsManagerClearMethodHandler.self,
+            .userInfo: CredentialsManagerUserInfoMethodHandler.self
         ]
         methodHandlers.forEach { method, methodHandler in
             let methodCall = FlutterMethodCall(methodName: method.rawValue, arguments: arguments())
@@ -274,6 +275,20 @@ extension CredentialsManagerHandlerTests {
             sut.handle(methodCall) { _ in }
         }
         wait(for: expectations)
+    }
+
+    func testReturnsUserInfoMethodHandlerForUserInfoMethod() {
+        let methodCall = FlutterMethodCall(methodName: CredentialsManagerHandler.Method.userInfo.rawValue, arguments: arguments())
+        let expectation = self.expectation(description: "Returned CredentialsManagerUserInfoMethodHandler")
+        
+        sut.methodHandlerProvider = { method, client in
+            let result = CredentialsManagerHandler().methodHandlerProvider(method, client)
+            XCTAssertTrue(type(of: result) == CredentialsManagerUserInfoMethodHandler.self)
+            expectation.fulfill()
+            return result
+        }
+        sut.handle(methodCall) { _ in }
+        wait(for: [expectation])
     }
 
     func testCallsMethodHandlers() {

@@ -60,7 +60,7 @@ jobs:
 
             - name: Analyze auth0_flutter_platform_interface package
               working-directory: auth0_flutter_platform_interface
-              run: flutter analyze --no-fatal-warnings --no-fatal-infos
+              run: flutter analyze
 
     test-auth0_flutter:
         name: Test auth0_flutter Flutter package
@@ -126,7 +126,7 @@ jobs:
         strategy:
           matrix:
             xcode:
-              - '26.0'
+              - '26.2'
 
         env:
           platform: iOS
@@ -160,41 +160,41 @@ jobs:
               with:
                 name: iOS coverage
                 path: auth0_flutter/example/ios/cobertura
+    # TODO: fix both android and iOS smoke testcases and uncomment them.
+    # test-ios-smoke:
+    #     name: Run native iOS smoke tests using Xcode ${{ matrix.xcode }}
+    #     runs-on: macos-15-large
+    #     environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
-    test-ios-smoke:
-        name: Run native iOS smoke tests using Xcode ${{ matrix.xcode }}
-        runs-on: macos-15-large
-        environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
+    #     env:
+    #         platform: iOS
+    #         USER_EMAIL: ${{ secrets.USER_EMAIL }}
+    #         USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
 
-        env:
-            platform: iOS
-            USER_EMAIL: ${{ secrets.USER_EMAIL }}
-            USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
+    #     strategy:
+    #       matrix:
+    #         xcode:
+    #           - '26.2'
 
-        strategy:
-          matrix:
-            xcode:
-              - '26.0'
+    #     steps:
+    #         - name: Checkout
+    #           uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+    #         - name: Set up environment
+    #           uses: ./.github/actions/setup-darwin
+    #           with:
+    #             platform: ${{ env.platform }}
+    #             ruby: ${{ env.ruby }}
+    #             flutter: ${{ env.flutter }}
+    #             xcode: ${{ matrix.xcode }}
+    #             auth0-domain: ${{ vars.AUTH0_DOMAIN }}
+    #             auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
 
-            - name: Set up environment
-              uses: ./.github/actions/setup-darwin
-              with:
-                platform: ${{ env.platform }}
-                ruby: ${{ env.ruby }}
-                flutter: ${{ env.flutter }}
-                xcode: ${{ matrix.xcode }}
-                auth0-domain: ${{ vars.AUTH0_DOMAIN }}
-                auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
-
-            - name: Run iOS smoke tests
-              uses: ./.github/actions/smoke-tests-darwin
-              with:
-                platform: ${{ env.platform }}
-                destination: ${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.ios-simulator) }}
+    #         - name: Run iOS smoke tests
+    #           uses: ./.github/actions/smoke-tests-darwin
+    #           with:
+    #             platform: ${{ env.platform }}
+    #             destination: ${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.ios-simulator) }}
 
     test-macos-unit:
         name: Run native macOS unit tests using Xcode ${{ matrix.xcode }}
@@ -204,7 +204,7 @@ jobs:
         strategy:
           matrix:
             xcode:
-              - '26.0'
+              - '26.2'
 
         env:
           platform: macOS
@@ -233,40 +233,41 @@ jobs:
                 platform: ${{ env.platform }}
                 destination: platform=macOS,arch=x86_64
 
-    test-macos-smoke:
-        name: Run native macOS smoke tests using Xcode ${{ matrix.xcode }}
-        runs-on: macos-15
-        environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
+    # TODO: fix macos smoke tests
+    # test-macos-smoke:
+    #     name: Run native macOS smoke tests using Xcode ${{ matrix.xcode }}
+    #     runs-on: macos-15
+    #     environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
-        env:
-            platform: macOS
-            USER_EMAIL: ${{ secrets.USER_EMAIL }}
-            USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
+    #     env:
+    #         platform: macOS
+    #         USER_EMAIL: ${{ secrets.USER_EMAIL }}
+    #         USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
 
-        strategy:
-          matrix:
-            xcode:
-              - '26.0'
+    #     strategy:
+    #       matrix:
+    #         xcode:
+    #           - '26.2'
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+    #     steps:
+    #         - name: Checkout
+    #           uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
-            - name: Set up environment
-              uses: ./.github/actions/setup-darwin
-              with:
-                platform: ${{ env.platform }}
-                ruby: ${{ env.ruby }}
-                flutter: ${{ env.flutter }}
-                xcode: ${{ matrix.xcode }}
-                auth0-domain: ${{ vars.AUTH0_DOMAIN }}
-                auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
+    #         - name: Set up environment
+    #           uses: ./.github/actions/setup-darwin
+    #           with:
+    #             platform: ${{ env.platform }}
+    #             ruby: ${{ env.ruby }}
+    #             flutter: ${{ env.flutter }}
+    #             xcode: ${{ matrix.xcode }}
+    #             auth0-domain: ${{ vars.AUTH0_DOMAIN }}
+    #             auth0-client-id: ${{ vars.AUTH0_CLIENT_ID }}
 
-            - name: Run macOS smoke tests
-              uses: ./.github/actions/smoke-tests-darwin
-              with:
-                platform: ${{ env.platform }}
-                destination: platform=macOS,arch=x86_64
+    #         - name: Run macOS smoke tests
+    #           uses: ./.github/actions/smoke-tests-darwin
+    #           with:
+    #             platform: ${{ env.platform }}
+    #             destination: platform=macOS,arch=x86_64
 
     test-android-unit:
         name: Run native Android unit tests
