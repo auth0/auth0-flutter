@@ -278,7 +278,9 @@ namespace auth0_flutter
 </body>
 </html>
 )html";
-                    request.reply(status_codes::BadRequest, errorHtml, U("text/html"));
+                    request.reply(status_codes::BadRequest,
+                                  utility::conversions::to_string_t(errorHtml),
+                                  U("text/html"));
                     callbackReceived = true;
                     return;
                 }
@@ -357,7 +359,9 @@ namespace auth0_flutter
 </body>
 </html>
 )html";
-                request.reply(status_codes::OK, errorHtml, U("text/html"));
+                request.reply(status_codes::OK,
+                              utility::conversions::to_string_t(errorHtml),
+                              U("text/html"));
                 callbackReceived = true;
                 return;
             }
@@ -463,7 +467,9 @@ namespace auth0_flutter
 </body>
 </html>
 )html";
-            request.reply(status_codes::OK, successHtml, U("text/html"));
+            request.reply(status_codes::OK,
+                          utility::conversions::to_string_t(successHtml),
+                          U("text/html"));
             callbackReceived = true; });
 
         listener.open().wait();
