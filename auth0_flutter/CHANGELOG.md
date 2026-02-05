@@ -1,5 +1,11 @@
 # Change Log
 
+## [af-v2.0.0-beta.3](https://github.com/auth0/auth0-flutter/tree/af-v2.0.0-beta.3) (2026-02-05)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.0.0-beta.2...af-v2.0.0-beta.3)
+
+**Added**
+- CredentialsManager user info/ID token contents accessible via flutter SDK [\#607](https://github.com/auth0/auth0-flutter/pull/607) ([NandanPrabhu](https://github.com/NandanPrabhu))
+
 ## [af-v2.0.0-beta.2](https://github.com/auth0/auth0-flutter/tree/af-v2.0.0-beta.2) (2026-01-22)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.0.0-beta.1...af-v2.0.0-beta.2)
 
