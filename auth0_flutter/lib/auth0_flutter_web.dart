@@ -1,4 +1,5 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
+
 import 'src/version.dart';
 
 export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
@@ -129,6 +130,8 @@ class Auth0Web {
   /// * [scopes] defaults to `openid profile email`. You can override these
   /// scopes, but `openid` is always requested regardless of this setting.
   /// * If you want to log into a specific organization, provide the
+  /// * Use [openUrl] to control the redirect and not rely on the SDK to do the
+  /// actual redirect. Required *auth0-spa-js* `2.0.1` or later.
   /// [organizationId]. Provide [invitationUrl] if a user has been invited
   /// to join an organization.
   /// * Arbitrary [parameters] can be specified and then picked up in a custom
@@ -147,6 +150,7 @@ class Auth0Web {
     final String? invitationUrl,
     final int? maxAge,
     final Set<String>? scopes,
+    final Future<void> Function(String url)? openUrl,
     final Map<String, String> parameters = const {},
   }) =>
       Auth0FlutterWebPlatform.instance.loginWithRedirect(
@@ -157,6 +161,7 @@ class Auth0Web {
           organizationId: organizationId,
           invitationUrl: invitationUrl,
           scopes: scopes ?? {},
+          openUrl: openUrl,
           idTokenValidationConfig: IdTokenValidationConfig(maxAge: maxAge),
           parameters: parameters,
         ),
@@ -234,9 +239,20 @@ class Auth0Web {
   /// * Use [federated] to log the user out of their identity provider
   /// (such as Google) as well as Auth0. Only applicable if the user
   /// authenticated using an identity provider. [Read more about how federated logout works at Auth0](https://auth0.com/docs/logout/guides/logout-idps).
-  Future<void> logout({final bool? federated, final String? returnToUrl}) =>
-      Auth0FlutterWebPlatform.instance
-          .logout(LogoutOptions(federated: federated, returnTo: returnToUrl));
+  /// * Use [openUrl] to control the redirect and not rely on the SDK to do the
+  /// actual redirect. Required *auth0-spa-js* `2.0.1` or later.
+  Future<void> logout({
+    final bool? federated,
+    final String? returnToUrl,
+    final Future<void> Function(String url)? openUrl,
+  }) =>
+      Auth0FlutterWebPlatform.instance.logout(
+        LogoutOptions(
+          federated: federated,
+          returnTo: returnToUrl,
+          openUrl: openUrl,
+        ),
+      );
 
   /// Retrieves a set of credentials for the user.
   ///
