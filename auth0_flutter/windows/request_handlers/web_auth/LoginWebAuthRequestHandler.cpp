@@ -190,24 +190,29 @@ namespace auth0_flutter
             }
         }
 
-        // Extract custom callback HTML parameters (Windows-specific)
-        std::string customSuccessHtml;
-        auto customHtmlIt = arguments->find(flutter::EncodableValue("customCallbackHtml"));
-        if (customHtmlIt != arguments->end())
+        auto parametersIt = arguments->find(flutter::EncodableValue("parameters"));
+        if (parametersIt == arguments->end())
         {
-            if (auto s = std::get_if<std::string>(&customHtmlIt->second))
-            {
-                customSuccessHtml = *s;
-            }
+            result->Error("bad_args", "Missing 'parameters' key");
+            return;
         }
 
-        std::string customSuccessUrl;
-        auto customUrlIt = arguments->find(flutter::EncodableValue("customCallbackUrl"));
-        if (customUrlIt != arguments->end())
+        const auto *parametersMap = std::get_if<flutter::EncodableMap>(&parametersIt->second);
+        if (!parametersMap)
         {
-            if (auto s = std::get_if<std::string>(&customUrlIt->second))
+            result->Error("bad_args", "'parameters' is not a map");
+            return;
+        }
+        // Extract the actual callback URL to listen for (may differ from redirectUri sent to Auth0)
+        // This is used when an intermediary server receives the Auth0 redirect and forwards to the app
+        std::string actualCallbackUrl = redirectUri;
+        auto callbackUrlIt = parametersMap->find(flutter::EncodableValue("actualCallbackUrl"));
+        if (callbackUrlIt != parametersMap->end())
+        {
+            if (auto s = std::get_if<std::string>(&callbackUrlIt->second))
             {
-                customSuccessUrl = *s;
+                actualCallbackUrl = *s;
+                DebugPrint("Using custom actualCallbackUrl: " + actualCallbackUrl);
             }
         }
 
@@ -231,19 +236,24 @@ namespace auth0_flutter
             }
         }
 
-        try
-        {
-            // Step 1: Generate PKCE parameters for secure OAuth flow
-            // PKCE prevents authorization code interception attacks
-            std::string codeVerifier = generateCodeVerifier();
-            std::string codeChallenge = generateCodeChallenge(codeVerifier);
+        // Run authentication flow in background thread to avoid blocking UI
+        std::thread([
+            result = std::move(result),
+            clientId, domain, scopeStr, redirectUri, audience, organizationId, invitationUrl, actualCallbackUrl, additionalParams
+        ]() mutable {
+            try
+            {
+                // Step 1: Generate PKCE parameters for secure OAuth flow
+                // PKCE prevents authorization code interception attacks
+                std::string codeVerifier = generateCodeVerifier();
+                std::string codeChallenge = generateCodeChallenge(codeVerifier);
 
-            // Generate state parameter for CSRF protection
-            std::string state = generateCodeVerifier(); // Reuse code verifier generation for random state
+                // Generate state parameter for CSRF protection
+                std::string state = generateCodeVerifier(); // Reuse code verifier generation for random state
 
-            DebugPrint("codeVerifier = " + codeVerifier);
-            DebugPrint("codeChallenge = " + codeChallenge);
-            DebugPrint("state = " + state);
+                DebugPrint("codeVerifier = " + codeVerifier);
+                DebugPrint("codeChallenge = " + codeChallenge);
+                DebugPrint("state = " + state);
 
             // Step 2: Build OAuth 2.0 authorization URL with properly encoded parameters
             // Uses authorization code flow with PKCE and state for CSRF protection
@@ -281,6 +291,7 @@ namespace auth0_flutter
 
             // Step 3: Open system default browser for user authentication
             // User will authenticate with Auth0 in their browser
+            DebugPrint("Opening authorize URL: " + authUrl.str());
             ShellExecuteA(NULL, "open", authUrl.str().c_str(), NULL, NULL, SW_SHOWNORMAL);
 
             // Step 4: Wait for OAuth callback containing authorization code with state validation
@@ -288,42 +299,30 @@ namespace auth0_flutter
             // State parameter is validated to prevent CSRF attacks
             std::string code;
 
-            // Auto-detect callback method based on redirect URI scheme
-            if (redirectUri.rfind("http://", 0) == 0 || redirectUri.rfind("https://", 0) == 0)
-            {
-                // Use HTTP listener for localhost callbacks
-                // This provides a better UX with a friendly "redirecting" page
-                DebugPrint("Using HTTP listener for callback: " + redirectUri);
-                if (!customSuccessUrl.empty())
-                {
-                    DebugPrint("Custom callback URL provided: " + customSuccessUrl);
-                }
-                else if (!customSuccessHtml.empty())
-                {
-                    DebugPrint("Custom callback HTML provided (length: " + std::to_string(customSuccessHtml.length()) + ")");
-                }
-                code = waitForAuthCode(redirectUri, 180, state, customSuccessHtml, customSuccessUrl);
-            }
-            else
-            {
-                // Use custom scheme (e.g., auth0flutter://) for protocol activation
-                DebugPrint("Using custom scheme for callback: " + redirectUri);
-                code = waitForAuthCode_CustomScheme(redirectUri, 180, state);
-            }
+            // Use custom scheme (e.g., auth0flutter://) for protocol activation
+            // This is used when an intermediary server forwards the callback to the app
+            DebugPrint("Using custom scheme for callback: " + actualCallbackUrl);
+            code = waitForAuthCode_CustomScheme(actualCallbackUrl, 180, state);
 
             // Step 5: Bring Flutter window back to foreground
+            DebugPrint("Callback received, bringing window to front");
             BringFlutterWindowToFront();
 
             if (code.empty())
             {
+                DebugPrint("ERROR: Authorization code is empty");
                 result->Error("auth_failed", "Failed to receive authorization code (timeout or user cancelled)");
                 return;
             }
 
+            DebugPrint("Authorization code received: " + code.substr(0, 10) + "...");
+
             // Step 6: Exchange authorization code for tokens
             // Sends code verifier to prove we initiated the flow (PKCE validation)
+            DebugPrint("Exchanging code for tokens with redirect_uri: " + redirectUri);
             Auth0Client client(domain, clientId);
             Credentials creds = client.ExchangeCodeForTokens(redirectUri, code, codeVerifier);
+            DebugPrint("Token exchange successful");
 
             // Step 7: Build response map with credentials
             flutter::EncodableMap response;
@@ -364,14 +363,15 @@ namespace auth0_flutter
             UserProfile user = UserProfile::DeserializeUserProfile(payload_map);
             response[flutter::EncodableValue("userProfile")] = flutter::EncodableValue(user.ToMap());
 
-            // Step 9: Return success with credentials
-            result->Success(flutter::EncodableValue(response));
-        }
-        catch (const std::exception &e)
-        {
-            // Handle any errors during the authentication flow
-            result->Error("auth_failed", e.what());
-        }
+                // Step 9: Return success with credentials
+                result->Success(flutter::EncodableValue(response));
+            }
+            catch (const std::exception &e)
+            {
+                // Handle any errors during the authentication flow
+                result->Error("auth_failed", e.what());
+            }
+        }).detach(); // Detach thread to run independently
     }
 
 } // namespace auth0_flutter

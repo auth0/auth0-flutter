@@ -38,38 +38,17 @@ namespace auth0_flutter
      * @brief Wait for OAuth callback with authorization code (custom scheme flow)
      *
      * Polls the PLUGIN_STARTUP_URL environment variable for the OAuth redirect URI.
+     * This is used when an intermediary server receives the Auth0 callback and forwards
+     * it to the app via a custom protocol scheme.
+     *
+     * @param expectedRedirectBase Expected redirect URI base for validation
+     * @param timeoutSeconds Maximum time to wait for callback (default: 180 seconds)
+     * @param expectedState Expected state parameter for CSRF validation (optional)
+     * @return Authorization code if successful, empty string on timeout or error
      */
     std::string waitForAuthCode_CustomScheme(
         const std::string &expectedRedirectBase,
         int timeoutSeconds = 180,
         const std::string &expectedState = "");
-
-    /**
-     * @brief Wait for OAuth callback with authorization code (HTTP listener flow)
-     *
-     * Starts a local HTTP server to listen for OAuth callback.
-     * Displays a friendly HTML page with auto-close functionality.
-     *
-     * @param redirectUri The redirect URI (e.g., "http://localhost:8080/callback")
-     * @param timeoutSeconds Maximum time to wait for callback (default: 180 seconds)
-     * @param expectedState Expected state parameter for CSRF validation (optional)
-     * @param customSuccessHtml Custom HTML for success page (optional, overrides default)
-     * @param customSuccessUrl URL to fetch custom HTML for success page (optional, overrides customSuccessHtml)
-     * @return Authorization code if successful, empty string on timeout or error
-     */
-    std::string waitForAuthCode(
-        const std::string &redirectUri,
-        int timeoutSeconds = 180,
-        const std::string &expectedState = "",
-        const std::string &customSuccessHtml = "",
-        const std::string &customSuccessUrl = "");
-
-    /**
-     * @brief Fetch HTML content from a URL
-     *
-     * @param url The URL to fetch HTML from
-     * @return HTML content as string, empty string on error
-     */
-    std::string fetchHtmlFromUrl(const std::string &url);
 
 } // namespace auth0_flutter

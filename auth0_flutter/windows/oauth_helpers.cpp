@@ -118,6 +118,7 @@ namespace auth0_flutter
         int timeoutSeconds,
         const std::string &expectedState)
     {
+        DebugPrint("Waiting for custom scheme callback: " + expectedRedirectBase);
         const int sleepMs = 200;
         int elapsed = 0;
         auto readAndClearEnv = []() -> std::string
@@ -147,12 +148,15 @@ namespace auth0_flutter
             std::string uri = readAndClearEnv();
             if (!uri.empty())
             {
+                DebugPrint("Received callback URI: " + uri);
+
                 // Optionally: verify prefix matches expectedRedirectBase
                 if (!expectedRedirectBase.empty())
                 {
                     if (uri.rfind(expectedRedirectBase, 0) != 0)
                     {
-                        // Warning: received URI does not start with expected redirect base
+                        DebugPrint("WARNING: URI does not match expected base. Expected: " +
+                                   expectedRedirectBase + ", Received: " + uri);
                         // continue — but still try to parse if present
                     }
                 }
@@ -160,6 +164,7 @@ namespace auth0_flutter
                 auto qpos = uri.find('?');
                 if (qpos == std::string::npos)
                 {
+                    DebugPrint("ERROR: No query parameters in callback URI");
                     return std::string(); // no query params
                 }
                 std::string query = uri.substr(qpos + 1);
@@ -175,11 +180,13 @@ namespace auth0_flutter
                                    "', received '" + (stateIt != params.end() ? stateIt->second : "(missing)") + "'");
                         return std::string(); // State mismatch - potential CSRF attack
                     }
+                    DebugPrint("State validation passed");
                 }
 
                 auto it = params.find("code");
                 if (it != params.end())
                 {
+                    DebugPrint("Authorization code extracted successfully");
                     return it->second;
                 }
                 else
@@ -187,8 +194,10 @@ namespace auth0_flutter
                     // maybe error param present
                     if (params.find("error") != params.end())
                     {
+                        DebugPrint("ERROR: OAuth error in callback");
                         return std::string();
                     }
+                    DebugPrint("ERROR: No code parameter in callback");
                 }
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(sleepMs));
@@ -196,361 +205,8 @@ namespace auth0_flutter
         }
 
         // timeout
+        DebugPrint("Timeout waiting for callback");
         return std::string();
-    }
-
-    std::string fetchHtmlFromUrl(const std::string &url)
-    {
-        try
-        {
-            http_client client(utility::conversions::to_string_t(url));
-            http_request request(methods::GET);
-
-            // Make the request and wait for response
-            http_response response = client.request(request).get();
-
-            if (response.status_code() == status_codes::OK)
-            {
-                // Extract body as string
-                auto body = response.extract_string().get();
-                return utility::conversions::to_utf8string(body);
-            }
-            else
-            {
-                DebugPrint("Failed to fetch HTML from URL: " + url +
-                           " - Status: " + std::to_string(response.status_code()));
-                return std::string();
-            }
-        }
-        catch (const std::exception &e)
-        {
-            DebugPrint("Exception fetching HTML from URL: " + url + " - " + e.what());
-            return std::string();
-        }
-    }
-
-    std::string waitForAuthCode(
-        const std::string &redirectUri,
-        int timeoutSeconds,
-        const std::string &expectedState,
-        const std::string &customSuccessHtml,
-        const std::string &customSuccessUrl)
-    {
-        uri u(utility::conversions::to_string_t(redirectUri));
-        http_listener listener(u);
-
-        std::string authCode;
-        bool callbackReceived = false;
-
-        listener.support(methods::GET, [&](http_request request)
-                         {
-            auto queries = uri::split_query(request.request_uri().query());
-
-            // Validate state parameter if provided (CSRF protection)
-            if (!expectedState.empty())
-            {
-                auto stateIt = queries.find(U("state"));
-                std::string receivedState;
-                if (stateIt != queries.end())
-                {
-                    receivedState = utility::conversions::to_utf8string(stateIt->second);
-                }
-
-                if (receivedState != expectedState)
-                {
-                    DebugPrint("State validation failed in HTTP listener: expected '" +
-                               expectedState + "', received '" + receivedState + "'");
-
-                    // Return error page for state mismatch
-                    std::string errorHtml = R"html(
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Authentication Error</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .container {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            max-width: 400px;
-        }
-        .icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-        }
-        h1 {
-            color: #d32f2f;
-            margin: 0 0 16px 0;
-            font-size: 24px;
-        }
-        p {
-            color: #666;
-            margin: 0 0 24px 0;
-            line-height: 1.5;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="icon">⚠️</div>
-        <h1>Authentication Error</h1>
-        <p>Invalid authentication state detected. Please try again.</p>
-    </div>
-</body>
-</html>
-)html";
-                    http_response response(status_codes::BadRequest);
-                    response.headers().set_content_type(U("text/html; charset=utf-8"));
-                    response.set_body(utility::conversions::to_string_t(errorHtml));
-                    request.reply(response);
-                    callbackReceived = true;
-                    return;
-                }
-            }
-
-            // Extract authorization code
-            auto it = queries.find(U("code"));
-            if (it != queries.end()) {
-                authCode = utility::conversions::to_utf8string(it->second);
-            }
-
-            // Check for error parameter
-            auto errorIt = queries.find(U("error"));
-            if (errorIt != queries.end())
-            {
-                std::string errorCode = utility::conversions::to_utf8string(errorIt->second);
-                std::string errorDescription = "Authentication failed";
-
-                auto errorDescIt = queries.find(U("error_description"));
-                if (errorDescIt != queries.end())
-                {
-                    errorDescription = utility::conversions::to_utf8string(errorDescIt->second);
-                }
-
-                DebugPrint("OAuth error received: " + errorCode + " - " + errorDescription);
-
-                // Return error page
-                std::string errorHtml = R"html(
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Authentication Failed</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .container {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            max-width: 400px;
-        }
-        .icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-        }
-        h1 {
-            color: #d32f2f;
-            margin: 0 0 16px 0;
-            font-size: 24px;
-        }
-        p {
-            color: #666;
-            margin: 0 0 24px 0;
-            line-height: 1.5;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="icon">❌</div>
-        <h1>Authentication Failed</h1>
-        <p>)html" + errorDescription + R"html(</p>
-        <p style="font-size: 14px; color: #999;">You can close this window.</p>
-    </div>
-</body>
-</html>
-)html";
-                http_response response(status_codes::OK);
-                response.headers().set_content_type(U("text/html; charset=utf-8"));
-                response.set_body(utility::conversions::to_string_t(errorHtml));
-                request.reply(response);
-                callbackReceived = true;
-                return;
-            }
-
-            // Success response with auto-close
-            // Use custom HTML if provided (priority: URL > custom HTML > default)
-            std::string successHtml;
-
-            if (!customSuccessUrl.empty())
-            {
-                // Fetch HTML from hosted URL
-                DebugPrint("Fetching custom success HTML from URL: " + customSuccessUrl);
-                successHtml = fetchHtmlFromUrl(customSuccessUrl);
-                if (successHtml.empty())
-                {
-                    DebugPrint("Failed to fetch custom HTML from URL, falling back to default");
-                }
-            }
-
-            if (successHtml.empty() && !customSuccessHtml.empty())
-            {
-                // Use custom HTML string provided by Flutter
-                DebugPrint("Using custom success HTML provided by Flutter");
-                successHtml = customSuccessHtml;
-            }
-
-            if (successHtml.empty())
-            {
-                // Use default HTML
-                DebugPrint("Using default success HTML");
-                successHtml = R"html(
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Authentication Successful</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .container {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            max-width: 400px;
-        }
-        .icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-            animation: checkmark 0.5s ease-in-out;
-        }
-        @keyframes checkmark {
-            0% { transform: scale(0); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-        h1 {
-            color: #2e7d32;
-            margin: 0 0 16px 0;
-            font-size: 24px;
-        }
-        p {
-            color: #666;
-            margin: 0 0 8px 0;
-            line-height: 1.5;
-        }
-        .countdown {
-            font-size: 14px;
-            color: #999;
-            margin-top: 16px;
-        }
-        .spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid #f3f3f3;
-            border-top: 2px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 8px;
-            vertical-align: middle;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
-    <script>
-        // Auto-close after 3 seconds
-        let countdown = 3;
-        function updateCountdown() {
-            const countdownEl = document.getElementById('countdown');
-            if (countdown > 0) {
-                countdownEl.textContent = countdown;
-                countdown--;
-                setTimeout(updateCountdown, 1000);
-            } else {
-                window.close();
-                // If window.close() doesn't work (some browsers block it), show message
-                setTimeout(() => {
-                    document.querySelector('.countdown').innerHTML =
-                        'If this window doesn\'t close automatically, you may close it manually.';
-                }, 500);
-            }
-        }
-        window.onload = updateCountdown;
-    </script>
-</head>
-<body>
-    <div class="container">
-        <div class="icon">✅</div>
-        <h1>Authentication Successful!</h1>
-        <p>You will be redirected in a few moments.</p>
-        <div class="countdown">
-            <span class="spinner"></span>
-            Closing in <span id="countdown">3</span> seconds...
-        </div>
-    </div>
-</body>
-</html>
-)html";
-            }
-
-            http_response response(status_codes::OK);
-            response.headers().set_content_type(U("text/html; charset=utf-8"));
-            response.set_body(utility::conversions::to_string_t(successHtml));
-            request.reply(response);
-            callbackReceived = true; });
-
-        listener.open().wait();
-
-        // Wait for callback with timeout
-        const int sleepMs = 100;
-        int elapsed = 0;
-        int maxWait = timeoutSeconds * 1000;
-
-        while (!callbackReceived && elapsed < maxWait)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(sleepMs));
-            elapsed += sleepMs;
-        }
-
-        listener.close().wait();
-        return authCode;
     }
 
 } // namespace auth0_flutter

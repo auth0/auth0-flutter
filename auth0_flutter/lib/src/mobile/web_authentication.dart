@@ -21,32 +21,6 @@ import 'dart:io' show Platform;
 /// final result = await auth0.webAuthentication().login();
 /// final accessToken = result.accessToken;
 /// ```
-///
-/// Windows custom callback page example:
-///
-/// ```dart
-/// // Option 1: Use a hosted HTML page (recommended)
-/// final result = await auth0.webAuthentication.login(
-///   customCallbackUrl: 'https://auth0.com/success.html',
-/// );
-///
-/// // Option 2: Provide inline HTML
-/// final result = await auth0.webAuthentication.login(
-///   customCallbackHtml: '''
-///     <!DOCTYPE html>
-///     <html>
-///     <head>
-///       <meta charset="UTF-8">
-///       <script>setTimeout(() => window.close(), 3000);</script>
-///     </head>
-///     <body style="text-align: center; padding: 50px;">
-///       <h1>Success!</h1>
-///       <p>You've logged in. Closing in 3 seconds...</p>
-///     </body>
-///     </html>
-///   ''',
-/// );
-/// ```
 class WebAuthentication {
   final Account _account;
   final UserAgent _userAgent;
@@ -111,41 +85,29 @@ class WebAuthentication {
   /// no other allowed browser installed, an error is returned
   /// * [useDPoP] enables DPoP for enhanced token security.
   /// See README for details. Defaults to `false`.
-  /// * (Windows only): [customCallbackHtml] allows providing custom HTML
-  /// to display on the callback page after successful authentication. The
-  /// HTML should include an auto-close script
-  /// (e.g., `setTimeout(() => window.close(), 3000);`).
-  /// * (Windows only): [customCallbackUrl] allows providing a URL to fetch
-  /// custom HTML from (e.g., `https://your-domain.com/auth-success.html`).
-  /// This takes priority over [customCallbackHtml]. Useful for centralized
-  /// branding across apps.
-  Future<Credentials> login({
-    final String? audience,
-    final Set<String> scopes = const {
-      'openid',
-      'profile',
-      'email',
-      'offline_access',
-    },
-    final String? redirectUrl,
-    final String? organizationId,
-    final String? invitationUrl,
-    final bool useHTTPS = false,
-    final List<String> allowedBrowsers = const [],
-    final bool useEphemeralSession = false,
-    final Map<String, String> parameters = const {},
-    final IdTokenValidationConfig idTokenValidationConfig =
-        const IdTokenValidationConfig(),
-    final SafariViewController? safariViewController,
-    final bool useDPoP = false,
-    final String? customCallbackHtml,
-    final String? customCallbackUrl,
-  }) async {
+  Future<Credentials> login(
+      {final String? audience,
+      final Set<String> scopes = const {
+        'openid',
+        'profile',
+        'email',
+        'offline_access',
+      },
+      final String? redirectUrl,
+      final String? organizationId,
+      final String? invitationUrl,
+      final bool useHTTPS = false,
+      final List<String> allowedBrowsers = const [],
+      final bool useEphemeralSession = false,
+      final Map<String, String> parameters = const {},
+      final IdTokenValidationConfig idTokenValidationConfig =
+          const IdTokenValidationConfig(),
+      final SafariViewController? safariViewController,
+      final bool useDPoP = false}) async {
     // Merge custom callback parameters into the parameters map for Windows
     final mergedParameters = <String, String>{
       ...parameters,
-      if (customCallbackHtml != null) 'customCallbackHtml': customCallbackHtml,
-      if (customCallbackUrl != null) 'customCallbackUrl': customCallbackUrl,
+      'actualCallbackUrl': 'auth0flutter://callback',
     };
 
     final credentials = await Auth0FlutterWebAuthPlatform.instance.login(
