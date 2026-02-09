@@ -1,6 +1,7 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 
 import '../../auth0_flutter.dart';
+import 'dart:io' show Platform;
 
 /// An interface for authenticating users using the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login).
 ///
@@ -12,11 +13,12 @@ import '../../auth0_flutter.dart';
 /// It is not intended for you to instantiate this class yourself, as an
 /// instance of it is already exposed as [Auth0.webAuthentication].
 ///
+///
 /// Usage example:
 ///
 /// ```dart
 /// final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
-/// final result = await auth0.webAuthentication.login();
+/// final result = await auth0.webAuthentication().login();
 /// final accessToken = result.accessToken;
 /// ```
 class WebAuthentication {
@@ -83,26 +85,31 @@ class WebAuthentication {
   /// no other allowed browser installed, an error is returned
   /// * [useDPoP] enables DPoP for enhanced token security.
   /// See README for details. Defaults to `false`.
-  Future<Credentials> login({
-    final String? audience,
-    final Set<String> scopes = const {
-      'openid',
-      'profile',
-      'email',
-      'offline_access',
-    },
-    final String? redirectUrl,
-    final String? organizationId,
-    final String? invitationUrl,
-    final bool useHTTPS = false,
-    final List<String> allowedBrowsers = const [],
-    final bool useEphemeralSession = false,
-    final Map<String, String> parameters = const {},
-    final IdTokenValidationConfig idTokenValidationConfig =
-        const IdTokenValidationConfig(),
-    final SafariViewController? safariViewController,
-    final bool useDPoP = false,
-  }) async {
+  Future<Credentials> login(
+      {final String? audience,
+      final Set<String> scopes = const {
+        'openid',
+        'profile',
+        'email',
+        'offline_access',
+      },
+      final String? redirectUrl,
+      final String? organizationId,
+      final String? invitationUrl,
+      final bool useHTTPS = false,
+      final List<String> allowedBrowsers = const [],
+      final bool useEphemeralSession = false,
+      final Map<String, String> parameters = const {},
+      final IdTokenValidationConfig idTokenValidationConfig =
+          const IdTokenValidationConfig(),
+      final SafariViewController? safariViewController,
+      final bool useDPoP = false}) async {
+    // Merge custom callback parameters into the parameters map for Windows
+    final mergedParameters = <String, String>{
+      ...parameters,
+      'actualCallbackUrl': 'auth0flutter://callback',
+    };
+
     final credentials = await Auth0FlutterWebAuthPlatform.instance.login(
       _createWebAuthRequest(
         WebAuthLoginOptions(
@@ -111,7 +118,7 @@ class WebAuthentication {
           redirectUrl: redirectUrl,
           organizationId: organizationId,
           invitationUrl: invitationUrl,
-          parameters: parameters,
+          parameters: mergedParameters,
           idTokenValidationConfig: idTokenValidationConfig,
           scheme: _scheme,
           useHTTPS: useHTTPS,
@@ -123,8 +130,9 @@ class WebAuthentication {
       ),
     );
 
-    await _credentialsManager?.storeCredentials(credentials);
-
+    if (!Platform.isWindows) {
+      await _credentialsManager?.storeCredentials(credentials);
+    }
     return credentials;
   }
 
@@ -165,7 +173,10 @@ class WebAuthentication {
           federated: federated,
           allowedBrowsers: allowedBrowsers),
     ));
-    await _credentialsManager?.clearCredentials();
+
+    if (!Platform.isWindows) {
+      await _credentialsManager?.clearCredentials();
+    }
   }
 
   /// Terminates the ongoing web-based operation and reports back that it was

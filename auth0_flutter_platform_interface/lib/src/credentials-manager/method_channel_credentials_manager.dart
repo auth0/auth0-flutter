@@ -1,14 +1,6 @@
 import 'package:flutter/services.dart';
 
-import '../credentials.dart';
-import '../request/request.dart';
-import '../request/request_options.dart';
-import 'credentials_manager_exception.dart';
-import 'credentials_manager_platform.dart';
-import 'options/get_credentials_options.dart';
-import 'options/has_valid_credentials_options.dart';
-import 'options/renew_credentials_options.dart';
-import 'options/save_credentials_options.dart';
+import '../../auth0_flutter_platform_interface.dart';
 
 const MethodChannel _channel =
     MethodChannel('auth0.com/auth0_flutter/credentials_manager');
@@ -16,6 +8,8 @@ const String credentialsManagerSaveCredentialsMethod =
     'credentialsManager#saveCredentials';
 const String credentialsManagerGetCredentialsMethod =
     'credentialsManager#getCredentials';
+const String credentialsManagerGetUserProfileMethod =
+    'credentialsManager#user';
 const String credentialsManagerClearCredentialsMethod =
     'credentialsManager#clearCredentials';
 const String credentialsManagerHasValidCredentialsMethod =
@@ -61,6 +55,21 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
     final bool? result = await _invokeRequest<bool, RequestOptions?>(
         method: credentialsManagerSaveCredentialsMethod, request: request);
     return result ?? true;
+  }
+
+  /// Fetches the user profile associated with the stored credentials.
+  /// Returns null if no credentials are stored
+  @override
+  Future<UserProfile?> user(final CredentialsManagerRequest request) async {
+    final Map<String, dynamic>? result;
+    try {
+      result = await _channel.invokeMapMethod(
+        credentialsManagerGetUserProfileMethod,request.toMap());
+    } on PlatformException catch (e) {
+      throw CredentialsManagerException.fromPlatformException(e);
+    }
+
+    return result != null ? UserProfile.fromMap(result) : null;
   }
 
   /// Removes the credentials from the native storage if present.

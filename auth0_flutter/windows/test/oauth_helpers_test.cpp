@@ -230,15 +230,6 @@ TEST(WaitForAuthCodeCustomSchemeTest, TimeoutReturnsEmptyString) {
   EXPECT_EQ(result, "");
 }
 
-/* ---------------- waitForAuthCode ---------------- */
-
-// Note: waitForAuthCode starts an HTTP listener which is difficult to test
-// in a unit test environment without actually making HTTP requests.
-// Integration tests would be more appropriate for this function.
-
-// Placeholder test to document the limitation
-TEST(WaitForAuthCodeTest, RequiresIntegrationTesting) {
-  // This function requires HTTP listener setup and is best tested
-  // through integration tests rather than unit tests.
-  SUCCEED();
-}
+// Note: The HTTP listener-based waitForAuthCode function has been removed.
+// The codebase now uses custom scheme callbacks exclusively via
+// waitForAuthCode_CustomScheme for all OAuth flows.

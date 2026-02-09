@@ -38,17 +38,17 @@ namespace auth0_flutter
      * @brief Wait for OAuth callback with authorization code (custom scheme flow)
      *
      * Polls the PLUGIN_STARTUP_URL environment variable for the OAuth redirect URI.
+     * This is used when an intermediary server receives the Auth0 callback and forwards
+     * it to the app via a custom protocol scheme.
+     *
+     * @param expectedRedirectBase Expected redirect URI base for validation
+     * @param timeoutSeconds Maximum time to wait for callback (default: 180 seconds)
+     * @param expectedState Expected state parameter for CSRF validation (optional)
+     * @return Authorization code if successful, empty string on timeout or error
      */
     std::string waitForAuthCode_CustomScheme(
         const std::string &expectedRedirectBase,
         int timeoutSeconds = 180,
         const std::string &expectedState = "");
-
-    /**
-     * @brief Wait for OAuth callback with authorization code (HTTP listener flow)
-     *
-     * Starts a local HTTP server to listen for OAuth callback.
-     */
-    std::string waitForAuthCode(const std::string &redirectUri);
 
 } // namespace auth0_flutter

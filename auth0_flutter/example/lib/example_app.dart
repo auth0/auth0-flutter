@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'package:auth0_flutter/auth0_flutter.dart';
 import 'package:auth0_flutter/auth0_flutter_web.dart';
 import 'package:flutter/foundation.dart';
@@ -50,7 +51,10 @@ class _ExampleAppState extends State<ExampleApp> {
         return auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
       }
 
-      final result = await webAuth.login(useHTTPS: true);
+      final result = await webAuth.login(
+        useHTTPS: true,
+        customCallbackUrl: 'https://auth0.com',
+      );
 
       setState(() {
         _isLoggedIn = true;

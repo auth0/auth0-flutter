@@ -18,12 +18,14 @@
 #include <openssl/sha.h>
 #include <openssl/rand.h>
 
-// cpprestsdk for HTTP listener
+// cpprestsdk for HTTP listener and client
 #include <cpprest/http_listener.h>
+#include <cpprest/http_client.h>
 #include <cpprest/uri.h>
 
 using namespace web;
 using namespace web::http;
+using namespace web::http::client;
 using namespace web::http::experimental::listener;
 
 namespace auth0_flutter
@@ -116,6 +118,7 @@ namespace auth0_flutter
         int timeoutSeconds,
         const std::string &expectedState)
     {
+        DebugPrint("Waiting for custom scheme callback: " + expectedRedirectBase);
         const int sleepMs = 200;
         int elapsed = 0;
         auto readAndClearEnv = []() -> std::string
@@ -145,12 +148,15 @@ namespace auth0_flutter
             std::string uri = readAndClearEnv();
             if (!uri.empty())
             {
+                DebugPrint("Received callback URI: " + uri);
+
                 // Optionally: verify prefix matches expectedRedirectBase
                 if (!expectedRedirectBase.empty())
                 {
                     if (uri.rfind(expectedRedirectBase, 0) != 0)
                     {
-                        // Warning: received URI does not start with expected redirect base
+                        DebugPrint("WARNING: URI does not match expected base. Expected: " +
+                                   expectedRedirectBase + ", Received: " + uri);
                         // continue — but still try to parse if present
                     }
                 }
@@ -158,6 +164,7 @@ namespace auth0_flutter
                 auto qpos = uri.find('?');
                 if (qpos == std::string::npos)
                 {
+                    DebugPrint("ERROR: No query parameters in callback URI");
                     return std::string(); // no query params
                 }
                 std::string query = uri.substr(qpos + 1);
@@ -173,11 +180,13 @@ namespace auth0_flutter
                                    "', received '" + (stateIt != params.end() ? stateIt->second : "(missing)") + "'");
                         return std::string(); // State mismatch - potential CSRF attack
                     }
+                    DebugPrint("State validation passed");
                 }
 
                 auto it = params.find("code");
                 if (it != params.end())
                 {
+                    DebugPrint("Authorization code extracted successfully");
                     return it->second;
                 }
                 else
@@ -185,8 +194,10 @@ namespace auth0_flutter
                     // maybe error param present
                     if (params.find("error") != params.end())
                     {
+                        DebugPrint("ERROR: OAuth error in callback");
                         return std::string();
                     }
+                    DebugPrint("ERROR: No code parameter in callback");
                 }
             }
             std::this_thread::sleep_for(std::chrono::milliseconds(sleepMs));
@@ -194,35 +205,8 @@ namespace auth0_flutter
         }
 
         // timeout
+        DebugPrint("Timeout waiting for callback");
         return std::string();
-    }
-
-    std::string waitForAuthCode(const std::string &redirectUri)
-    {
-        uri u(utility::conversions::to_string_t(redirectUri));
-        http_listener listener(u);
-
-        std::string authCode;
-
-        listener.support(methods::GET, [&](http_request request)
-                         {
-            auto queries = uri::split_query(request.request_uri().query());
-            auto it = queries.find(U("code"));
-            if (it != queries.end()) {
-                authCode = utility::conversions::to_utf8string(it->second);
-            }
-
-            request.reply(status_codes::OK,
-                          U("Login successful! You may close this window.")); });
-
-        listener.open().wait();
-
-        while (authCode.empty())
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        }
-        listener.close().wait();
-        return authCode;
     }
 
 } // namespace auth0_flutter
