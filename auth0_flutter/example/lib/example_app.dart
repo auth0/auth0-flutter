@@ -53,7 +53,6 @@ class _ExampleAppState extends State<ExampleApp> {
 
       final result = await webAuth.login(
         useHTTPS: true,
-        customCallbackUrl: 'https://auth0.com',
       );
 
       setState(() {
