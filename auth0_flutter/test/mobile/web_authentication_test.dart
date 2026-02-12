@@ -159,7 +159,8 @@ void main() {
       expect(verificationResult.options.scopes,
           ['openid', 'profile', 'email', 'offline_access']);
       // ignore: inference_failure_on_collection_literal
-      expect(verificationResult.options.parameters, {});
+      // Windows requires actualCallbackUrl parameter
+      expect(verificationResult.options.parameters, {'actualCallbackUrl': 'auth0flutter://callback'});
       expect(result, TestPlatform.loginResult);
     });
 
@@ -524,8 +525,9 @@ void main() {
             .single as WebAuthRequest<WebAuthLoginOptions>;
 
         expect(verificationResult.options.useDPoP, true);
+        // Custom parameters are merged with actualCallbackUrl for Windows
         expect(verificationResult.options.parameters,
-            {'custom_param': 'custom_value'});
+            {'custom_param': 'custom_value', 'actualCallbackUrl': 'auth0flutter://callback'});
       });
 
       test('passes useDPoP with invitationUrl parameter', () async {
@@ -672,8 +674,9 @@ void main() {
         expect(verificationResult.options.organizationId, 'org_123');
         expect(verificationResult.options.redirectUrl, 'myapp://callback');
         expect(verificationResult.options.useHTTPS, true);
+        // Parameters are merged with actualCallbackUrl for Windows
         expect(verificationResult.options.parameters,
-            {'connection': 'google-oauth2'});
+            {'connection': 'google-oauth2', 'actualCallbackUrl': 'auth0flutter://callback'});
         expect(result, TestPlatform.loginResult);
       });
 

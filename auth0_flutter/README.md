@@ -28,11 +28,11 @@ We're excited to announce the release of auth0_flutter v2.0.0!
 
 ### Requirements
 
-| Flutter     | Android         | iOS               | macOS             |
-| :---------- | :-------------- | :---------------- | :---------------- |
-| SDK 3.24.0+ | Android API 21+ | iOS 14+           | macOS 11+         |
-| Dart 3.5.0+ | Java 8+         | Swift 5.9+        | Swift 5.9+        |
-|             |                 | Xcode 15.x / 16.x | Xcode 15.x / 16.x |
+| Flutter     | Android         | iOS               | macOS             | Windows                          |
+| :---------- | :-------------- | :---------------- | :---------------- | :------------------------------- |
+| SDK 3.24.0+ | Android API 21+ | iOS 14+           | macOS 11+         | Windows 10+                      |
+| Dart 3.5.0+ | Java 8+         | Swift 5.9+        | Swift 5.9+        | C++ 17, Visual Studio 2022       |
+|             |                 | Xcode 15.x / 16.x | Xcode 15.x / 16.x | vcpkg (for dependencies)         |
 
 ### Installation
 
@@ -77,6 +77,7 @@ Under the **Application URIs** section of the **Settings** page, configure the f
 - Android: `SCHEME://YOUR_DOMAIN/android/YOUR_PACKAGE_NAME/callback`
 - iOS: `https://YOUR_DOMAIN/ios/YOUR_BUNDLE_ID/callback,YOUR_BUNDLE_ID://YOUR_DOMAIN/ios/YOUR_BUNDLE_ID/callback`
 - macOS: `https://YOUR_DOMAIN/macos/YOUR_BUNDLE_ID/callback,YOUR_BUNDLE_ID://YOUR_DOMAIN/macos/YOUR_BUNDLE_ID/callback`
+- Windows: `https://YOUR_HOSTED_DOMAIN/callback` (or your custom callback URL on your intermediary server)
 
 <details>
   <summary>Example</summary>
@@ -86,10 +87,36 @@ If your Auth0 domain was `company.us.auth0.com` and your package name (Android) 
 - Android: `https://company.us.auth0.com/android/com.company.myapp/callback`
 - iOS: `https://company.us.auth0.com/ios/com.company.myapp/callback,com.company.myapp://company.us.auth0.com/ios/com.company.myapp/callback`
 - macOS: `https://company.us.auth0.com/macos/com.company.myapp/callback,com.company.myapp://company.us.auth0.com/macos/com.company.myapp/callback`
+- Windows: `https://your-app.example.com/callback` (your intermediary server endpoint)
 
 </details>
 
+> 💡 **Windows**: The Windows implementation uses a custom scheme callback architecture (`auth0flutter://callback`). This requires an intermediary server to receive the Auth0 callback and forward it to your Windows app via the custom protocol. The intermediary server URL (e.g., `https://your-app.example.com/callback`) should be configured as the callback URL in your Auth0 dashboard. The server should handle the Auth0 redirect and trigger the `auth0flutter://` protocol to activate your app with the authorization code and state parameters.
+
 Take note of the **client ID** and **domain** values under the **Basic Information** section. You'll need these values in the next step.
+
+##### Security Considerations for Custom URL Schemes
+
+> ⚠️ **Important Security Information**
+>
+> Custom URL schemes (nonverifiable callback URIs) can be vulnerable to **app impersonation attacks**, where malicious apps could potentially intercept OAuth authorization codes by registering the same custom scheme on a device.
+>
+> **Recommended Best Practices:**
+>
+> - **Use HTTPS-based schemes whenever possible:**
+>   - iOS 17.4+ / macOS 14.4+: Use Universal Links
+>   - Android: Use Android App Links with HTTPS schemes
+>   - These verifiable schemes cryptographically bind your app to your domain, preventing impersonation
+>
+> - **If you must use custom URL schemes:**
+>   - Implement additional security measures such as PKCE (Proof Key for Code Exchange), which is automatically enabled in this SDK
+>   - Consider using short-lived authorization codes
+>   - Implement additional client-side validation
+>   - Be aware that custom schemes offer no protection against malicious apps on the same device
+>
+> - **For Windows applications:** Custom schemes are currently required due to platform limitations. Ensure your intermediary server validates requests and uses secure communication
+>
+> 📖 For more details about app impersonation risks and mitigation strategies, see [Auth0's Security Guidance: Measures Against App Impersonation](https://auth0.com/docs/secure/security-guidance/measures-against-app-impersonation)
 
 #### 🌐 Web
 
@@ -127,7 +154,7 @@ Take note of the **client ID** and **domain** values under the **Basic Informati
 
 ### Configure the SDK
 
-#### 📱 Mobile/macOS
+#### 📱 Mobile/macOS/Windows
 
 Start by importing `auth0_flutter/auth0_flutter.dart`.
 
@@ -247,6 +274,46 @@ If you have a [custom domain](https://auth0.com/docs/customize/custom-domains),
 
 > ⚠️ For the associated domain to work, your app must be signed with your team certificate **even when building for the iOS simulator**. Make sure you are using the Apple Team whose Team ID is configured in the **Settings** page of your application.
 
+##### Windows: Configure protocol handler and intermediary server
+
+Windows authentication requires two components:
+
+1. **Custom Protocol Handler**: Your Windows app needs to register the `auth0flutter://` protocol handler
+2. **Intermediary Server**: A hosted server that receives the Auth0 callback and forwards it to your app
+
+**Step 1: Register the custom protocol handler**
+
+The `auth0flutter://` protocol should be automatically registered when your app is installed. The Flutter Windows plugin handles protocol activation through the `PLUGIN_STARTUP_URL` environment variable.
+
+**Step 2: Set up your intermediary server**
+
+Create a web endpoint (e.g., `https://your-app.example.com/callback`) that:
+1. Receives the Auth0 callback with `code` and `state` parameters
+2. Redirects to `auth0flutter://callback?code=...&state=...`
+
+Example server implementation:
+
+```javascript
+// Node.js/Express example
+app.get('/callback', (req, res) => {
+  const { code, state, error, error_description } = req.query;
+
+  if (error) {
+    res.redirect(`auth0flutter://callback?error=${error}&error_description=${error_description}`);
+  } else {
+    res.redirect(`auth0flutter://callback?code=${code}&state=${state}`);
+  }
+});
+```
+
+**Step 3: Configure Auth0 callback URLs**
+
+In your Auth0 application settings, add your intermediary server URL:
+- **Allowed Callback URLs**: `https://your-app.example.com/callback`
+- **Allowed Logout URLs**: `https://your-app.example.com/logout`
+
+The SDK will automatically use the `auth0flutter://callback` custom scheme internally to receive the forwarded callback from your server.
+
 #### 🌐 Web
 
 Start by importing `auth0_flutter/auth0_flutter_web.dart`.
@@ -271,24 +338,26 @@ Finally, in your `index.html` add the following `<script>` tag:
 
 ### Logging in
 
-#### 📱 Mobile/macOS
+#### 📱 Mobile/macOS/Windows
 
 Present the [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login) page in the `onPressed` callback of your **Login** button.
 
 ```dart
 // Use a Universal Link callback URL on iOS 17.4+ / macOS 14.4+
-// useHTTPS is ignored on Android
+// useHTTPS is ignored on Android and Windows
 final credentials = await auth0.webAuthentication().login(useHTTPS: true);
 
 // Access token -> credentials.accessToken
 // User profile -> credentials.user
 ```
 
-auth0_flutter automatically stores the user's credentials using the built-in [Credentials Manager](#credentials-manager) instance. You can access this instance through the `credentialsManager` property.
+**Credential Storage:**
+- **Mobile/macOS**: auth0_flutter automatically stores the user's credentials using the built-in [Credentials Manager](#credentials-manager) instance. You can access this instance through the `credentialsManager` property:
+  ```dart
+  final credentials = await auth0.credentialsManager.credentials();
+  ```
 
-```dart
-final credentials = await auth0.credentialsManager.credentials();
-```
+- **Windows**: Credentials are **not** automatically stored. You must manually store and manage the `credentials` object returned from `login()` in your app (e.g., using `shared_preferences` or secure storage)
 
 For other comprehensive examples, see the [EXAMPLES.md](EXAMPLES.md) document.
 
@@ -407,18 +476,27 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 - [Retrieve stored credentials](EXAMPLES.md#retrieve-stored-credentials) - fetch the user's credentials from the storage, automatically renewing them if they have expired.
 - [Retrieve user information](EXAMPLES.md#retrieve-user-information) - fetch the latest user information from the `/userinfo` endpoint.
 
+### 🪟 Windows
+
+- **Custom Protocol Handler**: Windows uses `auth0flutter://` custom scheme for OAuth callbacks, requiring an intermediary server (see setup guide above)
+- **No Credentials Manager**: Credential storage is not currently supported on Windows. Credentials must be managed manually in your app
+- **C++ SDK**: The Windows implementation is built with native C++ using PKCE for secure authentication
+- **Unit Tests**: Comprehensive unit tests for Windows OAuth helpers are available in `windows/test/`
+
 ### 🌐 Web
 
 - [Handling credentials on the web](EXAMPLES.md#handling-credentials-on-the-web) - how to check and retrieve credentials on the web platform.
 
 ## API reference
 
-### 📱 Mobile/macOS
+### 📱 Mobile/macOS/Windows
 
 #### Web Authentication
 
 - [login](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/WebAuthentication/login.html)
 - [logout](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/WebAuthentication/logout.html)
+
+> 💡 **Windows**: Web Authentication on Windows uses a custom scheme callback (`auth0flutter://`) that requires an intermediary server to forward the Auth0 callback to your app. See the [Windows configuration section](#windows-configure-protocol-handler-and-intermediary-server) above for setup details.
 
 #### API
 
@@ -431,6 +509,8 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 - [userProfile](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/userProfile.html)
 
 #### Credentials Manager
+
+> ⚠️ **Note**: Credentials Manager is available on Mobile (Android/iOS) and macOS platforms only. Windows does not currently support credential storage. On Windows, you must manually manage credentials returned from `login()`.
 
 - [credentials](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/DefaultCredentialsManager/credentials.html)
 - [hasValidCredentials](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/DefaultCredentialsManager/hasValidCredentials.html)
