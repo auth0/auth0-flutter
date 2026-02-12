@@ -95,6 +95,29 @@ If your Auth0 domain was `company.us.auth0.com` and your package name (Android) 
 
 Take note of the **client ID** and **domain** values under the **Basic Information** section. You'll need these values in the next step.
 
+##### Security Considerations for Custom URL Schemes
+
+> ⚠️ **Important Security Information**
+>
+> Custom URL schemes (nonverifiable callback URIs) can be vulnerable to **app impersonation attacks**, where malicious apps could potentially intercept OAuth authorization codes by registering the same custom scheme on a device.
+>
+> **Recommended Best Practices:**
+>
+> - **Use HTTPS-based schemes whenever possible:**
+>   - iOS 17.4+ / macOS 14.4+: Use Universal Links
+>   - Android: Use Android App Links with HTTPS schemes
+>   - These verifiable schemes cryptographically bind your app to your domain, preventing impersonation
+>
+> - **If you must use custom URL schemes:**
+>   - Implement additional security measures such as PKCE (Proof Key for Code Exchange), which is automatically enabled in this SDK
+>   - Consider using short-lived authorization codes
+>   - Implement additional client-side validation
+>   - Be aware that custom schemes offer no protection against malicious apps on the same device
+>
+> - **For Windows applications:** Custom schemes are currently required due to platform limitations. Ensure your intermediary server validates requests and uses secure communication
+>
+> 📖 For more details about app impersonation risks and mitigation strategies, see [Auth0's Security Guidance: Measures Against App Impersonation](https://auth0.com/docs/secure/security-guidance/measures-against-app-impersonation)
+
 #### 🌐 Web
 
 Head to the [Auth0 Dashboard](https://manage.auth0.com/#/applications/) and create a new **Single Page** application.
