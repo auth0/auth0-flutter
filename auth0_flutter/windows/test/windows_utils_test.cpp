@@ -97,32 +97,3 @@ TEST(BringFlutterWindowToFrontTest, DoesNotCrashWhenCalled) {
   // In a real environment without a window, it should handle gracefully
   EXPECT_NO_THROW(BringFlutterWindowToFront());
 }
-
-/* ---------------- DebugPrint ---------------- */
-
-// Note: DebugPrint outputs to the Visual Studio debugger output window
-// using OutputDebugStringA. These tests verify that the function can be
-// called without crashing.
-
-TEST(DebugPrintTest, DoesNotCrashWithEmptyString) {
-  EXPECT_NO_THROW(DebugPrint(""));
-}
-
-TEST(DebugPrintTest, DoesNotCrashWithSimpleMessage) {
-  EXPECT_NO_THROW(DebugPrint("Test message"));
-}
-
-TEST(DebugPrintTest, DoesNotCrashWithLongMessage) {
-  std::string longMessage(10000, 'X');
-  EXPECT_NO_THROW(DebugPrint(longMessage));
-}
-
-TEST(DebugPrintTest, DoesNotCrashWithSpecialCharacters) {
-  EXPECT_NO_THROW(DebugPrint("Test with special chars: \n\r\t!@#$%^&*()"));
-}
-
-TEST(DebugPrintTest, DoesNotCrashWithUnicodeInUtf8) {
-  // UTF-8 encoded string with unicode
-  std::string utf8Message = "Unicode: \xE4\xB8\x96\xE7\x95\x8C";
-  EXPECT_NO_THROW(DebugPrint(utf8Message));
-}

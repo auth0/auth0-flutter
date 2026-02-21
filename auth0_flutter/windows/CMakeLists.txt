@@ -61,6 +61,8 @@ if(TARGET flutter)
     "windows_utils.h"
     "id_token_validator.cpp"
     "id_token_validator.h"
+    "id_token_signature_validator.cpp"
+    "id_token_signature_validator.h"
     ${PLUGIN_SOURCES}
   )
 
@@ -147,6 +149,7 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
     oauth_helpers.cpp
     jwt_util.cpp
     id_token_validator.cpp
+    id_token_signature_validator.cpp
   )
 
   add_executable(${TEST_RUNNER}

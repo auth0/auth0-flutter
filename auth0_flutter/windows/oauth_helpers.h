@@ -47,19 +47,26 @@ namespace auth0_flutter
     };
 
     /**
+     * @brief The fixed redirect URI registered with Auth0 for the Windows plugin.
+     *
+     * Sent as redirect_uri in the authorization request and used as the expected
+     * prefix when waiting for the OAuth callback. The app always listens on this
+     * URI — no other callback URL is accepted.
+     */
+    static constexpr const char *kDefaultRedirectUri = "auth0flutter://callback";
+
+    /**
      * @brief Wait for OAuth callback with authorization code (custom scheme flow)
      *
-     * Polls the PLUGIN_STARTUP_URL environment variable for the OAuth redirect URI.
-     * This is used when an intermediary server receives the Auth0 callback and forwards
-     * it to the app via a custom protocol scheme.
+     * Polls the PLUGIN_STARTUP_URL environment variable for the OAuth callback URL.
+     * Only callbacks whose URL starts with kDefaultRedirectUri ("auth0flutter://callback")
+     * are accepted.
      *
-     * @param expectedRedirectBase Expected redirect URI base for validation
      * @param timeoutSeconds Maximum time to wait for callback (default: 180 seconds)
-     * @param expectedState Expected state parameter for CSRF validation (optional)
+     * @param expectedState  Expected state parameter for CSRF validation (optional)
      * @return OAuthCallbackResult with authorization code or error details
      */
     OAuthCallbackResult waitForAuthCode_CustomScheme(
-        const std::string &expectedRedirectBase,
         int timeoutSeconds = 180,
         const std::string &expectedState = "");
 

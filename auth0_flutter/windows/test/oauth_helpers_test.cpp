@@ -224,7 +224,7 @@ TEST(OAuthHelpersIntegrationTest, MultipleVerifiersProduceUniqueChallenges) {
 
 TEST(WaitForAuthCodeCustomSchemeTest, TimeoutReturnsError) {
   // Test with very short timeout and no environment variable set
-  OAuthCallbackResult result = waitForAuthCode_CustomScheme("test://callback", 0, "");
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(0, "");
 
   // Should timeout and return error result
   EXPECT_FALSE(result.success);

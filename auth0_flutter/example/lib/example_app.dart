@@ -59,7 +59,6 @@ class _ExampleAppState extends State<ExampleApp> {
         final result = await windowsWebAuth.login(
           redirectUrl: 'http://localhost:3000/destination',
           parameters: {
-            'appCallbackUrl': 'auth0flutter://callback',
             'authTimeoutSeconds': '300', // 5 minutes for demo
           },
         );
@@ -105,7 +104,7 @@ class _ExampleAppState extends State<ExampleApp> {
       } else if (Platform.isWindows) {
         // Use Windows-specific logout
         await windowsWebAuth.logout(
-          returnTo: 'http://localhost:8080/callback',
+          returnTo: 'auth0flutter://callback',
         );
 
         setState(() {

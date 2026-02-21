@@ -16,6 +16,7 @@ struct JwtParts
 };
 
 JwtParts SplitJwt(const std::string &token);
+web::json::value DecodeJwtHeader(const std::string &token);
 web::json::value DecodeJwtPayload(const std::string &token);
 
 // Flutter conversion functions (only available when building with Flutter)

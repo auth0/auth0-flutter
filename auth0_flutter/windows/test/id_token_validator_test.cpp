@@ -507,6 +507,130 @@ TEST(IdTokenValidatorTest, RejectsMalformedToken)
         IdTokenValidationException);
 }
 
+/* ---------------- Signature Validation Tests ---------------- */
+
+/**
+ * Helper to build a JWT whose header is arbitrary JSON.
+ * The signature is a dummy value (not cryptographically valid).
+ */
+static std::string CreateTestJWTWithCustomHeader(
+    const web::json::value &header,
+    const web::json::value &payload)
+{
+    auto base64UrlEncode = [](const std::string &input) -> std::string
+    {
+        BIO *bio, *b64;
+        BUF_MEM *bufferPtr;
+
+        b64 = BIO_new(BIO_f_base64());
+        bio = BIO_new(BIO_s_mem());
+        bio = BIO_push(b64, bio);
+
+        BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
+        BIO_write(bio, input.data(), static_cast<int>(input.length()));
+        BIO_flush(bio);
+        BIO_get_mem_ptr(bio, &bufferPtr);
+
+        std::string result(bufferPtr->data, bufferPtr->length);
+        BIO_free_all(bio);
+
+        for (auto &c : result)
+        {
+            if (c == '+') c = '-';
+            else if (c == '/') c = '_';
+        }
+        result.erase(std::remove(result.begin(), result.end(), '='), result.end());
+        return result;
+    };
+
+    std::string headerStr  = utility::conversions::to_utf8string(header.serialize());
+    std::string payloadStr = utility::conversions::to_utf8string(payload.serialize());
+
+    return base64UrlEncode(headerStr) + "." + base64UrlEncode(payloadStr) + ".dummy_signature";
+}
+
+// When jwksUri is not set, signature validation is skipped – existing tests
+// already cover this path. The tests below exercise the header checks that
+// fire before any network call is made.
+
+TEST(IdTokenValidatorTest, RejectsUnsupportedAlgorithmWhenJwksUriSet)
+{
+    int64_t now = GetNow();
+
+    // Header declares HS256 – only RS256 is accepted
+    web::json::value header;
+    header[U("alg")] = web::json::value::string(U("HS256"));
+    header[U("typ")] = web::json::value::string(U("JWT"));
+    header[U("kid")] = web::json::value::string(U("key-1"));
+
+    web::json::value payload;
+    payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
+    payload[U("aud")] = web::json::value::string(U("test_client_id"));
+    payload[U("exp")] = web::json::value::number(now + 3600);
+    payload[U("iat")] = web::json::value::number(now - 10);
+
+    std::string jwt = CreateTestJWTWithCustomHeader(header, payload);
+
+    IdTokenValidationConfig config;
+    config.issuer   = "https://test.auth0.com/";
+    config.audience = "test_client_id";
+    config.jwksUri  = "https://test.auth0.com/.well-known/jwks.json";
+
+    // Fails on algorithm check – no network call is made
+    EXPECT_THROW(ValidateIdToken(jwt, config), IdTokenValidationException);
+}
+
+TEST(IdTokenValidatorTest, RejectsMissingAlgorithmWhenJwksUriSet)
+{
+    int64_t now = GetNow();
+
+    // Header has no "alg" field at all
+    web::json::value header;
+    header[U("typ")] = web::json::value::string(U("JWT"));
+    header[U("kid")] = web::json::value::string(U("key-1"));
+
+    web::json::value payload;
+    payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
+    payload[U("aud")] = web::json::value::string(U("test_client_id"));
+    payload[U("exp")] = web::json::value::number(now + 3600);
+    payload[U("iat")] = web::json::value::number(now - 10);
+
+    std::string jwt = CreateTestJWTWithCustomHeader(header, payload);
+
+    IdTokenValidationConfig config;
+    config.issuer   = "https://test.auth0.com/";
+    config.audience = "test_client_id";
+    config.jwksUri  = "https://test.auth0.com/.well-known/jwks.json";
+
+    EXPECT_THROW(ValidateIdToken(jwt, config), IdTokenValidationException);
+}
+
+TEST(IdTokenValidatorTest, RejectsMissingKidWhenJwksUriSet)
+{
+    int64_t now = GetNow();
+
+    // Header declares RS256 but omits the kid field
+    web::json::value header;
+    header[U("alg")] = web::json::value::string(U("RS256"));
+    header[U("typ")] = web::json::value::string(U("JWT"));
+
+    web::json::value payload;
+    payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
+    payload[U("aud")] = web::json::value::string(U("test_client_id"));
+    payload[U("exp")] = web::json::value::number(now + 3600);
+    payload[U("iat")] = web::json::value::number(now - 10);
+
+    std::string jwt = CreateTestJWTWithCustomHeader(header, payload);
+
+    IdTokenValidationConfig config;
+    config.issuer   = "https://test.auth0.com/";
+    config.audience = "test_client_id";
+    config.jwksUri  = "https://test.auth0.com/.well-known/jwks.json";
+
+    // Fails on missing kid check – no network call is made
+    EXPECT_THROW(ValidateIdToken(jwt, config), IdTokenValidationException);
+}
+
 /* ---------------- Payload Output Test ---------------- */
 
 TEST(IdTokenValidatorTest, ReturnsDecodedPayload)
