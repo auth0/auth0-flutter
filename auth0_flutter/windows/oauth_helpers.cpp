@@ -114,7 +114,6 @@ namespace auth0_flutter
     }
 
     OAuthCallbackResult waitForAuthCode_CustomScheme(
-        const std::string &expectedRedirectBase,
         int timeoutSeconds,
         const std::string &expectedState)
     {
@@ -147,13 +146,13 @@ namespace auth0_flutter
             std::string uri = readAndClearEnv();
             if (!uri.empty())
             {
-                // Optionally: verify prefix matches expectedRedirectBase
-                if (!expectedRedirectBase.empty())
+                // Only accept callbacks on the fixed redirect URI
+                if (uri.rfind(kDefaultRedirectUri, 0) != 0)
                 {
-                    if (uri.rfind(expectedRedirectBase, 0) != 0)
-                    {
-                        // continue — but still try to parse if present
-                    }
+                    // Not our callback — keep waiting
+                    std::this_thread::sleep_for(std::chrono::milliseconds(sleepMs));
+                    elapsed += sleepMs;
+                    continue;
                 }
                 // find query
                 auto qpos = uri.find('?');

@@ -53,9 +53,4 @@ namespace auth0_flutter
         AttachThreadInput(foregroundThread, currentThread, FALSE);
     }
 
-    void DebugPrint(const std::string &msg)
-    {
-        OutputDebugStringA((msg + "\n").c_str());
-    }
-
 } // namespace auth0_flutter

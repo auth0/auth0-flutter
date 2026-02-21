@@ -4,6 +4,7 @@
  */
 
 #include "id_token_validator.h"
+#include "id_token_signature_validator.h"
 #include "jwt_util.h"
 #include <chrono>
 #include <sstream>
@@ -114,6 +115,14 @@ namespace auth0_flutter
         if (idToken.empty())
         {
             throw IdTokenValidationException("ID token is empty");
+        }
+
+        // Signature validation (RS256 via JWKS) – performed before claims validation
+        // to match the OIDC specification and Auth0.swift ordering.
+        // Skipped when jwksUri is not provided (e.g. in unit tests).
+        if (config.jwksUri.has_value() && !config.jwksUri.value().empty())
+        {
+            ValidateIdTokenSignature(idToken, config.jwksUri.value());
         }
 
         // Decode JWT payload

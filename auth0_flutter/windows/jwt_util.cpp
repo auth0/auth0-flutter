@@ -71,6 +71,13 @@ JwtParts SplitJwt(const std::string &token)
   return {parts[0], parts[1], parts[2]};
 }
 
+web::json::value DecodeJwtHeader(const std::string &token)
+{
+  auto parts = SplitJwt(token);
+  auto decoded = Base64UrlDecode(parts.header);
+  return web::json::value::parse(decoded);
+}
+
 web::json::value DecodeJwtPayload(const std::string &token)
 {
   auto parts = SplitJwt(token);

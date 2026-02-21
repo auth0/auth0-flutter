@@ -26,14 +26,13 @@ import '../../auth0_flutter.dart';
 /// final accessToken = result.accessToken;
 /// ```
 ///
-/// Login with custom timeout and callback URL:
+/// Login with custom timeout:
 /// ```dart
 /// final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
-/// final result = await auth0.webAuthentication().login(
+/// final result = await auth0.windowsWebAuthentication().login(
 ///   redirectUrl: 'http://localhost:8080/callback',
 ///   parameters: {
 ///     'authTimeoutSeconds': '300',  // 5 minutes for MFA
-///     'appCallbackUrl': 'myapp://auth-complete',
 ///   },
 /// );
 /// ```
@@ -57,8 +56,17 @@ class WindowsWebAuthentication {
   /// **IMPORTANT**: [redirectUrl] is required for Windows desktop applications.
   /// It must appear in your **Allowed Callback URLs** list for the Auth0 app.
   /// Common values include:
-  /// - `http://localhost:8080/callback` (recommended for better UX)
-  /// - Custom scheme URLs registered with your app
+  /// - `auth0flutter://callback` — the app's built-in custom scheme.
+  ///   Auth0 redirects directly to the app; no server is required.
+  /// - `https://your-server.com/callback` — an HTTPS endpoint on an
+  ///   intermediary server that receives the Auth0 redirect and forwards it
+  ///   to the app via the `auth0flutter://callback` scheme.
+  ///
+  /// Regardless of what [redirectUrl] is registered with Auth0, the Windows
+  /// plugin always wakes the app by listening on the `auth0flutter://callback`
+  /// custom scheme. When using an intermediary server, the server must
+  /// forward the callback to `auth0flutter://callback?code=...&state=...`.
+  ///
   /// [Read more about redirecting users](https://auth0.com/docs/authenticate/login/redirect-users-after-login).
   ///
   /// How the ID token is validated can be configured using
@@ -84,31 +92,7 @@ class WindowsWebAuthentication {
   ///
   /// ## Windows-Specific Parameters
   ///
-  /// The [parameters] map supports two Windows-specific keys:
-  ///
-  /// ### appCallbackUrl
-  /// Specifies the actual callback URL that your Windows app should listen for.
-  /// This is distinct from [redirectUrl] (the URL sent to Auth0).
-  ///
-  /// **Why use this?**
-  /// - When using an intermediary server that receives the Auth0 redirect and
-  ///   forwards it to your app using a custom scheme
-  /// - When [redirectUrl] is an HTTP endpoint but your app listens on a custom
-  ///   scheme (e.g., 'myapp://callback')
-  /// - For complex routing scenarios where Auth0's redirect target differs
-  ///   from where your app actually receives the callback
-  ///
-  /// **Example:**
-  /// ```dart
-  /// await auth0.webAuthentication().login(
-  ///   redirectUrl: 'http://localhost:8080/callback',  // Auth0 redirects here
-  ///   parameters: {
-  ///     'appCallbackUrl': 'myapp://auth-complete',  // App listens here
-  ///   },
-  /// );
-  /// ```
-  ///
-  /// **Default:** `'auth0flutter://callback'`
+  /// The [parameters] map supports the following Windows-specific key:
   ///
   /// ### authTimeoutSeconds
   /// Configures how long to wait for the authentication callback before timing
@@ -145,20 +129,14 @@ class WindowsWebAuthentication {
       required final String redirectUrl,
       final String? organizationId,
       final String? invitationUrl,
-      // Windows-specific parameters with sensible defaults
-      // Override these in the map if you need different behavior:
-      // - appCallbackUrl: Change if using custom scheme or intermediary server
-      // - authTimeoutSeconds: Change if users need more/less time to authenticate
+      // Override authTimeoutSeconds in the map if users need more/less time
+      // to authenticate (e.g. '300' for MFA flows, '60' for quick testing).
       final Map<String, String> parameters = const {
-        'appCallbackUrl': 'auth0flutter://callback',
         'authTimeoutSeconds': '180'
       },
       final IdTokenValidationConfig idTokenValidationConfig =
           const IdTokenValidationConfig(),
       final bool useDPoP = false}) async {
-    // Merge custom callback parameters into the parameters map for Windows
-    final mergedParameters = <String, String>{...parameters};
-
     final credentials = await Auth0FlutterWebAuthPlatform.instance.login(
       _createWebAuthRequest(
         WebAuthLoginOptions(
@@ -167,7 +145,7 @@ class WindowsWebAuthentication {
           redirectUrl: redirectUrl,
           organizationId: organizationId,
           invitationUrl: invitationUrl,
-          parameters: mergedParameters,
+          parameters: parameters,
           idTokenValidationConfig: idTokenValidationConfig,
           scheme: _scheme,
           useDPoP: useDPoP,

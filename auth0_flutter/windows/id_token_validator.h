@@ -26,6 +26,11 @@ namespace auth0_flutter
         int leeway = 60;                 // Clock skew leeway in seconds (default: 60)
         std::optional<int> maxAge;       // Maximum authentication age in seconds (optional)
         std::optional<std::string> nonce; // Expected nonce value (optional)
+
+        // When set, RS256 signature validation is performed against this JWKS endpoint.
+        // Typically "https://{domain}/.well-known/jwks.json".
+        // Leave empty to skip signature validation (for tests / offline use).
+        std::optional<std::string> jwksUri;
     };
 
     /**

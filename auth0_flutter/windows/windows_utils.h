@@ -25,12 +25,4 @@ namespace auth0_flutter
      */
     void BringFlutterWindowToFront();
 
-    /**
-     * @brief Debug logging utility
-     *
-     * Prints debug messages to the Visual Studio Output window using
-     * OutputDebugString.
-     */
-    void DebugPrint(const std::string &msg);
-
 } // namespace auth0_flutter

@@ -21,6 +21,7 @@
 #include <iomanip>
 #include <thread>
 #include <map>
+#include <set>
 
 #include <cpprest/json.h>
 
@@ -170,22 +171,18 @@ namespace auth0_flutter
             }
         }
 
-        // Extract redirect URI (required)
-        std::string redirectUri;
+        // Extract redirect URI – defaults to the fixed custom-scheme callback URL.
+        // The app always listens on kDefaultRedirectUri ("auth0flutter://callback"),
+        // so any value provided here must be registered with Auth0 accordingly.
+        std::string redirectUri = kDefaultRedirectUri;
         auto redirectIt = arguments->find(flutter::EncodableValue("redirectUrl"));
         if (redirectIt != arguments->end())
         {
-            if (auto s = std::get_if<std::string>(&redirectIt->second))
+            if (auto s = std::get_if<std::string>(&redirectIt->second);
+                s && !s->empty())
             {
                 redirectUri = *s;
             }
-        }
-
-        // Validate that redirectUri is provided
-        if (redirectUri.empty())
-        {
-            result->Error("bad_args", "redirectUrl is required and must not be empty");
-            return;
         }
 
         // Extract optional parameters
@@ -220,49 +217,37 @@ namespace auth0_flutter
         }
 
         auto parametersIt = arguments->find(flutter::EncodableValue("parameters"));
-        if (parametersIt == arguments->end())
+        const flutter::EncodableMap *parametersMap = nullptr;
+        if (parametersIt != arguments->end())
         {
-            result->Error("bad_args", "Missing 'parameters' key");
-            return;
-        }
-
-        const auto *parametersMap = std::get_if<flutter::EncodableMap>(&parametersIt->second);
-        if (!parametersMap)
-        {
-            result->Error("bad_args", "'parameters' is not a map");
-            return;
-        }
-        // Extract the app callback URL to listen for (may differ from redirectUri sent to Auth0)
-        // This is used when an intermediary server receives the Auth0 redirect and forwards to the app
-        std::string appCallbackUrl = redirectUri;
-        auto callbackUrlIt = parametersMap->find(flutter::EncodableValue("appCallbackUrl"));
-        if (callbackUrlIt != parametersMap->end())
-        {
-            if (auto s = std::get_if<std::string>(&callbackUrlIt->second))
-            {
-                appCallbackUrl = *s;
-            }
+            parametersMap = std::get_if<flutter::EncodableMap>(&parametersIt->second);
         }
 
         // Extract authentication timeout in seconds (default: 180 seconds / 3 minutes)
         int authTimeoutSeconds = 180;
-        auto timeoutIt = parametersMap->find(flutter::EncodableValue("authTimeoutSeconds"));
-        if (timeoutIt != parametersMap->end())
+        if (parametersMap)
         {
-            if (auto s = std::get_if<std::string>(&timeoutIt->second))
+            auto timeoutIt = parametersMap->find(flutter::EncodableValue("authTimeoutSeconds"));
+            if (timeoutIt != parametersMap->end())
             {
-                try
+                if (auto s = std::get_if<std::string>(&timeoutIt->second))
                 {
-                    authTimeoutSeconds = std::stoi(*s);
-                }
-                catch (const std::exception &)
-                {
-                    // If parsing fails, use default value
+                    try
+                    {
+                        authTimeoutSeconds = std::stoi(*s);
+                    }
+                    catch (const std::exception &)
+                    {
+                        // If parsing fails, use default value
+                    }
                 }
             }
         }
 
-        // Extract additional parameters map
+        // Extract additional parameters to append to the authorize URL.
+        // Internal plugin parameters (authTimeoutSeconds) are consumed above
+        // and must NOT be forwarded to the authorization server.
+        static const std::set<std::string> kInternalParams = {"authTimeoutSeconds"};
         std::map<std::string, std::string> additionalParams;
         auto paramsIt = arguments->find(flutter::EncodableValue("parameters"));
         if (paramsIt != arguments->end())
@@ -274,7 +259,7 @@ namespace auth0_flutter
                 {
                     const auto *key = std::get_if<std::string>(&kv.first);
                     const auto *val = std::get_if<std::string>(&kv.second);
-                    if (key && val)
+                    if (key && val && kInternalParams.find(*key) == kInternalParams.end())
                     {
                         additionalParams[*key] = *val;
                     }
@@ -316,7 +301,7 @@ namespace auth0_flutter
         // Run authentication flow in background thread to avoid blocking UI
         std::thread([
             result = std::move(result),
-            clientId, domain, scopeStr, redirectUri, audience, organizationId, invitationUrl, appCallbackUrl, authTimeoutSeconds, additionalParams,
+            clientId, domain, scopeStr, redirectUri, audience, organizationId, invitationUrl, authTimeoutSeconds, additionalParams,
             leeway, maxAge, issuer
         ]() mutable {
             try
@@ -369,7 +354,7 @@ namespace auth0_flutter
 
             // Step 4: Wait for OAuth callback containing authorization code with state validation
             // State parameter is validated to prevent CSRF attacks
-            OAuthCallbackResult callbackResult = waitForAuthCode_CustomScheme(appCallbackUrl, authTimeoutSeconds, state);
+            OAuthCallbackResult callbackResult = waitForAuthCode_CustomScheme(authTimeoutSeconds, state);
 
             // Step 5: Bring Flutter window back to foreground
             BringFlutterWindowToFront();
@@ -488,6 +473,10 @@ namespace auth0_flutter
                 validationConfig.leeway = leeway;
                 validationConfig.maxAge = maxAge;
                 // Note: nonce validation would go here if nonce was sent in authorization request
+
+                // RS256 signature validation via the JWKS well-known endpoint.
+                // Derived from the issuer URL: issuer already has a trailing "/".
+                validationConfig.jwksUri = issuer + ".well-known/jwks.json";
 
                 ValidateIdToken(creds.idToken, validationConfig, &validatedPayload);
             }

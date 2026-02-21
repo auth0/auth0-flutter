@@ -17,12 +17,12 @@ static std::optional<std::string> GetString(
   return std::get<std::string>(it->second);
 }
 
-static bool GetBoolOrFalse(
+static std::optional<bool> GetBoolOrFalse(
     const EncodableMap& map,
     const std::string& key) {
   auto it = map.find(EncodableValue(key));
-  if (it == map.end()) return false;
-  if (!std::holds_alternative<bool>(it->second)) return false;
+  if (it == map.end()) return std::nullopt;
+  if (!std::holds_alternative<bool>(it->second)) return std::nullopt;
   return std::get<bool>(it->second);
 }
 
