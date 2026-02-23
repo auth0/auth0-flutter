@@ -28,11 +28,11 @@ We're excited to announce the release of auth0_flutter v2.0.0!
 
 ### Requirements
 
-| Flutter     | Android         | iOS               | macOS             | Windows                          |
-| :---------- | :-------------- | :---------------- | :---------------- | :------------------------------- |
-| SDK 3.24.0+ | Android API 21+ | iOS 14+           | macOS 11+         | Windows 10+                      |
-| Dart 3.5.0+ | Java 8+         | Swift 5.9+        | Swift 5.9+        | C++ 17, Visual Studio 2022       |
-|             |                 | Xcode 15.x / 16.x | Xcode 15.x / 16.x | vcpkg (for dependencies)         |
+| Flutter     | Android         | iOS               | macOS             |
+| :---------- | :-------------- | :---------------- | :---------------- |
+| SDK 3.24.0+ | Android API 21+ | iOS 14+           | macOS 11+         |
+| Dart 3.5.0+ | Java 8+         | Swift 5.9+        | Swift 5.9+        |
+|             |                 | Xcode 15.x / 16.x | Xcode 15.x / 16.x |
 
 ### Installation
 

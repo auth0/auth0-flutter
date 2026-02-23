@@ -192,7 +192,7 @@ class _ExampleAppState extends State<ExampleApp> {
       } else {
         // Mobile (Android/iOS): Use WebAuth with DPoP
         final webAuthDPoP = auth0.webAuthentication(
-          scheme: 'https',
+          scheme: dotenv.env['AUTH0_CUSTOM_SCHEME'],
         );
 
         final result = await webAuthDPoP.login(
