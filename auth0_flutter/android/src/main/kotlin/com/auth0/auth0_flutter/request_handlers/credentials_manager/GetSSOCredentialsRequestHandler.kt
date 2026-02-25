@@ -28,7 +28,7 @@ class GetSSOCredentialsRequestHandler : CredentialsManagerRequestHandler {
             override fun onSuccess(credentials: SSOCredentials) {
                 val map = mutableMapOf<String, Any?>(
                     "sessionTransferToken" to credentials.sessionTransferToken,
-                    "tokenType" to credentials.tokenType,
+                    "tokenType" to credentials.issuedTokenType,
                     "expiresIn" to credentials.expiresIn,
                     "idToken" to credentials.idToken
                 )

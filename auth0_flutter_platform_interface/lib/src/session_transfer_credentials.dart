@@ -1,5 +1,5 @@
 /// Authentication artifacts used to establish a web session from a native
-/// application context (Native to Web SSO — Early Access).
+/// application context (Native to Web SSO).
 ///
 /// Obtain a [SessionTransferCredentials] instance via
 /// `CredentialsManager.ssoCredentials()`.

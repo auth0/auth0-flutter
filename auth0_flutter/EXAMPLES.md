@@ -521,9 +521,7 @@ print(e);
 }
 ```
 
-### Native to Web SSO (Early Access)
-
-> ⚠️ **Early Access Feature**: Native to Web SSO is currently available in Early Access. To use this feature, you must have an Enterprise plan. For more information, see [Product Release Stages](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages).
+### Native to Web SSO
 
 Native to Web SSO allows authenticated users in your native mobile application to seamlessly transition to your web application without requiring them to log in again. This is achieved by exchanging a refresh token for a Session Transfer Token, which can then be used to establish a session in the web application.
 
@@ -600,32 +598,35 @@ if (sessionTransferToken) {
 
 **Option 2: As a Cookie (WebView only)**
 
-If your application uses a WebView, you can inject the token as a cookie:
+If your application uses a WebView to open your website, you can inject the Session Transfer Token as a cookie. The cookie will be automatically sent to Auth0's `/authorize` endpoint when your web application initiates authentication.
 
 ```dart
 final ssoCredentials = await auth0.credentialsManager.ssoCredentials();
 
 final cookie = 'auth0_session_transfer_token=${ssoCredentials.sessionTransferToken}; '
-    'path=/; domain=.YOUR_AUTH0_DOMAIN; secure';
+    'path=/; '
+    'domain=YOUR_AUTH0_DOMAIN; ' // Or custom domain, if your website uses one
+    'secure';
 
 // Inject via your WebView controller (e.g. webview_flutter)
 await webViewController.runJavaScript(
   "document.cookie = '$cookie';",
 );
-```
 
-> **Note**: Cookie injection is platform-specific and may require additional configuration. The query parameter method is generally more straightforward and recommended for most use cases.
-
-#### Passing additional parameters
-
-On iOS and macOS, you can forward extra parameters or custom headers to the token exchange request:
-
-```dart
-final ssoCredentials = await auth0.credentialsManager.ssoCredentials(
-  parameters: {'ui_locales': 'en-US'},
-  headers: {'X-Custom-Header': 'value'}, // iOS/macOS only
+// Then navigate to your web application
+await webViewController.loadRequest(
+  Uri.parse('https://your-web-app.com'),
 );
 ```
+
+> **Important**: Make sure the cookie's domain matches the Auth0 domain your website is using, regardless of the domain your mobile app uses. Otherwise, the `/authorize` endpoint will not receive the cookie.
+>
+> - If your website uses the default Auth0 domain (like `example.us.auth0.com`), set the cookie's domain to this value
+> - If your website uses a custom domain, use the custom domain value instead
+>
+> Cookie injection is platform-specific and may require additional WebView configuration.
+
+
 
 [Go up ⤴](#examples)
 

@@ -67,7 +67,7 @@ abstract class CredentialsManagerPlatform extends PlatformInterface {
 
   /// Exchanges the stored refresh token for a [SessionTransferCredentials]
   /// that can be used to establish an authenticated web session from the
-  /// current native session (Native to Web SSO — Early Access).
+  /// current native session (Native to Web SSO).
   ///
   /// See `CredentialsManager.ssoCredentials` for full documentation.
   Future<SessionTransferCredentials> getSSOCredentials(
