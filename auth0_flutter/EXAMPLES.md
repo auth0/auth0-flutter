@@ -552,14 +552,6 @@ try {
   print('Session Transfer Token: ${ssoCredentials.sessionTransferToken}');
   print('Token Type: ${ssoCredentials.tokenType}');
   print('Expires In: ${ssoCredentials.expiresIn} seconds');
-
-  // Optional: ID Token and Refresh Token may be returned if RTR is enabled
-  if (ssoCredentials.idToken != null) {
-    print('ID Token: ${ssoCredentials.idToken}');
-  }
-  if (ssoCredentials.refreshToken != null) {
-    print('New Refresh Token received (RTR enabled)');
-  }
 } on CredentialsManagerException catch (e) {
   print('Failed to get SSO credentials: ${e.message}');
 }

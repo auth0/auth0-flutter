@@ -946,12 +946,13 @@ void main() {
     });
 
     test(
-        'correctly returns SessionTransferCredentials with null optional fields',
+        'correctly returns SessionTransferCredentials with null refreshToken',
         () async {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
             'sessionTransferToken': 'ssoToken',
             'tokenType': 'session_transfer',
             'expiresIn': 30,
+            'idToken': 'id-token',
           });
 
       final result = await MethodChannelCredentialsManager().getSSOCredentials(
@@ -963,7 +964,7 @@ void main() {
       verify(mocked.methodCallHandler(captureAny));
 
       expect(result.sessionTransferToken, 'ssoToken');
-      expect(result.idToken, isNull);
+      expect(result.idToken, 'id-token');
       expect(result.refreshToken, isNull);
     });
 

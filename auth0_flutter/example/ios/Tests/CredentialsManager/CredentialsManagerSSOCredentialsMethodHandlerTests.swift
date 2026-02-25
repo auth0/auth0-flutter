@@ -95,7 +95,7 @@ extension CredentialsManagerSSOCredentialsMethodHandlerTests {
 extension CredentialsManagerSSOCredentialsMethodHandlerTests {
     override func arguments() -> [String: Any] {
         return [
-            Argument.parameters.rawValue: [String: Any](),
+            Argument.parameters.rawValue: [String: String](),
             Argument.headers.rawValue: [String: String]()
         ]
     }

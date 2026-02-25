@@ -16,7 +16,7 @@ struct CredentialsManagerSSOCredentialsMethodHandler: MethodHandler {
     let credentialsManager: CredentialsManager
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
-        guard let parameters = arguments[Argument.parameters] as? [String: Any] else {
+        guard let parameters = arguments[Argument.parameters] as? [String: String] else {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.parameters.rawValue)))
         }
         guard let headers = arguments[Argument.headers] as? [String: String] else {

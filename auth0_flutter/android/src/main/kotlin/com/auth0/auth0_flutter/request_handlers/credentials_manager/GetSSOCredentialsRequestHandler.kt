@@ -29,9 +29,9 @@ class GetSSOCredentialsRequestHandler : CredentialsManagerRequestHandler {
                 val map = mutableMapOf<String, Any?>(
                     "sessionTransferToken" to credentials.sessionTransferToken,
                     "tokenType" to credentials.tokenType,
-                    "expiresIn" to credentials.expiresIn
+                    "expiresIn" to credentials.expiresIn,
+                    "idToken" to credentials.idToken
                 )
-                credentials.idToken?.let { map["idToken"] = it }
                 credentials.refreshToken?.let { map["refreshToken"] = it }
                 result.success(map)
             }

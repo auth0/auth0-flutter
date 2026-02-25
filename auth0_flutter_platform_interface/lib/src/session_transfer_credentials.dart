@@ -33,9 +33,7 @@ class SessionTransferCredentials {
   final int expiresIn;
 
   /// A JSON web token containing user identity information.
-  ///
-  /// May be `null` depending on the scopes requested.
-  final String? idToken;
+  final String idToken;
 
   /// A token that can be used to request new credentials.
   ///
@@ -47,7 +45,7 @@ class SessionTransferCredentials {
     required this.sessionTransferToken,
     required this.tokenType,
     required this.expiresIn,
-    this.idToken,
+    required this.idToken,
     this.refreshToken,
   });
 
@@ -56,8 +54,8 @@ class SessionTransferCredentials {
       SessionTransferCredentials(
         sessionTransferToken: result['sessionTransferToken'] as String,
         tokenType: result['tokenType'] as String,
-        expiresIn: result['expiresIn'] as int? ?? 0,
-        idToken: result['idToken'] as String?,
+        expiresIn: result['expiresIn'] as int,
+        idToken: result['idToken'] as String,
         refreshToken: result['refreshToken'] as String?,
       );
 }
