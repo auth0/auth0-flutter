@@ -1,6 +1,8 @@
 package com.auth0.auth0_flutter.request_handlers
 
+import android.os.Build
 import com.auth0.android.Auth0
+import com.auth0.android.request.DefaultClient
 import com.auth0.android.util.Auth0UserAgent
 import com.auth0.auth0_flutter.utils.assertHasProperties
 import io.flutter.plugin.common.MethodCall
@@ -42,7 +44,21 @@ class MethodCallRequest {
                 version = userAgentMap["version"] as String,
             )
 
+            val mobileUserAgent = buildMobileUserAgent(userAgentMap)
+            account.networkingClient = DefaultClient(
+                defaultHeaders = mapOf("User-Agent" to mobileUserAgent)
+            )
+
             return MethodCallRequest(account, args)
+        }
+
+        private fun buildMobileUserAgent(userAgentMap: Map<String, String>): String {
+            val sdkName = userAgentMap["name"] ?: "auth0-flutter"
+            val sdkVersion = userAgentMap["version"] ?: "unknown"
+            return "$sdkName/$sdkVersion " +
+                "(Linux; Android ${Build.VERSION.RELEASE}; " +
+                "${Build.MANUFACTURER} ${Build.MODEL}; " +
+                "SDK ${Build.VERSION.SDK_INT})"
         }
     }
 }
