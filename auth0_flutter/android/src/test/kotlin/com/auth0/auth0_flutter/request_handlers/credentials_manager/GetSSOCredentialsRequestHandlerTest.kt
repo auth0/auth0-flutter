@@ -107,7 +107,7 @@ class GetSSOCredentialsRequestHandlerTest {
 
         val mockSSOCredentials = mock<SSOCredentials>()
         `when`(mockSSOCredentials.sessionTransferToken).thenReturn("sso-token")
-        `when`(mockSSOCredentials.tokenType).thenReturn("session_transfer")
+        `when`(mockSSOCredentials.issuedTokenType).thenReturn("session_transfer")
         `when`(mockSSOCredentials.expiresIn).thenReturn(3600)
         `when`(mockSSOCredentials.idToken).thenReturn("id-token")
         `when`(mockSSOCredentials.refreshToken).thenReturn(null)
