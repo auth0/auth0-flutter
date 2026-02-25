@@ -18,6 +18,14 @@ class MethodCallHandler {
     'tokenType': 'Bearer'
   };
 
+  static const Map<dynamic, dynamic> ssoCredentials = {
+    'sessionTransferToken': 'ssoToken',
+    'tokenType': 'session_transfer',
+    'expiresIn': 60,
+    'idToken': 'idToken',
+    'refreshToken': 'refreshToken',
+  };
+
   Future<dynamic>? methodCallHandler(final MethodCall? methodCall) async {}
 }
 
@@ -852,6 +860,154 @@ void main() {
       expect(result.email, isNull);
       expect(result.nickname, isNull);
       expect(result.pictureUrl, isNull);
+    });
+  });
+
+  group('getSSOCredentials', () {
+    test('calls the correct MethodChannel method', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.ssoCredentials);
+
+      await MethodChannelCredentialsManager().getSSOCredentials(
+          CredentialsManagerRequest<GetSSOCredentialsOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: GetSSOCredentialsOptions()));
+
+      expect(
+          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          'credentialsManager#getSSOCredentials');
+    });
+
+    test('correctly maps all properties', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.ssoCredentials);
+
+      await MethodChannelCredentialsManager().getSSOCredentials(
+          CredentialsManagerRequest<GetSSOCredentialsOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: GetSSOCredentialsOptions(
+                parameters: {'test-param': 'test-value'},
+                headers: {'test-header': 'test-header-value'},
+              )));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['_account']['domain'], 'test-domain');
+      expect(verificationResult.arguments['_account']['clientId'],
+          'test-clientId');
+      expect(verificationResult.arguments['_userAgent']['name'], 'test-name');
+      expect(verificationResult.arguments['_userAgent']['version'],
+          'test-version');
+      expect(verificationResult.arguments['parameters']['test-param'],
+          'test-value');
+      expect(verificationResult.arguments['headers']['test-header'],
+          'test-header-value');
+    });
+
+    test(
+        'correctly assigns default values to all non-required properties when missing',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.ssoCredentials);
+
+      await MethodChannelCredentialsManager().getSSOCredentials(
+          CredentialsManagerRequest<GetSSOCredentialsOptions>(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: '', version: ''),
+              options: GetSSOCredentialsOptions()));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['parameters'], isEmpty);
+      expect(verificationResult.arguments['headers'], isEmpty);
+    });
+
+    test('correctly returns the response from the Method Channel', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.ssoCredentials);
+
+      final result = await MethodChannelCredentialsManager().getSSOCredentials(
+          CredentialsManagerRequest<GetSSOCredentialsOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: GetSSOCredentialsOptions()));
+
+      verify(mocked.methodCallHandler(captureAny));
+
+      expect(result.sessionTransferToken,
+          MethodCallHandler.ssoCredentials['sessionTransferToken']);
+      expect(result.tokenType, MethodCallHandler.ssoCredentials['tokenType']);
+      expect(result.expiresIn, MethodCallHandler.ssoCredentials['expiresIn']);
+      expect(result.idToken, MethodCallHandler.ssoCredentials['idToken']);
+      expect(
+          result.refreshToken, MethodCallHandler.ssoCredentials['refreshToken']);
+    });
+
+    test(
+        'correctly returns SessionTransferCredentials with null optional fields',
+        () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
+            'sessionTransferToken': 'ssoToken',
+            'tokenType': 'session_transfer',
+            'expiresIn': 30,
+          });
+
+      final result = await MethodChannelCredentialsManager().getSSOCredentials(
+          CredentialsManagerRequest<GetSSOCredentialsOptions>(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: '', version: ''),
+              options: GetSSOCredentialsOptions()));
+
+      verify(mocked.methodCallHandler(captureAny));
+
+      expect(result.sessionTransferToken, 'ssoToken');
+      expect(result.idToken, isNull);
+      expect(result.refreshToken, isNull);
+    });
+
+    test(
+        'throws a CredentialsManagerException when method channel returns null',
+        () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      Future<SessionTransferCredentials> actual() async {
+        final result = await MethodChannelCredentialsManager().getSSOCredentials(
+            CredentialsManagerRequest<GetSSOCredentialsOptions>(
+                account: const Account('', ''),
+                userAgent:
+                    UserAgent(name: 'test-name', version: 'test-version'),
+                options: GetSSOCredentialsOptions()));
+
+        return result;
+      }
+
+      expectLater(
+          actual,
+          throwsA(predicate((final e) =>
+              e is CredentialsManagerException &&
+              e.message == 'Channel returned null.')));
+    });
+
+    test(
+        'throws a CredentialsManagerException when method channel throws a PlatformException',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenThrow(PlatformException(code: '123'));
+
+      Future<SessionTransferCredentials> actual() async {
+        final result = await MethodChannelCredentialsManager().getSSOCredentials(
+            CredentialsManagerRequest<GetSSOCredentialsOptions>(
+                account: const Account('', ''),
+                userAgent:
+                    UserAgent(name: 'test-name', version: 'test-version'),
+                options: GetSSOCredentialsOptions()));
+
+        return result;
+      }
+
+      await expectLater(actual, throwsA(isA<CredentialsManagerException>()));
     });
   });
 }

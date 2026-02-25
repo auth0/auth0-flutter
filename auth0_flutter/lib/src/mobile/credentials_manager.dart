@@ -22,6 +22,32 @@ abstract class CredentialsManager {
   });
 
   Future<bool> clearCredentials();
+
+  /// Exchanges the stored refresh token for a [SessionTransferCredentials]
+  /// that can be used to establish an authenticated web session from the
+  /// current native session (Native to Web SSO — Early Access).
+  ///
+  /// The returned [SessionTransferCredentials.sessionTransferToken] is:
+  /// - **Short-lived**: expires after approximately 1 minute
+  /// - **Single-use**: can only be used once to establish a web session
+  /// - **Secure**: can be bound to the user's device through IP address or ASN
+  ///
+  /// Pass the token to your web application as a `session_transfer_token`
+  /// query parameter, or inject it as a cookie into a WebView. Use it
+  /// immediately after retrieval.
+  ///
+  /// Pass optional [parameters] to include in the token exchange request.
+  /// On iOS and macOS, [headers] can also be forwarded to the Auth0 endpoint.
+  ///
+  /// **Prerequisites:**
+  /// - Auth0 Enterprise plan with Native to Web SSO enabled
+  /// - `offline_access` scope must be present in the stored credentials
+  ///
+  /// See also: [Auth0 Native to Web SSO documentation](https://auth0.com/docs/authenticate/single-sign-on/native-to-web/configure-implement-native-to-web)
+  Future<SessionTransferCredentials> ssoCredentials({
+    final Map<String, String> parameters = const {},
+    final Map<String, String> headers = const {},
+  });
 }
 
 /// Default [CredentialsManager] implementation that passes calls to
@@ -110,6 +136,22 @@ class DefaultCredentialsManager extends CredentialsManager {
   @override
   Future<bool> clearCredentials() => CredentialsManagerPlatform.instance
       .clearCredentials(_createApiRequest(null));
+
+  /// Exchanges the stored refresh token for a [SessionTransferCredentials]
+  /// that can be used to establish an authenticated web session from the
+  /// current native session (Native to Web SSO — Early Access).
+  ///
+  /// See [CredentialsManager.ssoCredentials] for full documentation.
+  @override
+  Future<SessionTransferCredentials> ssoCredentials({
+    final Map<String, String> parameters = const {},
+    final Map<String, String> headers = const {},
+  }) =>
+      CredentialsManagerPlatform.instance.getSSOCredentials(
+          _createApiRequest(GetSSOCredentialsOptions(
+        parameters: parameters,
+        headers: headers,
+      )));
 
   CredentialsManagerRequest<TOptions>
       _createApiRequest<TOptions extends RequestOptions>(

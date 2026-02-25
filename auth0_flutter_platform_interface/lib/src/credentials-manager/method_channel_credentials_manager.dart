@@ -16,6 +16,8 @@ const String credentialsManagerHasValidCredentialsMethod =
     'credentialsManager#hasValidCredentials';
 const String credentialsManagerRenewCredentialsMethod =
     'credentialsManager#renewCredentials';
+const String credentialsManagerGetSSOCredentialsMethod =
+    'credentialsManager#getSSOCredentials';
 
 /// Method Channel implementation to communicate with the Native
 /// CredentialsManager
@@ -94,6 +96,22 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
         method: credentialsManagerHasValidCredentialsMethod, request: request);
 
     return result ?? false;
+  }
+
+  /// Exchanges the stored refresh token for a [SessionTransferCredentials]
+  /// that can be used to establish an authenticated web session from the
+  /// current native session (Native to Web SSO — Early Access).
+  ///
+  /// Uses the [MethodChannel] to communicate with the native platforms.
+  /// See `CredentialsManager.ssoCredentials` for full documentation.
+  @override
+  Future<SessionTransferCredentials> getSSOCredentials(
+      final CredentialsManagerRequest<GetSSOCredentialsOptions>
+          request) async {
+    final Map<String, dynamic> result = await _invokeMapRequest(
+        method: credentialsManagerGetSSOCredentialsMethod, request: request);
+
+    return SessionTransferCredentials.fromMap(result);
   }
 
   Future<TResult?> _invokeRequest<TResult, TOptions extends RequestOptions?>({

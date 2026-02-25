@@ -64,4 +64,15 @@ abstract class CredentialsManagerPlatform extends PlatformInterface {
   ) {
     throw UnimplementedError('hasValidCredentials() has not been implemented');
   }
+
+  /// Exchanges the stored refresh token for a [SessionTransferCredentials]
+  /// that can be used to establish an authenticated web session from the
+  /// current native session (Native to Web SSO — Early Access).
+  ///
+  /// See `CredentialsManager.ssoCredentials` for full documentation.
+  Future<SessionTransferCredentials> getSSOCredentials(
+    final CredentialsManagerRequest<GetSSOCredentialsOptions> request,
+  ) {
+    throw UnimplementedError('getSSOCredentials() has not been implemented');
+  }
 }
