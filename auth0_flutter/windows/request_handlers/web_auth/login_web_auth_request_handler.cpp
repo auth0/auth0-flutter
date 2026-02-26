@@ -10,6 +10,7 @@
 #include "../../jwt_util.h"
 #include "../../time_util.h"
 #include "../../oauth_helpers.h"
+#include "../../url_utils.h"
 #include "../../windows_utils.h"
 #include "../../id_token_validator.h"
 #include "../../authentication_error.h"
@@ -19,7 +20,6 @@
 #include <stdexcept>
 #include <array>
 #include <iomanip>
-#include <thread>
 #include <map>
 #include <set>
 
@@ -27,30 +27,6 @@
 
 namespace auth0_flutter
 {
-
-    // Local URL encoding helper (kept here per design requirement)
-    static std::string UrlEncode(const std::string &str)
-    {
-        std::ostringstream encoded;
-        encoded.fill('0');
-        encoded << std::hex << std::uppercase;
-
-        for (unsigned char c : str)
-        {
-            // Keep alphanumeric and safe characters unchanged
-            if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~')
-            {
-                encoded << c;
-            }
-            else
-            {
-                // Percent-encode everything else
-                encoded << '%' << std::setw(2) << static_cast<int>(c);
-            }
-        }
-
-        return encoded.str();
-    }
 
     /**
      * @brief Handles the webAuth#login method call
@@ -118,57 +94,31 @@ namespace auth0_flutter
         }
 
         // Extract scopes (default: "openid profile email")
-        std::string scopeStr = "openid profile email";
-
+        
+        std::set<std::string> scopeSet = { "openid", "profile", "email", "offline_access"};
+    
         auto scopesIt = arguments->find(flutter::EncodableValue("scopes"));
         if (scopesIt != arguments->end())
         {
             const auto *scopeList = std::get_if<flutter::EncodableList>(&scopesIt->second);
-            if (!scopeList)
-            {
-                result->Error("bad_args", "'scopes' must be a List<String>");
-                return;
-            }
-
-            // Build scope string from provided list
-            std::ostringstream oss;
-            bool first = true;
-            bool hasOpenId = false;
-
             for (const auto &v : *scopeList)
             {
-                const auto *s = std::get_if<std::string>(&v);
-                if (!s)
+                if (const auto *s = std::get_if<std::string>(&v))
+                {
+                    scopeSet.insert(*s);
+                }
+                else
                 {
                     result->Error("bad_args", "Each scope must be a String");
                     return;
                 }
-
-                // Check if "openid" scope is present
-                if (*s == "openid")
-                {
-                    hasOpenId = true;
-                }
-
-                if (!first)
-                    oss << " ";
-                oss << *s;
-                first = false;
             }
+        }
 
-            scopeStr = oss.str();
-
-            // Ensure "openid" scope is always present (OIDC compliance)
-            // The "openid" scope is required to get an ID token
-            if (!hasOpenId && !scopeStr.empty())
-            {
-                scopeStr = "openid " + scopeStr;
-            }
-            else if (!hasOpenId && scopeStr.empty())
-            {
-                // If no scopes provided, use just "openid"
-                scopeStr = "openid";
-            }
+        std::string scopeStr;
+        for (const auto& s : scopeSet) {
+            if (!scopeStr.empty()) scopeStr += ' ';
+            scopeStr += s;
         }
 
         // Extract redirect URI – defaults to the fixed custom-scheme callback URL.
@@ -298,12 +248,26 @@ namespace auth0_flutter
             }
         }
 
-        // Run authentication flow in background thread to avoid blocking UI
-        std::thread([
-            result = std::move(result),
+        // Cancel any previously running login task so a second call to handle()
+        // does not leave a stale task that still holds a reference to the old
+        // (now-replaced) MethodResult.
+        _cts.cancel();
+        _cts = pplx::cancellation_token_source{};
+        auto token = _cts.get_token();
+
+        // MSVC PPL's create_task requires the functor to be CopyConstructible.
+        // std::unique_ptr is move-only, so transfer ownership to shared_ptr first.
+        // All synchronous argument validation above has already run at this point.
+        std::shared_ptr<flutter::MethodResult<flutter::EncodableValue>> sharedResult(result.release());
+
+        // Run authentication on a cancellable pplx task to avoid blocking the
+        // Flutter UI thread.  The cancellation token lets the destructor (or a
+        // subsequent handle() call) abort a running flow cleanly.
+        pplx::create_task([
+            sharedResult,
             clientId, domain, scopeStr, redirectUri, audience, organizationId, invitationUrl, authTimeoutSeconds, additionalParams,
-            leeway, maxAge, issuer
-        ]() mutable {
+            leeway, maxAge, issuer, token
+        ]() {
             try
             {
                 // Step 1: Generate PKCE parameters for secure OAuth flow
@@ -311,41 +275,73 @@ namespace auth0_flutter
                 std::string codeVerifier = generateCodeVerifier();
                 std::string codeChallenge = generateCodeChallenge(codeVerifier);
 
-                // Generate state parameter for CSRF protection
-                std::string state = generateCodeVerifier(); // Reuse code verifier generation for random state
+                // Generate state (CSRF protection) and nonce (OIDC replay protection)
+                std::string state = generateCodeVerifier();
+                std::string nonce = generateCodeVerifier();
+
+                // Parse invitation URL to extract organization and invitation query parameters.
+                // Mirrors Swift/Android SDK behavior: the raw URL is never forwarded as-is;
+                // only the extracted param values are sent to the authorization server.
+                std::string resolvedOrganizationId = organizationId;
+                std::string invitationId;
+                if (!invitationUrl.empty())
+                {
+                    auto qpos = invitationUrl.find('?');
+                    if (qpos != std::string::npos)
+                    {
+                        auto invParams = SafeParseQuery(invitationUrl.substr(qpos + 1));
+                        auto orgIt = invParams.find("organization");
+                        auto invIt = invParams.find("invitation");
+                        if (orgIt == invParams.end() || invIt == invParams.end())
+                        {
+                            sharedResult->Error("INVALID_INVITATION_URL",
+                                "Invalid invitation URL: missing organization or invitation parameters",
+                                flutter::EncodableValue());
+                            return;
+                        }
+                        resolvedOrganizationId = orgIt->second;
+                        invitationId = invIt->second;
+                    }
+                }
 
             // Step 2: Build OAuth 2.0 authorization URL with properly encoded parameters
-            // Uses authorization code flow with PKCE and state for CSRF protection
+            // Uses authorization code flow with PKCE, state for CSRF, and nonce for OIDC replay protection
             std::ostringstream authUrl;
-            authUrl << "https://" << UrlEncode(domain) << "/authorize?"
+            authUrl << "https://" << urlEncode(domain) << "/authorize?"
                     << "response_type=code"
-                    << "&client_id=" << UrlEncode(clientId)
-                    << "&redirect_uri=" << UrlEncode(redirectUri)
-                    << "&scope=" << UrlEncode(scopeStr)
-                    << "&code_challenge=" << UrlEncode(codeChallenge)
+                    << "&client_id=" << urlEncode(clientId)
+                    << "&redirect_uri=" << urlEncode(redirectUri)
+                    << "&scope=" << urlEncode(scopeStr)
+                    << "&code_challenge=" << urlEncode(codeChallenge)
                     << "&code_challenge_method=S256"
-                    << "&state=" << UrlEncode(state);
+                    << "&state=" << urlEncode(state)
+                    << "&nonce=" << urlEncode(nonce);
 
             // Add optional parameters if provided
             if (!audience.empty())
             {
-                authUrl << "&audience=" << UrlEncode(audience);
+                authUrl << "&audience=" << urlEncode(audience);
             }
 
-            if (!organizationId.empty())
+            if (!resolvedOrganizationId.empty())
             {
-                authUrl << "&organization=" << UrlEncode(organizationId);
+                authUrl << "&organization=" << urlEncode(resolvedOrganizationId);
             }
 
-            if (!invitationUrl.empty())
+            if (!invitationId.empty())
             {
-                authUrl << "&invitation=" << UrlEncode(invitationUrl);
+                authUrl << "&invitation=" << urlEncode(invitationId);
+            }
+
+            if (maxAge.has_value())
+            {
+                authUrl << "&max_age=" << maxAge.value();
             }
 
             // Add any additional custom parameters
             for (const auto &kv : additionalParams)
             {
-                authUrl << "&" << UrlEncode(kv.first) << "=" << UrlEncode(kv.second);
+                authUrl << "&" << urlEncode(kv.first) << "=" << urlEncode(kv.second);
             }
 
             // Step 3: Open system default browser for user authentication
@@ -354,7 +350,15 @@ namespace auth0_flutter
 
             // Step 4: Wait for OAuth callback containing authorization code with state validation
             // State parameter is validated to prevent CSRF attacks
-            OAuthCallbackResult callbackResult = waitForAuthCode_CustomScheme(authTimeoutSeconds, state);
+            OAuthCallbackResult callbackResult = waitForAuthCode_CustomScheme(authTimeoutSeconds, state, token);
+
+            // If cancellation was requested after the callback arrived (e.g. the
+            // destructor was called while the token exchange is in progress), bail
+            // out now so we never call result on a potentially-destroyed MethodResult.
+            if (token.is_canceled())
+            {
+                return;
+            }
 
             // Step 5: Bring Flutter window back to foreground
             BringFlutterWindowToFront();
@@ -367,7 +371,7 @@ namespace auth0_flutter
                 {
                     // User likely closed the browser without completing authentication
                     // Return USER_CANCELLED error code for consistency across platforms
-                    result->Error("USER_CANCELLED",
+                    sharedResult->Error("USER_CANCELLED",
                         "The user cancelled the Web Auth operation.",
                         flutter::EncodableValue());
                     return;
@@ -376,7 +380,7 @@ namespace auth0_flutter
                 {
                     // State parameter validation failed (CSRF protection)
                     // This is a security issue - use specific error code
-                    result->Error("INVALID_STATE",
+                    sharedResult->Error("INVALID_STATE",
                         callbackResult.errorDescription,
                         flutter::EncodableValue());
                     return;
@@ -401,13 +405,13 @@ namespace auth0_flutter
                         ? callbackResult.error
                         : callbackResult.errorDescription;
 
-                    result->Error(callbackResult.error, message, flutter::EncodableValue(errorDetails));
+                    sharedResult->Error(callbackResult.error, message, flutter::EncodableValue(errorDetails));
                     return;
                 }
                 else
                 {
                     // Invalid callback - no code and no error
-                    result->Error("NO_AUTHORIZATION_CODE",
+                    sharedResult->Error("NO_AUTHORIZATION_CODE",
                         "The callback URL is missing the authorization code.",
                         flutter::EncodableValue());
                     return;
@@ -455,7 +459,7 @@ namespace auth0_flutter
                 }
 
                 // Return error with code, description, and details
-                result->Error(
+                sharedResult->Error(
                     e.GetCode(),
                     e.GetDescription(),
                     flutter::EncodableValue(errorDetails));
@@ -472,7 +476,7 @@ namespace auth0_flutter
                 validationConfig.audience = clientId;
                 validationConfig.leeway = leeway;
                 validationConfig.maxAge = maxAge;
-                // Note: nonce validation would go here if nonce was sent in authorization request
+                validationConfig.nonce = nonce;
 
                 // RS256 signature validation via the JWKS well-known endpoint.
                 // Derived from the issuer URL: issuer already has a trailing "/".
@@ -483,7 +487,7 @@ namespace auth0_flutter
             catch (const IdTokenValidationException &e)
             {
                 // Return ID_TOKEN_VALIDATION_FAILED error code
-                result->Error("ID_TOKEN_VALIDATION_FAILED",
+                sharedResult->Error("ID_TOKEN_VALIDATION_FAILED",
                     std::string("The ID token validation performed after authentication failed: ") + e.what(),
                     flutter::EncodableValue());
                 return;
@@ -528,15 +532,30 @@ namespace auth0_flutter
             UserProfile user = UserProfile::DeserializeUserProfile(payload_map);
             response[flutter::EncodableValue("userProfile")] = flutter::EncodableValue(user.ToMap());
 
-                // Step 10: Return success with credentials
-                result->Success(flutter::EncodableValue(response));
+                // Step 10: Return success with credentials.
+                // Guard against the narrow race where cancellation is signalled
+                // between the polling loop returning and this call.
+                if (!token.is_canceled())
+                {
+                    sharedResult->Success(flutter::EncodableValue(response));
+                }
+            }
+            catch (const pplx::task_canceled &)
+            {
+                // Cancellation was requested (engine shutdown or a subsequent
+                // handle() call).  result is no longer valid — exit silently.
             }
             catch (const std::exception &e)
             {
-                // Handle any errors during the authentication flow
-                result->Error("auth_failed", e.what());
+                // Handle any unexpected errors during the authentication flow.
+                // Guard against the rare race where cancellation fires after the
+                // polling loop completes but before the result is delivered.
+                if (!token.is_canceled())
+                {
+                    sharedResult->Error("auth_failed", e.what());
+                }
             }
-        }).detach(); // Detach thread to run independently
+        });
     }
 
 } // namespace auth0_flutter

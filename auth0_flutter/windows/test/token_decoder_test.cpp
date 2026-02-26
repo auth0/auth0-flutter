@@ -201,3 +201,120 @@ TEST(DecodeTokenResponseTest, HandlesInvalidExpiresAtFormat) {
   // Should fall back to computing from expires_in
   ASSERT_TRUE(creds.expiresAt.has_value());
 }
+
+TEST(DecodeTokenResponseTest, DPoPTokenType) {
+  // DPoP token type must be preserved exactly as returned by Auth0.
+  value json;
+  json[U("access_token")] = value::string(U("dpop_bound_token"));
+  json[U("token_type")]   = value::string(U("DPoP"));
+
+  Credentials creds = DecodeTokenResponse(json);
+
+  EXPECT_EQ(creds.accessToken, "dpop_bound_token");
+  EXPECT_EQ(creds.tokenType,   "DPoP");
+}
+
+TEST(DecodeTokenResponseTest, ZeroExpiresInProducesExpiresAtApproximatelyNow) {
+  auto before = std::chrono::system_clock::now();
+
+  value json;
+  json[U("access_token")] = value::string(U("tok"));
+  json[U("token_type")]   = value::string(U("Bearer"));
+  json[U("expires_in")]   = value::number(0);
+
+  Credentials creds = DecodeTokenResponse(json);
+
+  auto after = std::chrono::system_clock::now();
+
+  ASSERT_TRUE(creds.expiresIn.has_value());
+  EXPECT_EQ(creds.expiresIn.value(), 0);
+  ASSERT_TRUE(creds.expiresAt.has_value());
+
+  // expiresAt should be very close to the time of the call (now + 0 s).
+  auto diff = std::chrono::duration_cast<std::chrono::seconds>(
+      creds.expiresAt.value() - before).count();
+  EXPECT_GE(diff, 0);
+  EXPECT_LE(diff, 2);
+}
+
+TEST(DecodeTokenResponseTest, LargeExpiresInOneYear) {
+  const int oneYear = 365 * 24 * 3600;
+
+  value json;
+  json[U("access_token")] = value::string(U("tok"));
+  json[U("token_type")]   = value::string(U("Bearer"));
+  json[U("expires_in")]   = value::number(oneYear);
+
+  Credentials creds = DecodeTokenResponse(json);
+
+  ASSERT_TRUE(creds.expiresIn.has_value());
+  EXPECT_EQ(creds.expiresIn.value(), oneYear);
+  ASSERT_TRUE(creds.expiresAt.has_value());
+
+  auto expected = std::chrono::system_clock::now() + std::chrono::seconds(oneYear);
+  auto diff = std::chrono::duration_cast<std::chrono::seconds>(
+      creds.expiresAt.value() - expected).count();
+  EXPECT_LE(std::abs(diff), 2);
+}
+
+TEST(DecodeTokenResponseTest, ScopeWithLeadingAndTrailingSpaces) {
+  // istringstream-based parsing skips leading/trailing whitespace.
+  value json;
+  json[U("access_token")] = value::string(U("tok"));
+  json[U("token_type")]   = value::string(U("Bearer"));
+  json[U("scope")]        = value::string(U("  openid profile  "));
+
+  Credentials creds = DecodeTokenResponse(json);
+
+  ASSERT_EQ(creds.scope.size(), 2u);
+  EXPECT_EQ(creds.scope[0], "openid");
+  EXPECT_EQ(creds.scope[1], "profile");
+}
+
+TEST(DecodeTokenResponseTest, ScopeWithOnlyWhitespaceIsEmpty) {
+  value json;
+  json[U("access_token")] = value::string(U("tok"));
+  json[U("token_type")]   = value::string(U("Bearer"));
+  json[U("scope")]        = value::string(U("   "));
+
+  Credentials creds = DecodeTokenResponse(json);
+
+  EXPECT_TRUE(creds.scope.empty());
+}
+
+TEST(DecodeTokenResponseTest, IdTokenAbsentIsEmptyString) {
+  // No "id_token" field — idToken must default to an empty string,
+  // not an uninitialised value.
+  value json;
+  json[U("access_token")] = value::string(U("tok"));
+  json[U("token_type")]   = value::string(U("Bearer"));
+
+  Credentials creds = DecodeTokenResponse(json);
+
+  EXPECT_EQ(creds.idToken, "");
+}
+
+TEST(DecodeTokenResponseTest, NoExpiryFieldsProducesNoExpiresAt) {
+  // When neither expires_at nor expires_in is present, expiresAt must be
+  // absent (not guessed or defaulted).
+  value json;
+  json[U("access_token")] = value::string(U("tok"));
+  json[U("token_type")]   = value::string(U("Bearer"));
+
+  Credentials creds = DecodeTokenResponse(json);
+
+  EXPECT_FALSE(creds.expiresIn.has_value());
+  EXPECT_FALSE(creds.expiresAt.has_value());
+}
+
+TEST(DecodeTokenResponseTest, InvalidExpiresAtWithNoFallbackProducesNoExpiresAt) {
+  // Malformed expires_at with no expires_in → no expiry information at all.
+  value json;
+  json[U("access_token")] = value::string(U("tok"));
+  json[U("token_type")]   = value::string(U("Bearer"));
+  json[U("expires_at")]   = value::string(U("not-a-date"));
+
+  Credentials creds = DecodeTokenResponse(json);
+
+  EXPECT_FALSE(creds.expiresAt.has_value());
+}

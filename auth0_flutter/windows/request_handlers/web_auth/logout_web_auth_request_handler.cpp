@@ -4,36 +4,12 @@
  */
 
 #include "logout_web_auth_request_handler.h"
+#include "../../oauth_helpers.h"
 #include <windows.h>
 #include <sstream>
-#include <iomanip>
 
 namespace auth0_flutter
 {
-
-    // Local URL encoding helper (kept here per design requirement)
-    static std::string UrlEncode(const std::string &str)
-    {
-        std::ostringstream encoded;
-        encoded.fill('0');
-        encoded << std::hex << std::uppercase;
-
-        for (unsigned char c : str)
-        {
-            // Keep alphanumeric and safe characters unchanged
-            if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~')
-            {
-                encoded << c;
-            }
-            else
-            {
-                // Percent-encode everything else
-                encoded << '%' << std::setw(2) << static_cast<int>(c);
-            }
-        }
-
-        return encoded.str();
-    }
 
     /**
      * @brief Builds the Auth0 logout URL with required parameters
@@ -63,7 +39,7 @@ namespace auth0_flutter
         std::ostringstream url;
 
         // Base logout endpoint with encoded domain
-        url << "https://" << UrlEncode(domain) << "/v2/logout";
+        url << "https://" << urlEncode(domain) << "/v2/logout";
 
         // Add federated parameter if requested
         // This will also log the user out from their identity provider
@@ -78,12 +54,12 @@ namespace auth0_flutter
         // Add returnTo URL if provided (with proper encoding)
         if (!returnTo.empty())
         {
-            url << separator << "returnTo=" << UrlEncode(returnTo);
+            url << separator << "returnTo=" << urlEncode(returnTo);
             separator = '&';
         }
 
         // Add client_id (required by Auth0) with proper encoding
-        url << separator << "client_id=" << UrlEncode(clientId);
+        url << separator << "client_id=" << urlEncode(clientId);
 
         return url.str();
     }

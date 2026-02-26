@@ -1,7 +1,9 @@
 #include <flutter/dart_project.h>
 #include <flutter/flutter_view_controller.h>
 #include <windows.h>
+#include <sddl.h>
 #include <string>
+#include <vector>
 #include <thread>
 
 #include "flutter_window.h"
@@ -9,6 +11,51 @@
 
 const wchar_t* kSingleInstanceMutex = L"auth0flutter_single_instance_mutex";
 const wchar_t* kRedirectPipeName    = L"\\\\.\\pipe\\auth0flutter_pipe";
+
+// Only URLs beginning with this prefix are accepted from the pipe.
+// Matches kDefaultRedirectUri in oauth_helpers.h.
+const wchar_t* kCallbackPrefix = L"auth0flutter://callback";
+
+// Builds a SECURITY_DESCRIPTOR that grants pipe read/write access only to the
+// current user's SID, preventing other users or processes from connecting.
+// Returns NULL on failure. Caller must LocalFree() the returned pointer.
+static PSECURITY_DESCRIPTOR BuildCurrentUserSD() {
+  HANDLE hToken = NULL;
+  if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken))
+    return NULL;
+
+  // Query required buffer size, then fetch the token user info.
+  DWORD cbTokenUser = 0;
+  GetTokenInformation(hToken, TokenUser, NULL, 0, &cbTokenUser);
+  if (GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
+    CloseHandle(hToken);
+    return NULL;
+  }
+
+  std::vector<BYTE> buf(cbTokenUser);
+  auto* pTokenUser = reinterpret_cast<PTOKEN_USER>(buf.data());
+  if (!GetTokenInformation(hToken, TokenUser, pTokenUser, cbTokenUser, &cbTokenUser)) {
+    CloseHandle(hToken);
+    return NULL;
+  }
+  CloseHandle(hToken);
+
+  // Convert the SID to a string so we can embed it in an SDDL expression.
+  LPWSTR pszSid = NULL;
+  if (!ConvertSidToStringSidW(pTokenUser->User.Sid, &pszSid))
+    return NULL;
+
+  // D:(A;;GRGW;;;S-1-5-…) — grant generic read+write to current user only.
+  std::wstring sddl = L"D:(A;;GRGW;;;";
+  sddl += pszSid;
+  sddl += L")";
+  LocalFree(pszSid);
+
+  PSECURITY_DESCRIPTOR pSD = NULL;
+  ConvertStringSecurityDescriptorToSecurityDescriptorW(
+      sddl.c_str(), SDDL_REVISION_1, &pSD, NULL);
+  return pSD;  // caller must LocalFree()
+}
 
 // Forward URI to first instance (pipe client)
 void ForwardToFirstInstance(const wchar_t* uri) {
@@ -36,11 +83,29 @@ void BringExistingWindowToFront() {
 void StartPipeServer() {
   std::thread([] {
     while (true) {
+      // Restrict the pipe to the current user only.
+      // A NULL security descriptor would allow any process on the system to
+      // connect, which would let an attacker inject an arbitrary startup URL.
+      PSECURITY_DESCRIPTOR pSD = BuildCurrentUserSD();
+      if (!pSD) {
+        // Cannot create a restricted descriptor; refuse to expose an
+        // unrestricted pipe rather than fall back to the default DACL.
+        return;
+      }
+
+      SECURITY_ATTRIBUTES sa = {};
+      sa.nLength              = sizeof(sa);
+      sa.lpSecurityDescriptor = pSD;
+      sa.bInheritHandle       = FALSE;
+
       HANDLE hPipe = CreateNamedPipeW(
           kRedirectPipeName,
           PIPE_ACCESS_INBOUND,
           PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,
-          1, 0, 0, 0, NULL);
+          1, 0, 0, 0, &sa);
+
+      // Security descriptor is no longer needed once the pipe is created.
+      LocalFree(pSD);
 
       if (hPipe == INVALID_HANDLE_VALUE) {
         return;
@@ -49,14 +114,21 @@ void StartPipeServer() {
       if (ConnectNamedPipe(hPipe, NULL)) {
         wchar_t buffer[2048];
         DWORD read = 0;
-        if (ReadFile(hPipe, buffer, sizeof(buffer), &read, NULL)) {
+        // Reserve one wchar_t for the null terminator so buffer[read/sizeof(wchar_t)]
+        // is always within bounds (fixes the off-by-one overflow).
+        if (ReadFile(hPipe, buffer, sizeof(buffer) - sizeof(wchar_t), &read, NULL)) {
           buffer[read / sizeof(wchar_t)] = L'\0';
 
-          // Expose to plugin
-          SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", buffer);
-
-          // Bring app to front when redirect arrives
-          BringExistingWindowToFront();
+          // Only accept URLs that begin with the expected auth0flutter:// prefix.
+          // This is a defence-in-depth guard: even if an attacker managed to
+          // connect to the pipe despite the restricted DACL, they cannot
+          // overwrite PLUGIN_STARTUP_URL with an arbitrary string.
+          size_t prefixLen = wcslen(kCallbackPrefix);
+          if (wcslen(buffer) >= prefixLen &&
+              wcsncmp(buffer, kCallbackPrefix, prefixLen) == 0) {
+            SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", buffer);
+            BringExistingWindowToFront();
+          }
         }
       }
       DisconnectNamedPipe(hPipe);
@@ -101,9 +173,13 @@ int APIENTRY wWinMain(
 HANDLE hMutex = CreateMutexW(NULL, TRUE, kSingleInstanceMutex);
 bool alreadyRunning = (hMutex && GetLastError() == ERROR_ALREADY_EXISTS);
 
-if (alreadyRunning && hasUri) {
-  // This is a protocol activation → forward and exit
-  ForwardToFirstInstance(startupUri.c_str());
+if (alreadyRunning) {
+  // Another instance is already running. Bring it to the foreground and exit,
+  // regardless of whether this launch carried a protocol URI.
+  BringExistingWindowToFront();
+  if (hasUri) {
+    ForwardToFirstInstance(startupUri.c_str());
+  }
   return 0;
 }
 

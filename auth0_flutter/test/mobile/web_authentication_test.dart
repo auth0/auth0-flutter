@@ -197,18 +197,19 @@ void main() {
       when(mockedCMPlatform.saveCredentials(any))
           .thenAnswer((final _) async => true);
 
-      await Auth0('test-domain', 'test-clientId').webAuthentication().login(
-          parameters: {
-            'appCallbackUrl': 'myapp://callback',
-            'authTimeoutSeconds': '300',
-          });
+      await Auth0('test-domain', 'test-clientId')
+          .webAuthentication()
+          .login(parameters: {
+        'screen_hint': 'signup',
+        'authTimeoutSeconds': '300',
+      });
 
       final verificationResult = verify(mockedPlatform.login(captureAny))
           .captured
           .single as WebAuthRequest<WebAuthLoginOptions>;
       // ignore: inference_failure_on_collection_literal
       expect(verificationResult.options.parameters, {
-        'appCallbackUrl': 'myapp://callback',
+        'screen_hint': 'signup',
         'authTimeoutSeconds': '300',
       });
     });

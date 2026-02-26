@@ -4,6 +4,7 @@
  */
 
 #include "url_utils.h"
+#include <cstdlib>
 #include <sstream>
 
 namespace auth0_flutter

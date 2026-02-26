@@ -116,15 +116,15 @@ class Auth0 {
   /// ```dart
   /// final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
   /// final result = await auth0.windowsWebAuthentication().login(
-  ///   redirectUrl: 'http://localhost:8080/callback',
+  ///   redirectUrl: 'auth0flutter://callback',
   /// );
   /// final accessToken = result.accessToken;
   /// ```
   ///
   /// Note: Credentials are NOT automatically stored in the CredentialsManager
   /// for Windows desktop applications.
-  WindowsWebAuthentication windowsWebAuthentication({final String? scheme}) =>
-      WindowsWebAuthentication(_account, _userAgent, scheme, null);
+  WindowsWebAuthentication windowsWebAuthentication() =>
+      WindowsWebAuthentication(_account, _userAgent);
 
   /// Generates DPoP (Demonstrating Proof-of-Possession) headers for making
   /// authenticated API calls with DPoP-bound tokens.

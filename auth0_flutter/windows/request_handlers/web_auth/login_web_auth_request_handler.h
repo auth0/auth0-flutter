@@ -18,6 +18,7 @@
 #define FLUTTER_PLUGIN_LOGIN_WEB_AUTH_REQUEST_HANDLER_H_
 
 #include "web_auth_request_handler.h"
+#include <pplx/pplxtasks.h>
 
 namespace auth0_flutter
 {
@@ -50,7 +51,10 @@ namespace auth0_flutter
     {
     public:
         LoginWebAuthRequestHandler() = default;
-        ~LoginWebAuthRequestHandler() override = default;
+
+        // Cancels any in-flight pplx task so the task body stops
+        // before it can touch the (now-destroyed) MethodResult.
+        ~LoginWebAuthRequestHandler() override { _cts.cancel(); }
 
         std::string method() const override
         {
@@ -60,6 +64,12 @@ namespace auth0_flutter
         void handle(
             const flutter::EncodableMap *arguments,
             std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) override;
+
+    private:
+        // Shared cancellation source for the currently running login task.
+        // Replaced at the start of every new handle() call so a second
+        // login attempt automatically cancels the first.
+        pplx::cancellation_token_source _cts;
     };
 
 } // namespace auth0_flutter
