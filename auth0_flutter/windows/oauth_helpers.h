@@ -7,9 +7,18 @@
 
 #include <string>
 #include <vector>
+#include <pplx/pplxtasks.h>
 
 namespace auth0_flutter
 {
+
+    /**
+     * @brief Percent-encode a string for safe inclusion in a URL query parameter
+     *
+     * Leaves alphanumeric characters and the unreserved characters - _ . ~ unchanged
+     * and percent-encodes everything else (RFC 3986).
+     */
+    std::string urlEncode(const std::string &str);
 
     /**
      * @brief Base64 URL-safe encode without padding
@@ -68,6 +77,7 @@ namespace auth0_flutter
      */
     OAuthCallbackResult waitForAuthCode_CustomScheme(
         int timeoutSeconds = 180,
-        const std::string &expectedState = "");
+        const std::string &expectedState = "",
+        pplx::cancellation_token ct = pplx::cancellation_token::none());
 
 } // namespace auth0_flutter

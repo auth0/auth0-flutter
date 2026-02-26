@@ -155,10 +155,15 @@ namespace auth0_flutter
          * @brief Check if this is a network error
          *
          * Cross-platform helper: isNetworkError
+         *
+         * Only status code 0 qualifies: the HTTP request never completed
+         * (no connection, DNS failure, timeout before any response, etc.).
+         * A 5xx response means the server replied — the network was reachable,
+         * so that is a server error, not a network error.
          */
         bool IsNetworkError() const
         {
-            return statusCode_ == 0 || statusCode_ >= 500;
+            return statusCode_ == 0;
         }
 
         /**

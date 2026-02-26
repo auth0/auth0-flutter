@@ -232,6 +232,18 @@ TEST(WaitForAuthCodeCustomSchemeTest, TimeoutReturnsError) {
   EXPECT_EQ(result.code, "");
 }
 
+TEST(WaitForAuthCodeCustomSchemeTest, CancelsWhenTokenIsAlreadyCancelled) {
+  // Pre-cancel the token before passing it to the function.
+  // The polling loop checks ct.is_canceled() on the very first tick and
+  // calls pplx::cancel_current_task(), which throws pplx::task_canceled.
+  pplx::cancellation_token_source cts;
+  cts.cancel();
+
+  EXPECT_THROW(
+      waitForAuthCode_CustomScheme(180, "", cts.get_token()),
+      pplx::task_canceled);
+}
+
 // Note: The HTTP listener-based waitForAuthCode function has been removed.
 // The codebase now uses custom scheme callbacks exclusively via
 // waitForAuthCode_CustomScheme for all OAuth flows.

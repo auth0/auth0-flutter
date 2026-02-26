@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include <vector>
 #include <sstream>
+#include <iomanip>
 
 // OpenSSL for PKCE
 #include <openssl/sha.h>
@@ -30,6 +31,27 @@ using namespace web::http::experimental::listener;
 
 namespace auth0_flutter
 {
+
+    std::string urlEncode(const std::string &str)
+    {
+        std::ostringstream encoded;
+        encoded.fill('0');
+        encoded << std::hex << std::uppercase;
+
+        for (unsigned char c : str)
+        {
+            if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~')
+            {
+                encoded << c;
+            }
+            else
+            {
+                encoded << '%' << std::setw(2) << static_cast<int>(c);
+            }
+        }
+
+        return encoded.str();
+    }
 
     std::string base64UrlEncode(const std::vector<unsigned char> &data)
     {
@@ -115,7 +137,8 @@ namespace auth0_flutter
 
     OAuthCallbackResult waitForAuthCode_CustomScheme(
         int timeoutSeconds,
-        const std::string &expectedState)
+        const std::string &expectedState,
+        pplx::cancellation_token ct)
     {
         const int sleepMs = 200;
         int elapsed = 0;
@@ -143,6 +166,13 @@ namespace auth0_flutter
 
         while (elapsed < timeoutSeconds * 1000)
         {
+            // Yield to a pending cancellation (engine shutdown or new login call)
+            // before doing any work this tick.
+            if (ct.is_canceled())
+            {
+                pplx::cancel_current_task();
+            }
+
             std::string uri = readAndClearEnv();
             if (!uri.empty())
             {
