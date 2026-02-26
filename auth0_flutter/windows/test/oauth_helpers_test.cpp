@@ -3,6 +3,7 @@
 #include "oauth_helpers.h"
 #include <regex>
 #include <openssl/sha.h>
+#include <windows.h>
 
 using namespace auth0_flutter;
 
@@ -232,6 +233,251 @@ TEST(WaitForAuthCodeCustomSchemeTest, TimeoutReturnsError) {
   EXPECT_EQ(result.code, "");
 }
 
+TEST(WaitForAuthCodeCustomSchemeTest, CancelsWhenTokenIsAlreadyCancelled) {
+  // Pre-cancel the token before passing it to the function.
+  // The polling loop checks ct.is_canceled() on the very first tick and
+  // calls pplx::cancel_current_task(), which throws pplx::task_canceled.
+  pplx::cancellation_token_source cts;
+  cts.cancel();
+
+  EXPECT_THROW(
+      waitForAuthCode_CustomScheme(180, "", cts.get_token()),
+      pplx::task_canceled);
+}
+
 // Note: The HTTP listener-based waitForAuthCode function has been removed.
 // The codebase now uses custom scheme callbacks exclusively via
 // waitForAuthCode_CustomScheme for all OAuth flows.
+
+/* ---------------- urlEncode ---------------- */
+
+TEST(UrlEncodeTest, EmptyStringReturnsEmpty) {
+  EXPECT_EQ(urlEncode(""), "");
+}
+
+TEST(UrlEncodeTest, AlphanumericPassesThrough) {
+  EXPECT_EQ(urlEncode("abcXYZ0123456789"), "abcXYZ0123456789");
+}
+
+TEST(UrlEncodeTest, Rfc3986UnreservedCharsPassThrough) {
+  // RFC 3986 §2.3 unreserved: ALPHA / DIGIT / "-" / "." / "_" / "~"
+  EXPECT_EQ(urlEncode("-_.~"), "-_.~");
+}
+
+TEST(UrlEncodeTest, SpaceEncodedAs20) {
+  EXPECT_EQ(urlEncode("hello world"), "hello%20world");
+}
+
+TEST(UrlEncodeTest, SlashEncoded) {
+  EXPECT_EQ(urlEncode("a/b"), "a%2Fb");
+}
+
+TEST(UrlEncodeTest, QuestionMarkEncoded) {
+  EXPECT_EQ(urlEncode("key?value"), "key%3Fvalue");
+}
+
+TEST(UrlEncodeTest, HashEncoded) {
+  EXPECT_EQ(urlEncode("foo#bar"), "foo%23bar");
+}
+
+TEST(UrlEncodeTest, AtSignEncoded) {
+  EXPECT_EQ(urlEncode("user@example.com"), "user%40example.com");
+}
+
+TEST(UrlEncodeTest, ColonAndDoubleSlashEncoded) {
+  // Verifies that "://" is fully encoded when a URL is passed as a
+  // query parameter value (e.g. redirect_uri=https%3A%2F%2F...).
+  EXPECT_EQ(urlEncode("https://example.com"),
+            "https%3A%2F%2Fexample.com");
+}
+
+TEST(UrlEncodeTest, AmpersandEncoded) {
+  EXPECT_EQ(urlEncode("a&b"), "a%26b");
+}
+
+TEST(UrlEncodeTest, EqualsEncoded) {
+  EXPECT_EQ(urlEncode("key=value"), "key%3Dvalue");
+}
+
+TEST(UrlEncodeTest, PlusSignEncodedAs2B) {
+  // '+' must be percent-encoded as %2B, not left as '+'.
+  // In application/x-www-form-urlencoded '+' means space, so leaving it
+  // unencoded would corrupt values that legitimately contain a plus sign.
+  EXPECT_EQ(urlEncode("a+b"), "a%2Bb");
+}
+
+TEST(UrlEncodeTest, ScopeStringSpacesEncoded) {
+  // Scope strings like "openid profile email" must have spaces encoded
+  // when appended to a URL query string.
+  EXPECT_EQ(urlEncode("openid profile email"), "openid%20profile%20email");
+}
+
+TEST(UrlEncodeTest, Auth0CallbackSchemeEncoded) {
+  // auth0flutter://callback must be fully encoded when passed as the
+  // redirect_uri query parameter value.
+  EXPECT_EQ(urlEncode("auth0flutter://callback"),
+            "auth0flutter%3A%2F%2Fcallback");
+}
+
+TEST(UrlEncodeTest, Auth0DomainPassesThrough) {
+  // Domains contain only unreserved characters and must pass through unchanged.
+  EXPECT_EQ(urlEncode("tenant.auth0.com"), "tenant.auth0.com");
+}
+
+TEST(UrlEncodeTest, HyphenatedDomainPassesThrough) {
+  EXPECT_EQ(urlEncode("my-tenant.us.auth0.com"), "my-tenant.us.auth0.com");
+}
+
+TEST(UrlEncodeTest, OutputHexDigitsAreUppercase) {
+  // The implementation uses std::hex << std::uppercase, so hex must be upper.
+  EXPECT_EQ(urlEncode(" "), "%20");    // not %20 - correct
+  EXPECT_EQ(urlEncode("/"), "%2F");    // not %2f
+  EXPECT_EQ(urlEncode(":"), "%3A");    // not %3a
+}
+
+TEST(UrlEncodeTest, HighByteEncodedAsUppercaseHex) {
+  std::string input(1, static_cast<char>(0xFF));
+  EXPECT_EQ(urlEncode(input), "%FF");  // not %ff
+}
+
+TEST(UrlEncodeTest, Rfc3986ReservedCharsAllEncoded) {
+  // All RFC 3986 reserved characters must be percent-encoded and must not
+  // appear literally in the result.
+  const std::string reserved = ":/?#[]@!$&'()*+,;=";
+  const std::string result = urlEncode(reserved);
+  for (char c : reserved) {
+    EXPECT_EQ(result.find(c), std::string::npos)
+        << "Character '" << c << "' should be percent-encoded but was not";
+  }
+}
+
+TEST(UrlEncodeTest, AudienceUrlEncoded) {
+  EXPECT_EQ(urlEncode("https://api.example.com/"),
+            "https%3A%2F%2Fapi.example.com%2F");
+}
+
+TEST(UrlEncodeTest, OrganizationIdPassesThrough) {
+  // org_ prefixed IDs are alphanumeric — no encoding needed.
+  EXPECT_EQ(urlEncode("org_abc123XYZ"), "org_abc123XYZ");
+}
+
+/* -------- waitForAuthCode_CustomScheme — environment variable tests -------- */
+
+// For these tests the PLUGIN_STARTUP_URL environment variable is set before
+// calling waitForAuthCode_CustomScheme.  The polling loop reads and clears it
+// on the very first iteration (before any sleep), so calls return immediately
+// without reaching the timeout.  Each test clears any stale value first.
+
+TEST(WaitForAuthCodeEnvVarTest, SuccessWithValidCodeAndNoStateCheck) {
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"auth0flutter://callback?code=SplxlOBeZQQYbYS6WxSbIA");
+
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(5, "");
+
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(result.code, "SplxlOBeZQQYbYS6WxSbIA");
+  EXPECT_EQ(result.error, "");
+  EXPECT_EQ(result.errorDescription, "");
+  EXPECT_FALSE(result.timedOut);
+}
+
+TEST(WaitForAuthCodeEnvVarTest, SuccessWithCodeAndMatchingState) {
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"auth0flutter://callback?code=my_auth_code&state=csrf_token_abc");
+
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(5, "csrf_token_abc");
+
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(result.code, "my_auth_code");
+  EXPECT_FALSE(result.timedOut);
+}
+
+TEST(WaitForAuthCodeEnvVarTest, StateMismatchReturnsMismatchError) {
+  // Callback carries an attacker-controlled state that does not match.
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"auth0flutter://callback?code=x&state=attacker_state");
+
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(5, "legitimate_state");
+
+  EXPECT_FALSE(result.success);
+  EXPECT_EQ(result.error, "state_mismatch");
+  EXPECT_TRUE(result.code.empty());
+  EXPECT_FALSE(result.timedOut);
+}
+
+TEST(WaitForAuthCodeEnvVarTest, MissingStateParamWhenExpectedIsStateMismatch) {
+  // Callback has no state param at all — treated as a mismatch.
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"auth0flutter://callback?code=abc");
+
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(5, "expected_csrf");
+
+  EXPECT_FALSE(result.success);
+  EXPECT_EQ(result.error, "state_mismatch");
+  EXPECT_FALSE(result.timedOut);
+}
+
+TEST(WaitForAuthCodeEnvVarTest, OAuthAccessDeniedErrorPropagated) {
+  // '+' in error_description is decoded to ' ' by SafeParseQuery.
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"auth0flutter://callback?error=access_denied"
+      L"&error_description=User+denied+access&state=s1");
+
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(5, "s1");
+
+  EXPECT_FALSE(result.success);
+  EXPECT_EQ(result.error, "access_denied");
+  EXPECT_EQ(result.errorDescription, "User denied access");
+  EXPECT_FALSE(result.timedOut);
+}
+
+TEST(WaitForAuthCodeEnvVarTest, OAuthErrorWithoutDescriptionHasEmptyDescription) {
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"auth0flutter://callback?error=login_required&state=s2");
+
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(5, "s2");
+
+  EXPECT_FALSE(result.success);
+  EXPECT_EQ(result.error, "login_required");
+  EXPECT_EQ(result.errorDescription, "");
+  EXPECT_FALSE(result.timedOut);
+}
+
+TEST(WaitForAuthCodeEnvVarTest, CallbackWithNoQueryParamsReturnsInvalidCallback) {
+  // Correct scheme but no '?' — the query string is absent.
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"auth0flutter://callback");
+
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(5, "");
+
+  EXPECT_FALSE(result.success);
+  EXPECT_EQ(result.error, "invalid_callback");
+  EXPECT_FALSE(result.timedOut);
+}
+
+TEST(WaitForAuthCodeEnvVarTest, CallbackWithNoCodeAndNoErrorReturnsInvalidCallback) {
+  // State matches but neither 'code' nor 'error' is present in the query.
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"auth0flutter://callback?state=xyz&foo=bar");
+
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(5, "xyz");
+
+  EXPECT_FALSE(result.success);
+  EXPECT_EQ(result.error, "invalid_callback");
+  EXPECT_FALSE(result.timedOut);
+}
+
+// NOTE: This test takes ~1 second because the wrong-scheme URL causes one
+// full polling cycle before the 1-second timeout expires.
+TEST(WaitForAuthCodeEnvVarTest, WrongSchemeUrlIsIgnoredAndTimesOut) {
+  // An HTTPS redirect (e.g. from an attacker or mis-configured intermediary)
+  // must be silently skipped.  Only auth0flutter:// callbacks are accepted.
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"https://evil.example.com/callback?code=hijacked_code");
+
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(1, "");
+
+  EXPECT_FALSE(result.success);
+  EXPECT_TRUE(result.timedOut);
+  EXPECT_TRUE(result.code.empty());
+}

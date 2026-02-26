@@ -128,11 +128,14 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
   # Test files available in standalone build (without Flutter dependencies)
   # These tests cover core C++ functionality that doesn't require Flutter types
   set(TEST_SOURCES
-    test/time_util_test.cpp           # Time utilities (ISO8601, RFC3339)
-    test/url_utils_test.cpp           # URL parsing and manipulation
-    test/windows_utils_test.cpp       # Windows-specific utilities
-    test/oauth_helpers_test.cpp       # OAuth 2.0 / PKCE helpers
-    test/id_token_validator_test.cpp  # OpenID Connect ID token validation
+    test/time_util_test.cpp                     # Time utilities (ISO8601, RFC3339)
+    test/url_utils_test.cpp                     # URL parsing and manipulation
+    test/windows_utils_test.cpp                 # Windows-specific utilities
+    test/oauth_helpers_test.cpp                 # OAuth 2.0 / PKCE helpers + cancellation
+    test/id_token_validator_test.cpp            # OpenID Connect ID token validation
+    test/id_token_signature_validator_test.cpp  # RS256 signature validation (non-network paths)
+    test/authentication_error_test.cpp          # AuthenticationError classification + IsNetworkError
+    test/token_decoder_test.cpp                 # OAuth token response decoding
   )
 
   # Excluded from standalone build (require Flutter types for testing):
@@ -150,6 +153,7 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
     jwt_util.cpp
     id_token_validator.cpp
     id_token_signature_validator.cpp
+    token_decoder.cpp
   )
 
   add_executable(${TEST_RUNNER}
@@ -222,7 +226,7 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
 
   message(STATUS "Auth0 Flutter tests enabled (standalone mode)")
   message(STATUS "Test executable: ${TEST_RUNNER}")
-  message(STATUS "  - Includes: time_util, url_utils, windows_utils, oauth_helpers, id_token_validator tests")
+  message(STATUS "  - Includes: time_util, url_utils, windows_utils, oauth_helpers, id_token_validator, id_token_signature_validator, authentication_error, token_decoder tests")
   message(STATUS "  - Excludes: Flutter-dependent tests (jwt_util, user_profile, user_identity)")
   message(STATUS "Run tests with: cmake --build build --target run_tests")
   message(STATUS "Run tests with coverage: cmake --build build --target coverage")

@@ -329,7 +329,7 @@ jobs:
               shell: powershell
 
             - name: Set up vcpkg
-              uses: lukka/run-vcpkg@v11 # pin@v11
+              uses: lukka/run-vcpkg@5e0cab206a5ea620130caf672fce3e4a6b5666a1 # pin@v11.5
               with:
                 vcpkgDirectory: '${{ github.workspace }}/vcpkg'
                 vcpkgGitCommitId: '66c0373dc7fca549e5803087b9487edfe3aca0a1'
@@ -368,7 +368,7 @@ jobs:
               shell: powershell
 
             - name: Upload coverage report
-              uses: actions/upload-artifact@v6
+              uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # pin@v6
               with:
                 name: Windows coverage
                 path: auth0_flutter/windows/coverage.xml

@@ -41,15 +41,31 @@ Credentials Auth0Client::ExchangeCodeForTokens(
 
   request.set_body(body);
 
-  auto response = client.request(request).get();
-  auto json = response.extract_json().get();
-
-  if (response.status_code() != status_codes::OK)
+  try
   {
-    // Throw AuthenticationError with full error details:
-    // error code, description, and status code
-    throw AuthenticationError(json, response.status_code());
-  }
+    auto response = client.request(request).get();
+    auto json     = response.extract_json().get();
 
-  return DecodeTokenResponse(json);
+    // Any non-2xx response (4xx or 5xx) is treated identically:
+    // parse the error body and throw with the real HTTP status code.
+    // Mirrors iOS behaviour: guard (200...300).contains(response.statusCode)
+    if (response.status_code() < 200 || response.status_code() >= 300)
+    {
+      throw AuthenticationError(json, response.status_code());
+    }
+
+    return DecodeTokenResponse(json);
+  }
+  catch (const AuthenticationError &)
+  {
+    throw; // already typed correctly — propagate as-is
+  }
+  catch (const std::exception &e)
+  {
+    // Transport-level failure: no connection, DNS error, timeout, TLS error, etc.
+    // No HTTP response was received, so statusCode defaults to 0.
+    // Mirrors iOS behaviour: E(cause: error!, statusCode: response?.statusCode ?? 0)
+    // This ensures IsNetworkError() returns true on the Dart side.
+    throw AuthenticationError("network_error", e.what(), 0);
+  }
 }

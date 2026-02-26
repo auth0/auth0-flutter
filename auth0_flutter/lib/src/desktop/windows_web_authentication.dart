@@ -1,5 +1,3 @@
-import 'dart:io' show Platform;
-
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 
 import '../../auth0_flutter.dart';
@@ -14,14 +12,13 @@ import '../../auth0_flutter.dart';
 /// It is not intended for you to instantiate this class yourself, as an
 /// instance of it is already exposed as [Auth0.windowsWebAuthentication].
 ///
-///
 /// Usage examples:
 ///
 /// Basic login:
 /// ```dart
 /// final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
-/// final result = await auth0.webAuthentication().login(
-///   redirectUrl: 'http://localhost:8080/callback',
+/// final result = await auth0.windowsWebAuthentication().login(
+///   redirectUrl: 'auth0flutter://callback',
 /// );
 /// final accessToken = result.accessToken;
 /// ```
@@ -30,7 +27,7 @@ import '../../auth0_flutter.dart';
 /// ```dart
 /// final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
 /// final result = await auth0.windowsWebAuthentication().login(
-///   redirectUrl: 'http://localhost:8080/callback',
+///   redirectUrl: 'auth0flutter://callback',
 ///   parameters: {
 ///     'authTimeoutSeconds': '300',  // 5 minutes for MFA
 ///   },
@@ -39,14 +36,10 @@ import '../../auth0_flutter.dart';
 class WindowsWebAuthentication {
   final Account _account;
   final UserAgent _userAgent;
-  final String? _scheme;
-  final CredentialsManager? _credentialsManager;
 
   WindowsWebAuthentication(
     this._account,
     this._userAgent,
-    this._scheme,
-    this._credentialsManager,
   );
 
   /// Redirects the user to the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login) for authentication. If successful, it returns
@@ -106,8 +99,8 @@ class WindowsWebAuthentication {
   ///
   /// **Example:**
   /// ```dart
-  /// await auth0.webAuthentication().login(
-  ///   redirectUrl: 'http://localhost:8080/callback',
+  /// await auth0.windowsWebAuthentication().login(
+  ///   redirectUrl: 'auth0flutter://callback',
   ///   parameters: {
   ///     'authTimeoutSeconds': '300',  // 5 minutes for MFA flows
   ///   },
@@ -147,7 +140,6 @@ class WindowsWebAuthentication {
           invitationUrl: invitationUrl,
           parameters: parameters,
           idTokenValidationConfig: idTokenValidationConfig,
-          scheme: _scheme,
           useDPoP: useDPoP,
         ),
       ),
@@ -174,18 +166,9 @@ class WindowsWebAuthentication {
     await Auth0FlutterWebAuthPlatform.instance.logout(_createWebAuthRequest(
       WebAuthLogoutOptions(
         returnTo: returnTo,
-        scheme: _scheme,
         federated: federated,
       ),
     ));
-  }
-
-  /// Terminates the ongoing web-based operation and reports back that it was
-  /// cancelled.
-  /// ## Note: This is not supported on Windows desktop
-  ///
-  static void cancel() {
-    Auth0FlutterWebAuthPlatform.instance.cancel();
   }
 
   WebAuthRequest<TOptions>

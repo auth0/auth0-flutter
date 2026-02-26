@@ -200,7 +200,7 @@ void main() {
       await Auth0('test-domain', 'test-clientId')
           .webAuthentication()
           .login(parameters: {
-        'appCallbackUrl': 'myapp://callback',
+        'screen_hint': 'signup',
         'authTimeoutSeconds': '300',
       });
 
@@ -209,7 +209,7 @@ void main() {
           .single as WebAuthRequest<WebAuthLoginOptions>;
       // ignore: inference_failure_on_collection_literal
       expect(verificationResult.options.parameters, {
-        'appCallbackUrl': 'myapp://callback',
+        'screen_hint': 'signup',
         'authTimeoutSeconds': '300',
       });
     });
