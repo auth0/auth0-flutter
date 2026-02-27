@@ -33,8 +33,8 @@ class TestPlatform extends Mock
     'tokenType': 'Bearer'
   });
 
-  static const SessionTransferCredentials ssoResult =
-      SessionTransferCredentials(
+  static const SSOCredentials ssoResult =
+      SSOCredentials(
     sessionTransferToken: 'ssoToken',
     tokenType: 'session_transfer',
     expiresIn: 60,
@@ -325,7 +325,7 @@ void main() {
       expect(verificationResult.options?.headers, isEmpty);
     });
 
-    test('returns the SessionTransferCredentials from the platform', () async {
+    test('returns the SSOCredentials from the platform', () async {
       when(mockedPlatform.getSSOCredentials(any))
           .thenAnswer((final _) async => TestPlatform.ssoResult);
 

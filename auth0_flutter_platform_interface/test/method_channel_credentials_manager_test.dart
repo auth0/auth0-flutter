@@ -946,7 +946,7 @@ void main() {
     });
 
     test(
-        'correctly returns SessionTransferCredentials with null refreshToken',
+        'correctly returns SSOCredentials with null refreshToken',
         () async {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
             'sessionTransferToken': 'ssoToken',
@@ -973,7 +973,7 @@ void main() {
         () async {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
-      Future<SessionTransferCredentials> actual() async {
+      Future<SSOCredentials> actual() async {
         final result = await MethodChannelCredentialsManager().getSSOCredentials(
             CredentialsManagerRequest<GetSSOCredentialsOptions>(
                 account: const Account('', ''),
@@ -997,7 +997,7 @@ void main() {
       when(mocked.methodCallHandler(any))
           .thenThrow(PlatformException(code: '123'));
 
-      Future<SessionTransferCredentials> actual() async {
+      Future<SSOCredentials> actual() async {
         final result = await MethodChannelCredentialsManager().getSSOCredentials(
             CredentialsManagerRequest<GetSSOCredentialsOptions>(
                 account: const Account('', ''),

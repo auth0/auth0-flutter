@@ -1,7 +1,7 @@
 import '../../../auth0_flutter_platform_interface.dart';
 
 // ignore: comment_references
-/// Options used to retrieve [SessionTransferCredentials] via
+/// Options used to retrieve [SSOCredentials] via
 /// `CredentialsManagerPlatform.getSSOCredentials()`.
 class GetSSOCredentialsOptions implements RequestOptions {
   /// Additional parameters to include in the SSO credentials request.

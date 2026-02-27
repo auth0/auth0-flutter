@@ -1,7 +1,7 @@
 /// Authentication artifacts used to establish a web session from a native
 /// application context (Native to Web SSO).
 ///
-/// Obtain a [SessionTransferCredentials] instance via
+/// Obtain a [SSOCredentials] instance via
 /// `CredentialsManager.ssoCredentials()`.
 ///
 /// The [sessionTransferToken] is:
@@ -18,7 +18,7 @@
 /// - `offline_access` scope must be present in the stored credentials
 ///
 /// See also: [Auth0 Native to Web SSO documentation](https://auth0.com/docs/authenticate/single-sign-on/native-to-web/configure-implement-native-to-web)
-class SessionTransferCredentials {
+class SSOCredentials {
   /// The session transfer token used to establish an authenticated web session.
   ///
   /// Pass this value to your web application as a `session_transfer_token`
@@ -41,7 +41,7 @@ class SessionTransferCredentials {
   /// `offline_access` scope was requested.
   final String? refreshToken;
 
-  const SessionTransferCredentials({
+  const SSOCredentials({
     required this.sessionTransferToken,
     required this.tokenType,
     required this.expiresIn,
@@ -49,9 +49,9 @@ class SessionTransferCredentials {
     this.refreshToken,
   });
 
-  factory SessionTransferCredentials.fromMap(
+  factory SSOCredentials.fromMap(
           final Map<dynamic, dynamic> result) =>
-      SessionTransferCredentials(
+      SSOCredentials(
         sessionTransferToken: result['sessionTransferToken'] as String,
         tokenType: result['tokenType'] as String,
         expiresIn: result['expiresIn'] as int,

@@ -37,9 +37,9 @@ class _FakeCredentials_0 extends _i1.SmartFake implements _i2.Credentials {
         );
 }
 
-class _FakeSessionTransferCredentials_1 extends _i1.SmartFake
-    implements _i3.SessionTransferCredentials {
-  _FakeSessionTransferCredentials_1(
+class _FakeSSOCredentials_1 extends _i1.SmartFake
+    implements _i3.SSOCredentials {
+  _FakeSSOCredentials_1(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -137,7 +137,7 @@ class MockTestPlatform extends _i1.Mock implements _i4.TestPlatform {
       ) as _i5.Future<bool>);
 
   @override
-  _i5.Future<_i3.SessionTransferCredentials> getSSOCredentials(
+  _i5.Future<_i3.SSOCredentials> getSSOCredentials(
           _i3.CredentialsManagerRequest<_i3.GetSSOCredentialsOptions>?
               request) =>
       (super.noSuchMethod(
@@ -145,13 +145,12 @@ class MockTestPlatform extends _i1.Mock implements _i4.TestPlatform {
           #getSSOCredentials,
           [request],
         ),
-        returnValue: _i5.Future<_i3.SessionTransferCredentials>.value(
-            _FakeSessionTransferCredentials_1(
+        returnValue: _i5.Future<_i3.SSOCredentials>.value(_FakeSSOCredentials_1(
           this,
           Invocation.method(
             #getSSOCredentials,
             [request],
           ),
         )),
-      ) as _i5.Future<_i3.SessionTransferCredentials>);
+      ) as _i5.Future<_i3.SSOCredentials>);
 }

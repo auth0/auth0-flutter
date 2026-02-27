@@ -406,7 +406,7 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 - [Check for stored credentials](EXAMPLES.md#check-for-stored-credentials) - check if the user is already logged in when your app starts up.
 - [Retrieve stored credentials](EXAMPLES.md#retrieve-stored-credentials) - fetch the user's credentials from the storage, automatically renewing them if they have expired.
 - [Retrieve user information](EXAMPLES.md#retrieve-user-information) - fetch the latest user information from the `/userinfo` endpoint.
-- [Native to Web SSO](EXAMPLES.md#native-to-web-sso-early-access) - obtain a session transfer token to authenticate a WebView without re-prompting the user.
+- [Native to Web SSO](EXAMPLES.md#native-to-web-sso) - obtain a session transfer token to authenticate a WebView without re-prompting the user.
 
 ### 🌐 Web
 

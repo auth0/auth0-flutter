@@ -23,11 +23,11 @@ abstract class CredentialsManager {
 
   Future<bool> clearCredentials();
 
-  /// Exchanges the stored refresh token for a [SessionTransferCredentials]
+  /// Exchanges the stored refresh token for a [SSOCredentials]
   /// that can be used to establish an authenticated web session from the
   /// current native session (Native to Web SSO).
   ///
-  /// The returned [SessionTransferCredentials.sessionTransferToken] is:
+  /// The returned [SSOCredentials.sessionTransferToken] is:
   /// - **Short-lived**: expires after approximately 1 minute
   /// - **Single-use**: can only be used once to establish a web session
   /// - **Secure**: can be bound to the user's device through IP address or ASN
@@ -44,7 +44,7 @@ abstract class CredentialsManager {
   /// - `offline_access` scope must be present in the stored credentials
   ///
   /// See also: [Auth0 Native to Web SSO documentation](https://auth0.com/docs/authenticate/single-sign-on/native-to-web/configure-implement-native-to-web)
-  Future<SessionTransferCredentials> ssoCredentials({
+  Future<SSOCredentials> ssoCredentials({
     final Map<String, String> parameters = const {},
     final Map<String, String> headers = const {},
   });
@@ -137,13 +137,13 @@ class DefaultCredentialsManager extends CredentialsManager {
   Future<bool> clearCredentials() => CredentialsManagerPlatform.instance
       .clearCredentials(_createApiRequest(null));
 
-  /// Exchanges the stored refresh token for a [SessionTransferCredentials]
+  /// Exchanges the stored refresh token for a [SSOCredentials]
   /// that can be used to establish an authenticated web session from the
   /// current native session (Native to Web SSO).
   ///
   /// See [CredentialsManager.ssoCredentials] for full documentation.
   @override
-  Future<SessionTransferCredentials> ssoCredentials({
+  Future<SSOCredentials> ssoCredentials({
     final Map<String, String> parameters = const {},
     final Map<String, String> headers = const {},
   }) =>
