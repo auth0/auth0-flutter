@@ -1,5 +1,6 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 
+import 'src/desktop/windows_web_authentication.dart';
 import 'src/mobile/authentication_api.dart';
 import 'src/mobile/credentials_manager.dart';
 import 'src/mobile/web_authentication.dart';
@@ -21,6 +22,7 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         LocalAuthentication,
         LocalAuthenticationLevel;
 
+export 'src/desktop/windows_web_authentication.dart';
 export 'src/mobile/authentication_api.dart';
 export 'src/mobile/credentials_manager.dart';
 export 'src/mobile/web_authentication.dart';
@@ -102,6 +104,27 @@ class Auth0 {
           {final String? scheme, final bool useCredentialsManager = true}) =>
       WebAuthentication(_account, _userAgent, scheme,
           useCredentialsManager ? credentialsManager : null);
+
+  /// Creates an instance of [WindowsWebAuthentication], the Windows-specific
+  /// interface for interacting with the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login).
+  ///
+  /// This method is specifically designed for Windows desktop applications and
+  /// provides Windows-specific configuration options.
+  ///
+  /// Usage example:
+  ///
+  /// ```dart
+  /// final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
+  /// final result = await auth0.windowsWebAuthentication().login(
+  ///   redirectUrl: 'auth0-flutter://callback',
+  /// );
+  /// final accessToken = result.accessToken;
+  /// ```
+  ///
+  /// Note: Credentials are NOT automatically stored in the CredentialsManager
+  /// for Windows desktop applications.
+  WindowsWebAuthentication windowsWebAuthentication({final String? scheme}) =>
+      WindowsWebAuthentication(_account, _userAgent, scheme, null);
 
   /// Generates DPoP (Demonstrating Proof-of-Possession) headers for making
   /// authenticated API calls with DPoP-bound tokens.

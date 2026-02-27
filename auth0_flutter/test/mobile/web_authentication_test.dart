@@ -190,6 +190,29 @@ void main() {
           .single as WebAuthRequest<WebAuthLoginOptions>;
       expect(verificationResult.options.useEphemeralSession, false);
     });
+
+    test('passes custom parameters to platform', () async {
+      when(mockedPlatform.login(any))
+          .thenAnswer((final _) async => TestPlatform.loginResult);
+      when(mockedCMPlatform.saveCredentials(any))
+          .thenAnswer((final _) async => true);
+
+      await Auth0('test-domain', 'test-clientId')
+          .webAuthentication()
+          .login(parameters: {
+        'appCallbackUrl': 'myapp://callback',
+        'authTimeoutSeconds': '300',
+      });
+
+      final verificationResult = verify(mockedPlatform.login(captureAny))
+          .captured
+          .single as WebAuthRequest<WebAuthLoginOptions>;
+      // ignore: inference_failure_on_collection_literal
+      expect(verificationResult.options.parameters, {
+        'appCallbackUrl': 'myapp://callback',
+        'authTimeoutSeconds': '300',
+      });
+    });
   });
 
   group('logout', () {
@@ -329,8 +352,8 @@ void main() {
       expect(verificationResult.options.useHTTPS, true);
       expect(verificationResult.options.returnTo, 'https://example.com/logout');
       expect(verificationResult.options.federated, true);
-      expect(verificationResult.options.allowedBrowsers,
-          ['com.android.chrome']);
+      expect(
+          verificationResult.options.allowedBrowsers, ['com.android.chrome']);
     });
   });
 
@@ -361,9 +384,7 @@ void main() {
         when(mockedCMPlatform.saveCredentials(any))
             .thenAnswer((final _) async => true);
 
-        await Auth0('test-domain', 'test-clientId')
-            .webAuthentication()
-            .login();
+        await Auth0('test-domain', 'test-clientId').webAuthentication().login();
 
         final verificationResult = verify(mockedPlatform.login(captureAny))
             .captured

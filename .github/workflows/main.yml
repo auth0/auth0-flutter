@@ -307,6 +307,72 @@ jobs:
                 name: Test results
                 path: 'auth0_flutter/example/build/app/reports/androidTests/*.xml'
 
+    test-windows-unit:
+        name: Run native Windows unit tests
+        runs-on: windows-latest
+        environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+
+            - name: Install Flutter
+              uses: subosito/flutter-action@fd55f4c5af5b953cc57a2be44cb082c8f6635e8e # pin@v2.21.0
+              with:
+                  flutter-version: ${{ env.flutter }}
+                  channel: stable
+                  cache: true
+
+            - name: Add example/.env
+              working-directory: auth0_flutter
+              run: Copy-Item example/.env.example example/.env
+              shell: powershell
+
+            - name: Set up vcpkg
+              uses: lukka/run-vcpkg@v11 # pin@v11
+              with:
+                vcpkgDirectory: '${{ github.workspace }}/vcpkg'
+                vcpkgGitCommitId: '66c0373dc7fca549e5803087b9487edfe3aca0a1'
+
+            - name: Install vcpkg dependencies
+              run: |
+                ${{ github.workspace }}\vcpkg\vcpkg install cpprestsdk:x64-windows openssl:x64-windows boost-system:x64-windows boost-date-time:x64-windows boost-regex:x64-windows
+              shell: cmd
+
+            - name: Build Windows example app
+              working-directory: auth0_flutter/example
+              run: flutter build windows --debug
+              env:
+                CMAKE_TOOLCHAIN_FILE: ${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
+
+            - name: Install OpenCppCoverage
+              run: choco install opencppcoverage
+              shell: powershell
+
+            - name: Build Windows unit tests
+              working-directory: auth0_flutter/windows
+              run: |
+                cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake -DAUTH0_FLUTTER_ENABLE_TESTS=ON -DCMAKE_BUILD_TYPE=Debug
+                cmake --build build --config Debug
+              shell: cmd
+
+            - name: Run Windows unit tests with coverage
+              working-directory: auth0_flutter/windows
+              run: |
+                & "C:\Program Files\OpenCppCoverage\OpenCppCoverage.exe" `
+                  --sources ${{ github.workspace }}\auth0_flutter\windows `
+                  --excluded_sources ${{ github.workspace }}\auth0_flutter\windows\test `
+                  --export_type cobertura:coverage.xml `
+                  --export_type html:coverage_html `
+                  -- .\build\Debug\auth0_flutter_tests.exe
+              shell: powershell
+
+            - name: Upload coverage report
+              uses: actions/upload-artifact@v6
+              with:
+                name: Windows coverage
+                path: auth0_flutter/windows/coverage.xml
+
     # test-android-smoke:
     #     name: Run native Android smoke tests using API-level ${{ matrix.android-api }}
     #     runs-on: macos-latest-xl
@@ -419,7 +485,8 @@ jobs:
           test-auth0_flutter,
           test-auth0_flutter_platform_interface,
           test-ios-unit,
-          test-android-unit
+          test-android-unit,
+          test-windows-unit
         ]
 
         steps:
@@ -450,6 +517,12 @@ jobs:
                 name: Android coverage
                 path: coverage/android
 
+            - name: Download coverage report for Windows
+              uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+              with:
+                name: Windows coverage
+                path: coverage/windows
+
             - name: Upload coverage report for auth0_flutter
               uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de
               with:
@@ -477,3 +550,10 @@ jobs:
                   name: Auth0 Flutter
                   flags: auth0_flutter_android
                   directory: coverage/android
+
+            - name: Upload coverage report for Windows
+              uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de
+              with:
+                  name: Auth0 Flutter
+                  flags: auth0_flutter_windows
+                  directory: coverage/windows
