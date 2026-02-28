@@ -8,6 +8,14 @@ enum CredentialsProperty: String, CaseIterable {
     case tokenType
 }
 
+enum SSOCredentialsProperty: String, CaseIterable {
+    case sessionTransferToken
+    case tokenType
+    case expiresIn
+    case idToken
+    case refreshToken
+}
+
 enum UserInfoProperty: String, CaseIterable {
     case sub
     case name
