@@ -521,6 +521,113 @@ print(e);
 }
 ```
 
+### Native to Web SSO
+
+Native to Web SSO allows authenticated users in your native mobile application to seamlessly transition to your web application without requiring them to log in again. This is achieved by exchanging a refresh token for a Session Transfer Token, which can then be used to establish a session in the web application.
+
+The Session Transfer Token is:
+
+- **Short-lived**: Expires after approximately 1 minute
+- **Single-use**: Can only be used once to establish a web session
+- **Secure**: Can be bound to the user's device through IP address or ASN
+
+For detailed configuration and implementation guidance, see the [Auth0 Native to Web SSO documentation](https://auth0.com/docs/authenticate/single-sign-on/native-to-web/configure-implement-native-to-web).
+
+#### Prerequisites
+
+Before using Native to Web SSO:
+
+1. **Enable Native to Web SSO on your Auth0 tenant** - This feature requires an Enterprise plan
+2. [**Configure your native application**](https://auth0.com/docs/authenticate/single-sign-on/native-to-web/configure-implement-native-to-web#configure-native-applications)
+3. **Request `offline_access` scope during login** to ensure a refresh token is issued
+
+#### Get a Session Transfer Token
+
+```dart
+try {
+  final ssoCredentials = await auth0.credentialsManager.ssoCredentials();
+
+  print('Session Transfer Token: ${ssoCredentials.sessionTransferToken}');
+  print('Token Type: ${ssoCredentials.tokenType}');
+  print('Expires In: ${ssoCredentials.expiresIn} seconds');
+} on CredentialsManagerException catch (e) {
+  print('Failed to get SSO credentials: ${e.message}');
+}
+```
+
+#### Sending the Session Transfer Token
+
+There are two ways to send the Session Transfer Token to your web application:
+
+**Option 1: As a Query Parameter**
+
+Pass the token as a URL parameter when opening your web application:
+
+```dart
+final ssoCredentials = await auth0.credentialsManager.ssoCredentials();
+
+final webAppUrl = Uri.parse('https://your-web-app.com/login').replace(
+  queryParameters: {
+    'session_transfer_token': ssoCredentials.sessionTransferToken,
+  },
+);
+
+// Open using your preferred URL launcher or WebView package
+await launchUrl(webAppUrl);
+```
+
+Your web application should then include the `session_transfer_token` in the `/authorize` request:
+
+```js
+// In your web application
+const urlParams = new URLSearchParams(window.location.search);
+const sessionTransferToken = urlParams.get('session_transfer_token');
+
+if (sessionTransferToken) {
+  const authorizeUrl =
+    `https://YOUR_AUTH0_DOMAIN/authorize?` +
+    `client_id=YOUR_WEB_CLIENT_ID&` +
+    `redirect_uri=${encodeURIComponent('https://your-web-app.com/callback')}&` +
+    `response_type=code&` +
+    `scope=openid profile email&` +
+    `session_transfer_token=${sessionTransferToken}`;
+
+  window.location.href = authorizeUrl;
+}
+```
+
+**Option 2: As a Cookie (WebView only)**
+
+If your application uses a WebView to open your website, you can inject the Session Transfer Token as a cookie. The cookie will be automatically sent to Auth0's `/authorize` endpoint when your web application initiates authentication.
+
+```dart
+final ssoCredentials = await auth0.credentialsManager.ssoCredentials();
+
+final cookie = 'auth0_session_transfer_token=${ssoCredentials.sessionTransferToken}; '
+    'path=/; '
+    'domain=YOUR_AUTH0_DOMAIN; ' // Or custom domain, if your website uses one
+    'secure';
+
+// Inject via your WebView controller (e.g. webview_flutter)
+await webViewController.runJavaScript(
+  "document.cookie = '$cookie';",
+);
+
+// Then navigate to your web application
+await webViewController.loadRequest(
+  Uri.parse('https://your-web-app.com'),
+);
+```
+
+> **Important**: Make sure the cookie's domain matches the Auth0 domain your website is using, regardless of the domain your mobile app uses. Otherwise, the `/authorize` endpoint will not receive the cookie.
+>
+> - If your website uses the default Auth0 domain (like `example.us.auth0.com`), set the cookie's domain to this value
+> - If your website uses a custom domain, use the custom domain value instead
+>
+> Cookie injection is platform-specific and may require additional WebView configuration.
+
+
+
 [Go up ⤴](#examples)
 
 ## 🌐 Handling Credentials on the Web

@@ -26,6 +26,7 @@
 		5C4E65C5286D1CFB00141449 /* CredentialsManagerHasValidMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4E65C4286D1CFB00141449 /* CredentialsManagerHasValidMethodHandlerTests.swift */; };
 		5C4E65C7286D24A900141449 /* CredentialsManagerSaveMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4E65C6286D24A900141449 /* CredentialsManagerSaveMethodHandlerTests.swift */; };
 		5C4E65C9286D26D800141449 /* CredentialsManagerGetMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4E65C8286D26D800141449 /* CredentialsManagerGetMethodHandlerTests.swift */; };
+		A09B2E3F1D4C7891BA000002 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A09B2E3F1D4C7891BA000001 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift */; };
 		5C59DA6527FFCF0600365CDB /* AuthAPIHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C59DA6427FFCF0600365CDB /* AuthAPIHandlerTests.swift */; };
 		5C59DA6727FFE75600365CDB /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C59DA6627FFE75600365CDB /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift */; };
 		5C59DA6928011D4F00365CDB /* AuthAPISignupMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C59DA6828011D4F00365CDB /* AuthAPISignupMethodHandlerTests.swift */; };
@@ -102,6 +103,7 @@
 		5C4E65C4286D1CFB00141449 /* CredentialsManagerHasValidMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerHasValidMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C4E65C6286D24A900141449 /* CredentialsManagerSaveMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerSaveMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C4E65C8286D26D800141449 /* CredentialsManagerGetMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerGetMethodHandlerTests.swift; sourceTree = "<group>"; };
+		A09B2E3F1D4C7891BA000001 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerSSOCredentialsMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C59DA6427FFCF0600365CDB /* AuthAPIHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPIHandlerTests.swift; sourceTree = "<group>"; };
 		5C59DA6627FFE75600365CDB /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPILoginUsernameOrEmailMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C59DA6828011D4F00365CDB /* AuthAPISignupMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPISignupMethodHandlerTests.swift; sourceTree = "<group>"; };
@@ -227,6 +229,7 @@
 				5C4E65C8286D26D800141449 /* CredentialsManagerGetMethodHandlerTests.swift */,
 				5C4E65BD286D151400141449 /* CredentialsManagerClearMethodHandlerTests.swift */,
 				5C08DBC7288A7646000D2F37 /* CredentialsManagerExtensionsTests.swift */,
+				A09B2E3F1D4C7891BA000001 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift */,
 			);
 			path = CredentialsManager;
 			sourceTree = "<group>";
@@ -603,6 +606,7 @@
 				5C328B5727F7BFEA00451E70 /* Mocks.swift in Sources */,
 				5C335E3D27FBBC2300EDDE3A /* WebAuthLogoutMethodHandlerTests.swift in Sources */,
 				5C08DBC8288A7646000D2F37 /* CredentialsManagerExtensionsTests.swift in Sources */,
+				A09B2E3F1D4C7891BA000002 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift in Sources */,
 				5C335E4127FBD2FE00EDDE3A /* ExtensionsTests.swift in Sources */,
 				5C59DA732807B1A300365CDB /* AuthAPIResetPasswordMethodHandlerTests.swift in Sources */,
 				5C59DA832809214200365CDB /* AuthAPIUserInfoMethodHandlerTests.swift in Sources */,
