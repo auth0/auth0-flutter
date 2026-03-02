@@ -6,7 +6,7 @@ import Flutter
 import FlutterMacOS
 #endif
 
-struct CredentialsManagerSSOCredentialsMethodHandler: MethodHandler {
+struct SSOCredentialsMethodHandler: MethodHandler {
 
     enum Argument: String {
         case parameters

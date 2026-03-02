@@ -38,6 +38,14 @@ class TestPlatform extends Mock
     'userProfile': {'sub': '123', 'name': 'John Doe'},
     'tokenType': 'Bearer'
   });
+
+  static const SSOCredentials ssoExchangeResult = SSOCredentials(
+    sessionTransferToken: 'sso-token',
+    tokenType: 'session_transfer',
+    expiresIn: 60,
+    idToken: 'id-token',
+    refreshToken: 'new-refresh-token',
+  );
 }
 
 @GenerateMocks([TestPlatform])
@@ -283,6 +291,45 @@ void main() {
       expect(verificationResult.options.scopes, isEmpty);
       expect(verificationResult.options.parameters, isEmpty);
       expect(result, TestPlatform.renewResult);
+    });
+  });
+
+  group('ssoExchange', () {
+    test('passes through properties to the platform', () async {
+      when(mockedPlatform.ssoExchange(any))
+          .thenAnswer((final _) async => TestPlatform.ssoExchangeResult);
+
+      final result = await Auth0('test-domain', 'test-clientId')
+          .api
+          .ssoExchange(
+              refreshToken: 'test-refresh-token',
+              parameters: {'param1': 'value1'},
+              headers: {'X-Custom': 'custom-value'});
+
+      final verificationResult =
+          verify(mockedPlatform.ssoExchange(captureAny)).captured.single
+              as ApiRequest<AuthSSOExchangeOptions>;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.account.clientId, 'test-clientId');
+      expect(verificationResult.options.refreshToken, 'test-refresh-token');
+      expect(verificationResult.options.parameters['param1'], 'value1');
+      expect(verificationResult.options.headers['X-Custom'], 'custom-value');
+      expect(result, TestPlatform.ssoExchangeResult);
+    });
+
+    test('sets parameters and headers to empty maps when omitted', () async {
+      when(mockedPlatform.ssoExchange(any))
+          .thenAnswer((final _) async => TestPlatform.ssoExchangeResult);
+
+      await Auth0('test-domain', 'test-clientId')
+          .api
+          .ssoExchange(refreshToken: 'test-refresh-token');
+
+      final verificationResult =
+          verify(mockedPlatform.ssoExchange(captureAny)).captured.single
+              as ApiRequest<AuthSSOExchangeOptions>;
+      expect(verificationResult.options.parameters, isEmpty);
+      expect(verificationResult.options.headers, isEmpty);
     });
   });
 

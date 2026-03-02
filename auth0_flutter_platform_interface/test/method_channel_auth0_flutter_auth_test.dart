@@ -53,6 +53,14 @@ class MethodCallHandler {
     'tokenType': 'Bearer'
   };
 
+  static const Map<dynamic, dynamic> ssoExchangeResult = {
+    'sessionTransferToken': 'sso-token',
+    'tokenType': 'session_transfer',
+    'expiresIn': 60,
+    'idToken': 'id-token',
+    'refreshToken': 'new-refresh-token'
+  };
+
   Future<dynamic>? methodCallHandler(final MethodCall? methodCall) async {}
 }
 
@@ -1190,6 +1198,123 @@ void main() {
             userAgent: UserAgent(name: 'test-name', version: 'test-version'),
             options: AuthUserInfoOptions(accessToken: 'test-token')));
       }
+
+      await expectLater(actual, throwsA(isA<ApiException>()));
+    });
+  });
+
+  group('ssoExchange', () {
+    test('calls the correct MethodChannel method', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.ssoExchangeResult);
+
+      await MethodChannelAuth0FlutterAuth().ssoExchange(
+          ApiRequest<AuthSSOExchangeOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options:
+                  AuthSSOExchangeOptions(refreshToken: 'test-refresh-token')));
+
+      expect(
+          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          'auth#ssoExchange');
+    });
+
+    test('correctly maps all properties', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.ssoExchangeResult);
+
+      await MethodChannelAuth0FlutterAuth().ssoExchange(
+          ApiRequest<AuthSSOExchangeOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: AuthSSOExchangeOptions(
+                  refreshToken: 'test-refresh-token',
+                  parameters: {'param1': 'value1'},
+                  headers: {'X-Custom': 'custom-value'})));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['_account']['domain'], 'test-domain');
+      expect(verificationResult.arguments['_account']['clientId'],
+          'test-clientId');
+      expect(verificationResult.arguments['_userAgent']['name'], 'test-name');
+      expect(verificationResult.arguments['_userAgent']['version'],
+          'test-version');
+      expect(verificationResult.arguments['refreshToken'], 'test-refresh-token');
+      expect(
+          verificationResult.arguments['parameters']['param1'], 'value1');
+      expect(
+          verificationResult.arguments['headers']['X-Custom'], 'custom-value');
+    });
+
+    test(
+        'correctly assigns default values to parameters and headers when missing',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.ssoExchangeResult);
+
+      await MethodChannelAuth0FlutterAuth().ssoExchange(
+          ApiRequest<AuthSSOExchangeOptions>(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: '', version: ''),
+              options: AuthSSOExchangeOptions(refreshToken: '')));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['parameters'], isEmpty);
+      expect(verificationResult.arguments['headers'], isEmpty);
+    });
+
+    test('correctly returns the response from the Method Channel', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.ssoExchangeResult);
+
+      final result = await MethodChannelAuth0FlutterAuth().ssoExchange(
+          ApiRequest<AuthSSOExchangeOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options:
+                  AuthSSOExchangeOptions(refreshToken: 'test-refresh-token')));
+
+      expect(result.sessionTransferToken,
+          MethodCallHandler.ssoExchangeResult['sessionTransferToken']);
+      expect(
+          result.tokenType, MethodCallHandler.ssoExchangeResult['tokenType']);
+      expect(
+          result.expiresIn, MethodCallHandler.ssoExchangeResult['expiresIn']);
+      expect(result.idToken, MethodCallHandler.ssoExchangeResult['idToken']);
+      expect(result.refreshToken,
+          MethodCallHandler.ssoExchangeResult['refreshToken']);
+    });
+
+    test('throws an ApiException when method channel returns null', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      Future<SSOCredentials> actual() => MethodChannelAuth0FlutterAuth()
+              .ssoExchange(ApiRequest<AuthSSOExchangeOptions>(
+                  account: const Account('test-domain', 'test-clientId'),
+                  userAgent:
+                      UserAgent(name: 'test-name', version: 'test-version'),
+                  options: AuthSSOExchangeOptions(
+                      refreshToken: 'test-refresh-token')));
+
+      await expectLater(actual, throwsA(isA<ApiException>()));
+    });
+
+    test(
+        'throws an ApiException when method channel throws a PlatformException',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenThrow(PlatformException(code: '123'));
+
+      Future<SSOCredentials> actual() => MethodChannelAuth0FlutterAuth()
+              .ssoExchange(ApiRequest<AuthSSOExchangeOptions>(
+                  account: const Account('test-domain', 'test-clientId'),
+                  userAgent:
+                      UserAgent(name: 'test-name', version: 'test-version'),
+                  options: AuthSSOExchangeOptions(
+                      refreshToken: 'test-refresh-token')));
 
       await expectLater(actual, throwsA(isA<ApiException>()));
     });

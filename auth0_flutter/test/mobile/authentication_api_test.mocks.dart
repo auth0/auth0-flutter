@@ -67,6 +67,17 @@ class _FakeDatabaseUser_3 extends _i1.SmartFake implements _i2.DatabaseUser {
         );
 }
 
+class _FakeSSOCredentials_4 extends _i1.SmartFake
+    implements _i3.SSOCredentials {
+  _FakeSSOCredentials_4(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [TestPlatform].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -251,6 +262,23 @@ class MockTestPlatform extends _i1.Mock implements _i4.TestPlatform {
           ),
         )),
       ) as _i5.Future<_i2.Credentials>);
+
+  @override
+  _i5.Future<_i3.SSOCredentials> ssoExchange(
+          _i3.ApiRequest<_i3.AuthSSOExchangeOptions>? request) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #ssoExchange,
+          [request],
+        ),
+        returnValue: _i5.Future<_i3.SSOCredentials>.value(_FakeSSOCredentials_4(
+          this,
+          Invocation.method(
+            #ssoExchange,
+            [request],
+          ),
+        )),
+      ) as _i5.Future<_i3.SSOCredentials>);
 
   @override
   _i5.Future<void> resetPassword(

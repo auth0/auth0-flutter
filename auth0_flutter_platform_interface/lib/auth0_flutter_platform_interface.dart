@@ -11,6 +11,7 @@ export 'src/auth/auth_passwordless_type.dart';
 export 'src/auth/auth_renew_access_token_options.dart';
 export 'src/auth/auth_reset_password_options.dart';
 export 'src/auth/auth_signup_options.dart';
+export 'src/auth/auth_sso_exchange_options.dart';
 export 'src/auth/auth_user_info_options.dart';
 export 'src/auth/challenge.dart';
 export 'src/auth/challenge_type.dart';
