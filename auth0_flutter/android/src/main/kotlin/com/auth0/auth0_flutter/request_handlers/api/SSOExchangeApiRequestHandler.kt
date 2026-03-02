@@ -5,6 +5,7 @@ import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
 import com.auth0.android.result.SSOCredentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
+import com.auth0.auth0_flutter.toMap
 import com.auth0.auth0_flutter.utils.assertHasProperties
 import io.flutter.plugin.common.MethodChannel
 
