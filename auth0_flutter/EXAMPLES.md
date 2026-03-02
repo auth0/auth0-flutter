@@ -643,7 +643,8 @@ await webViewController.loadRequest(
 >
 > Cookie injection is platform-specific and may require additional WebView configuration.
 
-
+> [!NOTE]
+> This feature is designed for **iOS and Android** only. Since the purpose is to transition a native app session into a web session, calling `auth0.credentialsManager.ssoCredentials()` or `auth0.api.ssoExchange()` from any other platform is not supported.
 
 [Go up ⤴](#examples)
 
