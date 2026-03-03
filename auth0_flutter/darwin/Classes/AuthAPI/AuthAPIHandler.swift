@@ -27,6 +27,7 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
         case passwordlessWithPhoneNumber = "auth#passwordlessWithPhoneNumber"
         case loginWithEmailCode = "auth#loginWithEmail"
         case loginWithSMSCode = "auth#loginWithPhoneNumber"
+        case ssoExchange = "auth#ssoExchange"
     }
 
     private static let channelName = "auth0.com/auth0_flutter/auth"
@@ -71,6 +72,7 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
         case .passwordlessWithPhoneNumber: return AuthAPIPasswordlessPhoneNumberMethodHandler(client: client)
         case .loginWithEmailCode: return AuthAPILoginWithEmailMethodHandler(client: client)
         case .loginWithSMSCode: return AuthAPILoginWithPhoneNumberMethodHandler(client: client)
+        case .ssoExchange: return SSOExchangeMethodHandler(client: client)
         }
     }
 

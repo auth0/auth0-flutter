@@ -260,7 +260,9 @@ extension CredentialsManagerHandlerTests {
             .hasValid: CredentialsManagerHasValidMethodHandler.self,
             .get: CredentialsManagerGetMethodHandler.self,
             .clear: CredentialsManagerClearMethodHandler.self,
-            .userInfo: CredentialsManagerUserInfoMethodHandler.self
+            .userInfo: CredentialsManagerUserInfoMethodHandler.self,
+            .renew: CredentialsManagerRenewMethodHandler.self,
+            .sso: SSOCredentialsMethodHandler.self
         ]
         methodHandlers.forEach { method, methodHandler in
             let methodCall = FlutterMethodCall(methodName: method.rawValue, arguments: arguments())

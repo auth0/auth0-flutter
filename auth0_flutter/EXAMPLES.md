@@ -543,6 +543,8 @@ Before using Native to Web SSO:
 
 #### Get a Session Transfer Token
 
+If you authenticated via **Web Auth** and stored credentials with the Credentials Manager, use `ssoCredentials()` — it handles token renewal automatically:
+
 ```dart
 try {
   final ssoCredentials = await auth0.credentialsManager.ssoCredentials();
@@ -554,6 +556,21 @@ try {
   print('Failed to get SSO credentials: ${e.message}');
 }
 ```
+
+If you authenticated via the **Authentication API** (username/password login) and already hold a refresh token, you can exchange it directly using `auth0.api.ssoExchange()`:
+
+```dart
+try {
+  final ssoCredentials = await auth0.api.ssoExchange(refreshToken: refreshToken);
+
+  print('Session Transfer Token: ${ssoCredentials.sessionTransferToken}');
+  print('Expires In: ${ssoCredentials.expiresIn} seconds');
+} on ApiException catch (e) {
+  print('SSO Exchange failed: ${e.code} - ${e.message}');
+}
+```
+
+> ⚠️ If you are using the Credentials Manager to store the user's credentials, prefer `auth0.credentialsManager.ssoCredentials()` instead. It automatically handles refresh token rotation and is thread-safe, whereas `auth0.api.ssoExchange()` is not.
 
 #### Sending the Session Transfer Token
 
@@ -626,7 +643,8 @@ await webViewController.loadRequest(
 >
 > Cookie injection is platform-specific and may require additional WebView configuration.
 
-
+> [!NOTE]
+> This feature is designed for **iOS and Android** only. Since the purpose is to transition a native app session into a web session, calling `auth0.credentialsManager.ssoCredentials()` or `auth0.api.ssoExchange()` from any other platform is not supported.
 
 [Go up ⤴](#examples)
 

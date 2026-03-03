@@ -3,24 +3,24 @@ import Auth0
 
 @testable import auth0_flutter
 
-fileprivate typealias Argument = CredentialsManagerSSOCredentialsMethodHandler.Argument
+fileprivate typealias Argument = SSOCredentialsMethodHandler.Argument
 
-class CredentialsManagerSSOCredentialsMethodHandlerTests: XCTestCase {
+final class SSOCredentialsMethodHandlerTests: XCTestCase {
     var spyAuthentication: SpyAuthentication!
     var spyStorage: SpyCredentialsStorage!
-    var sut: CredentialsManagerSSOCredentialsMethodHandler!
+    var sut: SSOCredentialsMethodHandler!
 
     override func setUpWithError() throws {
         spyAuthentication = SpyAuthentication()
         spyStorage = SpyCredentialsStorage()
         let credentialsManager = CredentialsManager(authentication: spyAuthentication, storage: spyStorage)
-        sut = CredentialsManagerSSOCredentialsMethodHandler(credentialsManager: credentialsManager)
+        sut = SSOCredentialsMethodHandler(credentialsManager: credentialsManager)
     }
 }
 
 // MARK: - Required Arguments Error
 
-extension CredentialsManagerSSOCredentialsMethodHandlerTests {
+extension SSOCredentialsMethodHandlerTests {
     func testProducesErrorWhenRequiredArgumentsAreMissing() {
         let keys: [Argument] = [.parameters, .headers]
         let expectations = keys.map { expectation(description: "\($0.rawValue) is missing") }
@@ -36,7 +36,7 @@ extension CredentialsManagerSSOCredentialsMethodHandlerTests {
 
 // MARK: - SSO Credentials
 
-extension CredentialsManagerSSOCredentialsMethodHandlerTests {
+extension SSOCredentialsMethodHandlerTests {
     func testSSOExchangeIsCalled() {
         let credentials = Credentials(accessToken: "accessToken",
                                       tokenType: "tokenType",
@@ -77,7 +77,7 @@ extension CredentialsManagerSSOCredentialsMethodHandlerTests {
 
 // MARK: - Error
 
-extension CredentialsManagerSSOCredentialsMethodHandlerTests {
+extension SSOCredentialsMethodHandlerTests {
     func testProducesCredentialsManagerError() {
         let error = CredentialsManagerError.noCredentials
         let expectation = self.expectation(description: "Produced the CredentialsManagerError \(error)")
@@ -92,7 +92,7 @@ extension CredentialsManagerSSOCredentialsMethodHandlerTests {
 
 // MARK: - Helpers
 
-extension CredentialsManagerSSOCredentialsMethodHandlerTests {
+extension SSOCredentialsMethodHandlerTests {
     override func arguments() -> [String: Any] {
         return [
             Argument.parameters.rawValue: [String: String](),

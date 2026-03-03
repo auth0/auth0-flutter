@@ -10,12 +10,14 @@ import 'auth/auth_passwordless_login_options.dart';
 import 'auth/auth_renew_access_token_options.dart';
 import 'auth/auth_reset_password_options.dart';
 import 'auth/auth_signup_options.dart';
+import 'auth/auth_sso_exchange_options.dart';
 import 'auth/auth_user_info_options.dart';
 import 'auth/challenge.dart';
 import 'credentials.dart';
 import 'database_user.dart';
 import 'method_channel_auth0_flutter_auth.dart';
 import 'request/request.dart';
+import 'sso_credentials.dart';
 import 'user_profile.dart';
 
 abstract class Auth0FlutterAuthPlatform extends PlatformInterface {
@@ -80,6 +82,11 @@ abstract class Auth0FlutterAuthPlatform extends PlatformInterface {
   Future<Credentials> customTokenExchange(
       final ApiRequest<AuthCustomTokenExchangeOptions> request) {
     throw UnimplementedError('customTokenExchange() has not been implemented');
+  }
+
+  Future<SSOCredentials> ssoExchange(
+      final ApiRequest<AuthSSOExchangeOptions> request) {
+    throw UnimplementedError('ssoExchange() has not been implemented');
   }
 
   Future<void> resetPassword(
