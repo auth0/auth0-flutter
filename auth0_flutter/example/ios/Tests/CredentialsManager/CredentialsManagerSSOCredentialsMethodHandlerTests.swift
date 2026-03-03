@@ -5,7 +5,7 @@ import Auth0
 
 fileprivate typealias Argument = SSOCredentialsMethodHandler.Argument
 
-class SSOCredentialsMethodHandlerTests: XCTestCase {
+final class SSOCredentialsMethodHandlerTests: XCTestCase {
     var spyAuthentication: SpyAuthentication!
     var spyStorage: SpyCredentialsStorage!
     var sut: SSOCredentialsMethodHandler!
