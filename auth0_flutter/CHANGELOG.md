@@ -1,5 +1,11 @@
 # Change Log
 
+## [af-v2.0.0-beta.5](https://github.com/auth0/auth0-flutter/tree/af-v2.0.0-beta.5) (2026-03-06)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.0.0-beta.4...af-v2.0.0-beta.5)
+
+**Fixed**
+- fix: Show SSOCredentials [\#767](https://github.com/auth0/auth0-flutter/pull/767) ([ezorrio](https://github.com/ezorrio))
+
 ## [af-v2.0.0-beta.4](https://github.com/auth0/auth0-flutter/tree/af-v2.0.0-beta.4) (2026-03-03)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.0.0-beta.1...af-v2.0.0-beta.4)
 
