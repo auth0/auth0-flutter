@@ -1,5 +1,6 @@
 #include "token_decoder.h"
 #include <chrono>
+#include <sstream>
 #include "time_util.h"
 Credentials DecodeTokenResponse(
     const web::json::value &json)

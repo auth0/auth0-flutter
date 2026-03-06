@@ -62,7 +62,18 @@ TEST(DeserializeUserProfileTest, HandlesEmailVerifiedFalse) {
 
   UserProfile profile = UserProfile::DeserializeUserProfile(payload);
 
+  ASSERT_TRUE(profile.isEmailVerified.has_value());
   EXPECT_FALSE(profile.isEmailVerified.value());
+}
+
+TEST(DeserializeUserProfileTest, IsEmailVerifiedAbsentWhenKeyMissing) {
+  EncodableMap payload;
+  payload[EncodableValue("user_id")] = EncodableValue("auth0|123456");
+  // no email_verified key
+
+  UserProfile profile = UserProfile::DeserializeUserProfile(payload);
+
+  EXPECT_FALSE(profile.isEmailVerified.has_value());
 }
 
 TEST(DeserializeUserProfileTest, HandlesIdentities) {
@@ -163,8 +174,8 @@ TEST(DeserializeUserProfileTest, HandlesNonBoolEmailVerified) {
 
   UserProfile profile = UserProfile::DeserializeUserProfile(payload);
 
-  // Should default to false
-  EXPECT_FALSE(profile.isEmailVerified.value());
+  // GetBool returns nullopt when the value is not a bool
+  EXPECT_FALSE(profile.isEmailVerified.has_value());
 }
 
 /* ---------------- ToMap ---------------- */

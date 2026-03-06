@@ -94,9 +94,9 @@ namespace auth0_flutter
         }
 
         // Extract scopes (default: "openid profile email")
-        
-        std::set<std::string> scopeSet = { "openid", "profile", "email", "offline_access"};
-    
+
+        std::set<std::string> scopeSet = {"openid", "profile", "email", "offline_access"};
+
         auto scopesIt = arguments->find(flutter::EncodableValue("scopes"));
         if (scopesIt != arguments->end())
         {
@@ -116,8 +116,10 @@ namespace auth0_flutter
         }
 
         std::string scopeStr;
-        for (const auto& s : scopeSet) {
-            if (!scopeStr.empty()) scopeStr += ' ';
+        for (const auto &s : scopeSet)
+        {
+            if (!scopeStr.empty())
+                scopeStr += ' ';
             scopeStr += s;
         }
 
@@ -166,6 +168,16 @@ namespace auth0_flutter
             }
         }
 
+        std::string nonce = generateCodeVerifier();
+        auto nonceIt = arguments->find(flutter::EncodableValue("nonce"));
+        if (nonceIt != arguments->end())
+        {
+            if (auto s = std::get_if<std::string>(&nonceIt->second))
+            {
+                nonce = *s;
+            }
+        }
+
         auto parametersIt = arguments->find(flutter::EncodableValue("parameters"));
         const flutter::EncodableMap *parametersMap = nullptr;
         if (parametersIt != arguments->end())
@@ -173,30 +185,32 @@ namespace auth0_flutter
             parametersMap = std::get_if<flutter::EncodableMap>(&parametersIt->second);
         }
 
-        // Extract authentication timeout in seconds (default: 180 seconds / 3 minutes)
         int authTimeoutSeconds = 180;
         if (parametersMap)
         {
+            // Extract authentication timeout in seconds (default: 180 seconds / 3 minutes)
             auto timeoutIt = parametersMap->find(flutter::EncodableValue("authTimeoutSeconds"));
             if (timeoutIt != parametersMap->end())
             {
                 if (auto s = std::get_if<std::string>(&timeoutIt->second))
                 {
-                    try
-                    {
-                        authTimeoutSeconds = std::stoi(*s);
-                    }
-                    catch (const std::exception &)
-                    {
-                        // If parsing fails, use default value
-                    }
+
+                    authTimeoutSeconds = std::stoi(*s);
+                }
+            }
+
+            // Extract nonce for ID token validation if provided in parameters
+            nonceIt = parametersMap->find(flutter::EncodableValue("nonce"));
+            if (nonceIt != parametersMap->end())
+            {
+                if (auto s = std::get_if<std::string>(&nonceIt->second))
+                {
+                    nonce = *s;
                 }
             }
         }
 
         // Extract additional parameters to append to the authorize URL.
-        // Internal plugin parameters (authTimeoutSeconds) are consumed above
-        // and must NOT be forwarded to the authorization server.
         static const std::set<std::string> kInternalParams = {"authTimeoutSeconds"};
         std::map<std::string, std::string> additionalParams;
         auto paramsIt = arguments->find(flutter::EncodableValue("parameters"));
@@ -263,11 +277,9 @@ namespace auth0_flutter
         // Run authentication on a cancellable pplx task to avoid blocking the
         // Flutter UI thread.  The cancellation token lets the destructor (or a
         // subsequent handle() call) abort a running flow cleanly.
-        pplx::create_task([
-            sharedResult,
-            clientId, domain, scopeStr, redirectUri, audience, organizationId, invitationUrl, authTimeoutSeconds, additionalParams,
-            leeway, maxAge, issuer, token
-        ]() {
+        pplx::create_task([sharedResult,
+                           clientId, domain, scopeStr, redirectUri, audience, organizationId, invitationUrl, authTimeoutSeconds, additionalParams, leeway, maxAge, nonce, issuer, token]()
+                          {
             try
             {
                 // Step 1: Generate PKCE parameters for secure OAuth flow
@@ -277,7 +289,6 @@ namespace auth0_flutter
 
                 // Generate state (CSRF protection) and nonce (OIDC replay protection)
                 std::string state = generateCodeVerifier();
-                std::string nonce = generateCodeVerifier();
 
                 // Parse invitation URL to extract organization and invitation query parameters.
                 // Mirrors Swift/Android SDK behavior: the raw URL is never forwarded as-is;
@@ -477,6 +488,10 @@ namespace auth0_flutter
                 validationConfig.leeway = leeway;
                 validationConfig.maxAge = maxAge;
                 validationConfig.nonce = nonce;
+                if (!resolvedOrganizationId.empty())
+                {
+                    validationConfig.organization = resolvedOrganizationId;
+                }
 
                 // RS256 signature validation via the JWKS well-known endpoint.
                 // Derived from the issuer URL: issuer already has a trailing "/".
@@ -554,8 +569,7 @@ namespace auth0_flutter
                 {
                     sharedResult->Error("auth_failed", e.what());
                 }
-            }
-        });
+            } });
     }
 
 } // namespace auth0_flutter

@@ -34,8 +34,7 @@ class _ExampleAppState extends State<ExampleApp> {
         Auth0Web(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
     webAuth =
         auth0.webAuthentication(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
-    windowsWebAuth = auth0.windowsWebAuthentication(
-        scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
+    windowsWebAuth = auth0.windowsWebAuthentication();
     if (kIsWeb) {
       auth0Web.onLoad().then((final credentials) => setState(() {
             _output = credentials?.idToken ?? '';
@@ -66,8 +65,8 @@ class _ExampleAppState extends State<ExampleApp> {
         setState(() {
           _isLoggedIn = true;
         });
-
-        output = result.idToken;
+        // remove replaceall to view non redacted token in output
+        output = result.idToken.replaceAll(RegExp(r'.'), '*');
       } else {
         // Use mobile authentication for iOS/Android
         final result = await webAuth.login(
@@ -78,7 +77,7 @@ class _ExampleAppState extends State<ExampleApp> {
           _isLoggedIn = true;
         });
 
-        output = result.idToken;
+        output = result.idToken.replaceAll(RegExp(r'.'), '*');
       }
     } catch (e) {
       output = e.toString();

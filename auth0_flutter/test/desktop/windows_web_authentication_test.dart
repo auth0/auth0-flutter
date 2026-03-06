@@ -308,4 +308,5 @@ void main() {
       expect(verificationResult.options.returnTo, 'auth0flutter://callback');
     });
   });
+
 }

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <sstream>
+#include <stdexcept>
 #include <vector>
 #include <windows.h>
 #include <wincrypt.h>

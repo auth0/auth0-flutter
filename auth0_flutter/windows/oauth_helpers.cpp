@@ -8,6 +8,7 @@
 #include "windows_utils.h"
 
 #include <windows.h>
+#include <cctype>
 #include <thread>
 #include <chrono>
 #include <stdexcept>
@@ -40,7 +41,7 @@ namespace auth0_flutter
 
         for (unsigned char c : str)
         {
-            if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~')
+            if (std::isalnum(static_cast<unsigned char>(c)) || c == '-' || c == '_' || c == '.' || c == '~')
             {
                 encoded << c;
             }
