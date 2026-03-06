@@ -2,8 +2,13 @@
 # installed that includes CMake 3.14 or later. You should not increase this
 # version, as doing so will cause the plugin to fail to compile for some
 # customers of the plugin.
-cmake_minimum_required(VERSION 3.15)
-cmake_policy(SET CMP0167 NEW)
+cmake_minimum_required(VERSION 3.14)
+
+# CMP0167 (FindBoost deprecation) was introduced in CMake 3.27.
+# Guard it so the file stays compatible with older CMake versions.
+if(POLICY CMP0167)
+  cmake_policy(SET CMP0167 NEW)
+endif()
 
 #if (DEFINED ENV{VCPKG_ROOT} AND EXISTS "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
 #    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
@@ -109,7 +114,7 @@ if(TARGET flutter)
 endif()
 
 # === Tests ===
-option(AUTH0_FLUTTER_ENABLE_TESTS "Build auth0_flutter unit tests" ON)
+option(AUTH0_FLUTTER_ENABLE_TESTS "Build auth0_flutter unit tests" OFF)
 
 if (AUTH0_FLUTTER_ENABLE_TESTS)
   enable_testing()

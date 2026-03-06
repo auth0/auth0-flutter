@@ -9,15 +9,19 @@ using web::json::value;
 /* ---------------- DecodeTokenResponse ---------------- */
 
 TEST(DecodeTokenResponseTest, DecodesMinimalResponse) {
+  // openid is always requested, so Auth0 always returns an id_token.
+  // The minimal real-world response always includes access_token, token_type, and id_token.
   value json;
   json[U("access_token")] = value::string(U("test_access_token"));
-  json[U("token_type")] = value::string(U("Bearer"));
+  json[U("token_type")]   = value::string(U("Bearer"));
+  json[U("id_token")]     = value::string(U("test_id_token"));
 
   Credentials creds = DecodeTokenResponse(json);
 
   EXPECT_EQ(creds.accessToken, "test_access_token");
   EXPECT_EQ(creds.tokenType, "Bearer");
-  EXPECT_FALSE(creds.idToken.empty());  // Empty, not uninitialized
+  EXPECT_FALSE(creds.idToken.empty());
+  EXPECT_EQ(creds.idToken, "test_id_token");
   EXPECT_FALSE(creds.refreshToken.has_value());
   EXPECT_FALSE(creds.expiresIn.has_value());
   EXPECT_FALSE(creds.expiresAt.has_value());
@@ -282,17 +286,6 @@ TEST(DecodeTokenResponseTest, ScopeWithOnlyWhitespaceIsEmpty) {
   EXPECT_TRUE(creds.scope.empty());
 }
 
-TEST(DecodeTokenResponseTest, IdTokenAbsentIsEmptyString) {
-  // No "id_token" field — idToken must default to an empty string,
-  // not an uninitialised value.
-  value json;
-  json[U("access_token")] = value::string(U("tok"));
-  json[U("token_type")]   = value::string(U("Bearer"));
-
-  Credentials creds = DecodeTokenResponse(json);
-
-  EXPECT_EQ(creds.idToken, "");
-}
 
 TEST(DecodeTokenResponseTest, NoExpiryFieldsProducesNoExpiresAt) {
   // When neither expires_at nor expires_in is present, expiresAt must be

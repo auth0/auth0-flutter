@@ -70,6 +70,10 @@ class LoginWebAuthRequestHandler(
             builder.withScheme(args["scheme"] as String)
         }
 
+        if(args["nonce"] is String) {
+            builder.withNonce(args["nonce"] as String)
+        }
+
         if (args["parameters"] is Map<*, *>) {
             builder.withParameters(args["parameters"] as Map<String, *>)
         }

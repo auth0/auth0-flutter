@@ -6,9 +6,10 @@
 #include "id_token_validator.h"
 #include "id_token_signature_validator.h"
 #include "jwt_util.h"
+#include <algorithm>
+#include <cctype>
 #include <chrono>
 #include <sstream>
-#include <algorithm>
 
 namespace auth0_flutter
 {
@@ -21,27 +22,6 @@ namespace auth0_flutter
         auto now = std::chrono::system_clock::now();
         auto duration = now.time_since_epoch();
         return std::chrono::duration_cast<std::chrono::seconds>(duration).count();
-    }
-
-    /**
-     * @brief Extract a required string claim from JWT payload
-     */
-    static std::string GetRequiredStringClaim(
-        const web::json::value &payload,
-        const std::string &claimName)
-    {
-        if (!payload.has_field(utility::conversions::to_string_t(claimName)))
-        {
-            throw IdTokenValidationException("Missing required claim: " + claimName);
-        }
-
-        const auto &field = payload.at(utility::conversions::to_string_t(claimName));
-        if (!field.is_string())
-        {
-            throw IdTokenValidationException("Claim '" + claimName + "' is not a string");
-        }
-
-        return utility::conversions::to_utf8string(field.as_string());
     }
 
     /**
@@ -133,103 +113,123 @@ namespace auth0_flutter
         }
         catch (const std::exception &e)
         {
-            throw IdTokenValidationException(std::string("Failed to decode ID token: ") + e.what());
+            throw IdTokenValidationException(std::string("ID token could not be decoded: ") + e.what());
         }
 
-        // Get current timestamp for time-based validations
+        // Get current Unix timestamp for time-based validations
         int64_t now = GetCurrentTimestamp();
 
-        // 1. Validate issuer (iss) claim
-        std::string iss = GetRequiredStringClaim(payload, "iss");
-        if (iss != config.issuer)
+        // 1. Validate issuer (iss) claim 
         {
-            std::ostringstream msg;
-            msg << "Invalid issuer. Expected: '" << config.issuer << "', Got: '" << iss << "'";
-            throw IdTokenValidationException(msg.str());
+            auto iss = GetOptionalStringClaim(payload, "iss");
+            if (!iss.has_value())
+            {
+                throw IdTokenValidationException(
+                    "Issuer (iss) claim must be a string present in the ID token");
+            }
+            if (iss.value() != config.issuer)
+            {
+                std::ostringstream msg;
+                msg << "Issuer (iss) claim mismatch in the ID token, expected ("
+                    << config.issuer << "), found (" << iss.value() << ")";
+                throw IdTokenValidationException(msg.str());
+            }
         }
 
-        // 2. Validate audience (aud) claim
-        // The aud claim can be either a string or an array of strings
+        // 2. Validate subject (sub) claim
+        {
+            auto sub = GetOptionalStringClaim(payload, "sub");
+            if (!sub.has_value() || sub.value().empty())
+            {
+                throw IdTokenValidationException(
+                    "Subject (sub) claim must be a string present in the ID token");
+            }
+        }
+
+        // 3. Validate audience (aud) claim 
+        // aud can be a string or an array of strings.
         if (!payload.has_field(U("aud")))
         {
-            throw IdTokenValidationException("Missing required claim: aud");
+            throw IdTokenValidationException(
+                "Audience (aud) claim must be a string or array of strings present in the ID token");
         }
 
         const auto &audField = payload.at(U("aud"));
-        bool audienceValid = false;
 
         if (audField.is_string())
         {
             std::string aud = utility::conversions::to_utf8string(audField.as_string());
-            audienceValid = (aud == config.audience);
+            if (aud != config.audience)
+            {
+                std::ostringstream msg;
+                msg << "Audience (aud) claim mismatch in the ID token; expected ("
+                    << config.audience << ") but found (" << aud << ")";
+                throw IdTokenValidationException(msg.str());
+            }
         }
         else if (audField.is_array())
         {
             const auto &audArray = audField.as_array();
-            for (const auto &audValue : audArray)
-            {
-                if (audValue.is_string())
-                {
-                    std::string aud = utility::conversions::to_utf8string(audValue.as_string());
-                    if (aud == config.audience)
-                    {
-                        audienceValid = true;
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (!audienceValid)
-        {
-            std::ostringstream msg;
-            msg << "Invalid audience. Expected: '" << config.audience << "'";
-            throw IdTokenValidationException(msg.str());
-        }
-
-        // 3. Validate expiration time (exp) claim with leeway
-        int64_t exp = GetRequiredIntClaim(payload, "exp");
-        if (now > exp + config.leeway)
-        {
-            std::ostringstream msg;
-            msg << "ID token has expired. Expiration time: " << exp
-                << ", Current time: " << now
-                << ", Leeway: " << config.leeway;
-            throw IdTokenValidationException(msg.str());
-        }
-
-        // 4. Validate issued at (iat) claim
-        // The iat claim must be present and should not be in the future (with leeway)
-        int64_t iat = GetRequiredIntClaim(payload, "iat");
-        if (iat > now + config.leeway)
-        {
-            std::ostringstream msg;
-            msg << "ID token issued in the future. Issued at: " << iat
-                << ", Current time: " << now
-                << ", Leeway: " << config.leeway;
-            throw IdTokenValidationException(msg.str());
-        }
-
-        // 5. Validate auth_time if maxAge is specified
-        if (config.maxAge.has_value())
-        {
-            auto authTime = GetOptionalIntClaim(payload, "auth_time");
-            if (!authTime.has_value())
+            if (audArray.size() == 0)
             {
                 throw IdTokenValidationException(
-                    "Missing required claim 'auth_time' when maxAge is specified");
+                    "Audience (aud) claim must be a string or array of strings present in the ID token");
             }
 
-            int64_t timeSinceAuth = now - authTime.value();
-            if (timeSinceAuth > config.maxAge.value() + config.leeway)
+            std::vector<std::string> audValues;
+            bool found = false;
+            for (const auto &v : audArray)
             {
+                if (v.is_string())
+                {
+                    std::string s = utility::conversions::to_utf8string(v.as_string());
+                    audValues.push_back(s);
+                    if (s == config.audience) found = true;
+                }
+            }
+            if (!found)
+            {
+                std::ostringstream joined;
+                for (size_t i = 0; i < audValues.size(); ++i)
+                {
+                    if (i > 0) joined << ", ";
+                    joined << audValues[i];
+                }
                 std::ostringstream msg;
-                msg << "Authentication is too old. auth_time: " << authTime.value()
-                    << ", Current time: " << now
-                    << ", maxAge: " << config.maxAge.value()
-                    << ", Time since auth: " << timeSinceAuth;
+                msg << "Audience (aud) claim mismatch in the ID token; expected ("
+                    << config.audience << ") but was not one of (" << joined.str() << ")";
                 throw IdTokenValidationException(msg.str());
             }
+        }
+        else
+        {
+            throw IdTokenValidationException(
+                "Audience (aud) claim must be a string or array of strings present in the ID token");
+        }
+
+        // 4. Validate expiration time (exp) claim
+        {
+            if (!payload.has_field(U("exp")))
+            {
+                throw IdTokenValidationException(
+                    "Expiration time (exp) claim must be a number present in the ID token");
+            }
+            int64_t exp = GetRequiredIntClaim(payload, "exp");
+            double expWithLeeway = static_cast<double>(exp) + static_cast<double>(config.leeway);
+            if (static_cast<double>(now) > expWithLeeway)
+            {
+                std::ostringstream msg;
+                msg << "Expiration time (exp) claim error in the ID token; current time ("
+                    << now << ") is after expiration time (" << expWithLeeway << ")";
+                throw IdTokenValidationException(msg.str());
+            }
+        }
+
+        // 5. Validate issued at (iat) claim
+        if (!payload.has_field(U("iat")))
+        {
+            throw IdTokenValidationException(
+                "Issued At (iat) claim must be a number present in the ID token");
         }
 
         // 6. Validate nonce if provided
@@ -239,19 +239,105 @@ namespace auth0_flutter
             if (!nonce.has_value())
             {
                 throw IdTokenValidationException(
-                    "Missing required claim 'nonce' when nonce was sent in authorization request");
+                    "Nonce (nonce) claim must be a string present in the ID token");
             }
-
             if (nonce.value() != config.nonce.value())
             {
                 std::ostringstream msg;
-                msg << "Invalid nonce. Expected: '" << config.nonce.value()
-                    << "', Got: '" << nonce.value() << "'";
+                msg << "Nonce (nonce) claim value mismatch in the ID token; expected ("
+                    << config.nonce.value() << "), found (" << nonce.value() << ")";
                 throw IdTokenValidationException(msg.str());
             }
         }
 
-        // All validations passed - return payload if requested
+        // 7. Validate azp (Authorized Party) when aud has multiple values 
+        if (audField.is_array() && audField.as_array().size() > 1)
+        {
+            auto azp = GetOptionalStringClaim(payload, "azp");
+            if (!azp.has_value())
+            {
+                throw IdTokenValidationException(
+                    "Authorized Party (azp) claim must be a string present in the ID token "
+                    "when Audience (aud) claim has multiple values");
+            }
+            if (azp.value() != config.audience)
+            {
+                std::ostringstream msg;
+                msg << "Authorized Party (azp) claim mismatch in the ID token; expected ("
+                    << config.audience << "), found (" << azp.value() << ")";
+                throw IdTokenValidationException(msg.str());
+            }
+        }
+
+        // 8. Validate auth_time if maxAge is specified
+        if (config.maxAge.has_value())
+        {
+            auto authTime = GetOptionalIntClaim(payload, "auth_time");
+            if (!authTime.has_value())
+            {
+                throw IdTokenValidationException(
+                    "Authentication Time (auth_time) claim must be a number present in the ID token "
+                    "when Max Age (max_age) is specified");
+            }
+            double adjustedMaxAge = static_cast<double>(config.maxAge.value()) +
+                                    static_cast<double>(config.leeway);
+            double authTimeWithMax = static_cast<double>(authTime.value()) + adjustedMaxAge;
+            if (static_cast<double>(now) > authTimeWithMax)
+            {
+                std::ostringstream msg;
+                msg << "Authentication Time (auth_time) claim in the ID token indicates that "
+                       "too much time has passed since the last user authentication. "
+                       "Current time (" << now << ") is after last auth time (" << authTimeWithMax << ")";
+                throw IdTokenValidationException(msg.str());
+            }
+        }
+
+        // 9. Validate organization
+        // Values starting with "org_" are org_id (exact match).
+        // All other values are org_name (case-insensitive, Auth0 stores org_name in lowercase).
+        if (config.organization.has_value() && !config.organization.value().empty())
+        {
+            const std::string &expectedOrg = config.organization.value();
+            if (expectedOrg.rfind("org_", 0) == 0)
+            {
+                // org_id — exact match
+                auto orgId = GetOptionalStringClaim(payload, "org_id");
+                if (!orgId.has_value())
+                {
+                    throw IdTokenValidationException(
+                        "Organization Id (org_id) claim must be a string present in the ID token");
+                }
+                if (orgId.value() != expectedOrg)
+                {
+                    std::ostringstream msg;
+                    msg << "Organization Id (org_id) claim value mismatch in the ID token; expected ("
+                        << expectedOrg << "), found (" << orgId.value() << ")";
+                    throw IdTokenValidationException(msg.str());
+                }
+            }
+            else
+            {
+                // org_name — compare against lowercased expected value
+                auto orgName = GetOptionalStringClaim(payload, "org_name");
+                if (!orgName.has_value())
+                {
+                    throw IdTokenValidationException(
+                        "Organization Name (org_name) claim must be a string present in the ID token");
+                }
+                std::string expectedLower = expectedOrg;
+                std::transform(expectedLower.begin(), expectedLower.end(),
+                               expectedLower.begin(), ::tolower);
+                if (orgName.value() != expectedLower)
+                {
+                    std::ostringstream msg;
+                    msg << "Organization Name (org_name) claim value mismatch in the ID token; expected ("
+                        << expectedOrg << "), found (" << orgName.value() << ")";
+                    throw IdTokenValidationException(msg.str());
+                }
+            }
+        }
+
+        // All validations passed — return the decoded payload to the caller if requested
         if (outPayload != nullptr)
         {
             *outPayload = payload;

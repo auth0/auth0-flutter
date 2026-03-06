@@ -17,7 +17,7 @@ static std::optional<std::string> GetString(
   return std::get<std::string>(it->second);
 }
 
-static std::optional<bool> GetBoolOrFalse(
+static std::optional<bool> GetBool(
     const EncodableMap& map,
     const std::string& key) {
   auto it = map.find(EncodableValue(key));
@@ -36,7 +36,7 @@ UserProfile UserProfile::DeserializeUserProfile(const EncodableMap& payload) {
   profile.email = GetString(payload, "email");
   profile.givenName = GetString(payload, "given_name");
   profile.familyName = GetString(payload, "family_name");
-  profile.isEmailVerified = GetBoolOrFalse(payload, "email_verified");
+  profile.isEmailVerified = GetBool(payload, "email_verified");
 
  // identities
 auto identities_it = payload.find(flutter::EncodableValue("identities"));
