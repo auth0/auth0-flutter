@@ -32,6 +32,14 @@ class TestPlatform extends Mock
     'userProfile': {'sub': '123', 'name': 'John Doe'},
     'tokenType': 'Bearer'
   });
+
+  static const SSOCredentials ssoResult = SSOCredentials(
+    sessionTransferToken: 'ssoToken',
+    tokenType: 'session_transfer',
+    expiresIn: 60,
+    idToken: 'idToken',
+    refreshToken: 'refreshToken',
+  );
 }
 
 @GenerateMocks([TestPlatform])
@@ -221,9 +229,9 @@ void main() {
 
       final result = await DefaultCredentialsManager(account, userAgent).user();
 
-      final verificationResult =
-          verify(mockedPlatform.user(captureAny)).captured.single
-              as CredentialsManagerRequest;
+      final verificationResult = verify(mockedPlatform.user(captureAny))
+          .captured
+          .single as CredentialsManagerRequest;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
       expect(result, isNotNull);
@@ -269,8 +277,8 @@ void main() {
           .thenThrow(const CredentialsManagerException(
               'FAILED', 'No credentials stored', {}));
 
-      Future<UserProfile?> actual() async => DefaultCredentialsManager(
-          account, userAgent).user();
+      Future<UserProfile?> actual() async =>
+          DefaultCredentialsManager(account, userAgent).user();
 
       await expectLater(
           actual,
@@ -278,6 +286,57 @@ void main() {
               e is CredentialsManagerException &&
               e.code == 'FAILED' &&
               e.message == 'No credentials stored')));
+    });
+  });
+
+  group('ssoCredentials', () {
+    test('passes through parameters and headers to the platform', () async {
+      when(mockedPlatform.getSSOCredentials(any))
+          .thenAnswer((final _) async => TestPlatform.ssoResult);
+
+      await DefaultCredentialsManager(account, userAgent).ssoCredentials(
+        parameters: {'param': 'value'},
+        headers: {'header': 'header-value'},
+      );
+
+      final verificationResult =
+          verify(mockedPlatform.getSSOCredentials(captureAny)).captured.single
+              as CredentialsManagerRequest<GetSSOCredentialsOptions>;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.account.clientId, 'test-clientId');
+      expect(verificationResult.options?.parameters, {'param': 'value'});
+      expect(verificationResult.options?.headers, {'header': 'header-value'});
+    });
+
+    test('uses empty defaults for parameters and headers when omitted',
+        () async {
+      when(mockedPlatform.getSSOCredentials(any))
+          .thenAnswer((final _) async => TestPlatform.ssoResult);
+
+      await DefaultCredentialsManager(account, userAgent).ssoCredentials();
+
+      final verificationResult =
+          verify(mockedPlatform.getSSOCredentials(captureAny)).captured.single
+              as CredentialsManagerRequest<GetSSOCredentialsOptions>;
+      // ignore: inference_failure_on_collection_literal
+      expect(verificationResult.options?.parameters, isEmpty);
+      // ignore: inference_failure_on_collection_literal
+      expect(verificationResult.options?.headers, isEmpty);
+    });
+
+    test('returns the SSOCredentials from the platform', () async {
+      when(mockedPlatform.getSSOCredentials(any))
+          .thenAnswer((final _) async => TestPlatform.ssoResult);
+
+      final result =
+          await DefaultCredentialsManager(account, userAgent).ssoCredentials();
+
+      expect(result.sessionTransferToken,
+          TestPlatform.ssoResult.sessionTransferToken);
+      expect(result.tokenType, TestPlatform.ssoResult.tokenType);
+      expect(result.expiresIn, TestPlatform.ssoResult.expiresIn);
+      expect(result.idToken, TestPlatform.ssoResult.idToken);
+      expect(result.refreshToken, TestPlatform.ssoResult.refreshToken);
     });
   });
 }

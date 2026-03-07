@@ -545,9 +545,8 @@ void main() {
             .single as WebAuthRequest<WebAuthLoginOptions>;
 
         expect(verificationResult.options.useDPoP, true);
-        expect(verificationResult.options.parameters, {
-          'custom_param': 'custom_value',
-        });
+        expect(verificationResult.options.parameters,
+            {'custom_param': 'custom_value'});
       });
 
       test('passes useDPoP with invitationUrl parameter', () async {
@@ -694,9 +693,8 @@ void main() {
         expect(verificationResult.options.organizationId, 'org_123');
         expect(verificationResult.options.redirectUrl, 'myapp://callback');
         expect(verificationResult.options.useHTTPS, true);
-        expect(verificationResult.options.parameters, {
-          'connection': 'google-oauth2',
-        });
+        expect(verificationResult.options.parameters,
+            {'connection': 'google-oauth2'});
         expect(result, TestPlatform.loginResult);
       });
 

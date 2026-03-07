@@ -70,8 +70,9 @@ class _ExampleAppState extends State<ExampleApp> {
       } else {
         // Use mobile authentication for iOS/Android
         final result = await webAuth.login(
-          useHTTPS: true,
-        );
+            useHTTPS: true,
+            scopes: {'openid', 'profile', 'email', 'offline_access'});
+        // await auth0.credentialsManager.storeCredentials(result);
 
         setState(() {
           _isLoggedIn = true;
@@ -191,7 +192,7 @@ class _ExampleAppState extends State<ExampleApp> {
       } else {
         // Mobile (Android/iOS): Use WebAuth with DPoP
         final webAuthDPoP = auth0.webAuthentication(
-          scheme: 'https',
+          scheme: dotenv.env['AUTH0_CUSTOM_SCHEME'],
         );
 
         final result = await webAuthDPoP.login(
@@ -211,6 +212,31 @@ class _ExampleAppState extends State<ExampleApp> {
       }
     } catch (e) {
       output = 'DPoP Login Failed:\n$e';
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      _output = output;
+    });
+  }
+
+  Future<void> getSSOCredentials() async {
+    String output;
+    try {
+      final ssoCredentials = await auth0.credentialsManager.ssoCredentials();
+      final token = ssoCredentials.sessionTransferToken;
+      output = 'SSO Credentials:\n\n'
+          'Session Transfer Token: ${token.substring(0, 20)}...\n'
+          'Token Type: ${ssoCredentials.tokenType}\n'
+          'Expires In: ${ssoCredentials.expiresIn}s\n'
+          'ID Token: ${ssoCredentials.idToken != null ? '****' : 'N/A'}\n'
+          'Refresh Token: '
+          '${ssoCredentials.refreshToken != null ? '****' : 'N/A'}';
+    } on CredentialsManagerException catch (e) {
+      output = 'SSO Error: ${e.code}\n${e.message}';
+    } catch (e) {
+      output = 'SSO Error: $e';
     }
 
     if (!mounted) return;
@@ -255,6 +281,22 @@ class _ExampleAppState extends State<ExampleApp> {
                           style: TextStyle(fontSize: 16),
                         ),
                       ),
+                      if (!kIsWeb && _isLoggedIn) ...[
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.teal,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 12),
+                          ),
+                          onPressed: getSSOCredentials,
+                          child: const Text(
+                            'Get SSO Token',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ],
                     ]),
               )),
               SliverFillRemaining(

@@ -25,6 +25,7 @@ import 'authentication_api_test.dart' as _i4;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
+// ignore_for_file: invalid_use_of_internal_member
 
 class _FakeCredentials_0 extends _i1.SmartFake implements _i2.Credentials {
   _FakeCredentials_0(
@@ -58,6 +59,17 @@ class _FakeUserProfile_2 extends _i1.SmartFake implements _i2.UserProfile {
 
 class _FakeDatabaseUser_3 extends _i1.SmartFake implements _i2.DatabaseUser {
   _FakeDatabaseUser_3(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeSSOCredentials_4 extends _i1.SmartFake
+    implements _i3.SSOCredentials {
+  _FakeSSOCredentials_4(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -250,6 +262,23 @@ class MockTestPlatform extends _i1.Mock implements _i4.TestPlatform {
           ),
         )),
       ) as _i5.Future<_i2.Credentials>);
+
+  @override
+  _i5.Future<_i3.SSOCredentials> ssoExchange(
+          _i3.ApiRequest<_i3.AuthSSOExchangeOptions>? request) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #ssoExchange,
+          [request],
+        ),
+        returnValue: _i5.Future<_i3.SSOCredentials>.value(_FakeSSOCredentials_4(
+          this,
+          Invocation.method(
+            #ssoExchange,
+            [request],
+          ),
+        )),
+      ) as _i5.Future<_i3.SSOCredentials>);
 
   @override
   _i5.Future<void> resetPassword(

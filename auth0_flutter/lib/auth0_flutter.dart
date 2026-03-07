@@ -14,6 +14,7 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         SafariViewController,
         SafariViewControllerPresentationStyle,
         Credentials,
+        SSOCredentials,
         UserProfile,
         DatabaseUser,
         ChallengeType,

@@ -10,6 +10,7 @@ import 'auth/auth_passwordless_login_options.dart';
 import 'auth/auth_renew_access_token_options.dart';
 import 'auth/auth_reset_password_options.dart';
 import 'auth/auth_signup_options.dart';
+import 'auth/auth_sso_exchange_options.dart';
 import 'auth/auth_user_info_options.dart';
 import 'auth/challenge.dart';
 import 'auth0_flutter_auth_platform.dart';
@@ -17,6 +18,7 @@ import 'credentials.dart';
 import 'database_user.dart';
 import 'request/request.dart';
 import 'request/request_options.dart';
+import 'sso_credentials.dart';
 import 'user_profile.dart';
 
 const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter/auth');
@@ -34,6 +36,8 @@ const String authUserInfoMethod = 'auth#userInfo';
 const String authSignUpMethod = 'auth#signUp';
 const String authRenewMethod = 'auth#renew';
 const String authCustomTokenExchangeMethod = 'auth#customTokenExchange';
+
+const String authSSOExchangeMethod = 'auth#ssoExchange';
 const String authResetPasswordMethod = 'auth#resetPassword';
 
 class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
@@ -134,6 +138,17 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
     );
 
     return Credentials.fromMap(result);
+  }
+
+  @override
+  Future<SSOCredentials> ssoExchange(
+      final ApiRequest<AuthSSOExchangeOptions> request) async {
+    final Map<String, dynamic> result = await invokeRequest(
+      method: authSSOExchangeMethod,
+      request: request,
+    );
+
+    return SSOCredentials.fromMap(result);
   }
 
   @override

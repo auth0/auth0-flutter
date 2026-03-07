@@ -1,5 +1,24 @@
 # Change Log
 
+## [afpi-v2.0.0-beta.4](https://github.com/auth0/auth0-flutter/tree/afpi-v2.0.0-beta.4) (2026-03-03)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.0.0-beta.3...afpi-v2.0.0-beta.4)
+
+**Added**
+- feat: add ssoExchange to AuthenticationApi for Native to Web SSO [\#759](https://github.com/auth0/auth0-flutter/pull/759) ([sanchitmehtagit](https://github.com/sanchitmehtagit))
+- feat: Implement Native to Web [\#749](https://github.com/auth0/auth0-flutter/pull/749) ([sanchitmehtagit](https://github.com/sanchitmehtagit))
+
+## [afpi-v2.0.0-beta.3](https://github.com/auth0/auth0-flutter/tree/afpi-v2.0.0-beta.3) (2026-02-05)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.0.0-beta.2...afpi-v2.0.0-beta.3)
+
+**Added**
+- CredentialsManager user info/ID token contents accessible via flutter SDK [\#607](https://github.com/auth0/auth0-flutter/pull/607) ([NandanPrabhu](https://github.com/NandanPrabhu))
+
+## [afpi-v2.0.0-beta.3](https://github.com/auth0/auth0-flutter/tree/afpi-v2.0.0-beta.3) (2026-02-05)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.0.0-beta.2...afpi-v2.0.0-beta.3)
+
+**Added**
+- CredentialsManager user info/ID token contents accessible via flutter SDK [\#607](https://github.com/auth0/auth0-flutter/pull/607) ([NandanPrabhu](https://github.com/NandanPrabhu))
+
 ## [afpi-v2.0.0-beta.2](https://github.com/auth0/auth0-flutter/tree/afpi-v2.0.0-beta.2) (2026-01-22)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.0.0-beta.1...afpi-v2.0.0-beta.2)
 

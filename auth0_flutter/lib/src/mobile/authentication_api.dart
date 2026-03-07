@@ -349,6 +349,24 @@ class AuthenticationApi {
               scopes: scopes,
               parameters: parameters)));
 
+  /// Exchanges a [refreshToken] for a session transfer token that can be used
+  /// to perform web single sign-on (Native to Web SSO).
+  ///
+  /// When opening your website in a browser or web view, pass the
+  /// [SSOCredentials.sessionTransferToken] as a query parameter so your site
+  /// can redirect to Auth0's `/authorize` endpoint with it.
+  Future<SSOCredentials> ssoExchange({
+    required final String refreshToken,
+    final Map<String, String> parameters = const {},
+    final Map<String, String> headers = const {},
+  }) =>
+      Auth0FlutterAuthPlatform.instance
+          .ssoExchange(_createApiRequest(AuthSSOExchangeOptions(
+        refreshToken: refreshToken,
+        parameters: parameters,
+        headers: headers,
+      )));
+
   /// Performs a custom token exchange to obtain Auth0 credentials using an
   /// existing identity provider token.
   ///

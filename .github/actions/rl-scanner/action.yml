@@ -23,7 +23,7 @@ runs:
         pip install boto3 requests
 
     - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@61815dcd50bd041e203e49132bacad1fd04d2708 # pin@v4.3.0
+      uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7 # pin@v4.3.0
       with:
         role-to-assume: ${{ env.PRODSEC_TOOLS_ARN }}
         aws-region: 'us-east-1'
@@ -32,7 +32,7 @@ runs:
     - name: Install RL Wrapper
       shell: bash
       run: |
-        pip install rl-wrapper>=1.0.0 --index-url "https://${{ env.PRODSEC_TOOLS_USER }}:${{ env.PRODSEC_TOOLS_TOKEN }}@a0us.jfrog.io/artifactory/api/pypi/python-local/simple"
+        pip install rl-wrapper --index-url "https://${{ env.PRODSEC_TOOLS_USER }}:${{ env.PRODSEC_TOOLS_TOKEN }}@a0us.jfrog.io/artifactory/api/pypi/python/simple"
 
     - name: Run RL Scanner
       shell: bash
@@ -54,7 +54,7 @@ runs:
           --repository "${{ github.repository }}" \
           --commit "${{ github.sha }}" \
           --build-env "github_actions" \
-          --suppress_output
+          --suppress-output
 
         # Check the outcome of the scanner
         if [ $? -ne 0 ]; then

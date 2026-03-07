@@ -116,7 +116,8 @@ extension AuthAPIHandlerTests {
             .userInfo: AuthAPIUserInfoMethodHandler.self,
             .renew: AuthAPIRenewMethodHandler.self,
             .customTokenExchange: AuthAPICustomTokenExchangeMethodHandler.self,
-            .resetPassword: AuthAPIResetPasswordMethodHandler.self
+            .resetPassword: AuthAPIResetPasswordMethodHandler.self,
+            .ssoExchange: SSOExchangeMethodHandler.self
         ]
         methodHandlers.forEach { method, methodHandler in
             let methodCall = FlutterMethodCall(methodName: method.rawValue, arguments: arguments())
