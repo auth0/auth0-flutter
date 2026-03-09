@@ -100,12 +100,14 @@ TEST(IdTokenValidatorTest, ValidatesTokenWithArrayAudience)
 
     web::json::value payload;
     payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
+    payload[U("sub")] = web::json::value::string(U("auth0|123"));
 
-    // Audience as array
+    // Audience as array — azp is required when there are multiple entries (step 7)
     web::json::value audArray = web::json::value::array();
     audArray[0] = web::json::value::string(U("test_client_id"));
     audArray[1] = web::json::value::string(U("other_audience"));
     payload[U("aud")] = audArray;
+    payload[U("azp")] = web::json::value::string(U("test_client_id"));
 
     payload[U("exp")] = web::json::value::number(now + 3600);
     payload[U("iat")] = web::json::value::number(now - 10);
@@ -126,6 +128,7 @@ TEST(IdTokenValidatorTest, ValidatesTokenWithLeeway)
 
     web::json::value payload;
     payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
+    payload[U("sub")] = web::json::value::string(U("auth0|123"));
     payload[U("aud")] = web::json::value::string(U("test_client_id"));
     payload[U("exp")] = web::json::value::number(now - 30); // Expired 30 seconds ago
     payload[U("iat")] = web::json::value::number(now - 3630);
@@ -148,6 +151,7 @@ TEST(IdTokenValidatorTest, RejectsInvalidIssuer)
 
     web::json::value payload;
     payload[U("iss")] = web::json::value::string(U("https://evil.com/"));
+    payload[U("sub")] = web::json::value::string(U("auth0|123"));
     payload[U("aud")] = web::json::value::string(U("test_client_id"));
     payload[U("exp")] = web::json::value::number(now + 3600);
     payload[U("iat")] = web::json::value::number(now - 10);
@@ -169,6 +173,7 @@ TEST(IdTokenValidatorTest, RejectsMissingIssuer)
 
     web::json::value payload;
     // Missing iss claim
+    payload[U("sub")] = web::json::value::string(U("auth0|123"));
     payload[U("aud")] = web::json::value::string(U("test_client_id"));
     payload[U("exp")] = web::json::value::number(now + 3600);
     payload[U("iat")] = web::json::value::number(now - 10);
@@ -192,6 +197,7 @@ TEST(IdTokenValidatorTest, RejectsInvalidAudience)
 
     web::json::value payload;
     payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
+    payload[U("sub")] = web::json::value::string(U("auth0|123"));
     payload[U("aud")] = web::json::value::string(U("wrong_client_id"));
     payload[U("exp")] = web::json::value::number(now + 3600);
     payload[U("iat")] = web::json::value::number(now - 10);
@@ -213,6 +219,7 @@ TEST(IdTokenValidatorTest, RejectsMissingAudience)
 
     web::json::value payload;
     payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
+    payload[U("sub")] = web::json::value::string(U("auth0|123"));
     // Missing aud claim
     payload[U("exp")] = web::json::value::number(now + 3600);
     payload[U("iat")] = web::json::value::number(now - 10);
@@ -234,6 +241,7 @@ TEST(IdTokenValidatorTest, RejectsArrayAudienceWithoutMatch)
 
     web::json::value payload;
     payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
+    payload[U("sub")] = web::json::value::string(U("auth0|123"));
 
     web::json::value audArray = web::json::value::array();
     audArray[0] = web::json::value::string(U("other_client"));
@@ -262,6 +270,7 @@ TEST(IdTokenValidatorTest, RejectsExpiredToken)
 
     web::json::value payload;
     payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
+    payload[U("sub")] = web::json::value::string(U("auth0|123"));
     payload[U("aud")] = web::json::value::string(U("test_client_id"));
     payload[U("exp")] = web::json::value::number(now - 120); // Expired 2 minutes ago
     payload[U("iat")] = web::json::value::number(now - 3720);
@@ -284,6 +293,7 @@ TEST(IdTokenValidatorTest, RejectsMissingExpiration)
 
     web::json::value payload;
     payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
+    payload[U("sub")] = web::json::value::string(U("auth0|123"));
     payload[U("aud")] = web::json::value::string(U("test_client_id"));
     // Missing exp claim
     payload[U("iat")] = web::json::value::number(now - 10);
@@ -307,6 +317,7 @@ TEST(IdTokenValidatorTest, RejectsTokenIssuedInFuture)
 
     web::json::value payload;
     payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
+    payload[U("sub")] = web::json::value::string(U("auth0|123"));
     payload[U("aud")] = web::json::value::string(U("test_client_id"));
     payload[U("exp")] = web::json::value::number(now + 3600);
     payload[U("iat")] = web::json::value::number(now + 120); // Issued 2 minutes in future
@@ -329,6 +340,7 @@ TEST(IdTokenValidatorTest, RejectsMissingIssuedAt)
 
     web::json::value payload;
     payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
+    payload[U("sub")] = web::json::value::string(U("auth0|123"));
     payload[U("aud")] = web::json::value::string(U("test_client_id"));
     payload[U("exp")] = web::json::value::number(now + 3600);
     // Missing iat claim
@@ -352,6 +364,7 @@ TEST(IdTokenValidatorTest, ValidatesAuthTimeWithMaxAge)
 
     web::json::value payload;
     payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
+    payload[U("sub")] = web::json::value::string(U("auth0|123"));
     payload[U("aud")] = web::json::value::string(U("test_client_id"));
     payload[U("exp")] = web::json::value::number(now + 3600);
     payload[U("iat")] = web::json::value::number(now - 10);
@@ -373,6 +386,7 @@ TEST(IdTokenValidatorTest, RejectsOldAuthenticationWithMaxAge)
 
     web::json::value payload;
     payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
+    payload[U("sub")] = web::json::value::string(U("auth0|123"));
     payload[U("aud")] = web::json::value::string(U("test_client_id"));
     payload[U("exp")] = web::json::value::number(now + 3600);
     payload[U("iat")] = web::json::value::number(now - 10);
@@ -397,6 +411,7 @@ TEST(IdTokenValidatorTest, RejectsMissingAuthTimeWhenMaxAgeSpecified)
 
     web::json::value payload;
     payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
+    payload[U("sub")] = web::json::value::string(U("auth0|123"));
     payload[U("aud")] = web::json::value::string(U("test_client_id"));
     payload[U("exp")] = web::json::value::number(now + 3600);
     payload[U("iat")] = web::json::value::number(now - 10);
@@ -422,6 +437,7 @@ TEST(IdTokenValidatorTest, ValidatesMatchingNonce)
 
     web::json::value payload;
     payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
+    payload[U("sub")] = web::json::value::string(U("auth0|123"));
     payload[U("aud")] = web::json::value::string(U("test_client_id"));
     payload[U("exp")] = web::json::value::number(now + 3600);
     payload[U("iat")] = web::json::value::number(now - 10);
@@ -443,6 +459,7 @@ TEST(IdTokenValidatorTest, RejectsMismatchedNonce)
 
     web::json::value payload;
     payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
+    payload[U("sub")] = web::json::value::string(U("auth0|123"));
     payload[U("aud")] = web::json::value::string(U("test_client_id"));
     payload[U("exp")] = web::json::value::number(now + 3600);
     payload[U("iat")] = web::json::value::number(now - 10);
@@ -466,6 +483,7 @@ TEST(IdTokenValidatorTest, RejectsMissingNonceWhenExpected)
 
     web::json::value payload;
     payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
+    payload[U("sub")] = web::json::value::string(U("auth0|123"));
     payload[U("aud")] = web::json::value::string(U("test_client_id"));
     payload[U("exp")] = web::json::value::number(now + 3600);
     payload[U("iat")] = web::json::value::number(now - 10);
