@@ -130,8 +130,8 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
   set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
   FetchContent_MakeAvailable(googletest)
 
-  # Test files available in standalone build (without Flutter dependencies)
-  # These tests cover core C++ functionality that doesn't require Flutter types
+  # All test files — Flutter types are provided by the stub header in
+  # test/stubs/flutter/encodable_value.h, so no Flutter SDK is needed.
   set(TEST_SOURCES
     test/time_util_test.cpp                     # Time utilities (ISO8601, RFC3339)
     test/url_utils_test.cpp                     # URL parsing and manipulation
@@ -141,13 +141,10 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
     test/id_token_signature_validator_test.cpp  # RS256 signature validation (non-network paths)
     test/authentication_error_test.cpp          # AuthenticationError classification + IsNetworkError
     test/token_decoder_test.cpp                 # OAuth token response decoding
+    test/jwt_util_test.cpp                      # JWT splitting, decoding, and JSON->Encodable
+    test/user_profile_test.cpp                  # UserProfile deserialization and serialization
+    test/user_identity_test.cpp                 # UserIdentity deserialization and serialization
   )
-
-  # Excluded from standalone build (require Flutter types for testing):
-  # - test/jwt_util_test.cpp (tests JsonToEncodable conversion functions)
-  # - test/user_profile_test.cpp (tests UserProfile Flutter serialization)
-  # - test/user_identity_test.cpp (tests UserIdentity Flutter serialization)
-  # These are tested when building as part of a Flutter app
 
   # Source files needed for tests
   set(TEST_IMPL_SOURCES
@@ -159,6 +156,8 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
     id_token_validator.cpp
     id_token_signature_validator.cpp
     token_decoder.cpp
+    user_profile.cpp
+    user_identity.cpp
   )
 
   add_executable(${TEST_RUNNER}
@@ -171,11 +170,13 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
   target_include_directories(${TEST_RUNNER} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    # Stub flutter/encodable_value.h — satisfies Flutter type includes without
+    # requiring the Flutter SDK. Must come before any real Flutter include paths.
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/stubs
   )
 
   target_compile_definitions(${TEST_RUNNER} PRIVATE
     _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
-    AUTH0_FLUTTER_STANDALONE_BUILD  # Exclude Flutter-dependent code in tests
   )
 
   target_link_libraries(${TEST_RUNNER} PRIVATE
@@ -229,10 +230,9 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
     COMMENT "Running unit tests with coverage (requires OpenCppCoverage)..."
   )
 
-  message(STATUS "Auth0 Flutter tests enabled (standalone mode)")
+  message(STATUS "Auth0 Flutter tests enabled")
   message(STATUS "Test executable: ${TEST_RUNNER}")
-  message(STATUS "  - Includes: time_util, url_utils, windows_utils, oauth_helpers, id_token_validator, id_token_signature_validator, authentication_error, token_decoder tests")
-  message(STATUS "  - Excludes: Flutter-dependent tests (jwt_util, user_profile, user_identity)")
+  message(STATUS "  Flutter types provided by test/stubs/flutter/encodable_value.h (no Flutter SDK required)")
   message(STATUS "Run tests with: cmake --build build --target run_tests")
   message(STATUS "Run tests with coverage: cmake --build build --target coverage")
   message(STATUS "Or run directly: ./build/Debug/${TEST_RUNNER}.exe")

@@ -86,9 +86,6 @@ web::json::value DecodeJwtPayload(const std::string &token)
   return web::json::value::parse(decoded);
 }
 
-// Flutter conversion functions (only compiled when building with Flutter)
-#ifndef AUTH0_FLUTTER_STANDALONE_BUILD
-
 flutter::EncodableValue JsonToEncodable(const web::json::value &v)
 {
   if (v.is_null())
@@ -131,5 +128,3 @@ flutter::EncodableMap ParseJsonToEncodableMap(const std::string &json)
   auto ev = JsonToEncodable(parsed);
   return std::get<flutter::EncodableMap>(ev);
 }
-
-#endif // AUTH0_FLUTTER_STANDALONE_BUILD
