@@ -95,7 +95,7 @@ namespace auth0_flutter
 
         // Extract scopes (default: "openid profile email")
 
-        std::set<std::string> scopeSet = {"openid", "profile", "email", "offline_access"};
+        std::set<std::string> scopeSet = {"openid"};
 
         auto scopesIt = arguments->find(flutter::EncodableValue("scopes"));
         if (scopesIt != arguments->end())
@@ -115,6 +115,7 @@ namespace auth0_flutter
             }
         }
 
+        std::string defaultScopes = "profile email offline_access openid";
         std::string scopeStr;
         for (const auto &s : scopeSet)
         {
@@ -123,6 +124,10 @@ namespace auth0_flutter
             scopeStr += s;
         }
 
+        if (scopeStr.empty()) {
+            scopeStr = defaultScopes;
+        }
+    
         // Extract redirect URI – defaults to the fixed custom-scheme callback URL.
         // The app always listens on kDefaultRedirectUri ("auth0flutter://callback"),
         // so any value provided here must be registered with Auth0 accordingly.
