@@ -153,8 +153,9 @@ TEST(DeserializeUserProfileTest, PreservesExtraInfo) {
 
   UserProfile profile = UserProfile::DeserializeUserProfile(payload);
 
-  EXPECT_EQ(profile.extraInfo.size(), 2u);
-  EXPECT_TRUE(profile.extraInfo.find(EncodableValue("user_id")) != profile.extraInfo.end());
+  // user_id is a structural field — stripped from extraInfo, parsed into profile.id
+  EXPECT_EQ(profile.extraInfo.size(), 1u);
+  EXPECT_TRUE(profile.extraInfo.find(EncodableValue("user_id")) == profile.extraInfo.end());
   EXPECT_TRUE(profile.extraInfo.find(EncodableValue("custom_field")) != profile.extraInfo.end());
 }
 
@@ -200,6 +201,7 @@ TEST(UserProfileToMapTest, ExtractsCustomClaims) {
   profile.extraInfo[EncodableValue("sub")] = EncodableValue("auth0|123456");
   profile.extraInfo[EncodableValue("https://example.com/roles")] = EncodableValue("admin");
   profile.extraInfo[EncodableValue("https://example.com/plan")] = EncodableValue("premium");
+  // Any claim not in kNonCustomClaims is treated as custom — not just https:// prefixed
   profile.extraInfo[EncodableValue("regular_field")] = EncodableValue("value");
 
   EncodableMap map = profile.ToMap();
@@ -209,10 +211,10 @@ TEST(UserProfileToMapTest, ExtractsCustomClaims) {
   ASSERT_TRUE(std::holds_alternative<EncodableMap>(customClaimsIt->second));
 
   const auto& customClaims = std::get<EncodableMap>(customClaimsIt->second);
-  EXPECT_EQ(customClaims.size(), 2u);
+  EXPECT_EQ(customClaims.size(), 3u);
   EXPECT_TRUE(customClaims.find(EncodableValue("https://example.com/roles")) != customClaims.end());
   EXPECT_TRUE(customClaims.find(EncodableValue("https://example.com/plan")) != customClaims.end());
-  EXPECT_TRUE(customClaims.find(EncodableValue("regular_field")) == customClaims.end());
+  EXPECT_TRUE(customClaims.find(EncodableValue("regular_field")) != customClaims.end());
 }
 
 TEST(UserProfileToMapTest, HandlesEmptyCustomClaims) {
