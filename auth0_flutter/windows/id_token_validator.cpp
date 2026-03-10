@@ -231,6 +231,16 @@ namespace auth0_flutter
             throw IdTokenValidationException(
                 "Issued At (iat) claim must be a number present in the ID token");
         }
+        {
+            int64_t iat = GetRequiredIntClaim(payload, "iat");
+            if (static_cast<double>(iat) > static_cast<double>(now) + static_cast<double>(config.leeway))
+            {
+                std::ostringstream msg;
+                msg << "Issued At (iat) claim error in the ID token; current time ("
+                    << now << ") is before issued at time (" << iat << ")";
+                throw IdTokenValidationException(msg.str());
+            }
+        }
 
         // 6. Validate nonce if provided
         if (config.nonce.has_value())

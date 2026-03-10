@@ -1,12 +1,26 @@
 #include "user_profile.h"
+#include <unordered_set>
 
 using flutter::EncodableMap;
 using flutter::EncodableValue;
 using flutter::EncodableList;
 
-static bool IsCustomClaim(const std::string& key) {
-  return key.rfind("https://", 0) == 0;
-}
+// Claims excluded from custom_claims 
+static const std::unordered_set<std::string> kNonCustomClaims = {
+  // JWT protocol claims
+  "aud", "iss", "iat", "exp", "nbf", "nonce", "azp", "auth_time",
+  "s_hash", "at_hash", "c_hash",
+  // Standard OIDC profile claims
+  "sub", "name", "given_name", "family_name", "middle_name", "nickname",
+  "preferred_username", "profile", "picture", "website", "email",
+  "email_verified", "gender", "birthdate", "zoneinfo", "locale",
+  "phone_number", "phone_number_verified", "address", "updated_at"
+};
+
+// Structural fields parsed into dedicated UserProfile members
+static const std::unordered_set<std::string> kStructuralFields = {
+  "user_id", "identities", "user_metadata", "app_metadata"
+};
 
 static std::optional<std::string> GetString(
     const EncodableMap& map,
@@ -73,7 +87,18 @@ if (identities_it != payload.end() &&
     profile.appMetadata = std::get<EncodableMap>(appMetaIt->second);
   }
 
-  profile.extraInfo = payload;
+  // Store only raw OIDC claims in extraInfo — strip structural fields that are
+  // already parsed into dedicated members (user_id, identities, etc.).
+  for (const auto& kv : payload) {
+    if (std::holds_alternative<std::string>(kv.first)) {
+      const auto& key = std::get<std::string>(kv.first);
+      if (kStructuralFields.find(key) == kStructuralFields.end()) {
+        profile.extraInfo[kv.first] = kv.second;
+      }
+    } else {
+      profile.extraInfo[kv.first] = kv.second;
+    }
+  }
   return profile;
 }
 
@@ -98,7 +123,7 @@ flutter::EncodableMap UserProfile::ToMap() const {
   for (const auto& kv : extraInfo) {
     if (std::holds_alternative<std::string>(kv.first)) {
       const auto& key = std::get<std::string>(kv.first);
-      if (IsCustomClaim(key)) {
+      if (kNonCustomClaims.find(key) == kNonCustomClaims.end()) {
         customClaims[kv.first] = kv.second;
       }
     }
