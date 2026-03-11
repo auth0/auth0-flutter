@@ -113,13 +113,29 @@ namespace auth0_flutter
         if (auto it = accountMap->find(flutter::EncodableValue("clientId"));
             it != accountMap->end())
         {
-            clientId = std::get<std::string>(it->second);
+            if (auto s = std::get_if<std::string>(&it->second))
+            {
+                clientId = *s;
+            }
+            else
+            {
+                result->Error("bad_args", "'clientId' must be a string");
+                return;
+            }
         }
 
         if (auto it = accountMap->find(flutter::EncodableValue("domain"));
             it != accountMap->end())
         {
-            domain = std::get<std::string>(it->second);
+            if (auto s = std::get_if<std::string>(&it->second))
+            {
+                domain = *s;
+            }
+            else
+            {
+                result->Error("bad_args", "'domain' must be a string");
+                return;
+            }
         }
 
         // Validate required parameters
@@ -154,11 +170,19 @@ namespace auth0_flutter
         // Build logout URL with all parameters
         std::string logoutUrl = BuildLogoutUrl(domain, clientId, returnTo, federated);
 
-        // Open logout URL in system default browser
-        // This is a fire-and-forget operation - we don't wait for completion
-        ShellExecuteA(NULL, "open", logoutUrl.c_str(), NULL, NULL, SW_SHOWNORMAL);
+        // Open logout URL in system default browser.
+        // ShellExecuteW avoids ANSI code-page issues for any non-ASCII URL components.
+        // Return values <= 32 indicate failure (no default browser, permission error, etc.).
+        std::wstring logoutUrlW(logoutUrl.begin(), logoutUrl.end());
+        HINSTANCE shellResult = ShellExecuteW(NULL, L"open", logoutUrlW.c_str(), NULL, NULL, SW_SHOWNORMAL);
+        if (reinterpret_cast<INT_PTR>(shellResult) <= 32)
+        {
+            result->Error("LOGOUT_FAILED",
+                "Failed to open the browser for logout (ShellExecute error " +
+                std::to_string(reinterpret_cast<INT_PTR>(shellResult)) + ")");
+            return;
+        }
 
-        // Return success immediately
         result->Success(flutter::EncodableValue());
     }
 

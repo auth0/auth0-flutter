@@ -62,7 +62,7 @@ namespace auth0_flutter
      * prefix when waiting for the OAuth callback. The app always listens on this
      * URI — no other callback URL is accepted.
      */
-    static constexpr const char *kDefaultRedirectUri = "auth0flutter://callback";
+    inline constexpr const char *kDefaultRedirectUri = "auth0flutter://callback";
 
     /**
      * @brief Wait for OAuth callback with authorization code (custom scheme flow)

@@ -281,7 +281,13 @@ If you have a [custom domain](https://auth0.com/docs/customize/custom-domains),
 
 ##### Windows: Configure protocol handler
 
-The `auth0flutter://` protocol is automatically registered when your app is installed. The Flutter Windows plugin receives the callback by listening for `auth0flutter://callback` activations via the `PLUGIN_STARTUP_URL` environment variable — no extra app-side code is required.
+> ⚠️ **Runner integration required.** The Windows authentication flow depends on callback plumbing that must be added to your app's runner (`windows/runner/main.cpp`). The Flutter plugin itself does not automatically receive protocol-scheme activations from the OS — your runner must capture the `auth0flutter://callback` URI and pass it to the plugin via the `PLUGIN_STARTUP_URL` environment variable. Copy the reference implementation from the [example runner](example/windows/runner/main.cpp) and adapt it to your own `wWinMain`. The key pieces are:
+>
+> 1. **Single-instance mutex** — ensures a second launch triggered by the OS protocol handler forwards its URI to the already-running instance rather than starting a new one.
+> 2. **Pipe server** — the already-running instance listens on a named pipe (`\\.\pipe\auth0flutter_pipe`) for the URI forwarded by the second launch, validates it, and writes it to `PLUGIN_STARTUP_URL`.
+> 3. **Startup URI capture** — on first launch the runner writes `argv[1]` (the protocol-scheme URI, if present) directly to `PLUGIN_STARTUP_URL` before Flutter starts.
+>
+> Without this integration, `login()` will always time out with `USER_CANCELLED` on a standard consumer app because the callback never reaches the waiting plugin.
 
 You have two options for how Auth0 delivers the callback to your app:
 

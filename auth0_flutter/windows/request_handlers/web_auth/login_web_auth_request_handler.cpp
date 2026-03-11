@@ -77,13 +77,29 @@ namespace auth0_flutter
         if (auto it = accountMap->find(flutter::EncodableValue("clientId"));
             it != accountMap->end())
         {
-            clientId = std::get<std::string>(it->second);
+            if (auto s = std::get_if<std::string>(&it->second))
+            {
+                clientId = *s;
+            }
+            else
+            {
+                result->Error("bad_args", "'clientId' must be a string");
+                return;
+            }
         }
 
         if (auto it = accountMap->find(flutter::EncodableValue("domain"));
             it != accountMap->end())
         {
-            domain = std::get<std::string>(it->second);
+            if (auto s = std::get_if<std::string>(&it->second))
+            {
+                domain = *s;
+            }
+            else
+            {
+                result->Error("bad_args", "'domain' must be a string");
+                return;
+            }
         }
 
         // Validate required parameters
@@ -93,14 +109,17 @@ namespace auth0_flutter
             return;
         }
 
-        // Extract scopes (default: "openid profile email")
-
         std::set<std::string> scopeSet = {"openid"};
 
         auto scopesIt = arguments->find(flutter::EncodableValue("scopes"));
         if (scopesIt != arguments->end())
         {
             const auto *scopeList = std::get_if<flutter::EncodableList>(&scopesIt->second);
+            if (!scopeList)
+            {
+                result->Error("bad_args", "'scopes' must be a list");
+                return;
+            }
             for (const auto &v : *scopeList)
             {
                 if (const auto *s = std::get_if<std::string>(&v))
@@ -115,7 +134,6 @@ namespace auth0_flutter
             }
         }
 
-        std::string defaultScopes = "profile email offline_access openid";
         std::string scopeStr;
         for (const auto &s : scopeSet)
         {
@@ -124,10 +142,7 @@ namespace auth0_flutter
             scopeStr += s;
         }
 
-        if (scopeStr.empty()) {
-            scopeStr = defaultScopes;
-        }
-    
+
         // Extract redirect URI – defaults to the fixed custom-scheme callback URL.
         // The app always listens on kDefaultRedirectUri ("auth0flutter://callback"),
         // so any value provided here must be registered with Auth0 accordingly.
@@ -199,39 +214,41 @@ namespace auth0_flutter
             {
                 if (auto s = std::get_if<std::string>(&timeoutIt->second))
                 {
-
-                    authTimeoutSeconds = std::stoi(*s);
+                    try
+                    {
+                        authTimeoutSeconds = std::stoi(*s);
+                    }
+                    catch (const std::exception &)
+                    {
+                        result->Error("bad_args", "'authTimeoutSeconds' must be a valid integer");
+                        return;
+                    }
                 }
             }
 
-            // Extract nonce for ID token validation if provided in parameters
-            nonceIt = parametersMap->find(flutter::EncodableValue("nonce"));
-            if (nonceIt != parametersMap->end())
-            {
-                if (auto s = std::get_if<std::string>(&nonceIt->second))
-                {
-                    nonce = *s;
-                }
-            }
         }
 
         // Extract additional parameters to append to the authorize URL.
-        static const std::set<std::string> kInternalParams = {"authTimeoutSeconds"};
+        // Reuses parametersMap already resolved above — no second map lookup needed.
+        //
+        // Keys listed here are consumed internally and never forwarded to the URL.
+        // "nonce" must be excluded: the nonce is always auto-generated above, so
+        // allowing it via the parameters map would both weaken OIDC replay protection
+        // and cause a duplicate nonce= in the authorize URL.
+        static const std::set<std::string> kInternalParams = {
+            "authTimeoutSeconds",
+            "nonce",
+        };
         std::map<std::string, std::string> additionalParams;
-        auto paramsIt = arguments->find(flutter::EncodableValue("parameters"));
-        if (paramsIt != arguments->end())
+        if (parametersMap)
         {
-            const auto *paramsMap = std::get_if<flutter::EncodableMap>(&paramsIt->second);
-            if (paramsMap)
+            for (const auto &kv : *parametersMap)
             {
-                for (const auto &kv : *paramsMap)
+                const auto *key = std::get_if<std::string>(&kv.first);
+                const auto *val = std::get_if<std::string>(&kv.second);
+                if (key && val && kInternalParams.find(*key) == kInternalParams.end())
                 {
-                    const auto *key = std::get_if<std::string>(&kv.first);
-                    const auto *val = std::get_if<std::string>(&kv.second);
-                    if (key && val && kInternalParams.find(*key) == kInternalParams.end())
-                    {
-                        additionalParams[*key] = *val;
-                    }
+                    additionalParams[*key] = *val;
                 }
             }
         }
@@ -261,9 +278,17 @@ namespace auth0_flutter
         auto issuerIt = arguments->find(flutter::EncodableValue("issuer"));
         if (issuerIt != arguments->end())
         {
-            if (auto s = std::get_if<std::string>(&issuerIt->second))
+            if (auto s = std::get_if<std::string>(&issuerIt->second); s && !s->empty())
             {
                 issuer = *s;
+                // Ensure exactly one trailing slash so that the JWKS URI
+                // ("issuer" + ".well-known/jwks.json") is always well-formed.
+                // Without this, "https://my-issuer.com" produces the invalid
+                // URL "https://my-issuer.com.well-known/jwks.json".
+                if (issuer.back() != '/')
+                {
+                    issuer += '/';
+                }
             }
         }
 
@@ -361,8 +386,11 @@ namespace auth0_flutter
             }
 
             // Step 3: Open system default browser for user authentication
-            // User will authenticate with Auth0 in their browser
-            ShellExecuteA(NULL, "open", authUrl.str().c_str(), NULL, NULL, SW_SHOWNORMAL);
+            // User will authenticate with Auth0 in their browser.
+            // ShellExecuteW avoids ANSI code-page issues for any non-ASCII URL components.
+            std::string urlStr = authUrl.str();
+            std::wstring urlW(urlStr.begin(), urlStr.end());
+            ShellExecuteW(NULL, L"open", urlW.c_str(), NULL, NULL, SW_SHOWNORMAL);
 
             // Step 4: Wait for OAuth callback containing authorization code with state validation
             // State parameter is validated to prevent CSRF attacks
@@ -465,6 +493,7 @@ namespace auth0_flutter
                 errorFlags[flutter::EncodableValue("isTooManyAttempts")] = flutter::EncodableValue(e.IsTooManyAttempts());
                 errorFlags[flutter::EncodableValue("isLoginRequired")] = flutter::EncodableValue(e.IsLoginRequired());
                 errorFlags[flutter::EncodableValue("isRuleError")] = flutter::EncodableValue(e.IsRuleError());
+                errorFlags[flutter::EncodableValue("isInvalidRefreshToken")] = flutter::EncodableValue(e.IsInvalidRefreshToken());
                 errorDetails[flutter::EncodableValue("_errorFlags")] = flutter::EncodableValue(errorFlags);
 
                 // Add MFA token if present (for multifactor authentication flows)
@@ -548,8 +577,17 @@ namespace auth0_flutter
             // Step 9: Extract user profile from validated ID token payload
             // Use the validated payload from step 7 (already decoded and validated)
             auto ev = JsonToEncodable(validatedPayload);
-            auto payload_map = std::get<flutter::EncodableMap>(ev);
-            UserProfile user = UserProfile::DeserializeUserProfile(payload_map);
+            const auto *payload_map_ptr = std::get_if<flutter::EncodableMap>(&ev);
+            if (!payload_map_ptr)
+            {
+                if (!token.is_canceled())
+                {
+                    sharedResult->Error("AUTH_FAILED",
+                        "ID token payload could not be decoded as a JSON object");
+                }
+                return;
+            }
+            UserProfile user = UserProfile::DeserializeUserProfile(*payload_map_ptr);
             response[flutter::EncodableValue("userProfile")] = flutter::EncodableValue(user.ToMap());
 
                 // Step 10: Return success with credentials.
@@ -572,7 +610,7 @@ namespace auth0_flutter
                 // polling loop completes but before the result is delivered.
                 if (!token.is_canceled())
                 {
-                    sharedResult->Error("auth_failed", e.what());
+                    sharedResult->Error("AUTH_FAILED", e.what());
                 }
             } });
     }

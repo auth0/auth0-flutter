@@ -1,7 +1,9 @@
 #include <gtest/gtest.h>
 
 #include "oauth_helpers.h"
+#include <chrono>
 #include <regex>
+#include <thread>
 #include <openssl/sha.h>
 #include <windows.h>
 
@@ -368,18 +370,11 @@ TEST(UrlEncodeTest, OrganizationIdPassesThrough) {
 // on the very first iteration (before any sleep), so calls return immediately
 // without reaching the timeout.  Each test clears any stale value first.
 
-TEST(WaitForAuthCodeEnvVarTest, SuccessWithValidCodeAndNoStateCheck) {
-  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
-      L"auth0flutter://callback?code=SplxlOBeZQQYbYS6WxSbIA");
-
-  OAuthCallbackResult result = waitForAuthCode_CustomScheme(5, "");
-
-  EXPECT_TRUE(result.success);
-  EXPECT_EQ(result.code, "SplxlOBeZQQYbYS6WxSbIA");
-  EXPECT_EQ(result.error, "");
-  EXPECT_EQ(result.errorDescription, "");
-  EXPECT_FALSE(result.timedOut);
-}
+// NOTE: The old "SuccessWithValidCodeAndNoStateCheck" test was removed.
+// State validation is unconditional: an empty or missing state is always
+// a state_mismatch regardless of the expectedState value passed by the caller.
+// Passing "" as expectedState never produces a success result.
+// See MissingStateAlwaysFailsEvenWithNoExpectedState for the authoritative test.
 
 TEST(WaitForAuthCodeEnvVarTest, SuccessWithCodeAndMatchingState) {
   SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
@@ -480,4 +475,78 @@ TEST(WaitForAuthCodeEnvVarTest, WrongSchemeUrlIsIgnoredAndTimesOut) {
   EXPECT_FALSE(result.success);
   EXPECT_TRUE(result.timedOut);
   EXPECT_TRUE(result.code.empty());
+}
+
+// NOTE: This test takes ~200ms because the wrong-scheme URL is consumed on
+// the first tick, then the correct URL is written and picked up on the second.
+TEST(WaitForAuthCodeEnvVarTest, WrongSchemeIsSkippedAndCorrectCallbackAccepted) {
+  // Confirm that a non-matching URI is discarded and the poller continues
+  // to accept the legitimate callback on a subsequent tick.
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"https://evil.example.com/callback?code=hijacked");
+
+  // Spawn a thread that writes the legitimate URL after a short delay,
+  // simulating the URL arriving one poll cycle after the wrong one.
+  std::thread writer([]() {
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));
+    SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+        L"auth0flutter://callback?code=real_code&state=s_valid");
+  });
+
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(5, "s_valid");
+  writer.join();
+
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(result.code, "real_code");
+  EXPECT_FALSE(result.timedOut);
+}
+
+/* -------- authTimeoutSeconds validation (CSRF state always validated) ---- */
+
+TEST(WaitForAuthCodeEnvVarTest, MissingStateAlwaysFailsEvenWithNoExpectedState) {
+  // State validation is unconditional. A callback with no state parameter
+  // must be rejected even when the caller passes an empty expectedState —
+  // that case signals an internal logic error, not a permissive mode.
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"auth0flutter://callback?code=abc");
+
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(5, "");
+
+  EXPECT_FALSE(result.success);
+  EXPECT_EQ(result.error, "state_mismatch");
+  EXPECT_FALSE(result.timedOut);
+}
+
+TEST(WaitForAuthCodeEnvVarTest, EmptyExpectedStateWithStateInCallbackIsStateMismatch) {
+  // An attacker-supplied state when the expected state is empty must still
+  // be rejected — not silently accepted.
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"auth0flutter://callback?code=abc&state=attacker");
+
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(5, "");
+
+  EXPECT_FALSE(result.success);
+  EXPECT_EQ(result.error, "state_mismatch");
+  EXPECT_FALSE(result.timedOut);
+}
+
+/* -------- authTimeout boundary — zero and negative timeouts -------------- */
+
+TEST(WaitForAuthCodeCustomSchemeTest, ZeroTimeoutReturnsTimeoutImmediately) {
+  // A zero-second timeout must not block and must return timedOut == true.
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(0, "any_state");
+
+  EXPECT_FALSE(result.success);
+  EXPECT_TRUE(result.timedOut);
+}
+
+TEST(WaitForAuthCodeCustomSchemeTest, NegativeTimeoutReturnsTimeoutImmediately) {
+  // A negative timeout (e.g. from a negative Duration in Dart) must not
+  // block — the while-loop condition is false from the start.
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(-1, "any_state");
+
+  EXPECT_FALSE(result.success);
+  EXPECT_TRUE(result.timedOut);
 }

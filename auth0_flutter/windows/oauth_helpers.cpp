@@ -86,7 +86,7 @@ namespace auth0_flutter
 
             for (i = 0; i < 4; i++)
             {
-                if (i <= (size_t)(len + 0))
+                if (i <= static_cast<size_t>(len))
                 {
                     result += b64chars[a4[i]];
                 }
@@ -194,14 +194,14 @@ namespace auth0_flutter
                 std::string query = uri.substr(qpos + 1);
                 auto params = SafeParseQuery(query);
 
-                // Validate state parameter if expected state is provided (CSRF protection)
-                if (!expectedState.empty())
+                // Validate state parameter unconditionally (CSRF protection).
+                // A state value is always generated before launching the browser,
+                // so an empty, missing, or mismatched state in the callback is
+                // always an attack signal — never an acceptable response.
+                auto stateIt = params.find("state");
+                if (expectedState.empty() || stateIt == params.end() || stateIt->second != expectedState)
                 {
-                    auto stateIt = params.find("state");
-                    if (stateIt == params.end() || stateIt->second != expectedState)
-                    {
-                        return {false, "", "state_mismatch", "State parameter validation failed (potential CSRF attack)", false};
-                    }
+                    return {false, "", "state_mismatch", "State parameter validation failed (potential CSRF attack)", false};
                 }
 
                 // Check for OAuth error response (e.g., user denied access)
