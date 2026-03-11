@@ -427,25 +427,25 @@ jobs:
               uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
             - name: Download coverage report for auth0_flutter
-              uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3
+              uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
               with:
                 name: auth0_flutter coverage
                 path: coverage/auth0_flutter
 
             - name: Download coverage report for auth0_flutter_platform_interface
-              uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3
+              uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
               with:
                 name: auth0_flutter_platform_interface coverage
                 path: coverage/auth0_flutter_platform_interface
 
             - name: Download coverage report for iOS
-              uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3
+              uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
               with:
                 name: iOS coverage
                 path: coverage/ios
 
             - name: Download coverage report for Android
-              uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3
+              uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
               with:
                 name: Android coverage
                 path: coverage/android
