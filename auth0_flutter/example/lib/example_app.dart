@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'package:auth0_flutter/auth0_flutter.dart';
 import 'package:auth0_flutter/auth0_flutter_web.dart';
 import 'package:flutter/foundation.dart';
@@ -21,6 +22,7 @@ class _ExampleAppState extends State<ExampleApp> {
 
   late Auth0 auth0;
   late WebAuthentication webAuth;
+  late WindowsWebAuthentication windowsWebAuth;
   late Auth0Web auth0Web;
 
   @override
@@ -32,6 +34,7 @@ class _ExampleAppState extends State<ExampleApp> {
         Auth0Web(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
     webAuth =
         auth0.webAuthentication(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
+    windowsWebAuth = auth0.windowsWebAuthentication();
     if (kIsWeb) {
       auth0Web.onLoad().then((final credentials) => setState(() {
             _output = credentials?.idToken ?? '';
@@ -50,17 +53,33 @@ class _ExampleAppState extends State<ExampleApp> {
         return auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
       }
 
-      final result = await webAuth.login(
-        useHTTPS: true,
-        scopes: {'openid', 'profile', 'email', 'offline_access'},
-      );
-      await auth0.credentialsManager.storeCredentials(result);
+      // Use Windows-specific authentication for Windows platform
+      if (Platform.isWindows) {
+        final result = await windowsWebAuth.login(
+          redirectUrl: 'http://localhost:3000/destination',
+          parameters: {
+            'authTimeoutSeconds': '300', // 5 minutes for demo
+          },
+        );
 
-      setState(() {
-        _isLoggedIn = true;
-      });
+        setState(() {
+          _isLoggedIn = true;
+        });
+        // remove replaceall to view non redacted token in output
+        output = result.idToken.replaceAll(RegExp(r'.'), '*');
+      } else {
+        // Use mobile authentication for iOS/Android
+        final result = await webAuth.login(
+            useHTTPS: true,
+            scopes: {'openid', 'profile', 'email', 'offline_access'});
+        // await auth0.credentialsManager.storeCredentials(result);
 
-      output = result.idToken;
+        setState(() {
+          _isLoggedIn = true;
+        });
+
+        output = result.idToken.replaceAll(RegExp(r'.'), '*');
+      }
     } catch (e) {
       output = e.toString();
     }
@@ -82,7 +101,17 @@ class _ExampleAppState extends State<ExampleApp> {
     try {
       if (kIsWeb) {
         await auth0Web.logout(returnToUrl: 'http://localhost:3000');
+      } else if (Platform.isWindows) {
+        // Use Windows-specific logout
+        await windowsWebAuth.logout(
+          returnTo: 'auth0flutter://callback',
+        );
+
+        setState(() {
+          _isLoggedIn = false;
+        });
       } else {
+        // Use mobile logout for iOS/Android
         await webAuth.logout(useHTTPS: true);
 
         setState(() {

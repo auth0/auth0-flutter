@@ -3,6 +3,7 @@
 
 # Global coverage
 coverage/
+**/.vs/
 
 appium-test/node_modules/*
 
