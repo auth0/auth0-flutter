@@ -257,7 +257,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
-          .logout();
+          .logout(returnTo: 'auth0flutter://callback');
 
       verify(mockedPlatform.logout(any)).called(1);
     });
@@ -267,7 +267,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
-          .logout();
+          .logout(returnTo: 'auth0flutter://callback');
 
       final verificationResult = verify(mockedPlatform.logout(captureAny))
           .captured
@@ -281,7 +281,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
-          .logout();
+          .logout(returnTo: 'auth0flutter://callback');
 
       final verificationResult = verify(mockedPlatform.logout(captureAny))
           .captured
@@ -294,25 +294,12 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
-          .logout(federated: true);
+          .logout(returnTo: 'auth0flutter://callback', federated: true);
 
       final verificationResult = verify(mockedPlatform.logout(captureAny))
           .captured
           .single as WebAuthRequest<WebAuthLogoutOptions>;
       expect(verificationResult.options.federated, true);
-    });
-
-    test('uses null returnTo by default', () async {
-      when(mockedPlatform.logout(any)).thenAnswer((final _) async {});
-
-      await Auth0('test-domain', 'test-clientId')
-          .windowsWebAuthentication()
-          .logout();
-
-      final verificationResult = verify(mockedPlatform.logout(captureAny))
-          .captured
-          .single as WebAuthRequest<WebAuthLogoutOptions>;
-      expect(verificationResult.options.returnTo, isNull);
     });
 
     test('passes returnTo to the platform', () async {
