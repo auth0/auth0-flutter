@@ -1,7 +1,9 @@
 #include <gtest/gtest.h>
 
 #include "oauth_helpers.h"
+#include <chrono>
 #include <regex>
+#include <thread>
 #include <openssl/sha.h>
 #include <windows.h>
 
@@ -368,18 +370,11 @@ TEST(UrlEncodeTest, OrganizationIdPassesThrough) {
 // on the very first iteration (before any sleep), so calls return immediately
 // without reaching the timeout.  Each test clears any stale value first.
 
-TEST(WaitForAuthCodeEnvVarTest, SuccessWithValidCodeAndNoStateCheck) {
-  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
-      L"auth0flutter://callback?code=SplxlOBeZQQYbYS6WxSbIA");
-
-  OAuthCallbackResult result = waitForAuthCode_CustomScheme(5, "");
-
-  EXPECT_TRUE(result.success);
-  EXPECT_EQ(result.code, "SplxlOBeZQQYbYS6WxSbIA");
-  EXPECT_EQ(result.error, "");
-  EXPECT_EQ(result.errorDescription, "");
-  EXPECT_FALSE(result.timedOut);
-}
+// NOTE: The old "SuccessWithValidCodeAndNoStateCheck" test was removed.
+// State validation is unconditional: an empty or missing state is always
+// a state_mismatch regardless of the expectedState value passed by the caller.
+// Passing "" as expectedState never produces a success result.
+// See MissingStateAlwaysFailsEvenWithNoExpectedState for the authoritative test.
 
 TEST(WaitForAuthCodeEnvVarTest, SuccessWithCodeAndMatchingState) {
   SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
@@ -480,4 +475,181 @@ TEST(WaitForAuthCodeEnvVarTest, WrongSchemeUrlIsIgnoredAndTimesOut) {
   EXPECT_FALSE(result.success);
   EXPECT_TRUE(result.timedOut);
   EXPECT_TRUE(result.code.empty());
+}
+
+// NOTE: This test takes ~200ms because the wrong-scheme URL is consumed on
+// the first tick, then the correct URL is written and picked up on the second.
+TEST(WaitForAuthCodeEnvVarTest, WrongSchemeIsSkippedAndCorrectCallbackAccepted) {
+  // Confirm that a non-matching URI is discarded and the poller continues
+  // to accept the legitimate callback on a subsequent tick.
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"https://evil.example.com/callback?code=hijacked");
+
+  // Spawn a thread that writes the legitimate URL after a short delay,
+  // simulating the URL arriving one poll cycle after the wrong one.
+  std::thread writer([]() {
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));
+    SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+        L"auth0flutter://callback?code=real_code&state=s_valid");
+  });
+
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(5, "s_valid");
+  writer.join();
+
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(result.code, "real_code");
+  EXPECT_FALSE(result.timedOut);
+}
+
+/* -------- authTimeoutSeconds validation (CSRF state always validated) ---- */
+
+TEST(WaitForAuthCodeEnvVarTest, MissingStateAlwaysFailsEvenWithNoExpectedState) {
+  // State validation is unconditional. A callback with no state parameter
+  // must be rejected even when the caller passes an empty expectedState —
+  // that case signals an internal logic error, not a permissive mode.
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"auth0flutter://callback?code=abc");
+
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(5, "");
+
+  EXPECT_FALSE(result.success);
+  EXPECT_EQ(result.error, "state_mismatch");
+  EXPECT_FALSE(result.timedOut);
+}
+
+TEST(WaitForAuthCodeEnvVarTest, EmptyExpectedStateWithStateInCallbackIsStateMismatch) {
+  // An attacker-supplied state when the expected state is empty must still
+  // be rejected — not silently accepted.
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"auth0flutter://callback?code=abc&state=attacker");
+
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(5, "");
+
+  EXPECT_FALSE(result.success);
+  EXPECT_EQ(result.error, "state_mismatch");
+  EXPECT_FALSE(result.timedOut);
+}
+
+/* -------- authTimeout boundary — zero and negative timeouts -------------- */
+
+TEST(WaitForAuthCodeCustomSchemeTest, ZeroTimeoutReturnsTimeoutImmediately) {
+  // A zero-second timeout must not block and must return timedOut == true.
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(0, "any_state");
+
+  EXPECT_FALSE(result.success);
+  EXPECT_TRUE(result.timedOut);
+}
+
+TEST(WaitForAuthCodeCustomSchemeTest, NegativeTimeoutReturnsTimeoutImmediately) {
+  // A negative timeout (e.g. from a negative Duration in Dart) must not
+  // block — the while-loop condition is false from the start.
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(-1, "any_state");
+
+  EXPECT_FALSE(result.success);
+  EXPECT_TRUE(result.timedOut);
+}
+
+// Issue #17 — exact test name requested in the issue report.
+// NOTE: Takes ~200 ms (one poll cycle between the two env-var writes).
+TEST(WaitForAuthCodeCustomSchemeTest, IgnoresNonMatchingUriAndAcceptsCorrectOne) {
+  // Set PLUGIN_STARTUP_URL to an attacker-controlled URL — must be ignored.
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"https://attacker.example.com/callback?code=x");
+
+  // Write the legitimate callback after one poll cycle.
+  std::thread writer([]() {
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));
+    SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+        L"auth0flutter://callback?code=abc&state=s");
+  });
+
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(5, "s");
+  writer.join();
+
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(result.code, "abc");
+  EXPECT_FALSE(result.timedOut);
+  EXPECT_TRUE(result.error.empty());
+}
+
+/* -------- waitForLogoutCallback ------------------------------------------ */
+
+// Issue #17 — non-matching callback URI silently ignored; correct one accepted
+// These tests mirror the waitForAuthCode_CustomScheme env-var tests but for
+// the simpler logout polling function (no state / code validation).
+
+TEST(WaitForLogoutCallbackTest, ZeroTimeoutReturnsFalse) {
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
+  bool result = waitForLogoutCallback("auth0flutter://callback", 0);
+  EXPECT_FALSE(result);
+}
+
+TEST(WaitForLogoutCallbackTest, NegativeTimeoutReturnsFalse) {
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
+  bool result = waitForLogoutCallback("auth0flutter://callback", -1);
+  EXPECT_FALSE(result);
+}
+
+TEST(WaitForLogoutCallbackTest, ReturnsTrueWhenCallbackMatchesExactUri) {
+  // Exact returnTo URI with no query parameters (bare logout callback).
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"auth0flutter://callback");
+  bool result = waitForLogoutCallback("auth0flutter://callback", 5);
+  EXPECT_TRUE(result);
+}
+
+TEST(WaitForLogoutCallbackTest, ReturnsTrueWhenCallbackMatchesUriWithQueryParams) {
+  // Auth0 may append query parameters to the returnTo redirect.
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"auth0flutter://callback?foo=bar");
+  bool result = waitForLogoutCallback("auth0flutter://callback", 5);
+  EXPECT_TRUE(result);
+}
+
+TEST(WaitForLogoutCallbackTest, ReturnsTrueForCustomReturnToUri) {
+  // Callers can provide a custom returnTo URI; only that prefix should match.
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"com.example.app://logout/callback");
+  bool result = waitForLogoutCallback("com.example.app://logout/callback", 5);
+  EXPECT_TRUE(result);
+}
+
+// NOTE: This test takes ~200 ms because the wrong-prefix URL is consumed on
+// the first tick, then the correct URL is written and picked up on the second.
+TEST(WaitForLogoutCallbackTest, WrongPrefixIsIgnoredAndCorrectCallbackAccepted) {
+  // Confirm that a URI that doesn't start with returnToUri is silently
+  // discarded and the poller continues to accept the correct one.
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"https://attacker.example.com/callback?code=hijacked");
+
+  std::thread writer([]() {
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));
+    SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+        L"auth0flutter://callback");
+  });
+
+  bool result = waitForLogoutCallback("auth0flutter://callback", 5);
+  writer.join();
+
+  EXPECT_TRUE(result);
+}
+
+// NOTE: This test takes ~1 s (one full polling cycle before timeout).
+TEST(WaitForLogoutCallbackTest, WrongPrefixUrlIsIgnoredAndTimesOut) {
+  // A URI with a different scheme must be discarded; no callback with the
+  // correct prefix arrives, so the function must time out and return false.
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"https://evil.example.com/callback");
+  bool result = waitForLogoutCallback("auth0flutter://callback", 1);
+  EXPECT_FALSE(result);
+}
+
+TEST(WaitForLogoutCallbackTest, CancelsWhenTokenIsAlreadyCancelled) {
+  pplx::cancellation_token_source cts;
+  cts.cancel();
+
+  EXPECT_THROW(
+      waitForLogoutCallback("auth0flutter://callback", 180, cts.get_token()),
+      pplx::task_canceled);
 }

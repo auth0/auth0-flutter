@@ -186,8 +186,19 @@ if (alreadyRunning) {
   // -----------------------------
   // First instance: store startup URI
   // -----------------------------
+  // Apply the same prefix guard as the pipe server: only accept URIs that
+  // begin with the expected auth0flutter:// scheme.  This ensures that an
+  // unrelated protocol activation (e.g. a deep-link from a different app)
+  // cannot overwrite PLUGIN_STARTUP_URL with arbitrary data.
   if (!startupUri.empty()) {
-    SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", startupUri.c_str());
+    size_t prefixLen = wcslen(kCallbackPrefix);
+    bool isOurCallback = (startupUri.size() >= prefixLen &&
+                          startupUri.compare(0, prefixLen, kCallbackPrefix) == 0);
+    if (isOurCallback) {
+      SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", startupUri.c_str());
+    } else {
+      SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
+    }
   } else {
     SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
   }

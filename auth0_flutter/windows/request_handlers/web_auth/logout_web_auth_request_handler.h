@@ -17,6 +17,7 @@
 #define FLUTTER_PLUGIN_LOGOUT_WEB_AUTH_REQUEST_HANDLER_H_
 
 #include "web_auth_request_handler.h"
+#include <pplx/pplxtasks.h>
 
 namespace auth0_flutter
 {
@@ -36,8 +37,11 @@ namespace auth0_flutter
      * https://{domain}/v2/logout?federated&returnTo={returnTo}&client_id={clientId}
      *
      * Response:
-     * - Returns null/void on success (logout is asynchronous, no callback needed)
-     * - Returns error if parameters are invalid
+     * - Returns null/void on success.
+     * - Browser-side failures (e.g. no default browser) do NOT return an error —
+     *   this matches iOS/Android SDK behaviour where logout is always considered
+     *   successful once the URL has been dispatched.
+     * - Returns error only for invalid/missing Dart-side arguments.
      */
     class LogoutWebAuthRequestHandler : public WebAuthRequestHandler
     {
@@ -53,7 +57,9 @@ namespace auth0_flutter
         void handle(
             const flutter::EncodableMap *arguments,
             std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) override;
+
     };
+
 
 } // namespace auth0_flutter
 

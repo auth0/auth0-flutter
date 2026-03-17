@@ -5,8 +5,11 @@
 
 #include "logout_web_auth_request_handler.h"
 #include "../../oauth_helpers.h"
+#include "../../url_utils.h"
+#include "../../windows_utils.h"
 #include <windows.h>
 #include <sstream>
+#include <thread>
 
 namespace auth0_flutter
 {
@@ -72,11 +75,9 @@ namespace auth0_flutter
      * 2. Extract optional parameters (returnTo, federated)
      * 3. Build logout URL with all parameters
      * 4. Open system default browser with logout URL
-     * 5. Return success immediately (logout is fire-and-forget)
-     *
-     * Note: Unlike login, logout does not wait for a callback. The browser
-     * operation is asynchronous and the user may close the browser tab after
-     * logout completes.
+     * 5. Wait for browser to redirect back to the returnTo URI
+     * 6. Bring Flutter window back to foreground
+     * 7. Return success to Dart (always — browser-side failures are ignored)
      *
      * @param arguments Map containing configuration from Flutter
      * @param result Callback to return success/error to Flutter
@@ -113,13 +114,29 @@ namespace auth0_flutter
         if (auto it = accountMap->find(flutter::EncodableValue("clientId"));
             it != accountMap->end())
         {
-            clientId = std::get<std::string>(it->second);
+            if (auto s = std::get_if<std::string>(&it->second))
+            {
+                clientId = *s;
+            }
+            else
+            {
+                result->Error("bad_args", "'clientId' must be a string");
+                return;
+            }
         }
 
         if (auto it = accountMap->find(flutter::EncodableValue("domain"));
             it != accountMap->end())
         {
-            domain = std::get<std::string>(it->second);
+            if (auto s = std::get_if<std::string>(&it->second))
+            {
+                domain = *s;
+            }
+            else
+            {
+                result->Error("bad_args", "'domain' must be a string");
+                return;
+            }
         }
 
         // Validate required parameters
@@ -154,12 +171,20 @@ namespace auth0_flutter
         // Build logout URL with all parameters
         std::string logoutUrl = BuildLogoutUrl(domain, clientId, returnTo, federated);
 
-        // Open logout URL in system default browser
-        // This is a fire-and-forget operation - we don't wait for completion
-        ShellExecuteA(NULL, "open", logoutUrl.c_str(), NULL, NULL, SW_SHOWNORMAL);
+        std::shared_ptr<flutter::MethodResult<flutter::EncodableValue>> sharedResult(result.release());
 
-        // Return success immediately
-        result->Success(flutter::EncodableValue());
+        pplx::create_task([sharedResult, logoutUrl, returnTo]()
+        {
+            // Open logout URL in system default browser.
+            std::wstring urlW(logoutUrl.begin(), logoutUrl.end());
+            ShellExecuteW(NULL, L"open", urlW.c_str(), NULL, NULL, SW_SHOWNORMAL);
+
+            // Wait for the browser to redirect back to the returnTo URI.
+            waitForLogoutCallback(returnTo);
+
+            BringFlutterWindowToFront();
+            sharedResult->Success();
+        });
     }
 
 } // namespace auth0_flutter

@@ -281,7 +281,13 @@ If you have a [custom domain](https://auth0.com/docs/customize/custom-domains),
 
 ##### Windows: Configure protocol handler
 
-The `auth0flutter://` protocol is automatically registered when your app is installed. The Flutter Windows plugin receives the callback by listening for `auth0flutter://callback` activations via the `PLUGIN_STARTUP_URL` environment variable — no extra app-side code is required.
+> ⚠️ **Runner integration required.** The Windows authentication flow depends on callback plumbing that must be added to your app's runner (`windows/runner/main.cpp`). The Flutter plugin itself does not automatically receive protocol-scheme activations from the OS — your runner must capture the `auth0flutter://callback` URI and pass it to the plugin via the `PLUGIN_STARTUP_URL` environment variable. Copy the reference implementation from the [example runner](example/windows/runner/main.cpp) and adapt it to your own `wWinMain`. The key pieces are:
+>
+> 1. **Single-instance mutex** — ensures a second launch triggered by the OS protocol handler forwards its URI to the already-running instance rather than starting a new one.
+> 2. **Pipe server** — the already-running instance listens on a named pipe (`\\.\pipe\auth0flutter_pipe`) for the URI forwarded by the second launch, validates it, and writes it to `PLUGIN_STARTUP_URL`.
+> 3. **Startup URI capture** — on first launch the runner writes `argv[1]` (the protocol-scheme URI, if present) directly to `PLUGIN_STARTUP_URL` before Flutter starts.
+>
+> Without this integration, `login()` will always time out with `USER_CANCELLED` on a standard consumer app because the callback never reaches the waiting plugin.
 
 You have two options for how Auth0 delivers the callback to your app:
 
@@ -366,26 +372,59 @@ Finally, in your `index.html` add the following `<script>` tag:
 
 ### Logging in
 
-#### 📱 Mobile/macOS/Windows
+#### 📱 Mobile/macOS
 
 Present the [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login) page in the `onPressed` callback of your **Login** button.
 
 ```dart
 // Use a Universal Link callback URL on iOS 17.4+ / macOS 14.4+
-// useHTTPS is ignored on Android and Windows
+// useHTTPS is ignored on Android
 final credentials = await auth0.webAuthentication().login(useHTTPS: true);
 
 // Access token -> credentials.accessToken
 // User profile -> credentials.user
 ```
 
-**Credential Storage:**
-- **Mobile/macOS**: auth0_flutter automatically stores the user's credentials using the built-in [Credentials Manager](#credentials-manager) instance. You can access this instance through the `credentialsManager` property:
-  ```dart
-  final credentials = await auth0.credentialsManager.credentials();
-  ```
+auth0_flutter automatically stores the user's credentials using the built-in [Credentials Manager](#credentials-manager) instance. You can access this instance through the `credentialsManager` property:
 
-- **Windows**: Credentials are **not** automatically stored. You must manually store and manage the `credentials` object returned from `login()` in your app (e.g., using `shared_preferences` or secure storage)
+```dart
+final credentials = await auth0.credentialsManager.credentials();
+```
+
+#### 🪟 Windows
+
+Windows uses `windowsWebAuthentication()` and requires an explicit `redirectUrl`. Pass the same URL you registered in **Allowed Callback URLs** in the Auth0 dashboard (see [Windows configuration](#windows-configure-protocol-handler) above).
+
+```dart
+// Option A — direct custom-scheme redirect (simplest)
+final credentials = await auth0.windowsWebAuthentication().login(
+  redirectUrl: 'auth0flutter://callback',
+);
+
+// Option B — intermediary HTTPS server (cleaner browser UX)
+final credentials = await auth0.windowsWebAuthentication().login(
+  redirectUrl: 'https://your-app.example.com/callback',
+);
+
+// Access token -> credentials.accessToken
+// User profile -> credentials.user
+```
+
+Logging out requires a `returnTo` URL that matches one of the **Allowed Logout URLs** in the Auth0 dashboard:
+
+```dart
+// Option A
+await auth0.windowsWebAuthentication().logout(
+  returnTo: 'auth0flutter://callback',
+);
+
+// Option B
+await auth0.windowsWebAuthentication().logout(
+  returnTo: 'https://your-app.example.com/logout',
+);
+```
+
+> ⚠️ **Credentials are not automatically stored on Windows.** You must manually store and manage the `credentials` object returned from `login()` (e.g., using `shared_preferences` or secure storage).
 
 For other comprehensive examples, see the [EXAMPLES.md](EXAMPLES.md) document.
 

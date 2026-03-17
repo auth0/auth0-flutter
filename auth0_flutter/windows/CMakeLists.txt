@@ -133,17 +133,18 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
   # All test files — Flutter types are provided by the stub header in
   # test/stubs/flutter/encodable_value.h, so no Flutter SDK is needed.
   set(TEST_SOURCES
-    test/time_util_test.cpp                     # Time utilities (ISO8601, RFC3339)
-    test/url_utils_test.cpp                     # URL parsing and manipulation
-    test/windows_utils_test.cpp                 # Windows-specific utilities
-    test/oauth_helpers_test.cpp                 # OAuth 2.0 / PKCE helpers + cancellation
-    test/id_token_validator_test.cpp            # OpenID Connect ID token validation
-    test/id_token_signature_validator_test.cpp  # RS256 signature validation (non-network paths)
-    test/authentication_error_test.cpp          # AuthenticationError classification + IsNetworkError
-    test/token_decoder_test.cpp                 # OAuth token response decoding
-    test/jwt_util_test.cpp                      # JWT splitting, decoding, and JSON->Encodable
-    test/user_profile_test.cpp                  # UserProfile deserialization and serialization
-    test/user_identity_test.cpp                 # UserIdentity deserialization and serialization
+    test/time_util_test.cpp                           # Time utilities (ISO8601, RFC3339)
+    test/url_utils_test.cpp                           # URL parsing and manipulation
+    test/windows_utils_test.cpp                       # Windows-specific utilities
+    test/oauth_helpers_test.cpp                       # OAuth 2.0 / PKCE helpers + cancellation
+    test/id_token_validator_test.cpp                  # OpenID Connect ID token validation
+    test/id_token_signature_validator_test.cpp        # RS256 signature validation + JWKS fetch failures
+    test/authentication_error_test.cpp                # AuthenticationError classification + IsNetworkError
+    test/token_decoder_test.cpp                       # OAuth token response decoding
+    test/jwt_util_test.cpp                            # JWT splitting, decoding, and JSON->Encodable
+    test/user_profile_test.cpp                        # UserProfile deserialization and serialization
+    test/user_identity_test.cpp                       # UserIdentity deserialization and serialization
+    test/login_web_auth_request_handler_test.cpp      # Handler arg validation (#15 scopes, #16 timeout, #19 DPoP)
   )
 
   # Source files needed for tests
@@ -158,6 +159,9 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
     token_decoder.cpp
     user_profile.cpp
     user_identity.cpp
+    # Handler under test + its non-Flutter dependencies
+    auth0_client.cpp
+    request_handlers/web_auth/login_web_auth_request_handler.cpp
   )
 
   add_executable(${TEST_RUNNER}

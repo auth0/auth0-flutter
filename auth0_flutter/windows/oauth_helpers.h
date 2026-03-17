@@ -62,7 +62,7 @@ namespace auth0_flutter
      * prefix when waiting for the OAuth callback. The app always listens on this
      * URI — no other callback URL is accepted.
      */
-    static constexpr const char *kDefaultRedirectUri = "auth0flutter://callback";
+    inline constexpr const char *kDefaultRedirectUri = "auth0flutter://callback";
 
     /**
      * @brief Wait for OAuth callback with authorization code (custom scheme flow)
@@ -78,6 +78,27 @@ namespace auth0_flutter
     OAuthCallbackResult waitForAuthCode_CustomScheme(
         int timeoutSeconds = 180,
         const std::string &expectedState = "",
+        pplx::cancellation_token ct = pplx::cancellation_token::none());
+
+    /**
+     * @brief Wait for the browser to redirect back to the logout returnTo URI
+     *
+     * Polls the PLUGIN_STARTUP_URL environment variable until a URL whose prefix
+     * matches @p returnToUri is received or the timeout expires.  No state or code
+     * validation is performed — logout callbacks carry neither.
+     *
+     * The return value intentionally has no error semantics: the caller always
+     * treats logout as successful regardless of whether a callback arrived, which
+     * mirrors iOS/Android SDK behaviour.
+     *
+     * @param returnToUri    Expected returnTo URI prefix registered with Auth0
+     * @param timeoutSeconds Maximum time to wait (default: 300 seconds)
+     * @param ct             Cancellation token (optional)
+     * @return true if the callback was received before the timeout, false otherwise
+     */
+    bool waitForLogoutCallback(
+        const std::string &returnToUri,
+        int timeoutSeconds = 300,
         pplx::cancellation_token ct = pplx::cancellation_token::none());
 
 } // namespace auth0_flutter

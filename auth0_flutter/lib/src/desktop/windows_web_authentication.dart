@@ -28,9 +28,7 @@ import '../../auth0_flutter.dart';
 /// final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
 /// final result = await auth0.windowsWebAuthentication().login(
 ///   redirectUrl: 'auth0flutter://callback',
-///   parameters: {
-///     'authTimeoutSeconds': '300',  // 5 minutes for MFA
-///   },
+///   authTimeout: const Duration(minutes: 5), // 5 minutes for MFA
 /// );
 /// ```
 class WindowsWebAuthentication {
@@ -80,37 +78,27 @@ class WindowsWebAuthentication {
   /// * If you want to log into a specific organization, provide the
   /// [organizationId]. Provide [invitationUrl] if a user has been invited
   /// to join an organization.
-  /// * [useDPoP] enables DPoP for enhanced token security.
-  /// See README for details. Defaults to `false`.
   ///
   /// ## Windows-Specific Parameters
   ///
-  /// The [parameters] map supports the following Windows-specific key:
-  ///
-  /// ### authTimeoutSeconds
-  /// Configures how long to wait for the authentication callback before timing
-  /// out.
-  ///
-  /// **Why customize this?**
-  /// - Increase timeout for users who may take longer to authenticate
-  ///   (e.g., first-time users, MFA flows, password reset flows)
-  /// - Decrease timeout for faster failure detection in automated testing
-  /// - Account for slow network connections or complex authentication flows
+  /// ### authTimeout
+  /// How long to wait for the authentication callback before timing out.
+  /// Defaults to 3 minutes. Increase this for MFA flows or slow networks;
+  /// decrease it for faster failure detection in automated testing.
   ///
   /// **Example:**
   /// ```dart
   /// await auth0.windowsWebAuthentication().login(
   ///   redirectUrl: 'auth0flutter://callback',
-  ///   parameters: {
-  ///     'authTimeoutSeconds': '300',  // 5 minutes for MFA flows
-  ///   },
+  ///   authTimeout: const Duration(minutes: 5), // for MFA flows
   /// );
   /// ```
   ///
-  /// **Default:** `'180'` (3 minutes)
+  /// If the timeout is reached a `USER_CANCELLED` error is returned, as the
+  /// user likely closed the browser without completing authentication.
   ///
-  /// **Note:** If the timeout is reached, a `USER_CANCELLED` error is returned,
-  /// as the user likely closed the browser without completing authentication.
+  /// **Note:** [useDPoP] is accepted for API compatibility but is not yet
+  /// implemented on Windows. Passing `true` will throw an [UnsupportedError].
   Future<Credentials> login(
       {final String? audience,
       final Set<String> scopes = const {
@@ -122,14 +110,15 @@ class WindowsWebAuthentication {
       required final String redirectUrl,
       final String? organizationId,
       final String? invitationUrl,
-      // Override authTimeoutSeconds in the map if users need more/less time
-      // to authenticate (e.g. '300' for MFA flows, '60' for quick testing).
-      final Map<String, String> parameters = const {
-        'authTimeoutSeconds': '180'
-      },
+      final Duration authTimeout = const Duration(minutes: 3),
+      final bool useDPoP = false,
+      final Map<String, String> parameters = const {},
       final IdTokenValidationConfig idTokenValidationConfig =
-          const IdTokenValidationConfig(),
-      final bool useDPoP = false}) async {
+          const IdTokenValidationConfig()}) async {
+    if (useDPoP) {
+      throw UnsupportedError('DPoP is not yet supported on Windows. '
+          'useDPoP has no effect on this platform.');
+    }
     final credentials = await Auth0FlutterWebAuthPlatform.instance.login(
       _createWebAuthRequest(
         WebAuthLoginOptions(
@@ -138,9 +127,11 @@ class WindowsWebAuthentication {
           redirectUrl: redirectUrl,
           organizationId: organizationId,
           invitationUrl: invitationUrl,
-          parameters: parameters,
+          parameters: {
+            ...parameters,
+            'authTimeoutSeconds': authTimeout.inSeconds.toString(),
+          },
           idTokenValidationConfig: idTokenValidationConfig,
-          useDPoP: useDPoP,
         ),
       ),
     );
@@ -151,16 +142,19 @@ class WindowsWebAuthentication {
   /// authentication session, and log out. The user is immediately redirected
   /// back to the application once logout is complete.
   ///
-  /// If [returnTo] is not specified, a default URL is used:
-  /// 'auth0flutter://callback'.
-  /// [returnTo] must appear in your **Allowed Logout URLs** list for the
-  /// Auth0 app.
+  /// **IMPORTANT**: [returnTo] is required for Windows desktop applications.
+  /// It must appear in your **Allowed Logout URLs** list for the Auth0 app.
+  /// Use the same URL pattern you chose for login:
+  /// - `auth0flutter://callback` — direct custom-scheme redirect (Option A).
+  /// - `https://your-server.com/logout` — HTTPS intermediary server that
+  ///   redirects back to `auth0flutter://callback` (Option B).
+  ///
   /// [Read more about redirecting users after logout](https://auth0.com/docs/authenticate/login/logout#redirect-users-after-logout).
   ///
   /// [federated] controls whether to perform federated logout, which also logs
   /// the user out from their identity provider.
   Future<void> logout({
-    final String? returnTo,
+    required final String returnTo,
     final bool federated = false,
   }) async {
     await Auth0FlutterWebAuthPlatform.instance.logout(_createWebAuthRequest(

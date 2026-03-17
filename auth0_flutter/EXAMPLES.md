@@ -12,6 +12,9 @@
     - [2. Capture the callback URL](#2-capture-the-callback-url)
   - [Errors](#errors)
   - [Android: Custom schemes](#android-custom-schemes)
+- [🪟 Windows Web Authentication](#-windows-web-authentication)
+  - [Login](#login)
+  - [Logout](#logout)
 - [📱 Credentials Manager](#-credentials-manager)
   - [Check for stored credentials](#check-for-stored-credentials)
   - [Retrieve stored credentials](#retrieve-stored-credentials)
@@ -50,6 +53,9 @@
     - [2. Capture the callback URL](#2-capture-the-callback-url)
   - [Errors](#errors)
   - [Android: Custom schemes](#android-custom-schemes)
+- [🪟 Windows Web Authentication](#-windows-web-authentication)
+  - [Login](#login)
+  - [Logout](#logout)
 
 ---
 
@@ -68,6 +74,25 @@ If you're using your own credentials storage, make sure to delete the credential
 // Use a Universal Link logout URL on iOS 17.4+ / macOS 14.4+
 // useHTTPS is ignored on Android
 await auth0.webAuthentication().logout(useHTTPS: true);
+```
+
+</details>
+
+<details>
+  <summary>Windows</summary>
+
+`returnTo` is required and must appear in **Allowed Logout URLs** in the Auth0 dashboard.
+
+```dart
+// Option A — direct custom-scheme redirect
+await auth0.windowsWebAuthentication().logout(
+  returnTo: 'auth0flutter://callback',
+);
+
+// Option B — intermediary HTTPS server
+await auth0.windowsWebAuthentication().logout(
+  returnTo: 'https://your-app.example.com/logout',
+);
 ```
 
 </details>
@@ -387,6 +412,57 @@ await webAuth.logout();
 ```
 
 > 💡 Note that custom schemes [can only have](https://developer.android.com/guide/topics/manifest/data-element) lowercase letters.
+
+[Go up ⤴](#examples)
+
+## 🪟 Windows Web Authentication
+
+Windows uses `windowsWebAuthentication()` instead of `webAuthentication()`. Unlike mobile/macOS, both `redirectUrl` (login) and `returnTo` (logout) are **required** parameters and must be registered in the Auth0 dashboard.
+
+You have two options — choose one and register the corresponding URLs in **Allowed Callback URLs** and **Allowed Logout URLs** in the [Auth0 Dashboard](https://manage.auth0.com/#/applications/):
+
+| Option | Allowed Callback URL | Allowed Logout URL |
+|--------|---------------------|--------------------|
+| A — Direct custom scheme | `auth0flutter://callback` | `auth0flutter://callback` |
+| B — Intermediary HTTPS server | `https://your-app.example.com/callback` | `https://your-app.example.com/logout` |
+
+See the [Windows configuration section](README.md#windows-configure-protocol-handler) in the README for the full setup guide, including the required runner changes.
+
+### Login
+
+```dart
+// Option A — direct custom-scheme redirect (recommended for most apps)
+// Register 'auth0flutter://callback' in Allowed Callback URLs
+final credentials = await auth0.windowsWebAuthentication().login(
+  redirectUrl: 'auth0flutter://callback',
+);
+
+// Option B — intermediary HTTPS server (cleaner browser UX, no hanging tab)
+// Register 'https://your-app.example.com/callback' in Allowed Callback URLs
+// Your server must redirect onward to auth0flutter://callback?code=...&state=...
+final credentials = await auth0.windowsWebAuthentication().login(
+  redirectUrl: 'https://your-app.example.com/callback',
+);
+
+// Access token -> credentials.accessToken
+// User profile -> credentials.user
+```
+
+> ⚠️ Credentials are **not** automatically stored on Windows. Store and manage the returned `credentials` object yourself (e.g., using `shared_preferences` or secure storage).
+
+### Logout
+
+```dart
+// Option A
+await auth0.windowsWebAuthentication().logout(
+  returnTo: 'auth0flutter://callback',
+);
+
+// Option B
+await auth0.windowsWebAuthentication().logout(
+  returnTo: 'https://your-app.example.com/logout',
+);
+```
 
 [Go up ⤴](#examples)
 

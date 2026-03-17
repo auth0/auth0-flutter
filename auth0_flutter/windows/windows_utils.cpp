@@ -24,13 +24,35 @@ namespace auth0_flutter
 
     void BringFlutterWindowToFront()
     {
-        HWND hwnd = GetActiveWindow();
-
-        if (!hwnd)
+        // GetActiveWindow() only returns windows on the calling thread's message
+        // queue. Since this runs on a background pplx worker thread it always
+        // returns NULL. Instead, enumerate all top-level windows that belong to
+        // this process to find the Flutter window.
+        struct FindData
         {
-            hwnd = GetForegroundWindow();
-        }
+            DWORD pid;
+            HWND hwnd;
+        };
+        FindData findData = {GetCurrentProcessId(), nullptr};
 
+        EnumWindows(
+            [](HWND candidate, LPARAM lp) -> BOOL
+            {
+                auto *data = reinterpret_cast<FindData *>(lp);
+                DWORD windowPid = 0;
+                GetWindowThreadProcessId(candidate, &windowPid);
+                if (windowPid == data->pid &&
+                    IsWindowVisible(candidate) &&
+                    GetParent(candidate) == nullptr)
+                {
+                    data->hwnd = candidate;
+                    return FALSE; // stop enumeration
+                }
+                return TRUE;
+            },
+            reinterpret_cast<LPARAM>(&findData));
+
+        HWND hwnd = findData.hwnd;
         if (!hwnd)
             return;
 
@@ -40,17 +62,23 @@ namespace auth0_flutter
             ShowWindow(hwnd, SW_RESTORE);
         }
 
-        // Required trick to bypass foreground lock
+        // Required trick to bypass foreground lock.
+        // AttachThreadInput is wrapped in an RAII guard so detach is guaranteed
+        // even if an exception is thrown between attach and detach.
         DWORD currentThread = GetCurrentThreadId();
-        DWORD foregroundThread = GetWindowThreadProcessId(GetForegroundWindow(), NULL);
+        DWORD foregroundThread = GetWindowThreadProcessId(GetForegroundWindow(), nullptr);
+
+        struct ThreadInputGuard
+        {
+            DWORD from, to;
+            ~ThreadInputGuard() { AttachThreadInput(from, to, FALSE); }
+        } guard{foregroundThread, currentThread};
 
         AttachThreadInput(foregroundThread, currentThread, TRUE);
 
         SetForegroundWindow(hwnd);
         SetFocus(hwnd);
         SetActiveWindow(hwnd);
-
-        AttachThreadInput(foregroundThread, currentThread, FALSE);
     }
 
 } // namespace auth0_flutter

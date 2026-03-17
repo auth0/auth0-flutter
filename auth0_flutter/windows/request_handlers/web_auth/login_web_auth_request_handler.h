@@ -66,9 +66,6 @@ namespace auth0_flutter
             std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) override;
 
     private:
-        // Shared cancellation source for the currently running login task.
-        // Replaced at the start of every new handle() call so a second
-        // login attempt automatically cancels the first.
         pplx::cancellation_token_source _cts;
     };
 

@@ -1,4 +1,7 @@
 #include "user_profile.h"
+#include "time_util.h"
+#include <chrono>
+#include <ctime>
 #include <unordered_set>
 
 using flutter::EncodableMap;
@@ -110,14 +113,43 @@ flutter::EncodableMap UserProfile::ToMap() const {
     return it != extraInfo.end() ? it->second : EncodableValue();
   };
 
-  map[EncodableValue("sub")] = get("sub");
-  map[EncodableValue("name")] = get("name");
-  map[EncodableValue("given_name")] = get("given_name");
-  map[EncodableValue("family_name")] = get("family_name");
-  map[EncodableValue("nickname")] = get("nickname");
-  map[EncodableValue("picture")] = get("picture");
-  map[EncodableValue("email")] = get("email");
-  map[EncodableValue("email_verified")] = get("email_verified");
+  // All 20 standard OIDC claims — keys and order match UserProfile.toMap()
+  // in the Android plugin so that Dart's UserProfile.fromMap() can read them.
+  map[EncodableValue("sub")]                   = get("sub");
+  map[EncodableValue("name")]                  = get("name");
+  map[EncodableValue("given_name")]            = get("given_name");
+  map[EncodableValue("family_name")]           = get("family_name");
+  map[EncodableValue("middle_name")]           = get("middle_name");
+  map[EncodableValue("nickname")]              = get("nickname");
+  map[EncodableValue("preferred_username")]    = get("preferred_username");
+  map[EncodableValue("profile")]               = get("profile");
+  map[EncodableValue("picture")]               = get("picture");
+  map[EncodableValue("website")]               = get("website");
+  map[EncodableValue("email")]                 = get("email");
+  map[EncodableValue("email_verified")]        = get("email_verified");
+  map[EncodableValue("gender")]                = get("gender");
+  map[EncodableValue("birthdate")]             = get("birthdate");
+  map[EncodableValue("zoneinfo")]              = get("zoneinfo");
+  map[EncodableValue("locale")]                = get("locale");
+  map[EncodableValue("phone_number")]          = get("phone_number");
+  map[EncodableValue("phone_number_verified")] = get("phone_number_verified");
+  map[EncodableValue("address")]               = get("address");
+
+  // updated_at: the OIDC spec defines it as a Unix timestamp (JSON number),
+  // but Dart's UserProfile.fromMap() calls DateTime.parse() on it, so it
+  // expects an ISO 8601 string.  Convert the double here; pass null if absent.
+  {
+    auto it = extraInfo.find(EncodableValue("updated_at"));
+    if (it != extraInfo.end() && std::holds_alternative<double>(it->second)) {
+      auto tp = std::chrono::system_clock::from_time_t(
+          static_cast<std::time_t>(std::get<double>(it->second)));
+      map[EncodableValue("updated_at")] = EncodableValue(ToIso8601(tp));
+    } else {
+      // String value (non-standard) or absent — pass through as-is / null
+      map[EncodableValue("updated_at")] =
+          (it != extraInfo.end()) ? it->second : EncodableValue();
+    }
+  }
 
   EncodableMap customClaims;
   for (const auto& kv : extraInfo) {
