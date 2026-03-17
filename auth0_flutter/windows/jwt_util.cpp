@@ -45,6 +45,9 @@ static std::string Base64UrlDecode(const std::string &input)
     throw std::runtime_error("Base64 decode failed: decoding error");
   }
 
+  // CryptStringToBinaryA updates out_len with the actual bytes written,
+  // which may be less than the pre-allocated size. Trim any trailing null bytes.
+  output.resize(out_len);
   return output;
 }
 

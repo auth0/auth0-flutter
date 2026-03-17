@@ -86,7 +86,7 @@ namespace auth0_flutter
 
             for (i = 0; i < 4; i++)
             {
-                if (i <= (size_t)(len + 0))
+                if (i <= static_cast<size_t>(len))
                 {
                     result += b64chars[a4[i]];
                 }
@@ -141,34 +141,36 @@ namespace auth0_flutter
         const std::string &expectedState,
         pplx::cancellation_token ct)
     {
-        const int sleepMs = 200;
-        int elapsed = 0;
+        static constexpr DWORD kStackBufChars = 2048;
+
         auto readAndClearEnv = []() -> std::string
         {
-            // Ask Windows how many wchar_t characters are needed (including null)
-            DWORD bufSize = GetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", NULL, 0);
-            if (bufSize == 0)
-                return std::string();
+            wchar_t stackBuf[kStackBufChars];
+            DWORD ret = GetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", stackBuf, kStackBufChars);
+            if (ret == 0)
+                return std::string(); // variable not set
 
-            std::vector<wchar_t> buf(bufSize);
-            DWORD ret = GetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", buf.data(), bufSize);
-            if (ret == 0 || ret >= bufSize)
+            if (ret < kStackBufChars)
             {
-                return std::string();
+                SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
+                return WideToUtf8(std::wstring(stackBuf, ret));
             }
 
-            // Clear it so it's not consumed twice
+            std::vector<wchar_t> heapBuf(ret + 1);
+            DWORD ret2 = GetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", heapBuf.data(), ret + 1);
+            if (ret2 == 0 || ret2 >= ret + 1)
+                return std::string();
+
             SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
-
-            // Convert wide -> UTF-8 safely
-            std::wstring wstr(buf.data(), ret);
-            return WideToUtf8(wstr);
+            return WideToUtf8(std::wstring(heapBuf.data(), ret2));
         };
+    
+        const auto deadline = std::chrono::steady_clock::now() +
+                              std::chrono::seconds(timeoutSeconds);
+        const auto sleepDuration = std::chrono::milliseconds(200);
 
-        while (elapsed < timeoutSeconds * 1000)
+        while (std::chrono::steady_clock::now() < deadline)
         {
-            // Yield to a pending cancellation (engine shutdown or new login call)
-            // before doing any work this tick.
             if (ct.is_canceled())
             {
                 pplx::cancel_current_task();
@@ -177,12 +179,9 @@ namespace auth0_flutter
             std::string uri = readAndClearEnv();
             if (!uri.empty())
             {
-                // Only accept callbacks on the fixed redirect URI
                 if (uri.rfind(kDefaultRedirectUri, 0) != 0)
                 {
-                    // Not our callback — keep waiting
-                    std::this_thread::sleep_for(std::chrono::milliseconds(sleepMs));
-                    elapsed += sleepMs;
+                    std::this_thread::sleep_for(sleepDuration);
                     continue;
                 }
                 // find query
@@ -194,17 +193,13 @@ namespace auth0_flutter
                 std::string query = uri.substr(qpos + 1);
                 auto params = SafeParseQuery(query);
 
-                // Validate state parameter if expected state is provided (CSRF protection)
-                if (!expectedState.empty())
+                // Validate state parameter unconditionally.
+                auto stateIt = params.find("state");
+                if (stateIt == params.end() || stateIt->second != expectedState)
                 {
-                    auto stateIt = params.find("state");
-                    if (stateIt == params.end() || stateIt->second != expectedState)
-                    {
-                        return {false, "", "state_mismatch", "State parameter validation failed (potential CSRF attack)", false};
-                    }
+                    return {false, "", "state_mismatch", "State parameter validation failed", false};
                 }
 
-                // Check for OAuth error response (e.g., user denied access)
                 auto errorIt = params.find("error");
                 if (errorIt != params.end())
                 {
@@ -231,12 +226,63 @@ namespace auth0_flutter
                     return {false, "", "invalid_callback", "No authorization code in callback", false};
                 }
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(sleepMs));
-            elapsed += sleepMs;
+            std::this_thread::sleep_for(sleepDuration);
         }
 
         // Timeout - no callback received (user likely closed browser)
         return {false, "", "timeout", "No callback received within timeout period", true};
+    }
+
+    bool waitForLogoutCallback(
+        const std::string &returnToUri,
+        int timeoutSeconds,
+        pplx::cancellation_token ct)
+    {
+        static constexpr DWORD kStackBufChars = 2048;
+
+        auto readAndClearEnv = []() -> std::string
+        {
+            wchar_t stackBuf[kStackBufChars];
+            DWORD ret = GetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", stackBuf, kStackBufChars);
+            if (ret == 0)
+                return std::string();
+
+            if (ret < kStackBufChars)
+            {
+                SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
+                return WideToUtf8(std::wstring(stackBuf, ret));
+            }
+
+            std::vector<wchar_t> heapBuf(ret + 1);
+            DWORD ret2 = GetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", heapBuf.data(), ret + 1);
+            if (ret2 == 0 || ret2 >= ret + 1)
+                return std::string();
+
+            SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
+            return WideToUtf8(std::wstring(heapBuf.data(), ret2));
+        };
+
+        const auto deadline = std::chrono::steady_clock::now() +
+                              std::chrono::seconds(timeoutSeconds);
+        const auto sleepDuration = std::chrono::milliseconds(200);
+
+        while (std::chrono::steady_clock::now() < deadline)
+        {
+            if (ct.is_canceled())
+            {
+                pplx::cancel_current_task();
+            }
+
+            std::string uri = readAndClearEnv();
+            if (!uri.empty() && uri.rfind(returnToUri, 0) == 0)
+            {
+                return true;
+            }
+
+            std::this_thread::sleep_for(sleepDuration);
+        }
+
+        return false;
     }
 
 } // namespace auth0_flutter

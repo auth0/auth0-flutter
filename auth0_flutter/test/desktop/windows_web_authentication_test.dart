@@ -161,7 +161,7 @@ void main() {
           'https://invite.example.com');
     });
 
-    test('passes custom authTimeoutSeconds to the platform', () async {
+    test('passes custom authTimeout to the platform', () async {
       when(mockedPlatform.login(any))
           .thenAnswer((final _) async => TestPlatform.loginResult);
 
@@ -169,7 +169,7 @@ void main() {
           .windowsWebAuthentication()
           .login(
             redirectUrl: 'auth0flutter://callback',
-            parameters: {'authTimeoutSeconds': '300'},
+            authTimeout: const Duration(seconds: 300),
           );
 
       final verificationResult = verify(mockedPlatform.login(captureAny))
@@ -177,6 +177,28 @@ void main() {
           .single as WebAuthRequest<WebAuthLoginOptions>;
       expect(verificationResult.options.parameters,
           {'authTimeoutSeconds': '300'});
+    });
+
+    test('typed authTimeout wins over authTimeoutSeconds in parameters',
+        () async {
+      // When both are provided, the typed authTimeout must take precedence.
+      // The reversed spread ensures authTimeoutSeconds is always written last.
+      when(mockedPlatform.login(any))
+          .thenAnswer((final _) async => TestPlatform.loginResult);
+
+      await Auth0('test-domain', 'test-clientId')
+          .windowsWebAuthentication()
+          .login(
+            redirectUrl: 'auth0flutter://callback',
+            authTimeout: const Duration(seconds: 600),
+            parameters: {'authTimeoutSeconds': '9999'},
+          );
+
+      final verificationResult = verify(mockedPlatform.login(captureAny))
+          .captured
+          .single as WebAuthRequest<WebAuthLoginOptions>;
+      expect(verificationResult.options.parameters,
+          containsPair('authTimeoutSeconds', '600'));
     });
 
     test('passes idTokenValidationConfig to the platform', () async {
@@ -199,21 +221,19 @@ void main() {
       expect(verificationResult.options.idTokenValidationConfig, config);
     });
 
-    test('enables DPoP when useDPoP is true', () async {
-      when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
-
-      await Auth0('test-domain', 'test-clientId')
-          .windowsWebAuthentication()
-          .login(
-            redirectUrl: 'auth0flutter://callback',
-            useDPoP: true,
-          );
-
-      final verificationResult = verify(mockedPlatform.login(captureAny))
-          .captured
-          .single as WebAuthRequest<WebAuthLoginOptions>;
-      expect(verificationResult.options.useDPoP, true);
+    test('throws UnsupportedError when useDPoP is true', () async {
+      // DPoP is not yet implemented on Windows. Passing useDPoP: true must
+      // throw UnsupportedError immediately — no platform call should be made.
+      expect(
+        () => Auth0('test-domain', 'test-clientId')
+            .windowsWebAuthentication()
+            .login(
+              redirectUrl: 'auth0flutter://callback',
+              useDPoP: true,
+            ),
+        throwsUnsupportedError,
+      );
+      verifyNever(mockedPlatform.login(any));
     });
 
     test('does not enable DPoP by default', () async {

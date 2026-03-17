@@ -1,14 +1,16 @@
 /**
  * @file id_token_signature_validator_test.cpp
- * @brief Tests for ValidateIdTokenSignature (non-network validation paths)
+ * @brief Tests for ValidateIdTokenSignature
  *
- * Covers all validation steps that execute before the JWKS network fetch:
+ * Covers all validation steps:
  *   Step 1 – JWT structural validity (SplitJwt / DecodeJwtHeader)
  *   Step 2 – Algorithm must be RS256
  *   Step 3 – Key ID (kid) must be present and non-empty
+ *   Step 4 – JWKS fetch failures (network unreachable, HTTP 5xx,
+ *             malformed JSON, missing `keys` array) — issue #18
  *
- * JWKS fetch (step 4) and cryptographic verification (steps 5-6) require
- * a live JWKS endpoint and are therefore exercised in integration tests.
+ * Steps 5-6 (cryptographic verification) require a real RS256 key pair
+ * and are exercised in integration tests.
  *
  * Every test uses try/catch rather than EXPECT_THROW so that the exception
  * message is always validated alongside the exception type.
@@ -20,12 +22,18 @@
 #include "../id_token_signature_validator.h"
 #include "../id_token_validator.h"
 
+#include <cpprest/http_listener.h>
+
 #include <openssl/bio.h>
 #include <openssl/evp.h>
 #include <openssl/buffer.h>
 
 #include <algorithm>
 #include <string>
+
+using web::http::experimental::listener::http_listener;
+using web::http::http_response;
+using web::http::status_codes;
 
 using namespace auth0_flutter;
 using ::testing::HasSubstr;
@@ -644,5 +652,192 @@ TEST(IdTokenSignatureValidatorTest, Step3FailureThrowsIdTokenValidationException
     catch (const std::exception &e)
     {
         FAIL() << "Got std::exception instead of IdTokenValidationException: " << e.what();
+    }
+}
+
+// ===========================================================================
+// Issue #18 – JWKS fetch failures (step 4)
+//
+// These tests cover error paths that execute after the JWT passes structural
+// and algorithm checks (steps 1-3).  A token with a valid RS256 header and a
+// non-empty kid is required so that the validator reaches the network fetch.
+//
+// Network-unreachable is tested by using a localhost port that nothing is
+// listening on — the connection is refused immediately (or very quickly),
+// which avoids long test timeouts.
+//
+// HTTP 5xx, malformed JSON, and missing 'keys' array are tested with a real
+// cpprestsdk http_listener spun up inline.  Each test binds a unique port so
+// that the in-process g_jwksCache cannot serve a stale entry from a prior run.
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+// TestJwksServer — RAII HTTP listener for step-4 tests
+//
+// Starts a cpprestsdk http_listener on localhost:<port>.  Every GET request
+// receives the caller-supplied HTTP status code and response body.
+// Destructor closes the listener; any close() error is swallowed so that test
+// teardown is always clean.
+// ---------------------------------------------------------------------------
+
+class TestJwksServer
+{
+public:
+    TestJwksServer(int port, web::http::status_code status, const std::string &body)
+        : uri_("http://127.0.0.1:" + std::to_string(port) + "/jwks.json"),
+          listener_(utility::conversions::to_string_t(uri_))
+    {
+        listener_.support(
+            [status, body](web::http::http_request req)
+            {
+                http_response resp(status);
+                resp.set_body(body, "application/json");
+                req.reply(resp);
+            });
+        listener_.open().wait();
+    }
+
+    ~TestJwksServer()
+    {
+        try { listener_.close().wait(); } catch (...) {}
+    }
+
+    const std::string &uri() const { return uri_; }
+
+private:
+    std::string   uri_;
+    http_listener listener_;
+};
+
+// Build a JWT whose header passes steps 1-3 so the validator reaches step 4.
+static std::string MakeValidHeaderJwt(const std::string &kid = "test-key-id")
+{
+    return MakeJwtWithHeader(
+        R"({"alg":"RS256","typ":"JWT","kid":")" + kid + R"("})");
+}
+
+TEST(IdTokenSignatureValidatorJwksTest, ThrowsWhenJwksEndpointIsUnreachable)
+{
+    // Port 9 is the discard protocol — on Windows connections are typically
+    // refused immediately.  Use a clearly-unreachable localhost address to
+    // trigger the "Failed to fetch JWKS:" error path.
+    const std::string unreachableJwksUri =
+        "http://127.0.0.1:9/jwks.json";
+
+    std::string token = MakeValidHeaderJwt();
+
+    try
+    {
+        ValidateIdTokenSignature(token, unreachableJwksUri);
+        FAIL() << "Expected IdTokenValidationException for unreachable JWKS endpoint";
+    }
+    catch (const IdTokenValidationException &e)
+    {
+        const std::string msg = e.what();
+        EXPECT_THAT(msg, HasSubstr("Failed to fetch JWKS"))
+            << "Error message should report JWKS fetch failure; got: " << msg;
+    }
+    catch (const std::exception &e)
+    {
+        FAIL() << "Got std::exception instead of IdTokenValidationException: " << e.what();
+    }
+}
+
+TEST(IdTokenSignatureValidatorJwksTest, ThrowsIdTokenValidationExceptionNotStdException)
+{
+    // A network failure must be wrapped in IdTokenValidationException, not
+    // propagated as a raw cpprestsdk or std::exception.
+    const std::string unreachableJwksUri =
+        "http://127.0.0.1:9/jwks.json";
+
+    std::string token = MakeValidHeaderJwt();
+
+    bool caughtIdTokenException = false;
+    try
+    {
+        ValidateIdTokenSignature(token, unreachableJwksUri);
+    }
+    catch (const IdTokenValidationException &)
+    {
+        caughtIdTokenException = true;
+    }
+    catch (const std::exception &e)
+    {
+        FAIL() << "Unwrapped std::exception escaped the validator: " << e.what();
+    }
+
+    EXPECT_TRUE(caughtIdTokenException)
+        << "Network failure must throw IdTokenValidationException";
+}
+
+TEST(IdTokenSignatureValidatorJwksTest, ThrowsOnHttp5xxResponse)
+{
+    // Listener returns HTTP 500; FetchJwksFromNetwork should throw
+    // IdTokenValidationException("Failed to fetch JWKS: HTTP 500").
+    TestJwksServer server(19081, status_codes::InternalError, "");
+    std::string token = MakeValidHeaderJwt("kid-5xx");
+
+    try
+    {
+        ValidateIdTokenSignature(token, server.uri());
+        FAIL() << "Expected IdTokenValidationException for HTTP 500 response";
+    }
+    catch (const IdTokenValidationException &e)
+    {
+        EXPECT_THAT(std::string(e.what()), HasSubstr("Failed to fetch JWKS"))
+            << "HTTP 5xx must produce a JWKS fetch error; got: " << e.what();
+    }
+    catch (const std::exception &e)
+    {
+        FAIL() << "Unwrapped std::exception escaped the validator: " << e.what();
+    }
+}
+
+TEST(IdTokenSignatureValidatorJwksTest, ThrowsOnMalformedJsonResponse)
+{
+    // Listener returns HTTP 200 with a body that is not valid JSON.
+    // extract_json() throws; the catch in ValidateIdTokenSignature wraps it as
+    // "Failed to fetch JWKS: <parse error>".
+    TestJwksServer server(19082, status_codes::OK, "not-valid-json!!!");
+    std::string token = MakeValidHeaderJwt("kid-malformed");
+
+    try
+    {
+        ValidateIdTokenSignature(token, server.uri());
+        FAIL() << "Expected IdTokenValidationException for malformed JSON body";
+    }
+    catch (const IdTokenValidationException &e)
+    {
+        EXPECT_THAT(std::string(e.what()), HasSubstr("Failed to fetch JWKS"))
+            << "Malformed JSON must produce a JWKS fetch error; got: " << e.what();
+    }
+    catch (const std::exception &e)
+    {
+        FAIL() << "Unwrapped std::exception escaped the validator: " << e.what();
+    }
+}
+
+TEST(IdTokenSignatureValidatorJwksTest, ThrowsWhenJwksResponseMissingKeysArray)
+{
+    // Listener returns a valid JSON object that has no "keys" field.
+    // FindKeyAndVerify detects this and throws
+    // IdTokenValidationException("Invalid JWKS response: missing 'keys' array").
+    TestJwksServer server(19083, status_codes::OK, R"({"foo":"bar"})");
+    std::string token = MakeValidHeaderJwt("kid-no-keys");
+
+    try
+    {
+        ValidateIdTokenSignature(token, server.uri());
+        FAIL() << "Expected IdTokenValidationException for missing 'keys' array";
+    }
+    catch (const IdTokenValidationException &e)
+    {
+        EXPECT_THAT(std::string(e.what()),
+                    HasSubstr("Invalid JWKS response: missing 'keys' array"))
+            << "Missing 'keys' array must produce the expected error; got: " << e.what();
+    }
+    catch (const std::exception &e)
+    {
+        FAIL() << "Unwrapped std::exception escaped the validator: " << e.what();
     }
 }
