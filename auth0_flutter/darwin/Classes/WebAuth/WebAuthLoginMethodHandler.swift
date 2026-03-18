@@ -1,14 +1,14 @@
-import Auth0
 import Foundation
+import Auth0
 
 #if os(iOS)
-    import Flutter
+import Flutter
 #else
-    import FlutterMacOS
+import FlutterMacOS
 #endif
 
 #if os(iOS)
-    typealias WebAuthProviderFunction = (UIModalPresentationStyle) -> WebAuthProvider
+typealias WebAuthProviderFunction = (UIModalPresentationStyle) -> WebAuthProvider
 #endif
 
 struct WebAuthLoginMethodHandler: MethodHandler {
@@ -20,51 +20,48 @@ struct WebAuthLoginMethodHandler: MethodHandler {
         case audience
         case redirectUrl
         case organizationId
-        case nonce
         case invitationUrl
         case leeway
         case useDPoP
         case issuer
         case maxAge
         #if os(iOS)
-            case safariViewController
+        case safariViewController
         #endif
     }
 
     let client: WebAuth
 
     #if os(iOS)
-        let safariProvider: WebAuthProviderFunction
+    let safariProvider: WebAuthProviderFunction
 
-        init(
-            client: WebAuth,
-            safariProvider: @escaping WebAuthProviderFunction = WebAuthentication.safariProvider
-        ) {
-            self.client = client
-            self.safariProvider = safariProvider
-        }
+    init(client: WebAuth, safariProvider: @escaping WebAuthProviderFunction = WebAuthentication.safariProvider) {
+        self.client = client
+        self.safariProvider = safariProvider
+    }
     #else
-        init(client: WebAuth) {
-            self.client = client
-        }
+    init(client: WebAuth) {
+        self.client = client
+    }
     #endif
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
         guard let useHTTPS = arguments[Argument.useHTTPS] as? Bool else {
-            return callback(
-                FlutterError(from: .requiredArgumentMissing(Argument.useHTTPS.rawValue)))
+            return callback(FlutterError(from: .requiredArgumentMissing(Argument.useHTTPS.rawValue)))
         }
         guard let useEphemeralSession = arguments[Argument.useEphemeralSession] as? Bool else {
-            return callback(
-                FlutterError(from: .requiredArgumentMissing(Argument.useEphemeralSession.rawValue)))
+            return callback(FlutterError(from: .requiredArgumentMissing(Argument.useEphemeralSession.rawValue)))
         }
         guard let scopes = arguments[Argument.scopes] as? [String] else {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.scopes.rawValue)))
         }
+        guard let parameters = arguments[Argument.parameters] as? [String: String] else {
+            return callback(FlutterError(from: .requiredArgumentMissing(Argument.parameters.rawValue)))
+        }
 
-        var webAuth =
-            client
+        var webAuth = client
             .scope(scopes.asSpaceSeparatedString)
+            .parameters(parameters)
 
         if useHTTPS {
             webAuth = webAuth.useHTTPS()
@@ -78,9 +75,7 @@ struct WebAuthLoginMethodHandler: MethodHandler {
             webAuth = webAuth.audience(audience)
         }
 
-        if let redirectURL = arguments[Argument.redirectUrl] as? String,
-            let url = URL(string: redirectURL)
-        {
+        if let redirectURL = arguments[Argument.redirectUrl] as? String, let url = URL(string: redirectURL) {
             webAuth = webAuth.redirectURL(url)
         }
 
@@ -88,13 +83,8 @@ struct WebAuthLoginMethodHandler: MethodHandler {
             webAuth = webAuth.organization(organizationId)
         }
 
-        if let nonce = arguments[Argument.nonce] as? String {
-            webAuth = webAuth.nonce(nonce)
-        }
-
         if let invitationURL = arguments[Argument.invitationUrl] as? String,
-            let url = URL(string: invitationURL)
-        {
+           let url = URL(string: invitationURL) {
             webAuth = webAuth.invitationURL(url)
         }
 
@@ -110,19 +100,11 @@ struct WebAuthLoginMethodHandler: MethodHandler {
             webAuth = webAuth.maxAge(maxAge)
         }
 
-        if let parameters = arguments[Argument.parameters] as? [String: String] {
-            webAuth = webAuth.parameters(parameters)
-        }
-
         #if os(iOS)
-            if let safariViewControllerDictionary = arguments[SafariViewController.key]
-                as? [String: Any?]
-            {
-                let safariViewController = SafariViewController(
-                    from: safariViewControllerDictionary)
-                webAuth = webAuth.provider(
-                    self.safariProvider(safariViewController.presentationStyle))
-            }
+        if let safariViewControllerDictionary = arguments[SafariViewController.key] as? [String: Any?] {
+            let safariViewController = SafariViewController(from: safariViewControllerDictionary)
+            webAuth = webAuth.provider(self.safariProvider(safariViewController.presentationStyle))
+        }
         #endif
 
         if arguments[Argument.useDPoP.rawValue] as? Bool == true {
@@ -131,8 +113,8 @@ struct WebAuthLoginMethodHandler: MethodHandler {
 
         webAuth.start {
             switch $0 {
-            case .success(let credentials): callback(result(from: credentials))
-            case .failure(let error): callback(FlutterError(from: error))
+            case let .success(credentials): callback(result(from: credentials))
+            case let .failure(error): callback(FlutterError(from: error))
             }
         }
     }

@@ -304,16 +304,22 @@ namespace auth0_flutter
         // Cancel any previously running login task so a second call to handle()
         // does not leave a stale task that still holds a reference to the old
         // (now-replaced) MethodResult.
-        _cts.cancel();
-        _cts = pplx::cancellation_token_source{};
-        auto token = _cts.get_token();
+        // pplx::cancellation_token has a private default constructor; it must
+        // be obtained from a cancellation_token_source or from ::none().
+        pplx::cancellation_token token = pplx::cancellation_token::none();
+        {
+            std::lock_guard<std::mutex> lock(_cts_mutex);
+            _cts.cancel();
+            _cts = pplx::cancellation_token_source{};
+            token = _cts.get_token();
+        }
 
         std::shared_ptr<flutter::MethodResult<flutter::EncodableValue>> sharedResult(result.release());
 
         // Run authentication on a cancellable pplx task to avoid blocking the
         // Flutter UI thread.  The cancellation token lets the destructor (or a
         // subsequent handle() call) abort a running flow cleanly.
-        pplx::create_task([sharedResult,
+        pplx::create_task([this, sharedResult,
                            clientId, domain, scopeStr, redirectUri, audience, organizationId, invitationUrl, authTimeoutSeconds, leeway, maxAge, nonce, issuer, token, additionalParams]()
                           {
             try
@@ -341,8 +347,13 @@ namespace auth0_flutter
                     if (orgIt == invParams.end() || invIt == invParams.end() ||
                         orgIt->second.empty() || invIt->second.empty())
                     {
-                        sharedResult->Error("INVALID_INVITATION_URL",
-                            "Invalid invitation URL: " + invitationUrl);
+                        if (!token.is_canceled())
+                        {
+                            ui_task_runner_([sharedResult, invitationUrl]() {
+                                sharedResult->Error("INVALID_INVITATION_URL",
+                                    "Invalid invitation URL: " + invitationUrl);
+                            });
+                        }
                         return;
                     }
                     resolvedOrganizationId = orgIt->second;
@@ -390,10 +401,16 @@ namespace auth0_flutter
             }
 
             // Step 3: Open system default browser for user authentication.
+            // Must run on the UI thread (ShellExecuteW uses COM STA).
+            // Fire-and-forget: the background thread proceeds immediately to wait
+            // for the OAuth callback while the UI thread opens the browser.
             {
+
                 std::string urlStr = authUrl.str();
                 std::wstring urlW(urlStr.begin(), urlStr.end());
-                ShellExecuteW(NULL, L"open", urlW.c_str(), NULL, NULL, SW_SHOWNORMAL);
+                ui_task_runner_([urlW]() {
+                    ShellExecuteW(NULL, L"open", urlW.c_str(), NULL, NULL, SW_SHOWNORMAL);
+                });
             }
 
             // Step 4: Wait for OAuth callback containing authorization code with state validation
@@ -405,8 +422,8 @@ namespace auth0_flutter
                 return;
             }
 
-            // Step 5: Bring Flutter window back to foreground.
-            BringFlutterWindowToFront();
+            // Step 5: Bring Flutter window back to foreground (must be on UI thread).
+            ui_task_runner_([]() { BringFlutterWindowToFront(); });
 
             // Handle callback result
             if (!callbackResult.success)
@@ -416,16 +433,26 @@ namespace auth0_flutter
                 {
                     // User likely closed the browser without completing authentication
                     // Return USER_CANCELLED error code for consistency across platforms
-                    sharedResult->Error("USER_CANCELLED",
-                        "The user cancelled the Web Auth operation.");
+                    if (!token.is_canceled())
+                    {
+                        ui_task_runner_([sharedResult]() {
+                            sharedResult->Error("USER_CANCELLED",
+                                "The user cancelled the Web Auth operation.");
+                        });
+                    }
                     return;
                 }
                 else if (callbackResult.error == "state_mismatch")
                 {
                     // State parameter validation failed (CSRF protection)
                     // This is a security issue - use specific error code
-                    sharedResult->Error("INVALID_STATE",
-                        callbackResult.errorDescription);
+                    if (!token.is_canceled())
+                    {
+                        ui_task_runner_([sharedResult, callbackResult]() {
+                            sharedResult->Error("INVALID_STATE",
+                                callbackResult.errorDescription);
+                        });
+                    }
                     return;
                 }
                 else if (!callbackResult.error.empty())
@@ -437,14 +464,24 @@ namespace auth0_flutter
                     std::string message = callbackResult.errorDescription.empty()
                         ? callbackResult.error
                         : callbackResult.errorDescription;
-                    sharedResult->Error(callbackResult.error, message);
+                    if (!token.is_canceled())
+                    {
+                        ui_task_runner_([sharedResult, error = callbackResult.error, message]() {
+                            sharedResult->Error(error, message);
+                        });
+                    }
                     return;
                 }
                 else
                 {
                     // Invalid callback - no code and no error
-                    sharedResult->Error("NO_AUTHORIZATION_CODE",
-                        "The callback URL is missing the authorization code.");
+                    if (!token.is_canceled())
+                    {
+                        ui_task_runner_([sharedResult]() {
+                            sharedResult->Error("NO_AUTHORIZATION_CODE",
+                                "The callback URL is missing the authorization code.");
+                        });
+                    }
                     return;
                 }
             }
@@ -462,7 +499,12 @@ namespace auth0_flutter
             catch (const auth0_flutter::AuthenticationError &e)
             {
                 // Token exchange failed.
-                sharedResult->Error(e.GetCode(), e.GetDescription());
+                if (!token.is_canceled())
+                {
+                    ui_task_runner_([sharedResult, code = e.GetCode(), desc = e.GetDescription()]() {
+                        sharedResult->Error(code, desc);
+                    });
+                }
                 return;
             }
 
@@ -490,8 +532,12 @@ namespace auth0_flutter
             }
             catch (const IdTokenValidationException &e)
             {
-                sharedResult->Error("ID_TOKEN_VALIDATION_FAILED",
-                    std::string("The ID token validation performed after authentication failed: ") + e.what());
+                if (!token.is_canceled())
+                {
+                    ui_task_runner_([sharedResult, msg = std::string("The ID token validation performed after authentication failed: ") + e.what()]() {
+                        sharedResult->Error("ID_TOKEN_VALIDATION_FAILED", msg);
+                    });
+                }
                 return;
             }
 
@@ -535,18 +581,22 @@ namespace auth0_flutter
             {
                 if (!token.is_canceled())
                 {
-                    sharedResult->Error("AUTH_FAILED",
-                        "ID token payload could not be decoded as a JSON object");
+                    ui_task_runner_([sharedResult]() {
+                        sharedResult->Error("AUTH_FAILED",
+                            "ID token payload could not be decoded as a JSON object");
+                    });
                 }
                 return;
             }
             UserProfile user = UserProfile::DeserializeUserProfile(*payload_map_ptr);
             response[flutter::EncodableValue("userProfile")] = flutter::EncodableValue(user.ToMap());
 
-                // Step 10: Return success with credentials
+                // Step 10: Return success with credentials (must be on UI thread).
                 if (!token.is_canceled())
                 {
-                    sharedResult->Success(flutter::EncodableValue(response));
+                    ui_task_runner_([sharedResult, response]() {
+                        sharedResult->Success(flutter::EncodableValue(response));
+                    });
                 }
             }
             catch (const pplx::task_canceled &)
@@ -558,7 +608,9 @@ namespace auth0_flutter
             {
                 if (!token.is_canceled())
                 {
-                    sharedResult->Error("AUTH_FAILED", e.what());
+                    ui_task_runner_([sharedResult, msg = std::string(e.what())]() {
+                        sharedResult->Error("AUTH_FAILED", msg);
+                    });
                 }
             } });
     }

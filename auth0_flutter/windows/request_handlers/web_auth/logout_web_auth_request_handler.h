@@ -18,6 +18,7 @@
 
 #include "web_auth_request_handler.h"
 #include <pplx/pplxtasks.h>
+#include <functional>
 
 namespace auth0_flutter
 {
@@ -46,7 +47,8 @@ namespace auth0_flutter
     class LogoutWebAuthRequestHandler : public WebAuthRequestHandler
     {
     public:
-        LogoutWebAuthRequestHandler() = default;
+        explicit LogoutWebAuthRequestHandler(std::function<void(std::function<void()>)> post_ui_task)
+            : ui_task_runner_(std::move(post_ui_task)) {}
         ~LogoutWebAuthRequestHandler() override = default;
 
         std::string method() const override
@@ -58,6 +60,8 @@ namespace auth0_flutter
             const flutter::EncodableMap *arguments,
             std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) override;
 
+    private:
+        std::function<void(std::function<void()>)> ui_task_runner_;
     };
 
 

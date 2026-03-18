@@ -173,17 +173,22 @@ namespace auth0_flutter
 
         std::shared_ptr<flutter::MethodResult<flutter::EncodableValue>> sharedResult(result.release());
 
-        pplx::create_task([sharedResult, logoutUrl, returnTo]()
+        pplx::create_task([this, sharedResult, logoutUrl, returnTo]()
         {
-            // Open logout URL in system default browser.
+            // Open logout URL in system default browser (must be on UI thread).
             std::wstring urlW(logoutUrl.begin(), logoutUrl.end());
-            ShellExecuteW(NULL, L"open", urlW.c_str(), NULL, NULL, SW_SHOWNORMAL);
+            ui_task_runner_([urlW]() {
+                ShellExecuteW(NULL, L"open", urlW.c_str(), NULL, NULL, SW_SHOWNORMAL);
+            });
 
             // Wait for the browser to redirect back to the returnTo URI.
             waitForLogoutCallback(returnTo);
 
-            BringFlutterWindowToFront();
-            sharedResult->Success();
+            // Bring window to front and return result on the UI thread.
+            ui_task_runner_([sharedResult]() {
+                BringFlutterWindowToFront();
+                sharedResult->Success();
+            });
         });
     }
 
