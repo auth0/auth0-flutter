@@ -33,26 +33,31 @@ class CapturingMethodResult
 public:
     enum class Kind { None, Success, Error, NotImplemented };
 
-    Kind        kind         = Kind::None;
-    std::string errorCode;
-    std::string errorMessage;
+    struct State
+    {
+        Kind        kind         = Kind::None;
+        std::string errorCode;
+        std::string errorMessage;
+    };
+
+    std::shared_ptr<State> state = std::make_shared<State>();
 
 protected:
     void SuccessInternal(const flutter::EncodableValue *) override
     {
-        kind = Kind::Success;
+        state->kind = Kind::Success;
     }
 
     void ErrorInternal(const std::string &code,
                        const std::string &message,
                        const flutter::EncodableValue *) override
     {
-        kind         = Kind::Error;
-        errorCode    = code;
-        errorMessage = message;
+        state->kind         = Kind::Error;
+        state->errorCode    = code;
+        state->errorMessage = message;
     }
 
-    void NotImplementedInternal() override { kind = Kind::NotImplemented; }
+    void NotImplementedInternal() override { state->kind = Kind::NotImplemented; }
 };
 
 // ---------------------------------------------------------------------------
@@ -70,14 +75,16 @@ static flutter::EncodableMap MinimalArgs()
     return args;
 }
 
-static CapturingMethodResult *Invoke(
+// Returns the State shared_ptr, which remains valid even after handle()
+// destroys the MethodResult object (as happens on synchronous error paths).
+static std::shared_ptr<CapturingMethodResult::State> Invoke(
     LoginWebAuthRequestHandler &handler,
     flutter::EncodableMap &args)
 {
     auto result = std::make_unique<CapturingMethodResult>();
-    auto *raw   = result.get();
+    auto state  = result->state;          // keep state alive independently
     handler.handle(&args, std::move(result));
-    return raw;
+    return state;
 }
 
 // ===========================================================================
@@ -93,11 +100,11 @@ TEST(LoginHandlerTest, ReturnsErrorWhenScopesIsNotAList)
     args[flutter::EncodableValue("scopes")] =
         flutter::EncodableValue(std::string("openid"));  // string, not list
 
-    auto *raw = Invoke(handler, args);
+    auto state = Invoke(handler, args);
 
-    ASSERT_EQ(raw->kind, CapturingMethodResult::Kind::Error);
-    EXPECT_EQ(raw->errorCode, "bad_args");
-    EXPECT_THAT(raw->errorMessage, HasSubstr("scopes"));
+    ASSERT_EQ(state->kind, CapturingMethodResult::Kind::Error);
+    EXPECT_EQ(state->errorCode, "bad_args");
+    EXPECT_THAT(state->errorMessage, HasSubstr("scopes"));
 }
 
 // Additional type variants — confirm the check covers all non-list types.
@@ -108,10 +115,10 @@ TEST(LoginHandlerTest, ReturnsErrorWhenScopesIsAnInteger)
     auto args = MinimalArgs();
     args[flutter::EncodableValue("scopes")] = flutter::EncodableValue(int32_t(42));
 
-    auto *raw = Invoke(handler, args);
+    auto state = Invoke(handler, args);
 
-    ASSERT_EQ(raw->kind, CapturingMethodResult::Kind::Error);
-    EXPECT_EQ(raw->errorCode, "bad_args");
+    ASSERT_EQ(state->kind, CapturingMethodResult::Kind::Error);
+    EXPECT_EQ(state->errorCode, "bad_args");
 }
 
 TEST(LoginHandlerTest, ReturnsErrorWhenScopesIsABoolean)
@@ -121,10 +128,10 @@ TEST(LoginHandlerTest, ReturnsErrorWhenScopesIsABoolean)
     auto args = MinimalArgs();
     args[flutter::EncodableValue("scopes")] = flutter::EncodableValue(true);
 
-    auto *raw = Invoke(handler, args);
+    auto state = Invoke(handler, args);
 
-    ASSERT_EQ(raw->kind, CapturingMethodResult::Kind::Error);
-    EXPECT_EQ(raw->errorCode, "bad_args");
+    ASSERT_EQ(state->kind, CapturingMethodResult::Kind::Error);
+    EXPECT_EQ(state->errorCode, "bad_args");
 }
 
 // ===========================================================================
@@ -139,11 +146,11 @@ TEST(LoginHandlerTest, ReturnsErrorWhenAuthTimeoutIsAString)
     args[flutter::EncodableValue("authTimeoutSeconds")] =
         flutter::EncodableValue(std::string("abc"));
 
-    auto *raw = Invoke(handler, args);
+    auto state = Invoke(handler, args);
 
-    ASSERT_EQ(raw->kind, CapturingMethodResult::Kind::Error);
-    EXPECT_EQ(raw->errorCode, "bad_args");
-    EXPECT_THAT(raw->errorMessage, HasSubstr("integer"));
+    ASSERT_EQ(state->kind, CapturingMethodResult::Kind::Error);
+    EXPECT_EQ(state->errorCode, "bad_args");
+    EXPECT_THAT(state->errorMessage, HasSubstr("integer"));
 }
 
 TEST(LoginHandlerTest, ReturnsErrorWhenAuthTimeoutIsNegative)
@@ -154,11 +161,11 @@ TEST(LoginHandlerTest, ReturnsErrorWhenAuthTimeoutIsNegative)
     args[flutter::EncodableValue("authTimeoutSeconds")] =
         flutter::EncodableValue(int32_t(-1));
 
-    auto *raw = Invoke(handler, args);
+    auto state = Invoke(handler, args);
 
-    ASSERT_EQ(raw->kind, CapturingMethodResult::Kind::Error);
-    EXPECT_EQ(raw->errorCode, "bad_args");
-    EXPECT_THAT(raw->errorMessage, HasSubstr("positive"));
+    ASSERT_EQ(state->kind, CapturingMethodResult::Kind::Error);
+    EXPECT_EQ(state->errorCode, "bad_args");
+    EXPECT_THAT(state->errorMessage, HasSubstr("positive"));
 }
 
 TEST(LoginHandlerTest, ReturnsErrorWhenAuthTimeoutIsZero)
@@ -169,11 +176,11 @@ TEST(LoginHandlerTest, ReturnsErrorWhenAuthTimeoutIsZero)
     args[flutter::EncodableValue("authTimeoutSeconds")] =
         flutter::EncodableValue(int32_t(0));
 
-    auto *raw = Invoke(handler, args);
+    auto state = Invoke(handler, args);
 
-    ASSERT_EQ(raw->kind, CapturingMethodResult::Kind::Error);
-    EXPECT_EQ(raw->errorCode, "bad_args");
-    EXPECT_THAT(raw->errorMessage, HasSubstr("positive"));
+    ASSERT_EQ(state->kind, CapturingMethodResult::Kind::Error);
+    EXPECT_EQ(state->errorCode, "bad_args");
+    EXPECT_THAT(state->errorMessage, HasSubstr("positive"));
 }
 
 TEST(LoginHandlerTest, ReturnsErrorWhenAuthTimeoutExceedsMaximum)
@@ -184,11 +191,11 @@ TEST(LoginHandlerTest, ReturnsErrorWhenAuthTimeoutExceedsMaximum)
     args[flutter::EncodableValue("authTimeoutSeconds")] =
         flutter::EncodableValue(int32_t(9999999));
 
-    auto *raw = Invoke(handler, args);
+    auto state = Invoke(handler, args);
 
-    ASSERT_EQ(raw->kind, CapturingMethodResult::Kind::Error);
-    EXPECT_EQ(raw->errorCode, "bad_args");
-    EXPECT_THAT(raw->errorMessage, HasSubstr("3600"));
+    ASSERT_EQ(state->kind, CapturingMethodResult::Kind::Error);
+    EXPECT_EQ(state->errorCode, "bad_args");
+    EXPECT_THAT(state->errorMessage, HasSubstr("3600"));
 }
 
 // Boundary: 3600 is the maximum inclusive value — must not trigger the >3600 error.
@@ -200,9 +207,9 @@ TEST(LoginHandlerTest, AcceptsMaximumBoundaryAuthTimeout)
     args[flutter::EncodableValue("authTimeoutSeconds")] =
         flutter::EncodableValue(int32_t(3600));
 
-    auto *raw = Invoke(handler, args);
+    auto state = Invoke(handler, args);
 
-    EXPECT_NE(raw->kind, CapturingMethodResult::Kind::Error);
+    EXPECT_NE(state->kind, CapturingMethodResult::Kind::Error);
 }
 
 // Boundary: 1 is the minimum inclusive value — must not trigger the <=0 error.
@@ -214,9 +221,9 @@ TEST(LoginHandlerTest, AcceptsMinimumBoundaryAuthTimeout)
     args[flutter::EncodableValue("authTimeoutSeconds")] =
         flutter::EncodableValue(int32_t(1));
 
-    auto *raw = Invoke(handler, args);
+    auto state = Invoke(handler, args);
 
-    EXPECT_NE(raw->kind, CapturingMethodResult::Kind::Error);
+    EXPECT_NE(state->kind, CapturingMethodResult::Kind::Error);
 }
 
 // ===========================================================================
@@ -230,9 +237,9 @@ TEST(LoginHandlerTest, SilentlyIgnoresUseDPoPTrue)
     auto args = MinimalArgs();
     args[flutter::EncodableValue("useDPoP")] = flutter::EncodableValue(true);
 
-    auto *raw = Invoke(handler, args);
+    auto state = Invoke(handler, args);
 
-    EXPECT_NE(raw->kind, CapturingMethodResult::Kind::Error)
+    EXPECT_NE(state->kind, CapturingMethodResult::Kind::Error)
         << "useDPoP:true must not cause a bad_args error on Windows";
 }
 
@@ -245,11 +252,11 @@ TEST(LoginHandlerTest, ReturnsErrorWhenNullArguments)
     LoginWebAuthRequestHandler handler;
 
     auto result = std::make_unique<CapturingMethodResult>();
-    auto *raw   = result.get();
+    auto state  = result->state;
     handler.handle(nullptr, std::move(result));
 
-    ASSERT_EQ(raw->kind, CapturingMethodResult::Kind::Error);
-    EXPECT_EQ(raw->errorCode, "bad_args");
+    ASSERT_EQ(state->kind, CapturingMethodResult::Kind::Error);
+    EXPECT_EQ(state->errorCode, "bad_args");
 }
 
 TEST(LoginHandlerTest, ReturnsErrorWhenAccountIsAbsent)
@@ -258,9 +265,9 @@ TEST(LoginHandlerTest, ReturnsErrorWhenAccountIsAbsent)
 
     flutter::EncodableMap emptyArgs;
     auto result = std::make_unique<CapturingMethodResult>();
-    auto *raw   = result.get();
+    auto state  = result->state;
     handler.handle(&emptyArgs, std::move(result));
 
-    ASSERT_EQ(raw->kind, CapturingMethodResult::Kind::Error);
-    EXPECT_EQ(raw->errorCode, "bad_args");
+    ASSERT_EQ(state->kind, CapturingMethodResult::Kind::Error);
+    EXPECT_EQ(state->errorCode, "bad_args");
 }

@@ -13,6 +13,7 @@
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
 
+#include <functional>
 #include <memory>
 
 namespace auth0_flutter
@@ -44,8 +45,9 @@ namespace auth0_flutter
 
         /**
          * @brief Constructor - initializes WebAuth handlers
+         * @param ui_task_runner Task runner for the Flutter platform (UI) thread
          */
-        Auth0FlutterPlugin();
+        explicit Auth0FlutterPlugin(std::function<void(std::function<void()>)> post_ui_task);
 
         /**
          * @brief Destructor

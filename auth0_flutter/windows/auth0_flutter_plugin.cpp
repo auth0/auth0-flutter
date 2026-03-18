@@ -59,7 +59,14 @@ namespace auth0_flutter
                 registrar->messenger(), "auth0.com/auth0_flutter/web_auth",
                 &flutter::StandardMethodCodec::GetInstance());
 
-        auto plugin = std::make_unique<Auth0FlutterPlugin>();
+        // Pass a direct-call task runner. All operations posted through it
+        // (ShellExecuteW, window focus, MethodResult callbacks) are safe to
+        // invoke from a pplx background thread, so no UI-thread dispatch is
+        // required.  This avoids depending on flutter::TaskRunner / GetTaskRunner()
+        // which was only introduced in Flutter 3.7 and may not exist on all
+        // build environments.
+        auto plugin = std::make_unique<Auth0FlutterPlugin>(
+            [](std::function<void()> task) { task(); });
 
         channel->SetMethodCallHandler(
             [plugin_pointer = plugin.get()](const auto &call, auto result)
@@ -76,12 +83,12 @@ namespace auth0_flutter
      * Creates and registers all WebAuth request handlers following the
      * strategy pattern for clean separation of concerns.
      */
-    Auth0FlutterPlugin::Auth0FlutterPlugin()
+    Auth0FlutterPlugin::Auth0FlutterPlugin(std::function<void(std::function<void()>)> ui_task_runner)
     {
         // Initialize WebAuth method call handler with all request handlers
         std::vector<std::unique_ptr<WebAuthRequestHandler>> handlers;
-        handlers.push_back(std::make_unique<LoginWebAuthRequestHandler>());
-        handlers.push_back(std::make_unique<LogoutWebAuthRequestHandler>());
+        handlers.push_back(std::make_unique<LoginWebAuthRequestHandler>(ui_task_runner));
+        handlers.push_back(std::make_unique<LogoutWebAuthRequestHandler>(ui_task_runner));
 
         webAuthCallHandler_ = std::make_unique<Auth0FlutterWebAuthMethodCallHandler>(
             std::move(handlers));
