@@ -922,7 +922,6 @@ final didStore =
 - Integrate an external identity provider 
 - Migrate to Auth0
 
-> **Note:** This feature is currently available in [Early Access](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#early-access). Please reach out to Auth0 support to enable it for your tenant.
 
 <details>
   <summary>Mobile (Android/iOS)</summary>

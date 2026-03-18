@@ -2,7 +2,7 @@
 
 ## Summary
 
-**auth0_flutter v2.0.0** includes updates to the underlying native Auth0 SDKs to support new features including **DPoP (Demonstrating Proof of Possession)**. 
+**auth0_flutter v2.0.0** includes updates to the underlying native Auth0 SDKs to support new features including **DPoP (Demonstrating Proof of Possession)**, **Custom Token Exchange**, **Native to Web SSO**, and addresses several GitHub issues.
 
 **Do I need to make changes?**
 - ⚠️ **YES** - If you use biometric authentication on Android, you **MUST** update your `MainActivity` (see below)

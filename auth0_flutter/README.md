@@ -9,11 +9,9 @@
 📚 <a href="#documentation">Documentation</a> • 🚀 <a href="#getting-started">Getting started</a> • 🌐 <a href="#api-reference">API reference</a> • 💬 <a href="#feedback">Feedback</a>
 </div>
 
-## ⚠️ Important Migration Notice: v2.0.0
+## Important Migration Notice: v2.0.0
 
-We're excited to announce the release of auth0_flutter v2.0.0!
-
-**For v2.0.0 users:** This version includes updates to the underlying native Auth0 SDKs to support **DPoP (Demonstrating Proof of Possession)** and other improvements. See the 👉 [Migration Guide](https://github.com/auth0/auth0-flutter/blob/main/auth0_flutter/MIGRATION_GUIDE.md) 👈 for compatibility requirements and upgrade instructions.
+**auth0_flutter v2.0.0** is now Generally Available. This version includes updates to the underlying native Auth0 SDKs to support **DPoP (Demonstrating Proof of Possession)** and other improvements. See the [Migration Guide](https://github.com/auth0/auth0-flutter/blob/main/auth0_flutter/MIGRATION_GUIDE.md) for compatibility requirements and upgrade instructions.
 
 ## Documentation
 
