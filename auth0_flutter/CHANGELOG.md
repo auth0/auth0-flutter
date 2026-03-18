@@ -1,5 +1,11 @@
 # Change Log
 
+## [af-v2.0.0](https://github.com/auth0/auth0-flutter/tree/af-v2.0.0) (2026-03-18)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.0.0-beta.5...af-v2.0.0)
+
+**Added**
+- auth0_flutter from v2.0.0-beta.5 to v2.0.0 (GA) [\#781](https://github.com/auth0/auth0-flutter/pull/781) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
 ## [af-v2.0.0-beta.5](https://github.com/auth0/auth0-flutter/tree/af-v2.0.0-beta.5) (2026-03-06)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.0.0-beta.4...af-v2.0.0-beta.5)
 
