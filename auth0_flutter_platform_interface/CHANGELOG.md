@@ -1,5 +1,25 @@
 # Change Log
 
+## [afpi-v2.0.0](https://github.com/auth0/auth0-flutter/tree/afpi-v2.0.0) (2026-03-18)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.0.0-beta.1...afpi-v2.0.0)
+
+**Added**
+- auth0_flutter from v2.0.0-beta.5 to v2.0.0 (GA) [\#781](https://github.com/auth0/auth0-flutter/pull/781) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- fix: Show SSOCredentials [\#767](https://github.com/auth0/auth0-flutter/pull/767) ([ezorrio](https://github.com/ezorrio))
+- chore: Fix RL Scanner pipeline [\#763](https://github.com/auth0/auth0-flutter/pull/763) ([sanchitmehtagit](https://github.com/sanchitmehtagit))
+- chore: fix symlinks [\#760](https://github.com/auth0/auth0-flutter/pull/760) ([sanchitmehtagit](https://github.com/sanchitmehtagit))
+- feat: add ssoExchange to AuthenticationApi for Native to Web SSO [\#759](https://github.com/auth0/auth0-flutter/pull/759) ([sanchitmehtagit](https://github.com/sanchitmehtagit))
+- feat: Implement Native to Web [\#749](https://github.com/auth0/auth0-flutter/pull/749) ([sanchitmehtagit](https://github.com/sanchitmehtagit))
+- chore: Removed PR analyzer [\#752](https://github.com/auth0/auth0-flutter/pull/752) ([pmathew92](https://github.com/pmathew92))
+- chore:  updated the RL wrapper installation path [\#746](https://github.com/auth0/auth0-flutter/pull/746) ([pmathew92](https://github.com/pmathew92))
+- CredentialsManager user info/ID token contents accessible via flutter SDK [\#607](https://github.com/auth0/auth0-flutter/pull/607) ([NandanPrabhu](https://github.com/NandanPrabhu))
+- chore : Improvements in PR pipelines [\#738](https://github.com/auth0/auth0-flutter/pull/738) ([sanchitmehtagit](https://github.com/sanchitmehtagit))
+- Release afpi-v2.0.0-beta.2  [\#733](https://github.com/auth0/auth0-flutter/pull/733) ([sanchitmehtagit](https://github.com/sanchitmehtagit))
+- JDI: fix flutter analyse errors [\#731](https://github.com/auth0/auth0-flutter/pull/731) ([sanchitmehtagit](https://github.com/sanchitmehtagit))
+- chore:Fixed errors from flutter analyze [\#727](https://github.com/auth0/auth0-flutter/pull/727) ([pmathew92](https://github.com/pmathew92))
+- feat: add custom token exchange support across all platforms [\#721](https://github.com/auth0/auth0-flutter/pull/721) ([sanchitmehtagit](https://github.com/sanchitmehtagit))
+- feat: Add allowedBrowsers parameter to logout API  [\#726](https://github.com/auth0/auth0-flutter/pull/726) ([pmathew92](https://github.com/pmathew92))
+
 ## [afpi-v2.0.0-beta.4](https://github.com/auth0/auth0-flutter/tree/afpi-v2.0.0-beta.4) (2026-03-03)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.0.0-beta.3...afpi-v2.0.0-beta.4)
 
