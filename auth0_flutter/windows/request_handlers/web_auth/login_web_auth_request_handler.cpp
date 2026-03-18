@@ -316,10 +316,12 @@ namespace auth0_flutter
 
         std::shared_ptr<flutter::MethodResult<flutter::EncodableValue>> sharedResult(result.release());
 
+        auto taskRunner = ui_task_runner_;
+
         // Run authentication on a cancellable pplx task to avoid blocking the
         // Flutter UI thread.  The cancellation token lets the destructor (or a
         // subsequent handle() call) abort a running flow cleanly.
-        pplx::create_task([this, sharedResult,
+        pplx::create_task([taskRunner, sharedResult,
                            clientId, domain, scopeStr, redirectUri, audience, organizationId, invitationUrl, authTimeoutSeconds, leeway, maxAge, nonce, issuer, token, additionalParams]()
                           {
             try
@@ -349,7 +351,7 @@ namespace auth0_flutter
                     {
                         if (!token.is_canceled())
                         {
-                            ui_task_runner_([sharedResult, invitationUrl]() {
+                            taskRunner([sharedResult, invitationUrl]() {
                                 sharedResult->Error("INVALID_INVITATION_URL",
                                     "Invalid invitation URL: " + invitationUrl);
                             });
@@ -408,7 +410,7 @@ namespace auth0_flutter
 
                 std::string urlStr = authUrl.str();
                 std::wstring urlW(urlStr.begin(), urlStr.end());
-                ui_task_runner_([urlW]() {
+                taskRunner([urlW]() {
                     ShellExecuteW(NULL, L"open", urlW.c_str(), NULL, NULL, SW_SHOWNORMAL);
                 });
             }
@@ -423,7 +425,7 @@ namespace auth0_flutter
             }
 
             // Step 5: Bring Flutter window back to foreground (must be on UI thread).
-            ui_task_runner_([]() { BringFlutterWindowToFront(); });
+            taskRunner([]() { BringFlutterWindowToFront(); });
 
             // Handle callback result
             if (!callbackResult.success)
@@ -435,7 +437,7 @@ namespace auth0_flutter
                     // Return USER_CANCELLED error code for consistency across platforms
                     if (!token.is_canceled())
                     {
-                        ui_task_runner_([sharedResult]() {
+                        taskRunner([sharedResult]() {
                             sharedResult->Error("USER_CANCELLED",
                                 "The user cancelled the Web Auth operation.");
                         });
@@ -448,7 +450,7 @@ namespace auth0_flutter
                     // This is a security issue - use specific error code
                     if (!token.is_canceled())
                     {
-                        ui_task_runner_([sharedResult, callbackResult]() {
+                        taskRunner([sharedResult, callbackResult]() {
                             sharedResult->Error("INVALID_STATE",
                                 callbackResult.errorDescription);
                         });
@@ -466,7 +468,7 @@ namespace auth0_flutter
                         : callbackResult.errorDescription;
                     if (!token.is_canceled())
                     {
-                        ui_task_runner_([sharedResult, error = callbackResult.error, message]() {
+                        taskRunner([sharedResult, error = callbackResult.error, message]() {
                             sharedResult->Error(error, message);
                         });
                     }
@@ -477,7 +479,7 @@ namespace auth0_flutter
                     // Invalid callback - no code and no error
                     if (!token.is_canceled())
                     {
-                        ui_task_runner_([sharedResult]() {
+                        taskRunner([sharedResult]() {
                             sharedResult->Error("NO_AUTHORIZATION_CODE",
                                 "The callback URL is missing the authorization code.");
                         });
@@ -501,7 +503,7 @@ namespace auth0_flutter
                 // Token exchange failed.
                 if (!token.is_canceled())
                 {
-                    ui_task_runner_([sharedResult, code = e.GetCode(), desc = e.GetDescription()]() {
+                    taskRunner([sharedResult, code = e.GetCode(), desc = e.GetDescription()]() {
                         sharedResult->Error(code, desc);
                     });
                 }
@@ -534,7 +536,7 @@ namespace auth0_flutter
             {
                 if (!token.is_canceled())
                 {
-                    ui_task_runner_([sharedResult, msg = std::string("The ID token validation performed after authentication failed: ") + e.what()]() {
+                    taskRunner([sharedResult, msg = std::string("The ID token validation performed after authentication failed: ") + e.what()]() {
                         sharedResult->Error("ID_TOKEN_VALIDATION_FAILED", msg);
                     });
                 }
@@ -581,7 +583,7 @@ namespace auth0_flutter
             {
                 if (!token.is_canceled())
                 {
-                    ui_task_runner_([sharedResult]() {
+                    taskRunner([sharedResult]() {
                         sharedResult->Error("AUTH_FAILED",
                             "ID token payload could not be decoded as a JSON object");
                     });
@@ -594,7 +596,7 @@ namespace auth0_flutter
                 // Step 10: Return success with credentials (must be on UI thread).
                 if (!token.is_canceled())
                 {
-                    ui_task_runner_([sharedResult, response]() {
+                    taskRunner([sharedResult, response]() {
                         sharedResult->Success(flutter::EncodableValue(response));
                     });
                 }
@@ -608,7 +610,7 @@ namespace auth0_flutter
             {
                 if (!token.is_canceled())
                 {
-                    ui_task_runner_([sharedResult, msg = std::string(e.what())]() {
+                    taskRunner([sharedResult, msg = std::string(e.what())]() {
                         sharedResult->Error("AUTH_FAILED", msg);
                     });
                 }
