@@ -52,6 +52,9 @@ namespace auth0_flutter
     class LoginWebAuthRequestHandler : public WebAuthRequestHandler
     {
     public:
+        LoginWebAuthRequestHandler()
+            : ui_task_runner_([](std::function<void()> task){ task(); }) {}
+
         explicit LoginWebAuthRequestHandler(std::function<void(std::function<void()>)> post_ui_task)
             : ui_task_runner_(std::move(post_ui_task)) {}
 
