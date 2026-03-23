@@ -146,12 +146,28 @@ namespace auth0_flutter
             return;
         }
 
-        // Extract returnTo URL (default: "auth0flutter://callback")
-        std::string returnTo = "auth0flutter://callback";
+        // Extract appActivationURL — the custom-scheme URL the Windows app listens on
+        // to detect when the browser has completed logout and redirected back.
+        // Defaults to kDefaultRedirectUri ("auth0flutter://callback").
+        std::string appActivationURL = kDefaultRedirectUri;
+        auto appActivationIt = arguments->find(flutter::EncodableValue("appActivationURL"));
+        if (appActivationIt != arguments->end())
+        {
+            if (auto s = std::get_if<std::string>(&appActivationIt->second);
+                s && !s->empty())
+            {
+                appActivationURL = *s;
+            }
+        }
+
+        // Extract returnTo URL — the URL sent to Auth0 as the post-logout redirect.
+        // Defaults to appActivationURL when not provided.
+        std::string returnTo = appActivationURL;
         auto returnToIt = arguments->find(flutter::EncodableValue("returnTo"));
         if (returnToIt != arguments->end())
         {
-            if (auto s = std::get_if<std::string>(&returnToIt->second))
+            if (auto s = std::get_if<std::string>(&returnToIt->second);
+                s && !s->empty())
             {
                 returnTo = *s;
             }
@@ -173,19 +189,26 @@ namespace auth0_flutter
 
         std::shared_ptr<flutter::MethodResult<flutter::EncodableValue>> sharedResult(result.release());
 
-        pplx::create_task([this, sharedResult, logoutUrl, returnTo]()
+        // Capture ui_task_runner_ by value to avoid holding a dangling `this` pointer
+        // if the handler is destroyed while the background task is still running.
+        auto taskRunner = ui_task_runner_;
+
+        pplx::create_task([taskRunner, sharedResult, logoutUrl, appActivationURL]()
         {
             // Open logout URL in system default browser (must be on UI thread).
             std::wstring urlW(logoutUrl.begin(), logoutUrl.end());
-            ui_task_runner_([urlW]() {
+            taskRunner([urlW]() {
                 ShellExecuteW(NULL, L"open", urlW.c_str(), NULL, NULL, SW_SHOWNORMAL);
             });
 
-            // Wait for the browser to redirect back to the returnTo URI.
-            waitForLogoutCallback(returnTo);
+            // Wait for the browser to redirect back to appActivationURL.
+            // appActivationURL is what the Windows app listens on — even when returnTo
+            // is an intermediary server URL, the server must forward the final redirect
+            // to appActivationURL so the app wakes up.
+            waitForLogoutCallback(appActivationURL);
 
             // Bring window to front and return result on the UI thread.
-            ui_task_runner_([sharedResult]() {
+            taskRunner([sharedResult]() {
                 BringFlutterWindowToFront();
                 sharedResult->Success();
             });

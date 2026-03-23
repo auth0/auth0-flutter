@@ -30,14 +30,10 @@ Credentials Auth0Client::ExchangeCodeForTokens(
 
   web::json::value body;
   body[U("grant_type")] = web::json::value::string(U("authorization_code"));
-  body[U("client_id")] =
-      web::json::value::string(utility::conversions::to_string_t(clientId_));
-  body[U("code")] =
-      web::json::value::string(utility::conversions::to_string_t(code));
-  body[U("redirect_uri")] =
-      web::json::value::string(utility::conversions::to_string_t(redirectUri));
-  body[U("code_verifier")] =
-      web::json::value::string(utility::conversions::to_string_t(codeVerifier));
+  body[U("client_id")] = web::json::value::string(utility::conversions::to_string_t(clientId_));
+  body[U("code")] = web::json::value::string(utility::conversions::to_string_t(code));
+  body[U("redirect_uri")] = web::json::value::string(utility::conversions::to_string_t(redirectUri));
+  body[U("code_verifier")] = web::json::value::string(utility::conversions::to_string_t(codeVerifier));
 
   request.set_body(body);
 

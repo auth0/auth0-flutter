@@ -16,12 +16,12 @@
 #include "../../authentication_error.h"
 
 #include <windows.h>
+#include <set>
 #include <sstream>
 #include <stdexcept>
 #include <array>
 #include <iomanip>
 #include <map>
-#include <set>
 
 #include <cpprest/json.h>
 
@@ -146,10 +146,25 @@ namespace auth0_flutter
         }
 
 
-        // Extract redirect URI – defaults to the fixed custom-scheme callback URL.
-        // The app always listens on kDefaultRedirectUri ("auth0flutter://callback"),
-        // so any value provided here must be registered with Auth0 accordingly.
-        std::string redirectUri = kDefaultRedirectUri;
+        // Extract appActivationURL — the custom-scheme URL the Windows app listens on
+        // to receive the OAuth callback from the browser (or an intermediary server).
+        // Defaults to kDefaultRedirectUri ("auth0flutter://callback").
+        std::string appActivationURL = kDefaultRedirectUri;
+        auto appActivationIt = arguments->find(flutter::EncodableValue("appActivationURL"));
+        if (appActivationIt != arguments->end())
+        {
+            if (auto s = std::get_if<std::string>(&appActivationIt->second);
+                s && !s->empty())
+            {
+                appActivationURL = *s;
+            }
+        }
+
+        // Extract redirect URI — the redirect_uri sent to Auth0 in the authorization URL.
+        // Defaults to appActivationURL when not provided.  When using an intermediary
+        // server (Option B), the server URL is the redirectUrl while the app still listens
+        // on appActivationURL.
+        std::string redirectUri = appActivationURL;
         auto redirectIt = arguments->find(flutter::EncodableValue("redirectUrl"));
         if (redirectIt != arguments->end())
         {
@@ -220,20 +235,14 @@ namespace auth0_flutter
             }
         }
 
-        // Build additional URL parameters from the parameters map.
-        // Keys in kInternalParams are consumed above and must not be forwarded
-        // as raw query parameters to the authorization URL.
-        static const std::set<std::string> kInternalParams = {"nonce", "authTimeoutSeconds"};
-        std::map<std::string, std::string> additionalParams;
+        std::map<std::string, std::string> extraParams;
         if (parametersMap)
         {
             for (const auto &kv : *parametersMap)
             {
                 const auto *k = std::get_if<std::string>(&kv.first);
-                if (!k || kInternalParams.count(*k))
-                    continue;
-                if (const auto *v = std::get_if<std::string>(&kv.second))
-                    additionalParams[*k] = *v;
+                const auto *v = std::get_if<std::string>(&kv.second);
+                if (k && v) extraParams[*k] = *v;
             }
         }
 
@@ -322,7 +331,7 @@ namespace auth0_flutter
         // Flutter UI thread.  The cancellation token lets the destructor (or a
         // subsequent handle() call) abort a running flow cleanly.
         pplx::create_task([taskRunner, sharedResult,
-                           clientId, domain, scopeStr, redirectUri, audience, organizationId, invitationUrl, authTimeoutSeconds, leeway, maxAge, nonce, issuer, token, additionalParams]()
+                           clientId, domain, scopeStr, redirectUri, appActivationURL, audience, organizationId, invitationUrl, authTimeoutSeconds, leeway, maxAge, nonce, issuer, token, extraParams]()
                           {
             try
             {
@@ -396,8 +405,7 @@ namespace auth0_flutter
                 authUrl << "&max_age=" << maxAge.value();
             }
 
-            // Add any additional custom parameters
-            for (const auto &kv : additionalParams)
+            for (const auto &kv : extraParams)
             {
                 authUrl << "&" << urlEncode(kv.first) << "=" << urlEncode(kv.second);
             }
@@ -417,7 +425,7 @@ namespace auth0_flutter
 
             // Step 4: Wait for OAuth callback containing authorization code with state validation
             // State parameter is validated to prevent CSRF attacks
-            OAuthCallbackResult callbackResult = waitForAuthCode_CustomScheme(authTimeoutSeconds, state, token);
+            OAuthCallbackResult callbackResult = waitForAuthCode_CustomScheme(authTimeoutSeconds, state, token, appActivationURL);
 
             if (token.is_canceled())
             {

@@ -68,17 +68,19 @@ namespace auth0_flutter
      * @brief Wait for OAuth callback with authorization code (custom scheme flow)
      *
      * Polls the PLUGIN_STARTUP_URL environment variable for the OAuth callback URL.
-     * Only callbacks whose URL starts with kDefaultRedirectUri ("auth0flutter://callback")
-     * are accepted.
+     * Only callbacks whose URL starts with @p appActivationUrl are accepted.
      *
-     * @param timeoutSeconds Maximum time to wait for callback (default: 180 seconds)
-     * @param expectedState  Expected state parameter for CSRF validation (optional)
+     * @param timeoutSeconds   Maximum time to wait for callback (default: 180 seconds)
+     * @param expectedState    Expected state parameter for CSRF validation (optional)
+     * @param ct               Cancellation token (optional)
+     * @param appActivationUrl URL prefix the app listens on (default: kDefaultRedirectUri)
      * @return OAuthCallbackResult with authorization code or error details
      */
     OAuthCallbackResult waitForAuthCode_CustomScheme(
         int timeoutSeconds = 180,
         const std::string &expectedState = "",
-        pplx::cancellation_token ct = pplx::cancellation_token::none());
+        pplx::cancellation_token ct = pplx::cancellation_token::none(),
+        const std::string &appActivationUrl = kDefaultRedirectUri);
 
     /**
      * @brief Wait for the browser to redirect back to the logout returnTo URI

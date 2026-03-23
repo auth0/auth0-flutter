@@ -139,7 +139,8 @@ namespace auth0_flutter
     OAuthCallbackResult waitForAuthCode_CustomScheme(
         int timeoutSeconds,
         const std::string &expectedState,
-        pplx::cancellation_token ct)
+        pplx::cancellation_token ct,
+        const std::string &appActivationUrl)
     {
         static constexpr DWORD kStackBufChars = 2048;
 
@@ -179,7 +180,7 @@ namespace auth0_flutter
             std::string uri = readAndClearEnv();
             if (!uri.empty())
             {
-                if (uri.rfind(kDefaultRedirectUri, 0) != 0)
+                if (uri.rfind(appActivationUrl, 0) != 0)
                 {
                     std::this_thread::sleep_for(sleepDuration);
                     continue;

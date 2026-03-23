@@ -117,7 +117,7 @@ class Auth0 {
   /// ```dart
   /// final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
   /// final result = await auth0.windowsWebAuthentication().login(
-  ///   redirectUrl: 'auth0flutter://callback',
+  ///   appActivationURL: 'auth0flutter://callback',
   /// );
   /// final accessToken = result.accessToken;
   /// ```

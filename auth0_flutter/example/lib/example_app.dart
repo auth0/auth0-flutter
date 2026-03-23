@@ -58,7 +58,7 @@ class _ExampleAppState extends State<ExampleApp> {
       // Use Windows-specific authentication for Windows platform
       if (Platform.isWindows) {
         final result = await windowsWebAuth.login(
-          redirectUrl: 'auth0flutter://callback',
+          appActivationURL: 'auth0flutter://callback',
           authTimeout: const Duration(minutes: 5),
         );
 
@@ -103,7 +103,7 @@ class _ExampleAppState extends State<ExampleApp> {
       } else if (Platform.isWindows) {
         // Use Windows-specific logout
         await windowsWebAuth.logout(
-          returnTo: 'auth0flutter://callback',
+          appActivationURL: 'auth0flutter://callback',
         );
 
         setState(() {

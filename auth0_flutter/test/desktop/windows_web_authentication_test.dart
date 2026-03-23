@@ -42,7 +42,7 @@ void main() {
 
       final result = await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
-          .login(redirectUrl: 'auth0flutter://callback');
+          .login(appActivationURL: 'auth0flutter://callback');
 
       expect(result, TestPlatform.loginResult);
       verify(mockedPlatform.login(any)).called(1);
@@ -54,7 +54,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
-          .login(redirectUrl: 'auth0flutter://callback');
+          .login(appActivationURL: 'auth0flutter://callback');
 
       final verificationResult = verify(mockedPlatform.login(captureAny))
           .captured
@@ -63,18 +63,38 @@ void main() {
       expect(verificationResult.account.clientId, 'test-clientId');
     });
 
-    test('passes redirectUrl to the platform', () async {
+    test('passes appActivationURL to the platform', () async {
       when(mockedPlatform.login(any))
           .thenAnswer((final _) async => TestPlatform.loginResult);
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
-          .login(redirectUrl: 'auth0flutter://callback');
+          .login(appActivationURL: 'auth0flutter://callback');
 
       final verificationResult = verify(mockedPlatform.login(captureAny))
           .captured
           .single as WebAuthRequest<WebAuthLoginOptions>;
-      expect(verificationResult.options.redirectUrl, 'auth0flutter://callback');
+      final options = verificationResult.options as WindowsWebAuthLoginOptions;
+      expect(options.appActivationURL, 'auth0flutter://callback');
+    });
+
+    test('passes redirectUrl separately from appActivationURL', () async {
+      when(mockedPlatform.login(any))
+          .thenAnswer((final _) async => TestPlatform.loginResult);
+
+      await Auth0('test-domain', 'test-clientId')
+          .windowsWebAuthentication()
+          .login(
+            appActivationURL: 'auth0flutter://callback',
+            redirectUrl: 'https://my-server.com/callback',
+          );
+
+      final verificationResult = verify(mockedPlatform.login(captureAny))
+          .captured
+          .single as WebAuthRequest<WebAuthLoginOptions>;
+      final options = verificationResult.options as WindowsWebAuthLoginOptions;
+      expect(options.appActivationURL, 'auth0flutter://callback');
+      expect(options.redirectUrl, 'https://my-server.com/callback');
     });
 
     test('uses default scopes when not specified', () async {
@@ -83,7 +103,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
-          .login(redirectUrl: 'auth0flutter://callback');
+          .login(appActivationURL: 'auth0flutter://callback');
 
       final verificationResult = verify(mockedPlatform.login(captureAny))
           .captured
@@ -92,19 +112,19 @@ void main() {
           {'openid', 'profile', 'email', 'offline_access'});
     });
 
-    test('uses default authTimeoutSeconds of 180 in parameters', () async {
+    test('uses default authTimeout of 3 minutes when not specified', () async {
       when(mockedPlatform.login(any))
           .thenAnswer((final _) async => TestPlatform.loginResult);
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
-          .login(redirectUrl: 'auth0flutter://callback');
+          .login(appActivationURL: 'auth0flutter://callback');
 
       final verificationResult = verify(mockedPlatform.login(captureAny))
           .captured
           .single as WebAuthRequest<WebAuthLoginOptions>;
-      expect(verificationResult.options.parameters,
-          {'authTimeoutSeconds': '180'});
+      final options = verificationResult.options as WindowsWebAuthLoginOptions;
+      expect(options.authTimeout.inSeconds, 180);
     });
 
     test('passes audience to the platform', () async {
@@ -114,7 +134,7 @@ void main() {
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
           .login(
-            redirectUrl: 'auth0flutter://callback',
+            appActivationURL: 'auth0flutter://callback',
             audience: 'https://my-api.example.com',
           );
 
@@ -131,7 +151,7 @@ void main() {
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
           .login(
-            redirectUrl: 'auth0flutter://callback',
+            appActivationURL: 'auth0flutter://callback',
             scopes: {'openid', 'read:messages'},
           );
 
@@ -148,7 +168,7 @@ void main() {
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
           .login(
-            redirectUrl: 'auth0flutter://callback',
+            appActivationURL: 'auth0flutter://callback',
             organizationId: 'org_123',
             invitationUrl: 'https://invite.example.com',
           );
@@ -157,8 +177,8 @@ void main() {
           .captured
           .single as WebAuthRequest<WebAuthLoginOptions>;
       expect(verificationResult.options.organizationId, 'org_123');
-      expect(verificationResult.options.invitationUrl,
-          'https://invite.example.com');
+      expect(
+          verificationResult.options.invitationUrl, 'https://invite.example.com');
     });
 
     test('passes custom authTimeout to the platform', () async {
@@ -168,37 +188,15 @@ void main() {
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
           .login(
-            redirectUrl: 'auth0flutter://callback',
+            appActivationURL: 'auth0flutter://callback',
             authTimeout: const Duration(seconds: 300),
           );
 
       final verificationResult = verify(mockedPlatform.login(captureAny))
           .captured
           .single as WebAuthRequest<WebAuthLoginOptions>;
-      expect(verificationResult.options.parameters,
-          {'authTimeoutSeconds': '300'});
-    });
-
-    test('typed authTimeout wins over authTimeoutSeconds in parameters',
-        () async {
-      // When both are provided, the typed authTimeout must take precedence.
-      // The reversed spread ensures authTimeoutSeconds is always written last.
-      when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
-
-      await Auth0('test-domain', 'test-clientId')
-          .windowsWebAuthentication()
-          .login(
-            redirectUrl: 'auth0flutter://callback',
-            authTimeout: const Duration(seconds: 600),
-            parameters: {'authTimeoutSeconds': '9999'},
-          );
-
-      final verificationResult = verify(mockedPlatform.login(captureAny))
-          .captured
-          .single as WebAuthRequest<WebAuthLoginOptions>;
-      expect(verificationResult.options.parameters,
-          containsPair('authTimeoutSeconds', '600'));
+      final options = verificationResult.options as WindowsWebAuthLoginOptions;
+      expect(options.authTimeout.inSeconds, 300);
     });
 
     test('passes idTokenValidationConfig to the platform', () async {
@@ -211,7 +209,7 @@ void main() {
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
           .login(
-            redirectUrl: 'auth0flutter://callback',
+            appActivationURL: 'auth0flutter://callback',
             idTokenValidationConfig: config,
           );
 
@@ -219,35 +217,6 @@ void main() {
           .captured
           .single as WebAuthRequest<WebAuthLoginOptions>;
       expect(verificationResult.options.idTokenValidationConfig, config);
-    });
-
-    test('throws UnsupportedError when useDPoP is true', () async {
-      // DPoP is not yet implemented on Windows. Passing useDPoP: true must
-      // throw UnsupportedError immediately — no platform call should be made.
-      expect(
-        () => Auth0('test-domain', 'test-clientId')
-            .windowsWebAuthentication()
-            .login(
-              redirectUrl: 'auth0flutter://callback',
-              useDPoP: true,
-            ),
-        throwsUnsupportedError,
-      );
-      verifyNever(mockedPlatform.login(any));
-    });
-
-    test('does not enable DPoP by default', () async {
-      when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
-
-      await Auth0('test-domain', 'test-clientId')
-          .windowsWebAuthentication()
-          .login(redirectUrl: 'auth0flutter://callback');
-
-      final verificationResult = verify(mockedPlatform.login(captureAny))
-          .captured
-          .single as WebAuthRequest<WebAuthLoginOptions>;
-      expect(verificationResult.options.useDPoP, false);
     });
   });
 
@@ -257,7 +226,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
-          .logout(returnTo: 'auth0flutter://callback');
+          .logout(appActivationURL: 'auth0flutter://callback');
 
       verify(mockedPlatform.logout(any)).called(1);
     });
@@ -267,7 +236,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
-          .logout(returnTo: 'auth0flutter://callback');
+          .logout(appActivationURL: 'auth0flutter://callback');
 
       final verificationResult = verify(mockedPlatform.logout(captureAny))
           .captured
@@ -281,7 +250,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
-          .logout(returnTo: 'auth0flutter://callback');
+          .logout(appActivationURL: 'auth0flutter://callback');
 
       final verificationResult = verify(mockedPlatform.logout(captureAny))
           .captured
@@ -294,7 +263,10 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
-          .logout(returnTo: 'auth0flutter://callback', federated: true);
+          .logout(
+            appActivationURL: 'auth0flutter://callback',
+            federated: true,
+          );
 
       final verificationResult = verify(mockedPlatform.logout(captureAny))
           .captured
@@ -302,18 +274,36 @@ void main() {
       expect(verificationResult.options.federated, true);
     });
 
-    test('passes returnTo to the platform', () async {
+    test('passes appActivationURL to the platform', () async {
       when(mockedPlatform.logout(any)).thenAnswer((final _) async {});
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
-          .logout(returnTo: 'auth0flutter://callback');
+          .logout(appActivationURL: 'auth0flutter://callback');
 
       final verificationResult = verify(mockedPlatform.logout(captureAny))
           .captured
           .single as WebAuthRequest<WebAuthLogoutOptions>;
-      expect(verificationResult.options.returnTo, 'auth0flutter://callback');
+      final options = verificationResult.options as WindowsWebAuthLogoutOptions;
+      expect(options.appActivationURL, 'auth0flutter://callback');
+    });
+
+    test('passes returnTo separately from appActivationURL', () async {
+      when(mockedPlatform.logout(any)).thenAnswer((final _) async {});
+
+      await Auth0('test-domain', 'test-clientId')
+          .windowsWebAuthentication()
+          .logout(
+            appActivationURL: 'auth0flutter://callback',
+            returnTo: 'https://my-server.com/logout',
+          );
+
+      final verificationResult = verify(mockedPlatform.logout(captureAny))
+          .captured
+          .single as WebAuthRequest<WebAuthLogoutOptions>;
+      final options = verificationResult.options as WindowsWebAuthLogoutOptions;
+      expect(options.appActivationURL, 'auth0flutter://callback');
+      expect(options.returnTo, 'https://my-server.com/logout');
     });
   });
-
 }
