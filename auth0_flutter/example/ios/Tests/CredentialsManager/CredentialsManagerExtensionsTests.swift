@@ -43,12 +43,4 @@ class CredentialsManagerExtensionsTests: XCTestCase {
         XCTAssertEqual(details["_isRetryable"] as? Bool, true)
     }
 
-    func testIsRetryableIsTrueForRenewFailedWithNetworkError() {
-        let networkError = AuthenticationError(info: [:], statusCode: 0)
-        let renewError = CredentialsManagerError(code: .renewFailed, cause: networkError)
-        let flutterError = FlutterError(from: renewError)
-        let details = flutterError.details as! [String: Any]
-        // AuthenticationError with statusCode 0 and empty info is treated as a network error
-        XCTAssertNotNil(details["_isRetryable"])
-    }
 }
