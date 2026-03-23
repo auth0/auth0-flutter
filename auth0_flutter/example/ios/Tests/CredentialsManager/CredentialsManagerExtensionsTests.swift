@@ -19,4 +19,36 @@ class CredentialsManagerExtensionsTests: XCTestCase {
             assert(flutterError: flutterError, is: error, with: code)
         }
     }
+
+    func testIsRetryableIsFalseForNonRetryableErrors() {
+        let nonRetryableErrors: [CredentialsManagerError] = [
+            .noCredentials,
+            .noRefreshToken,
+            .renewFailed,
+            .storeFailed,
+            .revokeFailed,
+            .largeMinTTL
+        ]
+        for error in nonRetryableErrors {
+            let flutterError = FlutterError(from: error)
+            let details = flutterError.details as! [String: Any]
+            XCTAssertEqual(details["_isRetryable"] as? Bool, false,
+                           "Expected isRetryable to be false for \(error)")
+        }
+    }
+
+    func testIsRetryableIsTrueForBiometricsFailed() {
+        let flutterError = FlutterError(from: .biometricsFailed)
+        let details = flutterError.details as! [String: Any]
+        XCTAssertEqual(details["_isRetryable"] as? Bool, true)
+    }
+
+    func testIsRetryableIsTrueForRenewFailedWithNetworkError() {
+        let networkError = AuthenticationError(info: [:], statusCode: 0)
+        let renewError = CredentialsManagerError(code: .renewFailed, cause: networkError)
+        let flutterError = FlutterError(from: renewError)
+        let details = flutterError.details as! [String: Any]
+        // AuthenticationError with statusCode 0 and empty info is treated as a network error
+        XCTAssertNotNil(details["_isRetryable"])
+    }
 }

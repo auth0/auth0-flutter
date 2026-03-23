@@ -521,6 +521,27 @@ print(e);
 }
 ```
 
+#### Retryable errors
+
+The `isRetryable` property on `CredentialsManagerException` indicates whether the error is transient and the operation can be retried. When `true`, the failure is likely due to a temporary condition such as a network outage. When `false`, the failure is permanent (e.g. an invalid refresh token) and retrying will not help — you should log the user out instead.
+
+```dart
+try {
+  final credentials = await auth0.credentialsManager.credentials();
+  // ...
+} on CredentialsManagerException catch (e) {
+  if (e.isRetryable) {
+    // Transient error (e.g. network issue) — safe to retry
+    print("Temporary error, retrying...");
+  } else {
+    // Permanent error — log the user out
+    print("Credentials cannot be renewed: ${e.message}");
+  }
+}
+```
+
+> This property is available on Android and iOS/macOS. On Android, it checks whether the underlying cause is a network-related `AuthenticationException`. On iOS/macOS, it checks for `AuthenticationError.isNetworkError` or `URLError`, and also returns `true` for biometrics failures.
+
 ### Native to Web SSO
 
 Native to Web SSO allows authenticated users in your native mobile application to seamlessly transition to your web application without requiring them to log in again. This is achieved by exchanging a refresh token for a Session Transfer Token, which can then be used to establish a session in the web application.

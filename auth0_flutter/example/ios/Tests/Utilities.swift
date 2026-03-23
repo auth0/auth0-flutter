@@ -151,4 +151,10 @@ func assert(flutterError: FlutterError, is authenticationError: AuthenticationEr
 func assert(flutterError: FlutterError, is credentialsManagerError: CredentialsManagerError, with code: String) {
     XCTAssertEqual(flutterError.code, code)
     XCTAssertEqual(flutterError.message, String(describing: credentialsManagerError))
+
+    guard let details = flutterError.details as? [String: Any] else {
+        return XCTFail("The FlutterError is missing the 'details' dictionary")
+    }
+    XCTAssertNotNil(details["_isRetryable"])
+    XCTAssertTrue(details["_isRetryable"] is Bool)
 }
