@@ -18,17 +18,16 @@ import '../../auth0_flutter.dart';
 /// ```dart
 /// final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
 /// final result = await auth0.windowsWebAuthentication().login(
-///   redirectUrl: 'auth0flutter://callback',
+///   appActivationURL: 'auth0flutter://callback',
 /// );
 /// final accessToken = result.accessToken;
 /// ```
 ///
-/// Login with custom timeout:
+/// Login with an HTTPS intermediary server:
 /// ```dart
-/// final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
 /// final result = await auth0.windowsWebAuthentication().login(
-///   redirectUrl: 'auth0flutter://callback',
-///   authTimeout: const Duration(minutes: 5), // 5 minutes for MFA
+///   appActivationURL: 'auth0flutter://callback',
+///   redirectUrl: 'https://your-server.com/callback',
 /// );
 /// ```
 class WindowsWebAuthentication {
@@ -40,137 +39,82 @@ class WindowsWebAuthentication {
     this._userAgent,
   );
 
-  /// Redirects the user to the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login) for authentication. If successful, it returns
-  /// a set of tokens, as well as the user's profile (constructed from ID token
-  /// claims).
+  /// Redirects the user to the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login)
+  /// for authentication. If successful, returns a set of tokens as well as the
+  /// user's profile (constructed from ID token claims).
   ///
-  /// **IMPORTANT**: [redirectUrl] is required for Windows desktop applications.
-  /// It must appear in your **Allowed Callback URLs** list for the Auth0 app.
-  /// Common values include:
-  /// - `auth0flutter://callback` — the app's built-in custom scheme.
-  ///   Auth0 redirects directly to the app; no server is required.
-  /// - `https://your-server.com/callback` — an HTTPS endpoint on an
-  ///   intermediary server that receives the Auth0 redirect and forwards it
-  ///   to the app via the `auth0flutter://callback` scheme.
+  /// [appActivationURL] is required — the custom-scheme URL (e.g.
+  /// `auth0flutter://callback`) that the Windows app listens on for the OAuth
+  /// callback.
   ///
-  /// Regardless of what [redirectUrl] is registered with Auth0, the Windows
-  /// plugin always wakes the app by listening on the `auth0flutter://callback`
-  /// custom scheme. When using an intermediary server, the server must
-  /// forward the callback to `auth0flutter://callback?code=...&state=...`.
+  /// When [redirectUrl] is provided, it is used as the `redirect_uri` in the
+  /// Auth0 authorization request (e.g. an HTTPS intermediary server). When
+  /// omitted, [appActivationURL] is used directly. Both URLs must appear in
+  /// **Allowed Callback URLs** in the Auth0 dashboard.
   ///
   /// [Read more about redirecting users](https://auth0.com/docs/authenticate/login/redirect-users-after-login).
-  ///
-  /// How the ID token is validated can be configured using
-  /// [idTokenValidationConfig], but in general the defaults for this are
-  /// adequate.
-  ///
-  /// Additional notes:
-  ///
-  /// * [audience] relates to the API Identifier you want to reference in your
-  /// access tokens. See [API settings](https://auth0.com/docs/get-started/apis/api-settings)
-  /// to learn more.
-  /// * [scopes] defaults to `openid profile email offline_access`. You can
-  /// override these scopes, but `openid` is always requested regardless of this
-  /// setting.
-  /// * Arbitrary [parameters] can be specified and then picked up in a custom
-  /// Auth0 [Action](https://auth0.com/docs/customize/actions) or
-  /// [Rule](https://auth0.com/docs/customize/rules).
-  /// * If you want to log into a specific organization, provide the
-  /// [organizationId]. Provide [invitationUrl] if a user has been invited
-  /// to join an organization.
-  ///
-  /// ## Windows-Specific Parameters
-  ///
-  /// ### authTimeout
-  /// How long to wait for the authentication callback before timing out.
-  /// Defaults to 3 minutes. Increase this for MFA flows or slow networks;
-  /// decrease it for faster failure detection in automated testing.
-  ///
-  /// **Example:**
-  /// ```dart
-  /// await auth0.windowsWebAuthentication().login(
-  ///   redirectUrl: 'auth0flutter://callback',
-  ///   authTimeout: const Duration(minutes: 5), // for MFA flows
-  /// );
-  /// ```
-  ///
-  /// If the timeout is reached a `USER_CANCELLED` error is returned, as the
-  /// user likely closed the browser without completing authentication.
-  ///
-  /// **Note:** [useDPoP] is accepted for API compatibility but is not yet
-  /// implemented on Windows. Passing `true` will throw an [UnsupportedError].
-  Future<Credentials> login(
-      {final String? audience,
-      final Set<String> scopes = const {
-        'openid',
-        'profile',
-        'email',
-        'offline_access',
-      },
-      required final String redirectUrl,
-      final String? organizationId,
-      final String? invitationUrl,
-      final Duration authTimeout = const Duration(minutes: 3),
-      final bool useDPoP = false,
-      final Map<String, String> parameters = const {},
-      final IdTokenValidationConfig idTokenValidationConfig =
-          const IdTokenValidationConfig()}) async {
-    if (useDPoP) {
-      throw UnsupportedError('DPoP is not yet supported on Windows. '
-          'useDPoP has no effect on this platform.');
-    }
-    final credentials = await Auth0FlutterWebAuthPlatform.instance.login(
-      _createWebAuthRequest(
-        WebAuthLoginOptions(
-          audience: audience,
-          scopes: scopes,
-          redirectUrl: redirectUrl,
-          organizationId: organizationId,
-          invitationUrl: invitationUrl,
-          parameters: {
-            ...parameters,
-            'authTimeoutSeconds': authTimeout.inSeconds.toString(),
-          },
-          idTokenValidationConfig: idTokenValidationConfig,
+  Future<Credentials> login({
+    required final String appActivationURL,
+    final String? audience,
+    final Set<String> scopes = const {
+      'openid',
+      'profile',
+      'email',
+      'offline_access'
+    },
+    final String? redirectUrl,
+    final String? organizationId,
+    final String? invitationUrl,
+    final Map<String, String> parameters = const {},
+    final IdTokenValidationConfig idTokenValidationConfig =
+        const IdTokenValidationConfig(),
+    final Duration authTimeout = const Duration(minutes: 3),
+  }) =>
+      Auth0FlutterWebAuthPlatform.instance.login(
+        WebAuthRequest<WebAuthLoginOptions>(
+          account: _account,
+          options: WindowsWebAuthLoginOptions(
+            appActivationURL: appActivationURL,
+            audience: audience,
+            scopes: scopes,
+            redirectUrl: redirectUrl,
+            organizationId: organizationId,
+            invitationUrl: invitationUrl,
+            parameters: parameters,
+            idTokenValidationConfig: idTokenValidationConfig,
+            authTimeout: authTimeout,
+          ),
+          userAgent: _userAgent,
         ),
-      ),
-    );
-    return credentials;
-  }
+      );
 
-  /// Redirects the user to the Auth0 Logout endpoint to remove their
-  /// authentication session, and log out. The user is immediately redirected
-  /// back to the application once logout is complete.
+  /// Redirects the user to the Auth0 logout endpoint to remove their
+  /// authentication session.
   ///
-  /// **IMPORTANT**: [returnTo] is required for Windows desktop applications.
-  /// It must appear in your **Allowed Logout URLs** list for the Auth0 app.
-  /// Use the same URL pattern you chose for login:
-  /// - `auth0flutter://callback` — direct custom-scheme redirect (Option A).
-  /// - `https://your-server.com/logout` — HTTPS intermediary server that
-  ///   redirects back to `auth0flutter://callback` (Option B).
+  /// [appActivationURL] is required — the custom-scheme URL (e.g.
+  /// `auth0flutter://callback`) that the Windows app listens on for the
+  /// post-logout redirect from the browser.
+  ///
+  /// When [returnTo] is provided, it is used as the `returnTo` parameter in
+  /// the Auth0 logout request (e.g. an HTTPS intermediary server). When
+  /// omitted, [appActivationURL] is used directly. Both URLs must appear in
+  /// **Allowed Logout URLs** in the Auth0 dashboard.
   ///
   /// [Read more about redirecting users after logout](https://auth0.com/docs/authenticate/login/logout#redirect-users-after-logout).
-  ///
-  /// [federated] controls whether to perform federated logout, which also logs
-  /// the user out from their identity provider.
   Future<void> logout({
-    required final String returnTo,
+    required final String appActivationURL,
+    final String? returnTo,
     final bool federated = false,
-  }) async {
-    await Auth0FlutterWebAuthPlatform.instance.logout(_createWebAuthRequest(
-      WebAuthLogoutOptions(
-        returnTo: returnTo,
-        federated: federated,
-      ),
-    ));
-  }
-
-  WebAuthRequest<TOptions>
-      _createWebAuthRequest<TOptions extends RequestOptions>(
-              final TOptions options) =>
-          WebAuthRequest<TOptions>(
-            account: _account,
-            options: options,
-            userAgent: _userAgent,
-          );
+  }) =>
+      Auth0FlutterWebAuthPlatform.instance.logout(
+        WebAuthRequest<WebAuthLogoutOptions>(
+          account: _account,
+          options: WindowsWebAuthLogoutOptions(
+            appActivationURL: appActivationURL,
+            returnTo: returnTo,
+            federated: federated,
+          ),
+          userAgent: _userAgent,
+        ),
+      );
 }
