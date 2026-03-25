@@ -13,6 +13,11 @@ namespace auth0_flutter
 {
 
     /**
+     * @brief Normalize a domain string into an HTTPS URL with a trailing slash.
+     */
+    std::string httpsUrl(const std::string &domain);
+
+    /**
      * @brief Percent-encode a string for safe inclusion in a URL query parameter
      *
      * Leaves alphanumeric characters and the unreserved characters - _ . ~ unchanged

@@ -111,7 +111,11 @@ void StartPipeServer() {
         return;
       }
 
-      if (ConnectNamedPipe(hPipe, NULL)) {
+      // ConnectNamedPipe returns FALSE with ERROR_PIPE_CONNECTED when a
+      // client connected between CreateNamedPipeW and this call — that is
+      // a valid connection, not an error.
+      BOOL connected = ConnectNamedPipe(hPipe, NULL);
+      if (connected || GetLastError() == ERROR_PIPE_CONNECTED) {
         wchar_t buffer[2048];
         DWORD read = 0;
         // Reserve one wchar_t for the null terminator so buffer[read/sizeof(wchar_t)]

@@ -75,7 +75,7 @@ Under the **Application URIs** section of the **Settings** page, configure the f
 - Android: `SCHEME://YOUR_DOMAIN/android/YOUR_PACKAGE_NAME/callback`
 - iOS: `https://YOUR_DOMAIN/ios/YOUR_BUNDLE_ID/callback,YOUR_BUNDLE_ID://YOUR_DOMAIN/ios/YOUR_BUNDLE_ID/callback`
 - macOS: `https://YOUR_DOMAIN/macos/YOUR_BUNDLE_ID/callback,YOUR_BUNDLE_ID://YOUR_DOMAIN/macos/YOUR_BUNDLE_ID/callback`
-- Windows: `auth0flutter://callback` (direct, no server) **or** `https://YOUR_HOSTED_DOMAIN/callback` (intermediary server — see below)
+- Windows: `YOUR_SCHEME://callback` (direct, no server) **or** `https://YOUR_HOSTED_DOMAIN/callback` (intermediary server — see below)
 
 <details>
   <summary>Example</summary>
@@ -85,16 +85,16 @@ If your Auth0 domain was `company.us.auth0.com` and your package name (Android) 
 - Android: `https://company.us.auth0.com/android/com.company.myapp/callback`
 - iOS: `https://company.us.auth0.com/ios/com.company.myapp/callback,com.company.myapp://company.us.auth0.com/ios/com.company.myapp/callback`
 - macOS: `https://company.us.auth0.com/macos/com.company.myapp/callback,com.company.myapp://company.us.auth0.com/macos/com.company.myapp/callback`
-- Windows (direct): `auth0flutter://callback`
+- Windows (direct): `myapp://callback`
 - Windows (intermediary server): `https://your-app.example.com/callback`
 
 </details>
 
-> 💡 **Windows**: Always pass `appActivationURL` — the custom-scheme URL your Windows app is registered to listen on (e.g. `auth0flutter://callback`). You have two options for what to register in the Auth0 dashboard:
+> 💡 **Windows**: Always pass `appActivationURL` — the custom-scheme URL your Windows app is registered to listen on (e.g. `myapp://callback`). Choose a scheme name unique to your application. You have two options for what to register in the Auth0 dashboard:
 >
-> - **Direct (recommended for most apps):** Pass only `appActivationURL`. Register `auth0flutter://callback` in the dashboard. Auth0 redirects straight to the custom scheme and the plugin picks it up immediately.
+> - **Direct (recommended for most apps):** Pass only `appActivationURL`. Register your custom scheme (e.g. `myapp://callback`) in the dashboard. Auth0 redirects straight to the custom scheme and the plugin picks it up immediately.
 >
-> - **Intermediary server (better browser UX):** Also pass `redirectUrl` (login) or `returnTo` (logout) pointing to an HTTPS server you control. Register that HTTPS URL in the dashboard. Auth0 redirects to your server, which redirects onward to `auth0flutter://callback`. This lets the server show a "Returning you to the app…" page and close cleanly, avoiding any hanging browser tab.
+> - **Intermediary server (better browser UX):** Also pass `redirectUrl` (login) or `returnTo` (logout) pointing to an HTTPS server you control. Register that HTTPS URL in the dashboard. Auth0 redirects to your server, which redirects onward to your custom scheme. This lets the server show a "Returning you to the app…" page and close cleanly, avoiding any hanging browser tab.
 
 Take note of the **client ID** and **domain** values under the **Basic Information** section. You'll need these values in the next step.
 
@@ -117,7 +117,7 @@ Take note of the **client ID** and **domain** values under the **Basic Informati
 >   - Implement additional client-side validation
 >   - Be aware that custom schemes offer no protection against malicious apps on the same device
 >
-> - **For Windows applications:** The `auth0flutter://` custom scheme is required. When using the direct pattern, PKCE (automatically enabled) is your primary protection. When using the intermediary server pattern, also ensure the server endpoint validates the `state` parameter and uses HTTPS
+> - **For Windows applications:** A custom URL scheme is required. Choose a scheme unique to your app (e.g. `myapp://`). When using the direct pattern, PKCE (automatically enabled) is your primary protection. When using the intermediary server pattern, also ensure the server endpoint validates the `state` parameter and uses HTTPS
 >
 > 📖 For more details about app impersonation risks and mitigation strategies, see [Auth0's Security Guidance: Measures Against App Impersonation](https://auth0.com/docs/secure/security-guidance/measures-against-app-impersonation)
 
@@ -279,7 +279,7 @@ If you have a [custom domain](https://auth0.com/docs/customize/custom-domains),
 
 ##### Windows: Configure protocol handler
 
-> ⚠️ **Runner integration required.** The Windows authentication flow depends on callback plumbing that must be added to your app's runner (`windows/runner/main.cpp`). The Flutter plugin itself does not automatically receive protocol-scheme activations from the OS — your runner must capture the `auth0flutter://callback` URI and pass it to the plugin via the `PLUGIN_STARTUP_URL` environment variable. Copy the reference implementation from the [example runner](example/windows/runner/main.cpp) and adapt it to your own `wWinMain`. The key pieces are:
+> ⚠️ **Runner integration required.** The Windows authentication flow depends on callback plumbing that must be added to your app's runner (`windows/runner/main.cpp`). The Flutter plugin itself does not automatically receive protocol-scheme activations from the OS — your runner must capture the custom-scheme callback URI and pass it to the plugin via the `PLUGIN_STARTUP_URL` environment variable. Copy the reference implementation from the [example runner](example/windows/runner/main.cpp) and adapt it to your own `wWinMain`. Update the callback prefix constant to match your chosen scheme. The key pieces are:
 >
 > 1. **Single-instance mutex** — ensures a second launch triggered by the OS protocol handler forwards its URI to the already-running instance rather than starting a new one.
 > 2. **Pipe server** — the already-running instance listens on a named pipe (`\\.\pipe\auth0flutter_pipe`) for the URI forwarded by the second launch, validates it, and writes it to `PLUGIN_STARTUP_URL`.
@@ -293,16 +293,16 @@ You have two options for how Auth0 delivers the callback to your app:
 
 ###### Option A — Direct custom-scheme redirect (recommended)
 
-Register `auth0flutter://callback` directly as the callback URL in your Auth0 dashboard:
+Register your custom scheme directly as the callback URL in your Auth0 dashboard:
 
-- **Allowed Callback URLs**: `auth0flutter://callback`
-- **Allowed Logout URLs**: `auth0flutter://callback`
+- **Allowed Callback URLs**: `myapp://callback`
+- **Allowed Logout URLs**: `myapp://callback`
 
 Pass `appActivationURL` (the custom scheme your app listens on). No `redirectUrl` is needed — `appActivationURL` is used as the `redirect_uri` automatically:
 
 ```dart
 final credentials = await auth0.windowsWebAuthentication().login(
-  appActivationURL: 'auth0flutter://callback',
+  appActivationURL: 'myapp://callback',
 );
 ```
 
@@ -312,7 +312,7 @@ Auth0 redirects straight to the custom scheme. The Windows OS hands the URL to y
 
 ###### Option B — Intermediary server redirect (better browser UX)
 
-If leaving a blank tab open is unacceptable for your users, you can route the callback through a lightweight HTTPS server you control. The server receives the Auth0 redirect and immediately redirects onward to `auth0flutter://callback`, giving it the opportunity to show a clean "Returning you to the app…" page before the tab closes.
+If leaving a blank tab open is unacceptable for your users, you can route the callback through a lightweight HTTPS server you control. The server receives the Auth0 redirect and immediately redirects onward to your custom scheme (e.g. `myapp://callback`), giving it the opportunity to show a clean "Returning you to the app…" page before the tab closes.
 
 Register your server endpoint in the Auth0 dashboard:
 
@@ -323,25 +323,25 @@ Pass both `appActivationURL` (what the app listens on) and `redirectUrl` (what A
 
 ```dart
 final credentials = await auth0.windowsWebAuthentication().login(
-  appActivationURL: 'auth0flutter://callback',
+  appActivationURL: 'myapp://callback',
   redirectUrl: 'https://your-app.example.com/callback',
 );
 ```
 
-Minimal server implementation (Node.js/Express):
+Minimal server implementation (Node.js/Express). Replace `myapp` with your chosen scheme:
 
 ```javascript
 app.get('/callback', (req, res) => {
   const { code, state, error, error_description } = req.query;
   if (error) {
-    res.redirect(`auth0flutter://callback?error=${error}&error_description=${encodeURIComponent(error_description)}`);
+    res.redirect(`myapp://callback?error=${error}&error_description=${encodeURIComponent(error_description)}`);
   } else {
-    res.redirect(`auth0flutter://callback?code=${code}&state=${state}`);
+    res.redirect(`myapp://callback?code=${code}&state=${state}`);
   }
 });
 ```
 
-> ⚠️ Validate the `state` parameter on your server before forwarding to `auth0flutter://callback` to prevent open-redirect abuse. The SDK also validates `state` client-side as part of PKCE, but defence-in-depth is recommended.
+> ⚠️ Validate the `state` parameter on your server before forwarding to your custom scheme to prevent open-redirect abuse. The SDK also validates `state` client-side as part of PKCE, but defence-in-depth is recommended.
 
 ---
 
@@ -398,13 +398,13 @@ Windows uses `windowsWebAuthentication()`. `appActivationURL` is always required
 // Option A — direct custom-scheme redirect (simplest)
 // appActivationURL is used as redirect_uri automatically
 final credentials = await auth0.windowsWebAuthentication().login(
-  appActivationURL: 'auth0flutter://callback',
+  appActivationURL: 'myapp://callback',
 );
 
 // Option B — intermediary HTTPS server (cleaner browser UX)
 // Auth0 redirects to redirectUrl; your server redirects on to appActivationURL
 final credentials = await auth0.windowsWebAuthentication().login(
-  appActivationURL: 'auth0flutter://callback',
+  appActivationURL: 'myapp://callback',
   redirectUrl: 'https://your-app.example.com/callback',
 );
 
@@ -418,13 +418,13 @@ Logging out also requires `appActivationURL`. `returnTo` is optional — if omit
 // Option A — direct custom-scheme redirect (simplest)
 // appActivationURL is used as returnTo automatically
 await auth0.windowsWebAuthentication().logout(
-  appActivationURL: 'auth0flutter://callback',
+  appActivationURL: 'myapp://callback',
 );
 
 // Option B — intermediary HTTPS server
 // Auth0 redirects to returnTo; your server redirects on to appActivationURL
 await auth0.windowsWebAuthentication().logout(
-  appActivationURL: 'auth0flutter://callback',
+  appActivationURL: 'myapp://callback',
   returnTo: 'https://your-app.example.com/logout',
 );
 ```
@@ -551,7 +551,7 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 
 ### 🪟 Windows
 
-- **Custom Protocol Handler**: Windows uses the `auth0flutter://` custom scheme. Auth0 can redirect to it directly (no server needed) or via an intermediary HTTPS server for a cleaner browser UX — see the [Windows configuration section](#windows-configure-protocol-handler) above
+- **Custom Protocol Handler**: Windows uses a custom URL scheme that you choose (e.g. `myapp://`). Auth0 can redirect to it directly (no server needed) or via an intermediary HTTPS server for a cleaner browser UX — see the [Windows configuration section](#windows-configure-protocol-handler) above
 - **No Credentials Manager**: Credential storage is not currently supported on Windows. Credentials must be managed manually in your app
 - **C++ SDK**: The Windows implementation is built with native C++ using PKCE for secure authentication
 - **Unit Tests**: Comprehensive unit tests for Windows OAuth helpers are available in `windows/test/`

@@ -34,15 +34,15 @@ namespace auth0_flutter
      * @return Logout URL as string with properly encoded parameters
      */
     static std::string BuildLogoutUrl(
-        const std::string &domain,
+        const std::string &domainUrl,
         const std::string &clientId,
         const std::string &returnTo,
         bool federated)
     {
         std::ostringstream url;
 
-        // Base logout endpoint with encoded domain
-        url << "https://" << urlEncode(domain) << "/v2/logout";
+        // Base logout endpoint using normalized HTTPS domain URL
+        url << domainUrl << "v2/logout";
 
         // Add federated parameter if requested
         // This will also log the user out from their identity provider
@@ -185,7 +185,7 @@ namespace auth0_flutter
         }
 
         // Build logout URL with all parameters
-        std::string logoutUrl = BuildLogoutUrl(domain, clientId, returnTo, federated);
+        std::string logoutUrl = BuildLogoutUrl(httpsUrl(domain), clientId, returnTo, federated);
 
         std::shared_ptr<flutter::MethodResult<flutter::EncodableValue>> sharedResult(result.release());
 
