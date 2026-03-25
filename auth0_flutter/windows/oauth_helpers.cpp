@@ -33,6 +33,24 @@ using namespace web::http::experimental::listener;
 namespace auth0_flutter
 {
 
+    std::string httpsUrl(const std::string &domain)
+    {
+        std::string url;
+        if (domain.rfind("https", 0) != 0)
+        {
+            url = "https://" + domain;
+        }
+        else
+        {
+            url = domain;
+        }
+        if (url.empty() || url.back() != '/')
+        {
+            url += '/';
+        }
+        return url;
+    }
+
     std::string urlEncode(const std::string &str)
     {
         std::ostringstream encoded;
@@ -180,13 +198,16 @@ namespace auth0_flutter
             std::string uri = readAndClearEnv();
             if (!uri.empty())
             {
-                if (uri.rfind(appActivationUrl, 0) != 0)
+                auto qpos = uri.find('?');
+                std::string baseUrl = (qpos != std::string::npos)
+                                          ? uri.substr(0, qpos)
+                                          : uri;
+                if (baseUrl != appActivationUrl)
                 {
                     std::this_thread::sleep_for(sleepDuration);
                     continue;
                 }
                 // find query
-                auto qpos = uri.find('?');
                 if (qpos == std::string::npos)
                 {
                     return {false, "", "invalid_callback", "No query parameters in callback URI", false};
@@ -275,9 +296,16 @@ namespace auth0_flutter
             }
 
             std::string uri = readAndClearEnv();
-            if (!uri.empty() && uri.rfind(returnToUri, 0) == 0)
+            if (!uri.empty())
             {
-                return true;
+                auto qpos = uri.find('?');
+                std::string baseUrl = (qpos != std::string::npos)
+                                          ? uri.substr(0, qpos)
+                                          : uri;
+                if (baseUrl == returnToUri)
+                {
+                    return true;
+                }
             }
 
             std::this_thread::sleep_for(sleepDuration);

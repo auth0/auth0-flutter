@@ -206,15 +206,8 @@ namespace auth0_flutter
             }
         }
 
+        std::string state = generateCodeVerifier();
         std::string nonce = generateCodeVerifier();
-        if (auto nonceIt = arguments->find(flutter::EncodableValue("nonce"));
-            nonceIt != arguments->end())
-        {
-            if (auto s = std::get_if<std::string>(&nonceIt->second); s && !s->empty())
-            {
-                nonce = *s;
-            }
-        }
 
         auto parametersIt = arguments->find(flutter::EncodableValue("parameters"));
         const flutter::EncodableMap *parametersMap = nullptr;
@@ -225,6 +218,14 @@ namespace auth0_flutter
 
         if (parametersMap)
         {
+            if (auto it = parametersMap->find(flutter::EncodableValue("state"));
+                it != parametersMap->end())
+            {
+                if (auto s = std::get_if<std::string>(&it->second); s && !s->empty())
+                {
+                    state = *s;
+                }
+            }
             if (auto it = parametersMap->find(flutter::EncodableValue("nonce"));
                 it != parametersMap->end())
             {
@@ -235,6 +236,12 @@ namespace auth0_flutter
             }
         }
 
+        static const std::set<std::string> kReservedParams = {
+            "response_type", "client_id", "redirect_uri", "scope",
+            "code_challenge", "code_challenge_method", "state", "nonce",
+            "audience", "organization", "invitation", "max_age"
+        };
+
         std::map<std::string, std::string> extraParams;
         if (parametersMap)
         {
@@ -242,7 +249,8 @@ namespace auth0_flutter
             {
                 const auto *k = std::get_if<std::string>(&kv.first);
                 const auto *v = std::get_if<std::string>(&kv.second);
-                if (k && v) extraParams[*k] = *v;
+                if (k && v && kReservedParams.find(*k) == kReservedParams.end())
+                    extraParams[*k] = *v;
             }
         }
 
@@ -292,21 +300,17 @@ namespace auth0_flutter
             }
         }
 
-        std::string issuer = "https://" + domain + "/";
+        // Normalize domain to a proper HTTPS base URL
+        // Used as the default issuer and to derive the JWKS endpoint.
+        std::string domainUrl = httpsUrl(domain);
+
+        std::string issuer = domainUrl;
         auto issuerIt = arguments->find(flutter::EncodableValue("issuer"));
         if (issuerIt != arguments->end())
         {
             if (auto s = std::get_if<std::string>(&issuerIt->second); s && !s->empty())
             {
-                issuer = *s;
-                // Ensure exactly one trailing slash so that the JWKS URI
-                // ("issuer" + ".well-known/jwks.json") is always well-formed.
-                // Without this, "https://my-issuer.com" produces the invalid
-                // URL "https://my-issuer.com.well-known/jwks.json".
-                if (issuer.back() != '/')
-                {
-                    issuer += '/';
-                }
+                issuer = httpsUrl(*s);
             }
         }
 
@@ -331,7 +335,7 @@ namespace auth0_flutter
         // Flutter UI thread.  The cancellation token lets the destructor (or a
         // subsequent handle() call) abort a running flow cleanly.
         pplx::create_task([taskRunner, sharedResult,
-                           clientId, domain, scopeStr, redirectUri, appActivationURL, audience, organizationId, invitationUrl, authTimeoutSeconds, leeway, maxAge, nonce, issuer, token, extraParams]()
+                           clientId, domain, domainUrl, scopeStr, redirectUri, appActivationURL, audience, organizationId, invitationUrl, authTimeoutSeconds, leeway, maxAge, state, nonce, issuer, token, extraParams]()
                           {
             try
             {
@@ -339,9 +343,6 @@ namespace auth0_flutter
                 // PKCE prevents authorization code interception attacks
                 std::string codeVerifier = generateCodeVerifier();
                 std::string codeChallenge = generateCodeChallenge(codeVerifier);
-
-                // Generate state (CSRF protection) and nonce (OIDC replay protection)
-                std::string state = generateCodeVerifier();
 
                 // Parse invitation URL to extract organization and invitation query parameters.
                 std::string resolvedOrganizationId = organizationId;
@@ -374,7 +375,7 @@ namespace auth0_flutter
             // Step 2: Build OAuth 2.0 authorization URL with properly encoded parameters
             // Uses authorization code flow with PKCE, state for CSRF, and nonce for OIDC replay protection
             std::ostringstream authUrl;
-            authUrl << "https://" << urlEncode(domain) << "/authorize?"
+            authUrl << domainUrl << "authorize?"
                     << "response_type=code"
                     << "&client_id=" << urlEncode(clientId)
                     << "&redirect_uri=" << urlEncode(redirectUri)
@@ -535,8 +536,7 @@ namespace auth0_flutter
                 }
 
                 // RS256 signature validation via the JWKS well-known endpoint.
-                // Derived from the issuer URL: issuer already has a trailing "/".
-                validationConfig.jwksUri = issuer + ".well-known/jwks.json";
+                validationConfig.jwksUri = domainUrl + ".well-known/jwks.json";
 
                 ValidateIdToken(creds.idToken, validationConfig, &validatedPayload);
             }

@@ -9,6 +9,34 @@
 
 using namespace auth0_flutter;
 
+/* ---------------- httpsUrl ---------------- */
+
+TEST(HttpsUrlTest, PrependsPrefixAndTrailingSlash) {
+  EXPECT_EQ(httpsUrl("example.auth0.com"), "https://example.auth0.com/");
+}
+
+TEST(HttpsUrlTest, DoesNotDoublePrefixWhenAlreadyPresent) {
+  EXPECT_EQ(httpsUrl("https://example.auth0.com"), "https://example.auth0.com/");
+}
+
+TEST(HttpsUrlTest, DoesNotDoubleSlashWhenAlreadyPresent) {
+  EXPECT_EQ(httpsUrl("https://example.auth0.com/"), "https://example.auth0.com/");
+}
+
+TEST(HttpsUrlTest, HandlesBareDomainWithSubdomain) {
+  EXPECT_EQ(httpsUrl("tenant.us.auth0.com"), "https://tenant.us.auth0.com/");
+}
+
+TEST(HttpsUrlTest, HandlesHttpsPrefixWithTrailingSlash) {
+  // Already fully normalized — returned as-is.
+  EXPECT_EQ(httpsUrl("https://already.ok.com/"), "https://already.ok.com/");
+}
+
+TEST(HttpsUrlTest, HandlesDomainWithPath) {
+  // A domain with an existing path keeps the trailing slash appended.
+  EXPECT_EQ(httpsUrl("example.com/custom-path"), "https://example.com/custom-path/");
+}
+
 /* ---------------- base64UrlEncode ---------------- */
 
 TEST(Base64UrlEncodeTest, EncodesEmptyData) {
@@ -499,6 +527,32 @@ TEST(WaitForAuthCodeEnvVarTest, WrongSchemeIsSkippedAndCorrectCallbackAccepted) 
   EXPECT_TRUE(result.success);
   EXPECT_EQ(result.code, "real_code");
   EXPECT_FALSE(result.timedOut);
+}
+
+/* -------- Exact-match URL validation (prevents callbackevil attacks) ----- */
+
+// NOTE: Takes ~1 s (wrong-prefix URL causes one full polling cycle before timeout).
+TEST(WaitForAuthCodeEnvVarTest, RejectsSimilarPrefixCallbackEvil) {
+  // "auth0flutter://callbackevil" must NOT match "auth0flutter://callback".
+  // Before the exact-match fix this would have been accepted as a prefix match.
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"auth0flutter://callbackevil?code=stolen&state=s1");
+
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(1, "s1");
+
+  EXPECT_FALSE(result.success);
+  EXPECT_TRUE(result.timedOut);
+  EXPECT_TRUE(result.code.empty());
+}
+
+// NOTE: Takes ~1 s.
+TEST(WaitForLogoutCallbackTest, RejectsSimilarPrefixCallbackEvil) {
+  // "auth0flutter://callbackevil" must NOT match "auth0flutter://callback".
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"auth0flutter://callbackevil");
+
+  bool result = waitForLogoutCallback("auth0flutter://callback", 1);
+  EXPECT_FALSE(result);
 }
 
 /* -------- authTimeoutSeconds validation (CSRF state always validated) ---- */
