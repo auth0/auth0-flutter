@@ -112,6 +112,12 @@ func assert(result: Any?, isError handlerError: HandlerError) {
 func assert(flutterError: FlutterError, is webAuthError: WebAuthError, with code: String) {
     XCTAssertEqual(flutterError.code, code)
     XCTAssertEqual(flutterError.message, String(describing: webAuthError))
+
+    guard let details = flutterError.details as? [String: Any] else {
+        return XCTFail("The FlutterError is missing the 'details' dictionary")
+    }
+    XCTAssertNotNil(details["_isRetryable"])
+    XCTAssertTrue(details["_isRetryable"] is Bool)
 }
 
 func assert(flutterError: FlutterError, is authenticationError: AuthenticationError) {

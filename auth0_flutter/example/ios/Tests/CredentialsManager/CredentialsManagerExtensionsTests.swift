@@ -20,12 +20,13 @@ class CredentialsManagerExtensionsTests: XCTestCase {
         }
     }
 
-    func testIsRetryableIsFalseForNonRetryableErrors() {
+    func testIsRetryableIsFalseForErrorsWithoutNetworkCause() {
         let nonRetryableErrors: [CredentialsManagerError] = [
             .noCredentials,
             .noRefreshToken,
             .renewFailed,
             .storeFailed,
+            .biometricsFailed,
             .revokeFailed,
             .largeMinTTL
         ]
@@ -35,12 +36,6 @@ class CredentialsManagerExtensionsTests: XCTestCase {
             XCTAssertEqual(details["_isRetryable"] as? Bool, false,
                            "Expected isRetryable to be false for \(error)")
         }
-    }
-
-    func testIsRetryableIsTrueForBiometricsFailed() {
-        let flutterError = FlutterError(from: .biometricsFailed)
-        let details = flutterError.details as! [String: Any]
-        XCTAssertEqual(details["_isRetryable"] as? Bool, true)
     }
 
 }

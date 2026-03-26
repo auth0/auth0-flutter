@@ -345,9 +345,15 @@ try {
   final credentials = await auth0.webAuthentication().login();
   // ...
 } on WebAuthenticationException catch (e) {
-  print(e);
+  if (e.isRetryable) {
+    // Transient error (e.g. network issue) — safe to retry
+  } else {
+    print(e);
+  }
 }
 ```
+
+The `isRetryable` property indicates whether the error is transient (e.g. a network outage) and the operation can be retried.
 
 </details>
 
@@ -540,7 +546,7 @@ try {
 }
 ```
 
-> This property is available on Android and iOS/macOS. On Android, it checks whether the underlying cause is a network-related `AuthenticationException`. On iOS/macOS, it checks for `AuthenticationError.isNetworkError` or `URLError`, and also returns `true` for biometrics failures.
+> The `isRetryable` property is available on all exception types (`CredentialsManagerException`, `ApiException`, `WebAuthenticationException`) across Android and iOS/macOS. It returns `true` when the underlying failure is network-related, indicating the operation may succeed on retry.
 
 ### Native to Web SSO
 
@@ -912,9 +918,15 @@ try {
       connectionOrRealm: connection);
   // ...
 } on ApiException catch (e) {
-  print(e);
+  if (e.isRetryable) {
+    // Transient error (e.g. network issue) — safe to retry
+  } else {
+    print(e);
+  }
 }
 ```
+
+The `isRetryable` property indicates whether the error is transient (e.g. a network outage) and the operation can be retried. It returns `true` when `isNetworkError` is `true`.
 
 [Go up ⤴](#examples)
 

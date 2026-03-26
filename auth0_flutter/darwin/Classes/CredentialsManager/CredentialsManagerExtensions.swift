@@ -21,16 +21,13 @@ extension FlutterError {
         }
 
         let isRetryable: Bool
-        switch credentialsManagerError {
-        case .renewFailed:
-            if let authError = credentialsManagerError.cause as? AuthenticationError {
+        if let cause = credentialsManagerError.cause {
+            if let authError = cause as? AuthenticationError {
                 isRetryable = authError.isNetworkError
             } else {
-                isRetryable = credentialsManagerError.cause is URLError
+                isRetryable = cause is URLError
             }
-        case .biometricsFailed:
-            isRetryable = true
-        default:
+        } else {
             isRetryable = false
         }
 

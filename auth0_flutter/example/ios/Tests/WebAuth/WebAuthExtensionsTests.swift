@@ -21,4 +21,23 @@ class WebAuthExtensionsTests: XCTestCase {
             assert(flutterError: flutterError, is: error, with: code)
         }
     }
+
+    func testIsRetryableIsFalseForNonNetworkErrors() {
+        let nonRetryableErrors: [WebAuthError] = [
+            .userCancelled,
+            .noBundleIdentifier,
+            .invalidInvitationURL,
+            .noAuthorizationCode,
+            .pkceNotAllowed,
+            .idTokenValidationFailed,
+            .transactionActiveAlready,
+            .other
+        ]
+        for error in nonRetryableErrors {
+            let flutterError = FlutterError(from: error)
+            let details = flutterError.details as! [String: Any]
+            XCTAssertEqual(details["_isRetryable"] as? Bool, false,
+                           "Expected isRetryable to be false for \(error)")
+        }
+    }
 }

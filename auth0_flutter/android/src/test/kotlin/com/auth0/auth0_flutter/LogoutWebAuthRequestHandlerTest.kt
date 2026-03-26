@@ -122,7 +122,7 @@ class LogoutWebAuthRequestHandlerTest {
 
         handler.handle(mock(), MethodCallRequest(Auth0.getInstance("test-client", "test-domain"), mock()), mockResult)
 
-        verify(mockResult).error("code", "description", exception)
+        verify(mockResult).error(eq("code"), eq("description"), eq(mapOf("_isRetryable" to false)))
     }
 
     @Test

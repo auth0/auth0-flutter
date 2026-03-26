@@ -305,7 +305,7 @@ class LoginWebAuthRequestHandlerTest {
         val mockRequest = MethodCallRequest(mockAccount, hashMapOf<String, Any>())
         handler.handle(mock(), mockRequest, mockResult)
 
-        verify(mockResult).error("code", "description", exception)
+        verify(mockResult).error(eq("code"), eq("description"), eq(mapOf("_isRetryable" to false)))
     }
 
     @Test

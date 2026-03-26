@@ -46,7 +46,8 @@ class LogoutWebAuthRequestHandler(private val builderResolver: (MethodCallReques
 
         builder.start(context, object : Callback<Void?, AuthenticationException> {
             override fun onFailure(exception: AuthenticationException) {
-                result.error(exception.getCode(), exception.getDescription(), exception)
+                result.error(exception.getCode(), exception.getDescription(),
+                    mapOf("_isRetryable" to exception.isNetworkError))
             }
 
             override fun onSuccess(res: Void?) {
