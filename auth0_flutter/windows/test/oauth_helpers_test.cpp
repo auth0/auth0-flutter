@@ -555,6 +555,51 @@ TEST(WaitForLogoutCallbackTest, RejectsSimilarPrefixCallbackEvil) {
   EXPECT_FALSE(result);
 }
 
+/* -------- trailing-slash normalization ----------------------------------- */
+
+TEST(WaitForAuthCodeEnvVarTest, TrailingSlashInCallbackUrlMatches) {
+  // Auth0 may redirect to "auth0flutter://callback/" (with trailing slash)
+  // while the app expects "auth0flutter://callback" (without).
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"auth0flutter://callback/?code=my_code&state=s1");
+
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(5, "s1");
+
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(result.code, "my_code");
+  EXPECT_FALSE(result.timedOut);
+}
+
+TEST(WaitForAuthCodeEnvVarTest, TrailingSlashInExpectedUrlMatches) {
+  // If the caller passes appCustomUrl with a trailing slash, it should
+  // still match a callback without one.
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"auth0flutter://callback?code=my_code&state=s2");
+
+  OAuthCallbackResult result = waitForAuthCode_CustomScheme(
+      5, "s2", pplx::cancellation_token::none(), "auth0flutter://callback/");
+
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(result.code, "my_code");
+  EXPECT_FALSE(result.timedOut);
+}
+
+TEST(WaitForLogoutCallbackTest, TrailingSlashInCallbackUrlMatches) {
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"auth0flutter://callback/");
+
+  bool result = waitForLogoutCallback("auth0flutter://callback", 5);
+  EXPECT_TRUE(result);
+}
+
+TEST(WaitForLogoutCallbackTest, TrailingSlashInExpectedUrlMatches) {
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL",
+      L"auth0flutter://callback");
+
+  bool result = waitForLogoutCallback("auth0flutter://callback/", 5);
+  EXPECT_TRUE(result);
+}
+
 /* -------- authTimeoutSeconds validation (CSRF state always validated) ---- */
 
 TEST(WaitForAuthCodeEnvVarTest, MissingStateAlwaysFailsEvenWithNoExpectedState) {
