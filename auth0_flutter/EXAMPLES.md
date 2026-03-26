@@ -91,18 +91,18 @@ await auth0.webAuthentication().logout(useHTTPS: true);
 <details>
   <summary>Windows</summary>
 
-`appActivationURL` is required for logout. It is the custom-scheme URL your Windows app listens on. `returnTo` is optional — if omitted, `appActivationURL` is used in the Auth0 logout URL as well.
+`appCustomURL` is required for logout. It is the custom-scheme URL your Windows app listens on. `returnTo` is optional — if omitted, `appCustomURL` is used in the Auth0 logout URL as well.
 
 ```dart
-// Option A — direct custom scheme (appActivationURL is used as returnTo too)
+// Option A — direct custom scheme (appCustomURL is used as returnTo too)
 await auth0.windowsWebAuthentication().logout(
-  appActivationURL: 'myapp://callback',
+  appCustomURL: 'myapp://callback',
 );
 
 // Option B — intermediary HTTPS server
 // Auth0 redirects to the HTTPS URL; the server redirects on to your custom scheme
 await auth0.windowsWebAuthentication().logout(
-  appActivationURL: 'myapp://callback',
+  appCustomURL: 'myapp://callback',
   returnTo: 'https://your-app.example.com/logout',
 );
 ```
@@ -431,18 +431,18 @@ await webAuth.logout();
 
 Windows uses `windowsWebAuthentication()` instead of `webAuthentication()`.
 
-### `appActivationURL` — why it is required
+### `appCustomURL` — why it is required
 
-On Windows, the browser cannot directly activate a desktop app the way iOS/Android handle universal links. Instead, the app registers a **custom URL scheme** (e.g. `myapp://callback`) as a protocol handler in the Windows registry. When the browser navigates to that URL, Windows launches (or brings to the front) your Flutter app and passes the URL as a command-line argument — this is the `appActivationURL`.
+On Windows, the browser cannot directly activate a desktop app the way iOS/Android handle universal links. Instead, the app registers a **custom URL scheme** (e.g. `myapp://callback`) as a protocol handler in the Windows registry. When the browser navigates to that URL, Windows launches (or brings to the front) your Flutter app and passes the URL as a command-line argument — this is the `appCustomURL`.
 
-`appActivationURL` must always be passed. It tells the SDK which URL scheme your app is listening on so it can intercept the browser redirect.
+`appCustomURL` must always be passed. It tells the SDK which URL scheme your app is listening on so it can intercept the browser redirect.
 
 ### `redirectUrl` (login) and `returnTo` (logout) — when to pass them
 
 | Scenario | What to pass | What happens |
 |----------|-------------|--------------|
-| **Simple setup** (recommended) | `appActivationURL` only | Auth0 redirects straight to the custom scheme; `appActivationURL` is used as `redirect_uri` / `returnTo` in the Auth0 URL. Register your scheme (e.g. `myapp://callback`) in your dashboard. |
-| **Intermediary HTTPS server** | `appActivationURL` + `redirectUrl` / `returnTo` | Auth0 redirects to your HTTPS server; the server then redirects onward to `appActivationURL`. Register the HTTPS URL in your dashboard. Useful when you want no custom-scheme URL visible in the browser address bar. |
+| **Simple setup** (recommended) | `appCustomURL` only | Auth0 redirects straight to the custom scheme; `appCustomURL` is used as `redirect_uri` / `returnTo` in the Auth0 URL. Register your scheme (e.g. `myapp://callback`) in your dashboard. |
+| **Intermediary HTTPS server** | `appCustomURL` + `redirectUrl` / `returnTo` | Auth0 redirects to your HTTPS server; the server then redirects onward to `appCustomURL`. Register the HTTPS URL in your dashboard. Useful when you want no custom-scheme URL visible in the browser address bar. |
 
 See the [Windows configuration section](README.md#windows-configure-protocol-handler) in the README for the full setup guide, including the required runner changes.
 
@@ -492,7 +492,7 @@ project(your_app LANGUAGES CXX)
 
 For Windows to route your custom-scheme callback URLs (e.g. `myapp://callback`) back to your app, you must register the scheme as a protocol handler in the Windows Registry. Choose a scheme name that is unique to your application. This is typically done once when the app is installed.
 
-> 💡 The scheme can be anything you choose — `myapp`, `com.example.myapp`, etc. Use the same value as `appActivationURL` in your Dart code and register it in the Auth0 dashboard's **Allowed Callback URLs** / **Allowed Logout URLs**.
+> 💡 The scheme can be anything you choose — `myapp`, `com.example.myapp`, etc. Use the same value as `appCustomURL` in your Dart code and register it in the Auth0 dashboard's **Allowed Callback URLs** / **Allowed Logout URLs**.
 
 **Option A — Manual registration (development)**
 
@@ -575,11 +575,11 @@ Your app's `windows/runner/main.cpp` must be updated to handle single-instance e
 ### Login
 
 ```dart
-// Simple setup — appActivationURL only (recommended for most apps)
+// Simple setup — appCustomURL only (recommended for most apps)
 // Register your custom scheme (e.g. 'myapp://callback') in Allowed Callback URLs
 // in the Auth0 dashboard.
 final credentials = await auth0.windowsWebAuthentication().login(
-  appActivationURL: 'myapp://callback',
+  appCustomURL: 'myapp://callback',
 );
 
 // Intermediary HTTPS server
@@ -587,7 +587,7 @@ final credentials = await auth0.windowsWebAuthentication().login(
 // Auth0 redirects to the HTTPS URL; your server redirects onward to
 // myapp://callback?code=...&state=... to activate the app.
 final credentials = await auth0.windowsWebAuthentication().login(
-  appActivationURL: 'myapp://callback',
+  appCustomURL: 'myapp://callback',
   redirectUrl: 'https://your-app.example.com/callback',
 );
 
@@ -600,11 +600,11 @@ final credentials = await auth0.windowsWebAuthentication().login(
 ### Logout
 
 ```dart
-// Simple setup — appActivationURL only (recommended for most apps)
+// Simple setup — appCustomURL only (recommended for most apps)
 // Register your custom scheme (e.g. 'myapp://callback') in Allowed Logout URLs
 // in the Auth0 dashboard.
 await auth0.windowsWebAuthentication().logout(
-  appActivationURL: 'myapp://callback',
+  appCustomURL: 'myapp://callback',
 );
 
 // Intermediary HTTPS server
@@ -612,7 +612,7 @@ await auth0.windowsWebAuthentication().logout(
 // Auth0 redirects to the HTTPS URL; your server redirects onward to
 // myapp://callback to re-activate the app.
 await auth0.windowsWebAuthentication().logout(
-  appActivationURL: 'myapp://callback',
+  appCustomURL: 'myapp://callback',
   returnTo: 'https://your-app.example.com/logout',
 );
 ```

@@ -42,7 +42,7 @@ void main() {
 
       final result = await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
-          .login(appActivationURL: 'auth0flutter://callback');
+          .login(appCustomURL: 'auth0flutter://callback');
 
       expect(result, TestPlatform.loginResult);
       verify(mockedPlatform.login(any)).called(1);
@@ -54,7 +54,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
-          .login(appActivationURL: 'auth0flutter://callback');
+          .login(appCustomURL: 'auth0flutter://callback');
 
       final verificationResult = verify(mockedPlatform.login(captureAny))
           .captured
@@ -63,29 +63,29 @@ void main() {
       expect(verificationResult.account.clientId, 'test-clientId');
     });
 
-    test('passes appActivationURL to the platform', () async {
+    test('passes appCustomURL to the platform', () async {
       when(mockedPlatform.login(any))
           .thenAnswer((final _) async => TestPlatform.loginResult);
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
-          .login(appActivationURL: 'auth0flutter://callback');
+          .login(appCustomURL: 'auth0flutter://callback');
 
       final verificationResult = verify(mockedPlatform.login(captureAny))
           .captured
           .single as WebAuthRequest<WebAuthLoginOptions>;
       final options = verificationResult.options as WindowsWebAuthLoginOptions;
-      expect(options.appActivationURL, 'auth0flutter://callback');
+      expect(options.appCustomURL, 'auth0flutter://callback');
     });
 
-    test('passes redirectUrl separately from appActivationURL', () async {
+    test('passes redirectUrl separately from appCustomURL', () async {
       when(mockedPlatform.login(any))
           .thenAnswer((final _) async => TestPlatform.loginResult);
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
           .login(
-            appActivationURL: 'auth0flutter://callback',
+            appCustomURL: 'auth0flutter://callback',
             redirectUrl: 'https://my-server.com/callback',
           );
 
@@ -93,7 +93,7 @@ void main() {
           .captured
           .single as WebAuthRequest<WebAuthLoginOptions>;
       final options = verificationResult.options as WindowsWebAuthLoginOptions;
-      expect(options.appActivationURL, 'auth0flutter://callback');
+      expect(options.appCustomURL, 'auth0flutter://callback');
       expect(options.redirectUrl, 'https://my-server.com/callback');
     });
 
@@ -103,7 +103,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
-          .login(appActivationURL: 'auth0flutter://callback');
+          .login(appCustomURL: 'auth0flutter://callback');
 
       final verificationResult = verify(mockedPlatform.login(captureAny))
           .captured
@@ -118,7 +118,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
-          .login(appActivationURL: 'auth0flutter://callback');
+          .login(appCustomURL: 'auth0flutter://callback');
 
       final verificationResult = verify(mockedPlatform.login(captureAny))
           .captured
@@ -134,7 +134,7 @@ void main() {
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
           .login(
-            appActivationURL: 'auth0flutter://callback',
+            appCustomURL: 'auth0flutter://callback',
             audience: 'https://my-api.example.com',
           );
 
@@ -151,7 +151,7 @@ void main() {
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
           .login(
-            appActivationURL: 'auth0flutter://callback',
+            appCustomURL: 'auth0flutter://callback',
             scopes: {'openid', 'read:messages'},
           );
 
@@ -168,7 +168,7 @@ void main() {
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
           .login(
-            appActivationURL: 'auth0flutter://callback',
+            appCustomURL: 'auth0flutter://callback',
             organizationId: 'org_123',
             invitationUrl: 'https://invite.example.com',
           );
@@ -188,7 +188,7 @@ void main() {
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
           .login(
-            appActivationURL: 'auth0flutter://callback',
+            appCustomURL: 'auth0flutter://callback',
             authTimeout: const Duration(seconds: 300),
           );
 
@@ -209,7 +209,7 @@ void main() {
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
           .login(
-            appActivationURL: 'auth0flutter://callback',
+            appCustomURL: 'auth0flutter://callback',
             idTokenValidationConfig: config,
           );
 
@@ -226,7 +226,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
-          .logout(appActivationURL: 'auth0flutter://callback');
+          .logout(appCustomURL: 'auth0flutter://callback');
 
       verify(mockedPlatform.logout(any)).called(1);
     });
@@ -236,7 +236,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
-          .logout(appActivationURL: 'auth0flutter://callback');
+          .logout(appCustomURL: 'auth0flutter://callback');
 
       final verificationResult = verify(mockedPlatform.logout(captureAny))
           .captured
@@ -250,7 +250,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
-          .logout(appActivationURL: 'auth0flutter://callback');
+          .logout(appCustomURL: 'auth0flutter://callback');
 
       final verificationResult = verify(mockedPlatform.logout(captureAny))
           .captured
@@ -264,7 +264,7 @@ void main() {
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
           .logout(
-            appActivationURL: 'auth0flutter://callback',
+            appCustomURL: 'auth0flutter://callback',
             federated: true,
           );
 
@@ -274,27 +274,27 @@ void main() {
       expect(verificationResult.options.federated, true);
     });
 
-    test('passes appActivationURL to the platform', () async {
+    test('passes appCustomURL to the platform', () async {
       when(mockedPlatform.logout(any)).thenAnswer((final _) async {});
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
-          .logout(appActivationURL: 'auth0flutter://callback');
+          .logout(appCustomURL: 'auth0flutter://callback');
 
       final verificationResult = verify(mockedPlatform.logout(captureAny))
           .captured
           .single as WebAuthRequest<WebAuthLogoutOptions>;
       final options = verificationResult.options as WindowsWebAuthLogoutOptions;
-      expect(options.appActivationURL, 'auth0flutter://callback');
+      expect(options.appCustomURL, 'auth0flutter://callback');
     });
 
-    test('passes returnTo separately from appActivationURL', () async {
+    test('passes returnTo separately from appCustomURL', () async {
       when(mockedPlatform.logout(any)).thenAnswer((final _) async {});
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
           .logout(
-            appActivationURL: 'auth0flutter://callback',
+            appCustomURL: 'auth0flutter://callback',
             returnTo: 'https://my-server.com/logout',
           );
 
@@ -302,7 +302,7 @@ void main() {
           .captured
           .single as WebAuthRequest<WebAuthLogoutOptions>;
       final options = verificationResult.options as WindowsWebAuthLogoutOptions;
-      expect(options.appActivationURL, 'auth0flutter://callback');
+      expect(options.appCustomURL, 'auth0flutter://callback');
       expect(options.returnTo, 'https://my-server.com/logout');
     });
   });

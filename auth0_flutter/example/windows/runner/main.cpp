@@ -57,15 +57,34 @@ static PSECURITY_DESCRIPTOR BuildCurrentUserSD() {
   return pSD;  // caller must LocalFree()
 }
 
-// Forward URI to first instance (pipe client)
+// Forward URI to first instance (pipe client).
+// Waits up to 2 seconds for the pipe server to become available — the first
+// instance's detached thread may not have called CreateNamedPipeW yet.
 void ForwardToFirstInstance(const wchar_t* uri) {
+  // Wait for the pipe to exist (handles the race between the first instance's
+  // StartPipeServer thread and this second-instance launch).
+  if (!WaitNamedPipeW(kRedirectPipeName, 2000)) {
+    return;  // pipe never appeared — nothing we can do
+  }
+
   HANDLE hPipe = CreateFileW(
       kRedirectPipeName, GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
 
+  // Retry once on PIPE_BUSY (another client just connected).
+  if (hPipe == INVALID_HANDLE_VALUE && GetLastError() == ERROR_PIPE_BUSY) {
+    if (WaitNamedPipeW(kRedirectPipeName, 2000)) {
+      hPipe = CreateFileW(
+          kRedirectPipeName, GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+    }
+  }
+
   if (hPipe != INVALID_HANDLE_VALUE) {
     DWORD written = 0;
-    size_t len = (wcslen(uri) + 1) * sizeof(wchar_t);
-    WriteFile(hPipe, uri, (DWORD)len, &written, NULL);
+    DWORD len = static_cast<DWORD>((wcslen(uri) + 1) * sizeof(wchar_t));
+    if (!WriteFile(hPipe, uri, len, &written, NULL) || written != len) {
+      // Partial or failed write — the first instance won't get a valid URI.
+      // Nothing actionable here; the login will time out.
+    }
     CloseHandle(hPipe);
   }
 }
@@ -120,7 +139,12 @@ void StartPipeServer() {
         DWORD read = 0;
         // Reserve one wchar_t for the null terminator so buffer[read/sizeof(wchar_t)]
         // is always within bounds (fixes the off-by-one overflow).
-        if (ReadFile(hPipe, buffer, sizeof(buffer) - sizeof(wchar_t), &read, NULL)) {
+        BOOL readOk = ReadFile(hPipe, buffer, sizeof(buffer) - sizeof(wchar_t), &read, NULL);
+
+        if (!readOk && GetLastError() == ERROR_MORE_DATA) {
+          // Message exceeds buffer — reject it rather than processing a truncated URL.
+          // Auth0 callback URLs are typically short; an oversized message is suspicious.
+        } else if (readOk) {
           buffer[read / sizeof(wchar_t)] = L'\0';
 
           // Only accept URLs that begin with the expected auth0flutter:// prefix.
@@ -184,6 +208,7 @@ if (alreadyRunning) {
   if (hasUri) {
     ForwardToFirstInstance(startupUri.c_str());
   }
+  CloseHandle(hMutex);
   return 0;
 }
 

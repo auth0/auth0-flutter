@@ -2,15 +2,15 @@
  * @file id_token_signature_validator_test.cpp
  * @brief Tests for ValidateIdTokenSignature
  *
- * Covers all validation steps:
- *   Step 1 – JWT structural validity (SplitJwt / DecodeJwtHeader)
- *   Step 2 – Algorithm must be RS256
- *   Step 3 – Key ID (kid) must be present and non-empty
- *   Step 4 – JWKS fetch failures (network unreachable, HTTP 5xx,
- *             malformed JSON, missing `keys` array) — issue #18
+ *   Step 1 – Extract algorithm and kid from JWT header
+ *            (structural validity, algorithm must be supported, kid must be present)
+ *   Step 2 – JWKS fetch failures (network unreachable, HTTP 5xx,
+ *             malformed JSON, missing `keys` array)
+ *   Step 3 – Find JWK by kid
+ *   Step 4 – Verify JWT signature using algorithm and JWK
  *
- * Steps 5-6 (cryptographic verification) require a real RS256 key pair
- * and are exercised in integration tests.
+ * Steps 3-4 (key lookup + cryptographic verification) require a real RS256
+ * key pair and are exercised in integration tests.
  *
  * Every test uses try/catch rather than EXPECT_THROW so that the exception
  * message is always validated alongside the exception type.
@@ -820,7 +820,7 @@ TEST(IdTokenSignatureValidatorJwksTest, ThrowsOnMalformedJsonResponse)
 TEST(IdTokenSignatureValidatorJwksTest, ThrowsWhenJwksResponseMissingKeysArray)
 {
     // Listener returns a valid JSON object that has no "keys" field.
-    // FindKeyAndVerify detects this and throws
+    // FindKeyByKid detects this and throws
     // IdTokenValidationException("Invalid JWKS response: missing 'keys' array").
     TestJwksServer server(19083, status_codes::OK, R"({"foo":"bar"})");
     std::string token = MakeValidHeaderJwt("kid-no-keys");

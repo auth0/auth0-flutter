@@ -1,6 +1,6 @@
 /**
  * @file id_token_signature_validator.cpp
- * @brief RS256 signature validation using the JWKS well-known endpoint
+ * @brief JWT signature validation using the JWKS well-known endpoint
  */
 
 #include "id_token_signature_validator.h"
@@ -20,6 +20,7 @@
 
 #include <chrono>
 #include <mutex>
+#include <set>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
@@ -46,17 +47,11 @@ namespace auth0_flutter
     } // anonymous namespace
 
     // -------------------------------------------------------------------------
-    // Internal helpers
+    // Base64url decoding
     // -------------------------------------------------------------------------
 
-    /**
-     * @brief Decode a Base64url-encoded string into raw bytes.
-     *
-     * Reuses Windows CryptStringToBinaryA (same approach as jwt_util.cpp).
-     */
     static std::vector<uint8_t> Base64UrlDecodeToBytes(const std::string &input)
     {
-        // Convert Base64url -> standard Base64 with padding
         std::string padded = input;
         std::replace(padded.begin(), padded.end(), '-', '+');
         std::replace(padded.begin(), padded.end(), '_', '/');
@@ -93,12 +88,10 @@ namespace auth0_flutter
         return output;
     }
 
-    /**
-     * @brief Fetch the JWKS JSON from the given URI synchronously (no cache).
-     *
-     * A 10-second timeout is applied so that an unresponsive JWKS endpoint
-     * does not block the authentication flow indefinitely.
-     */
+    // -------------------------------------------------------------------------
+    // JWKS fetching
+    // -------------------------------------------------------------------------
+
     static web::json::value FetchJwksFromNetwork(const std::string &jwksUri)
     {
         web::http::client::http_client_config config;
@@ -118,15 +111,6 @@ namespace auth0_flutter
         return response.extract_json().get();
     }
 
-    /**
-     * @brief Return JWKS for the given URI, using a 10-minute in-process cache.
-     *
-     * Auth0 rotates signing keys infrequently (days to months). Caching avoids
-     * an extra HTTP round-trip on every login and prevents auth failures when
-     * the network is briefly unavailable after a successful token exchange.
-     *
-     * Thread-safety: the cache is protected by g_jwksCacheMutex.
-     */
     static web::json::value FetchJwks(const std::string &jwksUri)
     {
         auto now = std::chrono::steady_clock::now();
@@ -141,7 +125,6 @@ namespace auth0_flutter
             }
         }
 
-        // Cache miss or stale — fetch from network
         web::json::value fresh = FetchJwksFromNetwork(jwksUri);
 
         {
@@ -153,21 +136,47 @@ namespace auth0_flutter
     }
 
     /**
-     * @brief Verify an RS256 (RSASSA-PKCS1-v1_5 + SHA-256) signature.
+     * @brief Search a JWKS for a key matching @p kid.
      *
-     * @param signingInput  The "header_b64url.payload_b64url" string
-     * @param signature     Raw decoded signature bytes
-     * @param modulusBytes  Raw decoded JWK 'n' bytes
-     * @param exponentBytes Raw decoded JWK 'e' bytes
-     * @return true if the signature is valid
+     * @param jwks  Parsed JWKS JSON value
+     * @param kid   Key ID to locate
+     * @return The matching JWK JSON value, or a null json value if not found.
      */
-    static bool VerifyRS256Signature(
+    static web::json::value FindKeyByKid(
+        const web::json::value &jwks,
+        const std::string &kid)
+    {
+        if (!jwks.has_field(U("keys")) || !jwks.at(U("keys")).is_array())
+        {
+            throw IdTokenValidationException("Invalid JWKS response: missing 'keys' array");
+        }
+
+        for (const auto &jwk : jwks.at(U("keys")).as_array())
+        {
+            if (!jwk.has_field(U("kid")) || !jwk.at(U("kid")).is_string())
+                continue;
+
+            std::string jwkKid =
+                utility::conversions::to_utf8string(jwk.at(U("kid")).as_string());
+
+            if (jwkKid == kid)
+                return jwk;
+        }
+
+        return web::json::value::null();
+    }
+
+    /**
+     * @brief Build an RSA public key from JWK n/e components and verify
+     *        an RSASSA-PKCS1-v1_5 signature with the given digest.
+     */
+    static bool VerifyRSASignature(
         const std::string &signingInput,
         const std::vector<uint8_t> &signature,
         const std::vector<uint8_t> &modulusBytes,
-        const std::vector<uint8_t> &exponentBytes)
+        const std::vector<uint8_t> &exponentBytes,
+        const EVP_MD *digest)
     {
-        // Build BIGNUM values from the JWK modulus and exponent
         BIGNUM *n = BN_bin2bn(modulusBytes.data(), static_cast<int>(modulusBytes.size()), nullptr);
         BIGNUM *e = BN_bin2bn(exponentBytes.data(), static_cast<int>(exponentBytes.size()), nullptr);
 
@@ -178,8 +187,6 @@ namespace auth0_flutter
             return false;
         }
 
-        // Build EVP_PKEY directly from BIGNUMs using the OpenSSL 3.0 provider API.
-        // This avoids all deprecated RSA_* / EVP_PKEY_assign_RSA calls.
         OSSL_PARAM_BLD *bld = OSSL_PARAM_BLD_new();
         if (!bld)
         {
@@ -224,7 +231,6 @@ namespace auth0_flutter
         EVP_PKEY_CTX_free(pkeyCtx);
         OSSL_PARAM_free(params);
 
-        // Verify using EVP_DigestVerify (SHA-256)
         EVP_MD_CTX *ctx = EVP_MD_CTX_new();
         if (!ctx)
         {
@@ -233,7 +239,7 @@ namespace auth0_flutter
         }
 
         bool valid = false;
-        if (EVP_DigestVerifyInit(ctx, nullptr, EVP_sha256(), nullptr, pkey) == 1 &&
+        if (EVP_DigestVerifyInit(ctx, nullptr, digest, nullptr, pkey) == 1 &&
             EVP_DigestVerifyUpdate(ctx, signingInput.data(), signingInput.size()) == 1)
         {
             valid = (EVP_DigestVerifyFinal(ctx, signature.data(), signature.size()) == 1);
@@ -245,100 +251,67 @@ namespace auth0_flutter
         return valid;
     }
 
-    // -------------------------------------------------------------------------
-    // Internal helpers
-    // -------------------------------------------------------------------------
-
     /**
-     * @brief Search a JWKS for a key matching @p kid and verify the RS256 signature.
+     * @brief Verify a JWT signature using the algorithm from the JWT header
+     *        and the public key material from the matched JWK.
      *
-     * @param jwks          Parsed JWKS JSON value
-     * @param kid           Key ID to locate in the JWKS
-     * @param signingInput  The "header_b64url.payload_b64url" signing input string
-     * @param signatureBytes Raw decoded JWT signature bytes
-     * @param[out] keyFound Set to true when the kid was found in the JWKS
-     * @return true if the signature verifies; false on mismatch.
-     *
-     * Throws IdTokenValidationException for structural JWKS problems (missing
-     * 'keys' array, undecodable key material) so the caller can propagate them
-     * without treating them as a simple signature mismatch.
+     * Dispatches to the correct verification function based on the algorithm.
+     * Currently supports RS256; extend the switch when adding new algorithms.
      */
-    static bool FindKeyAndVerify(
-        const web::json::value &jwks,
-        const std::string &kid,
+    static bool VerifyWithAlgorithm(
+        const std::string &alg,
         const std::string &signingInput,
         const std::vector<uint8_t> &signatureBytes,
-        bool &keyFound)
+        const web::json::value &jwk)
     {
-        keyFound = false;
-
-        if (!jwks.has_field(U("keys")) || !jwks.at(U("keys")).is_array())
+        if (alg == "RS256")
         {
-            throw IdTokenValidationException("Invalid JWKS response: missing 'keys' array");
-        }
-
-        std::string matchedN, matchedE;
-
-        for (const auto &jwk : jwks.at(U("keys")).as_array())
-        {
-            if (!jwk.has_field(U("kid")) || !jwk.at(U("kid")).is_string())
-                continue;
-
-            const std::string jwkKid =
-                utility::conversions::to_utf8string(jwk.at(U("kid")).as_string());
-
-            if (jwkKid != kid)
-                continue;
-
-            // Must be an RSA key
-            if (!jwk.has_field(U("kty")) || !jwk.at(U("kty")).is_string() ||
-                utility::conversions::to_utf8string(jwk.at(U("kty")).as_string()) != "RSA")
+            if (!jwk.has_field(U("n")) || !jwk.has_field(U("e")))
             {
-                continue;
+                throw IdTokenValidationException(
+                    "JWK is missing required RSA key material (n, e)");
             }
 
-            if (!jwk.has_field(U("n")) || !jwk.has_field(U("e")))
-                continue;
+            std::string nStr = utility::conversions::to_utf8string(jwk.at(U("n")).as_string());
+            std::string eStr = utility::conversions::to_utf8string(jwk.at(U("e")).as_string());
 
-            matchedN = utility::conversions::to_utf8string(jwk.at(U("n")).as_string());
-            matchedE = utility::conversions::to_utf8string(jwk.at(U("e")).as_string());
-            keyFound = true;
-            break;
-        }
+            std::vector<uint8_t> modulusBytes, exponentBytes;
+            try
+            {
+                modulusBytes = Base64UrlDecodeToBytes(nStr);
+                exponentBytes = Base64UrlDecodeToBytes(eStr);
+            }
+            catch (const IdTokenValidationException &)
+            {
+                throw;
+            }
+            catch (const std::exception &ex)
+            {
+                throw IdTokenValidationException(
+                    std::string("Failed to decode JWK key material: ") + ex.what());
+            }
 
-        if (!keyFound)
-        {
-            return false;
-        }
-
-        std::vector<uint8_t> modulusBytes, exponentBytes;
-        try
-        {
-            modulusBytes  = Base64UrlDecodeToBytes(matchedN);
-            exponentBytes = Base64UrlDecodeToBytes(matchedE);
-        }
-        catch (const IdTokenValidationException &)
-        {
-            throw;
-        }
-        catch (const std::exception &ex)
-        {
-            throw IdTokenValidationException(
-                std::string("Failed to decode JWK key material: ") + ex.what());
+            return VerifyRSASignature(signingInput, signatureBytes,
+                                      modulusBytes, exponentBytes, EVP_sha256());
         }
 
-        return VerifyRS256Signature(signingInput, signatureBytes, modulusBytes, exponentBytes);
+        throw IdTokenValidationException(
+            "Signature algorithm of \"" + alg +
+            "\" is not supported. Expected the ID token to be signed with \"RS256\"");
     }
 
-    // -------------------------------------------------------------------------
-    // Public API
-    // -------------------------------------------------------------------------
-
+    /**
+     * Validates the ID token signature
+     *   1. Extract algorithm and kid from JWT header
+     *   2. Fetch JWKS (with cache)
+     *   3. Find JWK by kid
+     *   4. Using the algorithm, verify the JWT with the JWK
+     */
     void ValidateIdTokenSignature(
         const std::string &idToken,
         const std::string &jwksUri)
     {
-        // --- 1. Decode JWT header ---
+        // --- 1. Extract algorithm and kid from JWT header ---
         web::json::value header;
         try
         {
@@ -350,38 +323,38 @@ namespace auth0_flutter
                 std::string("Failed to decode ID token header: ") + ex.what());
         }
 
-        // --- 2. Validate algorithm – only RS256 is accepted ---
-        const std::string expectedAlg = "RS256";
         std::string alg;
-
         if (header.has_field(U("alg")) && header.at(U("alg")).is_string())
         {
             alg = utility::conversions::to_utf8string(header.at(U("alg")).as_string());
         }
-
-        if (alg != expectedAlg)
+        if (alg.empty())
         {
             throw IdTokenValidationException(
-                "Signature algorithm of \"" + (alg.empty() ? "none" : alg) +
-                "\" is not supported. Expected the ID token to be signed with \"" +
-                expectedAlg + "\"");
+                "Signature algorithm of \"none\" is not supported. "
+                "Expected the ID token to be signed with \"RS256\"");
         }
 
-        // --- 3. Extract kid (Key ID) ---
-        std::string kid;
+        static const std::set<std::string> kSupportedAlgorithms = {"RS256"};
+        if (kSupportedAlgorithms.find(alg) == kSupportedAlgorithms.end())
+        {
+            throw IdTokenValidationException(
+                "Signature algorithm of \"" + alg +
+                "\" is not supported. Expected the ID token to be signed with \"RS256\"");
+        }
 
+        std::string kid;
         if (header.has_field(U("kid")) && header.at(U("kid")).is_string())
         {
             kid = utility::conversions::to_utf8string(header.at(U("kid")).as_string());
         }
-
         if (kid.empty())
         {
             throw IdTokenValidationException(
                 "Could not find a public key for Key ID (kid) \"\"");
         }
 
-        // --- 4. Fetch JWKS (potentially from the 10-minute in-process cache) ---
+        // --- 2. Fetch JWKS ---
         web::json::value jwks;
         try
         {
@@ -397,8 +370,7 @@ namespace auth0_flutter
                 std::string("Failed to fetch JWKS: ") + ex.what());
         }
 
-        // --- 5 & 6. Find the matching JWK and verify the RS256 signature ---
-        // The signing input is the raw "header_b64url.payload_b64url" from the JWT.
+        // Prepare signing input and decoded signature
         auto parts = SplitJwt(idToken);
         const std::string signingInput = parts.header + "." + parts.payload;
 
@@ -417,15 +389,12 @@ namespace auth0_flutter
                 std::string("Failed to decode JWT signature: ") + ex.what());
         }
 
-        bool keyFound = false;
-        bool verified = FindKeyAndVerify(jwks, kid, signingInput, signatureBytes, keyFound);
+        // --- 3. Find JWK by kid ---
+        web::json::value jwk = FindKeyByKid(jwks, kid);
 
-        if (!keyFound)
+        if (jwk.is_null())
         {
-            // The kid was not present in the cached JWKS at all.
-            // Auth0 rotates keys infrequently, but a fresh fetch may already have
-            // a new key that hasn't appeared in the cache yet.  Evict the stale
-            // entry and try once more before declaring the kid unknown.
+            // Kid not in cached JWKS — evict and retry with fresh fetch.
             {
                 std::lock_guard<std::mutex> lock(g_jwksCacheMutex);
                 g_jwksCache.erase(jwksUri);
@@ -444,19 +413,20 @@ namespace auth0_flutter
                     std::string("Failed to fetch JWKS: ") + ex.what());
             }
 
-            verified = FindKeyAndVerify(jwks, kid, signingInput, signatureBytes, keyFound);
-
-            if (!keyFound)
+            jwk = FindKeyByKid(jwks, kid);
+            if (jwk.is_null())
             {
                 throw IdTokenValidationException(
                     "Could not find a public key for Key ID (kid) \"" + kid + "\"");
             }
         }
-        else if (!verified)
+
+        // --- 4. Using the algorithm, verify the JWT with the JWK ---
+        bool verified = VerifyWithAlgorithm(alg, signingInput, signatureBytes, jwk);
+
+        if (!verified)
         {
-            // The key was found in the cache but the signature did not verify.
-            // This can happen when Auth0 rotates the signing key and the cache
-            // still holds the old JWKS.  Evict and retry once with a fresh fetch.
+            // Signature mismatch — may be a key rotation. Evict cache and retry once.
             {
                 std::lock_guard<std::mutex> lock(g_jwksCacheMutex);
                 g_jwksCache.erase(jwksUri);
@@ -475,7 +445,14 @@ namespace auth0_flutter
                     std::string("Failed to fetch JWKS: ") + ex.what());
             }
 
-            verified = FindKeyAndVerify(jwks, kid, signingInput, signatureBytes, keyFound);
+            jwk = FindKeyByKid(jwks, kid);
+            if (jwk.is_null())
+            {
+                throw IdTokenValidationException(
+                    "Could not find a public key for Key ID (kid) \"" + kid + "\"");
+            }
+
+            verified = VerifyWithAlgorithm(alg, signingInput, signatureBytes, jwk);
         }
 
         if (!verified)

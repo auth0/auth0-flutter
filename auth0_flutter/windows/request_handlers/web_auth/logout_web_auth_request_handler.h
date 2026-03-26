@@ -19,6 +19,7 @@
 #include "web_auth_request_handler.h"
 #include <pplx/pplxtasks.h>
 #include <functional>
+#include <mutex>
 
 namespace auth0_flutter
 {
@@ -49,7 +50,11 @@ namespace auth0_flutter
     public:
         explicit LogoutWebAuthRequestHandler(std::function<void(std::function<void()>)> post_ui_task)
             : ui_task_runner_(std::move(post_ui_task)) {}
-        ~LogoutWebAuthRequestHandler() override = default;
+
+        ~LogoutWebAuthRequestHandler() override {
+            std::lock_guard<std::mutex> lock(_cts_mutex);
+            _cts.cancel();
+        }
 
         std::string method() const override
         {
@@ -62,6 +67,8 @@ namespace auth0_flutter
 
     private:
         std::function<void(std::function<void()>)> ui_task_runner_;
+        std::mutex _cts_mutex;
+        pplx::cancellation_token_source _cts;
     };
 
 

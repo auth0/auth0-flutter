@@ -146,25 +146,25 @@ namespace auth0_flutter
         }
 
 
-        // Extract appActivationURL — the custom-scheme URL the Windows app listens on
+        // Extract appCustomURL — the custom-scheme URL the Windows app listens on
         // to receive the OAuth callback from the browser (or an intermediary server).
         // Defaults to kDefaultRedirectUri ("auth0flutter://callback").
-        std::string appActivationURL = kDefaultRedirectUri;
-        auto appActivationIt = arguments->find(flutter::EncodableValue("appActivationURL"));
+        std::string appCustomURL = kDefaultRedirectUri;
+        auto appActivationIt = arguments->find(flutter::EncodableValue("appCustomURL"));
         if (appActivationIt != arguments->end())
         {
             if (auto s = std::get_if<std::string>(&appActivationIt->second);
                 s && !s->empty())
             {
-                appActivationURL = *s;
+                appCustomURL = *s;
             }
         }
 
         // Extract redirect URI — the redirect_uri sent to Auth0 in the authorization URL.
-        // Defaults to appActivationURL when not provided.  When using an intermediary
+        // Defaults to appCustomURL when not provided.  When using an intermediary
         // server (Option B), the server URL is the redirectUrl while the app still listens
-        // on appActivationURL.
-        std::string redirectUri = appActivationURL;
+        // on appCustomURL.
+        std::string redirectUri = appCustomURL;
         auto redirectIt = arguments->find(flutter::EncodableValue("redirectUrl"));
         if (redirectIt != arguments->end())
         {
@@ -236,21 +236,15 @@ namespace auth0_flutter
             }
         }
 
-        static const std::set<std::string> kReservedParams = {
-            "response_type", "client_id", "redirect_uri", "scope",
-            "code_challenge", "code_challenge_method", "state", "nonce",
-            "audience", "organization", "invitation", "max_age"
-        };
-
-        std::map<std::string, std::string> extraParams;
+        std::map<std::string, std::string> queryParams;
         if (parametersMap)
         {
             for (const auto &kv : *parametersMap)
             {
                 const auto *k = std::get_if<std::string>(&kv.first);
                 const auto *v = std::get_if<std::string>(&kv.second);
-                if (k && v && kReservedParams.find(*k) == kReservedParams.end())
-                    extraParams[*k] = *v;
+                if (k && v)
+                    queryParams[*k] = *v;
             }
         }
 
@@ -335,7 +329,7 @@ namespace auth0_flutter
         // Flutter UI thread.  The cancellation token lets the destructor (or a
         // subsequent handle() call) abort a running flow cleanly.
         pplx::create_task([taskRunner, sharedResult,
-                           clientId, domain, domainUrl, scopeStr, redirectUri, appActivationURL, audience, organizationId, invitationUrl, authTimeoutSeconds, leeway, maxAge, state, nonce, issuer, token, extraParams]()
+                           clientId, domain, domainUrl, scopeStr, redirectUri, appCustomURL, audience, organizationId, invitationUrl, authTimeoutSeconds, leeway, maxAge, state, nonce, issuer, token, queryParams]()
                           {
             try
             {
@@ -372,43 +366,50 @@ namespace auth0_flutter
                     invitationId = invIt->second;
                 }
 
-            // Step 2: Build OAuth 2.0 authorization URL with properly encoded parameters
-            // Uses authorization code flow with PKCE, state for CSRF, and nonce for OIDC replay protection
-            std::ostringstream authUrl;
-            authUrl << domainUrl << "authorize?"
-                    << "response_type=code"
-                    << "&client_id=" << urlEncode(clientId)
-                    << "&redirect_uri=" << urlEncode(redirectUri)
-                    << "&scope=" << urlEncode(scopeStr)
-                    << "&code_challenge=" << urlEncode(codeChallenge)
-                    << "&code_challenge_method=S256"
-                    << "&state=" << urlEncode(state)
-                    << "&nonce=" << urlEncode(nonce);
+            // Step 2: Build OAuth 2.0 authorization URL.
+            // Start with a mutable copy of user-supplied params, then override
+            // with SDK-generated values. This ensures no duplicate keys and SDK
+            // values always take precedence.
+            auto params = queryParams;
 
-            // Add optional parameters if provided
+            params["response_type"] = "code";
+            params["client_id"] = clientId;
+            params["redirect_uri"] = redirectUri;
+            params["scope"] = scopeStr;
+            params["code_challenge"] = codeChallenge;
+            params["code_challenge_method"] = "S256";
+            params["state"] = state;
+            params["nonce"] = nonce;
+
             if (!audience.empty())
             {
-                authUrl << "&audience=" << urlEncode(audience);
+                params["audience"] = audience;
             }
 
             if (!resolvedOrganizationId.empty())
             {
-                authUrl << "&organization=" << urlEncode(resolvedOrganizationId);
+                params["organization"] = resolvedOrganizationId;
             }
 
             if (!invitationId.empty())
             {
-                authUrl << "&invitation=" << urlEncode(invitationId);
+                params["invitation"] = invitationId;
             }
 
             if (maxAge.has_value())
             {
-                authUrl << "&max_age=" << maxAge.value();
+                params["max_age"] = std::to_string(maxAge.value());
             }
 
-            for (const auto &kv : extraParams)
+            // Serialize into the authorize URL
+            std::ostringstream authUrl;
+            authUrl << domainUrl << "authorize?";
+            bool first = true;
+            for (const auto &kv : params)
             {
-                authUrl << "&" << urlEncode(kv.first) << "=" << urlEncode(kv.second);
+                if (!first) authUrl << "&";
+                authUrl << urlEncode(kv.first) << "=" << urlEncode(kv.second);
+                first = false;
             }
 
             // Step 3: Open system default browser for user authentication.
@@ -426,7 +427,7 @@ namespace auth0_flutter
 
             // Step 4: Wait for OAuth callback containing authorization code with state validation
             // State parameter is validated to prevent CSRF attacks
-            OAuthCallbackResult callbackResult = waitForAuthCode_CustomScheme(authTimeoutSeconds, state, token, appActivationURL);
+            OAuthCallbackResult callbackResult = waitForAuthCode_CustomScheme(authTimeoutSeconds, state, token, appCustomURL);
 
             if (token.is_canceled())
             {

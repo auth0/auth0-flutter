@@ -21,8 +21,11 @@ Credentials Auth0Client::ExchangeCodeForTokens(
     const std::string &codeVerifier)
 {
 
+  http_client_config config;
+  config.set_timeout(std::chrono::seconds(30));
+
   http_client client(
-      U("https://" + utility::conversions::to_string_t(domain_)));
+      U("https://" + utility::conversions::to_string_t(domain_)), config);
 
   http_request request(methods::POST);
   request.set_request_uri(U("/oauth/token"));

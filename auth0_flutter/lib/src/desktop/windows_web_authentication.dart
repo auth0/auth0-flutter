@@ -2,7 +2,7 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 
 import '../../auth0_flutter.dart';
 
-/// An interface for authenticating users using the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login).
+/// A class for authenticating users using the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login).
 ///
 /// Authentication using Universal Login works by redirecting your user to a
 /// login page hosted on Auth0's servers. To achieve this on a desktop device,
@@ -18,7 +18,7 @@ import '../../auth0_flutter.dart';
 /// ```dart
 /// final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
 /// final result = await auth0.windowsWebAuthentication().login(
-///   appActivationURL: 'auth0flutter://callback',
+///   appCustomURL: 'auth0flutter://callback',
 /// );
 /// final accessToken = result.accessToken;
 /// ```
@@ -26,7 +26,7 @@ import '../../auth0_flutter.dart';
 /// Login with an HTTPS intermediary server:
 /// ```dart
 /// final result = await auth0.windowsWebAuthentication().login(
-///   appActivationURL: 'auth0flutter://callback',
+///   appCustomURL: 'auth0flutter://callback',
 ///   redirectUrl: 'https://your-server.com/callback',
 /// );
 /// ```
@@ -43,18 +43,18 @@ class WindowsWebAuthentication {
   /// for authentication. If successful, returns a set of tokens as well as the
   /// user's profile (constructed from ID token claims).
   ///
-  /// [appActivationURL] is required — the custom-scheme URL (e.g.
+  /// [appCustomURL] is required — the custom-scheme URL (e.g.
   /// `auth0flutter://callback`) that the Windows app listens on for the OAuth
   /// callback.
   ///
   /// When [redirectUrl] is provided, it is used as the `redirect_uri` in the
   /// Auth0 authorization request (e.g. an HTTPS intermediary server). When
-  /// omitted, [appActivationURL] is used directly. Both URLs must appear in
+  /// omitted, [appCustomURL] is used directly. Both URLs must appear in
   /// **Allowed Callback URLs** in the Auth0 dashboard.
   ///
   /// [Read more about redirecting users](https://auth0.com/docs/authenticate/login/redirect-users-after-login).
   Future<Credentials> login({
-    required final String appActivationURL,
+    required final String appCustomURL,
     final String? audience,
     final Set<String> scopes = const {
       'openid',
@@ -74,7 +74,7 @@ class WindowsWebAuthentication {
         WebAuthRequest<WebAuthLoginOptions>(
           account: _account,
           options: WindowsWebAuthLoginOptions(
-            appActivationURL: appActivationURL,
+            appCustomURL: appCustomURL,
             audience: audience,
             scopes: scopes,
             redirectUrl: redirectUrl,
@@ -91,18 +91,18 @@ class WindowsWebAuthentication {
   /// Redirects the user to the Auth0 logout endpoint to remove their
   /// authentication session.
   ///
-  /// [appActivationURL] is required — the custom-scheme URL (e.g.
+  /// [appCustomURL] is required — the custom-scheme URL (e.g.
   /// `auth0flutter://callback`) that the Windows app listens on for the
   /// post-logout redirect from the browser.
   ///
   /// When [returnTo] is provided, it is used as the `returnTo` parameter in
   /// the Auth0 logout request (e.g. an HTTPS intermediary server). When
-  /// omitted, [appActivationURL] is used directly. Both URLs must appear in
+  /// omitted, [appCustomURL] is used directly. Both URLs must appear in
   /// **Allowed Logout URLs** in the Auth0 dashboard.
   ///
   /// [Read more about redirecting users after logout](https://auth0.com/docs/authenticate/login/logout#redirect-users-after-logout).
   Future<void> logout({
-    required final String appActivationURL,
+    required final String appCustomURL,
     final String? returnTo,
     final bool federated = false,
   }) =>
@@ -110,7 +110,7 @@ class WindowsWebAuthentication {
         WebAuthRequest<WebAuthLogoutOptions>(
           account: _account,
           options: WindowsWebAuthLogoutOptions(
-            appActivationURL: appActivationURL,
+            appCustomURL: appCustomURL,
             returnTo: returnTo,
             federated: federated,
           ),

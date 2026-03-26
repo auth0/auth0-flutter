@@ -22,9 +22,20 @@ namespace auth0_flutter
                 if (i + 2 < str.size())
                 {
                     std::string hex = str.substr(i + 1, 2);
-                    char decoded = (char)strtol(hex.c_str(), nullptr, 16);
-                    out.push_back(decoded);
-                    i += 2;
+                    char *end = nullptr;
+                    long decoded = strtol(hex.c_str(), &end, 16);
+                    // Reject invalid hex sequences (strtol consumed nothing)
+                    // and null bytes that would truncate C-string APIs.
+                    if (end != hex.c_str() + 2 || decoded == 0)
+                    {
+                        // Malformed or null — skip the percent and emit literally
+                        out.push_back(c);
+                    }
+                    else
+                    {
+                        out.push_back(static_cast<char>(decoded));
+                        i += 2;
+                    }
                 }
                 // else malformed percent-encoding: skip
             }

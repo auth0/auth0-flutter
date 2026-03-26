@@ -158,7 +158,7 @@ namespace auth0_flutter
         int timeoutSeconds,
         const std::string &expectedState,
         pplx::cancellation_token ct,
-        const std::string &appActivationUrl)
+        const std::string &appCustomUrl)
     {
         static constexpr DWORD kStackBufChars = 2048;
 
@@ -202,7 +202,7 @@ namespace auth0_flutter
                 std::string baseUrl = (qpos != std::string::npos)
                                           ? uri.substr(0, qpos)
                                           : uri;
-                if (baseUrl != appActivationUrl)
+                if (baseUrl != appCustomUrl)
                 {
                     std::this_thread::sleep_for(sleepDuration);
                     continue;
