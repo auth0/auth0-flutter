@@ -202,7 +202,12 @@ namespace auth0_flutter
                 std::string baseUrl = (qpos != std::string::npos)
                                           ? uri.substr(0, qpos)
                                           : uri;
-                if (baseUrl != appCustomUrl)
+                if (!baseUrl.empty() && baseUrl.back() == '/')
+                    baseUrl.pop_back();
+                std::string expected = appCustomUrl;
+                if (!expected.empty() && expected.back() == '/')
+                    expected.pop_back();
+                if (baseUrl != expected)
                 {
                     std::this_thread::sleep_for(sleepDuration);
                     continue;
@@ -302,7 +307,12 @@ namespace auth0_flutter
                 std::string baseUrl = (qpos != std::string::npos)
                                           ? uri.substr(0, qpos)
                                           : uri;
-                if (baseUrl == returnToUri)
+                if (!baseUrl.empty() && baseUrl.back() == '/')
+                    baseUrl.pop_back();
+                std::string expected = returnToUri;
+                if (!expected.empty() && expected.back() == '/')
+                    expected.pop_back();
+                if (baseUrl == expected)
                 {
                     return true;
                 }
