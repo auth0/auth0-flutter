@@ -294,15 +294,6 @@ jobs:
               run: Copy-Item example/.env.example example/.env
               shell: powershell
 
-            - name: Export GitHub Actions cache environment variables
-              uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # pin@v7.0.1
-              with:
-                script: |
-                  const token = process.env.ACTIONS_RUNTIME_TOKEN || '';
-                  if (token) core.setSecret(token);
-                  core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
-                  core.exportVariable('ACTIONS_RUNTIME_TOKEN', token);
-
             - name: Set up vcpkg
               uses: lukka/run-vcpkg@5e0cab206a5ea620130caf672fce3e4a6b5666a1 # pin@v11.5
               with:
@@ -323,7 +314,8 @@ jobs:
                 ${{ github.workspace }}\vcpkg\vcpkg install cpprestsdk:x64-windows openssl:x64-windows boost-system:x64-windows boost-date-time:x64-windows boost-regex:x64-windows
               shell: cmd
               env:
-                VCPKG_BINARY_SOURCES: 'clear;x-gha,readwrite'
+                VCPKG_BINARY_SOURCES: 'clear'
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Cache Windows example app build
               uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # pin@v4.2.3
