@@ -9,10 +9,18 @@ Credentials DecodeTokenResponse(
   Credentials creds;
 
   // ---- Required fields ----
+  if (!json.has_field(U("access_token")) || !json.at(U("access_token")).is_string())
+  {
+    throw std::runtime_error("Token response missing required 'access_token' field");
+  }
   creds.accessToken =
       utility::conversions::to_utf8string(
           json.at(U("access_token")).as_string());
 
+  if (!json.has_field(U("token_type")) || !json.at(U("token_type")).is_string())
+  {
+    throw std::runtime_error("Token response missing required 'token_type' field");
+  }
   creds.tokenType =
       utility::conversions::to_utf8string(
           json.at(U("token_type")).as_string());

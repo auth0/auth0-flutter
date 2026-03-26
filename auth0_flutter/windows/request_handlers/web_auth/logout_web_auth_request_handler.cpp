@@ -8,6 +8,7 @@
 #include "../../url_utils.h"
 #include "../../windows_utils.h"
 #include <windows.h>
+#include <mutex>
 #include <sstream>
 #include <thread>
 
@@ -146,23 +147,23 @@ namespace auth0_flutter
             return;
         }
 
-        // Extract appActivationURL — the custom-scheme URL the Windows app listens on
+        // Extract appCustomURL — the custom-scheme URL the Windows app listens on
         // to detect when the browser has completed logout and redirected back.
         // Defaults to kDefaultRedirectUri ("auth0flutter://callback").
-        std::string appActivationURL = kDefaultRedirectUri;
-        auto appActivationIt = arguments->find(flutter::EncodableValue("appActivationURL"));
+        std::string appCustomURL = kDefaultRedirectUri;
+        auto appActivationIt = arguments->find(flutter::EncodableValue("appCustomURL"));
         if (appActivationIt != arguments->end())
         {
             if (auto s = std::get_if<std::string>(&appActivationIt->second);
                 s && !s->empty())
             {
-                appActivationURL = *s;
+                appCustomURL = *s;
             }
         }
 
         // Extract returnTo URL — the URL sent to Auth0 as the post-logout redirect.
-        // Defaults to appActivationURL when not provided.
-        std::string returnTo = appActivationURL;
+        // Defaults to appCustomURL when not provided.
+        std::string returnTo = appCustomURL;
         auto returnToIt = arguments->find(flutter::EncodableValue("returnTo"));
         if (returnToIt != arguments->end())
         {
@@ -187,13 +188,23 @@ namespace auth0_flutter
         // Build logout URL with all parameters
         std::string logoutUrl = BuildLogoutUrl(httpsUrl(domain), clientId, returnTo, federated);
 
+        // Cancel any previously running logout task so a second call does not
+        // leave a stale task holding a reference to the old MethodResult.
+        pplx::cancellation_token token = pplx::cancellation_token::none();
+        {
+            std::lock_guard<std::mutex> lock(_cts_mutex);
+            _cts.cancel();
+            _cts = pplx::cancellation_token_source{};
+            token = _cts.get_token();
+        }
+
         std::shared_ptr<flutter::MethodResult<flutter::EncodableValue>> sharedResult(result.release());
 
         // Capture ui_task_runner_ by value to avoid holding a dangling `this` pointer
         // if the handler is destroyed while the background task is still running.
         auto taskRunner = ui_task_runner_;
 
-        pplx::create_task([taskRunner, sharedResult, logoutUrl, appActivationURL]()
+        pplx::create_task([taskRunner, sharedResult, logoutUrl, appCustomURL, token]()
         {
             // Open logout URL in system default browser (must be on UI thread).
             std::wstring urlW(logoutUrl.begin(), logoutUrl.end());
@@ -201,17 +212,20 @@ namespace auth0_flutter
                 ShellExecuteW(NULL, L"open", urlW.c_str(), NULL, NULL, SW_SHOWNORMAL);
             });
 
-            // Wait for the browser to redirect back to appActivationURL.
-            // appActivationURL is what the Windows app listens on — even when returnTo
+            // Wait for the browser to redirect back to appCustomURL.
+            // appCustomURL is what the Windows app listens on — even when returnTo
             // is an intermediary server URL, the server must forward the final redirect
-            // to appActivationURL so the app wakes up.
-            waitForLogoutCallback(appActivationURL);
+            // to appCustomURL so the app wakes up.
+            waitForLogoutCallback(appCustomURL, 300, token);
 
             // Bring window to front and return result on the UI thread.
-            taskRunner([sharedResult]() {
-                BringFlutterWindowToFront();
-                sharedResult->Success();
-            });
+            if (!token.is_canceled())
+            {
+                taskRunner([sharedResult]() {
+                    BringFlutterWindowToFront();
+                    sharedResult->Success();
+                });
+            }
         });
     }
 

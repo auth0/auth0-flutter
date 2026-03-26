@@ -16,5 +16,4 @@ JwtParts SplitJwt(const std::string &token);
 web::json::value DecodeJwtHeader(const std::string &token);
 web::json::value DecodeJwtPayload(const std::string &token);
 
-flutter::EncodableMap ParseJsonToEncodableMap(const std::string &json);
 flutter::EncodableValue JsonToEncodable(const web::json::value &v);

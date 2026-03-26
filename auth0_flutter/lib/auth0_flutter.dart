@@ -106,8 +106,8 @@ class Auth0 {
       WebAuthentication(_account, _userAgent, scheme,
           useCredentialsManager ? credentialsManager : null);
 
-  /// Creates an instance of [WindowsWebAuthentication], the Windows-specific
-  /// interface for interacting with the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login).
+  /// Creates a class of [WindowsWebAuthentication], the Windows-specific
+  /// class for interacting with the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login).
   ///
   /// This method is specifically designed for Windows desktop applications and
   /// provides Windows-specific configuration options.
@@ -117,7 +117,7 @@ class Auth0 {
   /// ```dart
   /// final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
   /// final result = await auth0.windowsWebAuthentication().login(
-  ///   appActivationURL: 'auth0flutter://callback',
+  ///   appCustomURL: 'auth0flutter://callback',
   /// );
   /// final accessToken = result.accessToken;
   /// ```

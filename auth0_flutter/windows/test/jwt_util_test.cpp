@@ -101,21 +101,3 @@ TEST(JsonToEncodableTest, ConvertsObject) {
   EXPECT_EQ(map.size(), 2u);
 }
 
-/* ---------------- ParseJsonToEncodableMap ---------------- */
-
-TEST(ParseJsonToEncodableMapTest, ParsesJsonStringToEncodableMap) {
-  std::string json = R"({
-    "name": "Alice",
-    "age": 30,
-    "admin": false
-  })";
-
-  flutter::EncodableMap map = ParseJsonToEncodableMap(json);
-
-  EXPECT_EQ(std::get<std::string>(map.at(flutter::EncodableValue("name"))),
-            "Alice");
-  EXPECT_EQ(std::get<double>(map.at(flutter::EncodableValue("age"))),
-            30);
-  EXPECT_EQ(std::get<bool>(map.at(flutter::EncodableValue("admin"))),
-            false);
-}

@@ -242,47 +242,6 @@ namespace auth0_flutter
         }
 
         /**
-         * @brief Check if MFA enrollment is required
-         *
-         * Cross-platform helper: isMultifactorEnrollRequired
-         */
-        bool IsMultifactorEnrollRequired() const
-        {
-            return code_ == "a0.mfa_registration_required";
-        }
-
-        /**
-         * @brief Check if the MFA code is invalid
-         *
-         * Cross-platform helper: isMultifactorCodeInvalid
-         */
-        bool IsMultifactorCodeInvalid() const
-        {
-            return code_ == "a0.mfa_invalid_code";
-        }
-
-        /**
-         * @brief Check if the MFA token is invalid
-         *
-         * Cross-platform helper: isMultifactorTokenInvalid
-         */
-        bool IsMultifactorTokenInvalid() const
-        {
-            return (code_ == "expired_token" && description_ == "mfa_token is expired") ||
-                   code_ == "invalid_grant";
-        }
-
-        /**
-         * @brief Check if email/phone verification is required
-         *
-         * Cross-platform helper: isVerificationRequired
-         */
-        bool IsVerificationRequired() const
-        {
-            return code_ == "requires_verification";
-        }
-
-        /**
          * @brief Check if this is a rule error
          *
          * Cross-platform helper: isRuleError
@@ -291,41 +250,6 @@ namespace auth0_flutter
         {
             return code_ == "unauthorized";
         }
-
-        /**
-         * @brief Always false on Windows — browser app availability is not applicable
-         *
-         * Cross-platform helper: isBrowserAppNotAvailable
-         */
-        bool IsBrowserAppNotAvailable() const { return false; }
-
-        /**
-         * @brief Always false on Windows — PKCE availability check is not applicable
-         *
-         * Cross-platform helper: isPKCENotAvailable
-         */
-        bool IsPKCENotAvailable() const { return false; }
-
-        /**
-         * @brief Always false on Windows — authorize URL validation is not applicable
-         *
-         * Cross-platform helper: isInvalidAuthorizeURL
-         */
-        bool IsInvalidAuthorizeURL() const { return false; }
-
-        /**
-         * @brief Always false on Windows — configuration validation is not applicable
-         *
-         * Cross-platform helper: isInvalidConfiguration
-         */
-        bool IsInvalidConfiguration() const { return false; }
-
-        /**
-         * @brief Always false on Windows — cancellation is handled at the web auth layer, not here
-         *
-         * Cross-platform helper: isCanceled
-         */
-        bool IsCanceled() const { return false; }
 
     private:
         std::string code_;

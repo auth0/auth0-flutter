@@ -63,22 +63,30 @@ namespace auth0_flutter
         }
 
         // Required trick to bypass foreground lock.
-        // AttachThreadInput is wrapped in an RAII guard so detach is guaranteed
-        // even if an exception is thrown between attach and detach.
+        // AttachThreadInput lets us steal focus from the current foreground owner.
         DWORD currentThread = GetCurrentThreadId();
-        DWORD foregroundThread = GetWindowThreadProcessId(GetForegroundWindow(), nullptr);
+        HWND fgWnd = GetForegroundWindow();
+        DWORD foregroundThread = fgWnd
+            ? GetWindowThreadProcessId(fgWnd, nullptr)
+            : 0;
 
-        struct ThreadInputGuard
+        // Only attach if there is a valid foreground thread different from ours.
+        // GetForegroundWindow() returns NULL when the desktop is locked or a UAC
+        // prompt is active — calling AttachThreadInput(0, …) is undefined.
+        bool attached = false;
+        if (foregroundThread != 0 && foregroundThread != currentThread)
         {
-            DWORD from, to;
-            ~ThreadInputGuard() { AttachThreadInput(from, to, FALSE); }
-        } guard{foregroundThread, currentThread};
-
-        AttachThreadInput(foregroundThread, currentThread, TRUE);
+            attached = (AttachThreadInput(foregroundThread, currentThread, TRUE) != 0);
+        }
 
         SetForegroundWindow(hwnd);
         SetFocus(hwnd);
         SetActiveWindow(hwnd);
+
+        if (attached)
+        {
+            AttachThreadInput(foregroundThread, currentThread, FALSE);
+        }
     }
 
 } // namespace auth0_flutter

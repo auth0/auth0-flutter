@@ -125,9 +125,3 @@ flutter::EncodableValue JsonToEncodable(const web::json::value &v)
   return flutter::EncodableValue();
 }
 
-flutter::EncodableMap ParseJsonToEncodableMap(const std::string &json)
-{
-  auto parsed = web::json::value::parse(json);
-  auto ev = JsonToEncodable(parsed);
-  return std::get<flutter::EncodableMap>(ev);
-}

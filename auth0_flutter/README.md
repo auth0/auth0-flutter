@@ -90,9 +90,9 @@ If your Auth0 domain was `company.us.auth0.com` and your package name (Android) 
 
 </details>
 
-> 💡 **Windows**: Always pass `appActivationURL` — the custom-scheme URL your Windows app is registered to listen on (e.g. `myapp://callback`). Choose a scheme name unique to your application. You have two options for what to register in the Auth0 dashboard:
+> 💡 **Windows**: Always pass `appCustomURL` — the custom-scheme URL your Windows app is registered to listen on (e.g. `myapp://callback`). Choose a scheme name unique to your application. You have two options for what to register in the Auth0 dashboard:
 >
-> - **Direct (recommended for most apps):** Pass only `appActivationURL`. Register your custom scheme (e.g. `myapp://callback`) in the dashboard. Auth0 redirects straight to the custom scheme and the plugin picks it up immediately.
+> - **Direct (recommended for most apps):** Pass only `appCustomURL`. Register your custom scheme (e.g. `myapp://callback`) in the dashboard. Auth0 redirects straight to the custom scheme and the plugin picks it up immediately.
 >
 > - **Intermediary server (better browser UX):** Also pass `redirectUrl` (login) or `returnTo` (logout) pointing to an HTTPS server you control. Register that HTTPS URL in the dashboard. Auth0 redirects to your server, which redirects onward to your custom scheme. This lets the server show a "Returning you to the app…" page and close cleanly, avoiding any hanging browser tab.
 
@@ -298,11 +298,11 @@ Register your custom scheme directly as the callback URL in your Auth0 dashboard
 - **Allowed Callback URLs**: `myapp://callback`
 - **Allowed Logout URLs**: `myapp://callback`
 
-Pass `appActivationURL` (the custom scheme your app listens on). No `redirectUrl` is needed — `appActivationURL` is used as the `redirect_uri` automatically:
+Pass `appCustomURL` (the custom scheme your app listens on). No `redirectUrl` is needed — `appCustomURL` is used as the `redirect_uri` automatically:
 
 ```dart
 final credentials = await auth0.windowsWebAuthentication().login(
-  appActivationURL: 'myapp://callback',
+  appCustomURL: 'myapp://callback',
 );
 ```
 
@@ -319,11 +319,11 @@ Register your server endpoint in the Auth0 dashboard:
 - **Allowed Callback URLs**: `https://your-app.example.com/callback`
 - **Allowed Logout URLs**: `https://your-app.example.com/logout`
 
-Pass both `appActivationURL` (what the app listens on) and `redirectUrl` (what Auth0 redirects to):
+Pass both `appCustomURL` (what the app listens on) and `redirectUrl` (what Auth0 redirects to):
 
 ```dart
 final credentials = await auth0.windowsWebAuthentication().login(
-  appActivationURL: 'myapp://callback',
+  appCustomURL: 'myapp://callback',
   redirectUrl: 'https://your-app.example.com/callback',
 );
 ```
@@ -392,19 +392,19 @@ final credentials = await auth0.credentialsManager.credentials();
 
 #### 🪟 Windows
 
-Windows uses `windowsWebAuthentication()`. `appActivationURL` is always required — it is the custom-scheme URL your Windows app listens on. `redirectUrl` is optional and only needed when using an intermediary HTTPS server (see [Windows configuration](#windows-configure-protocol-handler) above).
+Windows uses `windowsWebAuthentication()`. `appCustomURL` is always required — it is the custom-scheme URL your Windows app listens on. `redirectUrl` is optional and only needed when using an intermediary HTTPS server (see [Windows configuration](#windows-configure-protocol-handler) above).
 
 ```dart
 // Option A — direct custom-scheme redirect (simplest)
-// appActivationURL is used as redirect_uri automatically
+// appCustomURL is used as redirect_uri automatically
 final credentials = await auth0.windowsWebAuthentication().login(
-  appActivationURL: 'myapp://callback',
+  appCustomURL: 'myapp://callback',
 );
 
 // Option B — intermediary HTTPS server (cleaner browser UX)
-// Auth0 redirects to redirectUrl; your server redirects on to appActivationURL
+// Auth0 redirects to redirectUrl; your server redirects on to appCustomURL
 final credentials = await auth0.windowsWebAuthentication().login(
-  appActivationURL: 'myapp://callback',
+  appCustomURL: 'myapp://callback',
   redirectUrl: 'https://your-app.example.com/callback',
 );
 
@@ -412,19 +412,19 @@ final credentials = await auth0.windowsWebAuthentication().login(
 // User profile -> credentials.user
 ```
 
-Logging out also requires `appActivationURL`. `returnTo` is optional — if omitted, `appActivationURL` is used as the `returnTo` value in the Auth0 logout URL:
+Logging out also requires `appCustomURL`. `returnTo` is optional — if omitted, `appCustomURL` is used as the `returnTo` value in the Auth0 logout URL:
 
 ```dart
 // Option A — direct custom-scheme redirect (simplest)
-// appActivationURL is used as returnTo automatically
+// appCustomURL is used as returnTo automatically
 await auth0.windowsWebAuthentication().logout(
-  appActivationURL: 'myapp://callback',
+  appCustomURL: 'myapp://callback',
 );
 
 // Option B — intermediary HTTPS server
-// Auth0 redirects to returnTo; your server redirects on to appActivationURL
+// Auth0 redirects to returnTo; your server redirects on to appCustomURL
 await auth0.windowsWebAuthentication().logout(
-  appActivationURL: 'myapp://callback',
+  appCustomURL: 'myapp://callback',
   returnTo: 'https://your-app.example.com/logout',
 );
 ```
@@ -569,7 +569,7 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 - [login](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/WebAuthentication/login.html)
 - [logout](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/WebAuthentication/logout.html)
 
-> 💡 **Windows**: Always pass `appActivationURL` — the custom-scheme URL your app listens on. Pass `redirectUrl` (login) or `returnTo` (logout) only when routing through an intermediary HTTPS server. See the [Windows configuration section](#windows-configure-protocol-handler) above for both options.
+> 💡 **Windows**: Always pass `appCustomURL` — the custom-scheme URL your app listens on. Pass `redirectUrl` (login) or `returnTo` (logout) only when routing through an intermediary HTTPS server. See the [Windows configuration section](#windows-configure-protocol-handler) above for both options.
 
 #### API
 
