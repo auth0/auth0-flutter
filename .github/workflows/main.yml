@@ -29,7 +29,7 @@ jobs:
               uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
             - name: Install Flutter
-              uses: subosito/flutter-action@0ca7a949e71ae44c8e688a51c5e7e93b2c87e295 # pin@v2.22.0
+              uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
@@ -52,7 +52,7 @@ jobs:
               uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
             - name: Install Flutter
-              uses: subosito/flutter-action@0ca7a949e71ae44c8e688a51c5e7e93b2c87e295 # pin@v2.22.0
+              uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
@@ -71,7 +71,7 @@ jobs:
               uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
             - name: Install Flutter
-              uses: subosito/flutter-action@0ca7a949e71ae44c8e688a51c5e7e93b2c87e295 # pin@v2.22.0
+              uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
@@ -102,7 +102,7 @@ jobs:
               uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
             - name: Install Flutter
-              uses: subosito/flutter-action@0ca7a949e71ae44c8e688a51c5e7e93b2c87e295 # pin@v2.22.0
+              uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
