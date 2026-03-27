@@ -7,8 +7,12 @@
 
 #include <string>
 #include <vector>
-#include <mutex>
 #include <pplx/pplxtasks.h>
+
+namespace std
+{
+    class mutex;
+}
 
 namespace auth0_flutter
 {
