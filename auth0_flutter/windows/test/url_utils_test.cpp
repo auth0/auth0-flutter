@@ -63,12 +63,12 @@ TEST(UrlDecodeTest, HandlesEncodedEquals) {
 }
 
 TEST(UrlDecodeTest, HandlesMalformedPercentEncoding) {
-  // Percent without two hex digits - implementation still decodes partial hex
+  // Percent without valid two hex digits - implementation rejects and emits literally
   std::string encoded = "Hello%2World";
   std::string decoded = UrlDecode(encoded);
 
-  // Implementation decodes %2W as character 0x2, then continues with "orld"
-  EXPECT_EQ(decoded, "Hello\x2orld");
+  // %2W is malformed (strtol consumes only "2", end != hex.c_str() + 2), so % is emitted literally
+  EXPECT_EQ(decoded, "Hello%2World");
 }
 
 TEST(UrlDecodeTest, HandlesPercentAtEnd) {

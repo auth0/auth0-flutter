@@ -170,14 +170,14 @@ TEST(DecodeTokenResponseTest, ThrowsOnMissingAccessToken) {
   value json;
   json[U("token_type")] = value::string(U("Bearer"));
 
-  EXPECT_THROW(DecodeTokenResponse(json), web::json::json_exception);
+  EXPECT_THROW(DecodeTokenResponse(json), std::runtime_error);
 }
 
 TEST(DecodeTokenResponseTest, ThrowsOnMissingTokenType) {
   value json;
   json[U("access_token")] = value::string(U("test_access_token"));
 
-  EXPECT_THROW(DecodeTokenResponse(json), web::json::json_exception);
+  EXPECT_THROW(DecodeTokenResponse(json), std::runtime_error);
 }
 
 TEST(DecodeTokenResponseTest, HandlesNonIntegerExpiresIn) {
