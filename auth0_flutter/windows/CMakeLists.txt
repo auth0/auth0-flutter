@@ -10,11 +10,6 @@ if(POLICY CMP0167)
   cmake_policy(SET CMP0167 NEW)
 endif()
 
-#if (DEFINED ENV{VCPKG_ROOT} AND EXISTS "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
-#    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
-#        CACHE STRING "Vcpkg toolchain file")
-#endif()
-
 # Project-level configuration.
 set(PROJECT_NAME "auth0_flutter")
 project(${PROJECT_NAME} LANGUAGES CXX)
@@ -41,9 +36,22 @@ list(APPEND PLUGIN_SOURCES
 
 # === vcpkg dependencies ===
 # These are resolved via vcpkg.json automatically (cpprestsdk, boost)
+
+# Ensure CMAKE_TOOLCHAIN_FILE is set (required for vcpkg include/lib paths)
+if(NOT CMAKE_TOOLCHAIN_FILE)
+  message(WARNING "CMAKE_TOOLCHAIN_FILE not set. vcpkg dependencies may not be found. "
+    "Set CMAKE_TOOLCHAIN_FILE to vcpkg.cmake before configuring CMake.")
+else()
+  message(STATUS "Using CMAKE_TOOLCHAIN_FILE: ${CMAKE_TOOLCHAIN_FILE}")
+endif()
+
+message(STATUS "Searching for vcpkg packages...")
 find_package(cpprestsdk CONFIG REQUIRED)
+message(STATUS "cpprestsdk found: ${cpprestsdk_FOUND}")
 find_package(OpenSSL REQUIRED)
+message(STATUS "OpenSSL found: ${OPENSSL_FOUND}")
 find_package(Boost REQUIRED COMPONENTS system date_time regex)
+message(STATUS "Boost found: ${Boost_FOUND}")
 
 # Define the plugin library target only if flutter targets are available
 if(TARGET flutter)
@@ -92,8 +100,6 @@ if(TARGET flutter)
   target_include_directories(${PLUGIN_NAME} INTERFACE
     "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
-  #list(APPEND CMAKE_MODULE_PATH "$ENV{VCPKG_ROOT}/installed/x64-windows/share")
-
   # Link Flutter + vcpkg dependencies
   target_link_libraries(${PLUGIN_NAME} PRIVATE
     flutter
@@ -105,6 +111,26 @@ if(TARGET flutter)
     Boost::date_time
     Boost::regex
   )
+
+  # Explicitly add vcpkg include directories for cpprestsdk headers (pplx, etc.)
+  # This is needed because Flutter's build system may not properly propagate
+  # include directories from CMake targets in some configurations
+  get_target_property(CPPRESTSDK_INCLUDE_DIRS cpprestsdk::cpprest INTERFACE_INCLUDE_DIRECTORIES)
+  if(CPPRESTSDK_INCLUDE_DIRS)
+    target_include_directories(${PLUGIN_NAME} PRIVATE ${CPPRESTSDK_INCLUDE_DIRS})
+    message(STATUS "Added cpprestsdk include dirs from target: ${CPPRESTSDK_INCLUDE_DIRS}")
+  else()
+    # Fallback: manually construct vcpkg include path if target property is not set
+    # This handles cases where cpprestsdk target doesn't have INTERFACE_INCLUDE_DIRECTORIES
+    if(DEFINED VCPKG_INSTALLED_DIR)
+      set(VCPKG_INCLUDE_DIR "${VCPKG_INSTALLED_DIR}/include")
+      target_include_directories(${PLUGIN_NAME} PRIVATE ${VCPKG_INCLUDE_DIR})
+      message(STATUS "Added fallback vcpkg include dir: ${VCPKG_INCLUDE_DIR}")
+    else()
+      message(WARNING "Could not determine cpprestsdk include directories. "
+        "CMAKE_TOOLCHAIN_FILE may not be properly configured.")
+    endif()
+  endif()
 
   # List of absolute paths to libraries that should be bundled with the plugin.
   set(auth0_flutter_bundled_libraries
