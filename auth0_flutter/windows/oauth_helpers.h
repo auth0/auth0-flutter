@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <mutex>
 #include <pplx/pplxtasks.h>
 
 namespace auth0_flutter
@@ -107,5 +108,13 @@ namespace auth0_flutter
         const std::string &returnToUri,
         int timeoutSeconds = 300,
         pplx::cancellation_token ct = pplx::cancellation_token::none());
+
+    /**
+     * @brief Get the mutex protecting PLUGIN_STARTUP_URL environment variable.
+     *
+     * Used to synchronize reads/writes of PLUGIN_STARTUP_URL between the pipe server
+     * and polling threads to prevent TOCTOU race conditions.
+     */
+    std::mutex &GetPluginUrlMutex();
 
 } // namespace auth0_flutter

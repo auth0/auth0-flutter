@@ -20,8 +20,8 @@ env:
 
 jobs:
 
-    analyze-and-test-auth0_flutter:
-        name: Analyze and test auth0_flutter Flutter package
+    analyze-auth0_flutter:
+        name: Analyze auth0_flutter Flutter package
         runs-on: ubuntu-latest
 
         steps:
@@ -43,6 +43,25 @@ jobs:
               working-directory: auth0_flutter
               run: flutter analyze --no-fatal-warnings --no-fatal-infos
 
+    test-auth0_flutter:
+        name: Test auth0_flutter Flutter package
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+
+            - name: Install Flutter
+              uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
+              with:
+                  flutter-version: ${{ env.flutter }}
+                  channel: stable
+                  cache: true
+
+            - name: Add example/.env
+              working-directory: auth0_flutter
+              run: cp example/.env.example example/.env
+
             - name: Test auth0_flutter package
               working-directory: auth0_flutter
               run: |
@@ -55,8 +74,8 @@ jobs:
                 name: auth0_flutter coverage
                 path: auth0_flutter/coverage/lcov.info
 
-    analyze-and-test-auth0_flutter_platform_interface:
-        name: Analyze and test auth0_flutter_platform_interface Flutter package
+    analyze-auth0_flutter_platform_interface:
+        name: Analyze auth0_flutter_platform_interface Flutter package
         runs-on: ubuntu-latest
 
         steps:
@@ -73,6 +92,21 @@ jobs:
             - name: Analyze auth0_flutter_platform_interface package
               working-directory: auth0_flutter_platform_interface
               run: flutter analyze
+
+    test-auth0_flutter_platform_interface:
+        name: Test auth0_flutter_platform_interface Flutter package
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+
+            - name: Install Flutter
+              uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
+              with:
+                  flutter-version: ${{ env.flutter }}
+                  channel: stable
+                  cache: true
 
             - name: Test auth0_flutter_platform_interface package
               working-directory: auth0_flutter_platform_interface
@@ -300,22 +334,22 @@ jobs:
                 vcpkgDirectory: '${{ github.workspace }}/vcpkg'
                 vcpkgGitCommitId: '66c0373dc7fca549e5803087b9487edfe3aca0a1'
 
-            - name: Cache vcpkg installed packages
+            - name: Cache vcpkg packages and binaries
               uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # pin@v4.2.3
               with:
-                path: ${{ github.workspace }}/vcpkg/installed
-                key: vcpkg-installed-${{ runner.os }}-${{ hashFiles('auth0_flutter/windows/vcpkg.json') }}-${{ hashFiles('.github/workflows/main.yml') }}
+                path: |
+                  ${{ github.workspace }}/vcpkg/installed
+                  ${{ github.workspace }}/vcpkg-binary-cache
+                key: vcpkg-${{ runner.os }}-${{ hashFiles('auth0_flutter/windows/vcpkg.json') }}
                 restore-keys: |
-                  vcpkg-installed-${{ runner.os }}-${{ hashFiles('auth0_flutter/windows/vcpkg.json') }}-
-                  vcpkg-installed-${{ runner.os }}-
+                  vcpkg-${{ runner.os }}-
 
             - name: Install vcpkg dependencies
               run: |
                 ${{ github.workspace }}\vcpkg\vcpkg install cpprestsdk:x64-windows openssl:x64-windows boost-system:x64-windows boost-date-time:x64-windows boost-regex:x64-windows
               shell: cmd
               env:
-                VCPKG_BINARY_SOURCES: 'clear'
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                VCPKG_BINARY_SOURCES: 'clear;files,${{ github.workspace }}/vcpkg-binary-cache,readwrite;x-gha,readwrite'
 
             - name: Cache Windows example app build
               uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # pin@v4.2.3
@@ -478,8 +512,10 @@ jobs:
         runs-on: ubuntu-latest
 
         needs: [
-          analyze-and-test-auth0_flutter,
-          analyze-and-test-auth0_flutter_platform_interface,
+          analyze-auth0_flutter,
+          test-auth0_flutter,
+          analyze-auth0_flutter_platform_interface,
+          test-auth0_flutter_platform_interface,
           test-ios-unit,
           test-android-unit,
           test-windows-unit

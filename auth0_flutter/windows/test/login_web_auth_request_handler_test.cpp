@@ -243,9 +243,151 @@ TEST(LoginHandlerTest, SilentlyIgnoresUseDPoPTrue)
         << "useDPoP:true must not cause a bad_args error on Windows";
 }
 
-// ===========================================================================
-// Required-field validation
-// ===========================================================================
+TEST(LoginHandlerTest, AcceptsValidScopesListTopLevel)
+{
+    LoginWebAuthRequestHandler handler;
+
+    auto args = MinimalArgs();
+    flutter::EncodableList scopesList;
+    scopesList.push_back(flutter::EncodableValue(std::string("openid")));
+    scopesList.push_back(flutter::EncodableValue(std::string("profile")));
+    scopesList.push_back(flutter::EncodableValue(std::string("email")));
+    args[flutter::EncodableValue("scopes")] = flutter::EncodableValue(scopesList);
+
+    auto state = Invoke(handler, args);
+
+    ASSERT_EQ(state->kind, CapturingMethodResult::Kind::Success);
+}
+
+// Test that "openid" is added automatically even if not provided in scopes
+TEST(LoginHandlerTest, AutomaticallyAddsOpenidToScopesList)
+{
+    LoginWebAuthRequestHandler handler;
+
+    auto args = MinimalArgs();
+    flutter::EncodableList scopesList;
+    scopesList.push_back(flutter::EncodableValue(std::string("profile")));
+    scopesList.push_back(flutter::EncodableValue(std::string("email")));
+    args[flutter::EncodableValue("scopes")] = flutter::EncodableValue(scopesList);
+
+    auto state = Invoke(handler, args);
+
+    ASSERT_EQ(state->kind, CapturingMethodResult::Kind::Success);
+}
+
+// Test that non-string elements in scopes list are rejected
+TEST(LoginHandlerTest, ReturnsErrorWhenScopesListContainsNonString)
+{
+    LoginWebAuthRequestHandler handler;
+
+    auto args = MinimalArgs();
+    flutter::EncodableList scopesList;
+    scopesList.push_back(flutter::EncodableValue(std::string("openid")));
+    scopesList.push_back(flutter::EncodableValue(int32_t(42)));  // invalid
+    args[flutter::EncodableValue("scopes")] = flutter::EncodableValue(scopesList);
+
+    auto state = Invoke(handler, args);
+
+    ASSERT_EQ(state->kind, CapturingMethodResult::Kind::Error);
+    EXPECT_EQ(state->errorCode, "bad_args");
+    EXPECT_THAT(state->errorMessage, HasSubstr("scope"));
+}
+
+// Test that scope string in parameters is accepted (space-separated)
+TEST(LoginHandlerTest, AcceptsValidScopeStringInParameters)
+{
+    LoginWebAuthRequestHandler handler;
+
+    auto args = MinimalArgs();
+    flutter::EncodableMap params;
+    params[flutter::EncodableValue("scope")] = flutter::EncodableValue(std::string("profile email"));
+    args[flutter::EncodableValue("parameters")] = flutter::EncodableValue(params);
+
+    auto state = Invoke(handler, args);
+
+    ASSERT_EQ(state->kind, CapturingMethodResult::Kind::Success);
+}
+
+// Test that "openid" is added automatically even if not in parameters["scope"]
+TEST(LoginHandlerTest, AutomaticallyAddsOpenidToParametersScope)
+{
+    LoginWebAuthRequestHandler handler;
+
+    auto args = MinimalArgs();
+    flutter::EncodableMap params;
+    params[flutter::EncodableValue("scope")] = flutter::EncodableValue(std::string("profile email"));
+    args[flutter::EncodableValue("parameters")] = flutter::EncodableValue(params);
+
+    auto state = Invoke(handler, args);
+
+    ASSERT_EQ(state->kind, CapturingMethodResult::Kind::Success);
+}
+
+// Test that non-string scope in parameters is rejected
+TEST(LoginHandlerTest, ReturnsErrorWhenParametersScopeIsNotString)
+{
+    LoginWebAuthRequestHandler handler;
+
+    auto args = MinimalArgs();
+    flutter::EncodableMap params;
+    params[flutter::EncodableValue("scope")] = flutter::EncodableValue(int32_t(42));
+    args[flutter::EncodableValue("parameters")] = flutter::EncodableValue(params);
+
+    auto state = Invoke(handler, args);
+
+    ASSERT_EQ(state->kind, CapturingMethodResult::Kind::Error);
+    EXPECT_EQ(state->errorCode, "bad_args");
+    EXPECT_THAT(state->errorMessage, HasSubstr("scope"));
+}
+
+// Test that top-level "scopes" takes priority over parameters["scope"]
+TEST(LoginHandlerTest, TopLevelScopesTakesPriorityOverParametersScope)
+{
+    LoginWebAuthRequestHandler handler;
+
+    auto args = MinimalArgs();
+
+    // Top-level scopes (should be used)
+    flutter::EncodableList scopesList;
+    scopesList.push_back(flutter::EncodableValue(std::string("openid")));
+    args[flutter::EncodableValue("scopes")] = flutter::EncodableValue(scopesList);
+
+    // Parameters scope (should be ignored)
+    flutter::EncodableMap params;
+    params[flutter::EncodableValue("scope")] = flutter::EncodableValue(std::string("profile email"));
+    args[flutter::EncodableValue("parameters")] = flutter::EncodableValue(params);
+
+    auto state = Invoke(handler, args);
+
+    ASSERT_EQ(state->kind, CapturingMethodResult::Kind::Success);
+}
+
+// Test that platform defaults are used when no scopes provided
+TEST(LoginHandlerTest, UsesPlatformDefaultsWhenNoScopesProvided)
+{
+    LoginWebAuthRequestHandler handler;
+
+    auto args = MinimalArgs();
+    // No "scopes" parameter, no "parameters" parameter
+
+    auto state = Invoke(handler, args);
+
+    ASSERT_EQ(state->kind, CapturingMethodResult::Kind::Success);
+}
+
+// Test that platform defaults are used when parameters is empty
+TEST(LoginHandlerTest, UsesPlatformDefaultsWhenParametersIsEmpty)
+{
+    LoginWebAuthRequestHandler handler;
+
+    auto args = MinimalArgs();
+    flutter::EncodableMap emptyParams;
+    args[flutter::EncodableValue("parameters")] = flutter::EncodableValue(emptyParams);
+
+    auto state = Invoke(handler, args);
+
+    ASSERT_EQ(state->kind, CapturingMethodResult::Kind::Success);
+}
 
 TEST(LoginHandlerTest, ReturnsErrorWhenNullArguments)
 {
