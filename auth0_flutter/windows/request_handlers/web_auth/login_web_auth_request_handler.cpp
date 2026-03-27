@@ -109,15 +109,17 @@ namespace auth0_flutter
             return;
         }
 
+        auto parametersIt = arguments->find(flutter::EncodableValue("parameters"));
+        const flutter::EncodableMap *parametersMap = nullptr;
+        if (parametersIt != arguments->end())
+        {
+            parametersMap = std::get_if<flutter::EncodableMap>(&parametersIt->second);
+        }
+
         std::set<std::string> scopeSet = {"openid"};
 
         auto scopesIt = arguments->find(flutter::EncodableValue("scopes"));
-        if (scopesIt == arguments->end())
-        {
-            // No scopes key — use platform default
-            scopeSet = {"openid", "offline_access", "profile", "email"};
-        }
-        else
+        if (scopesIt != arguments->end())
         {
             const auto *scopeList = std::get_if<flutter::EncodableList>(&scopesIt->second);
             if (!scopeList)
@@ -137,7 +139,38 @@ namespace auth0_flutter
                 scopeSet.insert(*s);
             }
         }
+        else if (parametersMap)
+        {
+            if (auto it = parametersMap->find(flutter::EncodableValue("scope"));
+                it != parametersMap->end())
+            {
+                if (const auto *scopeStr = std::get_if<std::string>(&it->second); scopeStr && !scopeStr->empty())
+                {
+                    // Parse space-separated scopes
+                    std::istringstream iss(*scopeStr);
+                    std::string token;
+                    while (iss >> token)
+                    {
+                        if (!token.empty())
+                        {
+                            scopeSet.insert(token);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // No scope in parameters — use platform defaults
+                scopeSet = {"openid", "offline_access", "profile", "email"};
+            }
+        }
+        else
+        {
+            // No scopes and no parameters — use platform defaults
+            scopeSet = {"openid", "offline_access", "profile", "email"};
+        }
 
+        // Convert set to space-separated string for OAuth request
         std::string scopeStr;
         for (const auto &s : scopeSet)
         {
@@ -208,13 +241,6 @@ namespace auth0_flutter
 
         std::string state = generateCodeVerifier();
         std::string nonce = generateCodeVerifier();
-
-        auto parametersIt = arguments->find(flutter::EncodableValue("parameters"));
-        const flutter::EncodableMap *parametersMap = nullptr;
-        if (parametersIt != arguments->end())
-        {
-            parametersMap = std::get_if<flutter::EncodableMap>(&parametersIt->second);
-        }
 
         if (parametersMap)
         {
