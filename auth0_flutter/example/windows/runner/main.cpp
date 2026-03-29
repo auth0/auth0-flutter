@@ -9,6 +9,9 @@
 #include "flutter_window.h"
 #include "utils.h"
 
+// Include reader-writer lock for PLUGIN_STARTUP_URL synchronization with plugin
+#include "../../../auth0_flutter/windows/plugin_startup_url_lock.h"
+
 const wchar_t* kSingleInstanceMutex = L"auth0flutter_single_instance_mutex";
 const wchar_t* kRedirectPipeName    = L"\\\\.\\pipe\\auth0flutter_pipe";
 
@@ -154,7 +157,16 @@ void StartPipeServer() {
           size_t prefixLen = wcslen(kCallbackPrefix);
           if (wcslen(buffer) >= prefixLen &&
               wcsncmp(buffer, kCallbackPrefix, prefixLen) == 0) {
-            SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", buffer);
+            // Synchronize with polling threads (oauth_helpers.cpp) to prevent TOCTOU race.
+            // Acquire write lock (exclusive access) so polling threads are blocked while
+            // we write to PLUGIN_STARTUP_URL. Polling threads acquire read locks, which
+            // allows multiple readers to proceed simultaneously, but blocks when writer holds
+            // the lock (true reader-writer lock semantics).
+            auth0_flutter::WriteLockGuard writeLock(auth0_flutter::GetPluginUrlRwLock());
+            if (writeLock.IsValid()) {
+              SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", buffer);
+            }
+            // WriteLockGuard destructor releases the write lock automatically
             BringExistingWindowToFront();
           }
         }

@@ -4,6 +4,7 @@
  */
 
 #include "oauth_helpers.h"
+#include "plugin_startup_url_lock.h"
 #include "url_utils.h"
 #include "windows_utils.h"
 
@@ -164,24 +165,44 @@ namespace auth0_flutter
 
         auto readAndClearEnv = []() -> std::string
         {
-            wchar_t stackBuf[kStackBufChars];
-            DWORD ret = GetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", stackBuf, kStackBufChars);
-            if (ret == 0)
-                return std::string(); // variable not set
-
-            if (ret < kStackBufChars)
-            {
-                SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
-                return WideToUtf8(std::wstring(stackBuf, ret));
-            }
-
-            std::vector<wchar_t> heapBuf(ret + 1);
-            DWORD ret2 = GetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", heapBuf.data(), ret + 1);
-            if (ret2 == 0 || ret2 >= ret + 1)
+            // Acquire read lock to prevent TOCTOU race with pipe server writes
+            ReadLockGuard readLock(GetPluginUrlRwLock());
+            // Return empty string if lock acquisition failed
+            if (!readLock.IsValid())
                 return std::string();
 
-            SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
-            return WideToUtf8(std::wstring(heapBuf.data(), ret2));
+            // Query environment variable length into stackBuf
+            wchar_t stackBuf[kStackBufChars];
+            DWORD ret = GetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", stackBuf, kStackBufChars);
+            std::string result;
+
+            // If variable fits in stack buffer, read and clear it
+            if (ret > 0 && ret < kStackBufChars)
+            {
+                // Clear environment variable to mark it as consumed
+                SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
+                // Convert wide-char buffer to UTF-8 string
+                result = WideToUtf8(std::wstring(stackBuf, ret));
+            }
+            // If variable exceeds stack buffer, allocate heap buffer
+            else if (ret >= kStackBufChars)
+            {
+                // Allocate heap buffer sized for the full variable
+                std::vector<wchar_t> heapBuf(ret + 1);
+                // Read into heap buffer
+                DWORD ret2 = GetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", heapBuf.data(), ret + 1);
+                // If read successful and complete, clear and convert
+                if (ret2 > 0 && ret2 < ret + 1)
+                {
+                    // Clear environment variable to mark it as consumed
+                    SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
+                    // Convert wide-char buffer to UTF-8 string
+                    result = WideToUtf8(std::wstring(heapBuf.data(), ret2));
+                }
+            }
+
+            // Return result; read lock automatically released by guard destructor
+            return result;
         };
     
         const auto deadline = std::chrono::steady_clock::now() +
@@ -269,24 +290,44 @@ namespace auth0_flutter
 
         auto readAndClearEnv = []() -> std::string
         {
+            // Acquire read lock to prevent TOCTOU race with pipe server writes
+            ReadLockGuard readLock(GetPluginUrlRwLock());
+            // Return empty string if lock acquisition failed
+            if (!readLock.IsValid())
+                return std::string();
+
+            // Query environment variable length into stackBuf
             wchar_t stackBuf[kStackBufChars];
             DWORD ret = GetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", stackBuf, kStackBufChars);
-            if (ret == 0)
-                return std::string();
+            std::string result;
 
-            if (ret < kStackBufChars)
+            // If variable fits in stack buffer, read and clear it
+            if (ret > 0 && ret < kStackBufChars)
             {
+                // Clear environment variable to mark it as consumed
                 SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
-                return WideToUtf8(std::wstring(stackBuf, ret));
+                // Convert wide-char buffer to UTF-8 string
+                result = WideToUtf8(std::wstring(stackBuf, ret));
+            }
+            // If variable exceeds stack buffer, allocate heap buffer
+            else if (ret >= kStackBufChars)
+            {
+                // Allocate heap buffer sized for the full variable
+                std::vector<wchar_t> heapBuf(ret + 1);
+                // Read into heap buffer
+                DWORD ret2 = GetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", heapBuf.data(), ret + 1);
+                // If read successful and complete, clear and convert
+                if (ret2 > 0 && ret2 < ret + 1)
+                {
+                    // Clear environment variable to mark it as consumed
+                    SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
+                    // Convert wide-char buffer to UTF-8 string
+                    result = WideToUtf8(std::wstring(heapBuf.data(), ret2));
+                }
             }
 
-            std::vector<wchar_t> heapBuf(ret + 1);
-            DWORD ret2 = GetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", heapBuf.data(), ret + 1);
-            if (ret2 == 0 || ret2 >= ret + 1)
-                return std::string();
-
-            SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
-            return WideToUtf8(std::wstring(heapBuf.data(), ret2));
+            // Return result; read lock automatically released by guard destructor
+            return result;
         };
 
         const auto deadline = std::chrono::steady_clock::now() +

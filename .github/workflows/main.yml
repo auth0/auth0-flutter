@@ -355,9 +355,9 @@ jobs:
               uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # pin@v4.2.3
               with:
                 path: auth0_flutter/example/build/windows
-                key: win-example-build-${{ runner.os }}-${{ hashFiles('auth0_flutter/windows/**/*.cpp', 'auth0_flutter/windows/**/*.h', 'auth0_flutter/windows/CMakeLists.txt') }}-${{ hashFiles('auth0_flutter/example/lib/**/*.dart') }}
+                key: win-example-build-${{ runner.os }}-${{ hashFiles('auth0_flutter/windows/**/*.cpp', 'auth0_flutter/windows/**/*.h', 'auth0_flutter/windows/CMakeLists.txt', 'auth0_flutter/windows/vcpkg.json') }}-${{ hashFiles('auth0_flutter/example/lib/**/*.dart') }}
                 restore-keys: |
-                  win-example-build-${{ runner.os }}-${{ hashFiles('auth0_flutter/windows/**/*.cpp', 'auth0_flutter/windows/**/*.h', 'auth0_flutter/windows/CMakeLists.txt') }}-
+                  win-example-build-${{ runner.os }}-${{ hashFiles('auth0_flutter/windows/**/*.cpp', 'auth0_flutter/windows/**/*.h', 'auth0_flutter/windows/CMakeLists.txt', 'auth0_flutter/windows/vcpkg.json') }}-
                   win-example-build-${{ runner.os }}-
 
             - name: Build Windows example app
@@ -376,7 +376,7 @@ jobs:
               uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # pin@v4.2.3
               with:
                 path: auth0_flutter/windows/build
-                key: win-test-build-${{ runner.os }}-${{ hashFiles('auth0_flutter/windows/**/*.cpp', 'auth0_flutter/windows/**/*.h', 'auth0_flutter/windows/CMakeLists.txt', 'auth0_flutter/windows/test/**') }}
+                key: win-test-build-${{ runner.os }}-${{ hashFiles('auth0_flutter/windows/**/*.cpp', 'auth0_flutter/windows/**/*.h', 'auth0_flutter/windows/CMakeLists.txt', 'auth0_flutter/windows/test/**', 'auth0_flutter/windows/vcpkg.json') }}
                 restore-keys: |
                   win-test-build-${{ runner.os }}-
 
@@ -589,3 +589,4 @@ jobs:
                   name: Auth0 Flutter
                   flags: auth0_flutter_windows
                   directory: coverage/windows
+
