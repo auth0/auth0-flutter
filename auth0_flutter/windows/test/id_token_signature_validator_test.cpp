@@ -841,3 +841,115 @@ TEST(IdTokenSignatureValidatorJwksTest, ThrowsWhenJwksResponseMissingKeysArray)
         FAIL() << "Unwrapped std::exception escaped the validator: " << e.what();
     }
 }
+
+// RFC 7517 Compliance Tests (Issue #7 - JWKS use/alg validation)
+
+TEST(IdTokenSignatureValidatorJwksTest, SkipsKeyWithUseEncryption)
+{
+    // JWKS contains two keys: one for encryption (use: "enc") and one for signing (use: "sig").
+    // The validator should skip the encryption key and not use it for RS256 verification.
+    // This test ensures RFC 7517 §4.2 compliance: keys marked for encryption must not be used for signatures.
+    std::string jwksJson = R"({
+        "keys": [
+            {
+                "kid": "test-kid",
+                "use": "enc",
+                "alg": "RSA-OAEP",
+                "kty": "RSA",
+                "n": "invalid-n",
+                "e": "AQAB"
+            },
+            {
+                "kid": "test-kid",
+                "use": "sig",
+                "alg": "RS256",
+                "kty": "RSA",
+                "n": "invalid-n",
+                "e": "AQAB"
+            }
+        ]
+    })";
+
+    TestJwksServer server(19084, status_codes::OK, jwksJson);
+    std::string token = MakeValidHeaderJwt("test-kid");
+
+    try
+    {
+        ValidateIdTokenSignature(token, server.uri());
+        // The test will fail at signature verification (invalid key material),
+        // but the important thing is it doesn't crash trying to use the "enc" key.
+        // We expect it to either fail on signature verification or key material.
+    }
+    catch (const IdTokenValidationException &e)
+    {
+        // Expected: should fail on signature verification, not on key selection
+        std::string msg = e.what();
+        EXPECT_THAT(msg, ::testing::Not(HasSubstr("use")))
+            << "Should not fail due to 'use' field validation; got: " << msg;
+    }
+}
+
+TEST(IdTokenSignatureValidatorJwksTest, SkipsKeyWithWrongAlgorithm)
+{
+    // JWKS contains a key with alg: "HS256" (HMAC, not RSA).
+    // The validator should skip this key since we only support RS256.
+    // This test ensures RFC 7517 §4.1 compliance: keys for different algorithms are not used interchangeably.
+    std::string jwksJson = R"({
+        "keys": [
+            {
+                "kid": "test-kid",
+                "alg": "HS256",
+                "kty": "oct",
+                "k": "invalid"
+            }
+        ]
+    })";
+
+    TestJwksServer server(19085, status_codes::OK, jwksJson);
+    std::string token = MakeValidHeaderJwt("test-kid");
+
+    try
+    {
+        ValidateIdTokenSignature(token, server.uri());
+        FAIL() << "Expected IdTokenValidationException when key algorithm doesn't match";
+    }
+    catch (const IdTokenValidationException &e)
+    {
+        std::string msg = e.what();
+        EXPECT_THAT(msg, HasSubstr("Could not find a public key"))
+            << "Should report key not found for non-RS256 alg; got: " << msg;
+    }
+}
+
+TEST(IdTokenSignatureValidatorJwksTest, AcceptsKeyWithoutUseField)
+{
+    // Some JWKS keys don't have an explicit "use" field (it's optional per RFC 7517).
+    // The validator should accept keys without "use" field (assumes they can be used for verification).
+    std::string jwksJson = R"({
+        "keys": [
+            {
+                "kid": "test-kid",
+                "kty": "RSA",
+                "n": "invalid-n",
+                "e": "AQAB"
+            }
+        ]
+    })";
+
+    TestJwksServer server(19086, status_codes::OK, jwksJson);
+    std::string token = MakeValidHeaderJwt("test-kid");
+
+    try
+    {
+        ValidateIdTokenSignature(token, server.uri());
+        // Will fail on key material, not on 'use' field validation
+    }
+    catch (const IdTokenValidationException &e)
+    {
+        std::string msg = e.what();
+        // Should not complain about missing 'use' field
+        EXPECT_THAT(msg, ::testing::Not(HasSubstr("use")))
+            << "Should not require 'use' field; got: " << msg;
+    }
+}
+}

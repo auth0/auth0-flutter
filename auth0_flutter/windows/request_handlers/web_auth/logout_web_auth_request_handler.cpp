@@ -15,25 +15,7 @@
 namespace auth0_flutter
 {
 
-    /**
-     * @brief Builds the Auth0 logout URL with required parameters
-     *
-     * The logout URL follows the Auth0 logout endpoint specification:
-     * https://{domain}/v2/logout
-     *
-     * Query parameters:
-     * - federated: If true, also logs out from the identity provider
-     * - returnTo: URL to redirect after logout completes
-     * - client_id: Auth0 application client ID
-     *
-     * All parameters are properly percent-encoded for URL safety.
-     *
-     * @param domain Auth0 tenant domain
-     * @param clientId Auth0 application client ID
-     * @param returnTo URL to redirect after logout
-     * @param federated Whether to perform federated logout
-     * @return Logout URL as string with properly encoded parameters
-     */
+    // Build Auth0 logout URL (https://{domain}/v2/logout) with query parameters.
     static std::string BuildLogoutUrl(
         const std::string &domainUrl,
         const std::string &clientId,
@@ -42,65 +24,55 @@ namespace auth0_flutter
     {
         std::ostringstream url;
 
-        // Base logout endpoint using normalized HTTPS domain URL
+        // Append base logout endpoint to domain URL
         url << domainUrl << "v2/logout";
 
-        // Add federated parameter if requested
-        // This will also log the user out from their identity provider
+        // Append ?federated to URL if federated logout requested
         if (federated)
         {
             url << "?federated";
         }
 
-        // Determine query parameter separator
+        // Determine first separator: ? if no federated param, & if federated param present
         char separator = federated ? '&' : '?';
 
-        // Add returnTo URL if provided (with proper encoding)
+        // If returnTo provided, append returnTo parameter with URL encoding
         if (!returnTo.empty())
         {
             url << separator << "returnTo=" << urlEncode(returnTo);
+            // Update separator to & for subsequent parameters
             separator = '&';
         }
 
-        // Add client_id (required by Auth0) with proper encoding
+        // Append client_id parameter (required by Auth0) with URL encoding
         url << separator << "client_id=" << urlEncode(clientId);
 
+        // Return complete logout URL string
         return url.str();
     }
 
-    /**
-     * @brief Handles the webAuth#logout method call
-     *
-     * Process:
-     * 1. Extract and validate required parameters (account)
-     * 2. Extract optional parameters (returnTo, federated)
-     * 3. Build logout URL with all parameters
-     * 4. Open system default browser with logout URL
-     * 5. Wait for browser to redirect back to the returnTo URI
-     * 6. Bring Flutter window back to foreground
-     * 7. Return success to Dart (always — browser-side failures are ignored)
-     *
-     * @param arguments Map containing configuration from Flutter
-     * @param result Callback to return success/error to Flutter
-     */
+    // Handle webAuth#logout method call from Flutter.
     void LogoutWebAuthRequestHandler::handle(
         const flutter::EncodableMap *arguments,
         std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
     {
+        // Return error if arguments pointer is null
         if (!arguments)
         {
             result->Error("bad_args", "Expected a map as arguments");
             return;
         }
 
-        // Extract "account" map containing clientId and domain
+        // Find "_account" key in arguments map
         auto accountIt = arguments->find(flutter::EncodableValue("_account"));
+        // Return error if "_account" key not found
         if (accountIt == arguments->end())
         {
             result->Error("bad_args", "Missing '_account' key");
             return;
         }
 
+        // Extract account map from EncodableValue; return error if not a map
         const auto *accountMap = std::get_if<flutter::EncodableMap>(&accountIt->second);
         if (!accountMap)
         {
@@ -108,13 +80,15 @@ namespace auth0_flutter
             return;
         }
 
-        // Extract required Auth0 configuration
+        // Initialize clientId and domain strings (required fields)
         std::string clientId;
         std::string domain;
 
+        // Extract clientId from account map
         if (auto it = accountMap->find(flutter::EncodableValue("clientId"));
             it != accountMap->end())
         {
+            // Get string pointer from EncodableValue; return error if not a string
             if (auto s = std::get_if<std::string>(&it->second))
             {
                 clientId = *s;
@@ -126,9 +100,11 @@ namespace auth0_flutter
             }
         }
 
+        // Extract domain from account map
         if (auto it = accountMap->find(flutter::EncodableValue("domain"));
             it != accountMap->end())
         {
+            // Get string pointer from EncodableValue; return error if not a string
             if (auto s = std::get_if<std::string>(&it->second))
             {
                 domain = *s;
@@ -140,20 +116,20 @@ namespace auth0_flutter
             }
         }
 
-        // Validate required parameters
+        // Return error if required parameters are empty
         if (clientId.empty() || domain.empty())
         {
             result->Error("bad_args", "clientId and domain are required");
             return;
         }
 
-        // Extract appCustomURL — the custom-scheme URL the Windows app listens on
-        // to detect when the browser has completed logout and redirected back.
-        // Defaults to kDefaultRedirectUri ("auth0flutter://callback").
+        // Initialize appCustomURL to default redirect URI
         std::string appCustomURL = kDefaultRedirectUri;
+        // Find appCustomURL in arguments (optional, overrides default)
         auto appActivationIt = arguments->find(flutter::EncodableValue("appCustomURL"));
         if (appActivationIt != arguments->end())
         {
+            // Use provided appCustomURL if non-empty
             if (auto s = std::get_if<std::string>(&appActivationIt->second);
                 s && !s->empty())
             {
@@ -161,12 +137,13 @@ namespace auth0_flutter
             }
         }
 
-        // Extract returnTo URL — the URL sent to Auth0 as the post-logout redirect.
-        // Defaults to appCustomURL when not provided.
+        // Initialize returnTo to appCustomURL (will be sent to Auth0 for post-logout redirect)
         std::string returnTo = appCustomURL;
+        // Find returnTo in arguments (optional, overrides default)
         auto returnToIt = arguments->find(flutter::EncodableValue("returnTo"));
         if (returnToIt != arguments->end())
         {
+            // Use provided returnTo if non-empty
             if (auto s = std::get_if<std::string>(&returnToIt->second);
                 s && !s->empty())
             {
@@ -174,30 +151,36 @@ namespace auth0_flutter
             }
         }
 
-        // Extract federated flag (default: false)
+        // Initialize federated to false (default: no federated logout)
         bool federated = false;
+        // Find federated in arguments (optional)
         auto fedIt = arguments->find(flutter::EncodableValue("federated"));
         if (fedIt != arguments->end())
         {
+            // Use provided federated value if present
             if (auto b = std::get_if<bool>(&fedIt->second))
             {
                 federated = *b;
             }
         }
 
-        // Build logout URL with all parameters
+        // Build complete logout URL with all parameters
         std::string logoutUrl = BuildLogoutUrl(httpsUrl(domain), clientId, returnTo, federated);
 
-        // Cancel any previously running logout task so a second call does not
-        // leave a stale task holding a reference to the old MethodResult.
+        // Create new cancellation token for this logout task
         pplx::cancellation_token token = pplx::cancellation_token::none();
         {
+            // Lock cancellation token source during update
             std::lock_guard<std::mutex> lock(_cts_mutex);
+            // Cancel any existing logout task
             _cts.cancel();
+            // Create new token source for this logout task
             _cts = pplx::cancellation_token_source{};
+            // Get cancellation token from new source
             token = _cts.get_token();
         }
 
+        // Convert unique_ptr to shared_ptr so it's safe to pass to async task
         std::shared_ptr<flutter::MethodResult<flutter::EncodableValue>> sharedResult(result.release());
 
         // Capture ui_task_runner_ by value to avoid holding a dangling `this` pointer
@@ -206,25 +189,43 @@ namespace auth0_flutter
 
         pplx::create_task([taskRunner, sharedResult, logoutUrl, appCustomURL, token]()
         {
-            // Open logout URL in system default browser (must be on UI thread).
-            std::wstring urlW(logoutUrl.begin(), logoutUrl.end());
-            taskRunner([urlW]() {
-                ShellExecuteW(NULL, L"open", urlW.c_str(), NULL, NULL, SW_SHOWNORMAL);
-            });
-
-            // Wait for the browser to redirect back to appCustomURL.
-            // appCustomURL is what the Windows app listens on — even when returnTo
-            // is an intermediary server URL, the server must forward the final redirect
-            // to appCustomURL so the app wakes up.
-            waitForLogoutCallback(appCustomURL, 300, token);
-
-            // Bring window to front and return result on the UI thread.
-            if (!token.is_canceled())
+            try
             {
-                taskRunner([sharedResult]() {
-                    BringFlutterWindowToFront();
-                    sharedResult->Success();
+                // Convert logout URL to wide-char string
+                std::wstring urlW(logoutUrl.begin(), logoutUrl.end());
+                // Execute on UI thread: open URL in system default browser
+                taskRunner([urlW]() {
+                    ShellExecuteW(NULL, L"open", urlW.c_str(), NULL, NULL, SW_SHOWNORMAL);
                 });
+
+                // Wait for browser redirect to appCustomURL with 300-second timeout
+                waitForLogoutCallback(appCustomURL, 300, token);
+
+                // If task was not canceled, bring window to front and return success on UI thread
+                if (!token.is_canceled())
+                {
+                    taskRunner([sharedResult]() {
+                        BringFlutterWindowToFront();
+                        sharedResult->Success();
+                    });
+                }
+            }
+            // Catch task cancellation (engine shutdown or subsequent handle() call)
+            catch (const pplx::task_canceled &)
+            {
+                // Exit silently; result is no longer valid after cancellation
+            }
+            // Catch any other exceptions thrown during logout process
+            catch (const std::exception &e)
+            {
+                // If task not canceled, report error on UI thread
+                if (!token.is_canceled())
+                {
+                    // Capture exception message as string for async lambda
+                    taskRunner([sharedResult, msg = std::string(e.what())]() {
+                        sharedResult->Error("LOGOUT_FAILED", msg);
+                    });
+                }
             }
         });
     }

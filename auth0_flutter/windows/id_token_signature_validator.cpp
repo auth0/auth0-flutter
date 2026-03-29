@@ -135,34 +135,61 @@ namespace auth0_flutter
         return fresh;
     }
 
-    /**
-     * @brief Search a JWKS for a key matching @p kid.
-     *
-     * @param jwks  Parsed JWKS JSON value
-     * @param kid   Key ID to locate
-     * @return The matching JWK JSON value, or a null json value if not found.
-     */
+    // Search JWKS for key matching kid. Validates RFC 7517 "use" and "alg" fields.
     static web::json::value FindKeyByKid(
         const web::json::value &jwks,
         const std::string &kid)
     {
+        // Verify JWKS has "keys" array; throw if missing or not an array
         if (!jwks.has_field(U("keys")) || !jwks.at(U("keys")).is_array())
         {
             throw IdTokenValidationException("Invalid JWKS response: missing 'keys' array");
         }
 
+        // Iterate through each key in the JWKS keys array
         for (const auto &jwk : jwks.at(U("keys")).as_array())
         {
+            // Skip key if it doesn't have a "kid" field or "kid" is not a string
             if (!jwk.has_field(U("kid")) || !jwk.at(U("kid")).is_string())
                 continue;
 
+            // Convert key's kid value to UTF-8 string
             std::string jwkKid =
                 utility::conversions::to_utf8string(jwk.at(U("kid")).as_string());
 
+            // Check if this key's kid matches the requested kid
             if (jwkKid == kid)
+            {
+                // Check "use" field if present (must be "sig" for signature verification, not "enc")
+                if (jwk.has_field(U("use")) && jwk.at(U("use")).is_string())
+                {
+                    // Convert "use" field to string
+                    std::string use = utility::conversions::to_utf8string(jwk.at(U("use")).as_string());
+                    // Skip this key if "use" is not "sig" (prevents using encryption keys for signatures)
+                    if (use != "sig")
+                    {
+                        continue;
+                    }
+                }
+
+                // Check "alg" field if present (must be "RS256", our only supported algorithm)
+                if (jwk.has_field(U("alg")) && jwk.at(U("alg")).is_string())
+                {
+                    // Convert "alg" field to string
+                    std::string alg = utility::conversions::to_utf8string(jwk.at(U("alg")).as_string());
+                    // Skip this key if algorithm is not RS256 (prevents using keys for unsupported algorithms)
+                    if (alg != "RS256")
+                    {
+                        continue;
+                    }
+                }
+
+                // Return the key if all RFC 7517 validations passed
                 return jwk;
+            }
         }
 
+        // Return null if no matching kid found after checking all keys
         return web::json::value::null();
     }
 
