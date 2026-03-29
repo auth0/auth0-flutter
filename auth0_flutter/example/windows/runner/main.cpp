@@ -5,11 +5,9 @@
 #include <string>
 #include <vector>
 #include <thread>
-#include <mutex>
 
 #include "flutter_window.h"
 #include "utils.h"
-#include "../../../auth0_flutter/windows/oauth_helpers.h"
 
 const wchar_t* kSingleInstanceMutex = L"auth0flutter_single_instance_mutex";
 const wchar_t* kRedirectPipeName    = L"\\\\.\\pipe\\auth0flutter_pipe";
@@ -156,10 +154,7 @@ void StartPipeServer() {
           size_t prefixLen = wcslen(kCallbackPrefix);
           if (wcslen(buffer) >= prefixLen &&
               wcsncmp(buffer, kCallbackPrefix, prefixLen) == 0) {
-            {
-              std::lock_guard<std::mutex> lock(auth0_flutter::GetPluginUrlMutex());
-              SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", buffer);
-            }
+            SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", buffer);
             BringExistingWindowToFront();
           }
         }
@@ -224,20 +219,17 @@ if (alreadyRunning) {
   // begin with the expected auth0flutter:// scheme.  This ensures that an
   // unrelated protocol activation (e.g. a deep-link from a different app)
   // cannot overwrite PLUGIN_STARTUP_URL with arbitrary data.
-  {
-    std::lock_guard<std::mutex> lock(auth0_flutter::GetPluginUrlMutex());
-    if (!startupUri.empty()) {
-      size_t prefixLen = wcslen(kCallbackPrefix);
-      bool isOurCallback = (startupUri.size() >= prefixLen &&
-                            startupUri.compare(0, prefixLen, kCallbackPrefix) == 0);
-      if (isOurCallback) {
-        SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", startupUri.c_str());
-      } else {
-        SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
-      }
+  if (!startupUri.empty()) {
+    size_t prefixLen = wcslen(kCallbackPrefix);
+    bool isOurCallback = (startupUri.size() >= prefixLen &&
+                          startupUri.compare(0, prefixLen, kCallbackPrefix) == 0);
+    if (isOurCallback) {
+      SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", startupUri.c_str());
     } else {
       SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
     }
+  } else {
+    SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", L"");
   }
 
   StartPipeServer();

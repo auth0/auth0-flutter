@@ -33,13 +33,6 @@ using namespace web::http::experimental::listener;
 namespace auth0_flutter
 {
 
-    static std::mutex g_pluginUrlMutex;
-
-    std::mutex &GetPluginUrlMutex()
-    {
-        return g_pluginUrlMutex;
-    }
-
     std::string httpsUrl(const std::string &domain)
     {
         std::string url;
@@ -171,8 +164,6 @@ namespace auth0_flutter
 
         auto readAndClearEnv = []() -> std::string
         {
-            std::lock_guard<std::mutex> lock(g_pluginUrlMutex);
-
             wchar_t stackBuf[kStackBufChars];
             DWORD ret = GetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", stackBuf, kStackBufChars);
             if (ret == 0)
@@ -278,8 +269,6 @@ namespace auth0_flutter
 
         auto readAndClearEnv = []() -> std::string
         {
-            std::lock_guard<std::mutex> lock(g_pluginUrlMutex);
-
             wchar_t stackBuf[kStackBufChars];
             DWORD ret = GetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", stackBuf, kStackBufChars);
             if (ret == 0)
