@@ -213,7 +213,7 @@ namespace auth0_flutter
         {
             if (ct.is_canceled())
             {
-                pplx::cancel_current_task();
+                return {false, "", "cancelled", "OAuth operation was cancelled", false};
             }
 
             std::string uri = readAndClearEnv();
@@ -338,7 +338,7 @@ namespace auth0_flutter
         {
             if (ct.is_canceled())
             {
-                pplx::cancel_current_task();
+                return false;
             }
 
             std::string uri = readAndClearEnv();
