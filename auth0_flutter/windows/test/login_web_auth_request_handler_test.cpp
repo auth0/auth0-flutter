@@ -19,6 +19,9 @@
 
 #include <flutter/encodable_value.h>
 #include <string>
+#include <thread>
+#include <chrono>
+#include <windows.h>
 
 using namespace auth0_flutter;
 using ::testing::HasSubstr;
@@ -75,15 +78,49 @@ static flutter::EncodableMap MinimalArgs()
     return args;
 }
 
+// Create args with mock OAuth callback state
+// The Invoke() helper will simulate a browser callback with this state
+static flutter::EncodableMap ArgsWithMockCallback()
+{
+    auto args = MinimalArgs();
+    flutter::EncodableMap params;
+    params[flutter::EncodableValue("state")] = flutter::EncodableValue(std::string("test_state_123"));
+    args[flutter::EncodableValue("parameters")] = flutter::EncodableValue(params);
+    return args;
+}
+
+// Simulates browser callback by injecting OAuth response into environment variable
+// This must be called from a separate thread while the polling loop is running
+static void SimulateOAuthCallback(const std::string &state, int delayMs = 100)
+{
+    std::this_thread::sleep_for(std::chrono::milliseconds(delayMs));
+    std::string callbackUrl = "auth0flutter://callback?code=test_auth_code&state=" + state;
+    SetEnvironmentVariableA("PLUGIN_STARTUP_URL", callbackUrl.c_str());
+}
+
 // Returns the State shared_ptr, which remains valid even after handle()
 // destroys the MethodResult object (as happens on synchronous error paths).
-// For async paths, this waits for a short time for immediate errors (validation failures
-// or timeouts waiting for browser callback).
+// For async paths, this starts a background thread to simulate browser callback
+// and waits for the handler to complete.
 static std::shared_ptr<CapturingMethodResult::State> Invoke(
     flutter::EncodableMap &args)
 {
     auto result = std::make_unique<CapturingMethodResult>();
     auto state  = result->state;          // keep state alive independently
+
+    // Extract state parameter if provided (for mocking callback)
+    std::string expectedState;
+    auto paramsIt = args.find(flutter::EncodableValue("parameters"));
+    if (paramsIt != args.end()) {
+        if (auto paramsMap = std::get_if<flutter::EncodableMap>(&paramsIt->second)) {
+            if (auto stateIt = paramsMap->find(flutter::EncodableValue("state"));
+                stateIt != paramsMap->end()) {
+                if (auto s = std::get_if<std::string>(&stateIt->second)) {
+                    expectedState = *s;
+                }
+            }
+        }
+    }
 
     std::mutex wait_mutex;
     std::condition_variable wait_cv;
@@ -99,6 +136,14 @@ static std::shared_ptr<CapturingMethodResult::State> Invoke(
         wait_cv.notify_all();
     };
 
+    // Start background thread to simulate browser callback
+    std::thread callback_simulator;
+    if (!expectedState.empty()) {
+        callback_simulator = std::thread([expectedState]() {
+            SimulateOAuthCallback(expectedState, 50);  // Fire callback after 50ms
+        });
+    }
+
     // Use custom handler with task runner that signals completion
     LoginWebAuthRequestHandler handler(task_runner);
     handler.handle(&args, std::move(result));
@@ -108,9 +153,15 @@ static std::shared_ptr<CapturingMethodResult::State> Invoke(
     // - Synchronous validation errors (immediate, < 1ms)
     // - Async errors from failed operations (immediate after task starts)
     // - Timeout errors from waitForAuthCode_CustomScheme (default 5 second timeout)
+    // - OAuth callback processing (< 1 second with mock callback)
     {
         std::unique_lock<std::mutex> lock(wait_mutex);
         wait_cv.wait_for(lock, std::chrono::seconds(6), [&] { return task_complete; });
+    }
+
+    // Join callback simulator thread if running
+    if (callback_simulator.joinable()) {
+        callback_simulator.join();
     }
 
     return state;
@@ -272,11 +323,11 @@ TEST(LoginHandlerTest, SilentlyIgnoresUseDPoPTrue)
         << "useDPoP:true must not cause a bad_args error on Windows";
 }
 
-TEST(LoginHandlerTest, DISABLED_AcceptsValidScopesListTopLevel)
+TEST(LoginHandlerTest,AcceptsValidScopesListTopLevel)
 {
     LoginWebAuthRequestHandler handler;
 
-    auto args = MinimalArgs();
+    auto args = ArgsWithMockCallback();
     flutter::EncodableList scopesList;
     scopesList.push_back(flutter::EncodableValue(std::string("openid")));
     scopesList.push_back(flutter::EncodableValue(std::string("profile")));
@@ -295,11 +346,11 @@ TEST(LoginHandlerTest, DISABLED_AcceptsValidScopesListTopLevel)
 }
 
 // Test that "openid" is added automatically even if not provided in scopes
-TEST(LoginHandlerTest, DISABLED_AutomaticallyAddsOpenidToScopesList)
+TEST(LoginHandlerTest,AutomaticallyAddsOpenidToScopesList)
 {
     LoginWebAuthRequestHandler handler;
 
-    auto args = MinimalArgs();
+    auto args = ArgsWithMockCallback();
     flutter::EncodableList scopesList;
     scopesList.push_back(flutter::EncodableValue(std::string("profile")));
     scopesList.push_back(flutter::EncodableValue(std::string("email")));
@@ -333,11 +384,11 @@ TEST(LoginHandlerTest, ReturnsErrorWhenScopesListContainsNonString)
 }
 
 // Test that scope string in parameters is accepted (space-separated)
-TEST(LoginHandlerTest, DISABLED_AcceptsValidScopeStringInParameters)
+TEST(LoginHandlerTest,AcceptsValidScopeStringInParameters)
 {
     LoginWebAuthRequestHandler handler;
 
-    auto args = MinimalArgs();
+    auto args = ArgsWithMockCallback();
     flutter::EncodableMap params;
     params[flutter::EncodableValue("scope")] = flutter::EncodableValue(std::string("profile email"));
     args[flutter::EncodableValue("parameters")] = flutter::EncodableValue(params);
@@ -352,11 +403,11 @@ TEST(LoginHandlerTest, DISABLED_AcceptsValidScopeStringInParameters)
 }
 
 // Test that "openid" is added automatically even if not in parameters["scope"]
-TEST(LoginHandlerTest, DISABLED_AutomaticallyAddsOpenidToParametersScope)
+TEST(LoginHandlerTest,AutomaticallyAddsOpenidToParametersScope)
 {
     LoginWebAuthRequestHandler handler;
 
-    auto args = MinimalArgs();
+    auto args = ArgsWithMockCallback();
     flutter::EncodableMap params;
     params[flutter::EncodableValue("scope")] = flutter::EncodableValue(std::string("profile email"));
     args[flutter::EncodableValue("parameters")] = flutter::EncodableValue(params);
@@ -371,7 +422,7 @@ TEST(LoginHandlerTest, DISABLED_AutomaticallyAddsOpenidToParametersScope)
 }
 
 // Test that non-string scope in parameters is rejected
-TEST(LoginHandlerTest, DISABLED_ReturnsErrorWhenParametersScopeIsNotString)
+TEST(LoginHandlerTest,ReturnsErrorWhenParametersScopeIsNotString)
 {
     LoginWebAuthRequestHandler handler;
 
@@ -388,7 +439,7 @@ TEST(LoginHandlerTest, DISABLED_ReturnsErrorWhenParametersScopeIsNotString)
 }
 
 // Test that top-level "scopes" takes priority over parameters["scope"]
-TEST(LoginHandlerTest, DISABLED_TopLevelScopesTakesPriorityOverParametersScope)
+TEST(LoginHandlerTest,TopLevelScopesTakesPriorityOverParametersScope)
 {
     LoginWebAuthRequestHandler handler;
 
@@ -414,7 +465,7 @@ TEST(LoginHandlerTest, DISABLED_TopLevelScopesTakesPriorityOverParametersScope)
 }
 
 // Test that platform defaults are used when no scopes provided
-TEST(LoginHandlerTest, DISABLED_UsesPlatformDefaultsWhenNoScopesProvided)
+TEST(LoginHandlerTest,UsesPlatformDefaultsWhenNoScopesProvided)
 {
     LoginWebAuthRequestHandler handler;
 
@@ -431,7 +482,7 @@ TEST(LoginHandlerTest, DISABLED_UsesPlatformDefaultsWhenNoScopesProvided)
 }
 
 // Test that platform defaults are used when parameters is empty
-TEST(LoginHandlerTest, DISABLED_UsesPlatformDefaultsWhenParametersIsEmpty)
+TEST(LoginHandlerTest,UsesPlatformDefaultsWhenParametersIsEmpty)
 {
     LoginWebAuthRequestHandler handler;
 
