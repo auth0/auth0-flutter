@@ -29,7 +29,7 @@ jobs:
               uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
             - name: Install Flutter
-              uses: subosito/flutter-action@0ca7a949e71ae44c8e688a51c5e7e93b2c87e295 # pin@v2.22.0
+              uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
@@ -52,7 +52,7 @@ jobs:
               uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
             - name: Install Flutter
-              uses: subosito/flutter-action@0ca7a949e71ae44c8e688a51c5e7e93b2c87e295 # pin@v2.22.0
+              uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
@@ -71,7 +71,7 @@ jobs:
               uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
             - name: Install Flutter
-              uses: subosito/flutter-action@0ca7a949e71ae44c8e688a51c5e7e93b2c87e295 # pin@v2.22.0
+              uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
@@ -102,7 +102,7 @@ jobs:
               uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
 
             - name: Install Flutter
-              uses: subosito/flutter-action@0ca7a949e71ae44c8e688a51c5e7e93b2c87e295 # pin@v2.22.0
+              uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
               with:
                   flutter-version: ${{ env.flutter }}
                   channel: stable
@@ -451,28 +451,28 @@ jobs:
                 path: coverage/android
 
             - name: Upload coverage report for auth0_flutter
-              uses: codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad
+              uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter
                   directory: coverage/auth0_flutter
 
             - name: Upload coverage report for auth0_flutter_platform_interface
-              uses: codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad
+              uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter_platform_interface
                   directory: coverage/auth0_flutter_platform_interface
 
             - name: Upload coverage report for iOS
-              uses: codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad
+              uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter_ios
                   directory: coverage/ios
 
             - name: Upload coverage report for Android
-              uses: codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad
+              uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter_android
