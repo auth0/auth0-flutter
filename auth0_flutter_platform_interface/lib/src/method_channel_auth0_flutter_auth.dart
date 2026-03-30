@@ -36,6 +36,7 @@ const String authUserInfoMethod = 'auth#userInfo';
 const String authSignUpMethod = 'auth#signUp';
 const String authRenewMethod = 'auth#renew';
 const String authCustomTokenExchangeMethod = 'auth#customTokenExchange';
+
 const String authSSOExchangeMethod = 'auth#ssoExchange';
 const String authResetPasswordMethod = 'auth#resetPassword';
 

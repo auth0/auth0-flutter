@@ -515,4 +515,3 @@ class CredentialsManagerMethodCallHandlerTest {
         verify(mockResult).success(userProfileMap)
     }
 }
-

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'package:auth0_flutter/auth0_flutter.dart';
 import 'package:auth0_flutter/auth0_flutter_web.dart';
 import 'package:flutter/foundation.dart';
@@ -21,6 +22,7 @@ class _ExampleAppState extends State<ExampleApp> {
 
   late Auth0 auth0;
   late WebAuthentication webAuth;
+  late WindowsWebAuthentication windowsWebAuth;
   late Auth0Web auth0Web;
 
   @override
@@ -32,6 +34,9 @@ class _ExampleAppState extends State<ExampleApp> {
         Auth0Web(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
     webAuth =
         auth0.webAuthentication(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
+    if (Platform.isWindows) {
+      windowsWebAuth = auth0.windowsWebAuthentication();
+    }
     if (kIsWeb) {
       auth0Web.onLoad().then((final credentials) => setState(() {
             _output = credentials?.idToken ?? '';
@@ -50,17 +55,30 @@ class _ExampleAppState extends State<ExampleApp> {
         return auth0Web.loginWithRedirect(redirectUrl: 'http://localhost:3000');
       }
 
-      final result = await webAuth.login(
-        useHTTPS: true,
-        scopes: {'openid', 'profile', 'email', 'offline_access'},
-      );
-      await auth0.credentialsManager.storeCredentials(result);
+      // Use Windows-specific authentication for Windows platform
+      if (Platform.isWindows) {
+        final result = await windowsWebAuth.login(
+          appCustomURL: 'auth0flutter://callback',
+          authTimeout: const Duration(minutes: 5),
+        );
 
-      setState(() {
-        _isLoggedIn = true;
-      });
+        setState(() {
+          _isLoggedIn = true;
+        });
+        output = result.idToken.replaceAll(RegExp('.'), '*');
+      } else {
+        // Use mobile authentication for iOS/Android
+        final result = await webAuth.login(
+            useHTTPS: true,
+            scopes: {'openid', 'profile', 'email', 'offline_access'});
+        await auth0.credentialsManager.storeCredentials(result);
 
-      output = result.idToken;
+        setState(() {
+          _isLoggedIn = true;
+        });
+
+        output = result.idToken.replaceAll(RegExp(r'.'), '*');
+      }
     } catch (e) {
       output = e.toString();
     }
@@ -82,7 +100,17 @@ class _ExampleAppState extends State<ExampleApp> {
     try {
       if (kIsWeb) {
         await auth0Web.logout(returnToUrl: 'http://localhost:3000');
+      } else if (Platform.isWindows) {
+        // Use Windows-specific logout
+        await windowsWebAuth.logout(
+          appCustomURL: 'auth0flutter://callback',
+        );
+
+        setState(() {
+          _isLoggedIn = false;
+        });
       } else {
+        // Use mobile logout for iOS/Android
         await webAuth.logout(useHTTPS: true);
 
         setState(() {
@@ -130,7 +158,9 @@ class _ExampleAppState extends State<ExampleApp> {
     });
   }
 
-  // DPoP Login Function - Works on Web, Android, and iOS
+  // DPoP Login Function - Works on Web, Android, and iOS.
+  // NOTE: DPoP is not yet implemented on Windows; the button is
+  // hidden on that platform.
   Future<void> dpopLogin() async {
     String output = '';
 
@@ -238,20 +268,22 @@ class _ExampleAppState extends State<ExampleApp> {
                         WebAuthCard(
                             label: 'Web Auth Login', action: webAuthLogin),
                       const SizedBox(height: 10),
-                      // DPoP Button - Works on Web, Android, and iOS
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepPurple,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 32, vertical: 12),
+                      // DPoP button — not shown on Windows
+                      // (DPoP is not yet implemented on that platform)
+                      if (!Platform.isWindows)
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.deepPurple,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 12),
+                          ),
+                          onPressed: dpopLogin,
+                          child: const Text(
+                            'DPoP Login',
+                            style: TextStyle(fontSize: 16),
+                          ),
                         ),
-                        onPressed: dpopLogin,
-                        child: const Text(
-                          'DPoP Login',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
                       if (!kIsWeb && _isLoggedIn) ...[
                         const SizedBox(height: 10),
                         ElevatedButton(
