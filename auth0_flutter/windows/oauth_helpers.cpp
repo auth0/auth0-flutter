@@ -16,6 +16,7 @@
 #include <vector>
 #include <sstream>
 #include <iomanip>
+#include <pplx/pplxtasks.h>
 
 // OpenSSL for PKCE
 #include <openssl/sha.h>
@@ -213,7 +214,7 @@ namespace auth0_flutter
         {
             if (ct.is_canceled())
             {
-                return {false, "", "cancelled", "OAuth operation was cancelled", false};
+                throw pplx::task_canceled();
             }
 
             std::string uri = readAndClearEnv();
@@ -338,7 +339,7 @@ namespace auth0_flutter
         {
             if (ct.is_canceled())
             {
-                return false;
+                throw pplx::task_canceled();
             }
 
             std::string uri = readAndClearEnv();
