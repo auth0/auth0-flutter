@@ -1,5 +1,11 @@
 # Change Log
 
+## [afpi-v2.1.0-beta.1](https://github.com/auth0/auth0-flutter/tree/afpi-v2.1.0-beta.1) (2026-03-30)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.0.0...afpi-v2.1.0-beta.1)
+
+**Added**
+- feat: Flutter Windows  Desktop support [\#656](https://github.com/auth0/auth0-flutter/pull/656) ([NandanPrabhu](https://github.com/NandanPrabhu))
+
 ## [afpi-v2.0.0](https://github.com/auth0/auth0-flutter/tree/afpi-v2.0.0) (2026-03-18)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.0.0-beta.1...afpi-v2.0.0)
 
