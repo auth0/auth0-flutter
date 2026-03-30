@@ -2,11 +2,50 @@
 #include "../id_token_validator.h"
 #include <chrono>
 #include <cpprest/json.h>
-#include <openssl/bio.h>
-#include <openssl/evp.h>
-#include <openssl/buffer.h>
 
 using namespace auth0_flutter;
+
+/**
+ * @brief Simple base64 URL encoding without OpenSSL BIO (safer for tests)
+ */
+static std::string SimpleBase64UrlEncode(const std::string &input)
+{
+    // Use standard base64 alphabet
+    const char* base64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    std::string result;
+
+    for (size_t i = 0; i < input.length(); i += 3) {
+        unsigned int b = (static_cast<unsigned char>(input[i]) << 16);
+        if (i + 1 < input.length()) {
+            b |= (static_cast<unsigned char>(input[i + 1]) << 8);
+        }
+        if (i + 2 < input.length()) {
+            b |= static_cast<unsigned char>(input[i + 2]);
+        }
+
+        result += base64chars[(b >> 18) & 0x3F];
+        result += base64chars[(b >> 12) & 0x3F];
+        if (i + 1 < input.length()) {
+            result += base64chars[(b >> 6) & 0x3F];
+        }
+        if (i + 2 < input.length()) {
+            result += base64chars[b & 0x3F];
+        }
+    }
+
+    // Convert to URL-safe base64: + -> -, / -> _
+    for (auto &c : result) {
+        if (c == '+') c = '-';
+        else if (c == '/') c = '_';
+    }
+
+    // Remove padding
+    while (!result.empty() && result.back() == '=') {
+        result.pop_back();
+    }
+
+    return result;
+}
 
 /**
  * @brief Helper to create a simple unsigned JWT for testing
@@ -22,40 +61,8 @@ static std::string CreateTestJWT(const web::json::value &payload)
     std::string headerStr = utility::conversions::to_utf8string(header.serialize());
     std::string payloadStr = utility::conversions::to_utf8string(payload.serialize());
 
-    // Base64 URL encode (simplified - not production quality)
-    auto base64UrlEncode = [](const std::string &input) -> std::string
-    {
-        BIO *bio, *b64;
-        BUF_MEM *bufferPtr;
-
-        b64 = BIO_new(BIO_f_base64());
-        bio = BIO_new(BIO_s_mem());
-        bio = BIO_push(b64, bio);
-
-        BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
-        BIO_write(bio, input.data(), static_cast<int>(input.length()));
-        BIO_flush(bio);
-        BIO_get_mem_ptr(bio, &bufferPtr);
-
-        std::string result(bufferPtr->data, bufferPtr->length);
-        BIO_free_all(bio);
-
-        // Convert to URL-safe base64
-        for (auto &c : result)
-        {
-            if (c == '+')
-                c = '-';
-            else if (c == '/')
-                c = '_';
-        }
-        // Remove padding
-        result.erase(std::remove(result.begin(), result.end(), '='), result.end());
-
-        return result;
-    };
-
-    std::string encodedHeader = base64UrlEncode(headerStr);
-    std::string encodedPayload = base64UrlEncode(payloadStr);
+    std::string encodedHeader = SimpleBase64UrlEncode(headerStr);
+    std::string encodedPayload = SimpleBase64UrlEncode(payloadStr);
 
     // Dummy signature for testing
     return encodedHeader + "." + encodedPayload + ".dummy_signature";
@@ -535,36 +542,10 @@ static std::string CreateTestJWTWithCustomHeader(
     const web::json::value &header,
     const web::json::value &payload)
 {
-    auto base64UrlEncode = [](const std::string &input) -> std::string
-    {
-        BIO *bio, *b64;
-        BUF_MEM *bufferPtr;
-
-        b64 = BIO_new(BIO_f_base64());
-        bio = BIO_new(BIO_s_mem());
-        bio = BIO_push(b64, bio);
-
-        BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
-        BIO_write(bio, input.data(), static_cast<int>(input.length()));
-        BIO_flush(bio);
-        BIO_get_mem_ptr(bio, &bufferPtr);
-
-        std::string result(bufferPtr->data, bufferPtr->length);
-        BIO_free_all(bio);
-
-        for (auto &c : result)
-        {
-            if (c == '+') c = '-';
-            else if (c == '/') c = '_';
-        }
-        result.erase(std::remove(result.begin(), result.end(), '='), result.end());
-        return result;
-    };
-
     std::string headerStr  = utility::conversions::to_utf8string(header.serialize());
     std::string payloadStr = utility::conversions::to_utf8string(payload.serialize());
 
-    return base64UrlEncode(headerStr) + "." + base64UrlEncode(payloadStr) + ".dummy_signature";
+    return SimpleBase64UrlEncode(headerStr) + "." + SimpleBase64UrlEncode(payloadStr) + ".dummy_signature";
 }
 
 // When jwksUri is not set, signature validation is skipped – existing tests

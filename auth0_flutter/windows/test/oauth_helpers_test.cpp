@@ -10,6 +10,13 @@
 
 using namespace auth0_flutter;
 
+/* -------- Cleanup Helper -------- */
+
+static void CleanupEnvVar() {
+  // Clear PLUGIN_STARTUP_URL to ensure clean state between tests
+  SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", nullptr);
+}
+
 /* ---------------- httpsUrl ---------------- */
 
 TEST(HttpsUrlTest, PrependsPrefixAndTrailingSlash) {
@@ -772,7 +779,8 @@ TEST(PluginUrlReaderWriterLockTest, MultipleReadersCanAcquireSimultaneously) {
   // Start 3 reader threads that each acquire the read lock
   std::atomic<int> activeReaders(0);
   std::atomic<int> maxConcurrentReaders(0);
-  std::barrier barrier(3);
+  std::atomic<int> readyCount(0);
+  std::atomic<bool> startSignal(false);
 
   auto readerThread = [&]() {
     ReadLockGuard readLock(lock);
@@ -786,8 +794,13 @@ TEST(PluginUrlReaderWriterLockTest, MultipleReadersCanAcquireSimultaneously) {
       } while (current > prevMax &&
                !maxConcurrentReaders.compare_exchange_weak(prevMax, current));
 
-      // All readers arrive at the barrier
-      barrier.arrive_and_wait();
+      // Signal that this thread is ready and wait for all threads to be ready
+      readyCount++;
+      while (!startSignal.load()) {
+        std::this_thread::yield();
+      }
+      // Hold the lock for a brief moment to ensure concurrency
+      std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
       activeReaders--;
     }
@@ -796,6 +809,13 @@ TEST(PluginUrlReaderWriterLockTest, MultipleReadersCanAcquireSimultaneously) {
   std::thread t1(readerThread);
   std::thread t2(readerThread);
   std::thread t3(readerThread);
+
+  // Wait for all threads to acquire their read locks
+  while (readyCount.load() < 3) {
+    std::this_thread::yield();
+  }
+  // Now signal all threads to proceed
+  startSignal = true;
 
   t1.join();
   t2.join();
@@ -893,3 +913,35 @@ TEST(PluginUrlReaderWriterLockTest, NamedKernelObjectsAreSharedAcrossInstances) 
   ReadLockGuard readLock2(lock2);
   EXPECT_TRUE(readLock2.IsValid());
 }
+
+/* -------- Global Test Event Listener for Environment Variable Cleanup -------- */
+
+class EnvironmentVariableCleanupListener : public ::testing::TestEventListener {
+public:
+  // Implement all required virtual methods from TestEventListener
+  void OnTestProgramStart(const ::testing::UnitTest&) override {}
+  void OnTestIterationStart(const ::testing::UnitTest&, int) override {}
+  void OnEnvironmentsSetUpStart(const ::testing::UnitTest&) override {}
+  void OnEnvironmentsSetUpEnd(const ::testing::UnitTest&) override {}
+  void OnTestStart(const ::testing::TestInfo&) override {
+    // Clear environment before each test
+    SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", nullptr);
+  }
+  void OnTestPartResult(const ::testing::TestPartResult&) override {}
+  void OnTestEnd(const ::testing::TestInfo&) override {
+    // Clean up PLUGIN_STARTUP_URL environment variable after each test
+    SetEnvironmentVariableW(L"PLUGIN_STARTUP_URL", nullptr);
+  }
+  void OnEnvironmentsTearDownStart(const ::testing::UnitTest&) override {}
+  void OnEnvironmentsTearDownEnd(const ::testing::UnitTest&) override {}
+  void OnTestIterationEnd(const ::testing::UnitTest&, int) override {}
+  void OnTestProgramEnd(const ::testing::UnitTest&) override {}
+};
+
+static void AddGlobalTestEventListener() {
+  ::testing::TestEventListeners& listeners = ::testing::UnitTest::GetInstance()->listeners();
+  listeners.Append(new EnvironmentVariableCleanupListener());
+}
+
+// Register the cleanup listener using a static initializer
+static int register_listener = (AddGlobalTestEventListener(), 0);

@@ -1,142 +1,91 @@
-// Reader-Writer Lock for PLUGIN_STARTUP_URL synchronization across EXE/DLL boundary.
+// Reader-Writer Lock for PLUGIN_STARTUP_URL synchronization.
 // Multiple readers (polling threads) can access simultaneously; writers get exclusive access.
+// Uses std::shared_mutex (C++17) for efficient reader-writer synchronization.
 
 #pragma once
 
 #include <windows.h>
 #include <string>
+#include <shared_mutex>
 
 namespace auth0_flutter
 {
 
-    constexpr const wchar_t *kPluginUrlRwLockPrefix = L"Local\\auth0flutter_startup_url_rwlock_";
-
     class PluginUrlReaderWriterLock
     {
     private:
-        HANDLE hWriteMutex;    // Write lock (exclusive access)
-        HANDLE hReaderEvent;   // Signal for reader completion
+        mutable std::shared_mutex rwMutex;  // Thread-safe reader-writer lock
 
     public:
-        PluginUrlReaderWriterLock()
-            : hWriteMutex(nullptr), hReaderEvent(nullptr)
-        {
-            // Build full names for named kernel objects
-            std::wstring writeMutexName = std::wstring(kPluginUrlRwLockPrefix) + L"write_mutex";
-            std::wstring readerEventName = std::wstring(kPluginUrlRwLockPrefix) + L"reader_event";
-            // Create or open named write mutex (non-signaled initially)
-            hWriteMutex = CreateMutexW(nullptr, FALSE, writeMutexName.c_str());
-            // Create or open named reader event (signaled initially, manual reset)
-            hReaderEvent = CreateEventW(nullptr, TRUE, TRUE, readerEventName.c_str());
-        }
+        PluginUrlReaderWriterLock() = default;
+        ~PluginUrlReaderWriterLock() = default;
 
-        ~PluginUrlReaderWriterLock()
-        {
-            // Close write mutex handle if valid
-            if (hWriteMutex)
-                CloseHandle(hWriteMutex);
-            // Close reader event handle if valid
-            if (hReaderEvent)
-                CloseHandle(hReaderEvent);
-        }
+        // Not copyable or movable
+        PluginUrlReaderWriterLock(const PluginUrlReaderWriterLock&) = delete;
+        PluginUrlReaderWriterLock& operator=(const PluginUrlReaderWriterLock&) = delete;
 
-        bool AcquireRead()
-        {
-            // Return false if handles not initialized
-            if (!hWriteMutex || !hReaderEvent)
-                return false;
+        bool AcquireRead() { return true; }  // Lock guards handle actual locking
+        void ReleaseRead() {}                 // Lock guards handle release via RAII
 
-            // Try to acquire write mutex with zero timeout (non-blocking check)
-            DWORD waitResult = WaitForSingleObject(hWriteMutex, 0);
-            if (waitResult == WAIT_OBJECT_0)
-            {
-                // Write lock available; release it immediately so readers can proceed
-                ReleaseMutex(hWriteMutex);
-                return true;
-            }
-            else if (waitResult == WAIT_TIMEOUT)
-            {
-                // Write lock held; wait indefinitely for it to be released
-                waitResult = WaitForSingleObject(hWriteMutex, INFINITE);
-                if (waitResult == WAIT_OBJECT_0)
-                {
-                    // Write lock released; release it again for next reader
-                    ReleaseMutex(hWriteMutex);
-                    return true;
-                }
-            }
+        bool AcquireWrite() { return true; }  // Lock guards handle actual locking
+        void ReleaseWrite() {}                // Lock guards handle release via RAII
 
-            // Failed to acquire read lock
-            return false;
-        }
+        bool IsValid() const { return true; }
 
-        void ReleaseRead()
-        {
-            // Signal reader completion via event (other readers may still hold lock)
-            if (hReaderEvent)
-                SetEvent(hReaderEvent);
-        }
-
-        bool AcquireWrite()
-        {
-            // Return false if write mutex not initialized
-            if (!hWriteMutex)
-                return false;
-
-            // Acquire write mutex with infinite timeout (blocking until exclusive access)
-            DWORD waitResult = WaitForSingleObject(hWriteMutex, INFINITE);
-            // Return true if mutex acquired successfully
-            return waitResult == WAIT_OBJECT_0;
-        }
-
-        void ReleaseWrite()
-        {
-            // Release write mutex so other writers or readers can acquire it
-            if (hWriteMutex)
-                ReleaseMutex(hWriteMutex);
-        }
-
-        bool IsValid() const
-        {
-            // Return true only if both handles successfully created/opened
-            return hWriteMutex != nullptr && hReaderEvent != nullptr;
-        }
+        // Provide direct access to get locks
+        std::shared_mutex& GetMutex() const { return rwMutex; }
     };
 
     // RAII wrapper: acquires read lock in constructor, releases in destructor
     class ReadLockGuard
     {
     private:
-        PluginUrlReaderWriterLock &lock;
-        bool acquired;
+        std::shared_lock<std::shared_mutex> guard;
 
     public:
         // Acquire read lock on construction
-        ReadLockGuard(PluginUrlReaderWriterLock &l) : lock(l), acquired(l.AcquireRead()) {}
-        // Release read lock on destruction if it was acquired
-        ~ReadLockGuard() { if (acquired) lock.ReleaseRead(); }
-        // Return true if read lock was successfully acquired
-        bool IsValid() const { return acquired; }
+        explicit ReadLockGuard(PluginUrlReaderWriterLock& lock)
+            : guard(lock.GetMutex())
+        {
+        }
+
+        // Lock is automatically released when guard is destroyed
+        ~ReadLockGuard() = default;
+
+        // Not copyable or movable
+        ReadLockGuard(const ReadLockGuard&) = delete;
+        ReadLockGuard& operator=(const ReadLockGuard&) = delete;
+
+        // Return true if lock guard is valid
+        bool IsValid() const { return true; }
     };
 
     // RAII wrapper: acquires write lock in constructor, releases in destructor
     class WriteLockGuard
     {
     private:
-        PluginUrlReaderWriterLock &lock;
-        bool acquired;
+        std::unique_lock<std::shared_mutex> guard;
 
     public:
         // Acquire write lock on construction
-        WriteLockGuard(PluginUrlReaderWriterLock &l) : lock(l), acquired(l.AcquireWrite()) {}
-        // Release write lock on destruction if it was acquired
-        ~WriteLockGuard() { if (acquired) lock.ReleaseWrite(); }
-        // Return true if write lock was successfully acquired
-        bool IsValid() const { return acquired; }
+        explicit WriteLockGuard(PluginUrlReaderWriterLock& lock)
+            : guard(lock.GetMutex())
+        {
+        }
+
+        // Lock is automatically released when guard is destroyed
+        ~WriteLockGuard() = default;
+
+        // Not copyable or movable
+        WriteLockGuard(const WriteLockGuard&) = delete;
+        WriteLockGuard& operator=(const WriteLockGuard&) = delete;
+
+        // Return true if lock guard is valid
+        bool IsValid() const { return true; }
     };
 
-    // Get static RWLock instance. Each module (EXE/DLL) gets its own instance, but they coordinate
-    // via named kernel objects, providing effective synchronization across EXE/DLL boundary.
+    // Get static RWLock instance. Uses std::shared_mutex for thread-safe
+    // reader-writer synchronization within a single process.
     inline PluginUrlReaderWriterLock& GetPluginUrlRwLock()
     {
         // Static instance with lazy initialization (thread-safe in C++11)

@@ -24,10 +24,6 @@
 
 #include <cpprest/http_listener.h>
 
-#include <openssl/bio.h>
-#include <openssl/evp.h>
-#include <openssl/buffer.h>
-
 #include <algorithm>
 #include <string>
 
@@ -43,35 +39,44 @@ using ::testing::HasSubstr;
 // ---------------------------------------------------------------------------
 
 /**
- * @brief Base64url-encode a UTF-8 string (no padding).
- *
- * Uses the same OpenSSL BIO pipeline as id_token_validator_test.cpp so that
- * the encoded headers are byte-for-byte identical to what the real JWT library
- * would produce.
+ * @brief Simple base64 URL encoding without OpenSSL BIO (safer for tests)
  */
 static std::string Base64UrlEncode(const std::string &input)
 {
-    BIO *bio, *b64;
-    BUF_MEM *bufferPtr;
+    // Use standard base64 alphabet
+    const char* base64chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    std::string result;
 
-    b64  = BIO_new(BIO_f_base64());
-    bio  = BIO_new(BIO_s_mem());
-    bio  = BIO_push(b64, bio);
+    for (size_t i = 0; i < input.length(); i += 3) {
+        unsigned int b = (static_cast<unsigned char>(input[i]) << 16);
+        if (i + 1 < input.length()) {
+            b |= (static_cast<unsigned char>(input[i + 1]) << 8);
+        }
+        if (i + 2 < input.length()) {
+            b |= static_cast<unsigned char>(input[i + 2]);
+        }
 
-    BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
-    BIO_write(bio, input.data(), static_cast<int>(input.length()));
-    BIO_flush(bio);
-    BIO_get_mem_ptr(bio, &bufferPtr);
+        result += base64chars[(b >> 18) & 0x3F];
+        result += base64chars[(b >> 12) & 0x3F];
+        if (i + 1 < input.length()) {
+            result += base64chars[(b >> 6) & 0x3F];
+        }
+        if (i + 2 < input.length()) {
+            result += base64chars[b & 0x3F];
+        }
+    }
 
-    std::string result(bufferPtr->data, bufferPtr->length);
-    BIO_free_all(bio);
-
-    for (auto &c : result)
-    {
+    // Convert to URL-safe base64: + -> -, / -> _
+    for (auto &c : result) {
         if (c == '+') c = '-';
         else if (c == '/') c = '_';
     }
-    result.erase(std::remove(result.begin(), result.end(), '='), result.end());
+
+    // Remove padding
+    while (!result.empty() && result.back() == '=') {
+        result.pop_back();
+    }
+
     return result;
 }
 
@@ -951,5 +956,4 @@ TEST(IdTokenSignatureValidatorJwksTest, AcceptsKeyWithoutUseField)
         EXPECT_THAT(msg, ::testing::Not(HasSubstr("use")))
             << "Should not require 'use' field; got: " << msg;
     }
-}
 }
