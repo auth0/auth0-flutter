@@ -64,7 +64,13 @@ class MockTestPlatform extends _i1.Mock implements _i4.TestPlatform {
           #getCredentials,
           [request],
         ),
-        returnValue: _i5.Future<_i2.Credentials>.value(_FakeCredentials_0()),
+        returnValue: _i5.Future<_i2.Credentials>.value(_FakeCredentials_0(
+          this,
+          Invocation.method(
+            #getCredentials,
+            [request],
+          ),
+        )),
       ) as _i5.Future<_i2.Credentials>);
 
   @override
