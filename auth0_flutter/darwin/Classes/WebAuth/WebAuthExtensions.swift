@@ -21,7 +21,7 @@ extension FlutterError {
         default: code = "UNKNOWN"
         }
         var details = webAuthError.details
-        let isRetryable = (webAuthError.cause as? Auth0APIError)?.isNetworkError ?? false
+        let isRetryable = (webAuthError.cause as? Auth0APIError)?.isRetryable ?? false
         details["_isRetryable"] = isRetryable
         self.init(code: code, message: String(describing: webAuthError), details: details)
     }
