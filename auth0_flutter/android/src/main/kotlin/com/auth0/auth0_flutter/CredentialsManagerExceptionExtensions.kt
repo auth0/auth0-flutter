@@ -13,6 +13,7 @@ fun CredentialsManagerException.toMap(): Map<String, Any> {
     val map = mutableMapOf<String, Any>("_isRetryable" to isRetryable)
     if (exceptionCause != null) {
         map["cause"] = exceptionCause.toString()
+        map["causeStackTrace"] = exceptionCause.stackTraceToString()
     }
     return map
 }
