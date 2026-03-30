@@ -272,7 +272,7 @@ TEST(LoginHandlerTest, SilentlyIgnoresUseDPoPTrue)
         << "useDPoP:true must not cause a bad_args error on Windows";
 }
 
-TEST(LoginHandlerTest, DISABLED_AcceptsValidScopesListTopLevel)
+TEST(LoginHandlerTest, AcceptsValidScopesListTopLevel)
 {
     LoginWebAuthRequestHandler handler;
 
@@ -295,7 +295,7 @@ TEST(LoginHandlerTest, DISABLED_AcceptsValidScopesListTopLevel)
 }
 
 // Test that "openid" is added automatically even if not provided in scopes
-TEST(LoginHandlerTest, DISABLED_AutomaticallyAddsOpenidToScopesList)
+TEST(LoginHandlerTest, AutomaticallyAddsOpenidToScopesList)
 {
     LoginWebAuthRequestHandler handler;
 
@@ -333,7 +333,7 @@ TEST(LoginHandlerTest, ReturnsErrorWhenScopesListContainsNonString)
 }
 
 // Test that scope string in parameters is accepted (space-separated)
-TEST(LoginHandlerTest, DISABLED_AcceptsValidScopeStringInParameters)
+TEST(LoginHandlerTest, AcceptsValidScopeStringInParameters)
 {
     LoginWebAuthRequestHandler handler;
 
@@ -352,7 +352,7 @@ TEST(LoginHandlerTest, DISABLED_AcceptsValidScopeStringInParameters)
 }
 
 // Test that "openid" is added automatically even if not in parameters["scope"]
-TEST(LoginHandlerTest, DISABLED_AutomaticallyAddsOpenidToParametersScope)
+TEST(LoginHandlerTest, AutomaticallyAddsOpenidToParametersScope)
 {
     LoginWebAuthRequestHandler handler;
 
@@ -371,7 +371,7 @@ TEST(LoginHandlerTest, DISABLED_AutomaticallyAddsOpenidToParametersScope)
 }
 
 // Test that non-string scope in parameters is rejected
-TEST(LoginHandlerTest, DISABLED_ReturnsErrorWhenParametersScopeIsNotString)
+TEST(LoginHandlerTest, ReturnsErrorWhenParametersScopeIsNotString)
 {
     LoginWebAuthRequestHandler handler;
 
@@ -388,7 +388,7 @@ TEST(LoginHandlerTest, DISABLED_ReturnsErrorWhenParametersScopeIsNotString)
 }
 
 // Test that top-level "scopes" takes priority over parameters["scope"]
-TEST(LoginHandlerTest, DISABLED_TopLevelScopesTakesPriorityOverParametersScope)
+TEST(LoginHandlerTest, TopLevelScopesTakesPriorityOverParametersScope)
 {
     LoginWebAuthRequestHandler handler;
 
@@ -414,7 +414,7 @@ TEST(LoginHandlerTest, DISABLED_TopLevelScopesTakesPriorityOverParametersScope)
 }
 
 // Test that platform defaults are used when no scopes provided
-TEST(LoginHandlerTest, DISABLED_UsesPlatformDefaultsWhenNoScopesProvided)
+TEST(LoginHandlerTest, UsesPlatformDefaultsWhenNoScopesProvided)
 {
     LoginWebAuthRequestHandler handler;
 
@@ -431,7 +431,7 @@ TEST(LoginHandlerTest, DISABLED_UsesPlatformDefaultsWhenNoScopesProvided)
 }
 
 // Test that platform defaults are used when parameters is empty
-TEST(LoginHandlerTest, DISABLED_UsesPlatformDefaultsWhenParametersIsEmpty)
+TEST(LoginHandlerTest, UsesPlatformDefaultsWhenParametersIsEmpty)
 {
     LoginWebAuthRequestHandler handler;
 
