@@ -345,9 +345,15 @@ try {
   final credentials = await auth0.webAuthentication().login();
   // ...
 } on WebAuthenticationException catch (e) {
-  print(e);
+  if (e.isRetryable) {
+    // Transient error (e.g. network issue) — safe to retry
+  } else {
+    print(e);
+  }
 }
 ```
+
+The `isRetryable` property indicates whether the error is transient (e.g. a network outage) and the operation can be retried.
 
 </details>
 
@@ -520,6 +526,27 @@ print(e);
 }
 }
 ```
+
+#### Retryable errors
+
+The `isRetryable` property on `CredentialsManagerException` indicates whether the error is transient and the operation can be retried. When `true`, the failure is likely due to a temporary condition such as a network outage. When `false`, the failure is permanent (e.g. an invalid refresh token) and retrying will not help — you should log the user out instead.
+
+```dart
+try {
+  final credentials = await auth0.credentialsManager.credentials();
+  // ...
+} on CredentialsManagerException catch (e) {
+  if (e.isRetryable) {
+    // Transient error (e.g. network issue) — safe to retry
+    print("Temporary error, retrying...");
+  } else {
+    // Permanent error — log the user out
+    print("Credentials cannot be renewed: ${e.message}");
+  }
+}
+```
+
+> The `isRetryable` property is available on all exception types (`CredentialsManagerException`, `ApiException`, `WebAuthenticationException`) across Android and iOS/macOS. It returns `true` when the underlying failure is network-related, indicating the operation may succeed on retry.
 
 ### Native to Web SSO
 
@@ -891,9 +918,15 @@ try {
       connectionOrRealm: connection);
   // ...
 } on ApiException catch (e) {
-  print(e);
+  if (e.isRetryable) {
+    // Transient error (e.g. network issue) — safe to retry
+  } else {
+    print(e);
+  }
 }
 ```
+
+The `isRetryable` property indicates whether the error is transient (e.g. a network outage) and the operation can be retried. It returns `true` when `isNetworkError` is `true`.
 
 [Go up ⤴](#examples)
 
