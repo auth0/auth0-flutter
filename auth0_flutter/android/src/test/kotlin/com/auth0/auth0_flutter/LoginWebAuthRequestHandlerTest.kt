@@ -314,10 +314,10 @@ class LoginWebAuthRequestHandlerTest {
         val mockResult = mock<Result>()
         val cause = RuntimeException("network error")
         val exception = mock<AuthenticationException>()
-        `when`(exception.getCode()).thenReturn("code")
-        `when`(exception.getDescription()).thenReturn("description")
-        `when`(exception.isNetworkError).thenReturn(true)
-        `when`(exception.cause).thenReturn(cause)
+        whenever(exception.getCode()).thenReturn("code")
+        whenever(exception.getDescription()).thenReturn("description")
+        whenever(exception.isNetworkError).thenReturn(true)
+        whenever(exception.cause).thenReturn(cause)
 
         doAnswer { invocation ->
             val cb = invocation.getArgument<Callback<Credentials, AuthenticationException>>(1)

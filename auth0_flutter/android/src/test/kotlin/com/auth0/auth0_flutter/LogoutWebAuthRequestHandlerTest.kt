@@ -9,6 +9,8 @@ import com.auth0.android.provider.WebAuthProvider
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.request_handlers.web_auth.LogoutWebAuthRequestHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.*
@@ -132,10 +134,10 @@ class LogoutWebAuthRequestHandlerTest {
         val handler = LogoutWebAuthRequestHandler { mockBuilder }
         val cause = RuntimeException("network error")
         val exception = mock<AuthenticationException>()
-        `when`(exception.getCode()).thenReturn("code")
-        `when`(exception.getDescription()).thenReturn("description")
-        `when`(exception.isNetworkError).thenReturn(true)
-        `when`(exception.cause).thenReturn(cause)
+        whenever(exception.getCode()).thenReturn("code")
+        whenever(exception.getDescription()).thenReturn("description")
+        whenever(exception.isNetworkError).thenReturn(true)
+        whenever(exception.cause).thenReturn(cause)
 
         doAnswer { invocation ->
             val callback = invocation.getArgument<Callback<Void?, AuthenticationException>>(1)

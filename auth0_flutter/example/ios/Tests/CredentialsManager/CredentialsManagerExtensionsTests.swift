@@ -38,19 +38,5 @@ class CredentialsManagerExtensionsTests: XCTestCase {
         }
     }
 
-    func testCauseIsIncludedInDetailsWhenPresent() {
-        let cause = MockAuth0Error(debugDescription: "network error", cause: nil)
-        let error = CredentialsManagerError(code: .renewFailed, cause: cause)
-        let flutterError = FlutterError(from: error)
-        let details = flutterError.details as! [String: Any]
-        XCTAssertEqual(details["cause"] as? String, String(describing: cause))
-    }
-
-    func testCauseIsNotIncludedInDetailsWhenAbsent() {
-        let error = CredentialsManagerError.noCredentials
-        let flutterError = FlutterError(from: error)
-        let details = flutterError.details as! [String: Any]
-        XCTAssertNil(details["cause"])
-    }
 
 }

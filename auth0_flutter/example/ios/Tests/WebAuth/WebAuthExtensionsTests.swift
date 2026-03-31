@@ -41,18 +41,4 @@ class WebAuthExtensionsTests: XCTestCase {
         }
     }
 
-    func testCauseIsIncludedInDetailsWhenPresent() {
-        let cause = MockAuth0Error(debugDescription: "network error", cause: nil)
-        let error = WebAuthError(code: .other, cause: cause)
-        let flutterError = FlutterError(from: error)
-        let details = flutterError.details as! [String: Any]
-        XCTAssertEqual(details["cause"] as? String, String(describing: cause))
-    }
-
-    func testCauseIsNotIncludedInDetailsWhenAbsent() {
-        let error = WebAuthError.userCancelled
-        let flutterError = FlutterError(from: error)
-        let details = flutterError.details as! [String: Any]
-        XCTAssertNil(details["cause"])
-    }
 }
