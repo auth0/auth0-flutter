@@ -58,4 +58,37 @@ class CredentialsManagerExceptionExtensionsTest {
 
         assertThat(map["_isRetryable"], equalTo(false))
     }
+
+    @Test
+    fun `should include cause in map when cause is present`() {
+        val cause = RuntimeException("network error")
+        val exception = mock(CredentialsManagerException::class.java)
+        `when`(exception.cause).thenReturn(cause)
+
+        val map = exception.toMap()
+
+        assertThat(map["cause"], equalTo(cause.toString()))
+    }
+
+    @Test
+    fun `should include causeStackTrace in map when cause is present`() {
+        val cause = RuntimeException("network error")
+        val exception = mock(CredentialsManagerException::class.java)
+        `when`(exception.cause).thenReturn(cause)
+
+        val map = exception.toMap()
+
+        assertThat(map["causeStackTrace"], equalTo(cause.stackTraceToString()))
+    }
+
+    @Test
+    fun `should not include cause or causeStackTrace in map when cause is null`() {
+        val exception = mock(CredentialsManagerException::class.java)
+        `when`(exception.cause).thenReturn(null)
+
+        val map = exception.toMap()
+
+        assertThat(map.containsKey("cause"), equalTo(false))
+        assertThat(map.containsKey("causeStackTrace"), equalTo(false))
+    }
 }

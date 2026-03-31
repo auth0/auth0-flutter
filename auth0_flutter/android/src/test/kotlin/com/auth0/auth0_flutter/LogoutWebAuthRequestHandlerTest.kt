@@ -126,6 +126,33 @@ class LogoutWebAuthRequestHandlerTest {
     }
 
     @Test
+    fun `returns cause and causeStackTrace in error details when cause is present`() {
+        val mockBuilder = mock<WebAuthProvider.LogoutBuilder>()
+        val mockResult = mock<Result>()
+        val handler = LogoutWebAuthRequestHandler { mockBuilder }
+        val cause = RuntimeException("network error")
+        val exception = mock<AuthenticationException>()
+        `when`(exception.getCode()).thenReturn("code")
+        `when`(exception.getDescription()).thenReturn("description")
+        `when`(exception.isNetworkError).thenReturn(true)
+        `when`(exception.cause).thenReturn(cause)
+
+        doAnswer { invocation ->
+            val callback = invocation.getArgument<Callback<Void?, AuthenticationException>>(1)
+            callback.onFailure(exception)
+        }.`when`(mockBuilder).start(any(), any())
+
+        handler.handle(mock(), MethodCallRequest(Auth0.getInstance("test-client", "test-domain"), mock()), mockResult)
+
+        verify(mockResult).error(eq("code"), eq("description"), check {
+            val map = it as Map<*, *>
+            assertThat(map["_isRetryable"], equalTo(true))
+            assertThat(map["cause"], equalTo(cause.toString()))
+            assertThat(map["causeStackTrace"], equalTo(cause.stackTraceToString()))
+        })
+    }
+
+    @Test
     fun `handler returns the result when the builder succeeds`() {
         val mockBuilder = mock<WebAuthProvider.LogoutBuilder>()
         val mockResult = mock<Result>()
