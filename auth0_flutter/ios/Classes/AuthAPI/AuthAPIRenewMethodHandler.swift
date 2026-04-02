@@ -1,1 +1,0 @@
-../../../darwin/Classes/AuthAPI/AuthAPIRenewMethodHandler.swift
