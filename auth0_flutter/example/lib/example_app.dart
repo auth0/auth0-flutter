@@ -51,7 +51,7 @@ class _ExampleAppState extends State<ExampleApp> {
       }
 
       final result = await webAuth.login(
-        useHTTPS: false,
+        useHTTPS: true,
         scopes: {'openid', 'profile', 'email', 'offline_access'},
       );
       await auth0.credentialsManager.storeCredentials(result);
@@ -83,7 +83,7 @@ class _ExampleAppState extends State<ExampleApp> {
       if (kIsWeb) {
         await auth0Web.logout(returnToUrl: 'http://localhost:3000');
       } else {
-        await webAuth.logout(useHTTPS: false);
+        await webAuth.logout(useHTTPS: true);
 
         setState(() {
           _isLoggedIn = false;
