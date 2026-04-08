@@ -145,6 +145,7 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
     test/user_profile_test.cpp                        # UserProfile deserialization and serialization
     test/user_identity_test.cpp                       # UserIdentity deserialization and serialization
     test/login_web_auth_request_handler_test.cpp      # Handler arg validation (#15 scopes, #16 timeout, #19 DPoP)
+    test/auth0_client_telemetry_test.cpp              # BuildAuth0ClientHeader base64url encoding + JSON format
   )
 
   # Source files needed for tests
