@@ -4,7 +4,7 @@ import Flutter
 import FlutterMacOS
 #endif
 
-public class SwiftAuth0FlutterPlugin: NSObject, FlutterPlugin {
+public class Auth0FlutterPlugin: NSObject, FlutterPlugin {
     static var handlers: [FlutterPlugin.Type] = [WebAuthHandler.self,
                                                  AuthAPIHandler.self,
                                                  DPoPHandler.self,

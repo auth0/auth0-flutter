@@ -1,4 +1,6 @@
 #if os(iOS)
+import UIKit
+
 enum SafariViewControllerProperty: String, CaseIterable {
     case presentationStyle
 }
