@@ -11,7 +11,6 @@ let package = Package(
         .library(name: "auth0-flutter", targets: ["auth0_flutter"]),
     ],
     dependencies: [
-        .package(name: "FlutterFramework", path: "../FlutterFramework"),
         .package(url: "https://github.com/auth0/Auth0.swift", exact: "2.18.0"),
         .package(url: "https://github.com/auth0/JWTDecode.swift", exact: "3.3.0"),
         .package(url: "https://github.com/auth0/SimpleKeychain", exact: "1.3.0"),
@@ -20,15 +19,11 @@ let package = Package(
         .target(
             name: "auth0_flutter",
             dependencies: [
-                .product(name: "FlutterFramework", package: "FlutterFramework"),
                 .product(name: "Auth0", package: "Auth0.swift"),
                 .product(name: "JWTDecode", package: "JWTDecode.swift"),
                 .product(name: "SimpleKeychain", package: "SimpleKeychain"),
             ],
-            path: "Sources/auth0_flutter",
-            cSettings: [
-                .headerSearchPath("include/auth0_flutter"),
-            ]
+            path: "Sources/auth0_flutter"
         ),
     ]
 )
