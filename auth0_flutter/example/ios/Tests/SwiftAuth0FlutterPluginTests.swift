@@ -2,8 +2,8 @@ import XCTest
 
 @testable import auth0_flutter
 
-class SwiftAuth0FlutterPluginTests: XCTestCase {
-    let sut = SwiftAuth0FlutterPlugin.self
+class Auth0FlutterPluginTests: XCTestCase {
+    let sut = Auth0FlutterPlugin.self
 
     override func setUpWithError() throws {
         SpyFlutterPlugin.calledRegister = false
@@ -12,7 +12,7 @@ class SwiftAuth0FlutterPluginTests: XCTestCase {
 
 // MARK: - Handler Registration
 
-extension SwiftAuth0FlutterPluginTests {
+extension Auth0FlutterPluginTests {
     func testRegistersWebAuthHandler() {
         sut.handlers = [SpyFlutterPlugin.self]
         sut.register(with: SpyPluginRegistrar())
