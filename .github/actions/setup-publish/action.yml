@@ -20,7 +20,10 @@ runs:
         flutter-version: ${{ inputs.flutter }}
         channel: stable
         cache: true
-
+  
+    - name: Enable Swift Package Manager
+      run: flutter config --enable-swift-package-manager
+      shell: bash
     - name: Install Flutter dependencies
       working-directory: ${{ inputs.working-directory }}
       run: flutter pub get
