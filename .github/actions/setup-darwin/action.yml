@@ -36,7 +36,7 @@ runs:
       shell: bash
 
     - name: Set up Ruby
-      uses: ruby/setup-ruby@319994f95fa847cf3fb3cd3dbe89f6dcde9f178f # pin@v1.295.0
+      uses: ruby/setup-ruby@e65c17d16e57e481586a6a5a0282698790062f92 # pin@v1.300.0
       with:
         ruby-version: ${{ inputs.ruby }}
         bundler-cache: true
@@ -44,7 +44,7 @@ runs:
         working-directory: auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}
 
     - name: Install Flutter
-      uses: subosito/flutter-action@0ca7a949e71ae44c8e688a51c5e7e93b2c87e295 # pin@v2.22.0
+      uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
       with:
         flutter-version: ${{ inputs.flutter }}
         channel: stable

@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 
 import '../auth0_exception.dart';
 import '../extensions/exception_extensions.dart';
+import '../extensions/map_extensions.dart';
 
 class WebAuthenticationException extends Auth0Exception {
   const WebAuthenticationException(final String code, final String message,
@@ -16,4 +17,6 @@ class WebAuthenticationException extends Auth0Exception {
 
   bool get isUserCancelledException =>
       code == 'USER_CANCELLED' || code == 'a0.authentication_canceled';
+
+  bool get isRetryable => details.getBooleanOrFalse('_isRetryable');
 }

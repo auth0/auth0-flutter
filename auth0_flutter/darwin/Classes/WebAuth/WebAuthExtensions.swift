@@ -20,7 +20,10 @@ extension FlutterError {
         case .other: code = "OTHER"
         default: code = "UNKNOWN"
         }
-        self.init(code: code, message: String(describing: webAuthError), details: webAuthError.details)
+        var details = webAuthError.details
+        let isRetryable = (webAuthError.cause as? Auth0APIError)?.isRetryable ?? false
+        details["_isRetryable"] = isRetryable
+        self.init(code: code, message: String(describing: webAuthError), details: details)
     }
 }
 

@@ -80,7 +80,12 @@ class LoginWebAuthRequestHandler(
 
         builder.start(context, object : Callback<Credentials, AuthenticationException> {
             override fun onFailure(exception: AuthenticationException) {
-                result.error(exception.getCode(), exception.getDescription(), exception)
+                val details = mutableMapOf<String, Any>("_isRetryable" to exception.isNetworkError)
+                exception.cause?.let {
+                    details["cause"] = it.toString()
+                    details["causeStackTrace"] = it.stackTraceToString()
+                }
+                result.error(exception.getCode(), exception.getDescription(), details)
             }
 
             override fun onSuccess(credentials: Credentials) {

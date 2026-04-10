@@ -20,8 +20,13 @@ extension FlutterError {
         default: code = "UNKNOWN"
         }
 
+        let isRetryable = (credentialsManagerError.cause as? Auth0APIError)?.isRetryable ?? false
+
+        var errorDetails = credentialsManagerError.details
+        errorDetails["_isRetryable"] = isRetryable
+
         self.init(code: code,
                   message: String(describing: credentialsManagerError),
-                  details: credentialsManagerError.details)
+                  details: errorDetails)
     }
 }

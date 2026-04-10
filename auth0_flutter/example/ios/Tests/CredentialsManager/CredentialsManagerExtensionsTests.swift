@@ -19,4 +19,24 @@ class CredentialsManagerExtensionsTests: XCTestCase {
             assert(flutterError: flutterError, is: error, with: code)
         }
     }
+
+    func testIsRetryableIsFalseForErrorsWithoutNetworkCause() {
+        let nonRetryableErrors: [CredentialsManagerError] = [
+            .noCredentials,
+            .noRefreshToken,
+            .renewFailed,
+            .storeFailed,
+            .biometricsFailed,
+            .revokeFailed,
+            .largeMinTTL
+        ]
+        for error in nonRetryableErrors {
+            let flutterError = FlutterError(from: error)
+            let details = flutterError.details as! [String: Any]
+            XCTAssertEqual(details["_isRetryable"] as? Bool, false,
+                           "Expected isRetryable to be false for \(error)")
+        }
+    }
+
+
 }
