@@ -72,4 +72,5 @@ class ApiException extends Auth0Exception {
   bool get isPasswordLeaked =>
       _errorFlags.getBooleanOrFalse('isPasswordLeaked');
   bool get isLoginRequired => _errorFlags.getBooleanOrFalse('isLoginRequired');
+  bool get isRetryable => isNetworkError;
 }
