@@ -12,6 +12,8 @@ import 'package:auth0_flutter/src/web/js_interop.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 import 'auth0_extension_type_mocks.dart';
 
+import 'auth0_flutter_web_test.dart' as _i5;
+
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
 // ignore_for_file: avoid_setters_without_getters
@@ -185,6 +187,22 @@ class MockAuth0FlutterWebClientProxy extends _i1.Mock
           #logout,
           [options],
         ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+}
+
+/// A class which mocks [OpenUrl].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockOpenUrl extends _i1.Mock implements _i5.OpenUrl {
+  MockOpenUrl() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.Future<void> call(String? url) => (super.noSuchMethod(
+        Invocation.method(#call, [url]),
         returnValue: _i4.Future<void>.value(),
         returnValueForMissingStub: _i4.Future<void>.value(),
       ) as _i4.Future<void>);
