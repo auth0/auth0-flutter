@@ -25,13 +25,9 @@ runs:
     - name: Install Flutter
       uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2  #pin@v2.23.0
       with:
-        flutter-version: 3.29.3
+        flutter-version: ${{ inputs.flutter }}
         channel: stable
         cache: true
-  
-    - name: Enable Swift Package Manager
-      run: flutter config --enable-swift-package-manager
-      shell: bash
 
     - name: Install Flutter dependencies
       working-directory: auth0_flutter/example
