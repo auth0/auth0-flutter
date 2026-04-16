@@ -50,17 +50,21 @@ runs:
         channel: stable
         cache: true
 
-    - name: Install Flutter dependencies
-      working-directory: auth0_flutter/example
-      run: flutter pub get
-      shell: bash
-
     - name: Setup Xcode
       run: sudo xcode-select --switch /Applications/Xcode_${{ inputs.xcode }}.app/Contents/Developer
       shell: bash
 
     - name: Save Xcode version
       run: xcodebuild -version | tee .xcode-version
+      shell: bash
+
+    - name: Enable Swift Package Manager
+      run: flutter config --enable-swift-package-manager
+      shell: bash
+
+    - name: Install Flutter dependencies
+      working-directory: auth0_flutter/example
+      run: flutter pub get
       shell: bash
 
     - id: restore-pods-cache
