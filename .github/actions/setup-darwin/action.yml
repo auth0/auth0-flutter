@@ -6,10 +6,6 @@ inputs:
     description: Either iOS or macOS
     required: true
 
-  ruby:
-    description: The version of Ruby to use
-    required: true
-
   flutter:
     description: The version of Flutter to use
     required: true
@@ -50,6 +46,10 @@ runs:
         channel: stable
         cache: true
 
+    - name: Setup Xcode
+      run: sudo xcode-select --switch /Applications/Xcode_${{ inputs.xcode }}.app/Contents/Developer
+      shell: bash
+
     - name: Enable Swift Package Manager
       run: flutter config --enable-swift-package-manager
       shell: bash
@@ -57,10 +57,6 @@ runs:
     - name: Install Flutter dependencies
       working-directory: auth0_flutter/example
       run: flutter pub get
-      shell: bash
-
-    - name: Setup Xcode
-      run: sudo xcode-select --switch /Applications/Xcode_${{ inputs.xcode }}.app/Contents/Developer
       shell: bash
 
     - name: Save Xcode version
@@ -78,6 +74,7 @@ runs:
       working-directory: auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}
       run: pod install
       shell: bash
+
 
     - name: Set .env
       working-directory: auth0_flutter/example
