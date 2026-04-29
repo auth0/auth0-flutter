@@ -22,7 +22,7 @@ class MethodChannelAuth0FlutterWebAuth extends Auth0FlutterWebAuthPlatform {
 
   MethodChannelAuth0FlutterWebAuth() {
     _channel.setMethodCallHandler(_handleNativeCallback);
-    _channel.invokeMethod('webAuth#dartReady');
+    _channel.invokeMethod('webAuth#dartReady').catchError((final _) {});
   }
 
   Future<dynamic> _handleNativeCallback(final MethodCall call) async {

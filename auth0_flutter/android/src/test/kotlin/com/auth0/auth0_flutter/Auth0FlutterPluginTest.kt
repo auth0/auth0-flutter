@@ -103,7 +103,8 @@ class Auth0FlutterPluginTest {
                 return captor.firstValue as TMethodCallHandler
             }
 
-            assert(getHandler<Auth0FlutterWebAuthMethodCallHandler>(0).activity == mockActivity)
+            val webAuthHandler = getHandler<MethodChannel.MethodCallHandler>(0)
+            assert(webAuthHandler is Auth0FlutterPlugin)
             assert(getHandler<CredentialsManagerMethodCallHandler>(1).activity == mockActivity)
             assert(getHandler<CredentialsManagerMethodCallHandler>(1).context == mockContext)
 
