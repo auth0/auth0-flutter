@@ -25,4 +25,9 @@ abstract class Auth0FlutterWebAuthPlatform extends PlatformInterface {
   void cancel(){
     throw UnimplementedError('webAuth.cancel() has not been implemented');
   }
+
+  Stream<Credentials> get onCredentialsRecovered {
+    throw UnimplementedError(
+        'webAuth.onCredentialsRecovered has not been implemented');
+  }
 }
