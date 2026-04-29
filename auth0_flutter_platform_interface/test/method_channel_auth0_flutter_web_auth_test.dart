@@ -353,4 +353,61 @@ void main() {
       await expectLater(actual, throwsA(isA<WebAuthenticationException>()));
     });
   });
+
+  group('onCredentialsRecovered', () {
+    test('emits credentials when native sends onLoginResult', () async {
+      final instance = MethodChannelAuth0FlutterWebAuth();
+      final future =
+          instance.onCredentialsRecovered.first;
+
+      TestDefaultBinaryMessengerBinding
+          .instance.defaultBinaryMessenger
+          .handlePlatformMessage(
+        'auth0.com/auth0_flutter/web_auth',
+        const StandardMethodCodec()
+            .encodeMethodCall(const MethodCall(
+                'webAuth#onLoginResult', MethodCallHandler.loginResult)),
+        (final _) {},
+      );
+
+      final credentials = await future;
+      expect(credentials.accessToken, 'accessToken');
+      expect(credentials.idToken, 'idToken');
+      expect(credentials.refreshToken, 'refreshToken');
+    });
+
+    test('emits error when native sends onLoginError', () async {
+      final instance = MethodChannelAuth0FlutterWebAuth();
+      final future =
+          instance.onCredentialsRecovered.first;
+
+      TestDefaultBinaryMessengerBinding
+          .instance.defaultBinaryMessenger
+          .handlePlatformMessage(
+        'auth0.com/auth0_flutter/web_auth',
+        const StandardMethodCodec()
+            .encodeMethodCall(const MethodCall(
+                'webAuth#onLoginError', {
+          'code': 'a]network_error',
+          'description': 'Network request failed',
+          '_isRetryable': true,
+        })),
+        (final _) {},
+      );
+
+      await expectLater(
+          future, throwsA(isA<WebAuthenticationException>()));
+    });
+
+    test(
+        'sends dartReady only after first listener attaches',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => null);
+
+      MethodChannelAuth0FlutterWebAuth();
+
+      verifyNever(mocked.methodCallHandler(any));
+    });
+  });
 }

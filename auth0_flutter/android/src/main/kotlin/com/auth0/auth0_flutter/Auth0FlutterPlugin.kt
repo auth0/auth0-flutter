@@ -69,6 +69,7 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
         webAuthMethodChannel.invokeMethod("webAuth#onLoginResult", credentialsMap)
       } else {
         pendingRecoveredCredentials = credentialsMap
+        pendingRecoveryError = null
       }
     }
 
@@ -83,6 +84,7 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
         webAuthMethodChannel.invokeMethod("webAuth#onLoginError", errorMap)
       } else {
         pendingRecoveryError = errorMap
+        pendingRecoveredCredentials = null
       }
     }
   }
