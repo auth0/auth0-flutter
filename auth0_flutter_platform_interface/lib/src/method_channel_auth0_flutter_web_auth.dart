@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 
 import 'auth0_flutter_web_auth_platform.dart';
@@ -15,6 +17,45 @@ const String logoutMethod = 'webAuth#logout';
 const String cancelMethod = 'webAuth#cancel';
 
 class MethodChannelAuth0FlutterWebAuth extends Auth0FlutterWebAuthPlatform {
+  late final StreamController<Credentials> _credentialsRecoveredController =
+      StreamController<Credentials>.broadcast(onListen: _onFirstListen);
+  bool _dartReadySent = false;
+
+  MethodChannelAuth0FlutterWebAuth() {
+    _channel.setMethodCallHandler(_handleNativeCallback);
+  }
+
+  void _onFirstListen() {
+    if (!_dartReadySent) {
+      _dartReadySent = true;
+      _channel.invokeMethod('webAuth#dartReady').catchError((final _) {});
+    }
+  }
+
+  Future<dynamic> _handleNativeCallback(final MethodCall call) async {
+    switch (call.method) {
+      case 'webAuth#onLoginResult':
+        final map = Map<String, dynamic>.from(call.arguments as Map);
+        final credentials = Credentials.fromMap(map);
+        _credentialsRecoveredController.add(credentials);
+        break;
+      case 'webAuth#onLoginError':
+        final map =
+            Map<String, dynamic>.from(call.arguments as Map);
+        final code = map['code'] as String? ?? 'UNKNOWN';
+        final description = map['description'] as String? ??
+            'Process death recovery failed';
+        _credentialsRecoveredController
+            .addError(WebAuthenticationException(
+                code, description, map));
+        break;
+    }
+  }
+
+  @override
+  Stream<Credentials> get onCredentialsRecovered =>
+      _credentialsRecoveredController.stream;
+
   @override
   Future<Credentials> login(
       final WebAuthRequest<WebAuthLoginOptions> request) async {

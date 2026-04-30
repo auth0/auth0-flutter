@@ -397,6 +397,41 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 
 > 💡 See also [this blog post](https://developer.okta.com/blog/2022/01/13/mobile-sso) for a detailed overview of Single Sign-On (SSO) on iOS.
 
+### Android: Handle Process Death During Login
+
+On Android, some device manufacturers (Samsung, Xiaomi, Huawei, Oppo, Vivo) aggressively kill backgrounded apps to reclaim memory. If the OS kills your app while the user is completing authentication in the browser, the SDK automatically recovers the PKCE state and completes the token exchange when the app is restored.
+
+To receive the recovered credentials, listen to the `onCredentialsRecovered` stream early in your app lifecycle:
+
+```dart
+late StreamSubscription<Credentials> _processDeathSub;
+
+@override
+void initState() {
+  super.initState();
+  _processDeathSub = auth0
+      .webAuthentication()
+      .onCredentialsRecovered
+      .listen((credentials) {
+    // User was authenticated after process death recovery
+    setState(() {
+      _isLoggedIn = true;
+      _credentials = credentials;
+    });
+  });
+}
+
+@override
+void dispose() {
+  _processDeathSub.cancel();
+  super.dispose();
+}
+```
+
+> ⚠️ Without this listener, the credentials are recovered internally but your app will not receive them — the user will appear logged out despite a successful login.
+
+> 💡 This is an Android-only API. On iOS, `ASWebAuthenticationSession` handles the lifecycle automatically. On web, state is persisted in localStorage.
+
 ### Common Tasks
 
 ### 📱 Mobile/macOS
@@ -405,6 +440,7 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 - [Retrieve stored credentials](EXAMPLES.md#retrieve-stored-credentials) - fetch the user's credentials from the storage, automatically renewing them if they have expired.
 - [Retrieve user information](EXAMPLES.md#retrieve-user-information) - fetch the latest user information from the `/userinfo` endpoint.
 - [Native to Web SSO](EXAMPLES.md#native-to-web-sso) - obtain a session transfer token to authenticate a WebView without re-prompting the user.
+- [Handle Android process death](#android-handle-process-death-during-login) - recover credentials when the OS kills your app during login.
 
 ### 🌐 Web
 
@@ -418,6 +454,7 @@ Check the [FAQ](FAQ.md) for more information about the alert box that pops up **
 
 - [login](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/WebAuthentication/login.html)
 - [logout](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/WebAuthentication/logout.html)
+- [onCredentialsRecovered](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/WebAuthentication/onCredentialsRecovered.html) - stream of credentials recovered after Android process death
 
 #### API
 
