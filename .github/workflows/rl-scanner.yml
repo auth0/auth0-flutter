@@ -1,0 +1,66 @@
+name: RL-Security-Scanner
+
+on:
+  workflow_call:
+    inputs:
+      artifact-name:
+        required: true
+        type: string
+    secrets:
+      RLSECURE_LICENSE:
+        required: true
+      RLSECURE_SITE_KEY:
+        required: true
+      SIGNAL_HANDLER_TOKEN:
+        required: true
+      SIGNAL_HANDLER_DOMAIN:
+        required: true
+      PRODSEC_TOOLS_ARN:
+        required: true
+      PRODSEC_TOOLS_USER:
+        required: true
+      PRODSEC_TOOLS_TOKEN:
+        required: true
+      PRODSEC_PYTHON_TOOLS_REPO:
+        required: true
+
+jobs:
+  rl-scanner:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
+        with:
+          flutter-version: '3.x'
+          channel: stable
+          cache: true
+
+      - name: Build package
+        shell: bash
+        run: |
+          zip -r ${{ inputs.artifact-name }}.zip ./*
+
+      - name: Get version
+        id: get_version
+        run: |
+          version=$(awk -F"'" '/const String version/ {print $2}' auth0_flutter/lib/src/version.dart)
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+      - name: Run RL Scanner
+        uses: auth0/devsecops-tooling/.github/actions/rl-scan@main
+        with:
+          artifact-name: ${{ inputs.artifact-name }}
+          artifact-path: "${{ github.workspace }}/${{ inputs.artifact-name }}.zip"
+          version: ${{ steps.get_version.outputs.version }}
+          RLSECURE_LICENSE: ${{ secrets.RLSECURE_LICENSE }}
+          RLSECURE_SITE_KEY: ${{ secrets.RLSECURE_SITE_KEY }}
+          SIGNAL_HANDLER_TOKEN: ${{ secrets.SIGNAL_HANDLER_TOKEN }}
+          SIGNAL_HANDLER_DOMAIN: ${{ secrets.SIGNAL_HANDLER_DOMAIN }}
+          PRODSEC_TOOLS_ARN: ${{ secrets.PRODSEC_TOOLS_ARN }}
+          PRODSEC_TOOLS_USER: ${{ secrets.PRODSEC_TOOLS_USER }}
+          PRODSEC_TOOLS_TOKEN: ${{ secrets.PRODSEC_TOOLS_TOKEN }}
+          PRODSEC_PYTHON_TOOLS_REPO: ${{ secrets.PRODSEC_PYTHON_TOOLS_REPO }}

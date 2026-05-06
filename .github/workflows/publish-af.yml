@@ -14,44 +14,18 @@ env:
 
 jobs:
   rl-scanner:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
-        with:
-          flutter-version: '3.x'
-          channel: stable
-          cache: true
-
-      - name: Build package
-        shell: bash
-        run: |
-          zip -r auth0-flutter-af.zip ./*
-
-      - name: Get version
-        id: get_version
-        run: |
-          version=$(awk -F"'" '/const String version/ {print $2}' auth0_flutter/lib/src/version.dart)
-          echo "version=$version" >> $GITHUB_OUTPUT
-
-      - name: Run RL Scanner
-        uses: auth0/devsecops-tooling/.github/actions/rl-scan@main
-        with:
-          artifact-name: "auth0-flutter-af"
-          artifact-path: "${{ github.workspace }}/auth0-flutter-af.zip"
-          version: ${{ steps.get_version.outputs.version }}
-          RLSECURE_LICENSE: ${{ secrets.RLSECURE_LICENSE }}
-          RLSECURE_SITE_KEY: ${{ secrets.RLSECURE_SITE_KEY }}
-          SIGNAL_HANDLER_TOKEN: ${{ secrets.SIGNAL_HANDLER_TOKEN }}
-          SIGNAL_HANDLER_DOMAIN: ${{ secrets.SIGNAL_HANDLER_DOMAIN }}
-          PRODSEC_TOOLS_ARN: ${{ secrets.PRODSEC_TOOLS_ARN }}
-          PRODSEC_TOOLS_USER: ${{ secrets.PRODSEC_TOOLS_USER }}
-          PRODSEC_TOOLS_TOKEN: ${{ secrets.PRODSEC_TOOLS_TOKEN }}
-          PRODSEC_PYTHON_TOOLS_REPO: ${{ secrets.PRODSEC_PYTHON_TOOLS_REPO }}
+    uses: ./.github/workflows/rl-scanner.yml
+    with:
+      artifact-name: 'auth0-flutter-af'
+    secrets:
+      RLSECURE_LICENSE: ${{ secrets.RLSECURE_LICENSE }}
+      RLSECURE_SITE_KEY: ${{ secrets.RLSECURE_SITE_KEY }}
+      SIGNAL_HANDLER_TOKEN: ${{ secrets.SIGNAL_HANDLER_TOKEN }}
+      SIGNAL_HANDLER_DOMAIN: ${{ secrets.SIGNAL_HANDLER_DOMAIN }}
+      PRODSEC_TOOLS_ARN: ${{ secrets.PRODSEC_TOOLS_ARN }}
+      PRODSEC_TOOLS_USER: ${{ secrets.PRODSEC_TOOLS_USER }}
+      PRODSEC_TOOLS_TOKEN: ${{ secrets.PRODSEC_TOOLS_TOKEN }}
+      PRODSEC_PYTHON_TOOLS_REPO: ${{ secrets.PRODSEC_PYTHON_TOOLS_REPO }}
 
   publish:
     name: Publish auth0_flutter to pub.dev
