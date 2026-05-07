@@ -1,5 +1,11 @@
 # Change Log
 
+## [af-v2.0.2](https://github.com/auth0/auth0-flutter/tree/af-v2.0.2) (2026-05-07)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.0.1...af-v2.0.2)
+
+**Added**
+- Handle Android process death during web authentication [\#820](https://github.com/auth0/auth0-flutter/pull/820) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
 ## [af-v2.0.1](https://github.com/auth0/auth0-flutter/tree/af-v2.0.1) (2026-04-15)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.0.0...af-v2.0.1)
 
