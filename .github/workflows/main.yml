@@ -13,7 +13,6 @@ concurrency:
     cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 env:
-    ruby: '3.3.1'
     flutter: '3.x'
     ios-simulator: iPhone 16
     java: 17
@@ -139,7 +138,6 @@ jobs:
               uses: ./.github/actions/setup-darwin
               with:
                 platform: ${{ env.platform }}
-                ruby: ${{ env.ruby }}
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
                 auth0-domain: ${{ vars.AUTH0_DOMAIN }}
@@ -151,15 +149,11 @@ jobs:
                 platform: ${{ env.platform }}
                 destination: ${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.ios-simulator) }}
 
-            - name: Convert coverage report
-              working-directory: auth0_flutter/example/ios
-              run: bundle exec slather coverage -x --scheme Runner Runner.xcodeproj
-
             - name: Upload coverage report
               uses: actions/upload-artifact@v7
               with:
                 name: iOS coverage
-                path: auth0_flutter/example/ios/cobertura
+                path: auth0_flutter/example/ios/unit-tests.xcresult
     # TODO: fix both android and iOS smoke testcases and uncomment them.
     # test-ios-smoke:
     #     name: Run native iOS smoke tests using Xcode ${{ matrix.xcode }}
@@ -217,7 +211,6 @@ jobs:
               uses: ./.github/actions/setup-darwin
               with:
                 platform: ${{ env.platform }}
-                ruby: ${{ env.ruby }}
                 flutter: ${{ env.flutter }}
                 xcode: ${{ matrix.xcode }}
                 auth0-domain: ${{ vars.AUTH0_DOMAIN }}

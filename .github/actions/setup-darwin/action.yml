@@ -6,10 +6,6 @@ inputs:
     description: Either iOS or macOS
     required: true
 
-  ruby:
-    description: The version of Ruby to use
-    required: true
-
   flutter:
     description: The version of Flutter to use
     required: true
@@ -30,19 +26,6 @@ runs:
   using: composite
 
   steps:
-    - name: Lowercase platform value
-      id: lowercase-platform
-      run: echo "platform=$(echo ${{ inputs.platform }} | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
-      shell: bash
-
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@e65c17d16e57e481586a6a5a0282698790062f92 # pin@v1.300.0
-      with:
-        ruby-version: ${{ inputs.ruby }}
-        bundler-cache: true
-        cache-version: 1
-        working-directory: auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}
-
     - name: Install Flutter
       uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
       with:
@@ -50,29 +33,17 @@ runs:
         channel: stable
         cache: true
 
-    - name: Install Flutter dependencies
-      working-directory: auth0_flutter/example
-      run: flutter pub get
-      shell: bash
-
     - name: Setup Xcode
       run: sudo xcode-select --switch /Applications/Xcode_${{ inputs.xcode }}.app/Contents/Developer
       shell: bash
 
-    - name: Save Xcode version
-      run: xcodebuild -version | tee .xcode-version
+    - name: Enable Swift Package Manager
+      run: flutter config --enable-swift-package-manager
       shell: bash
 
-    - id: restore-pods-cache
-      name: Restore Pods cache
-      uses: actions/cache@v5
-      with:
-        path: auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}/Pods
-        key: pods-${{ hashFiles('Podfile.lock') }}-${{ hashFiles('.xcode-version') }}-v1
-
-    - name: Install pods
-      working-directory: auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}
-      run: pod install
+    - name: Install Flutter dependencies
+      working-directory: auth0_flutter/example
+      run: flutter pub get
       shell: bash
 
     - name: Set .env
