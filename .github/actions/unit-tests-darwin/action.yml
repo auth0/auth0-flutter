@@ -21,7 +21,7 @@ runs:
 
     - name: Run ${{ inputs.platform }} unit tests
       working-directory: auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}
-      run: xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination '${{ inputs.destination }}' -resultBundlePath unit-tests.xcresult -skip-testing:RunnerUITests
+      run: xcodebuild test -scheme Runner -project Runner.xcodeproj -destination '${{ inputs.destination }}' -resultBundlePath unit-tests.xcresult -skip-testing:RunnerUITests
       shell: bash
 
     - name: Upload xcresult bundles
