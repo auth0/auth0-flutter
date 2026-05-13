@@ -59,6 +59,18 @@ runs:
       run: flutter pub get
       shell: bash
 
+    - name: Fix iOS minimum deployment target for SPM
+      if: inputs.platform == 'iOS'
+      working-directory: auth0_flutter/example/ios/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage
+      run: sed -i '' 's/\.iOS(".*")/\.iOS("14.0")/g' Package.swift
+      shell: bash
+
+    - name: Fix macOS minimum deployment target for SPM
+      if: inputs.platform == 'macOS'
+      working-directory: auth0_flutter/example/macos/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage
+      run: sed -i '' 's/\.macOS(".*")/\.macOS("11.0")/g' Package.swift
+      shell: bash
+
     - name: Set .env
       working-directory: auth0_flutter/example
       run: printf '%s\n%s\n%s' 'AUTH0_DOMAIN=${{ inputs.auth0-domain }}' 'AUTH0_CLIENT_ID=${{ inputs.auth0-client-id }}' 'AUTH0_CUSTOM_SCHEME=demo' >> .env
