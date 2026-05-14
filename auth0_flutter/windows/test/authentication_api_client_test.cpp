@@ -3,8 +3,11 @@
 
 #include "../authentication_api_client.h"
 #include "../auth0_api_client.h"
+#include "../authentication_error.h"
 
 using namespace auth0_flutter;
+
+using HeaderMap = std::map<std::string, std::string>;
 
 class MockNetworking : public Networking
 {
@@ -12,7 +15,7 @@ public:
     MOCK_METHOD(NetworkResponse, post,
                 (const std::string &path,
                  const web::json::value &body,
-                 const std::map<std::string, std::string> &headers),
+                 const HeaderMap &headers),
                 (override));
 };
 
@@ -35,11 +38,11 @@ protected:
 
 TEST_F(AuthenticationApiClientTest, ExchangeCodeForTokensSendsAuth0ClientHeader)
 {
-    std::map<std::string, std::string> capturedHeaders;
+    HeaderMap capturedHeaders;
 
     EXPECT_CALL(*mockNet, post(::testing::_, ::testing::_, ::testing::_))
         .WillOnce([&](const std::string &, const web::json::value &,
-                       const std::map<std::string, std::string> &headers) {
+                       const HeaderMap &headers) {
             capturedHeaders = headers;
             return NetworkResponse{200, MakeTokenResponse()};
         });
@@ -53,11 +56,11 @@ TEST_F(AuthenticationApiClientTest, ExchangeCodeForTokensSendsAuth0ClientHeader)
 
 TEST_F(AuthenticationApiClientTest, ExchangeCodeForTokensOmitsHeaderWhenEmpty)
 {
-    std::map<std::string, std::string> capturedHeaders;
+    HeaderMap capturedHeaders;
 
     EXPECT_CALL(*mockNet, post(::testing::_, ::testing::_, ::testing::_))
         .WillOnce([&](const std::string &, const web::json::value &,
-                       const std::map<std::string, std::string> &headers) {
+                       const HeaderMap &headers) {
             capturedHeaders = headers;
             return NetworkResponse{200, MakeTokenResponse()};
         });
@@ -74,7 +77,7 @@ TEST_F(AuthenticationApiClientTest, ExchangeCodeForTokensPostsToCorrectPath)
 
     EXPECT_CALL(*mockNet, post(::testing::_, ::testing::_, ::testing::_))
         .WillOnce([&](const std::string &path, const web::json::value &,
-                       const std::map<std::string, std::string> &) {
+                       const HeaderMap &) {
             capturedPath = path;
             return NetworkResponse{200, MakeTokenResponse()};
         });
@@ -91,7 +94,7 @@ TEST_F(AuthenticationApiClientTest, ExchangeCodeForTokensSendsCorrectBody)
 
     EXPECT_CALL(*mockNet, post(::testing::_, ::testing::_, ::testing::_))
         .WillOnce([&](const std::string &, const web::json::value &body,
-                       const std::map<std::string, std::string> &) {
+                       const HeaderMap &) {
             capturedBody = body;
             return NetworkResponse{200, MakeTokenResponse()};
         });
@@ -110,7 +113,7 @@ TEST_F(AuthenticationApiClientTest, ExchangeCodeForTokensReturnsCredentials)
 {
     EXPECT_CALL(*mockNet, post(::testing::_, ::testing::_, ::testing::_))
         .WillOnce([](const std::string &, const web::json::value &,
-                      const std::map<std::string, std::string> &) {
+                      const HeaderMap &) {
             return NetworkResponse{200, MakeTokenResponse()};
         });
 
@@ -130,7 +133,7 @@ TEST_F(AuthenticationApiClientTest, ExchangeCodeForTokensThrowsOnApiError)
 
     EXPECT_CALL(*mockNet, post(::testing::_, ::testing::_, ::testing::_))
         .WillOnce([&](const std::string &, const web::json::value &,
-                       const std::map<std::string, std::string> &) {
+                       const HeaderMap &) {
             return NetworkResponse{403, errorBody};
         });
 
@@ -141,7 +144,7 @@ TEST_F(AuthenticationApiClientTest, ExchangeCodeForTokensThrowsOnApiError)
         client.ExchangeCodeForTokens("https://callback", "auth-code", "verifier");
         FAIL() << "Expected AuthenticationError";
     }
-    catch (const auth0_flutter::AuthenticationError &e)
+    catch (const AuthenticationError &e)
     {
         EXPECT_EQ(e.GetCode(), "invalid_grant");
         EXPECT_EQ(e.GetStatusCode(), 403);
@@ -152,7 +155,7 @@ TEST_F(AuthenticationApiClientTest, ExchangeCodeForTokensThrowsNetworkErrorOnExc
 {
     EXPECT_CALL(*mockNet, post(::testing::_, ::testing::_, ::testing::_))
         .WillOnce([](const std::string &, const web::json::value &,
-                      const std::map<std::string, std::string> &) -> NetworkResponse {
+                      const HeaderMap &) -> NetworkResponse {
             throw std::runtime_error("connection refused");
         });
 
@@ -163,10 +166,10 @@ TEST_F(AuthenticationApiClientTest, ExchangeCodeForTokensThrowsNetworkErrorOnExc
         client.ExchangeCodeForTokens("https://callback", "auth-code", "verifier");
         FAIL() << "Expected AuthenticationError";
     }
-    catch (const auth0_flutter::AuthenticationError &e)
+    catch (const AuthenticationError &e)
     {
         EXPECT_EQ(e.GetCode(), "network_error");
         EXPECT_EQ(e.GetStatusCode(), 0);
-        EXPECT_TRUE(e.IsNetworkError());
+        EXPECT_EQ(e.IsNetworkError(), true);
     }
 }
