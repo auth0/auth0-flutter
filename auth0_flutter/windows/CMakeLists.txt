@@ -52,7 +52,9 @@ if(TARGET flutter)
   add_library(${PLUGIN_NAME} SHARED
     "include/auth0_flutter/auth0_flutter_plugin_c_api.h"
     "auth0_flutter_plugin_c_api.cpp"
-    "auth0_client.cpp"
+    "networking.cpp"
+    "auth0_api_client.cpp"
+    "authentication_api_client.cpp"
     "token_decoder.cpp"
     "time_util.cpp"
     "user_profile.cpp"
@@ -146,6 +148,7 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
     test/user_identity_test.cpp                       # UserIdentity deserialization and serialization
     test/login_web_auth_request_handler_test.cpp      # Handler arg validation (#15 scopes, #16 timeout, #19 DPoP)
     test/auth0_client_telemetry_test.cpp              # BuildAuth0ClientHeader base64url encoding + JSON format
+    test/authentication_api_client_test.cpp            # AuthenticationApiClient with mocked Networking layer
   )
 
   # Source files needed for tests
@@ -161,7 +164,9 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
     user_profile.cpp
     user_identity.cpp
     # Handler under test + its non-Flutter dependencies
-    auth0_client.cpp
+    networking.cpp
+    auth0_api_client.cpp
+    authentication_api_client.cpp
     request_handlers/web_auth/login_web_auth_request_handler.cpp
   )
 

@@ -10,7 +10,9 @@
 #include <string>
 #include <stdexcept>
 
-#include "../auth0_client.h"
+#include "../auth0_api_client.h"
+
+using auth0_flutter::BuildAuth0ClientHeader;
 
 // Minimal base64url decoder for test verification only.
 static std::string Base64UrlDecode(const std::string &input)

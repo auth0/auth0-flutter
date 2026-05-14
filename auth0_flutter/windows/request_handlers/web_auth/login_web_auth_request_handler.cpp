@@ -5,7 +5,7 @@
  */
 
 #include "login_web_auth_request_handler.h"
-#include "../../auth0_client.h"
+#include "../../authentication_api_client.h"
 #include "../../credentials.h"
 #include "../../user_profile.h"
 #include "../../jwt_util.h"
@@ -130,7 +130,7 @@ namespace auth0_flutter
                 }
             }
         }
-        std::string auth0ClientHeader = BuildAuth0ClientHeader(userAgentName, userAgentVersion);
+        std::string auth0ClientHeader = auth0_flutter::BuildAuth0ClientHeader(userAgentName, userAgentVersion);
 
         auto parametersIt = arguments->find(flutter::EncodableValue("parameters"));
         const flutter::EncodableMap *parametersMap = nullptr;
@@ -554,7 +554,7 @@ namespace auth0_flutter
             Credentials creds;
             try
             {
-                Auth0Client client(domain, clientId, auth0ClientHeader);
+                auth0_flutter::AuthenticationApiClient client(domain, clientId, auth0ClientHeader);
                 creds = client.ExchangeCodeForTokens(redirectUri, code, codeVerifier);
             }
             catch (const auth0_flutter::AuthenticationError &e)
