@@ -5,7 +5,7 @@
  */
 
 #include "login_web_auth_request_handler.h"
-#include "../../auth0_client.h"
+#include "../../authentication_api_client.h"
 #include "../../credentials.h"
 #include "../../user_profile.h"
 #include "../../jwt_util.h"
@@ -109,6 +109,28 @@ namespace auth0_flutter
             result->Error("bad_args", "clientId and domain are required");
             return;
         }
+
+        // Extract optional _userAgent for telemetry (name + version from Dart SDK)
+        std::string userAgentName;
+        std::string userAgentVersion;
+        if (auto uaIt = arguments->find(flutter::EncodableValue("_userAgent"));
+            uaIt != arguments->end())
+        {
+            if (auto *uaMap = std::get_if<flutter::EncodableMap>(&uaIt->second))
+            {
+                if (auto it = uaMap->find(flutter::EncodableValue("name"));
+                    it != uaMap->end())
+                {
+                    if (auto s = std::get_if<std::string>(&it->second)) userAgentName = *s;
+                }
+                if (auto it = uaMap->find(flutter::EncodableValue("version"));
+                    it != uaMap->end())
+                {
+                    if (auto s = std::get_if<std::string>(&it->second)) userAgentVersion = *s;
+                }
+            }
+        }
+        std::string auth0ClientHeader = auth0_flutter::BuildAuth0ClientHeader(userAgentName, userAgentVersion);
 
         auto parametersIt = arguments->find(flutter::EncodableValue("parameters"));
         const flutter::EncodableMap *parametersMap = nullptr;
@@ -356,7 +378,7 @@ namespace auth0_flutter
         // Flutter UI thread.  The cancellation token lets the destructor (or a
         // subsequent handle() call) abort a running flow cleanly.
         pplx::create_task([taskRunner, sharedResult,
-                           clientId, domain, domainUrl, scopeStr, redirectUri, appCustomURL, audience, organizationId, invitationUrl, authTimeoutSeconds, leeway, maxAge, state, nonce, issuer, token, queryParams]()
+                           clientId, domain, domainUrl, scopeStr, redirectUri, appCustomURL, audience, organizationId, invitationUrl, authTimeoutSeconds, leeway, maxAge, state, nonce, issuer, token, queryParams, auth0ClientHeader]()
                           {
             try
             {
@@ -532,7 +554,7 @@ namespace auth0_flutter
             Credentials creds;
             try
             {
-                Auth0Client client(domain, clientId);
+                auth0_flutter::AuthenticationApiClient client(domain, clientId, auth0ClientHeader);
                 creds = client.ExchangeCodeForTokens(redirectUri, code, codeVerifier);
             }
             catch (const auth0_flutter::AuthenticationError &e)
