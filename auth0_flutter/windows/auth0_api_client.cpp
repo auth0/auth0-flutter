@@ -30,15 +30,20 @@ static std::string Base64UrlEncode(const std::string &input)
         if (i + 1 < input.size()) result += kChars[(b >>  6) & 0x3F];
         if (i + 2 < input.size()) result += kChars[(b      ) & 0x3F];
     }
+    // Convert standard base64 to base64url (RFC 4648 §5)
     for (auto &c : result)
     {
         if (c == '+') c = '-';
         else if (c == '/') c = '_';
     }
+    // Safety guard: strip padding in case encoding logic changes in the future.
     while (!result.empty() && result.back() == '=') result.pop_back();
     return result;
 }
 
+// Returns the real Windows version via RtlGetVersion (avoids GetVersionEx
+// compatibility shim lies on Windows 10+). Falls back to "0.0" if ntdll is
+// unavailable, which cannot happen in practice since ntdll is always loaded.
 static std::string GetWindowsVersion()
 {
     OSVERSIONINFOEXW osvi = {};

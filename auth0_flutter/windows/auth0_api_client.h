@@ -28,6 +28,8 @@ protected:
     std::map<std::string, std::string> baseHeaders() const;
 
 private:
+    // Order matters: domain_ must precede networking_ because the initializer
+    // list constructs networking_ from domain_ (use-after-move safety).
     std::string domain_;
     std::string clientId_;
     std::string auth0ClientHeader_;
