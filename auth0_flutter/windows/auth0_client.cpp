@@ -68,7 +68,6 @@ static std::string GetWindowsVersion()
 
 std::string BuildAuth0ClientHeader(const std::string &name, const std::string &version)
 {
-    // Mirror the Swift Telemetry format:
     // { "name": "auth0-flutter", "version": "x.y.z", "env": { "Windows": "10.0" } }
     std::ostringstream json;
     json << "{"
