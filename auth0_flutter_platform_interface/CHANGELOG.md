@@ -1,5 +1,20 @@
 # Change Log
 
+## [afpi-v2.0.2](https://github.com/auth0/auth0-flutter/tree/afpi-v2.0.2) (2026-05-07)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.0.1...afpi-v2.0.2)
+
+**Added**
+- Handle Android process death during web authentication [\#820](https://github.com/auth0/auth0-flutter/pull/820) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
+## [afpi-v2.0.1](https://github.com/auth0/auth0-flutter/tree/afpi-v2.0.1) (2026-04-15)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.0.0...afpi-v2.0.1)
+
+**Changed**
+- feat: Expose isRetryable property on CredentialsManagerException, ApiException, and WebAuthenticationException [\#786](https://github.com/auth0/auth0-flutter/pull/786) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
+**Fixed**
+- Set explicit type for .other in switch in FlutterError [\#808](https://github.com/auth0/auth0-flutter/pull/808) ([crazycatk](https://github.com/crazycatk))
+
 ## [afpi-v2.1.0-beta.1](https://github.com/auth0/auth0-flutter/tree/afpi-v2.1.0-beta.1) (2026-03-30)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.0.0...afpi-v2.1.0-beta.1)
 

@@ -1,7 +1,10 @@
 package com.auth0.auth0_flutter
 
 import androidx.annotation.NonNull
+import com.auth0.android.authentication.AuthenticationException
+import com.auth0.android.callback.Callback
 import com.auth0.android.provider.WebAuthProvider
+import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.request_handlers.api.*
 import com.auth0.auth0_flutter.request_handlers.credentials_manager.*
@@ -26,6 +29,9 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   private lateinit var dpopMethodChannel : MethodChannel
   private lateinit var binding: FlutterPlugin.FlutterPluginBinding
   private lateinit var authCallHandler: Auth0FlutterAuthMethodCallHandler
+  private var pendingRecoveredCredentials: Map<String, Any?>? = null
+  private var pendingRecoveryError: Map<String, Any?>? = null
+  private var dartReady = false
   private val webAuthCallHandler = Auth0FlutterWebAuthMethodCallHandler(listOf(
     LoginWebAuthRequestHandler(),
     LogoutWebAuthRequestHandler { request: MethodCallRequest -> WebAuthProvider.logout(request.account) },
@@ -44,13 +50,52 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     ClearDPoPKeyApiRequestHandler()
   ))
 
+  private val processDeathCallback = object : Callback<Credentials, AuthenticationException> {
+    override fun onSuccess(credentials: Credentials) {
+      val scopes = credentials.scope?.split(" ") ?: listOf()
+      val formattedDate = credentials.expiresAt.toInstant().toString()
+
+      val credentialsMap = mapOf(
+        "accessToken" to credentials.accessToken,
+        "idToken" to credentials.idToken,
+        "refreshToken" to credentials.refreshToken,
+        "userProfile" to credentials.user.toMap(),
+        "expiresAt" to formattedDate,
+        "scopes" to scopes,
+        "tokenType" to credentials.type
+      )
+
+      if (dartReady) {
+        webAuthMethodChannel.invokeMethod("webAuth#onLoginResult", credentialsMap)
+      } else {
+        pendingRecoveredCredentials = credentialsMap
+        pendingRecoveryError = null
+      }
+    }
+
+    override fun onFailure(exception: AuthenticationException) {
+      val errorMap = mapOf(
+        "code" to exception.getCode(),
+        "description" to exception.getDescription(),
+        "_isRetryable" to exception.isNetworkError
+      )
+
+      if (dartReady) {
+        webAuthMethodChannel.invokeMethod("webAuth#onLoginError", errorMap)
+      } else {
+        pendingRecoveryError = errorMap
+        pendingRecoveredCredentials = null
+      }
+    }
+  }
+
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     binding = flutterPluginBinding
     val messenger = binding.binaryMessenger
     val context = binding.applicationContext
 
     webAuthMethodChannel = MethodChannel(messenger, "auth0.com/auth0_flutter/web_auth")
-    webAuthMethodChannel.setMethodCallHandler(webAuthCallHandler)
+    webAuthMethodChannel.setMethodCallHandler(this)
 
     credentialsManagerMethodChannel = MethodChannel(messenger, "auth0.com/auth0_flutter/credentials_manager")
     credentialsManagerMethodChannel.setMethodCallHandler(credentialsManagerCallHandler)
@@ -82,7 +127,23 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     dpopMethodChannel.setMethodCallHandler(dpopCallHandler)
   }
 
-  override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result) {}
+  override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result) {
+    when (call.method) {
+      "webAuth#dartReady" -> {
+        dartReady = true
+        pendingRecoveredCredentials?.let {
+          webAuthMethodChannel.invokeMethod("webAuth#onLoginResult", it)
+          pendingRecoveredCredentials = null
+        }
+        pendingRecoveryError?.let {
+          webAuthMethodChannel.invokeMethod("webAuth#onLoginError", it)
+          pendingRecoveryError = null
+        }
+        result.success(null)
+      }
+      else -> webAuthCallHandler.onMethodCall(call, result)
+    }
+  }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
     webAuthMethodChannel.setMethodCallHandler(null)
@@ -94,17 +155,20 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     webAuthCallHandler.activity = binding.activity
     credentialsManagerCallHandler.activity = binding.activity
+    WebAuthProvider.addCallback(processDeathCallback)
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
-    // Not yet implemented
+    WebAuthProvider.removeCallback(processDeathCallback)
   }
 
   override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-    // Not yet implemented
+    webAuthCallHandler.activity = binding.activity
+    credentialsManagerCallHandler.activity = binding.activity
+    WebAuthProvider.addCallback(processDeathCallback)
   }
 
   override fun onDetachedFromActivity() {
-    // Not yet implemented
+    WebAuthProvider.removeCallback(processDeathCallback)
   }
 }

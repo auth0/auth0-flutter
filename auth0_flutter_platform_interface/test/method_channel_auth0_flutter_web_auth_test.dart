@@ -62,7 +62,7 @@ void main() {
               options: WebAuthLoginOptions()));
 
       expect(
-          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          verify(mocked.methodCallHandler(captureAny)).captured.last.method,
           'webAuth#login');
     });
 
@@ -88,7 +88,7 @@ void main() {
                       leeway: 10, issuer: 'test-issuer', maxAge: 20))));
 
       final verificationResult =
-          verify(mocked.methodCallHandler(captureAny)).captured.single;
+          verify(mocked.methodCallHandler(captureAny)).captured.last;
       expect(verificationResult.arguments['_account']['domain'], 'test-domain');
       expect(verificationResult.arguments['_account']['clientId'],
           'test-clientId');
@@ -123,7 +123,7 @@ void main() {
               options: WebAuthLoginOptions()));
 
       final verificationResult =
-          verify(mocked.methodCallHandler(captureAny)).captured.single;
+          verify(mocked.methodCallHandler(captureAny)).captured.last;
       expect(verificationResult.arguments['scopes'], isEmpty);
       expect(verificationResult.arguments['audience'], isNull);
       expect(verificationResult.arguments['redirectUrl'], isNull);
@@ -192,7 +192,7 @@ void main() {
                           SafariViewControllerPresentationStyle.formSheet))));
 
       final verificationResult =
-          verify(mocked.methodCallHandler(captureAny)).captured.single;
+          verify(mocked.methodCallHandler(captureAny)).captured.last;
 
       expect(
           verificationResult.arguments['safariViewController']
@@ -212,7 +212,7 @@ void main() {
               options: WebAuthLoginOptions()));
 
       final verificationResult =
-          verify(mocked.methodCallHandler(captureAny)).captured.single;
+          verify(mocked.methodCallHandler(captureAny)).captured.last;
 
       expect(verificationResult.arguments.containsKey('safariViewController'),
           false);
@@ -268,7 +268,7 @@ void main() {
               options: WebAuthLogoutOptions()));
 
       expect(
-          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          verify(mocked.methodCallHandler(captureAny)).captured.last.method,
           'webAuth#logout');
     });
 
@@ -286,7 +286,7 @@ void main() {
                   allowedBrowsers: ['com.android.chrome', 'org.mozilla.firefox'])));
 
       final verificationResult =
-          verify(mocked.methodCallHandler(captureAny)).captured.single;
+          verify(mocked.methodCallHandler(captureAny)).captured.last;
       expect(verificationResult.arguments['_account']['domain'], 'test-domain');
       expect(verificationResult.arguments['_account']['clientId'],
           'test-clientId');
@@ -311,7 +311,7 @@ void main() {
                   allowedBrowsers: ['com.android.chrome'])));
 
       final verificationResult =
-          verify(mocked.methodCallHandler(captureAny)).captured.single;
+          verify(mocked.methodCallHandler(captureAny)).captured.last;
       expect(
           verificationResult.arguments['allowedBrowsers'], ['com.android.chrome']);
     });
@@ -328,7 +328,7 @@ void main() {
               options: WebAuthLogoutOptions()));
 
       final verificationResult =
-          verify(mocked.methodCallHandler(captureAny)).captured.single;
+          verify(mocked.methodCallHandler(captureAny)).captured.last;
       expect(verificationResult.arguments['useHTTPS'], false);
       expect(verificationResult.arguments['returnTo'], isNull);
       expect(verificationResult.arguments['scheme'], isNull);
@@ -351,6 +351,63 @@ void main() {
       }
 
       await expectLater(actual, throwsA(isA<WebAuthenticationException>()));
+    });
+  });
+
+  group('onCredentialsRecovered', () {
+    test('emits credentials when native sends onLoginResult', () async {
+      final instance = MethodChannelAuth0FlutterWebAuth();
+      final future =
+          instance.onCredentialsRecovered.first;
+
+      TestDefaultBinaryMessengerBinding
+          .instance.defaultBinaryMessenger
+          .handlePlatformMessage(
+        'auth0.com/auth0_flutter/web_auth',
+        const StandardMethodCodec()
+            .encodeMethodCall(const MethodCall(
+                'webAuth#onLoginResult', MethodCallHandler.loginResult)),
+        (final _) {},
+      );
+
+      final credentials = await future;
+      expect(credentials.accessToken, 'accessToken');
+      expect(credentials.idToken, 'idToken');
+      expect(credentials.refreshToken, 'refreshToken');
+    });
+
+    test('emits error when native sends onLoginError', () async {
+      final instance = MethodChannelAuth0FlutterWebAuth();
+      final future =
+          instance.onCredentialsRecovered.first;
+
+      TestDefaultBinaryMessengerBinding
+          .instance.defaultBinaryMessenger
+          .handlePlatformMessage(
+        'auth0.com/auth0_flutter/web_auth',
+        const StandardMethodCodec()
+            .encodeMethodCall(const MethodCall(
+                'webAuth#onLoginError', {
+          'code': 'a]network_error',
+          'description': 'Network request failed',
+          '_isRetryable': true,
+        })),
+        (final _) {},
+      );
+
+      await expectLater(
+          future, throwsA(isA<WebAuthenticationException>()));
+    });
+
+    test(
+        'sends dartReady only after first listener attaches',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => null);
+
+      MethodChannelAuth0FlutterWebAuth();
+
+      verifyNever(mocked.methodCallHandler(any));
     });
   });
 }

@@ -167,6 +167,43 @@ class WebAuthentication {
     Auth0FlutterWebAuthPlatform.instance.cancel();
   }
 
+  /// Stream of [Credentials] recovered after Android process death.
+  ///
+  /// On Android, if the OS kills the app process while the user is in the
+  /// browser completing authentication, the native SDK
+  /// recovers the PKCE state and completes the token exchange automatically
+  /// when the app is restored. This stream emits those recovered credentials.
+  ///
+  /// Listen to this stream early in your app lifecycle (e.g., in `initState`)
+  /// to handle the case where login completes after process death.
+  ///
+  /// ## Note: This is an Android specific API
+  ///
+  /// Usage example:
+  ///
+  /// ```dart
+  /// late StreamSubscription<Credentials> _processDeathSub;
+  ///
+  /// @override
+  /// void initState() {
+  ///   super.initState();
+  ///   _processDeathSub = auth0
+  ///       .webAuthentication()
+  ///       .onCredentialsRecovered
+  ///       .listen((credentials) {
+  ///     setState(() => _credentials = credentials);
+  ///   });
+  /// }
+  ///
+  /// @override
+  /// void dispose() {
+  ///   _processDeathSub.cancel();
+  ///   super.dispose();
+  /// }
+  /// ```
+  Stream<Credentials> get onCredentialsRecovered =>
+      Auth0FlutterWebAuthPlatform.instance.onCredentialsRecovered;
+
   WebAuthRequest<TOptions>
       _createWebAuthRequest<TOptions extends RequestOptions>(
               final TOptions options) =>
