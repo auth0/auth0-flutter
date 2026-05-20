@@ -13,7 +13,7 @@ fun UserProfile.toMap(): Map<String, Any?> {
         "nickname" to this.nickname,
         "preferred_username" to this.preferredUsername,
         "profile" to this.profileURL,
-        "picture" to this.pictureURL,
+        "picture" to (getExtraInfo()["picture"] as? String),
         "website" to this.websiteURL,
         "email" to this.email,
         "email_verified" to this.isEmailVerified,
@@ -33,40 +33,40 @@ val UserProfile.sub: String
     get() = getExtraInfo()["sub"] as String
 
 val UserProfile.middleName: String?
-    get() = getExtraInfo()["middle_name"] as String?
+    get() = getExtraInfo()["middle_name"] as? String
 
 val UserProfile.preferredUsername: String?
-    get() = getExtraInfo()["preferred_username"] as String?
+    get() = getExtraInfo()["preferred_username"] as? String
 
 val UserProfile.profileURL: String?
-    get() = getExtraInfo()["profile"] as String?
+    get() = getExtraInfo()["profile"] as? String
 
 val UserProfile.websiteURL: String?
-    get() = getExtraInfo()["website"] as String?
+    get() = getExtraInfo()["website"] as? String
 
 val UserProfile.gender: String?
-    get() = getExtraInfo()["gender"] as String?
+    get() = getExtraInfo()["gender"] as? String
 
 val UserProfile.birthdate: String?
-    get() = getExtraInfo()["birthdate"] as String?
+    get() = getExtraInfo()["birthdate"] as? String
 
 val UserProfile.zoneinfo: String?
-    get() = getExtraInfo()["zoneinfo"] as String?
+    get() = getExtraInfo()["zoneinfo"] as? String
 
 val UserProfile.locale: String?
-    get() = getExtraInfo()["locale"] as String?
+    get() = getExtraInfo()["locale"] as? String
 
 val UserProfile.phoneNumber: String?
-    get() = getExtraInfo()["phone_number"] as String?
+    get() = getExtraInfo()["phone_number"] as? String
 
 val UserProfile.isPhoneNumberVerified: Boolean?
-    get() = getExtraInfo()["phone_number_verified"] as Boolean?
+    get() = getExtraInfo()["phone_number_verified"] as? Boolean
 
 val UserProfile.updatedAt: String?
-    get() = getExtraInfo()["updated_at"] as String?
+    get() = getExtraInfo()["updated_at"] as? String
 
 val UserProfile.address: Map<String, String>?
-    get() = getExtraInfo()["address"] as Map<String, String>?
+    get() = @Suppress("UNCHECKED_CAST") (getExtraInfo()["address"] as? Map<String, String>)
 
 val UserProfile.customClaims: Map<String, Any>
     get() = getCustomClaims(getExtraInfo())
