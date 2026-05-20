@@ -20,6 +20,6 @@ class WebAuthLogoutOptions implements RequestOptions {
         'returnTo': returnTo,
         'scheme': scheme,
         'federated': federated,
-        'allowedBrowsers': allowedBrowsers
+        'allowedBrowsers': allowedBrowsers,
       };
 }
