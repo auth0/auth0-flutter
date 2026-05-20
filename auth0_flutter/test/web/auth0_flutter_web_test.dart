@@ -496,9 +496,8 @@ void main() {
       ];
 
       for (final errorCase in errorCases) {
-        when(mockClientProxy.exchangeToken(any))
-            .thenThrow(createJsException(errorCase['code']!,
-            errorCase['message']!));
+        when(mockClientProxy.exchangeToken(any)).thenThrow(
+            createJsException(errorCase['code']!, errorCase['message']!));
 
         await expectLater(
             auth0.customTokenExchange(
@@ -691,8 +690,7 @@ void main() {
       });
 
       test('creates Auth0Web instance with explicit DPoP false', () {
-        final auth0NoDPoP =
-            Auth0Web('test-domain', 'test-client-id');
+        final auth0NoDPoP = Auth0Web('test-domain', 'test-client-id');
         expect(auth0NoDPoP, isNotNull);
       });
     });
@@ -1000,8 +998,8 @@ void main() {
 
         expect(
           auth0WithDPoP.credentials,
-          throwsA(predicate((final e) =>
-              e is WebException && e.code == 'use_dpop_nonce')),
+          throwsA(predicate(
+              (final e) => e is WebException && e.code == 'use_dpop_nonce')),
         );
       });
 
@@ -1026,8 +1024,7 @@ void main() {
       });
 
       test('Non-DPoP instance does not have DPoP enabled', () {
-        final regularAuth0 =
-            Auth0Web('test-domain', 'test-client-id');
+        final regularAuth0 = Auth0Web('test-domain', 'test-client-id');
         expect(regularAuth0, isNotNull);
       });
 

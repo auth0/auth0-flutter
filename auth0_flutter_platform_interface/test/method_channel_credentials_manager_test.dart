@@ -669,7 +669,7 @@ void main() {
       final Map<dynamic, dynamic> renewedCredentials = {
         'accessToken': 'renewedAccessToken',
         'idToken': 'idToken',
-        'refreshToken':'refreshToken',
+        'refreshToken': 'refreshToken',
         'expiresAt': '2023-11-01T22:16:35.760Z',
         'scopes': ['a', 'b'],
         'userProfile': {'sub': '123', 'name': 'John Doe'},
@@ -744,10 +744,11 @@ void main() {
       when(mocked.methodCallHandler(any))
           .thenAnswer((final _) async => {'sub': '123', 'name': 'John Doe'});
 
-      await MethodChannelCredentialsManager()
-          .user(CredentialsManagerRequest<RequestOptions?>(
+      await MethodChannelCredentialsManager().user(
+          CredentialsManagerRequest<RequestOptions?>(
               account: const Account('test-domain', 'test-clientId'),
-              userAgent: UserAgent(name: 'test-name', version: 'test-version')));
+              userAgent:
+                  UserAgent(name: 'test-name', version: 'test-version')));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -758,10 +759,11 @@ void main() {
       when(mocked.methodCallHandler(any))
           .thenAnswer((final _) async => {'sub': '123', 'name': 'John Doe'});
 
-      await MethodChannelCredentialsManager()
-          .user(CredentialsManagerRequest<RequestOptions?>(
+      await MethodChannelCredentialsManager().user(
+          CredentialsManagerRequest<RequestOptions?>(
               account: const Account('test-domain', 'test-clientId'),
-              userAgent: UserAgent(name: 'test-name', version: 'test-version')));
+              userAgent:
+                  UserAgent(name: 'test-name', version: 'test-version')));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -790,10 +792,11 @@ void main() {
       when(mocked.methodCallHandler(any))
           .thenAnswer((final _) async => userProfileData);
 
-      final result = await MethodChannelCredentialsManager()
-          .user(CredentialsManagerRequest<RequestOptions?>(
+      final result = await MethodChannelCredentialsManager().user(
+          CredentialsManagerRequest<RequestOptions?>(
               account: const Account('test-domain', 'test-clientId'),
-              userAgent: UserAgent(name: 'test-name', version: 'test-version')));
+              userAgent:
+                  UserAgent(name: 'test-name', version: 'test-version')));
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -813,23 +816,25 @@ void main() {
     test('returns null when native returns null', () async {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
-      final result = await MethodChannelCredentialsManager()
-          .user(CredentialsManagerRequest<RequestOptions?>(
+      final result = await MethodChannelCredentialsManager().user(
+          CredentialsManagerRequest<RequestOptions?>(
               account: const Account('test-domain', 'test-clientId'),
-              userAgent: UserAgent(name: 'test-name', version: 'test-version')));
+              userAgent:
+                  UserAgent(name: 'test-name', version: 'test-version')));
 
       verify(mocked.methodCallHandler(captureAny));
       expect(result, isNull);
     });
 
     test('throws CredentialsManagerException on PlatformException', () async {
-      when(mocked.methodCallHandler(any))
-          .thenThrow(PlatformException(code: 'FAILED', message: 'No credentials stored'));
+      when(mocked.methodCallHandler(any)).thenThrow(
+          PlatformException(code: 'FAILED', message: 'No credentials stored'));
 
       Future<UserProfile?> actual() async => MethodChannelCredentialsManager()
-            .user(CredentialsManagerRequest<RequestOptions?>(
-                account: const Account('test-domain', 'test-clientId'),
-                userAgent: UserAgent(name: 'test-name', version: 'test-version')));
+          .user(CredentialsManagerRequest<RequestOptions?>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent:
+                  UserAgent(name: 'test-name', version: 'test-version')));
 
       await expectLater(
           actual,
@@ -847,10 +852,11 @@ void main() {
       when(mocked.methodCallHandler(any))
           .thenAnswer((final _) async => minimalProfile);
 
-      final result = await MethodChannelCredentialsManager()
-          .user(CredentialsManagerRequest<RequestOptions?>(
+      final result = await MethodChannelCredentialsManager().user(
+          CredentialsManagerRequest<RequestOptions?>(
               account: const Account('test-domain', 'test-clientId'),
-              userAgent: UserAgent(name: 'test-name', version: 'test-version')));
+              userAgent:
+                  UserAgent(name: 'test-name', version: 'test-version')));
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -941,13 +947,11 @@ void main() {
       expect(result.tokenType, MethodCallHandler.ssoCredentials['tokenType']);
       expect(result.expiresIn, MethodCallHandler.ssoCredentials['expiresIn']);
       expect(result.idToken, MethodCallHandler.ssoCredentials['idToken']);
-      expect(
-          result.refreshToken, MethodCallHandler.ssoCredentials['refreshToken']);
+      expect(result.refreshToken,
+          MethodCallHandler.ssoCredentials['refreshToken']);
     });
 
-    test(
-        'correctly returns SSOCredentials with null refreshToken',
-        () async {
+    test('correctly returns SSOCredentials with null refreshToken', () async {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
             'sessionTransferToken': 'ssoToken',
             'tokenType': 'session_transfer',
@@ -974,12 +978,13 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
       Future<SSOCredentials> actual() async {
-        final result = await MethodChannelCredentialsManager().getSSOCredentials(
-            CredentialsManagerRequest<GetSSOCredentialsOptions>(
-                account: const Account('', ''),
-                userAgent:
-                    UserAgent(name: 'test-name', version: 'test-version'),
-                options: GetSSOCredentialsOptions()));
+        final result = await MethodChannelCredentialsManager()
+            .getSSOCredentials(
+                CredentialsManagerRequest<GetSSOCredentialsOptions>(
+                    account: const Account('', ''),
+                    userAgent:
+                        UserAgent(name: 'test-name', version: 'test-version'),
+                    options: GetSSOCredentialsOptions()));
 
         return result;
       }
@@ -998,12 +1003,13 @@ void main() {
           .thenThrow(PlatformException(code: '123'));
 
       Future<SSOCredentials> actual() async {
-        final result = await MethodChannelCredentialsManager().getSSOCredentials(
-            CredentialsManagerRequest<GetSSOCredentialsOptions>(
-                account: const Account('', ''),
-                userAgent:
-                    UserAgent(name: 'test-name', version: 'test-version'),
-                options: GetSSOCredentialsOptions()));
+        final result = await MethodChannelCredentialsManager()
+            .getSSOCredentials(
+                CredentialsManagerRequest<GetSSOCredentialsOptions>(
+                    account: const Account('', ''),
+                    userAgent:
+                        UserAgent(name: 'test-name', version: 'test-version'),
+                    options: GetSSOCredentialsOptions()));
 
         return result;
       }

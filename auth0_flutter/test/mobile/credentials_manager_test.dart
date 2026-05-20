@@ -33,8 +33,7 @@ class TestPlatform extends Mock
     'tokenType': 'Bearer'
   });
 
-  static const SSOCredentials ssoResult =
-      SSOCredentials(
+  static const SSOCredentials ssoResult = SSOCredentials(
     sessionTransferToken: 'ssoToken',
     tokenType: 'session_transfer',
     expiresIn: 60,
@@ -230,9 +229,9 @@ void main() {
 
       final result = await DefaultCredentialsManager(account, userAgent).user();
 
-      final verificationResult =
-          verify(mockedPlatform.user(captureAny)).captured.single
-              as CredentialsManagerRequest;
+      final verificationResult = verify(mockedPlatform.user(captureAny))
+          .captured
+          .single as CredentialsManagerRequest;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
       expect(result, isNotNull);
@@ -278,8 +277,8 @@ void main() {
           .thenThrow(const CredentialsManagerException(
               'FAILED', 'No credentials stored', {}));
 
-      Future<UserProfile?> actual() async => DefaultCredentialsManager(
-          account, userAgent).user();
+      Future<UserProfile?> actual() async =>
+          DefaultCredentialsManager(account, userAgent).user();
 
       await expectLater(
           actual,
@@ -329,8 +328,8 @@ void main() {
       when(mockedPlatform.getSSOCredentials(any))
           .thenAnswer((final _) async => TestPlatform.ssoResult);
 
-      final result = await DefaultCredentialsManager(account, userAgent)
-          .ssoCredentials();
+      final result =
+          await DefaultCredentialsManager(account, userAgent).ssoCredentials();
 
       expect(result.sessionTransferToken,
           TestPlatform.ssoResult.sessionTransferToken);
