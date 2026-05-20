@@ -2,28 +2,35 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 
 import 'src/mobile/authentication_api.dart';
 import 'src/mobile/credentials_manager.dart';
+import 'src/mobile/my_account_api.dart';
 import 'src/mobile/web_authentication.dart';
 import 'src/version.dart';
 
 export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
     show
-        WebAuthenticationException,
+        AuthenticationMethod,
         ApiException,
+        ChallengeType,
+        Credentials,
+        CredentialsManagerException,
+        DatabaseUser,
+        EnrollmentChallenge,
+        Factor,
         IdTokenValidationConfig,
+        LocalAuthentication,
+        LocalAuthenticationLevel,
+        MyAccountException,
+        PasswordlessType,
+        PhoneType,
         SafariViewController,
         SafariViewControllerPresentationStyle,
-        Credentials,
         SSOCredentials,
         UserProfile,
-        DatabaseUser,
-        ChallengeType,
-        CredentialsManagerException,
-        PasswordlessType,
-        LocalAuthentication,
-        LocalAuthenticationLevel;
+        WebAuthenticationException;
 
 export 'src/mobile/authentication_api.dart';
 export 'src/mobile/credentials_manager.dart';
+export 'src/mobile/my_account_api.dart';
 export 'src/mobile/web_authentication.dart';
 
 /// Primary interface for interacting with Auth0 using web authentication,
@@ -103,6 +110,26 @@ class Auth0 {
           {final String? scheme, final bool useCredentialsManager = true}) =>
       WebAuthentication(_account, _userAgent, scheme,
           useCredentialsManager ? credentialsManager : null);
+
+  /// Creates an instance of [MyAccountApi] for managing the user's
+  /// authentication methods (MFA factors) via the
+  /// [My Account API](https://auth0.com/docs/manage-users/my-account-api).
+  ///
+  /// Requires an [accessToken] with the appropriate `me` scopes and
+  /// audience `https://{domain}/me/`.
+  ///
+  /// **Note:** Only supported on mobile platforms (Android/iOS). Web is not
+  /// supported.
+  ///
+  /// Usage example:
+  ///
+  /// ```dart
+  /// final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
+  /// final myAccount = auth0.myAccount(accessToken: 'ACCESS_TOKEN');
+  /// final methods = await myAccount.getAuthenticationMethods();
+  /// ```
+  MyAccountApi myAccount({required final String accessToken}) =>
+      MyAccountApi(_account, _userAgent, accessToken);
 
   /// Generates DPoP (Demonstrating Proof-of-Possession) headers for making
   /// authenticated API calls with DPoP-bound tokens.

@@ -474,6 +474,66 @@ void dispose() {
 - [clearCredentials](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/DefaultCredentialsManager/clearCredentials.html)
 - [ssoCredentials](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/DefaultCredentialsManager/ssoCredentials.html)
 
+#### My Account API
+
+The My Account API allows users to manage their own multi-factor authentication (MFA) methods. Available on **mobile (Android/iOS) only**.
+
+First, authenticate with the `https://{domain}/me/` audience:
+
+```dart
+final credentials = await auth0.webAuthentication().login(
+  audience: 'https://YOUR_DOMAIN/me/',
+  scopes: {
+    'openid',
+    'read:me:authentication_methods',
+    'create:me:authentication_methods',
+    'delete:me:authentication_methods',
+    'read:me:enrollments',
+    'read:me:factors',
+  },
+);
+```
+
+Then create the My Account client and use it:
+
+```dart
+final myAccount = auth0.myAccount(accessToken: credentials.accessToken);
+
+// List enrolled MFA methods
+final methods = await myAccount.getAuthenticationMethods();
+
+// List available factors
+final factors = await myAccount.getFactors();
+
+// Enroll a new phone factor
+final challenge = await myAccount.enrollPhone(
+  phoneNumber: '+1234567890',
+  type: PhoneType.sms,
+);
+
+// Verify enrollment with OTP
+await myAccount.verifyOtp(
+  id: challenge.id,
+  authSession: challenge.authSession,
+  otp: '123456',
+);
+
+// Delete a method
+await myAccount.deleteAuthenticationMethod(id: 'method_id');
+```
+
+Other enrollment methods: `enrollEmail`, `enrollTotp`, `enrollPush`, `enrollRecoveryCode`.
+
+Error handling:
+
+```dart
+try {
+  await myAccount.getAuthenticationMethods();
+} on MyAccountException catch (e) {
+  print('${e.code}: ${e.message} (${e.statusCode})');
+}
+```
+
 ### 🌐 Web
 
 - [loginWithRedirect](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/loginWithRedirect.html)
