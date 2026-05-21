@@ -4,11 +4,11 @@
 [![Codecov](https://codecov.io/gh/auth0/auth0-flutter/branch/main/graph/badge.svg)](https://codecov.io/gh/auth0/auth0-flutter)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/auth0/auth0-flutter)
 
-Auth0 SDK for Android, iOS, macOS, and web Flutter apps.
+Auth0 SDK for Android, iOS, macOS, Windows and Web Flutter apps.
 
 | Package                                                                       | Description                                       |
 | :---------------------------------------------------------------------------- | :------------------------------------------------ |
-| [auth0_flutter](./auth0_flutter#readme)                                       | SDK for Android, iOS, macOS, and web Flutter apps |
+| [auth0_flutter](./auth0_flutter#readme)                                       | SDK for Android, iOS, macOS, Windows and web Flutter apps |
 | [auth0_flutter_platform_interface](./auth0_flutter_platform_interface#readme) | Common interface for platform implementations     |
 
 ## Getting Started
