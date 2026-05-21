@@ -1,18 +1,19 @@
 # Auth0 Flutter SDK: Example
 
-Flutter app for Android, iOS, macOS, and the web that demonstrates how to use the Auth0 Flutter SDK.
+Flutter app for Android, iOS, macOS, Windows, and the web that demonstrates how to use the Auth0 Flutter SDK.
 
 ## Configuration
 
 ### 1. Configure Auth0 Application
 
-#### 📱 Mobile/macOS
+#### 📱 Mobile/macOS/Windows
 
 Go to the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/) and configure the following URLs under the **Application URIs** section of the **Settings** page, for both **Allowed Callback URLs** and **Allowed Logout URLs**:
 
 - Android: `SCHEME://YOUR_DOMAIN/android/YOUR_PACKAGE_NAME/callback`
 - iOS: `YOUR_BUNDLE_ID://YOUR_DOMAIN/ios/YOUR_BUNDLE_ID/callback`
 - macOS: `YOUR_BUNDLE_ID://YOUR_DOMAIN/macos/YOUR_BUNDLE_ID/callback`
+- Windows: `auth0flutter://callback` (or your custom scheme, e.g. `myapp://callback`)
 
 If you are using a [Custom Domain](https://auth0.com/docs/customize/custom-domains), replace `YOUR_AUTH0_DOMAIN` with the value of your Custom Domain instead of the value from the settings page.
 
@@ -54,7 +55,26 @@ Then, open the `strings.xml` file and replace `YOUR_AUTH0_DOMAIN` with your own 
 
 If you prefer to use a custom scheme, configure the `com_auth0_scheme` entry with the correct value.
 
-### 4. Run the app
+### 4. Configure the Windows project (Windows only)
+
+The Windows runner requires additional setup for the OAuth callback flow:
+
+1. **vcpkg**: Install [vcpkg](https://vcpkg.io/) and set the `VCPKG_ROOT` environment variable. The plugin's native dependencies are resolved automatically at build time.
+
+2. **CMakeLists.txt**: Add vcpkg toolchain integration to your app's `windows/CMakeLists.txt` **before** the `project()` call:
+
+   ```cmake
+   if(DEFINED ENV{VCPKG_ROOT} AND EXISTS "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+       set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+           CACHE STRING "Vcpkg toolchain file")
+   endif()
+   ```
+
+3. **Protocol handler**: The example app auto-registers the `auth0flutter://` scheme on first launch. See `windows/runner/main.cpp` for the reference implementation.
+
+4. **Auth0 Dashboard**: Add `auth0flutter://callback` to both **Allowed Callback URLs** and **Allowed Logout URLs**.
+
+### 5. Run the app
 
 Use the [Flutter CLI's](https://docs.flutter.dev/reference/flutter-cli) `run` command.
 
@@ -62,6 +82,12 @@ Use the [Flutter CLI's](https://docs.flutter.dev/reference/flutter-cli) `run` co
 
 ```sh
 flutter run
+```
+
+#### 🪟 Windows
+
+```sh
+flutter run -d windows
 ```
 
 #### 🌐 Web
