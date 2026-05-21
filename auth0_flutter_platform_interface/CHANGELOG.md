@@ -1,5 +1,11 @@
 # Change Log
 
+## [afpi-v2.1.0](https://github.com/auth0/auth0-flutter/tree/afpi-v2.1.0) (2026-05-21)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.0.2...afpi-v2.1.0)
+
+**Added**
+- chore: Sync beta-release/v.2.1.0 to main  for flutter windows GA [\#833](https://github.com/auth0/auth0-flutter/pull/833) ([NandanPrabhu](https://github.com/NandanPrabhu))
+
 ## [afpi-v2.0.2](https://github.com/auth0/auth0-flutter/tree/afpi-v2.0.2) (2026-05-07)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.0.1...afpi-v2.0.2)
 
