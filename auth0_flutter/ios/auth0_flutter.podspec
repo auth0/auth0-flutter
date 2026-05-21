@@ -6,7 +6,7 @@ Pod::Spec.new do |s|
   s.name         = 'auth0_flutter'
   s.version      = '2.1.0'
   s.summary      = 'Auth0 SDK for Flutter'
-  s.description  = 'Auth0 SDK for Flutter iOS, Android, macOS, Windows, and web.'
+  s.description  = 'Auth0 SDK for Flutter Android, iOS, macOS, Windows, and web apps.'
   s.homepage     = 'https://auth0.com'
   s.license      = { :file => '../LICENSE' }
   s.author       = { 'Auth0' => 'support@auth0.com' }
