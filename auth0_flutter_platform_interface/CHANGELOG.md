@@ -5,6 +5,7 @@
 
 **Added**
 - auth0_flutter from v2.1.0-beta.1 to v2.1.0 (GA)  [\#843](https://github.com/auth0/auth0-flutter/pull/843) ([NandanPrabhu](https://github.com/NandanPrabhu))
+- feat: Flutter Windows support (GA) [#834](https://github.com/auth0/auth0-flutter/pull/834)([NandanPrabhu](https://github.com/NandanPrabhu))
 
 ## [afpi-v2.0.2](https://github.com/auth0/auth0-flutter/tree/afpi-v2.0.2) (2026-05-07)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.0.1...afpi-v2.0.2)
