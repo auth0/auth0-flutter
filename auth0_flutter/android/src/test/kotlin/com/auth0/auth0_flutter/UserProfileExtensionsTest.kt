@@ -66,6 +66,50 @@ class UserProfileExtensionsTest {
     }
 
     @Test
+    fun `should return null for picture when it is a non-string value`() {
+        val user = UserProfile(
+            "",
+            null, null, null, null, null, null, null, null,
+            mapOf("sub" to "test-sub", "picture" to mapOf("url" to "http://test.com")),
+            null, null, null
+        )
+        assertThat(user.toMap()["picture"], equalTo(null))
+    }
+
+    @Test
+    fun `should return null for string claims when they are non-string values`() {
+        val user = UserProfile(
+            "",
+            null, null, null, null, null, null, null, null,
+            mapOf(
+                "sub" to "test-sub",
+                "middle_name" to mapOf("value" to "test"),
+                "preferred_username" to mapOf("value" to "test"),
+                "profile" to mapOf("value" to "test"),
+                "website" to mapOf("value" to "test"),
+                "gender" to mapOf("value" to "test"),
+                "birthdate" to mapOf("value" to "test"),
+                "zoneinfo" to mapOf("value" to "test"),
+                "locale" to mapOf("value" to "test"),
+                "phone_number" to mapOf("value" to "test"),
+                "updated_at" to mapOf("value" to "test"),
+            ),
+            null, null, null
+        )
+
+        assertThat(user.middleName, equalTo(null))
+        assertThat(user.preferredUsername, equalTo(null))
+        assertThat(user.profileURL, equalTo(null))
+        assertThat(user.websiteURL, equalTo(null))
+        assertThat(user.gender, equalTo(null))
+        assertThat(user.birthdate, equalTo(null))
+        assertThat(user.zoneinfo, equalTo(null))
+        assertThat(user.locale, equalTo(null))
+        assertThat(user.phoneNumber, equalTo(null))
+        assertThat(user.updatedAt, equalTo(null))
+    }
+
+    @Test
     fun `should configure the extension properties`() {
         val user = UserProfile(
             "",

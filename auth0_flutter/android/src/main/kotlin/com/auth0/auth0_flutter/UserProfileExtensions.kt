@@ -13,7 +13,7 @@ fun UserProfile.toMap(): Map<String, Any?> {
         "nickname" to this.nickname,
         "preferred_username" to this.preferredUsername,
         "profile" to this.profileURL,
-        "picture" to (getExtraInfo()["picture"] as? String),
+        "picture" to (runCatching { this.pictureURL }.getOrNull() ?: getExtraInfo()["picture"] as? String),
         "website" to this.websiteURL,
         "email" to this.email,
         "email_verified" to this.isEmailVerified,
@@ -66,7 +66,7 @@ val UserProfile.updatedAt: String?
     get() = getExtraInfo()["updated_at"] as? String
 
 val UserProfile.address: Map<String, String>?
-    get() = @Suppress("UNCHECKED_CAST") (getExtraInfo()["address"] as? Map<String, String>)
+    get() = getExtraInfo()["address"] as? Map<String, String>
 
 val UserProfile.customClaims: Map<String, Any>
     get() = getCustomClaims(getExtraInfo())
