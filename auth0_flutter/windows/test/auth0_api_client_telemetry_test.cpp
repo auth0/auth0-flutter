@@ -66,13 +66,13 @@ TEST(BuildAuth0ClientHeaderTest, ContainsNoStandardBase64Chars)
 
 TEST(BuildAuth0ClientHeaderTest, DecodestoValidJson)
 {
-    auto header = BuildAuth0ClientHeader("auth0-flutter", "2.1.0-beta.1");
+    auto header = BuildAuth0ClientHeader("auth0-flutter", "2.1.0");
     auto decoded = Base64UrlDecode(header);
 
     EXPECT_NE(decoded.find("\"name\""), std::string::npos);
     EXPECT_NE(decoded.find("\"auth0-flutter\""), std::string::npos);
     EXPECT_NE(decoded.find("\"version\""), std::string::npos);
-    EXPECT_NE(decoded.find("\"2.1.0-beta.1\""), std::string::npos);
+    EXPECT_NE(decoded.find("\"2.1.0\""), std::string::npos);
     EXPECT_NE(decoded.find("\"env\""), std::string::npos);
     EXPECT_NE(decoded.find("\"Windows\""), std::string::npos);
 }
