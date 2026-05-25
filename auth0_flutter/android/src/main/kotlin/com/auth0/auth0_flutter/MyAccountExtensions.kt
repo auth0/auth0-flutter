@@ -49,7 +49,7 @@ fun EnrollmentChallenge.toMyAccountChallengeMap(): Map<String, Any?> {
             is TotpEnrollmentChallenge -> {
                 put("barcode_uri", challenge.barcodeUri)
                 put("totp_secret", challenge.manualInputCode)
-                put("totp_uri", challenge.manualInputCode)
+                put("totp_uri", challenge.barcodeUri)
             }
             is RecoveryCodeEnrollmentChallenge -> {
                 put("recovery_code", challenge.recoveryCode)
