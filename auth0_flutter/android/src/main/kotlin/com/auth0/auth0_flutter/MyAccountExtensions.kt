@@ -33,10 +33,13 @@ fun AuthenticationMethod.toMyAccountMethodMap(): Map<String, Any?> {
             is PushNotificationAuthenticationMethod -> {
                 put("name", method.name)
             }
-            else -> {}
+            else -> {
+                put("name", null)
+            }
         }
         if (this@toMyAccountMethodMap is MfaAuthenticationMethod) {
             put("confirmed", confirmed)
+            put("usage", usage)
         }
     }
 }

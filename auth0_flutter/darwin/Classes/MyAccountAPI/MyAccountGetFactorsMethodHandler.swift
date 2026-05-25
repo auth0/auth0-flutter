@@ -16,7 +16,7 @@ struct MyAccountGetFactorsMethodHandler: MethodHandler {
             .start {
                 switch $0 {
                 case let .success(factors):
-                    callback(factors.map { ["name": $0.type, "enabled": true] })
+                    callback(factors.map { ["type": $0.type, "usage": $0.usage as Any] })
                 case let .failure(error):
                     callback(FlutterError(from: error))
                 }

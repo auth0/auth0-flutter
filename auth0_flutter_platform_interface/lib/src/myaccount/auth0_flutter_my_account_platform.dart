@@ -77,7 +77,7 @@ abstract class Auth0FlutterMyAccountPlatform extends PlatformInterface {
     throw UnimplementedError('enrollRecoveryCode() has not been implemented');
   }
 
-  Future<void> verifyOtp(
+  Future<AuthenticationMethod> verifyOtp(
       final ApiRequest<MyAccountVerifyOtpOptions> request) {
     throw UnimplementedError('verifyOtp() has not been implemented');
   }

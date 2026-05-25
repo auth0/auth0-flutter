@@ -45,6 +45,7 @@ class GetFactorsRequestHandlerTest {
 
         val mockFactor = mock<Factor>()
         whenever(mockFactor.type).thenReturn("sms")
+        whenever(mockFactor.usage).thenReturn(listOf("secondary"))
 
         whenever(mockClient.getFactors()).thenReturn(mockRequest)
         doAnswer {
@@ -59,8 +60,8 @@ class GetFactorsRequestHandlerTest {
 
         val result = captor.firstValue
         assertThat(result.size, equalTo(1))
-        assertThat(result[0]["name"], equalTo("sms"))
-        assertThat(result[0]["enabled"], equalTo(true))
+        assertThat(result[0]["type"], equalTo("sms"))
+        assertThat(result[0]["usage"], equalTo(listOf("secondary")))
     }
 
     @Test

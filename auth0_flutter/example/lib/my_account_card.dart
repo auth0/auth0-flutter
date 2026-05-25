@@ -130,7 +130,7 @@ class _MyAccountCardState extends State<MyAccountCard> {
       }
       final output = StringBuffer('Available Factors (${factors.length}):\n');
       for (final f in factors) {
-        output.writeln('  - ${f.name}: ${f.enabled ? "enabled" : "disabled"}');
+        output.writeln('  - ${f.type}: usage=${f.usage?.join(", ") ?? "none"}');
       }
       _log(output.toString());
     } on MyAccountException catch (e) {
@@ -286,12 +286,13 @@ class _MyAccountCardState extends State<MyAccountCard> {
           '  id: $_lastEnrollmentId,\n'
           '  authSession: $_lastAuthSession,\n'
           '  otp: $otp)...');
-      await _myAccount!.verifyOtp(
+      final method = await _myAccount!.verifyOtp(
         id: _lastEnrollmentId!,
         authSession: _lastAuthSession!,
         otp: otp,
       );
-      _log('OTP Verified Successfully! Enrollment complete.');
+      _log('OTP Verified Successfully! Enrollment complete.\n'
+          '  Method: ${method.type} (id: ${method.id})');
       setState(() {
         _lastEnrollmentId = null;
         _lastAuthSession = null;

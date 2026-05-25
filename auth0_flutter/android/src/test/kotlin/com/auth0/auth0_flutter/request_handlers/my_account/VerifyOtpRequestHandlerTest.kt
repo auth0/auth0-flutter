@@ -8,6 +8,8 @@ import com.auth0.android.request.Request
 import com.auth0.android.result.AuthenticationMethod
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodChannel.Result
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.*
@@ -38,7 +40,7 @@ class VerifyOtpRequestHandlerTest {
     }
 
     @Test
-    fun `should call result success with null on success`() {
+    fun `should call result success with mapped method on success`() {
         val handler = VerifyOtpRequestHandler()
         val mockResult = mock<Result>()
         val mockAccount = mock<Auth0>()
@@ -52,6 +54,9 @@ class VerifyOtpRequestHandlerTest {
         val request = MethodCallRequest(account = mockAccount, options)
 
         val mockMethod = mock<AuthenticationMethod>()
+        whenever(mockMethod.id).thenReturn("phone|test123")
+        whenever(mockMethod.type).thenReturn("phone")
+        whenever(mockMethod.createdAt).thenReturn("2026-01-01")
 
         whenever(mockClient.verifyOtp(any(), any(), any())).thenReturn(mockRequest)
         doAnswer {
@@ -61,7 +66,12 @@ class VerifyOtpRequestHandlerTest {
 
         handler.handle(mockClient, request, mockResult)
 
-        verify(mockResult).success(isNull())
+        val captor = argumentCaptor<Map<String, Any?>>()
+        verify(mockResult).success(captor.capture())
+
+        val result = captor.firstValue
+        assertThat(result["id"], equalTo("phone|test123"))
+        assertThat(result["type"], equalTo("phone"))
     }
 
     @Test

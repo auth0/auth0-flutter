@@ -125,10 +125,12 @@ class MethodChannelAuth0FlutterMyAccount
   }
 
   @override
-  Future<void> verifyOtp(
+  Future<AuthenticationMethod> verifyOtp(
       final ApiRequest<MyAccountVerifyOtpOptions> request) async {
-    await invokeMapRequest(
-        method: myAccountVerifyOtpMethod, request: request, throwOnNull: false);
+    final Map<String, dynamic> result = await invokeMapRequest(
+        method: myAccountVerifyOtpMethod, request: request);
+
+    return AuthenticationMethod.fromMap(result);
   }
 
   Future<Map<String, dynamic>>

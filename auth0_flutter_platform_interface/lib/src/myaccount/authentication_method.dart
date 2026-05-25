@@ -9,6 +9,8 @@ class AuthenticationMethod {
   final String? preferredAuthenticationMethod;
   final DateTime? createdAt;
   final DateTime? lastAuthAt;
+  final bool? confirmed;
+  final List<String>? usage;
 
   const AuthenticationMethod({
     required this.id,
@@ -21,6 +23,8 @@ class AuthenticationMethod {
     this.preferredAuthenticationMethod,
     this.createdAt,
     this.lastAuthAt,
+    this.confirmed,
+    this.usage,
   });
 
   factory AuthenticationMethod.fromMap(final Map<String, dynamic> result) =>
@@ -40,6 +44,10 @@ class AuthenticationMethod {
         lastAuthAt: result['last_auth_at'] != null
             ? DateTime.parse(result['last_auth_at'] as String)
             : null,
+        confirmed: result['confirmed'] as bool?,
+        usage: (result['usage'] as List<dynamic>?)
+            ?.map((final e) => e as String)
+            .toList(),
       );
 
   Map<String, dynamic> toMap() => {
@@ -53,5 +61,7 @@ class AuthenticationMethod {
         'preferred_authentication_method': preferredAuthenticationMethod,
         'created_at': createdAt?.toUtc().toIso8601String(),
         'last_auth_at': lastAuthAt?.toUtc().toIso8601String(),
+        'confirmed': confirmed,
+        'usage': usage,
       };
 }

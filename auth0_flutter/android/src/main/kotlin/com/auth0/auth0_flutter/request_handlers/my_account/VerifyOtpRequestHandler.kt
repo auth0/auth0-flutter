@@ -6,6 +6,7 @@ import com.auth0.android.myaccount.MyAccountException
 import com.auth0.android.result.AuthenticationMethod
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.toMyAccountMap
+import com.auth0.auth0_flutter.toMyAccountMethodMap
 import com.auth0.auth0_flutter.utils.assertHasProperties
 import io.flutter.plugin.common.MethodChannel
 
@@ -44,7 +45,7 @@ class VerifyOtpRequestHandler : MyAccountRequestHandler {
                 override fun onSuccess(
                     res: AuthenticationMethod
                 ) {
-                    result.success(null)
+                    result.success(res.toMyAccountMethodMap())
                 }
             })
     }

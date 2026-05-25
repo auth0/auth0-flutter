@@ -25,8 +25,8 @@ struct MyAccountVerifyOtpMethodHandler: MethodHandler {
             .confirmPhoneEnrollment(id: id, authSession: authSession, otpCode: otp)
             .start {
                 switch $0 {
-                case .success:
-                    callback(nil)
+                case let .success(method):
+                    callback(method.asDictionary())
                 case let .failure(error):
                     callback(FlutterError(from: error))
                 }

@@ -6,6 +6,8 @@ fun MyAccountException.toMyAccountMap(): Map<String, Any> {
     val exception = this
     return buildMap {
         put("_statusCode", exception.statusCode)
+        put("_title", exception.getCode())
+        put("_detail", exception.getDescription())
         put("_errorFlags", mapOf(
             "isNetworkError" to exception.isNetworkError,
         ))

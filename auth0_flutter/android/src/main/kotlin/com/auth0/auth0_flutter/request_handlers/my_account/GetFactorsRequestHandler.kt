@@ -33,8 +33,8 @@ class GetFactorsRequestHandler : MyAccountRequestHandler {
                 override fun onSuccess(res: List<Factor>) {
                     result.success(res.map {
                         mapOf(
-                            "name" to it.type,
-                            "enabled" to true
+                            "type" to it.type,
+                            "usage" to it.usage
                         )
                     })
                 }

@@ -51,10 +51,14 @@ class MyAccountVerifyOtpMethodHandlerTests: XCTestCase {
         wait(for: [expectation])
     }
 
-    func testProducesNilOnSuccess() {
-        let expectation = self.expectation(description: "Produced nil")
+    func testProducesDictionaryOnSuccess() {
+        let expectation = self.expectation(description: "Produced dictionary")
         sut.handle(with: ["id": "test-id", "authSession": "session", "otp": "123456"]) { result in
-            XCTAssertNil(result)
+            guard let dict = result as? [String: Any?] else {
+                return XCTFail("Did not produce dictionary")
+            }
+            XCTAssertEqual(dict["id"] as? String, "test-id")
+            XCTAssertEqual(dict["confirmed"] as? Bool, true)
             expectation.fulfill()
         }
         wait(for: [expectation])

@@ -10,6 +10,8 @@ extension FlutterError {
     convenience init(from error: MyAccountError) {
         let details: [String: Any] = [
             "_statusCode": error.statusCode,
+            "_title": error.title,
+            "_detail": error.detail,
             "_errorFlags": [
                 "isNetworkError": false
             ]
@@ -32,7 +34,9 @@ extension AuthenticationMethod {
             "totp_uri": nil,
             "preferred_authentication_method": preferredAuthenticationMethod,
             "created_at": createdAt,
-            "last_auth_at": nil
+            "last_auth_at": nil,
+            "confirmed": confirmed,
+            "usage": usage
         ]
     }
 }

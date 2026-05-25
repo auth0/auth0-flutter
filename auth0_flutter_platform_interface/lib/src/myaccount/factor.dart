@@ -1,19 +1,21 @@
 class Factor {
-  final String name;
-  final bool enabled;
+  final String type;
+  final List<String>? usage;
 
   const Factor({
-    required this.name,
-    required this.enabled,
+    required this.type,
+    this.usage,
   });
 
   factory Factor.fromMap(final Map<String, dynamic> result) => Factor(
-        name: result['name'] as String,
-        enabled: result['enabled'] as bool,
+        type: result['type'] as String,
+        usage: (result['usage'] as List<dynamic>?)
+            ?.map((final e) => e as String)
+            .toList(),
       );
 
   Map<String, dynamic> toMap() => {
-        'name': name,
-        'enabled': enabled,
+        'type': type,
+        'usage': usage,
       };
 }

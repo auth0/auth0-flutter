@@ -196,6 +196,9 @@ class MyAccountApi {
   /// Use this after calling an enrollment method (e.g., [enrollPhone],
   /// [enrollEmail], [enrollTotp]) to confirm the enrollment.
   ///
+  /// Returns the confirmed [AuthenticationMethod] after successful
+  /// verification.
+  ///
   /// [id] and [authSession] are obtained from the [EnrollmentChallenge]
   /// returned by the enrollment method.
   ///
@@ -205,13 +208,13 @@ class MyAccountApi {
   /// ## Usage example
   ///
   /// ```dart
-  /// await myAccount.verifyOtp(
+  /// final method = await myAccount.verifyOtp(
   ///   id: challenge.id,
   ///   authSession: challenge.authSession,
   ///   otp: '123456',
   /// );
   /// ```
-  Future<void> verifyOtp({
+  Future<AuthenticationMethod> verifyOtp({
     required final String id,
     required final String authSession,
     required final String otp,
