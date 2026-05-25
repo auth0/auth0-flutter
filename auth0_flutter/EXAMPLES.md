@@ -12,6 +12,14 @@
     - [2. Capture the callback URL](#2-capture-the-callback-url)
   - [Errors](#errors)
   - [Android: Custom schemes](#android-custom-schemes)
+- [🪟 Windows Web Authentication](#-windows-web-authentication)
+  - [Prerequisites](#prerequisites)
+    - [1. Install vcpkg and native dependencies](#1-install-vcpkg-and-native-dependencies)
+    - [2. Configure your app's CMakeLists.txt](#2-configure-your-apps-cmakeliststxt)
+    - [3. Register the custom URL scheme (protocol handler)](#3-register-the-custom-url-scheme-protocol-handler)
+    - [4. Update the runner (main.cpp)](#4-update-the-runner-maincpp)
+  - [Login](#login)
+  - [Logout](#logout)
 - [📱 Credentials Manager](#-credentials-manager)
   - [Check for stored credentials](#check-for-stored-credentials)
   - [Retrieve stored credentials](#retrieve-stored-credentials)
@@ -50,6 +58,14 @@
     - [2. Capture the callback URL](#2-capture-the-callback-url)
   - [Errors](#errors)
   - [Android: Custom schemes](#android-custom-schemes)
+- [🪟 Windows Web Authentication](#-windows-web-authentication)
+  - [Prerequisites](#prerequisites)
+    - [1. Install vcpkg and native dependencies](#1-install-vcpkg-and-native-dependencies)
+    - [2. Configure your app's CMakeLists.txt](#2-configure-your-apps-cmakeliststxt)
+    - [3. Register the custom URL scheme (protocol handler)](#3-register-the-custom-url-scheme-protocol-handler)
+    - [4. Update the runner (main.cpp)](#4-update-the-runner-maincpp)
+  - [Login](#login)
+  - [Logout](#logout)
 
 ---
 
@@ -68,6 +84,27 @@ If you're using your own credentials storage, make sure to delete the credential
 // Use a Universal Link logout URL on iOS 17.4+ / macOS 14.4+
 // useHTTPS is ignored on Android
 await auth0.webAuthentication().logout(useHTTPS: true);
+```
+
+</details>
+
+<details>
+  <summary>Windows</summary>
+
+`appCustomURL` is required for logout. It is the custom-scheme URL your Windows app listens on. `returnTo` is optional — if omitted, `appCustomURL` is used in the Auth0 logout URL as well.
+
+```dart
+// Option A — direct custom scheme (appCustomURL is used as returnTo too)
+await auth0.windowsWebAuthentication().logout(
+  appCustomURL: 'myapp://callback',
+);
+
+// Option B — intermediary HTTPS server
+// Auth0 redirects to the HTTPS URL; the server redirects on to your custom scheme
+await auth0.windowsWebAuthentication().logout(
+  appCustomURL: 'myapp://callback',
+  returnTo: 'https://your-app.example.com/logout',
+);
 ```
 
 </details>
@@ -393,6 +430,198 @@ await webAuth.logout();
 ```
 
 > 💡 Note that custom schemes [can only have](https://developer.android.com/guide/topics/manifest/data-element) lowercase letters.
+
+[Go up ⤴](#examples)
+
+## 🪟 Windows Web Authentication
+
+Windows uses `windowsWebAuthentication()` instead of `webAuthentication()`.
+
+### `appCustomURL` — why it is required
+
+On Windows, the browser cannot directly activate a desktop app the way iOS/Android handle universal links. Instead, the app registers a **custom URL scheme** (e.g. `myapp://callback`) as a protocol handler in the Windows registry. When the browser navigates to that URL, Windows launches (or brings to the front) your Flutter app and passes the URL as a command-line argument — this is the `appCustomURL`.
+
+`appCustomURL` must always be passed. It tells the SDK which URL scheme your app is listening on so it can intercept the browser redirect.
+
+### `redirectUrl` (login) and `returnTo` (logout) — when to pass them
+
+| Scenario | What to pass | What happens |
+|----------|-------------|--------------|
+| **Simple setup** (recommended) | `appCustomURL` only | Auth0 redirects straight to the custom scheme; `appCustomURL` is used as `redirect_uri` / `returnTo` in the Auth0 URL. Register your scheme (e.g. `myapp://callback`) in your dashboard. |
+| **Intermediary HTTPS server** | `appCustomURL` + `redirectUrl` / `returnTo` | Auth0 redirects to your HTTPS server; the server then redirects onward to `appCustomURL`. Register the HTTPS URL in your dashboard. Useful when you want no custom-scheme URL visible in the browser address bar. |
+
+See the [Windows configuration section](README.md#windows-configure-protocol-handler) in the README for the full setup guide, including the required runner changes.
+
+### Prerequisites
+
+Before using `windowsWebAuthentication()`, your Windows Flutter app needs a few one-time setup steps.
+
+#### 1. Install vcpkg and native dependencies
+
+The auth0_flutter Windows plugin depends on native C++ libraries managed by [vcpkg](https://vcpkg.io/). Install vcpkg and set the `VCPKG_ROOT` environment variable:
+
+```powershell
+# Clone vcpkg (if you haven't already)
+git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
+cd C:\vcpkg
+.\bootstrap-vcpkg.bat
+
+# Set the environment variable (persist it in System Properties > Environment Variables)
+setx VCPKG_ROOT "C:\vcpkg"
+```
+
+The plugin's `vcpkg.json` manifest automatically pulls the required packages (`cpprestsdk`, `openssl`, `boost-system`, `boost-date-time`, `boost-regex`) at build time — no manual `vcpkg install` is needed.
+
+#### 2. Configure your app's CMakeLists.txt
+
+Your app's top-level `windows/CMakeLists.txt` must enable vcpkg toolchain integration so that the plugin's native dependencies can be resolved. Add the following **before** the first `project()` call:
+
+```cmake
+# windows/CMakeLists.txt
+
+cmake_minimum_required(VERSION 3.14)
+
+# --- vcpkg integration (required for auth0_flutter) ---
+if(DEFINED ENV{VCPKG_ROOT} AND EXISTS "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        CACHE STRING "Vcpkg toolchain file")
+endif()
+
+project(your_app LANGUAGES CXX)
+
+# ... rest of your CMakeLists.txt ...
+```
+
+> ⚠️ The `CMAKE_TOOLCHAIN_FILE` line **must** appear before `project()`. If it appears after, CMake will have already configured the compiler and vcpkg packages will not be found, resulting in build errors like `Could not find a package configuration file provided by "cpprestsdk"`.
+
+#### 3. Register the custom URL scheme (protocol handler)
+
+For Windows to route your custom-scheme callback URLs (e.g. `myapp://callback`) back to your app, you must register the scheme as a protocol handler in the Windows Registry. Choose a scheme name that is unique to your application. This is typically done once when the app is installed.
+
+> 💡 The scheme can be anything you choose — `myapp`, `com.example.myapp`, etc. Use the same value as `appCustomURL` in your Dart code and register it in the Auth0 dashboard's **Allowed Callback URLs** / **Allowed Logout URLs**.
+
+**Option A — Manual registration (development)**
+
+Create a `.reg` file with the following contents and double-click it to import. Replace `myapp` with your chosen scheme and update the executable path:
+
+```reg
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Classes\myapp]
+@="URL:myapp Protocol"
+"URL Protocol"=""
+
+[HKEY_CURRENT_USER\Software\Classes\myapp\shell]
+
+[HKEY_CURRENT_USER\Software\Classes\myapp\shell\open]
+
+[HKEY_CURRENT_USER\Software\Classes\myapp\shell\open\command]
+@="\"C:\\Path\\To\\Your\\App\\your_app.exe\" \"%1\""
+```
+
+Replace `C:\Path\To\Your\App\your_app.exe` with the actual path to your built Flutter executable (e.g. `build\windows\x64\runner\Release\your_app.exe`).
+
+> 💡 During development you can point this at your debug build path. Remember to update it when you move to a release/installed location.
+
+**Option B — Programmatic registration (installer / first-run)**
+
+If you use an installer (MSIX, Inno Setup, WiX, etc.), add the registry entries as part of the install step. For MSIX, declare the protocol in your `Package.appxmanifest`:
+
+```xml
+<Extensions>
+  <uap:Extension Category="windows.protocol">
+    <uap:Protocol Name="myapp">
+      <uap:DisplayName>My App Callback</uap:DisplayName>
+    </uap:Protocol>
+  </uap:Extension>
+</Extensions>
+```
+
+For a first-run self-registration approach, you can write the registry keys programmatically from your app's `main.cpp`. Replace `myapp` with your chosen scheme:
+
+```cpp
+// Call once on first launch to register the protocol handler.
+// schemeName: your custom scheme (e.g. L"myapp")
+// exePath:    full path to the running executable
+void RegisterProtocolHandler(const std::wstring& schemeName,
+                             const std::wstring& exePath) {
+    HKEY hKey;
+    std::wstring keyPath = L"Software\\Classes\\" + schemeName;
+
+    RegCreateKeyExW(HKEY_CURRENT_USER, keyPath.c_str(), 0, NULL,
+                    0, KEY_WRITE, NULL, &hKey, NULL);
+    std::wstring desc = L"URL:" + schemeName + L" Protocol";
+    RegSetValueExW(hKey, NULL, 0, REG_SZ,
+                   (const BYTE*)desc.c_str(), (DWORD)((desc.size() + 1) * sizeof(wchar_t)));
+    RegSetValueExW(hKey, L"URL Protocol", 0, REG_SZ, (const BYTE*)L"", sizeof(wchar_t));
+    RegCloseKey(hKey);
+
+    std::wstring cmdKeyPath = keyPath + L"\\shell\\open\\command";
+    RegCreateKeyExW(HKEY_CURRENT_USER, cmdKeyPath.c_str(), 0, NULL,
+                    0, KEY_WRITE, NULL, &hKey, NULL);
+    std::wstring cmd = L"\"" + exePath + L"\" \"%1\"";
+    RegSetValueExW(hKey, NULL, 0, REG_SZ,
+                   (const BYTE*)cmd.c_str(), (DWORD)((cmd.size() + 1) * sizeof(wchar_t)));
+    RegCloseKey(hKey);
+}
+```
+
+> ⚠️ Without the protocol handler registration, clicking the Auth0 login link in the browser will **not** launch your app and authentication will time out with `USER_CANCELLED`.
+
+#### 4. Update the runner (main.cpp)
+
+Your app's `windows/runner/main.cpp` must be updated to handle single-instance enforcement, capture the callback URI from `argv[1]`, and forward it to the plugin via the `PLUGIN_STARTUP_URL` environment variable. Copy the reference implementation from the [example runner](example/windows/runner/main.cpp) and adapt it to your app. Update the callback prefix constant to match your chosen scheme (e.g. `L"myapp://callback"`). The key pieces are:
+
+1. **Single-instance mutex** — prevents a second app instance when the OS launches your app for the protocol callback; instead, the URI is forwarded to the running instance.
+2. **Named pipe server** — the running instance listens on a named pipe for URIs forwarded by the second launch.
+3. **Startup URI capture** — on first launch, `argv[1]` (the callback URI) is written to `PLUGIN_STARTUP_URL` before Flutter initializes.
+
+> 💡 See the [Windows configuration section](README.md#windows-configure-protocol-handler) in the README for a detailed walkthrough of each piece.
+
+### Login
+
+```dart
+// Simple setup — appCustomURL only (recommended for most apps)
+// Register your custom scheme (e.g. 'myapp://callback') in Allowed Callback URLs
+// in the Auth0 dashboard.
+final credentials = await auth0.windowsWebAuthentication().login(
+  appCustomURL: 'myapp://callback',
+);
+
+// Intermediary HTTPS server
+// Register 'https://your-app.example.com/callback' in Allowed Callback URLs.
+// Auth0 redirects to the HTTPS URL; your server redirects onward to
+// myapp://callback?code=...&state=... to activate the app.
+final credentials = await auth0.windowsWebAuthentication().login(
+  appCustomURL: 'myapp://callback',
+  redirectUrl: 'https://your-app.example.com/callback',
+);
+
+// Access token -> credentials.accessToken
+// User profile -> credentials.user
+```
+
+> ⚠️ Credentials are **not** automatically stored on Windows. Store and manage the returned `credentials` object yourself (e.g., using `shared_preferences` or secure storage).
+
+### Logout
+
+```dart
+// Simple setup — appCustomURL only (recommended for most apps)
+// Register your custom scheme (e.g. 'myapp://callback') in Allowed Logout URLs
+// in the Auth0 dashboard.
+await auth0.windowsWebAuthentication().logout(
+  appCustomURL: 'myapp://callback',
+);
+
+// Intermediary HTTPS server
+// Register 'https://your-app.example.com/logout' in Allowed Logout URLs.
+// Auth0 redirects to the HTTPS URL; your server redirects onward to
+// myapp://callback to re-activate the app.
+await auth0.windowsWebAuthentication().logout(
+  appCustomURL: 'myapp://callback',
+  returnTo: 'https://your-app.example.com/logout',
+);
+```
 
 [Go up ⤴](#examples)
 
@@ -873,6 +1102,7 @@ final didStore =
 - Integrate an external identity provider 
 - Migrate to Auth0
 
+> **Note:** This feature is currently available in [Early Access](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#early-access). Please reach out to Auth0 support to enable it for your tenant.
 
 <details>
   <summary>Mobile (Android/iOS)</summary>

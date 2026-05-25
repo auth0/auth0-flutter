@@ -147,8 +147,8 @@ class DefaultCredentialsManager extends CredentialsManager {
     final Map<String, String> parameters = const {},
     final Map<String, String> headers = const {},
   }) =>
-      CredentialsManagerPlatform.instance.getSSOCredentials(
-          _createApiRequest(GetSSOCredentialsOptions(
+      CredentialsManagerPlatform.instance
+          .getSSOCredentials(_createApiRequest(GetSSOCredentialsOptions(
         parameters: parameters,
         headers: headers,
       )));

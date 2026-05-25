@@ -1,0 +1,120 @@
+/**
+ * @file auth0_flutter_plugin.cpp
+ * @brief Main plugin implementation for Auth0 Flutter Windows
+ *
+ * This file contains the main plugin class for Auth0 Flutter Windows.
+ * The plugin follows a handler pattern delegating method calls to specialized handlers.
+ *
+ * Architecture:
+ * - Auth0FlutterPlugin: Main plugin class, registers with Flutter engine
+ * - Auth0FlutterWebAuthMethodCallHandler: Routes method calls to appropriate handlers
+ * - LoginWebAuthRequestHandler: Handles webAuth#login
+ * - LogoutWebAuthRequestHandler: Handles webAuth#logout
+ *
+ * Helper utilities are now in separate files:
+ * - oauth_helpers.h: PKCE functions, OAuth callback handling
+ * - url_utils.h: URL encoding/decoding
+ * - windows_utils.h: Windows-specific utilities
+ */
+
+#include "auth0_flutter_plugin.h"
+
+#include <flutter/method_channel.h>
+#include <flutter/plugin_registrar_windows.h>
+#include <flutter/standard_method_codec.h>
+
+#include <memory>
+
+// Utility headers
+#include "oauth_helpers.h"
+#include "url_utils.h"
+#include "windows_utils.h"
+
+// WebAuth handlers
+#include "auth0_flutter_web_auth_method_call_handler.h"
+#include "request_handlers/web_auth/login_web_auth_request_handler.h"
+#include "request_handlers/web_auth/logout_web_auth_request_handler.h"
+
+namespace auth0_flutter
+{
+
+    /**
+     * @brief Registers the plugin with the Flutter engine
+     *
+     * Sets up the WebAuth method channel and initializes the plugin with
+     * all required handlers.
+     *
+     * Channel: "auth0.com/auth0_flutter/web_auth"
+     * Methods supported:
+     * - webAuth#login: Handled by LoginWebAuthRequestHandler
+     * - webAuth#logout: Handled by LogoutWebAuthRequestHandler
+     *
+     * @param registrar The Flutter plugin registrar
+     */
+    void Auth0FlutterPlugin::RegisterWithRegistrar(
+        flutter::PluginRegistrarWindows *registrar)
+    {
+        auto channel =
+            std::make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
+                registrar->messenger(), "auth0.com/auth0_flutter/web_auth",
+                &flutter::StandardMethodCodec::GetInstance());
+
+        // Pass a direct-call task runner. All operations posted through it
+        // (ShellExecuteW, window focus, MethodResult callbacks) are safe to
+        // invoke from a pplx background thread, so no UI-thread dispatch is
+        // required.  This avoids depending on flutter::TaskRunner / GetTaskRunner()
+        // which was only introduced in Flutter 3.7 and may not exist on all
+        // build environments.
+        auto plugin = std::make_unique<Auth0FlutterPlugin>(
+            [](std::function<void()> task) { task(); });
+
+        channel->SetMethodCallHandler(
+            [plugin_pointer = plugin.get()](const auto &call, auto result)
+            {
+                plugin_pointer->HandleMethodCall(call, std::move(result));
+            });
+
+        registrar->AddPlugin(std::move(plugin));
+    }
+
+    /**
+     * @brief Constructor - initializes the plugin with WebAuth handlers
+     *
+     * Creates and registers all WebAuth request handlers following the
+     * strategy pattern for clean separation of concerns.
+     */
+    Auth0FlutterPlugin::Auth0FlutterPlugin(std::function<void(std::function<void()>)> ui_task_runner)
+    {
+        // Initialize WebAuth method call handler with all request handlers
+        std::vector<std::unique_ptr<WebAuthRequestHandler>> handlers;
+        handlers.push_back(std::make_unique<LoginWebAuthRequestHandler>(ui_task_runner));
+        handlers.push_back(std::make_unique<LogoutWebAuthRequestHandler>(ui_task_runner));
+
+        webAuthCallHandler_ = std::make_unique<Auth0FlutterWebAuthMethodCallHandler>(
+            std::move(handlers));
+    }
+
+    Auth0FlutterPlugin::~Auth0FlutterPlugin() {}
+
+    /**
+     * @brief Handles method calls from Flutter
+     *
+     * Delegates all method calls to the appropriate handler. This implementation
+     * uses a handler-based architecture for clean separation of concerns.
+     *
+     * All WebAuth methods (login, logout) are handled by webAuthCallHandler_,
+     * which routes to specialized handlers based on the method name.
+     *
+     * @param method_call The method call from Flutter
+     * @param result Callback to return results to Flutter
+     */
+    void Auth0FlutterPlugin::HandleMethodCall(
+        const flutter::MethodCall<flutter::EncodableValue> &method_call,
+        std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+    {
+        // Delegate all method calls to the WebAuth handler
+        // The handler will route to appropriate specialized handlers based on method name
+        webAuthCallHandler_->HandleMethodCall(method_call, std::move(result));
+    }
+
+} // namespace auth0_flutter

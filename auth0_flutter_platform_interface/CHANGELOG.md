@@ -1,5 +1,12 @@
 # Change Log
 
+## [afpi-v2.1.0](https://github.com/auth0/auth0-flutter/tree/afpi-v2.1.0) (2026-05-21)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.0.2...afpi-v2.1.0)
+
+**Added**
+- auth0_flutter from v2.1.0-beta.1 to v2.1.0 (GA)  [\#843](https://github.com/auth0/auth0-flutter/pull/843) ([NandanPrabhu](https://github.com/NandanPrabhu))
+- feat: Flutter Windows support (GA) [#834](https://github.com/auth0/auth0-flutter/pull/834)([NandanPrabhu](https://github.com/NandanPrabhu))
+
 ## [afpi-v2.0.2](https://github.com/auth0/auth0-flutter/tree/afpi-v2.0.2) (2026-05-07)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.0.1...afpi-v2.0.2)
 
@@ -14,6 +21,12 @@
 
 **Fixed**
 - Set explicit type for .other in switch in FlutterError [\#808](https://github.com/auth0/auth0-flutter/pull/808) ([crazycatk](https://github.com/crazycatk))
+
+## [afpi-v2.1.0-beta.1](https://github.com/auth0/auth0-flutter/tree/afpi-v2.1.0-beta.1) (2026-03-30)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.0.0...afpi-v2.1.0-beta.1)
+
+**Added**
+- feat: Flutter Windows  Desktop support [\#656](https://github.com/auth0/auth0-flutter/pull/656) ([NandanPrabhu](https://github.com/NandanPrabhu))
 
 ## [afpi-v2.0.0](https://github.com/auth0/auth0-flutter/tree/afpi-v2.0.0) (2026-03-18)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.0.0-beta.1...afpi-v2.0.0)
