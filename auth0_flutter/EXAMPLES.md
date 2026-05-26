@@ -10,6 +10,7 @@
   - [Using `SFSafariViewController` (iOS only)](#using-sfsafariviewcontroller-ios-only)
     - [1. Configure a custom URL scheme](#1-configure-a-custom-url-scheme)
     - [2. Capture the callback URL](#2-capture-the-callback-url)
+  - [Using Partial Custom Tabs (Android only)](#using-partial-custom-tabs-android-only)
   - [Errors](#errors)
   - [Android: Custom schemes](#android-custom-schemes)
 - [🪟 Windows Web Authentication](#-windows-web-authentication)
@@ -56,6 +57,7 @@
   - [Using `SFSafariViewController` (iOS only)](#using-sfsafariviewcontroller-ios-only)
     - [1. Configure a custom URL scheme](#1-configure-a-custom-url-scheme)
     - [2. Capture the callback URL](#2-capture-the-callback-url)
+  - [Using Partial Custom Tabs (Android only)](#using-partial-custom-tabs-android-only)
   - [Errors](#errors)
   - [Android: Custom schemes](#android-custom-schemes)
 - [🪟 Windows Web Authentication](#-windows-web-authentication)
@@ -369,6 +371,43 @@ func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>)
 ```
 
 </details>
+
+### Using Partial Custom Tabs (Android only)
+
+On Android, auth0_flutter supports [Partial Custom Tabs](https://developer.chrome.com/docs/android/custom-tabs/guide-partial-custom-tabs), which display the authentication page as a bottom sheet or side sheet instead of a full-screen browser tab. This requires Chrome 107+ (bottom sheet) or Chrome 120+ (side sheet). On older browsers, the options are ignored and the tab opens full-screen.
+
+```dart
+await auth0.webAuthentication().login(
+    customTabsOptions: const CustomTabsOptions(
+        initialHeight: 700,
+        toolbarCornerRadius: 16,
+        resizable: false,
+        backgroundInteractionEnabled: true,
+        allowedBrowsers: ['com.android.chrome'],
+    ));
+```
+
+The available options are:
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `initialHeight` | `int?` | Bottom sheet height in dp. Chrome enforces a minimum of 50% of screen height. |
+| `resizable` | `bool?` | Whether the user can drag to resize the bottom sheet. Defaults to `true`. |
+| `toolbarCornerRadius` | `int?` | Top corner radius in dp (0–16). Only applies in bottom sheet mode. |
+| `initialWidth` | `int?` | Side sheet width in dp. Only applies on screens wider than `sideSheetBreakpoint`. |
+| `sideSheetBreakpoint` | `int?` | Screen width threshold (dp) to switch between bottom sheet and side sheet. Defaults to the browser's built-in value (typically 840dp). |
+| `backgroundInteractionEnabled` | `bool?` | Whether the user can interact with the app behind the partial tab. Defaults to `false`. |
+| `allowedBrowsers` | `List<String>` | Allowlist of browser packages for Custom Tabs. |
+
+You can also use `customTabsOptions` during logout:
+
+```dart
+await auth0.webAuthentication().logout(
+    customTabsOptions: const CustomTabsOptions(
+        initialHeight: 500,
+        toolbarCornerRadius: 12,
+    ));
+```
 
 ### Errors
 

@@ -33,15 +33,56 @@ class LogoutWebAuthRequestHandler(private val builderResolver: (MethodCallReques
             builder.withFederated()
         }
 
-        val allowedBrowsers =
+        val customTabsOptionsMap = args["customTabsOptions"] as? Map<*, *>
+        val allowedBrowsers = if (customTabsOptionsMap != null) {
+            (customTabsOptionsMap["allowedBrowsers"] as? List<*>)?.filterIsInstance<String>().orEmpty()
+        } else {
             (args["allowedBrowsers"] as? List<*>)?.filterIsInstance<String>().orEmpty()
-        if (allowedBrowsers.isNotEmpty()) {
-            builder.withCustomTabsOptions(
-                CustomTabsOptions.newBuilder().withBrowserPicker(
+        }
+
+        if (customTabsOptionsMap != null || allowedBrowsers.isNotEmpty()) {
+            val ctBuilder = CustomTabsOptions.newBuilder()
+
+            if (allowedBrowsers.isNotEmpty()) {
+                ctBuilder.withBrowserPicker(
                     BrowserPicker.newBuilder()
                         .withAllowedPackages(allowedBrowsers).build()
-                ).build()
-            )
+                )
+            }
+
+            if (customTabsOptionsMap != null) {
+                val initialHeight = customTabsOptionsMap["initialHeight"] as? Int
+                if (initialHeight != null && initialHeight > 0) {
+                    ctBuilder.withInitialHeight(initialHeight)
+                }
+
+                val resizable = customTabsOptionsMap["resizable"] as? Boolean
+                if (resizable != null) {
+                    ctBuilder.withResizable(resizable)
+                }
+
+                val toolbarCornerRadius = customTabsOptionsMap["toolbarCornerRadius"] as? Int
+                if (toolbarCornerRadius != null && toolbarCornerRadius > 0) {
+                    ctBuilder.withToolbarCornerRadius(toolbarCornerRadius)
+                }
+
+                val initialWidth = customTabsOptionsMap["initialWidth"] as? Int
+                if (initialWidth != null && initialWidth > 0) {
+                    ctBuilder.withInitialWidth(initialWidth)
+                }
+
+                val sideSheetBreakpoint = customTabsOptionsMap["sideSheetBreakpoint"] as? Int
+                if (sideSheetBreakpoint != null && sideSheetBreakpoint > 0) {
+                    ctBuilder.withSideSheetBreakpoint(sideSheetBreakpoint)
+                }
+
+                val backgroundInteractionEnabled = customTabsOptionsMap["backgroundInteractionEnabled"] as? Boolean
+                if (backgroundInteractionEnabled == true) {
+                    ctBuilder.withBackgroundInteractionEnabled(true)
+                }
+            }
+
+            builder.withCustomTabsOptions(ctBuilder.build())
         }
 
         builder.start(context, object : Callback<Void?, AuthenticationException> {

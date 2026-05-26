@@ -202,4 +202,74 @@ class LogoutWebAuthRequestHandlerTest {
             verify(builder, never()).withCustomTabsOptions(any())
         }
     }
+
+    @Test
+    fun `handler should apply customTabsOptions with initialHeight`() {
+        val args = hashMapOf<String, Any?>(
+            "customTabsOptions" to mapOf(
+                "initialHeight" to 700,
+                "allowedBrowsers" to listOf<String>()
+            )
+        )
+
+        runHandler(args) { _, builder ->
+            verify(builder).withCustomTabsOptions(any())
+        }
+    }
+
+    @Test
+    fun `handler should apply customTabsOptions with all partial tab options`() {
+        val args = hashMapOf<String, Any?>(
+            "customTabsOptions" to mapOf(
+                "initialHeight" to 500,
+                "resizable" to false,
+                "toolbarCornerRadius" to 12,
+                "initialWidth" to 400,
+                "sideSheetBreakpoint" to 840,
+                "backgroundInteractionEnabled" to true,
+                "allowedBrowsers" to listOf("com.android.chrome")
+            )
+        )
+
+        runHandler(args) { _, builder ->
+            verify(builder).withCustomTabsOptions(any())
+        }
+    }
+
+    @Test
+    fun `handler should not apply customTabsOptions when not specified`() {
+        val args = hashMapOf<String, Any?>(
+            "allowedBrowsers" to listOf<String>()
+        )
+
+        runHandler(args) { _, builder ->
+            verify(builder, never()).withCustomTabsOptions(any())
+        }
+    }
+
+    @Test
+    fun `handler should use allowedBrowsers from customTabsOptions over top-level`() {
+        val args = hashMapOf<String, Any?>(
+            "allowedBrowsers" to listOf("org.mozilla.firefox"),
+            "customTabsOptions" to mapOf(
+                "initialHeight" to 500,
+                "allowedBrowsers" to listOf("com.android.chrome")
+            )
+        )
+
+        runHandler(args) { _, builder ->
+            verify(builder).withCustomTabsOptions(any())
+        }
+    }
+
+    @Test
+    fun `handler should fall back to top-level allowedBrowsers when customTabsOptions is absent`() {
+        val args = hashMapOf<String, Any?>(
+            "allowedBrowsers" to listOf("com.android.chrome", "org.mozilla.firefox")
+        )
+
+        runHandler(args) { _, builder ->
+            verify(builder).withCustomTabsOptions(any())
+        }
+    }
 }
