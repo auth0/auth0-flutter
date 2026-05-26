@@ -3,8 +3,6 @@ package com.auth0.auth0_flutter
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
-import com.auth0.android.provider.BrowserPicker
-import com.auth0.android.provider.CustomTabsOptions
 import com.auth0.android.provider.WebAuthProvider
 import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
@@ -393,7 +391,7 @@ class LoginWebAuthRequestHandlerTest {
     }
 
     @Test
-    fun `handler should apply customTabsOptions with initialHeight`() {
+    fun `handler should apply customTabsOptions when initialHeight is specified`() {
         val args = hashMapOf<String, Any?>(
             "customTabsOptions" to mapOf(
                 "initialHeight" to 700,
@@ -407,7 +405,7 @@ class LoginWebAuthRequestHandlerTest {
     }
 
     @Test
-    fun `handler should apply customTabsOptions with all partial tab options`() {
+    fun `handler should apply customTabsOptions when all partial tab options are specified`() {
         val args = hashMapOf<String, Any?>(
             "customTabsOptions" to mapOf(
                 "initialHeight" to 700,
@@ -426,7 +424,7 @@ class LoginWebAuthRequestHandlerTest {
     }
 
     @Test
-    fun `handler should not apply customTabsOptions when not specified`() {
+    fun `handler should not apply customTabsOptions when not specified and allowedBrowsers is empty`() {
         val args = hashMapOf<String, Any?>(
             "allowedBrowsers" to listOf<String>()
         )
@@ -437,7 +435,7 @@ class LoginWebAuthRequestHandlerTest {
     }
 
     @Test
-    fun `handler should use allowedBrowsers from customTabsOptions over top-level`() {
+    fun `handler should prefer customTabsOptions over top-level allowedBrowsers`() {
         val args = hashMapOf<String, Any?>(
             "allowedBrowsers" to listOf("org.mozilla.firefox"),
             "customTabsOptions" to mapOf(
