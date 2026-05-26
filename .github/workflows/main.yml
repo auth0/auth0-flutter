@@ -69,7 +69,7 @@ jobs:
                 flutter test --coverage --exclude-tags browser
 
             - name: Upload coverage report
-              uses: actions/upload-artifact@v7
+              uses: actions/upload-artifact@v7.0.1
               with:
                 name: auth0_flutter coverage
                 path: auth0_flutter/coverage/lcov.info
@@ -113,7 +113,7 @@ jobs:
               run: flutter test --coverage
 
             - name: Upload coverage report
-              uses: actions/upload-artifact@v7
+              uses: actions/upload-artifact@v7.0.1
               with:
                 name: auth0_flutter_platform_interface coverage
                 path: auth0_flutter_platform_interface/coverage/lcov.info
@@ -156,7 +156,7 @@ jobs:
               run: bundle exec slather coverage -x --scheme Runner Runner.xcodeproj
 
             - name: Upload coverage report
-              uses: actions/upload-artifact@v7
+              uses: actions/upload-artifact@v7.0.1
               with:
                 name: iOS coverage
                 path: auth0_flutter/example/ios/cobertura
@@ -295,13 +295,13 @@ jobs:
               run: ./gradlew koverXmlReportDebug
 
             - name: Upload coverage report
-              uses: actions/upload-artifact@v7
+              uses: actions/upload-artifact@v7.0.1
               with:
                 name: Android coverage
                 path: auth0_flutter/example/build/app/coverage.xml
 
             - name: Upload test results
-              uses: actions/upload-artifact@v7
+              uses: actions/upload-artifact@v7.0.1
               if: ${{ failure() }}
               with:
                 name: Test results
@@ -329,13 +329,13 @@ jobs:
               shell: powershell
 
             - name: Set up vcpkg
-              uses: lukka/run-vcpkg@5e0cab206a5ea620130caf672fce3e4a6b5666a1 # pin@v11.5
+              uses: lukka/run-vcpkg@b1a0dd252f06b9e25b3c022a9a03bd7a427fb6a2 # pin@v11.6
               with:
                 vcpkgDirectory: '${{ github.workspace }}/vcpkg'
                 vcpkgGitCommitId: '66c0373dc7fca549e5803087b9487edfe3aca0a1'
 
             - name: Cache vcpkg packages and binaries
-              uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # pin@v4.2.3
+              uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # pin@v5.0.5
               with:
                 path: |
                   ${{ github.workspace }}/vcpkg/installed
@@ -352,7 +352,7 @@ jobs:
                 VCPKG_BINARY_SOURCES: 'clear;files,${{ github.workspace }}/vcpkg-binary-cache,readwrite;x-gha,readwrite'
 
             - name: Cache Windows example app build
-              uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # pin@v4.2.3
+              uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # pin@v5.0.5
               with:
                 path: auth0_flutter/example/build/windows
                 key: win-example-build-${{ runner.os }}-${{ hashFiles('auth0_flutter/windows/**/*.cpp', 'auth0_flutter/windows/**/*.h', 'auth0_flutter/windows/CMakeLists.txt', 'auth0_flutter/windows/vcpkg.json') }}-${{ hashFiles('auth0_flutter/example/lib/**/*.dart') }}
@@ -373,7 +373,7 @@ jobs:
               shell: powershell
 
             - name: Cache Windows unit test build
-              uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # pin@v4.2.3
+              uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # pin@v5.0.5
               with:
                 path: auth0_flutter/windows/build
                 key: win-test-build-${{ runner.os }}-${{ hashFiles('auth0_flutter/windows/**/*.cpp', 'auth0_flutter/windows/**/*.h', 'auth0_flutter/windows/CMakeLists.txt', 'auth0_flutter/windows/test/**', 'auth0_flutter/windows/vcpkg.json') }}
@@ -398,7 +398,7 @@ jobs:
               shell: powershell
 
             - name: Upload coverage report
-              uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # pin@v6
+              uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # pin@v7.0.1
               with:
                 name: Windows coverage
                 path: auth0_flutter/windows/coverage_html
@@ -494,14 +494,14 @@ jobs:
     #               USER_EMAIL=$USER_EMAIL USER_PASSWORD=$USER_PASSWORD node appium-test/test.js
 
     #         - name: Upload recording
-    #           uses: actions/upload-artifact@v7
+    #           uses: actions/upload-artifact@v7.0.1
     #           if: ${{ failure() }}
     #           with:
     #             name: 'Android - smoke tests recording'
     #             path: recording_video.webm
 
     #         - name: Upload APK
-    #           uses: actions/upload-artifact@v7
+    #           uses: actions/upload-artifact@v7.0.1
     #           if: ${{ failure() }}
     #           with:
     #             name: 'Android - APK'
@@ -550,41 +550,41 @@ jobs:
                 path: coverage/android
 
             - name: Download coverage report for Windows
-              uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131
+              uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
               with:
                 name: Windows coverage
                 path: coverage/windows
 
             - name: Upload coverage report for auth0_flutter
-              uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2
+              uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter
                   directory: coverage/auth0_flutter
 
             - name: Upload coverage report for auth0_flutter_platform_interface
-              uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2
+              uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter_platform_interface
                   directory: coverage/auth0_flutter_platform_interface
 
             - name: Upload coverage report for iOS
-              uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2
+              uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter_ios
                   directory: coverage/ios
 
             - name: Upload coverage report for Android
-              uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2
+              uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter_android
                   directory: coverage/android
 
             - name: Upload coverage report for Windows
-              uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de
+              uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter_windows
