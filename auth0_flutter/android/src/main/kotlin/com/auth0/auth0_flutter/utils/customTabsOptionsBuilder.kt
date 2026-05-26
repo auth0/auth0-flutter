@@ -11,7 +11,7 @@ import com.auth0.android.provider.CustomTabsOptions
  * - Otherwise, falls back to top-level `allowedBrowsers` from [args] (deprecated legacy path).
  * - Returns `null` if neither is provided.
  */
-fun buildCustomTabsOptions(args: Map<String, Any?>): CustomTabsOptions? {
+fun buildCustomTabsOptions(args: Map<*, *>): CustomTabsOptions? {
     val customTabsOptionsMap = args["customTabsOptions"] as? Map<*, *>
 
     // Resolve allowedBrowsers: customTabsOptions takes precedence over top-level
