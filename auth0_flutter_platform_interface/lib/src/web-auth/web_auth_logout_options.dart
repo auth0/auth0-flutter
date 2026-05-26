@@ -16,6 +16,7 @@ class WebAuthLogoutOptions implements RequestOptions {
       this.scheme,
       this.federated = false,
       this.customTabsOptions,
+      @Deprecated('Use CustomTabsOptions.allowedBrowsers instead')
       this.allowedBrowsers = const []});
 
   @override

@@ -25,6 +25,7 @@ class WebAuthLoginOptions extends LoginOptions {
       this.scheme,
       this.safariViewController,
       this.customTabsOptions,
+      @Deprecated('Use CustomTabsOptions.allowedBrowsers instead')
       this.allowedBrowsers = const [],
       this.useDPoP = false});
 
