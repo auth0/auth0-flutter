@@ -4,7 +4,7 @@
 <dict>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>webcredentials:{YOUR_AUTH0_DOMAIN}</string>
+		<string>webcredentials:passkeystestdomain.acmetest.org?mode=developer</string>
 	</array>
 </dict>
 </plist>

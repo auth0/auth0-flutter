@@ -26,7 +26,6 @@
 		5C4E65C5286D1CFB00141449 /* CredentialsManagerHasValidMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4E65C4286D1CFB00141449 /* CredentialsManagerHasValidMethodHandlerTests.swift */; };
 		5C4E65C7286D24A900141449 /* CredentialsManagerSaveMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4E65C6286D24A900141449 /* CredentialsManagerSaveMethodHandlerTests.swift */; };
 		5C4E65C9286D26D800141449 /* CredentialsManagerGetMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4E65C8286D26D800141449 /* CredentialsManagerGetMethodHandlerTests.swift */; };
-		A09B2E3F1D4C7891BA000002 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A09B2E3F1D4C7891BA000001 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift */; };
 		5C59DA6527FFCF0600365CDB /* AuthAPIHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C59DA6427FFCF0600365CDB /* AuthAPIHandlerTests.swift */; };
 		5C59DA6727FFE75600365CDB /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C59DA6627FFE75600365CDB /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift */; };
 		5C59DA6928011D4F00365CDB /* AuthAPISignupMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C59DA6828011D4F00365CDB /* AuthAPISignupMethodHandlerTests.swift */; };
@@ -44,6 +43,7 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		A09B2E3F1D4C7891BA000002 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A09B2E3F1D4C7891BA000001 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift */; };
 		A128A3E84540D9257B15491D /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03C97032096FE7868ACD2E52 /* Pods_Runner.framework */; };
 /* End PBXBuildFile section */
 
@@ -103,7 +103,6 @@
 		5C4E65C4286D1CFB00141449 /* CredentialsManagerHasValidMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerHasValidMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C4E65C6286D24A900141449 /* CredentialsManagerSaveMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerSaveMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C4E65C8286D26D800141449 /* CredentialsManagerGetMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerGetMethodHandlerTests.swift; sourceTree = "<group>"; };
-		A09B2E3F1D4C7891BA000001 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerSSOCredentialsMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C59DA6427FFCF0600365CDB /* AuthAPIHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPIHandlerTests.swift; sourceTree = "<group>"; };
 		5C59DA6627FFE75600365CDB /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPILoginUsernameOrEmailMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C59DA6828011D4F00365CDB /* AuthAPISignupMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPISignupMethodHandlerTests.swift; sourceTree = "<group>"; };
@@ -132,6 +131,7 @@
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		99BD47CB4C5EF89E894B6230 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		9B5F0CE7EB2CCC504C7678ED /* Pods-Runner-RunnerUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner-RunnerUITests.release.xcconfig"; path = "Target Support Files/Pods-Runner-RunnerUITests/Pods-Runner-RunnerUITests.release.xcconfig"; sourceTree = "<group>"; };
+		A09B2E3F1D4C7891BA000001 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerSSOCredentialsMethodHandlerTests.swift; sourceTree = "<group>"; };
 		C16443EA2BA08C71AE68B41B /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
 		C7412C9A0F502116EC6D51D0 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		C8270E3F40357C2A1DB27BB8 /* Pods_Runner_RunnerUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner_RunnerUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -722,7 +722,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/RunnerDebug.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = 86WQXF56BC;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -730,7 +732,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.auth0FlutterExample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.OAuth2.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
@@ -1021,7 +1023,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/RunnerDebug.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 86WQXF56BC;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -1029,7 +1031,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.auth0FlutterExample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.OAuth2.dev;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";

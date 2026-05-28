@@ -222,6 +222,94 @@ class _ExampleAppState extends State<ExampleApp> {
     });
   }
 
+  Future<void> passkeyLogin() async {
+    String output;
+    setState(() {
+      _output = 'Passkey Login: requesting challenge and presenting '
+          'passkey UI...';
+    });
+    try {
+      final result = await auth0.api.loginWithPasskey(
+        connection: dotenv.env['AUTH0_PASSKEY_CONNECTION'],
+      );
+      setState(() {
+        _isLoggedIn = true;
+      });
+      output = 'Passkey Login Successful!\n\n'
+          'Access Token: ${_preview(result.accessToken)}\n'
+          'ID Token: ${_preview(result.idToken)}\n'
+          'Token Type: ${result.tokenType}\n'
+          'Expires At: ${result.expiresAt}\n'
+          'User: ${result.user.name ?? result.user.email ?? result.user.sub}';
+    } on ApiException catch (e) {
+      output = 'Passkey Login Error:\n'
+          'Code: ${e.code}\n'
+          'Message: ${e.message}';
+    } catch (e) {
+      output = 'Passkey Login Failed:\n$e';
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _output = output;
+    });
+  }
+
+  /// Returns a short, safe preview of a token for display.
+  String _preview(final String token) =>
+      token.length <= 20 ? token : '${token.substring(0, 20)}...';
+
+  Future<void> passkeyLoginStepByStep() async {
+    String output;
+    try {
+      output = 'Step 1/3: Requesting challenge...\n';
+      setState(() { _output = output; });
+
+      final challenge = await auth0.api.passkeyLoginChallenge(
+        connection: dotenv.env['AUTH0_PASSKEY_CONNECTION'],
+      );
+
+      output += 'Challenge received!\n'
+          '  authSession: ${_preview(challenge.authSession)}\n'
+          '  rpId: ${challenge.authParamsPublicKey['rpId']}\n\n'
+          'Step 2/3: Presenting passkey UI & creating credential...\n';
+      setState(() { _output = output; });
+
+      final credential = await auth0.api.createPasskeyCredential(
+        challenge: challenge,
+      );
+
+      output += 'Credential created!\n'
+          '  credentialId: ${_preview(credential.id)}\n\n'
+          'Step 3/3: Exchanging credential for tokens...\n';
+      setState(() { _output = output; });
+
+      final result = await auth0.api.passkeyLogin(
+        challenge: challenge,
+        credential: credential,
+        connection: dotenv.env['AUTH0_PASSKEY_CONNECTION'],
+      );
+
+      setState(() {
+        _isLoggedIn = true;
+      });
+      output += 'Login successful!\n'
+          '  Access Token: ${_preview(result.accessToken)}\n'
+          '  User: ${result.user.name ?? result.user.email ?? result.user.sub}';
+    } on ApiException catch (e) {
+      output = 'Passkey Login Error:\n'
+          'Code: ${e.code}\n'
+          'Message: ${e.message}';
+    } catch (e) {
+      output = 'Passkey Login Failed:\n$e';
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _output = output;
+    });
+  }
+
   Future<void> getSSOCredentials() async {
     String output;
     try {
@@ -267,6 +355,37 @@ class _ExampleAppState extends State<ExampleApp> {
                       else
                         WebAuthCard(
                             label: 'Web Auth Login', action: webAuthLogin),
+                      const SizedBox(height: 10),
+                      if (!kIsWeb && !Platform.isWindows) ...[
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 12),
+                          ),
+                          onPressed: passkeyLogin,
+                          child: const Text(
+                            'Passkey Login (Single Call)',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green.shade700,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 12),
+                          ),
+                          onPressed: passkeyLoginStepByStep,
+                          child: const Text(
+                            'Passkey Login (Step by Step)',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ],
                       const SizedBox(height: 10),
                       // DPoP button — not shown on Windows
                       // (DPoP is not yet implemented on that platform)

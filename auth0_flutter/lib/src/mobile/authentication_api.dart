@@ -443,6 +443,93 @@ class AuthenticationApi {
           AuthResetPasswordOptions(
               email: email, connection: connection, parameters: parameters)));
 
+  /// Requests a challenge for logging in with an existing passkey.
+  Future<PasskeyLoginChallenge> passkeyLoginChallenge({
+    final String? connection,
+    final String? organization,
+  }) =>
+      Auth0FlutterAuthPlatform.instance.passkeyLoginChallenge(
+          _createApiRequest(AuthPasskeyLoginChallengeOptions(
+        connection: connection,
+        organization: organization,
+      )));
+
+  /// Presents the operating system's passkey UI for the given [challenge] and
+  /// returns the resulting passkey credential.
+  ///
+  /// This is the second step of the isolated passkey login flow: it does not
+  /// contact Auth0. Pass the returned credential to [passkeyLogin] to exchange
+  /// it for Auth0 tokens.
+  Future<PasskeyLoginCredential> createPasskeyCredential({
+    required final PasskeyLoginChallenge challenge,
+  }) =>
+      Auth0FlutterAuthPlatform.instance.createPasskeyCredential(
+          _createApiRequest(AuthPasskeyCreateCredentialOptions(
+        challenge: challenge,
+      )));
+
+  /// Completes passkey login by exchanging a [credential] (obtained from
+  /// [createPasskeyCredential]) for Auth0 tokens.
+  ///
+  /// This is the final step of the isolated passkey login flow and calls the
+  /// `/oauth/token` endpoint.
+  Future<Credentials> passkeyLogin({
+    required final PasskeyLoginChallenge challenge,
+    required final PasskeyLoginCredential credential,
+    final String? connection,
+    final String? audience,
+    final Set<String> scopes = const {
+      'openid',
+      'profile',
+      'email',
+      'offline_access'
+    },
+    final String? organization,
+    final Map<String, String> parameters = const {},
+  }) =>
+      Auth0FlutterAuthPlatform.instance
+          .passkeyLogin(_createApiRequest(AuthPasskeyLoginOptions(
+        challenge: challenge,
+        credential: credential,
+        connection: connection,
+        audience: audience,
+        scopes: scopes,
+        organization: organization,
+        parameters: parameters,
+      )));
+
+  /// Logs in an existing user with a passkey in a single call.
+  ///
+  /// Combines [passkeyLoginChallenge], [createPasskeyCredential], and
+  /// [passkeyLogin] into one call.
+  Future<Credentials> loginWithPasskey({
+    final String? connection,
+    final String? audience,
+    final Set<String> scopes = const {
+      'openid',
+      'profile',
+      'email',
+      'offline_access'
+    },
+    final String? organization,
+    final Map<String, String> parameters = const {},
+  }) async {
+    final challenge = await passkeyLoginChallenge(
+      connection: connection,
+      organization: organization,
+    );
+    final credential = await createPasskeyCredential(challenge: challenge);
+    return passkeyLogin(
+      challenge: challenge,
+      credential: credential,
+      connection: connection,
+      audience: audience,
+      scopes: scopes,
+      organization: organization,
+      parameters: parameters,
+    );
+  }
+
   ApiRequest<TOptions> _createApiRequest<TOptions extends RequestOptions>(
           final TOptions options) =>
       ApiRequest<TOptions>(
