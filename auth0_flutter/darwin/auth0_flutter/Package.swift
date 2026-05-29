@@ -8,7 +8,7 @@ let package = Package(
         .macOS("11.0"),
     ],
     products: [
-        .library(name: "auth0-flutter", targets: ["auth0_flutter"]),
+        .library(name: "auth0_flutter", targets: ["auth0_flutter"]),
     ],
     dependencies: [
         .package(url: "https://github.com/auth0/Auth0.swift", exact: "2.18.0"),
