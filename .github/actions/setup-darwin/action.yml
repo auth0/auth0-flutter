@@ -31,14 +31,6 @@ runs:
       run: echo "platform=$(echo ${{ inputs.platform }} | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
       shell: bash
 
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@9eb537ca036ebaed86729dcb9309076e4c5c3b74 # pin@v1.314.0
-      with:
-        ruby-version: ${{ inputs.ruby }}
-        bundler-cache: true
-        cache-version: 1
-        working-directory: auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}
-
     - name: Install Flutter
       uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
       with:
@@ -77,14 +69,24 @@ runs:
 
     - name: Fix iOS minimum deployment target for SPM
       if: inputs.platform == 'iOS'
-      working-directory: auth0_flutter/example/ios/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage
-      run: sed -i '' 's/\.iOS(".*")/\.iOS("14.0")/g' Package.swift
+      run: |
+        PACKAGE_FILE="auth0_flutter/example/ios/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Package.swift"
+        if [ ! -f "$PACKAGE_FILE" ]; then
+          echo "::error::FlutterGeneratedPluginSwiftPackage/Package.swift not found at expected path"
+          exit 1
+        fi
+        sed -i '' 's/\.iOS(".*")/\.iOS("14.0")/g' "$PACKAGE_FILE"
       shell: bash
 
     - name: Fix macOS minimum deployment target for SPM
       if: inputs.platform == 'macOS'
-      working-directory: auth0_flutter/example/macos/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage
-      run: sed -i '' 's/\.macOS(".*")/\.macOS("11.0")/g' Package.swift
+      run: |
+        PACKAGE_FILE="auth0_flutter/example/macos/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Package.swift"
+        if [ ! -f "$PACKAGE_FILE" ]; then
+          echo "::error::FlutterGeneratedPluginSwiftPackage/Package.swift not found at expected path"
+          exit 1
+        fi
+        sed -i '' 's/\.macOS(".*")/\.macOS("11.0")/g' "$PACKAGE_FILE"
       shell: bash
 
 
