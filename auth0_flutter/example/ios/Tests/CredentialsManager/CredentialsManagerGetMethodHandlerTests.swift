@@ -8,12 +8,13 @@ fileprivate typealias Argument = CredentialsManagerGetMethodHandler.Argument
 class CredentialsManagerGetMethodHandlerTests: XCTestCase {
     var spyAuthentication: SpyAuthentication!
     var spyStorage: SpyCredentialsStorage!
+    var credentialsManager: CredentialsManager!
     var sut: CredentialsManagerGetMethodHandler!
 
     override func setUpWithError() throws {
         spyAuthentication = SpyAuthentication()
         spyStorage = SpyCredentialsStorage()
-        let credentialsManager = CredentialsManager(authentication: spyAuthentication, storage: spyStorage)
+        credentialsManager = CredentialsManager(authentication: spyAuthentication, storage: spyStorage)
         sut = CredentialsManagerGetMethodHandler(credentialsManager: credentialsManager)
     }
 }
@@ -48,9 +49,8 @@ extension CredentialsManagerGetMethodHandlerTests {
                                       refreshToken: "refreshToken",
                                       expiresIn: Date(timeIntervalSinceNow: -3600),
                                       scope: "foo bar")
-        let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
         let expectation = self.expectation(description: "Produced credentials")
-        spyStorage.getEntryReturnValue = data
+        _ = credentialsManager.store(credentials: credentials)
         sut.handle(with: arguments(withKey: Argument.scopes, value: value)) { _ in
             XCTAssertEqual(self.spyAuthentication.arguments["scope"] as? String, value.asSpaceSeparatedString)
             expectation.fulfill()
@@ -65,9 +65,8 @@ extension CredentialsManagerGetMethodHandlerTests {
                                       refreshToken: "refreshToken",
                                       expiresIn: Date(timeIntervalSinceNow: -3600),
                                       scope: "foo bar")
-        let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
         let expectation = self.expectation(description: "Produced credentials")
-        spyStorage.getEntryReturnValue = data
+        _ = credentialsManager.store(credentials: credentials)
         sut.handle(with: arguments(withKey: Argument.scopes, value: [])) { _ in
             XCTAssertNil(self.spyAuthentication.arguments["scope"] as? String)
             expectation.fulfill()
@@ -95,9 +94,8 @@ extension CredentialsManagerGetMethodHandlerTests {
                                       refreshToken: "refreshToken",
                                       expiresIn: Date(timeIntervalSinceNow: 3600),
                                       scope: "foo bar")
-        let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
         let expectation = self.expectation(description: "Produced credentials")
-        spyStorage.getEntryReturnValue = data
+        _ = credentialsManager.store(credentials: credentials)
         sut.handle(with: arguments()) { result in
             assert(result: result, has: CredentialsProperty.allCases)
             expectation.fulfill()

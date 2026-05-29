@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		2D82163828F9A89300467FD1 /* AuthAPILoginWithOTPMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D82163728F9A89300467FD1 /* AuthAPILoginWithOTPMethodHandlerTests.swift */; };
+		A1B2C3D42AECB46A00862998 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D32AECB46A00862998 /* FlutterGeneratedPluginSwiftPackage */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		5C08DBC8288A7646000D2F37 /* CredentialsManagerExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C08DBC7288A7646000D2F37 /* CredentialsManagerExtensionsTests.swift */; };
 		5C328B4827F7822600451E70 /* WebAuthHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C328B4727F7822600451E70 /* WebAuthHandlerTests.swift */; };
@@ -144,6 +145,9 @@
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterGeneratedPluginSwiftPackage; path = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage; sourceTree = "<group>"; };
+		784666492D4C4C64000A1A5F /* FlutterFramework */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterFramework; path = Flutter/ephemeral/Packages/.packages/FlutterFramework; sourceTree = "<group>"; };
+		78DABEA22ED26510000E7860 /* auth0_flutter */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = auth0_flutter; path = ../../darwin/auth0_flutter; sourceTree = "<group>"; };
 		B0CA00010000000000000001 /* MyAccountSpies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountSpies.swift; sourceTree = "<group>"; };
 		B0CA00010000000000000002 /* MyAccountDeleteAuthMethodMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountDeleteAuthMethodMethodHandlerTests.swift; sourceTree = "<group>"; };
 		B0CA00010000000000000003 /* MyAccountEnrollEmailMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountEnrollEmailMethodHandlerTests.swift; sourceTree = "<group>"; };
@@ -170,6 +174,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1B2C3D42AECB46A00862998 /* FlutterGeneratedPluginSwiftPackage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -268,6 +273,9 @@
 		9740EEB11CF90186004384FC /* Flutter */ = {
 			isa = PBXGroup;
 			children = (
+				78DABEA22ED26510000E7860 /* auth0_flutter */,
+				784666492D4C4C64000A1A5F /* FlutterFramework */,
+				78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */,
 				3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */,
 				9740EEB21CF90195004384FC /* Debug.xcconfig */,
 				7AFA3C8E1D35360C0083082E /* Release.xcconfig */,
@@ -352,6 +360,9 @@
 				5C328B4A27F7822600451E70 /* PBXTargetDependency */,
 			);
 			name = RunnerTests;
+			packageProductDependencies = (
+				A1B2C3D32AECB46A00862998 /* FlutterGeneratedPluginSwiftPackage */,
+			);
 			productName = Tests;
 			productReference = 5C328B4527F7822600451E70 /* RunnerTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -715,7 +726,6 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/Runner";
 			};
 			name = Debug;
 		};
@@ -742,7 +752,6 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/Runner";
 			};
 			name = Release;
 		};
@@ -769,7 +778,6 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/Runner";
 			};
 			name = Profile;
 		};
@@ -1064,6 +1072,10 @@
 
 /* Begin XCSwiftPackageProductDependency section */
 		78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FlutterGeneratedPluginSwiftPackage;
+		};
+		A1B2C3D32AECB46A00862998 /* FlutterGeneratedPluginSwiftPackage */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FlutterGeneratedPluginSwiftPackage;
 		};
