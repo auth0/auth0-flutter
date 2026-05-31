@@ -1,5 +1,11 @@
 import XCTest
 
+#if os(iOS)
+import Flutter
+#else
+import FlutterMacOS
+#endif
+
 @testable import Auth0
 @testable import auth0_flutter
 

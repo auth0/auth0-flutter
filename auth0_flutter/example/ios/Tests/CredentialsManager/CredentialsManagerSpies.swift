@@ -1,3 +1,4 @@
+import Foundation
 import Auth0
 
 // MARK: - Auth0.swift Spies
@@ -18,6 +19,7 @@ class SpyCredentialsStorage: CredentialsStorage {
 
     func setEntry(_ data: Data, forKey key: String) -> Bool {
         self.calledSetEntry = true
+        self.getEntryReturnValue = data
         return self.setEntryReturnValue
     }
 
