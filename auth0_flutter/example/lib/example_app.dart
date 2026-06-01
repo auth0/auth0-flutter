@@ -224,14 +224,29 @@ class _ExampleAppState extends State<ExampleApp> {
 
   Future<void> passkeyLogin() async {
     String output;
-    setState(() {
-      _output = 'Passkey Login: requesting challenge and presenting '
-          'passkey UI...';
-    });
+    // Run the single-call flow as explicit steps so any failure points to the
+    // exact stage (challenge / credential / token exchange).
+    var step = 'challenge';
     try {
-      final result = await auth0.api.loginWithPasskey(
+      setState(() => _output = 'Step 1/3: requesting challenge...');
+      final challenge = await auth0.api.passkeyLoginChallenge(
         connection: dotenv.env['AUTH0_PASSKEY_CONNECTION'],
       );
+
+      step = 'createCredential';
+      setState(() => _output = 'Step 2/3: presenting passkey UI...');
+      final credential = await auth0.api.createPasskeyCredential(
+        challenge: challenge,
+      );
+
+      step = 'passkeyLogin';
+      setState(() => _output = 'Step 3/3: exchanging for tokens...');
+      final result = await auth0.api.passkeyLogin(
+        challenge: challenge,
+        credential: credential,
+        connection: dotenv.env['AUTH0_PASSKEY_CONNECTION'],
+      );
+
       setState(() {
         _isLoggedIn = true;
       });
@@ -242,11 +257,12 @@ class _ExampleAppState extends State<ExampleApp> {
           'Expires At: ${result.expiresAt}\n'
           'User: ${result.user.name ?? result.user.email ?? result.user.sub}';
     } on ApiException catch (e) {
-      output = 'Passkey Login Error:\n'
+      output = 'Passkey Login Error (step: $step):\n'
           'Code: ${e.code}\n'
-          'Message: ${e.message}';
+          'Message: ${e.message}\n'
+          'Details: ${e.details}';
     } catch (e) {
-      output = 'Passkey Login Failed:\n$e';
+      output = 'Passkey Login Failed (step: $step):\n$e';
     }
 
     if (!mounted) return;

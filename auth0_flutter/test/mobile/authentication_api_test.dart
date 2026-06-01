@@ -46,6 +46,29 @@ class TestPlatform extends Mock
     idToken: 'id-token',
     refreshToken: 'new-refresh-token',
   );
+
+  static const PasskeyLoginChallenge passkeyLoginChallengeResult =
+      PasskeyLoginChallenge(
+    authSession: 'test-auth-session',
+    authParamsPublicKey: {
+      'challenge': 'test-challenge',
+      'rpId': 'test-rp-id',
+    },
+  );
+
+  static const PasskeyLoginCredential createPasskeyCredentialResult =
+      PasskeyLoginCredential(
+    id: 'test-credential-id',
+    rawId: 'test-raw-id',
+    type: 'public-key',
+    authenticatorAttachment: 'platform',
+    response: PasskeyAuthenticatorAssertionResponse(
+      clientDataJSON: 'test-client-data',
+      authenticatorData: 'test-authenticator-data',
+      signature: 'test-signature',
+      userHandle: 'test-user-handle',
+    ),
+  );
 }
 
 @GenerateMocks([TestPlatform])
@@ -389,6 +412,167 @@ void main() {
       expect(verificationResult.account.clientId, 'test-clientId');
       expect(verificationResult.options?.accessToken, 'test-token');
       expect(verificationResult.options?.tokenType, 'DPoP');
+    });
+  });
+
+  group('passkeyLoginChallenge', () {
+    test('passes through properties to the platform', () async {
+      when(mockedPlatform.passkeyLoginChallenge(any)).thenAnswer(
+          (final _) async => TestPlatform.passkeyLoginChallengeResult);
+
+      final result = await Auth0('test-domain', 'test-clientId')
+          .api
+          .passkeyLoginChallenge(
+              connection: 'test-connection', organization: 'test-org');
+
+      final verificationResult =
+          verify(mockedPlatform.passkeyLoginChallenge(captureAny))
+              .captured
+              .single as ApiRequest<AuthPasskeyLoginChallengeOptions>;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.account.clientId, 'test-clientId');
+      expect(verificationResult.options.connection, 'test-connection');
+      expect(verificationResult.options.organization, 'test-org');
+      expect(result, TestPlatform.passkeyLoginChallengeResult);
+    });
+
+    test('sets connection and organization to null when omitted', () async {
+      when(mockedPlatform.passkeyLoginChallenge(any)).thenAnswer(
+          (final _) async => TestPlatform.passkeyLoginChallengeResult);
+
+      await Auth0('test-domain', 'test-clientId').api.passkeyLoginChallenge();
+
+      final verificationResult =
+          verify(mockedPlatform.passkeyLoginChallenge(captureAny))
+              .captured
+              .single as ApiRequest<AuthPasskeyLoginChallengeOptions>;
+      expect(verificationResult.options.connection, isNull);
+      expect(verificationResult.options.organization, isNull);
+    });
+  });
+
+  group('createPasskeyCredential', () {
+    test('passes the challenge through to the platform', () async {
+      when(mockedPlatform.createPasskeyCredential(any)).thenAnswer(
+          (final _) async => TestPlatform.createPasskeyCredentialResult);
+
+      final result = await Auth0('test-domain', 'test-clientId')
+          .api
+          .createPasskeyCredential(
+              challenge: TestPlatform.passkeyLoginChallengeResult);
+
+      final verificationResult =
+          verify(mockedPlatform.createPasskeyCredential(captureAny))
+              .captured
+              .single as ApiRequest<AuthPasskeyCreateCredentialOptions>;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.account.clientId, 'test-clientId');
+      expect(verificationResult.options.challenge.authSession,
+          'test-auth-session');
+      expect(verificationResult.options.challenge.authParamsPublicKey['rpId'],
+          'test-rp-id');
+      expect(result, TestPlatform.createPasskeyCredentialResult);
+    });
+  });
+
+  group('passkeyLogin', () {
+    test('passes through properties to the platform', () async {
+      when(mockedPlatform.passkeyLogin(any))
+          .thenAnswer((final _) async => TestPlatform.loginResult);
+
+      final result =
+          await Auth0('test-domain', 'test-clientId').api.passkeyLogin(
+                challenge: TestPlatform.passkeyLoginChallengeResult,
+                credential: TestPlatform.createPasskeyCredentialResult,
+                connection: 'test-connection',
+                audience: 'test-audience',
+                scopes: {'test-scope1', 'test-scope2'},
+                organization: 'test-org',
+                parameters: {'test': 'test-parameter'},
+              );
+
+      final verificationResult = verify(mockedPlatform.passkeyLogin(captureAny))
+          .captured
+          .single as ApiRequest<AuthPasskeyLoginOptions>;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.account.clientId, 'test-clientId');
+      expect(verificationResult.options.challenge.authSession,
+          'test-auth-session');
+      expect(verificationResult.options.credential.id, 'test-credential-id');
+      expect(verificationResult.options.connection, 'test-connection');
+      expect(verificationResult.options.audience, 'test-audience');
+      expect(verificationResult.options.scopes, {'test-scope1', 'test-scope2'});
+      expect(verificationResult.options.organization, 'test-org');
+      expect(verificationResult.options.parameters['test'], 'test-parameter');
+      expect(result, TestPlatform.loginResult);
+    });
+
+    test('uses default scopes and empty params/null fields when omitted',
+        () async {
+      when(mockedPlatform.passkeyLogin(any))
+          .thenAnswer((final _) async => TestPlatform.loginResult);
+
+      await Auth0('test-domain', 'test-clientId').api.passkeyLogin(
+            challenge: TestPlatform.passkeyLoginChallengeResult,
+            credential: TestPlatform.createPasskeyCredentialResult,
+          );
+
+      final verificationResult = verify(mockedPlatform.passkeyLogin(captureAny))
+          .captured
+          .single as ApiRequest<AuthPasskeyLoginOptions>;
+      expect(verificationResult.options.scopes,
+          {'openid', 'profile', 'email', 'offline_access'});
+      expect(verificationResult.options.parameters, isEmpty);
+      expect(verificationResult.options.connection, isNull);
+      expect(verificationResult.options.audience, isNull);
+      expect(verificationResult.options.organization, isNull);
+    });
+  });
+
+  group('loginWithPasskey', () {
+    test('chains challenge, credential creation, and login', () async {
+      when(mockedPlatform.passkeyLoginChallenge(any)).thenAnswer(
+          (final _) async => TestPlatform.passkeyLoginChallengeResult);
+      when(mockedPlatform.createPasskeyCredential(any)).thenAnswer(
+          (final _) async => TestPlatform.createPasskeyCredentialResult);
+      when(mockedPlatform.passkeyLogin(any))
+          .thenAnswer((final _) async => TestPlatform.loginResult);
+
+      final result =
+          await Auth0('test-domain', 'test-clientId').api.loginWithPasskey(
+                connection: 'test-connection',
+                audience: 'test-audience',
+                scopes: {'test-scope1'},
+                organization: 'test-org',
+                parameters: {'test': 'test-parameter'},
+              );
+
+      // The challenge is requested first...
+      final challengeRequest =
+          verify(mockedPlatform.passkeyLoginChallenge(captureAny))
+              .captured
+              .single as ApiRequest<AuthPasskeyLoginChallengeOptions>;
+      expect(challengeRequest.options.connection, 'test-connection');
+      expect(challengeRequest.options.organization, 'test-org');
+
+      // ...then the credential is created from that challenge...
+      final createRequest =
+          verify(mockedPlatform.createPasskeyCredential(captureAny))
+              .captured
+              .single as ApiRequest<AuthPasskeyCreateCredentialOptions>;
+      expect(createRequest.options.challenge.authSession, 'test-auth-session');
+
+      // ...then the login exchanges the resulting credential for tokens.
+      final loginRequest = verify(mockedPlatform.passkeyLogin(captureAny))
+          .captured
+          .single as ApiRequest<AuthPasskeyLoginOptions>;
+      expect(loginRequest.options.credential.id, 'test-credential-id');
+      expect(loginRequest.options.connection, 'test-connection');
+      expect(loginRequest.options.audience, 'test-audience');
+      expect(loginRequest.options.scopes, {'test-scope1'});
+      expect(loginRequest.options.organization, 'test-org');
+      expect(loginRequest.options.parameters['test'], 'test-parameter');
+      expect(result, TestPlatform.loginResult);
     });
   });
 }

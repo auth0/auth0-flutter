@@ -62,6 +62,17 @@ class PasskeyCreateCredentialApiRequestHandler : PasskeyApiRequestHandler {
             return
         }
 
+        // Credential Manager must be invoked with an Activity-based context to
+        // launch its selector UI; the application context cannot present UI.
+        if (activity == null) {
+            result.error(
+                "PASSKEY_ERROR",
+                "Passkey authentication requires an Activity context, but none was available.",
+                null
+            )
+            return
+        }
+
         val publicKeyJson = Gson().toJson(authParamsPublicKey)
         val credentialOption = GetPublicKeyCredentialOption(publicKeyJson)
         val getCredRequest = GetCredentialRequest(listOf(credentialOption))
@@ -70,7 +81,7 @@ class PasskeyCreateCredentialApiRequestHandler : PasskeyApiRequestHandler {
         val executor = Executors.newSingleThreadExecutor()
 
         credentialManager.getCredentialAsync(
-            context,
+            activity,
             getCredRequest,
             CancellationSignal(),
             executor,
@@ -114,33 +125,43 @@ class PasskeyCreateCredentialApiRequestHandler : PasskeyApiRequestHandler {
     private fun handleGetCredentialFailure(exception: GetCredentialException): AuthenticationException {
         return when (exception) {
             is GetCredentialCancellationException -> {
+                // "a0.authentication_canceled" mirrors the SDK's internal
+                // ERROR_VALUE_AUTHENTICATION_CANCELED, which is not public.
                 AuthenticationException(
-                    AuthenticationException.ERROR_VALUE_AUTHENTICATION_CANCELED,
+                    "a0.authentication_canceled",
                     "The user cancelled passkey authentication operation."
                 )
             }
 
             is GetCredentialInterruptedException -> {
                 AuthenticationException(
+                    "a0.passkey.interrupted",
                     "Passkey authentication was interrupted. Please retry the call."
                 )
             }
 
             is GetCredentialUnsupportedException -> {
                 AuthenticationException(
+                    "a0.passkey.unsupported",
                     "Credential manager is unsupported. Please update the device."
                 )
             }
 
             is NoCredentialException -> {
                 AuthenticationException(
+                    "a0.passkey.no_credential",
                     "No viable credential is available for the user."
                 )
             }
 
             else -> {
+                // Surface the underlying Credential Manager error type and
+                // message rather than collapsing to a generic unknown error.
                 AuthenticationException(
-                    "An error occurred when trying to authenticate with passkey."
+                    "a0.passkey.${exception.type}",
+                    exception.errorMessage?.toString()
+                        ?: exception.message
+                        ?: "An error occurred when trying to authenticate with passkey."
                 )
             }
         }
