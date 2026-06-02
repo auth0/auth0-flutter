@@ -3,8 +3,6 @@ package com.auth0.auth0_flutter
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
-import com.auth0.android.provider.BrowserPicker
-import com.auth0.android.provider.CustomTabsOptions
 import com.auth0.android.provider.WebAuthProvider
 import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
@@ -389,6 +387,76 @@ class LoginWebAuthRequestHandlerTest {
         runRequestHandler(args) { _, builder ->
             verify(builder, never()).withCustomTabsOptions(CustomTabsOptions.newBuilder().withBrowserPicker(
                 BrowserPicker.newBuilder().withAllowedPackages(listOf<String>()).build()).build())
+        }
+    }
+
+    @Test
+    fun `handler should apply customTabsOptions when initialHeight is specified`() {
+        val args = hashMapOf<String, Any?>(
+            "customTabsOptions" to mapOf(
+                "initialHeight" to 700,
+                "allowedBrowsers" to listOf<String>()
+            )
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withCustomTabsOptions(any())
+        }
+    }
+
+    @Test
+    fun `handler should apply customTabsOptions when all partial tab options are specified`() {
+        val args = hashMapOf<String, Any?>(
+            "customTabsOptions" to mapOf(
+                "initialHeight" to 700,
+                "resizable" to false,
+                "toolbarCornerRadius" to 16,
+                "initialWidth" to 500,
+                "sideSheetBreakpoint" to 840,
+                "backgroundInteractionEnabled" to true,
+                "allowedBrowsers" to listOf("com.android.chrome")
+            )
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withCustomTabsOptions(any())
+        }
+    }
+
+    @Test
+    fun `handler should not apply customTabsOptions when not specified and allowedBrowsers is empty`() {
+        val args = hashMapOf<String, Any?>(
+            "allowedBrowsers" to listOf<String>()
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder, never()).withCustomTabsOptions(any())
+        }
+    }
+
+    @Test
+    fun `handler should prefer customTabsOptions over top-level allowedBrowsers`() {
+        val args = hashMapOf<String, Any?>(
+            "allowedBrowsers" to listOf("org.mozilla.firefox"),
+            "customTabsOptions" to mapOf(
+                "initialHeight" to 700,
+                "allowedBrowsers" to listOf("com.android.chrome")
+            )
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withCustomTabsOptions(any())
+        }
+    }
+
+    @Test
+    fun `handler should fall back to top-level allowedBrowsers when customTabsOptions is absent`() {
+        val args = hashMapOf<String, Any?>(
+            "allowedBrowsers" to listOf("com.android.chrome", "org.mozilla.firefox")
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withCustomTabsOptions(any())
         }
     }
 

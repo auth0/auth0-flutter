@@ -69,14 +69,11 @@ class WebAuthentication {
   /// domain –or custom domain, if you have one.
   /// * (iOS/macOS only): [useEphemeralSession] controls whether shared persistent
   /// storage is used for cookies. [Read more on the effects this setting has](https://github.com/auth0/auth0-flutter/blob/main/auth0_flutter/FAQ.md#2-how-can-i-disable-the-ios-login-alert-box).
+  /// * (android only): [customTabsOptions] configures Chrome Custom Tabs,
+  /// including Partial Custom Tabs (bottom sheet / side sheet) on Chrome 107+.
+  /// See [CustomTabsOptions] for available settings.
   /// * (android only): [allowedBrowsers] Defines an allowlist of browser
-  /// packages
-  /// When the user's default browser is in the allowlist, it uses the default
-  /// browser
-  /// When the user's default browser is not in the allowlist, but the user has
-  /// another allowed browser installed, the allowed browser is used instead
-  /// When the user's default browser is not in the allowlist, and the user has
-  /// no other allowed browser installed, an error is returned
+  /// packages. **Deprecated**: use [customTabsOptions] instead.
   /// * [useDPoP] enables DPoP for enhanced token security.
   /// See README for details. Defaults to `false`.
   Future<Credentials> login(
@@ -91,6 +88,8 @@ class WebAuthentication {
       final String? organizationId,
       final String? invitationUrl,
       final bool useHTTPS = false,
+      final CustomTabsOptions? customTabsOptions,
+      @Deprecated('Use customTabsOptions instead')
       final List<String> allowedBrowsers = const [],
       final bool useEphemeralSession = false,
       final Map<String, String> parameters = const {},
@@ -111,6 +110,8 @@ class WebAuthentication {
             useHTTPS: useHTTPS,
             useEphemeralSession: useEphemeralSession,
             safariViewController: safariViewController,
+            customTabsOptions: customTabsOptions,
+            // ignore: deprecated_member_use_from_same_package
             allowedBrowsers: allowedBrowsers,
             useDPoP: useDPoP)));
 
@@ -135,17 +136,15 @@ class WebAuthentication {
   /// versions of iOS and macOS. Requires an Associated Domain configured with
   /// the `webcredentials` service type, set to your Auth0 domain –or custom
   /// domain, if you have one.
+  /// * (android only): [customTabsOptions] configures Chrome Custom Tabs,
+  /// including Partial Custom Tabs (bottom sheet / side sheet) on Chrome 107+.
   /// * (android only): [allowedBrowsers] Defines an allowlist of browser
-  /// packages
-  /// When the user's default browser is in the allowlist, it uses the default
-  /// browser
-  /// When the user's default browser is not in the allowlist, but the user has
-  /// another allowed browser installed, the allowed browser is used instead
-  /// When the user's default browser is not in the allowlist, and the user has
-  /// no other allowed browser installed, an error is returned
+  /// packages. **Deprecated**: use [customTabsOptions] instead.
   Future<void> logout(
       {final String? returnTo,
       final bool useHTTPS = false,
+      final CustomTabsOptions? customTabsOptions,
+      @Deprecated('Use customTabsOptions instead')
       final List<String> allowedBrowsers = const [],
       final bool federated = false}) async {
     await Auth0FlutterWebAuthPlatform.instance.logout(_createWebAuthRequest(
@@ -154,6 +153,8 @@ class WebAuthentication {
           scheme: _scheme,
           useHTTPS: useHTTPS,
           federated: federated,
+          customTabsOptions: customTabsOptions,
+          // ignore: deprecated_member_use_from_same_package
           allowedBrowsers: allowedBrowsers),
     ));
     await _credentialsManager?.clearCredentials();

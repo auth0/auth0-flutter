@@ -45,6 +45,7 @@ export 'src/request/request_options.dart';
 export 'src/sso_credentials.dart';
 export 'src/user_agent.dart';
 export 'src/user_profile.dart';
+export 'src/web-auth/custom_tabs_options.dart';
 export 'src/web-auth/safari_view_controller.dart';
 export 'src/web-auth/web_auth_login_options.dart';
 export 'src/web-auth/web_auth_logout_options.dart';
