@@ -25,6 +25,7 @@ class SpyMyAccountAuthenticationMethods: MyAccountAuthenticationMethods {
     var token: String { "test-token" }
     var telemetry = Telemetry()
     var logger: Logger?
+    var dpop: DPoP?
 
     var getAuthMethodsResult: Result<[AuthenticationMethod], MyAccountError> = .success([])
     var getAuthMethodResult: Result<AuthenticationMethod, MyAccountError> = .success(makeAuthMethod())
@@ -52,6 +53,7 @@ class SpyMyAccountAuthenticationMethods: MyAccountAuthenticationMethods {
                                         recoveryCode: "RECOVERY123")
     )
     var confirmResult: Result<AuthenticationMethod, MyAccountError> = .success(makeAuthMethod(confirmed: true))
+    var updateResult: Result<AuthenticationMethod, MyAccountError> = .success(makeAuthMethod())
 
     var calledGetAuthMethods = false
     var calledGetAuthMethod = false
@@ -63,8 +65,10 @@ class SpyMyAccountAuthenticationMethods: MyAccountAuthenticationMethods {
     var calledEnrollPush = false
     var calledEnrollRecovery = false
     var calledConfirm = false
+    var calledUpdate = false
 
     var getAuthMethodIdArg: String?
+    var getAuthMethodsTypeArg: AuthenticationMethodType?
     var deleteIdArg: String?
     var enrollPhoneNumberArg: String?
     var enrollPhoneMethodArg: PreferredAuthenticationMethod?
@@ -72,10 +76,24 @@ class SpyMyAccountAuthenticationMethods: MyAccountAuthenticationMethods {
     var confirmIdArg: String?
     var confirmAuthSessionArg: String?
     var confirmOtpArg: String?
+    var updateIdArg: String?
+    var updateNameArg: String?
+    var updatePreferredArg: PreferredAuthenticationMethod?
 
-    func getAuthenticationMethods() -> Request<[AuthenticationMethod], MyAccountError> {
+    func getAuthenticationMethods(type: AuthenticationMethodType?) -> Request<[AuthenticationMethod], MyAccountError> {
         calledGetAuthMethods = true
+        getAuthMethodsTypeArg = type
         return request(getAuthMethodsResult)
+    }
+
+    func updateAuthenticationMethod(by id: String,
+                                    name: String?,
+                                    preferredAuthenticationMethod: PreferredAuthenticationMethod?) -> Request<AuthenticationMethod, MyAccountError> {
+        calledUpdate = true
+        updateIdArg = id
+        updateNameArg = name
+        updatePreferredArg = preferredAuthenticationMethod
+        return request(updateResult)
     }
 
     func getAuthenticationMethod(by id: String) -> Request<AuthenticationMethod, MyAccountError> {
@@ -174,6 +192,7 @@ class SpyMyAccount: MyAccount {
     var token: String { "test-token" }
     var telemetry = Telemetry()
     var logger: Logger?
+    var dpop: DPoP?
 
     let spy: SpyMyAccountAuthenticationMethods
     var authenticationMethods: MyAccountAuthenticationMethods { spy }

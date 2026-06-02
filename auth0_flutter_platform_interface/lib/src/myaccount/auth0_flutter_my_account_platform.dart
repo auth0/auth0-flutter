@@ -5,6 +5,7 @@ import 'authentication_method.dart';
 import 'enrollment_challenge.dart';
 import 'factor.dart';
 import 'method_channel_auth0_flutter_my_account.dart';
+import 'my_account_confirm_enrollment_options.dart';
 import 'my_account_delete_auth_method_options.dart';
 import 'my_account_enroll_email_options.dart';
 import 'my_account_enroll_phone_options.dart';
@@ -14,6 +15,7 @@ import 'my_account_enroll_totp_options.dart';
 import 'my_account_get_auth_method_options.dart';
 import 'my_account_get_auth_methods_options.dart';
 import 'my_account_get_factors_options.dart';
+import 'my_account_update_auth_method_options.dart';
 import 'my_account_verify_otp_options.dart';
 
 abstract class Auth0FlutterMyAccountPlatform extends PlatformInterface {
@@ -80,5 +82,16 @@ abstract class Auth0FlutterMyAccountPlatform extends PlatformInterface {
   Future<AuthenticationMethod> verifyOtp(
       final ApiRequest<MyAccountVerifyOtpOptions> request) {
     throw UnimplementedError('verifyOtp() has not been implemented');
+  }
+
+  Future<AuthenticationMethod> confirmEnrollment(
+      final ApiRequest<MyAccountConfirmEnrollmentOptions> request) {
+    throw UnimplementedError('confirmEnrollment() has not been implemented');
+  }
+
+  Future<AuthenticationMethod> updateAuthenticationMethod(
+      final ApiRequest<MyAccountUpdateAuthMethodOptions> request) {
+    throw UnimplementedError(
+        'updateAuthenticationMethod() has not been implemented');
   }
 }

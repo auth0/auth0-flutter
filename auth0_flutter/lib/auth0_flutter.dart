@@ -141,6 +141,10 @@ class Auth0 {
   /// Requires an [accessToken] with the appropriate `me` scopes and
   /// audience `https://{domain}/me/`.
   ///
+  /// Set [useDPoP] to `true` to secure My Account API requests with DPoP
+  /// (Demonstrating Proof-of-Possession) sender-constrained tokens. Defaults
+  /// to `false`.
+  ///
   /// **Note:** Only supported on mobile platforms (Android/iOS). Web is not
   /// supported.
   ///
@@ -151,8 +155,11 @@ class Auth0 {
   /// final myAccount = auth0.myAccount(accessToken: 'ACCESS_TOKEN');
   /// final methods = await myAccount.getAuthenticationMethods();
   /// ```
-  MyAccountApi myAccount({required final String accessToken}) =>
-      MyAccountApi(_account, _userAgent, accessToken);
+  MyAccountApi myAccount({
+    required final String accessToken,
+    final bool useDPoP = false,
+  }) =>
+      MyAccountApi(_account, _userAgent, accessToken, useDPoP: useDPoP);
 
   /// Generates DPoP (Demonstrating Proof-of-Possession) headers for making
   /// authenticated API calls with DPoP-bound tokens.

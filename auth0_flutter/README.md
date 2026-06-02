@@ -645,6 +645,7 @@ final credentials = await auth0.webAuthentication().login(
     'openid',
     'read:me:authentication_methods',
     'create:me:authentication_methods',
+    'update:me:authentication_methods',
     'delete:me:authentication_methods',
     'read:me:enrollments',
     'read:me:factors',
@@ -660,6 +661,11 @@ final myAccount = auth0.myAccount(accessToken: credentials.accessToken);
 // List enrolled MFA methods
 final methods = await myAccount.getAuthenticationMethods();
 
+// Optionally filter by type
+final phones = await myAccount.getAuthenticationMethods(
+  type: AuthenticationMethodType.phone,
+);
+
 // List available factors
 final factors = await myAccount.getFactors();
 
@@ -669,11 +675,18 @@ final challenge = await myAccount.enrollPhone(
   type: PhoneType.sms,
 );
 
-// Verify enrollment with OTP
+// Verify enrollment with OTP (phone, email, TOTP)
 await myAccount.verifyOtp(
   id: challenge.id,
   authSession: challenge.authSession,
   otp: '123456',
+);
+
+// Update an existing method (e.g. rename, change preferred channel)
+await myAccount.updateAuthenticationMethod(
+  id: 'method_id',
+  name: 'My personal phone',
+  preferredAuthenticationMethod: PhoneType.voice,
 );
 
 // Delete a method
@@ -681,6 +694,28 @@ await myAccount.deleteAuthenticationMethod(id: 'method_id');
 ```
 
 Other enrollment methods: `enrollEmail`, `enrollTotp`, `enrollPush`, `enrollRecoveryCode`.
+
+Push notification and recovery code enrollments are confirmed without an OTP using `confirmEnrollment`:
+
+```dart
+final challenge = await myAccount.enrollPush();
+// ...complete the out-of-band step, then:
+await myAccount.confirmEnrollment(
+  id: challenge.id,
+  authSession: challenge.authSession,
+);
+```
+
+##### DPoP
+
+To secure My Account API requests with [DPoP](https://www.rfc-editor.org/rfc/rfc9449.html) (Demonstrating Proof-of-Possession) sender-constrained tokens, set `useDPoP` to `true` when creating the client. It defaults to `false`. The DPoP key pair is generated and stored securely on the device (Keychain on iOS, Keystore on Android).
+
+```dart
+final myAccount = auth0.myAccount(
+  accessToken: credentials.accessToken,
+  useDPoP: true,
+);
+```
 
 Error handling:
 

@@ -6,6 +6,7 @@ import 'auth0_flutter_my_account_platform.dart';
 import 'authentication_method.dart';
 import 'enrollment_challenge.dart';
 import 'factor.dart';
+import 'my_account_confirm_enrollment_options.dart';
 import 'my_account_delete_auth_method_options.dart';
 import 'my_account_enroll_email_options.dart';
 import 'my_account_enroll_phone_options.dart';
@@ -16,6 +17,7 @@ import 'my_account_exception.dart';
 import 'my_account_get_auth_method_options.dart';
 import 'my_account_get_auth_methods_options.dart';
 import 'my_account_get_factors_options.dart';
+import 'my_account_update_auth_method_options.dart';
 import 'my_account_verify_otp_options.dart';
 
 const MethodChannel _channel =
@@ -34,6 +36,9 @@ const String myAccountEnrollTotpMethod = 'myAccount#enrollTotp';
 const String myAccountEnrollPushMethod = 'myAccount#enrollPush';
 const String myAccountEnrollRecoveryCodeMethod = 'myAccount#enrollRecoveryCode';
 const String myAccountVerifyOtpMethod = 'myAccount#verifyOtp';
+const String myAccountConfirmEnrollmentMethod = 'myAccount#confirmEnrollment';
+const String myAccountUpdateAuthMethodMethod =
+    'myAccount#updateAuthenticationMethod';
 
 class MethodChannelAuth0FlutterMyAccount
     extends Auth0FlutterMyAccountPlatform {
@@ -129,6 +134,24 @@ class MethodChannelAuth0FlutterMyAccount
       final ApiRequest<MyAccountVerifyOtpOptions> request) async {
     final Map<String, dynamic> result = await invokeMapRequest(
         method: myAccountVerifyOtpMethod, request: request);
+
+    return AuthenticationMethod.fromMap(result);
+  }
+
+  @override
+  Future<AuthenticationMethod> confirmEnrollment(
+      final ApiRequest<MyAccountConfirmEnrollmentOptions> request) async {
+    final Map<String, dynamic> result = await invokeMapRequest(
+        method: myAccountConfirmEnrollmentMethod, request: request);
+
+    return AuthenticationMethod.fromMap(result);
+  }
+
+  @override
+  Future<AuthenticationMethod> updateAuthenticationMethod(
+      final ApiRequest<MyAccountUpdateAuthMethodOptions> request) async {
+    final Map<String, dynamic> result = await invokeMapRequest(
+        method: myAccountUpdateAuthMethodMethod, request: request);
 
     return AuthenticationMethod.fromMap(result);
   }

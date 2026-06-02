@@ -2,6 +2,7 @@ package com.auth0.auth0_flutter.request_handlers.my_account
 
 import com.auth0.android.Auth0
 import com.auth0.android.callback.Callback
+import com.auth0.android.myaccount.AuthenticationMethodType
 import com.auth0.android.myaccount.MyAccountAPIClient
 import com.auth0.android.myaccount.MyAccountException
 import com.auth0.android.request.Request
@@ -17,7 +18,7 @@ import org.robolectric.RobolectricTestRunner
 class GetAuthenticationMethodsRequestHandlerTest {
 
     @Test
-    fun `should call getAuthenticationMethods on the client`() {
+    fun `should call getAuthenticationMethods with null type when not provided`() {
         val handler = GetAuthenticationMethodsRequestHandler()
         val mockResult = mock<Result>()
         val mockAccount = mock<Auth0>()
@@ -25,11 +26,30 @@ class GetAuthenticationMethodsRequestHandlerTest {
         val mockRequest = mock<Request<List<AuthenticationMethod>, MyAccountException>>()
         val request = MethodCallRequest(account = mockAccount, hashMapOf<String, Any>())
 
-        whenever(mockClient.getAuthenticationMethods()).thenReturn(mockRequest)
+        whenever(mockClient.getAuthenticationMethods(anyOrNull())).thenReturn(mockRequest)
 
         handler.handle(mockClient, request, mockResult)
 
-        verify(mockClient).getAuthenticationMethods()
+        verify(mockClient).getAuthenticationMethods(null)
+    }
+
+    @Test
+    fun `should map the type filter and pass it to the client`() {
+        val handler = GetAuthenticationMethodsRequestHandler()
+        val mockResult = mock<Result>()
+        val mockAccount = mock<Auth0>()
+        val mockClient = mock<MyAccountAPIClient>()
+        val mockRequest = mock<Request<List<AuthenticationMethod>, MyAccountException>>()
+        val request = MethodCallRequest(
+            account = mockAccount,
+            hashMapOf<String, Any>("type" to "push-notification")
+        )
+
+        whenever(mockClient.getAuthenticationMethods(anyOrNull())).thenReturn(mockRequest)
+
+        handler.handle(mockClient, request, mockResult)
+
+        verify(mockClient).getAuthenticationMethods(AuthenticationMethodType.PUSH)
     }
 
     @Test
@@ -46,7 +66,7 @@ class GetAuthenticationMethodsRequestHandlerTest {
         whenever(mockMethod.type).thenReturn("phone")
         whenever(mockMethod.createdAt).thenReturn("2026-01-01T00:00:00.000Z")
 
-        whenever(mockClient.getAuthenticationMethods()).thenReturn(mockRequest)
+        whenever(mockClient.getAuthenticationMethods(anyOrNull())).thenReturn(mockRequest)
         doAnswer {
             val callback = it.getArgument<Callback<List<AuthenticationMethod>, MyAccountException>>(0)
             callback.onSuccess(listOf(mockMethod))
@@ -72,7 +92,7 @@ class GetAuthenticationMethodsRequestHandlerTest {
         whenever(exception.statusCode).thenReturn(403)
         whenever(exception.isNetworkError).thenReturn(false)
 
-        whenever(mockClient.getAuthenticationMethods()).thenReturn(mockRequest)
+        whenever(mockClient.getAuthenticationMethods(anyOrNull())).thenReturn(mockRequest)
         doAnswer {
             val callback = it.getArgument<Callback<List<AuthenticationMethod>, MyAccountException>>(0)
             callback.onFailure(exception)

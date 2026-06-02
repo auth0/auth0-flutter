@@ -61,7 +61,9 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     EnrollTotpRequestHandler(),
     EnrollPushRequestHandler(),
     EnrollRecoveryCodeRequestHandler(),
-    VerifyOtpRequestHandler()
+    VerifyOtpRequestHandler(),
+    ConfirmEnrollmentRequestHandler(),
+    UpdateAuthenticationMethodRequestHandler()
   ))
 
   private val processDeathCallback = object : Callback<Credentials, AuthenticationException> {

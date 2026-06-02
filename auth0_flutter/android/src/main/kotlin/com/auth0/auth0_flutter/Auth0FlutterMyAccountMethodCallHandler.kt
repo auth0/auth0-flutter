@@ -20,7 +20,12 @@ class Auth0FlutterMyAccountMethodCallHandler(
         val handler = myAccountRequestHandlers.find { it.method == call.method }
         if (handler != null) {
             val accessToken = request.data["accessToken"] as? String ?: ""
-            val client = MyAccountAPIClient(request.account, accessToken)
+            val useDPoP = request.data["useDPoP"] as? Boolean ?: false
+            val client = MyAccountAPIClient(request.account, accessToken).apply {
+                if (useDPoP) {
+                    useDPoP(context)
+                }
+            }
 
             handler.handle(client, request, result)
         } else {

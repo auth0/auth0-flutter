@@ -17,6 +17,16 @@ class MyAccountGetAuthMethodsMethodHandlerTests: XCTestCase {
         let expectation = self.expectation(description: "Called SDK method")
         sut.handle(with: [:]) { _ in
             XCTAssertTrue(self.spy.calledGetAuthMethods)
+            XCTAssertNil(self.spy.getAuthMethodsTypeArg)
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
+    }
+
+    func testPassesTypeFilterToSDK() {
+        let expectation = self.expectation(description: "Type filter passed to SDK")
+        sut.handle(with: ["type": "push-notification"]) { _ in
+            XCTAssertEqual(self.spy.getAuthMethodsTypeArg, .pushNotification)
             expectation.fulfill()
         }
         wait(for: [expectation])

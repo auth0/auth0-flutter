@@ -24,10 +24,16 @@ class MyAccountApi {
   final Account _account;
   final UserAgent _userAgent;
   final String _accessToken;
+  final bool _useDPoP;
 
-  MyAccountApi(this._account, this._userAgent, this._accessToken);
+  MyAccountApi(this._account, this._userAgent, this._accessToken,
+      {final bool useDPoP = false})
+      : _useDPoP = useDPoP;
 
   /// Lists all authentication methods enrolled by the user.
+  ///
+  /// Optionally filter the results by [type] (e.g.
+  /// [AuthenticationMethodType.phone]).
   ///
   /// Requires an access token with the `read:me:authentication_methods` scope
   /// and audience `https://{domain}/me/`.
@@ -36,11 +42,17 @@ class MyAccountApi {
   ///
   /// ```dart
   /// final methods = await myAccount.getAuthenticationMethods();
+  ///
+  /// // Filtered by type
+  /// final phones = await myAccount.getAuthenticationMethods(
+  ///   type: AuthenticationMethodType.phone,
+  /// );
   /// ```
-  Future<List<AuthenticationMethod>> getAuthenticationMethods() =>
+  Future<List<AuthenticationMethod>> getAuthenticationMethods(
+          {final AuthenticationMethodType? type}) =>
       Auth0FlutterMyAccountPlatform.instance.getAuthenticationMethods(
           _createApiRequest(MyAccountGetAuthMethodsOptions(
-              accessToken: _accessToken)));
+              accessToken: _accessToken, type: type)));
 
   /// Gets a specific authentication method by [id].
   ///
@@ -158,7 +170,7 @@ class MyAccountApi {
   /// Initiates push notification enrollment.
   ///
   /// Returns an [EnrollmentChallenge] containing the enrollment `id` and
-  /// `authSession` needed to complete the enrollment.
+  /// `authSession` needed to complete the enrollment via [confirmEnrollment].
   ///
   /// Requires an access token with the `create:me:authentication_methods`
   /// scope and audience `https://{domain}/me/`.
@@ -226,8 +238,76 @@ class MyAccountApi {
               authSession: authSession,
               otp: otp)));
 
+  /// Confirms an enrollment that does not require a one-time password, namely
+  /// push notification and recovery code enrollments.
+  ///
+  /// Use this after calling [enrollPush] or [enrollRecoveryCode]. For factors
+  /// that require an OTP (phone, email, TOTP), use [verifyOtp] instead.
+  ///
+  /// Returns the confirmed [AuthenticationMethod] after successful
+  /// confirmation.
+  ///
+  /// [id] and [authSession] are obtained from the [EnrollmentChallenge]
+  /// returned by the enrollment method.
+  ///
+  /// Requires an access token with the `create:me:authentication_methods`
+  /// scope and audience `https://{domain}/me/`.
+  ///
+  /// ## Usage example
+  ///
+  /// ```dart
+  /// final method = await myAccount.confirmEnrollment(
+  ///   id: challenge.id,
+  ///   authSession: challenge.authSession,
+  /// );
+  /// ```
+  Future<AuthenticationMethod> confirmEnrollment({
+    required final String id,
+    required final String authSession,
+  }) =>
+      Auth0FlutterMyAccountPlatform.instance.confirmEnrollment(
+          _createApiRequest(MyAccountConfirmEnrollmentOptions(
+              accessToken: _accessToken,
+              id: id,
+              authSession: authSession)));
+
+  /// Updates an existing authentication method identified by [id].
+  ///
+  /// Pass a new [name] to rename the method, and/or a new
+  /// [preferredAuthenticationMethod] (SMS or voice) for phone authenticators.
+  /// Omitted parameters are left unchanged.
+  ///
+  /// Returns the updated [AuthenticationMethod].
+  ///
+  /// Requires an access token with the `update:me:authentication_methods`
+  /// scope and audience `https://{domain}/me/`.
+  ///
+  /// ## Usage example
+  ///
+  /// ```dart
+  /// final method = await myAccount.updateAuthenticationMethod(
+  ///   id: 'auth_method_id',
+  ///   name: 'My phone',
+  ///   preferredAuthenticationMethod: PhoneType.voice,
+  /// );
+  /// ```
+  Future<AuthenticationMethod> updateAuthenticationMethod({
+    required final String id,
+    final String? name,
+    final PhoneType? preferredAuthenticationMethod,
+  }) =>
+      Auth0FlutterMyAccountPlatform.instance.updateAuthenticationMethod(
+          _createApiRequest(MyAccountUpdateAuthMethodOptions(
+              accessToken: _accessToken,
+              id: id,
+              name: name,
+              preferredAuthenticationMethod: preferredAuthenticationMethod)));
+
   ApiRequest<TOptions> _createApiRequest<TOptions extends RequestOptions>(
           final TOptions options) =>
       ApiRequest<TOptions>(
-          account: _account, options: options, userAgent: _userAgent);
+          account: _account,
+          options: options,
+          userAgent: _userAgent,
+          useDPoP: _useDPoP);
 }

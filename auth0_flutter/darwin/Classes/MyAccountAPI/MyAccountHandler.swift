@@ -6,7 +6,7 @@ import Flutter
 import FlutterMacOS
 #endif
 
-typealias MyAccountClientProvider = (_ account: Account, _ userAgent: UserAgent, _ accessToken: String) -> MyAccount
+typealias MyAccountClientProvider = (_ account: Account, _ userAgent: UserAgent, _ accessToken: String, _ useDPoP: Bool) -> MyAccount
 typealias MyAccountMethodHandlerProvider = (_ method: MyAccountHandler.Method, _ client: MyAccount) -> MethodHandler
 
 public class MyAccountHandler: NSObject, FlutterPlugin {
@@ -21,6 +21,8 @@ public class MyAccountHandler: NSObject, FlutterPlugin {
         case enrollPush = "myAccount#enrollPush"
         case enrollRecoveryCode = "myAccount#enrollRecoveryCode"
         case verifyOtp = "myAccount#verifyOtp"
+        case confirmEnrollment = "myAccount#confirmEnrollment"
+        case updateAuthenticationMethod = "myAccount#updateAuthenticationMethod"
     }
 
     private static let channelName = "auth0.com/auth0_flutter/my_account"
@@ -39,8 +41,11 @@ public class MyAccountHandler: NSObject, FlutterPlugin {
         registrar.addMethodCallDelegate(handler, channel: channel)
     }
 
-    var clientProvider: MyAccountClientProvider = { account, userAgent, accessToken in
+    var clientProvider: MyAccountClientProvider = { account, userAgent, accessToken, useDPoP in
         var client = Auth0.myAccount(token: accessToken, domain: account.domain)
+        if useDPoP {
+            client = client.useDPoP()
+        }
         return client
     }
 
@@ -56,6 +61,8 @@ public class MyAccountHandler: NSObject, FlutterPlugin {
         case .enrollPush: return MyAccountEnrollPushMethodHandler(client: client)
         case .enrollRecoveryCode: return MyAccountEnrollRecoveryCodeMethodHandler(client: client)
         case .verifyOtp: return MyAccountVerifyOtpMethodHandler(client: client)
+        case .confirmEnrollment: return MyAccountConfirmEnrollmentMethodHandler(client: client)
+        case .updateAuthenticationMethod: return MyAccountUpdateAuthMethodMethodHandler(client: client)
         }
     }
 
@@ -78,7 +85,8 @@ public class MyAccountHandler: NSObject, FlutterPlugin {
             return result(FlutterError(from: .requiredArgumentMissing("accessToken")))
         }
 
-        let client = clientProvider(account, userAgent, accessToken)
+        let useDPoP = arguments["useDPoP"] as? Bool ?? false
+        let client = clientProvider(account, userAgent, accessToken, useDPoP)
         let methodHandler = methodHandlerProvider(method, client)
 
         methodHandler.handle(with: arguments, callback: result)
