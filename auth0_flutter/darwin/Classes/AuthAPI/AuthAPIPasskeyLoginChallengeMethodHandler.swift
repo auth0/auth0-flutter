@@ -25,6 +25,11 @@ struct AuthAPIPasskeyLoginChallengeMethodHandler: MethodHandler {
             .start {
                 switch $0 {
                 case let .success(challenge):
+                    // Unlike Android, the iOS Auth0.swift challenge only exposes
+                    // the relying-party id and challenge data; `timeout` and
+                    // `userVerification` are not surfaced by the native API and
+                    // are not needed to build the assertion request here. The
+                    // asymmetry with the Android payload is intentional.
                     let response: [String: Any] = [
                         "authSession": challenge.authenticationSession,
                         "authParamsPublicKey": [

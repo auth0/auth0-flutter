@@ -20,7 +20,6 @@ import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.toMap
 import com.google.gson.Gson
 import io.flutter.plugin.common.MethodChannel
-import java.util.concurrent.Executors
 
 private const val AUTH_PASSKEY_CREATE_CREDENTIAL_METHOD = "auth#passkeyCreateCredential"
 
@@ -33,6 +32,8 @@ private const val AUTH_PASSKEY_CREATE_CREDENTIAL_METHOD = "auth#passkeyCreateCre
 class PasskeyCreateCredentialApiRequestHandler : PasskeyApiRequestHandler {
     override val method: String = AUTH_PASSKEY_CREATE_CREDENTIAL_METHOD
 
+    private val gson = Gson()
+
     override fun handle(
         api: AuthenticationAPIClient,
         request: MethodCallRequest,
@@ -41,44 +42,44 @@ class PasskeyCreateCredentialApiRequestHandler : PasskeyApiRequestHandler {
         activity: Activity?
     ) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            result.error(
-                "PASSKEY_ERROR",
-                "Passkey authentication requires Android 9 or higher",
-                null
-            )
+            failWith(result, "a0.passkey.unsupported", "Passkey authentication requires Android 9 or higher")
             return
         }
 
         val args = request.data
         val challengeMap = args["challenge"] as? Map<*, *>
         if (challengeMap == null) {
-            result.error("PASSKEY_ERROR", "Missing challenge argument", null)
+            failWith(result, "a0.passkey.invalid_request", "Missing challenge argument")
             return
         }
 
         val authParamsPublicKey = challengeMap["authParamsPublicKey"] as? Map<*, *>
         if (authParamsPublicKey == null) {
-            result.error("PASSKEY_ERROR", "Missing authParamsPublicKey in challenge", null)
+            failWith(result, "a0.passkey.invalid_request", "Missing authParamsPublicKey in challenge")
             return
         }
 
         // Credential Manager must be invoked with an Activity-based context to
         // launch its selector UI; the application context cannot present UI.
         if (activity == null) {
-            result.error(
-                "PASSKEY_ERROR",
-                "Passkey authentication requires an Activity context, but none was available.",
-                null
+            failWith(
+                result,
+                "a0.passkey.invalid_request",
+                "Passkey authentication requires an Activity context, but none was available."
             )
             return
         }
 
-        val publicKeyJson = Gson().toJson(authParamsPublicKey)
+        val publicKeyJson = gson.toJson(authParamsPublicKey)
         val credentialOption = GetPublicKeyCredentialOption(publicKeyJson)
         val getCredRequest = GetCredentialRequest(listOf(credentialOption))
 
         val credentialManager = CredentialManager.create(context)
-        val executor = Executors.newSingleThreadExecutor()
+        // Credential Manager invokes the callback on the supplied executor;
+        // a MethodChannel.Result must be resolved on the main thread, so post
+        // back to the main looper rather than a background executor.
+        // `mainExecutor` is available from API 28, matching the guard above.
+        val executor = context.mainExecutor
 
         credentialManager.getCredentialAsync(
             activity,
@@ -102,7 +103,7 @@ class PasskeyCreateCredentialApiRequestHandler : PasskeyApiRequestHandler {
                             // authenticationResponseJson already follows the
                             // standard WebAuthn JSON format expected by the
                             // login step.
-                            val credentialMap: Map<*, *> = Gson().fromJson(
+                            val credentialMap: Map<*, *> = gson.fromJson(
                                 credential.authenticationResponseJson,
                                 Map::class.java
                             )
@@ -110,16 +111,24 @@ class PasskeyCreateCredentialApiRequestHandler : PasskeyApiRequestHandler {
                         }
 
                         else -> {
-                            result.error(
-                                "PASSKEY_ERROR",
-                                "Received unrecognized credential type ${credential.type}",
-                                null
+                            failWith(
+                                result,
+                                "a0.passkey.unsupported",
+                                "Received unrecognized credential type ${credential.type}"
                             )
                         }
                     }
                 }
             }
         )
+    }
+
+    // Surfaces validation/credential errors through the same
+    // AuthenticationException shape used for runtime failures, so the Dart side
+    // always receives a populated `details` map.
+    private fun failWith(result: MethodChannel.Result, code: String, message: String) {
+        val exception = AuthenticationException(code, message)
+        result.error(exception.getCode(), exception.getDescription(), exception.toMap())
     }
 
     private fun handleGetCredentialFailure(exception: GetCredentialException): AuthenticationException {

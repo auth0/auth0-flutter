@@ -41,6 +41,50 @@ extension AuthAPIPasskeyLoginMethodHandlerTests {
     }
 }
 
+// MARK: - Reconstruction Errors
+
+@available(iOS 16.6, macOS 13.5, visionOS 1.0, *)
+extension AuthAPIPasskeyLoginMethodHandlerTests {
+    func testProducesErrorWhenChallengeCannotBeReconstructed() {
+        var args = arguments()
+        // Drop `rpId` so the challenge cannot be reconstructed.
+        args[Argument.challenge.rawValue] = [
+            "authSession": "test-auth-session",
+            "authParamsPublicKey": ["challenge": "dGVzdC1jaGFsbGVuZ2U"]
+        ]
+        let expectation = self.expectation(description: "challenge cannot be reconstructed")
+        sut.handle(with: args) { result in
+            guard let error = result as? FlutterError else {
+                return XCTFail("The handler did not produce a FlutterError")
+            }
+            XCTAssertEqual(error.code, "PASSKEY_ERROR")
+            XCTAssertEqual(error.message, "Failed to reconstruct login challenge")
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
+    }
+
+    func testProducesErrorWhenPasskeyCannotBeReconstructed() {
+        var args = arguments()
+        // Drop the `response` object so the passkey cannot be reconstructed.
+        args[Argument.credential.rawValue] = [
+            "id": "dGVzdC1jcmVkZW50aWFs",
+            "rawId": "dGVzdC1jcmVkZW50aWFs",
+            "type": "public-key"
+        ]
+        let expectation = self.expectation(description: "passkey cannot be reconstructed")
+        sut.handle(with: args) { result in
+            guard let error = result as? FlutterError else {
+                return XCTFail("The handler did not produce a FlutterError")
+            }
+            XCTAssertEqual(error.code, "PASSKEY_ERROR")
+            XCTAssertEqual(error.message, "Failed to reconstruct passkey credential")
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
+    }
+}
+
 // MARK: - Arguments
 
 @available(iOS 16.6, macOS 13.5, visionOS 1.0, *)

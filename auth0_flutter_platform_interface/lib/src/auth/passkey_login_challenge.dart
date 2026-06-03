@@ -1,5 +1,15 @@
+/// A challenge issued by Auth0 to begin a passkey login.
+///
+/// Returned by `passkeyLoginChallenge` and passed on to
+/// `createPasskeyCredential` (to present the OS passkey UI) and `passkeyLogin`
+/// (to exchange the resulting credential for tokens).
 class PasskeyLoginChallenge {
+  /// The authentication session token that ties the challenge to the
+  /// subsequent token exchange.
   final String authSession;
+
+  /// The WebAuthn public-key request options (e.g. `challenge`, `rpId`) used to
+  /// drive the platform authenticator.
   final Map<String, dynamic> authParamsPublicKey;
 
   const PasskeyLoginChallenge({

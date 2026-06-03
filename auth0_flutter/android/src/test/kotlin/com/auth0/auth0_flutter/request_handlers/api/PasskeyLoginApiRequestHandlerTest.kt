@@ -53,7 +53,11 @@ class PasskeyLoginApiRequestHandlerTest {
 
         handler.handle(mockApi, request, mockResult, mockContext, null)
 
-        verify(mockResult).error(eq("PASSKEY_ERROR"), eq("Missing challenge argument"), anyOrNull())
+        verify(mockResult).error(
+            eq("a0.passkey.invalid_request"),
+            eq("Missing challenge argument"),
+            anyOrNull()
+        )
     }
 
     @Test
@@ -74,7 +78,7 @@ class PasskeyLoginApiRequestHandlerTest {
         handler.handle(mockApi, request, mockResult, mockContext, null)
 
         verify(mockResult).error(
-            eq("PASSKEY_ERROR"),
+            eq("a0.passkey.invalid_request"),
             eq("Missing authSession in challenge"),
             anyOrNull()
         )
@@ -92,7 +96,11 @@ class PasskeyLoginApiRequestHandlerTest {
 
         handler.handle(mockApi, request, mockResult, mockContext, null)
 
-        verify(mockResult).error(eq("PASSKEY_ERROR"), eq("Missing credential argument"), anyOrNull())
+        verify(mockResult).error(
+            eq("a0.passkey.invalid_request"),
+            eq("Missing credential argument"),
+            anyOrNull()
+        )
     }
 
     @Test

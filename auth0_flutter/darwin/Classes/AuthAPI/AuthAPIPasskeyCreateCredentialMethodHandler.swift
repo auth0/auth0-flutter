@@ -45,7 +45,9 @@ class AuthAPIPasskeyCreateCredentialMethodHandler: NSObject, MethodHandler,
         self.pendingCallback = callback
         self.selfRetain = self
 
+        #if DEBUG
         NSLog("[Auth0Passkey] createCredential: presenting UI for rpId=\(relyingPartyId)")
+        #endif
 
         let provider = ASAuthorizationPlatformPublicKeyCredentialProvider(
             relyingPartyIdentifier: relyingPartyId
@@ -69,7 +71,9 @@ class AuthAPIPasskeyCreateCredentialMethodHandler: NSObject, MethodHandler,
 
     func authorizationController(controller: ASAuthorizationController,
                                  didCompleteWithAuthorization authorization: ASAuthorization) {
+        #if DEBUG
         NSLog("[Auth0Passkey] createCredential: didCompleteWithAuthorization")
+        #endif
         guard let callback = pendingCallback else { return }
 
         guard let credential = authorization.credential
@@ -81,10 +85,28 @@ class AuthAPIPasskeyCreateCredentialMethodHandler: NSObject, MethodHandler,
             return
         }
 
+        // `authenticatorData` and `signature` are mandatory for a valid WebAuthn
+        // assertion. Fail fast with a clear client error rather than forwarding
+        // empty data, which would only surface as an opaque /oauth/token reject.
+        guard let rawAuthenticatorData = credential.rawAuthenticatorData else {
+            callback(FlutterError(code: "PASSKEY_ERROR",
+                                  message: "Passkey assertion is missing authenticator data",
+                                  details: nil))
+            cleanup()
+            return
+        }
+        guard let signature = credential.signature else {
+            callback(FlutterError(code: "PASSKEY_ERROR",
+                                  message: "Passkey assertion is missing signature",
+                                  details: nil))
+            cleanup()
+            return
+        }
+
         var response: [String: Any] = [
             "clientDataJSON": credential.rawClientDataJSON.base64URLEncodedString(),
-            "authenticatorData": (credential.rawAuthenticatorData ?? Data()).base64URLEncodedString(),
-            "signature": (credential.signature ?? Data()).base64URLEncodedString()
+            "authenticatorData": rawAuthenticatorData.base64URLEncodedString(),
+            "signature": signature.base64URLEncodedString()
         ]
         if let userID = credential.userID {
             response["userHandle"] = userID.base64URLEncodedString()
@@ -105,7 +127,9 @@ class AuthAPIPasskeyCreateCredentialMethodHandler: NSObject, MethodHandler,
 
     func authorizationController(controller: ASAuthorizationController,
                                  didCompleteWithError error: Error) {
+        #if DEBUG
         NSLog("[Auth0Passkey] createCredential: didCompleteWithError \(error.localizedDescription)")
+        #endif
         guard let callback = pendingCallback else { return }
         let authError = error as? ASAuthorizationError
         let code = authError?.code == .canceled ? "a0.sdk.cancel" : "PASSKEY_ERROR"

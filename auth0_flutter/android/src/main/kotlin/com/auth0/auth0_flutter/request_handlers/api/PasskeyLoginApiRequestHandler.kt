@@ -23,6 +23,8 @@ private const val AUTH_PASSKEY_LOGIN_METHOD = "auth#passkeyLogin"
 class PasskeyLoginApiRequestHandler : PasskeyApiRequestHandler {
     override val method: String = AUTH_PASSKEY_LOGIN_METHOD
 
+    private val gson = Gson()
+
     override fun handle(
         api: AuthenticationAPIClient,
         request: MethodCallRequest,
@@ -31,30 +33,26 @@ class PasskeyLoginApiRequestHandler : PasskeyApiRequestHandler {
         activity: Activity?
     ) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            result.error(
-                "PASSKEY_ERROR",
-                "Passkey authentication requires Android 9 or higher",
-                null
-            )
+            failWith(result, "a0.passkey.unsupported", "Passkey authentication requires Android 9 or higher")
             return
         }
 
         val args = request.data
         val challengeMap = args["challenge"] as? Map<*, *>
         if (challengeMap == null) {
-            result.error("PASSKEY_ERROR", "Missing challenge argument", null)
+            failWith(result, "a0.passkey.invalid_request", "Missing challenge argument")
             return
         }
 
         val authSession = challengeMap["authSession"] as? String
         if (authSession == null) {
-            result.error("PASSKEY_ERROR", "Missing authSession in challenge", null)
+            failWith(result, "a0.passkey.invalid_request", "Missing authSession in challenge")
             return
         }
 
         val credentialMap = args["credential"] as? Map<*, *>
         if (credentialMap == null) {
-            result.error("PASSKEY_ERROR", "Missing credential argument", null)
+            failWith(result, "a0.passkey.invalid_request", "Missing credential argument")
             return
         }
 
@@ -68,7 +66,7 @@ class PasskeyLoginApiRequestHandler : PasskeyApiRequestHandler {
         // signinWithPasskey accepts the WebAuthn authentication response as a
         // JSON string in the standard format produced by the create-credential
         // step.
-        val authResponseJson = Gson().toJson(credentialMap)
+        val authResponseJson = gson.toJson(credentialMap)
 
         val loginBuilder = api.signinWithPasskey(
             authSession,
@@ -113,5 +111,13 @@ class PasskeyLoginApiRequestHandler : PasskeyApiRequestHandler {
                 )
             }
         })
+    }
+
+    // Surfaces validation errors through the same AuthenticationException shape
+    // used for runtime failures, so the Dart side always receives a populated
+    // `details` map.
+    private fun failWith(result: MethodChannel.Result, code: String, message: String) {
+        val exception = AuthenticationException(code, message)
+        result.error(exception.getCode(), exception.getDescription(), exception.toMap())
     }
 }
