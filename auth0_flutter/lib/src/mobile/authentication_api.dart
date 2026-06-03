@@ -445,10 +445,9 @@ class AuthenticationApi {
 
   /// Requests a challenge for logging in with an existing passkey.
   ///
-  /// This is the first step of the isolated passkey login flow. Pass the
-  /// returned [PasskeyLoginChallenge] to [createPasskeyCredential] to present
-  /// the OS passkey UI, then to [passkeyLogin] to exchange it for tokens. Use
-  /// [loginWithPasskey] if you do not need control over the UI between steps.
+  /// This is the first step of the passkey login flow. Pass the returned
+  /// [PasskeyLoginChallenge] to [createPasskeyCredential] to present the OS
+  /// passkey UI, then to [passkeyLogin] to exchange it for tokens.
   ///
   /// ## Endpoint
   /// https://auth0.com/docs/api/authentication#passkey
@@ -520,69 +519,6 @@ class AuthenticationApi {
         organization: organization,
         parameters: parameters,
       )));
-
-  /// Logs in an existing user with a passkey in a single call.
-  ///
-  /// Combines [passkeyLoginChallenge], [createPasskeyCredential], and
-  /// [passkeyLogin] into one call: it requests a login challenge, presents the
-  /// operating system's passkey UI (Face ID / Touch ID, Android Credential
-  /// Manager), and exchanges the resulting credential for Auth0 tokens. Use the
-  /// three individual methods instead if you need to render custom UI between
-  /// the stages.
-  ///
-  /// Supported on iOS 16.6+ / macOS 13.5+ and Android API 28+.
-  ///
-  /// ## Notes
-  ///
-  /// * [connection] is the name of the database connection configured with
-  /// passkeys. Defaults to the application's first passkey connection when
-  /// omitted.
-  /// * [audience] relates to the API Identifier you want to reference in your
-  /// access tokens. See [API settings](https://auth0.com/docs/get-started/apis/api-settings)
-  /// to learn more.
-  /// * [scopes] defaults to `openid profile email offline_access`. You can
-  /// override these scopes, but `openid` is always requested regardless of this
-  /// setting.
-  /// * [organization] is the optional Auth0 organization to log in to.
-  /// * [parameters] can be used to send custom parameters to the endpoint to be
-  /// picked up in a Rule or Action.
-  ///
-  /// ## Usage example
-  ///
-  /// ```dart
-  /// final result = await auth0.api.loginWithPasskey(
-  ///   connection: 'Username-Password-Authentication',
-  /// );
-  ///
-  /// final accessToken = result.accessToken;
-  /// ```
-  Future<Credentials> loginWithPasskey({
-    final String? connection,
-    final String? audience,
-    final Set<String> scopes = const {
-      'openid',
-      'profile',
-      'email',
-      'offline_access'
-    },
-    final String? organization,
-    final Map<String, String> parameters = const {},
-  }) async {
-    final challenge = await passkeyLoginChallenge(
-      connection: connection,
-      organization: organization,
-    );
-    final credential = await createPasskeyCredential(challenge: challenge);
-    return passkeyLogin(
-      challenge: challenge,
-      credential: credential,
-      connection: connection,
-      audience: audience,
-      scopes: scopes,
-      organization: organization,
-      parameters: parameters,
-    );
-  }
 
   ApiRequest<TOptions> _createApiRequest<TOptions extends RequestOptions>(
           final TOptions options) =>

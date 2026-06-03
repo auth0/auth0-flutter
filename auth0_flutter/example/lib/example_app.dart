@@ -222,60 +222,11 @@ class _ExampleAppState extends State<ExampleApp> {
     });
   }
 
-  Future<void> passkeyLogin() async {
-    String output;
-    // Run the single-call flow as explicit steps so any failure points to the
-    // exact stage (challenge / credential / token exchange).
-    var step = 'challenge';
-    try {
-      setState(() => _output = 'Step 1/3: requesting challenge...');
-      final challenge = await auth0.api.passkeyLoginChallenge(
-        connection: dotenv.env['AUTH0_PASSKEY_CONNECTION'],
-      );
-
-      step = 'createCredential';
-      setState(() => _output = 'Step 2/3: presenting passkey UI...');
-      final credential = await auth0.api.createPasskeyCredential(
-        challenge: challenge,
-      );
-
-      step = 'passkeyLogin';
-      setState(() => _output = 'Step 3/3: exchanging for tokens...');
-      final result = await auth0.api.passkeyLogin(
-        challenge: challenge,
-        credential: credential,
-        connection: dotenv.env['AUTH0_PASSKEY_CONNECTION'],
-      );
-
-      setState(() {
-        _isLoggedIn = true;
-      });
-      output = 'Passkey Login Successful!\n\n'
-          'Access Token: ${_preview(result.accessToken)}\n'
-          'ID Token: ${_preview(result.idToken)}\n'
-          'Token Type: ${result.tokenType}\n'
-          'Expires At: ${result.expiresAt}\n'
-          'User: ${result.user.name ?? result.user.email ?? result.user.sub}';
-    } on ApiException catch (e) {
-      output = 'Passkey Login Error (step: $step):\n'
-          'Code: ${e.code}\n'
-          'Message: ${e.message}\n'
-          'Details: ${e.details}';
-    } catch (e) {
-      output = 'Passkey Login Failed (step: $step):\n$e';
-    }
-
-    if (!mounted) return;
-    setState(() {
-      _output = output;
-    });
-  }
-
   /// Returns a short, safe preview of a token for display.
   String _preview(final String token) =>
       token.length <= 20 ? token : '${token.substring(0, 20)}...';
 
-  Future<void> passkeyLoginStepByStep() async {
+  Future<void> passkeyLogin() async {
     String output;
     try {
       output = 'Step 1/3: Requesting challenge...\n';
@@ -383,21 +334,7 @@ class _ExampleAppState extends State<ExampleApp> {
                           ),
                           onPressed: passkeyLogin,
                           child: const Text(
-                            'Passkey Login (Single Call)',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green.shade700,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 32, vertical: 12),
-                          ),
-                          onPressed: passkeyLoginStepByStep,
-                          child: const Text(
-                            'Passkey Login (Step by Step)',
+                            'Passkey Login',
                             style: TextStyle(fontSize: 16),
                           ),
                         ),

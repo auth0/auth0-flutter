@@ -1016,34 +1016,7 @@ final credentials = await auth0.api.login(
 > - Enable passkeys for your database connection and the **Passkey** grant type for your application. See [Configure passkeys](https://auth0.com/docs/authenticate/database-connections/passkeys/configure-passkeys).
 > - Configure the [associated domain (iOS/macOS)](#iosmacos-configure-the-associated-domain) and the equivalent [Digital Asset Links file](https://developer.android.com/identity/sign-in/credential-manager#add-support-dal) (Android) so the OS associates your app with the relying-party domain.
 
-#### Combined (single call)
-
-`loginWithPasskey` runs the whole flow — request a login challenge, present the OS passkey UI, and exchange the resulting credential for tokens — in one call.
-
-```dart
-final credentials = await auth0.api.loginWithPasskey(
-    connection: 'Username-Password-Authentication');
-
-// Store the credentials afterward
-final didStore =
-    await auth0.credentialsManager.storeCredentials(credentials);
-```
-
-<details>
-  <summary>Add an audience and scope values</summary>
-
-```dart
-final credentials = await auth0.api.loginWithPasskey(
-    connection: 'Username-Password-Authentication',
-    audience: 'YOUR_AUTH0_API_IDENTIFIER',
-    scopes: {'profile', 'email', 'offline_access', 'read:todos'});
-```
-
-</details>
-
-#### Step by step (isolated methods)
-
-If you need more control — for example, to render your own UI between steps — you can run the three stages individually. `loginWithPasskey` is simply these chained together.
+The flow runs in three steps. Request a login challenge from Auth0, present the OS passkey UI to obtain a credential, then exchange that credential for Auth0 tokens. Running the steps individually gives you full control over the UI between stages.
 
 ```dart
 // 1. Request a login challenge from Auth0.
@@ -1060,7 +1033,25 @@ final credentials = await auth0.api.passkeyLogin(
     challenge: challenge,
     credential: credential,
     connection: 'Username-Password-Authentication');
+
+// Store the credentials afterward
+final didStore =
+    await auth0.credentialsManager.storeCredentials(credentials);
 ```
+
+<details>
+  <summary>Add an audience and scope values</summary>
+
+```dart
+final credentials = await auth0.api.passkeyLogin(
+    challenge: challenge,
+    credential: credential,
+    connection: 'Username-Password-Authentication',
+    audience: 'YOUR_AUTH0_API_IDENTIFIER',
+    scopes: {'profile', 'email', 'offline_access', 'read:todos'});
+```
+
+</details>
 
 ### Sign up with database connection
 
