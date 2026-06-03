@@ -1,6 +1,7 @@
 package com.auth0.auth0_flutter.request_handlers.api
 
 import android.content.Context
+import android.os.Build
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
@@ -16,9 +17,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import java.util.*
 
 @RunWith(RobolectricTestRunner::class)
+@Config(sdk = [Build.VERSION_CODES.P])
 class PasskeyLoginApiRequestHandlerTest {
     private fun challengeMap() = mapOf(
         "authSession" to "test-auth-session",
