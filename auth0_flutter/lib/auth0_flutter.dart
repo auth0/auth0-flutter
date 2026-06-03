@@ -10,6 +10,7 @@ import 'src/version.dart';
 export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
     show
         AuthenticationMethod,
+        AuthenticationMethodType,
         ApiException,
         ChallengeType,
         Credentials,
@@ -25,6 +26,7 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         PhoneType,
         SafariViewController,
         SafariViewControllerPresentationStyle,
+        CustomTabsOptions,
         SSOCredentials,
         UserProfile,
         WebAuthenticationException;

@@ -47,6 +47,7 @@ class CredentialsManagerMethodCallHandlerTest {
             val ctx: Context = mock()
             val mockPrefs: SharedPreferences = mock()
             `when`(ctx.getSharedPreferences(any(), any())).thenReturn(mockPrefs)
+            `when`(ctx.applicationContext).thenReturn(ctx)
             ctx
         } else {
             context

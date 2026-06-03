@@ -357,6 +357,125 @@ void main() {
     });
   });
 
+  group('CustomTabsOptions (Android)', () {
+    group('login', () {
+      test('passes customTabsOptions to the platform when specified', () async {
+        when(mockedPlatform.login(any))
+            .thenAnswer((final _) async => TestPlatform.loginResult);
+        when(mockedCMPlatform.saveCredentials(any))
+            .thenAnswer((final _) async => true);
+
+        await Auth0('test-domain', 'test-clientId').webAuthentication().login(
+            customTabsOptions: const CustomTabsOptions(
+                initialHeight: 700,
+                toolbarCornerRadius: 16,
+                resizable: false,
+                backgroundInteractionEnabled: true,
+                allowedBrowsers: ['com.android.chrome'],
+            ));
+
+        final verificationResult = verify(mockedPlatform.login(captureAny))
+            .captured
+            .single as WebAuthRequest<WebAuthLoginOptions>;
+        expect(verificationResult.options.customTabsOptions, isNotNull);
+        expect(
+            verificationResult.options.customTabsOptions!.initialHeight, 700);
+        expect(
+            verificationResult
+                .options.customTabsOptions!.toolbarCornerRadius,
+            16);
+        expect(
+            verificationResult.options.customTabsOptions!.resizable,
+            false);
+        expect(
+            verificationResult
+                .options.customTabsOptions!.backgroundInteractionEnabled,
+            true);
+        expect(verificationResult.options.customTabsOptions!.allowedBrowsers,
+            ['com.android.chrome']);
+      });
+
+      test('customTabsOptions defaults to null when not specified', () async {
+        when(mockedPlatform.login(any))
+            .thenAnswer((final _) async => TestPlatform.loginResult);
+        when(mockedCMPlatform.saveCredentials(any))
+            .thenAnswer((final _) async => true);
+
+        await Auth0('test-domain', 'test-clientId').webAuthentication().login();
+
+        final verificationResult = verify(mockedPlatform.login(captureAny))
+            .captured
+            .single as WebAuthRequest<WebAuthLoginOptions>;
+        expect(verificationResult.options.customTabsOptions, isNull);
+      });
+
+      test('passes customTabsOptions with side sheet options', () async {
+        when(mockedPlatform.login(any))
+            .thenAnswer((final _) async => TestPlatform.loginResult);
+        when(mockedCMPlatform.saveCredentials(any))
+            .thenAnswer((final _) async => true);
+
+        await Auth0('test-domain', 'test-clientId').webAuthentication().login(
+            customTabsOptions: const CustomTabsOptions(
+                initialHeight: 700,
+                initialWidth: 500,
+                sideSheetBreakpoint: 840,
+            ));
+
+        final verificationResult = verify(mockedPlatform.login(captureAny))
+            .captured
+            .single as WebAuthRequest<WebAuthLoginOptions>;
+        expect(
+            verificationResult.options.customTabsOptions!.initialWidth, 500);
+        expect(
+            verificationResult.options.customTabsOptions!.sideSheetBreakpoint,
+            840);
+      });
+    });
+
+    group('logout', () {
+      test('passes customTabsOptions to the platform when specified', () async {
+        when(mockedPlatform.logout(any)).thenAnswer((final _) async => {});
+        when(mockedCMPlatform.clearCredentials(any))
+            .thenAnswer((final _) async => true);
+
+        await Auth0('test-domain', 'test-clientId').webAuthentication().logout(
+            customTabsOptions: const CustomTabsOptions(
+                initialHeight: 500,
+                toolbarCornerRadius: 12,
+            ));
+
+        final verificationResult = verify(mockedPlatform.logout(captureAny))
+            .captured
+            .single as WebAuthRequest<WebAuthLogoutOptions>;
+        expect(
+            verificationResult.options.customTabsOptions, isNotNull);
+        expect(
+            verificationResult.options.customTabsOptions!.initialHeight,
+            500);
+        expect(
+            verificationResult
+                .options.customTabsOptions!.toolbarCornerRadius,
+            12);
+      });
+
+      test('customTabsOptions defaults to null when not specified', () async {
+        when(mockedPlatform.logout(any)).thenAnswer((final _) async => {});
+        when(mockedCMPlatform.clearCredentials(any))
+            .thenAnswer((final _) async => true);
+
+        await Auth0('test-domain', 'test-clientId')
+            .webAuthentication()
+            .logout();
+
+        final verificationResult = verify(mockedPlatform.logout(captureAny))
+            .captured
+            .single as WebAuthRequest<WebAuthLogoutOptions>;
+        expect(verificationResult.options.customTabsOptions, isNull);
+      });
+    });
+  });
+
   group('DPoP Authentication', () {
     group('login with DPoP', () {
       test('passes useDPoP parameter to platform when enabled', () async {

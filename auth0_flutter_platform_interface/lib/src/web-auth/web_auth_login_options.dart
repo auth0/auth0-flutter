@@ -1,4 +1,5 @@
 import '../login_options.dart';
+import 'custom_tabs_options.dart';
 import 'safari_view_controller.dart';
 
 class WebAuthLoginOptions extends LoginOptions {
@@ -6,6 +7,8 @@ class WebAuthLoginOptions extends LoginOptions {
   final bool useEphemeralSession;
   final String? scheme;
   final SafariViewController? safariViewController;
+  final CustomTabsOptions? customTabsOptions;
+  @Deprecated('Use CustomTabsOptions.allowedBrowsers instead')
   final List<String> allowedBrowsers;
   final bool useDPoP;
 
@@ -21,6 +24,8 @@ class WebAuthLoginOptions extends LoginOptions {
       this.useEphemeralSession = false,
       this.scheme,
       this.safariViewController,
+      this.customTabsOptions,
+      @Deprecated('Use CustomTabsOptions.allowedBrowsers instead')
       this.allowedBrowsers = const [],
       this.useDPoP = false});
 
@@ -35,6 +40,9 @@ class WebAuthLoginOptions extends LoginOptions {
       'useDPoP': useDPoP,
       ...safariViewController != null
           ? {'safariViewController': safariViewController?.toMap()}
+          : <String, dynamic>{},
+      ...customTabsOptions != null
+          ? {'customTabsOptions': customTabsOptions?.toMap()}
           : <String, dynamic>{}
     };
 
