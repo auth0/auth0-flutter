@@ -149,11 +149,21 @@ jobs:
                 platform: ${{ env.platform }}
                 destination: ${{ format('{0}{1}', 'platform=iOS Simulator,name=', env.ios-simulator) }}
 
+            # Codecov cannot parse a raw .xcresult bundle, so convert it to
+            # Cobertura XML first. xcresultparser is Ruby-free, keeping the SPM
+            # migration's goal of dropping the Ruby/slather toolchain.
+            - name: Convert xcresult to Cobertura coverage
+              working-directory: auth0_flutter/example/ios
+              run: |
+                brew install a7ex/homebrew-formulae/xcresultparser
+                xcresultparser --output-format cobertura unit-tests.xcresult > coverage.xml
+              shell: bash
+
             - name: Upload coverage report
               uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
               with:
                 name: iOS coverage
-                path: auth0_flutter/example/ios/unit-tests.xcresult
+                path: auth0_flutter/example/ios/coverage.xml
     # TODO: fix both android and iOS smoke testcases and uncomment them.
     # test-ios-smoke:
     #     name: Run native iOS smoke tests using Xcode ${{ matrix.xcode }}
