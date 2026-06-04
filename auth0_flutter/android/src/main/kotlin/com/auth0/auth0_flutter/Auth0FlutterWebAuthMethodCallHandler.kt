@@ -9,12 +9,22 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
 class Auth0FlutterWebAuthMethodCallHandler(private val requestHandlers: List<WebAuthRequestHandler>) : MethodCallHandler {
-    lateinit var activity: Activity
+    var activity: Activity? = null
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         val requestHandler = requestHandlers.find { it.method == call.method }
 
         if (requestHandler != null) {
+            val activity = this.activity
+            if (activity == null) {
+                result.error(
+                    "webAuth#no-activity",
+                    "The plugin is not attached to an Activity.",
+                    null
+                )
+                return
+            }
+
             val request = MethodCallRequest.fromCall(call)
 
             requestHandler.handle(activity, request, result)

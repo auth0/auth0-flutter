@@ -1014,7 +1014,7 @@ final credentials = await auth0.api.login(
 
 > ⚠️ Passkeys require additional configuration on both your Auth0 tenant and your app:
 > - Enable passkeys for your database connection and the **Passkey** grant type for your application. See [Configure passkeys](https://auth0.com/docs/authenticate/database-connections/passkeys/configure-passkeys).
-> - Configure the [associated domain (iOS/macOS)](#iosmacos-configure-the-associated-domain) and the equivalent [Digital Asset Links file](https://developer.android.com/identity/sign-in/credential-manager#add-support-dal) (Android) so the OS associates your app with the relying-party domain.
+> - Configure the [associated domain (iOS/macOS)](README.md#iosmacos-configure-the-associated-domain) and the equivalent [Digital Asset Links file](https://developer.android.com/identity/sign-in/credential-manager#add-support-dal) (Android) so the OS associates your app with the relying-party domain.
 
 The SDK exposes **two** methods for passkey login — `passkeyLoginChallenge` and `passkeyLogin` — and leaves presenting the OS passkey UI to your app. The flow is:
 
