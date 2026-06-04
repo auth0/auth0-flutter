@@ -18,6 +18,10 @@ const String credentialsManagerRenewCredentialsMethod =
     'credentialsManager#renewCredentials';
 const String credentialsManagerGetSSOCredentialsMethod =
     'credentialsManager#getSSOCredentials';
+const String credentialsManagerGetApiCredentialsMethod =
+    'credentialsManager#getApiCredentials';
+const String credentialsManagerClearApiCredentialsMethod =
+    'credentialsManager#clearApiCredentials';
 
 /// Method Channel implementation to communicate with the Native
 /// CredentialsManager
@@ -112,6 +116,36 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
         method: credentialsManagerGetSSOCredentialsMethod, request: request);
 
     return SSOCredentials.fromMap(result);
+  }
+
+  /// Exchanges the stored refresh token for [ApiCredentials] scoped to a
+  /// specific API (audience), using a Multi-Resource Refresh Token (MRRT).
+  ///
+  /// Uses the [MethodChannel] to communicate with the native platforms.
+  /// See `CredentialsManager.getApiCredentials` for full documentation.
+  @override
+  Future<ApiCredentials> getApiCredentials(
+      final CredentialsManagerRequest<GetApiCredentialsOptions>
+          request) async {
+    final Map<String, dynamic> result = await _invokeMapRequest(
+        method: credentialsManagerGetApiCredentialsMethod, request: request);
+
+    return ApiCredentials.fromMap(result);
+  }
+
+  /// Removes the API credentials for the given audience from the native
+  /// storage if present.
+  ///
+  /// Uses the [MethodChannel] to communicate with the native platforms.
+  /// See `CredentialsManager.clearApiCredentials` for full documentation.
+  @override
+  Future<void> clearApiCredentials(
+      final CredentialsManagerRequest<ClearApiCredentialsOptions>
+          request) async {
+    await _invokeRequest<void, ClearApiCredentialsOptions>(
+        method: credentialsManagerClearApiCredentialsMethod,
+        request: request,
+        throwOnNull: false);
   }
 
   Future<TResult?> _invokeRequest<TResult, TOptions extends RequestOptions?>({

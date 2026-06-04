@@ -75,4 +75,24 @@ abstract class CredentialsManagerPlatform extends PlatformInterface {
   ) {
     throw UnimplementedError('getSSOCredentials() has not been implemented');
   }
+
+  /// Exchanges the stored refresh token for [ApiCredentials] scoped to a
+  /// specific API (audience), using a Multi-Resource Refresh Token (MRRT).
+  ///
+  /// See `CredentialsManager.getApiCredentials` for full documentation.
+  Future<ApiCredentials> getApiCredentials(
+    final CredentialsManagerRequest<GetApiCredentialsOptions> request,
+  ) {
+    throw UnimplementedError('getApiCredentials() has not been implemented');
+  }
+
+  /// Removes the API credentials for the given audience from the native
+  /// storage if present.
+  ///
+  /// See `CredentialsManager.clearApiCredentials` for full documentation.
+  Future<void> clearApiCredentials(
+    final CredentialsManagerRequest<ClearApiCredentialsOptions> request,
+  ) {
+    throw UnimplementedError('clearApiCredentials() has not been implemented');
+  }
 }

@@ -670,6 +670,7 @@ await auth0.windowsWebAuthentication().logout(
 
 - [Check for stored credentials](#check-for-stored-credentials)
 - [Retrieve stored credentials](#retrieve-stored-credentials)
+- [Retrieve API credentials for a specific audience (MRRT)](#retrieve-api-credentials-for-a-specific-audience-mrrt)
 - [Retrieve user profile](#retrieve-user-profile)
 - [Custom implementations](#custom-implementations)
 - [Local authentication](#local-authentication)
@@ -704,6 +705,42 @@ final credentials = await auth0.credentialsManager.credentials();
 ```
 
 > 💡 You do not need to call `credentialsManager.storeCredentials()` afterward. The Credentials Manager automatically persists the renewed credentials.
+
+### Retrieve API credentials for a specific audience (MRRT)
+
+If your app needs an access token for a **different API** than the one it logged in with, use `getApiCredentials()`. It exchanges the stored refresh token for an access token scoped to the requested `audience` using a [Multi-Resource Refresh Token (MRRT)](https://auth0.com/docs/secure/tokens/refresh-tokens/multi-resource-refresh-token). If valid API credentials for that audience are already cached, they are returned without a network call; otherwise a new token is fetched and cached for next time.
+
+```dart
+final apiCredentials = await auth0.credentialsManager.getApiCredentials(
+  audience: 'https://my-api.example.com',
+);
+
+print('Access token: ${apiCredentials.accessToken}');
+```
+
+You can request specific scopes and pass additional options:
+
+```dart
+final apiCredentials = await auth0.credentialsManager.getApiCredentials(
+  audience: 'https://my-api.example.com',
+  scope: {'read:data', 'write:data'},
+  minTtl: 60,
+  parameters: {'key': 'value'},
+  headers: {'key': 'value'}, // iOS and macOS only
+);
+```
+
+To remove the cached API credentials for an audience – for example, on logout:
+
+```dart
+await auth0.credentialsManager.clearApiCredentials(
+  audience: 'https://my-api.example.com',
+);
+```
+
+> ⚠️ **Prerequisites:** Multi-Resource Refresh Tokens must be enabled on your tenant, and the `offline_access` scope must have been requested at login so that a refresh token is available for the exchange.
+
+> 💡 On iOS and macOS, the stored API credentials are keyed by audience **and** scope, so pass the same `scope` to `clearApiCredentials()` that you used when fetching them. On Android they are keyed by audience alone, and the `scope` argument is ignored.
 
 ### Retrieve user profile
 
