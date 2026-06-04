@@ -17,16 +17,24 @@ struct MyAccountConfirmEnrollmentMethodHandler: MethodHandler {
             return callback(FlutterError(from: .requiredArgumentMissing("authSession")))
         }
 
-        client
-            .authenticationMethods
-            .confirmRecoveryCodeEnrollment(id: id, authSession: authSession)
-            .start {
-                switch $0 {
-                case let .success(method):
-                    callback(method.asDictionary())
-                case let .failure(error):
-                    callback(FlutterError(from: error))
-                }
+        guard let factorType = arguments["factorType"] as? String else {
+            return callback(FlutterError(from: .requiredArgumentMissing("factorType")))
+        }
+
+        let request: any Request<AuthenticationMethod, MyAccountError>
+        if factorType == "push-notification" {
+            request = client.authenticationMethods.confirmPushNotificationEnrollment(id: id, authSession: authSession)
+        } else {
+            request = client.authenticationMethods.confirmRecoveryCodeEnrollment(id: id, authSession: authSession)
+        }
+
+        request.start {
+            switch $0 {
+            case let .success(method):
+                callback(method.asDictionary())
+            case let .failure(error):
+                callback(FlutterError(from: error))
             }
+        }
     }
 }

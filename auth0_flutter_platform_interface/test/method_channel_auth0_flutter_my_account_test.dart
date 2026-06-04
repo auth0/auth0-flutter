@@ -66,6 +66,7 @@ void main() {
         accessToken: 'token',
         id: 'method-id',
         authSession: 'session',
+        factorType: 'recovery-code',
       ).toMap();
       expect(map['id'], 'method-id');
       expect(map['authSession'], 'session');
@@ -126,7 +127,7 @@ void main() {
           account: account,
           userAgent: userAgent,
           options: MyAccountConfirmEnrollmentOptions(
-              accessToken: 'token', id: 'method-id', authSession: 'session'),
+              accessToken: 'token', id: 'method-id', authSession: 'session', factorType: 'recovery-code'),
         ),
       );
 

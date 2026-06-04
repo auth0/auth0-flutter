@@ -20,16 +20,27 @@ struct MyAccountVerifyOtpMethodHandler: MethodHandler {
             return callback(FlutterError(from: .requiredArgumentMissing("otp")))
         }
 
-        client
-            .authenticationMethods
-            .confirmPhoneEnrollment(id: id, authSession: authSession, otpCode: otp)
-            .start {
-                switch $0 {
-                case let .success(method):
-                    callback(method.asDictionary())
-                case let .failure(error):
-                    callback(FlutterError(from: error))
-                }
+        guard let factorType = arguments["factorType"] as? String else {
+            return callback(FlutterError(from: .requiredArgumentMissing("factorType")))
+        }
+
+        let request: any Request<AuthenticationMethod, MyAccountError>
+        switch factorType {
+        case "email":
+            request = client.authenticationMethods.confirmEmailEnrollment(id: id, authSession: authSession, otpCode: otp)
+        case "totp":
+            request = client.authenticationMethods.confirmTOTPEnrollment(id: id, authSession: authSession, otpCode: otp)
+        default:
+            request = client.authenticationMethods.confirmPhoneEnrollment(id: id, authSession: authSession, otpCode: otp)
+        }
+
+        request.start {
+            switch $0 {
+            case let .success(method):
+                callback(method.asDictionary())
+            case let .failure(error):
+                callback(FlutterError(from: error))
             }
+        }
     }
 }

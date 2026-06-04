@@ -208,6 +208,10 @@ class MyAccountApi {
   /// Use this after calling an enrollment method (e.g., [enrollPhone],
   /// [enrollEmail], [enrollTotp]) to confirm the enrollment.
   ///
+  /// [factorType] must match the enrolled factor: `"phone"`, `"email"`, or
+  /// `"totp"`. This is used on iOS to dispatch to the correct Auth0.swift
+  /// confirm method.
+  ///
   /// Returns the confirmed [AuthenticationMethod] after successful
   /// verification.
   ///
@@ -224,25 +228,31 @@ class MyAccountApi {
   ///   id: challenge.id,
   ///   authSession: challenge.authSession,
   ///   otp: '123456',
+  ///   factorType: 'totp',
   /// );
   /// ```
   Future<AuthenticationMethod> verifyOtp({
     required final String id,
     required final String authSession,
     required final String otp,
+    required final String factorType,
   }) =>
       Auth0FlutterMyAccountPlatform.instance.verifyOtp(_createApiRequest(
           MyAccountVerifyOtpOptions(
               accessToken: _accessToken,
               id: id,
               authSession: authSession,
-              otp: otp)));
+              otp: otp,
+              factorType: factorType)));
 
   /// Confirms an enrollment that does not require a one-time password, namely
   /// push notification and recovery code enrollments.
   ///
   /// Use this after calling [enrollPush] or [enrollRecoveryCode]. For factors
   /// that require an OTP (phone, email, TOTP), use [verifyOtp] instead.
+  ///
+  /// [factorType] must be `"push-notification"` or `"recovery-code"`. This is
+  /// used on iOS to dispatch to the correct Auth0.swift confirm method.
   ///
   /// Returns the confirmed [AuthenticationMethod] after successful
   /// confirmation.
@@ -259,17 +269,20 @@ class MyAccountApi {
   /// final method = await myAccount.confirmEnrollment(
   ///   id: challenge.id,
   ///   authSession: challenge.authSession,
+  ///   factorType: 'push-notification',
   /// );
   /// ```
   Future<AuthenticationMethod> confirmEnrollment({
     required final String id,
     required final String authSession,
+    required final String factorType,
   }) =>
       Auth0FlutterMyAccountPlatform.instance.confirmEnrollment(
           _createApiRequest(MyAccountConfirmEnrollmentOptions(
               accessToken: _accessToken,
               id: id,
-              authSession: authSession)));
+              authSession: authSession,
+              factorType: factorType)));
 
   /// Updates an existing authentication method identified by [id].
   ///

@@ -39,10 +39,10 @@ class AuthenticationMethod {
         preferredAuthenticationMethod:
             result['preferred_authentication_method'] as String?,
         createdAt: result['created_at'] != null
-            ? DateTime.parse(result['created_at'] as String)
+            ? DateTime.parse(result['created_at'].toString())
             : null,
         lastAuthAt: result['last_auth_at'] != null
-            ? DateTime.parse(result['last_auth_at'] as String)
+            ? DateTime.parse(result['last_auth_at'].toString())
             : null,
         confirmed: result['confirmed'] as bool?,
         usage: (result['usage'] as List<dynamic>?)

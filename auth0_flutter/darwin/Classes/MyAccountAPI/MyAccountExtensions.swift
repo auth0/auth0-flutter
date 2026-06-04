@@ -13,7 +13,7 @@ extension FlutterError {
             "_title": error.title,
             "_detail": error.detail,
             "_errorFlags": [
-                "isNetworkError": false
+                "isNetworkError": error.isNetworkError
             ]
         ]
         self.init(code: error.code,

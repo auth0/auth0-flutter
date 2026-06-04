@@ -37,9 +37,9 @@ fun AuthenticationMethod.toMyAccountMethodMap(): Map<String, Any?> {
                 put("name", null)
             }
         }
+        put("usage", usage)
         if (this@toMyAccountMethodMap is MfaAuthenticationMethod) {
             put("confirmed", confirmed)
-            put("usage", usage)
         }
     }
 }

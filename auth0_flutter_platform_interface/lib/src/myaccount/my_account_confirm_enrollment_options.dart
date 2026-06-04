@@ -4,11 +4,13 @@ class MyAccountConfirmEnrollmentOptions implements RequestOptions {
   final String accessToken;
   final String id;
   final String authSession;
+  final String factorType;
 
   MyAccountConfirmEnrollmentOptions({
     required this.accessToken,
     required this.id,
     required this.authSession,
+    required this.factorType,
   });
 
   @override
@@ -16,5 +18,6 @@ class MyAccountConfirmEnrollmentOptions implements RequestOptions {
         'accessToken': accessToken,
         'id': id,
         'authSession': authSession,
+        'factorType': factorType,
       };
 }

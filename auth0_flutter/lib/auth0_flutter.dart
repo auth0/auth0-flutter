@@ -140,7 +140,7 @@ class Auth0 {
   /// authentication methods (MFA factors) via the
   /// [My Account API](https://auth0.com/docs/manage-users/my-account-api).
   ///
-  /// Requires an [accessToken] with the appropriate `me` scopes and
+  /// Requires an [accessToken] with the appropriate scopes and
   /// audience `https://{domain}/me/`.
   ///
   /// Set [useDPoP] to `true` to secure My Account API requests with DPoP
