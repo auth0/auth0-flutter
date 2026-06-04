@@ -24,12 +24,14 @@ class _MyAccountCardState extends State<MyAccountCard> {
   String? _accessToken;
   MyAccountApi? _myAccount;
   bool _isExpanded = false;
+  bool _useDPoP = false;
 
   final _phoneController = TextEditingController(text: '+1234567890');
   final _emailController = TextEditingController(text: 'test@example.com');
 
   String? _lastEnrollmentId;
   String? _lastAuthSession;
+  String? _lastFactorType;
 
   final _otpController = TextEditingController();
 
@@ -63,6 +65,7 @@ class _MyAccountCardState extends State<MyAccountCard> {
           'offline_access',
           'read:me:authentication_methods',
           'create:me:authentication_methods',
+          'update:me:authentication_methods',
           'delete:me:authentication_methods',
           'read:me:enrollments',
           'read:me:factors',
@@ -71,7 +74,8 @@ class _MyAccountCardState extends State<MyAccountCard> {
 
       setState(() {
         _accessToken = result.accessToken;
-        _myAccount = widget.auth0.myAccount(accessToken: _accessToken!);
+        _myAccount = widget.auth0
+            .myAccount(accessToken: _accessToken!, useDPoP: _useDPoP);
       });
 
       _log('Login successful!\n'
@@ -155,6 +159,7 @@ class _MyAccountCardState extends State<MyAccountCard> {
       setState(() {
         _lastEnrollmentId = challenge.id;
         _lastAuthSession = challenge.authSession;
+        _lastFactorType = 'phone';
       });
       _log('Enrollment Challenge:\n'
           '  ID: ${challenge.id}\n'
@@ -183,6 +188,7 @@ class _MyAccountCardState extends State<MyAccountCard> {
       setState(() {
         _lastEnrollmentId = challenge.id;
         _lastAuthSession = challenge.authSession;
+        _lastFactorType = 'email';
       });
       _log('** Enter OTP received via Email and tap Verify OTP **');
     } on MyAccountException catch (e) {
@@ -203,6 +209,7 @@ class _MyAccountCardState extends State<MyAccountCard> {
       setState(() {
         _lastEnrollmentId = challenge.id;
         _lastAuthSession = challenge.authSession;
+        _lastFactorType = 'totp';
       });
       _log('TOTP Enrollment Challenge:\n'
           '  ID: ${challenge.id}\n'
@@ -231,6 +238,7 @@ class _MyAccountCardState extends State<MyAccountCard> {
       setState(() {
         _lastEnrollmentId = challenge.id;
         _lastAuthSession = challenge.authSession;
+        _lastFactorType = 'push-notification';
       });
       _log('Push Enrollment Challenge:\n'
           '  ID: ${challenge.id}\n'
@@ -255,6 +263,7 @@ class _MyAccountCardState extends State<MyAccountCard> {
       setState(() {
         _lastEnrollmentId = challenge.id;
         _lastAuthSession = challenge.authSession;
+        _lastFactorType = 'recovery-code';
       });
       _log('Recovery Code Enrollment:\n'
           '  ID: ${challenge.id}\n'
@@ -290,14 +299,77 @@ class _MyAccountCardState extends State<MyAccountCard> {
         id: _lastEnrollmentId!,
         authSession: _lastAuthSession!,
         otp: otp,
+        factorType: _lastFactorType!,
       );
       _log('OTP Verified Successfully! Enrollment complete.\n'
           '  Method: ${method.type} (id: ${method.id})');
       setState(() {
         _lastEnrollmentId = null;
         _lastAuthSession = null;
+        _lastFactorType = null;
         _otpController.clear();
       });
+    } on MyAccountException catch (e) {
+      _log('MyAccountException: [${e.statusCode}] ${e.code} - ${e.message}');
+    } catch (e) {
+      _log('Error: $e');
+    }
+  }
+
+  Future<void> _confirmEnrollment() async {
+    if (_myAccount == null) {
+      _log('Error: Not logged in. Login first.');
+      return;
+    }
+    if (_lastEnrollmentId == null || _lastAuthSession == null) {
+      _log('Error: No pending enrollment. Enroll push/recovery first.');
+      return;
+    }
+    try {
+      _log('Calling confirmEnrollment(\n'
+          '  id: $_lastEnrollmentId,\n'
+          '  authSession: $_lastAuthSession)...');
+      final method = await _myAccount!.confirmEnrollment(
+        id: _lastEnrollmentId!,
+        authSession: _lastAuthSession!,
+        factorType: _lastFactorType!,
+      );
+      _log('Enrollment confirmed!\n'
+          '  Method: ${method.type} (id: ${method.id})');
+      setState(() {
+        _lastEnrollmentId = null;
+        _lastAuthSession = null;
+        _lastFactorType = null;
+      });
+    } on MyAccountException catch (e) {
+      _log('MyAccountException: [${e.statusCode}] ${e.code} - ${e.message}');
+    } catch (e) {
+      _log('Error: $e');
+    }
+  }
+
+  Future<void> _updateLastMethod() async {
+    if (_myAccount == null) {
+      _log('Error: Not logged in. Login first.');
+      return;
+    }
+    try {
+      _log('Fetching methods to update the last one...');
+      final methods = await _myAccount!.getAuthenticationMethods();
+      if (methods.isEmpty) {
+        _log('No methods to update.');
+        return;
+      }
+      final target = methods.last;
+      const newName = 'Updated by example app';
+      _log('Updating method ${target.id} (${target.type}) '
+          'with name "$newName"...');
+      final updated = await _myAccount!.updateAuthenticationMethod(
+        id: target.id,
+        name: newName,
+      );
+      _log('Updated successfully: ${updated.id} '
+          '(name: ${updated.name ?? "N/A"})');
     } on MyAccountException catch (e) {
       _log('MyAccountException: [${e.statusCode}] ${e.code} - ${e.message}');
     } catch (e) {
@@ -393,6 +465,19 @@ class _MyAccountCardState extends State<MyAccountCard> {
                 const Text(
                   'Login with My Account audience to get started:',
                   style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                  title: const Text('Use DPoP',
+                      style: TextStyle(fontSize: 13)),
+                  subtitle: const Text(
+                    'Secure requests with sender-constrained tokens',
+                    style: TextStyle(fontSize: 11, color: Colors.grey),
+                  ),
+                  value: _useDPoP,
+                  onChanged: (final value) =>
+                      setState(() => _useDPoP = value),
                 ),
                 const SizedBox(height: 8),
                 ElevatedButton.icon(
@@ -506,7 +591,24 @@ class _MyAccountCardState extends State<MyAccountCard> {
                       ),
                     ],
                   ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'For push / recovery code (no OTP):',
+                    style: TextStyle(fontSize: 11, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 6),
+                  _buildButton('Confirm Enrollment', _confirmEnrollment,
+                      Icons.check, color: Colors.green),
                 ],
+                const SizedBox(height: 12),
+                const Text(
+                  'Manage',
+                  style: TextStyle(
+                      fontSize: 13, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 6),
+                _buildButton('Update Last Method', _updateLastMethod,
+                    Icons.edit, color: Colors.teal),
                 const SizedBox(height: 12),
                 const Text(
                   'Delete',

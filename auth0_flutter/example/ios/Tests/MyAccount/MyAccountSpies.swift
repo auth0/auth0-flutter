@@ -76,6 +76,7 @@ class SpyMyAccountAuthenticationMethods: MyAccountAuthenticationMethods {
     var confirmIdArg: String?
     var confirmAuthSessionArg: String?
     var confirmOtpArg: String?
+    var confirmEnrollmentFactorType: String?
     var updateIdArg: String?
     var updateNameArg: String?
     var updatePreferredArg: PreferredAuthenticationMethod?
@@ -148,6 +149,7 @@ class SpyMyAccountAuthenticationMethods: MyAccountAuthenticationMethods {
         confirmIdArg = id
         confirmAuthSessionArg = authSession
         confirmOtpArg = otpCode
+        confirmEnrollmentFactorType = "phone"
         return request(confirmResult)
     }
 
@@ -165,21 +167,39 @@ class SpyMyAccountAuthenticationMethods: MyAccountAuthenticationMethods {
 
     func confirmTOTPEnrollment(id: String, authSession: String,
                                otpCode: String) -> Request<AuthenticationMethod, MyAccountError> {
-        return confirmPhoneEnrollment(id: id, authSession: authSession, otpCode: otpCode)
+        calledConfirm = true
+        confirmIdArg = id
+        confirmAuthSessionArg = authSession
+        confirmOtpArg = otpCode
+        confirmEnrollmentFactorType = "totp"
+        return request(confirmResult)
     }
 
     func confirmEmailEnrollment(id: String, authSession: String,
                                 otpCode: String) -> Request<AuthenticationMethod, MyAccountError> {
-        return confirmPhoneEnrollment(id: id, authSession: authSession, otpCode: otpCode)
+        calledConfirm = true
+        confirmIdArg = id
+        confirmAuthSessionArg = authSession
+        confirmOtpArg = otpCode
+        confirmEnrollmentFactorType = "email"
+        return request(confirmResult)
     }
 
     func confirmPushNotificationEnrollment(id: String,
                                            authSession: String) -> Request<AuthenticationMethod, MyAccountError> {
+        calledConfirm = true
+        confirmIdArg = id
+        confirmAuthSessionArg = authSession
+        confirmEnrollmentFactorType = "push-notification"
         return request(confirmResult)
     }
 
     func confirmRecoveryCodeEnrollment(id: String,
                                        authSession: String) -> Request<AuthenticationMethod, MyAccountError> {
+        calledConfirm = true
+        confirmIdArg = id
+        confirmAuthSessionArg = authSession
+        confirmEnrollmentFactorType = "recovery-code"
         return request(confirmResult)
     }
 }

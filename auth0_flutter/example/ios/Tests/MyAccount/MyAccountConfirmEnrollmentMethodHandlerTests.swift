@@ -15,7 +15,7 @@ class MyAccountConfirmEnrollmentMethodHandlerTests: XCTestCase {
 
     func testProducesErrorWhenIdMissing() {
         let expectation = self.expectation(description: "Missing id")
-        sut.handle(with: ["authSession": "session"]) { result in
+        sut.handle(with: ["authSession": "session", "factorType": "recovery-code"]) { result in
             XCTAssertTrue(result is FlutterError)
             expectation.fulfill()
         }
@@ -24,8 +24,35 @@ class MyAccountConfirmEnrollmentMethodHandlerTests: XCTestCase {
 
     func testProducesErrorWhenAuthSessionMissing() {
         let expectation = self.expectation(description: "Missing authSession")
-        sut.handle(with: ["id": "test-id"]) { result in
+        sut.handle(with: ["id": "test-id", "factorType": "recovery-code"]) { result in
             XCTAssertTrue(result is FlutterError)
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
+    }
+
+    func testProducesErrorWhenFactorTypeMissing() {
+        let expectation = self.expectation(description: "Missing factorType")
+        sut.handle(with: ["id": "test-id", "authSession": "session"]) { result in
+            XCTAssertTrue(result is FlutterError)
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
+    }
+
+    func testRoutesToPushNotificationEnrollment() {
+        let expectation = self.expectation(description: "Routes to push enrollment")
+        sut.handle(with: ["id": "test-id", "authSession": "session", "factorType": "push-notification"]) { _ in
+            XCTAssertEqual(self.spy.confirmEnrollmentFactorType, "push-notification")
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
+    }
+
+    func testRoutesToRecoveryCodeEnrollment() {
+        let expectation = self.expectation(description: "Routes to recovery-code enrollment")
+        sut.handle(with: ["id": "test-id", "authSession": "session", "factorType": "recovery-code"]) { _ in
+            XCTAssertEqual(self.spy.confirmEnrollmentFactorType, "recovery-code")
             expectation.fulfill()
         }
         wait(for: [expectation])
@@ -33,7 +60,7 @@ class MyAccountConfirmEnrollmentMethodHandlerTests: XCTestCase {
 
     func testProducesDictionaryOnSuccess() {
         let expectation = self.expectation(description: "Produced dictionary")
-        sut.handle(with: ["id": "test-id", "authSession": "session"]) { result in
+        sut.handle(with: ["id": "test-id", "authSession": "session", "factorType": "recovery-code"]) { result in
             guard let dict = result as? [String: Any?] else {
                 return XCTFail("Did not produce dictionary")
             }
@@ -47,7 +74,7 @@ class MyAccountConfirmEnrollmentMethodHandlerTests: XCTestCase {
     func testProducesFlutterErrorOnFailure() {
         let expectation = self.expectation(description: "Produced FlutterError")
         spy.confirmResult = .failure(MyAccountError(info: [:], statusCode: 403))
-        sut.handle(with: ["id": "test-id", "authSession": "session"]) { result in
+        sut.handle(with: ["id": "test-id", "authSession": "session", "factorType": "recovery-code"]) { result in
             XCTAssertTrue(result is FlutterError)
             expectation.fulfill()
         }
