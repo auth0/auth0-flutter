@@ -6,7 +6,6 @@ import 'auth/auth_login_code_options.dart';
 import 'auth/auth_login_options.dart';
 import 'auth/auth_login_with_otp_options.dart';
 import 'auth/auth_multifactor_challenge_options.dart';
-import 'auth/auth_passkey_create_credential_options.dart';
 import 'auth/auth_passkey_login_challenge_options.dart';
 import 'auth/auth_passkey_login_options.dart';
 import 'auth/auth_passwordless_login_options.dart';
@@ -17,7 +16,6 @@ import 'auth/auth_sso_exchange_options.dart';
 import 'auth/auth_user_info_options.dart';
 import 'auth/challenge.dart';
 import 'auth/passkey_login_challenge.dart';
-import 'auth/passkey_login_credential.dart';
 import 'auth0_flutter_auth_platform.dart';
 import 'credentials.dart';
 import 'database_user.dart';
@@ -45,8 +43,6 @@ const String authCustomTokenExchangeMethod = 'auth#customTokenExchange';
 const String authSSOExchangeMethod = 'auth#ssoExchange';
 const String authResetPasswordMethod = 'auth#resetPassword';
 const String authPasskeyLoginChallengeMethod = 'auth#passkeyLoginChallenge';
-const String authPasskeyCreateCredentialMethod =
-    'auth#passkeyCreateCredential';
 const String authPasskeyLoginMethod = 'auth#passkeyLogin';
 
 class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
@@ -173,14 +169,6 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
     final Map<String, dynamic> result = await invokeRequest(
         method: authPasskeyLoginChallengeMethod, request: request);
     return PasskeyLoginChallenge.fromMap(result);
-  }
-
-  @override
-  Future<PasskeyLoginCredential> createPasskeyCredential(
-      final ApiRequest<AuthPasskeyCreateCredentialOptions> request) async {
-    final Map<String, dynamic> result = await invokeRequest(
-        method: authPasskeyCreateCredentialMethod, request: request);
-    return PasskeyLoginCredential.fromMap(result);
   }
 
   @override

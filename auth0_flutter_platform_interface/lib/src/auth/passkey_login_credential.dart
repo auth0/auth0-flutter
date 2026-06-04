@@ -40,9 +40,11 @@ class PasskeyAuthenticatorAssertionResponse {
 
 /// A passkey login credential obtained from the platform authenticator.
 ///
-/// This is the result of `createPasskeyCredential` (presenting the OS passkey
-/// UI) and is passed to `passkeyLogin` to exchange it for Auth0 tokens. It
-/// follows the standard WebAuthn public key credential format.
+/// Your app presents the OS passkey UI (for example, via Apple's
+/// `ASAuthorizationController` or Android's Credential Manager) and constructs
+/// this from the resulting assertion, then passes it to `passkeyLogin` to
+/// exchange it for Auth0 tokens. It follows the standard WebAuthn public key
+/// credential format.
 class PasskeyLoginCredential {
   /// Base64URL-encoded credential identifier.
   final String id;

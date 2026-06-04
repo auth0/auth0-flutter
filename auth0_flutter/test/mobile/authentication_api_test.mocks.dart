@@ -89,17 +89,6 @@ class _FakePasskeyLoginChallenge_5 extends _i1.SmartFake
         );
 }
 
-class _FakePasskeyLoginCredential_6 extends _i1.SmartFake
-    implements _i3.PasskeyLoginCredential {
-  _FakePasskeyLoginCredential_6(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-}
-
 /// A class which mocks [TestPlatform].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -331,24 +320,6 @@ class MockTestPlatform extends _i1.Mock implements _i4.TestPlatform {
           ),
         )),
       ) as _i5.Future<_i3.PasskeyLoginChallenge>);
-
-  @override
-  _i5.Future<_i3.PasskeyLoginCredential> createPasskeyCredential(
-          _i3.ApiRequest<_i3.AuthPasskeyCreateCredentialOptions>? request) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #createPasskeyCredential,
-          [request],
-        ),
-        returnValue: _i5.Future<_i3.PasskeyLoginCredential>.value(
-            _FakePasskeyLoginCredential_6(
-          this,
-          Invocation.method(
-            #createPasskeyCredential,
-            [request],
-          ),
-        )),
-      ) as _i5.Future<_i3.PasskeyLoginCredential>);
 
   @override
   _i5.Future<_i2.Credentials> passkeyLogin(

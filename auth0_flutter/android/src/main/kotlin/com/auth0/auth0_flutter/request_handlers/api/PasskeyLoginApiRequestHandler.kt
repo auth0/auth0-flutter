@@ -15,10 +15,9 @@ import io.flutter.plugin.common.MethodChannel
 private const val AUTH_PASSKEY_LOGIN_METHOD = "auth#passkeyLogin"
 
 /**
- * Exchanges a passkey credential (obtained from
- * [PasskeyCreateCredentialApiRequestHandler]) and a login challenge for Auth0
- * tokens by calling the `/oauth/token` endpoint. This handler does not present
- * any UI.
+ * Exchanges a passkey credential (presented by the app) and a login challenge
+ * for Auth0 tokens by calling the `/oauth/token` endpoint. This handler does
+ * not present any UI.
  */
 class PasskeyLoginApiRequestHandler : PasskeyApiRequestHandler {
     override val method: String = AUTH_PASSKEY_LOGIN_METHOD

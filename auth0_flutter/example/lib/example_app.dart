@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'api_card.dart';
 import 'constants.dart';
+import 'passkey_authenticator.dart';
 import 'web_auth_card.dart';
 
 class ExampleApp extends StatefulWidget {
@@ -229,7 +230,8 @@ class _ExampleAppState extends State<ExampleApp> {
   Future<void> passkeyLogin() async {
     String output;
     try {
-      output = 'Step 1/3: Requesting challenge...\n';
+      // Step 1: Request a login challenge from Auth0.
+      output = 'Step 1/2: Requesting challenge...\n';
       setState(() { _output = output; });
 
       final challenge = await auth0.api.passkeyLoginChallenge(
@@ -239,16 +241,18 @@ class _ExampleAppState extends State<ExampleApp> {
       output += 'Challenge received!\n'
           '  authSession: ${_preview(challenge.authSession)}\n'
           '  rpId: ${challenge.authParamsPublicKey['rpId']}\n\n'
-          'Step 2/3: Presenting passkey UI & creating credential...\n';
+          'Presenting passkey UI & obtaining credential...\n';
       setState(() { _output = output; });
 
-      final credential = await auth0.api.createPasskeyCredential(
-        challenge: challenge,
-      );
+      // The SDK does not present the passkey UI. Your app obtains the
+      // assertion from the platform authenticator — for example via
+      // ASAuthorizationController (iOS/macOS) or Credential Manager (Android),
+      // typically over your own platform channel — using the `challenge` above,
+      // and constructs a [PasskeyLoginCredential] from the WebAuthn assertion.
+      final credential = await _obtainPasskeyCredential(challenge);
 
-      output += 'Credential created!\n'
-          '  credentialId: ${_preview(credential.id)}\n\n'
-          'Step 3/3: Exchanging credential for tokens...\n';
+      // Step 2: Exchange the credential for Auth0 tokens.
+      output += 'Step 2/2: Exchanging credential for tokens...\n';
       setState(() { _output = output; });
 
       final result = await auth0.api.passkeyLogin(
@@ -276,6 +280,19 @@ class _ExampleAppState extends State<ExampleApp> {
       _output = output;
     });
   }
+
+  /// Obtains a [PasskeyLoginCredential] from the platform authenticator.
+  ///
+  /// This is intentionally app-side: the SDK exposes only
+  /// [AuthenticationApi.passkeyLoginChallenge] and
+  /// [AuthenticationApi.passkeyLogin], leaving the OS passkey UI to the app.
+  /// Here we delegate to [PasskeyAuthenticator], which calls the native
+  /// platform authenticator over a method channel and maps the resulting
+  /// WebAuthn assertion into a [PasskeyLoginCredential].
+  Future<PasskeyLoginCredential> _obtainPasskeyCredential(
+    final PasskeyLoginChallenge challenge,
+  ) =>
+      PasskeyAuthenticator.getAssertion(challenge);
 
   Future<void> getSSOCredentials() async {
     String output;

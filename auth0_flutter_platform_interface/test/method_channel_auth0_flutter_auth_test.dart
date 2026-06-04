@@ -69,19 +69,6 @@ class MethodCallHandler {
     },
   };
 
-  static const Map<dynamic, dynamic> passkeyCreateCredentialResult = {
-    'id': 'test-credential-id',
-    'rawId': 'test-raw-id',
-    'type': 'public-key',
-    'authenticatorAttachment': 'platform',
-    'response': {
-      'clientDataJSON': 'test-client-data',
-      'authenticatorData': 'test-authenticator-data',
-      'signature': 'test-signature',
-      'userHandle': 'test-user-handle',
-    },
-  };
-
   Future<dynamic>? methodCallHandler(final MethodCall? methodCall) async {}
 }
 
@@ -1425,86 +1412,6 @@ void main() {
                   userAgent:
                       UserAgent(name: 'test-name', version: 'test-version'),
                   options: AuthPasskeyLoginChallengeOptions()));
-
-      await expectLater(actual, throwsA(isA<ApiException>()));
-    });
-  });
-
-  group('createPasskeyCredential', () {
-    test('calls the correct MethodChannel method', () async {
-      when(mocked.methodCallHandler(any)).thenAnswer(
-          (final _) async => MethodCallHandler.passkeyCreateCredentialResult);
-
-      await MethodChannelAuth0FlutterAuth().createPasskeyCredential(
-        ApiRequest<AuthPasskeyCreateCredentialOptions>(
-            account: const Account('', ''),
-            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-            options:
-                AuthPasskeyCreateCredentialOptions(challenge: _testChallenge)),
-      );
-
-      expect(
-          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
-          'auth#passkeyCreateCredential');
-    });
-
-    test('correctly maps the challenge', () async {
-      when(mocked.methodCallHandler(any)).thenAnswer(
-          (final _) async => MethodCallHandler.passkeyCreateCredentialResult);
-
-      await MethodChannelAuth0FlutterAuth().createPasskeyCredential(
-        ApiRequest<AuthPasskeyCreateCredentialOptions>(
-            account: const Account('test-domain', 'test-clientId'),
-            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-            options:
-                AuthPasskeyCreateCredentialOptions(challenge: _testChallenge)),
-      );
-
-      final verificationResult =
-          verify(mocked.methodCallHandler(captureAny)).captured.single;
-      expect(verificationResult.arguments['challenge']['authSession'],
-          'test-auth-session');
-      expect(
-          verificationResult.arguments['challenge']['authParamsPublicKey']
-              ['rpId'],
-          'test-rp-id');
-    });
-
-    test('correctly returns the credential from the Method Channel', () async {
-      when(mocked.methodCallHandler(any)).thenAnswer(
-          (final _) async => MethodCallHandler.passkeyCreateCredentialResult);
-
-      final result =
-          await MethodChannelAuth0FlutterAuth().createPasskeyCredential(
-        ApiRequest<AuthPasskeyCreateCredentialOptions>(
-            account: const Account('', ''),
-            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
-            options:
-                AuthPasskeyCreateCredentialOptions(challenge: _testChallenge)),
-      );
-
-      expect(result.id, 'test-credential-id');
-      expect(result.rawId, 'test-raw-id');
-      expect(result.type, 'public-key');
-      expect(result.authenticatorAttachment, 'platform');
-      expect(result.response.clientDataJSON, 'test-client-data');
-      expect(result.response.authenticatorData, 'test-authenticator-data');
-      expect(result.response.signature, 'test-signature');
-      expect(result.response.userHandle, 'test-user-handle');
-    });
-
-    test('throws an ApiException when the method channel throws', () async {
-      when(mocked.methodCallHandler(any))
-          .thenThrow(PlatformException(code: '123'));
-
-      Future<PasskeyLoginCredential> actual() =>
-          MethodChannelAuth0FlutterAuth().createPasskeyCredential(
-              ApiRequest<AuthPasskeyCreateCredentialOptions>(
-                  account: const Account('test-domain', 'test-clientId'),
-                  userAgent:
-                      UserAgent(name: 'test-name', version: 'test-version'),
-                  options: AuthPasskeyCreateCredentialOptions(
-                      challenge: _testChallenge)));
 
       await expectLater(actual, throwsA(isA<ApiException>()));
     });

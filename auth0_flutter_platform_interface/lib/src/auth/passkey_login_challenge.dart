@@ -1,8 +1,8 @@
 /// A challenge issued by Auth0 to begin a passkey login.
 ///
-/// Returned by `passkeyLoginChallenge` and passed on to
-/// `createPasskeyCredential` (to present the OS passkey UI) and `passkeyLogin`
-/// (to exchange the resulting credential for tokens).
+/// Returned by `passkeyLoginChallenge`. Use it to present the OS passkey UI in
+/// your app, then pass it together with the resulting credential to
+/// `passkeyLogin` to exchange them for tokens.
 class PasskeyLoginChallenge {
   /// The authentication session token that ties the challenge to the
   /// subsequent token exchange.

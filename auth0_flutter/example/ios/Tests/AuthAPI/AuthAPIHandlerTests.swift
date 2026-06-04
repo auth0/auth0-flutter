@@ -122,7 +122,6 @@ extension AuthAPIHandlerTests {
         #if PASSKEYS_PLATFORM
         if #available(iOS 16.6, macOS 13.5, visionOS 1.0, *) {
             methodHandlers[.passkeyLoginChallenge] = AuthAPIPasskeyLoginChallengeMethodHandler.self
-            methodHandlers[.passkeyCreateCredential] = AuthAPIPasskeyCreateCredentialMethodHandler.self
             methodHandlers[.passkeyLogin] = AuthAPIPasskeyLoginMethodHandler.self
         }
         #endif

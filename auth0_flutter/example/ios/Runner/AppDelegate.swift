@@ -9,6 +9,10 @@ import Auth0
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         GeneratedPluginRegistrant.register(with: self)
+        if #available(iOS 16.6, *),
+           let registrar = self.registrar(forPlugin: "PasskeyAuthenticator") {
+            PasskeyAuthenticator.register(with: registrar)
+        }
         if CommandLine.arguments.contains("--smoke-tests") {
             self.window?.layer.speed = 0.0
             UIView.setAnimationsEnabled(false)

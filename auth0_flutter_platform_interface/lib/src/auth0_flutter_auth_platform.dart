@@ -6,7 +6,6 @@ import 'auth/auth_login_code_options.dart';
 import 'auth/auth_login_options.dart';
 import 'auth/auth_login_with_otp_options.dart';
 import 'auth/auth_multifactor_challenge_options.dart';
-import 'auth/auth_passkey_create_credential_options.dart';
 import 'auth/auth_passkey_login_challenge_options.dart';
 import 'auth/auth_passkey_login_options.dart';
 import 'auth/auth_passwordless_login_options.dart';
@@ -17,7 +16,6 @@ import 'auth/auth_sso_exchange_options.dart';
 import 'auth/auth_user_info_options.dart';
 import 'auth/challenge.dart';
 import 'auth/passkey_login_challenge.dart';
-import 'auth/passkey_login_credential.dart';
 import 'credentials.dart';
 import 'database_user.dart';
 import 'method_channel_auth0_flutter_auth.dart';
@@ -103,12 +101,6 @@ abstract class Auth0FlutterAuthPlatform extends PlatformInterface {
       final ApiRequest<AuthPasskeyLoginChallengeOptions> request) {
     throw UnimplementedError(
         'passkeyLoginChallenge() has not been implemented');
-  }
-
-  Future<PasskeyLoginCredential> createPasskeyCredential(
-      final ApiRequest<AuthPasskeyCreateCredentialOptions> request) {
-    throw UnimplementedError(
-        'createPasskeyCredential() has not been implemented');
   }
 
   Future<Credentials> passkeyLogin(

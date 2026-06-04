@@ -56,7 +56,7 @@ class TestPlatform extends Mock
     },
   );
 
-  static const PasskeyLoginCredential createPasskeyCredentialResult =
+  static const PasskeyLoginCredential passkeyLoginCredential =
       PasskeyLoginCredential(
     id: 'test-credential-id',
     rawId: 'test-raw-id',
@@ -451,30 +451,6 @@ void main() {
     });
   });
 
-  group('createPasskeyCredential', () {
-    test('passes the challenge through to the platform', () async {
-      when(mockedPlatform.createPasskeyCredential(any)).thenAnswer(
-          (final _) async => TestPlatform.createPasskeyCredentialResult);
-
-      final result = await Auth0('test-domain', 'test-clientId')
-          .api
-          .createPasskeyCredential(
-              challenge: TestPlatform.passkeyLoginChallengeResult);
-
-      final verificationResult =
-          verify(mockedPlatform.createPasskeyCredential(captureAny))
-              .captured
-              .single as ApiRequest<AuthPasskeyCreateCredentialOptions>;
-      expect(verificationResult.account.domain, 'test-domain');
-      expect(verificationResult.account.clientId, 'test-clientId');
-      expect(verificationResult.options.challenge.authSession,
-          'test-auth-session');
-      expect(verificationResult.options.challenge.authParamsPublicKey['rpId'],
-          'test-rp-id');
-      expect(result, TestPlatform.createPasskeyCredentialResult);
-    });
-  });
-
   group('passkeyLogin', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.passkeyLogin(any))
@@ -483,7 +459,7 @@ void main() {
       final result =
           await Auth0('test-domain', 'test-clientId').api.passkeyLogin(
                 challenge: TestPlatform.passkeyLoginChallengeResult,
-                credential: TestPlatform.createPasskeyCredentialResult,
+                credential: TestPlatform.passkeyLoginCredential,
                 connection: 'test-connection',
                 audience: 'test-audience',
                 scopes: {'test-scope1', 'test-scope2'},
@@ -514,7 +490,7 @@ void main() {
 
       await Auth0('test-domain', 'test-clientId').api.passkeyLogin(
             challenge: TestPlatform.passkeyLoginChallengeResult,
-            credential: TestPlatform.createPasskeyCredentialResult,
+            credential: TestPlatform.passkeyLoginCredential,
           );
 
       final verificationResult = verify(mockedPlatform.passkeyLogin(captureAny))

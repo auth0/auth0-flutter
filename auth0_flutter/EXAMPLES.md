@@ -1016,17 +1016,30 @@ final credentials = await auth0.api.login(
 > - Enable passkeys for your database connection and the **Passkey** grant type for your application. See [Configure passkeys](https://auth0.com/docs/authenticate/database-connections/passkeys/configure-passkeys).
 > - Configure the [associated domain (iOS/macOS)](#iosmacos-configure-the-associated-domain) and the equivalent [Digital Asset Links file](https://developer.android.com/identity/sign-in/credential-manager#add-support-dal) (Android) so the OS associates your app with the relying-party domain.
 
-The flow runs in three steps. Request a login challenge from Auth0, present the OS passkey UI to obtain a credential, then exchange that credential for Auth0 tokens. Running the steps individually gives you full control over the UI between stages.
+The SDK exposes **two** methods for passkey login — `passkeyLoginChallenge` and `passkeyLogin` — and leaves presenting the OS passkey UI to your app. The flow is:
+
+1. Request a login challenge from Auth0 with `passkeyLoginChallenge`.
+2. **In your app**, present the platform authenticator using that challenge and obtain a WebAuthn assertion. The SDK does **not** do this step — call the OS APIs directly (for example, [`ASAuthorizationController`](https://developer.apple.com/documentation/authenticationservices/asauthorizationcontroller) on iOS/macOS or [Credential Manager](https://developer.android.com/identity/sign-in/credential-manager) on Android, typically over your own platform channel), then map the result into a `PasskeyLoginCredential`.
+3. Exchange that credential for Auth0 tokens with `passkeyLogin`.
 
 ```dart
 // 1. Request a login challenge from Auth0.
 final challenge = await auth0.api.passkeyLoginChallenge(
     connection: 'Username-Password-Authentication');
 
-// 2. Present the OS passkey UI and obtain the credential.
-//    This step does not contact Auth0.
-final credential =
-    await auth0.api.createPasskeyCredential(challenge: challenge);
+// 2. Present the OS passkey UI in your app (not provided by the SDK) using
+//    `challenge.authParamsPublicKey`, then build a PasskeyLoginCredential from
+//    the resulting WebAuthn assertion. All values are base64url-encoded.
+final credential = PasskeyLoginCredential(
+    id: '<base64url credentialId>',
+    rawId: '<base64url credentialId>',
+    type: 'public-key',
+    authenticatorAttachment: 'platform',
+    response: PasskeyAuthenticatorAssertionResponse(
+        clientDataJSON: '<base64url clientDataJSON>',
+        authenticatorData: '<base64url authenticatorData>',
+        signature: '<base64url signature>',
+        userHandle: '<base64url userHandle>'));
 
 // 3. Exchange the credential for Auth0 tokens.
 final credentials = await auth0.api.passkeyLogin(

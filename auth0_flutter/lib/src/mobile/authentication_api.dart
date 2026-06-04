@@ -445,9 +445,9 @@ class AuthenticationApi {
 
   /// Requests a challenge for logging in with an existing passkey.
   ///
-  /// This is the first step of the passkey login flow. Pass the returned
-  /// [PasskeyLoginChallenge] to [createPasskeyCredential] to present the OS
-  /// passkey UI, then to [passkeyLogin] to exchange it for tokens.
+  /// This is the first step of the passkey login flow. Use the returned
+  /// [PasskeyLoginChallenge] to present the OS passkey UI in your app, then
+  /// pass the resulting credential to [passkeyLogin] to exchange it for tokens.
   ///
   /// ## Endpoint
   /// https://auth0.com/docs/api/authentication#passkey
@@ -476,25 +476,13 @@ class AuthenticationApi {
         organization: organization,
       )));
 
-  /// Presents the operating system's passkey UI for the given [challenge] and
-  /// returns the resulting passkey credential.
+  /// Completes passkey login by exchanging a [credential] for Auth0 tokens.
   ///
-  /// This is the second step of the isolated passkey login flow: it does not
-  /// contact Auth0. Pass the returned credential to [passkeyLogin] to exchange
-  /// it for Auth0 tokens.
-  Future<PasskeyLoginCredential> createPasskeyCredential({
-    required final PasskeyLoginChallenge challenge,
-  }) =>
-      Auth0FlutterAuthPlatform.instance.createPasskeyCredential(
-          _createApiRequest(AuthPasskeyCreateCredentialOptions(
-        challenge: challenge,
-      )));
-
-  /// Completes passkey login by exchanging a [credential] (obtained from
-  /// [createPasskeyCredential]) for Auth0 tokens.
-  ///
-  /// This is the final step of the isolated passkey login flow and calls the
-  /// `/oauth/token` endpoint.
+  /// The [credential] is the passkey assertion obtained from the operating
+  /// system's authentication UI (for example, via Apple's
+  /// `ASAuthorizationController` or Android's Credential Manager in your app),
+  /// using the [PasskeyLoginChallenge] returned by [passkeyLoginChallenge].
+  /// This call exchanges that credential at the `/oauth/token` endpoint.
   Future<Credentials> passkeyLogin({
     required final PasskeyLoginChallenge challenge,
     required final PasskeyLoginCredential credential,

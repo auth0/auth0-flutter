@@ -8,8 +8,9 @@ import Flutter
 import FlutterMacOS
 #endif
 
-/// A ``LoginPasskey`` reconstructed from a credential map produced by
-/// ``AuthAPIPasskeyCreateCredentialMethodHandler``.
+/// A ``LoginPasskey`` reconstructed from a credential map provided by the
+/// Flutter layer (the app presents the OS passkey UI and passes the resulting
+/// assertion).
 @available(iOS 16.6, macOS 13.5, visionOS 1.0, *)
 private struct ReconstructedLoginPasskey: LoginPasskey {
     let userID: Data!
@@ -20,10 +21,9 @@ private struct ReconstructedLoginPasskey: LoginPasskey {
     let signature: Data!
 }
 
-/// Exchanges a passkey credential (obtained from
-/// ``AuthAPIPasskeyCreateCredentialMethodHandler``) and a login challenge for
-/// Auth0 tokens by calling the `/oauth/token` endpoint. This handler does not
-/// present any UI.
+/// Exchanges a passkey credential (presented by the app) and a login challenge
+/// for Auth0 tokens by calling the `/oauth/token` endpoint. This handler does
+/// not present any UI.
 @available(iOS 16.6, macOS 13.5, visionOS 1.0, *)
 struct AuthAPIPasskeyLoginMethodHandler: MethodHandler {
     enum Argument: String {
