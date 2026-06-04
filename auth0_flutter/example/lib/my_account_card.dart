@@ -48,39 +48,50 @@ class _MyAccountCardState extends State<MyAccountCard> {
     widget.onOutput(message);
   }
 
+  // Scopes required to manage authentication methods via the My Account API.
+  static const _myAccountScopes = {
+    'openid',
+    'read:me:authentication_methods',
+    'create:me:authentication_methods',
+    'update:me:authentication_methods',
+    'delete:me:authentication_methods',
+    'read:me:factors',
+  };
+
   Future<void> _loginForMyAccount() async {
     try {
-      _log('Logging in with audience: '
-          'https://${widget.domain}/me/ ...');
-
+      // 1. Log in once for the app, requesting offline_access so that a refresh
+      //    token is stored. This is the recommended approach: rather than
+      //    launching a second interactive login against the `/me/` audience, we
+      //    reuse the existing session and exchange the refresh token below.
+      _log('Logging in (requesting offline_access for a refresh token)...');
       final webAuth = widget.auth0.webAuthentication(
         scheme: widget.scheme,
       );
       final result = await webAuth.login(
-        audience: 'https://${widget.domain}/me/',
-        scopes: {
-          'openid',
-          'profile',
-          'email',
-          'offline_access',
-          'read:me:authentication_methods',
-          'create:me:authentication_methods',
-          'update:me:authentication_methods',
-          'delete:me:authentication_methods',
-          'read:me:enrollments',
-          'read:me:factors',
-        },
+        scopes: {'openid', 'profile', 'email', 'offline_access'},
+      );
+      await widget.auth0.credentialsManager.storeCredentials(result);
+
+      // 2. Exchange the stored refresh token for an access token scoped to the
+      //    My Account API by requesting the `https://{domain}/me/` audience.
+      //    (Requires Multi-Resource Refresh Tokens enabled on the tenant.)
+      _log('Exchanging refresh token for a My Account token '
+          '(audience: https://${widget.domain}/me/)...');
+      final myAccountCredentials =
+          await widget.auth0.credentialsManager.credentials(
+        scopes: _myAccountScopes,
+        parameters: {'audience': 'https://${widget.domain}/me/'},
       );
 
       setState(() {
-        _accessToken = result.accessToken;
+        _accessToken = myAccountCredentials.accessToken;
         _myAccount = widget.auth0
             .myAccount(accessToken: _accessToken!, useDPoP: _useDPoP);
       });
 
-      _log('Login successful!\n'
-          'Access Token: ${_accessToken!.substring(0, 30)}...\n'
-          'Scopes obtained. Ready for My Account API calls.');
+      _log('Ready for My Account API calls!\n'
+          'Access Token: ${_accessToken!.substring(0, 30)}...');
     } catch (e) {
       _log('Login Error: $e');
     }
