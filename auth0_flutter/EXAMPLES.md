@@ -739,7 +739,7 @@ await auth0.credentialsManager.clearApiCredentials(
 ```
 
 > ⚠️ **Prerequisites:** Multi-Resource Refresh Tokens must be enabled on your tenant, and the `offline_access` scope must have been requested at login so that a refresh token is available for the exchange.
-
+>
 > 💡 On iOS and macOS, the stored API credentials are keyed by audience **and** scope, so pass the same `scope` to `clearApiCredentials()` that you used when fetching them. On Android they are keyed by audience alone, and the `scope` argument is ignored.
 
 ### Retrieve user profile

@@ -1110,7 +1110,10 @@ void main() {
       expect(result.accessToken,
           MethodCallHandler.apiCredentials['accessToken']);
       expect(result.tokenType, MethodCallHandler.apiCredentials['tokenType']);
-      expect(result.scopes, MethodCallHandler.apiCredentials['scopes']);
+      expect(
+          result.scopes,
+          Set<String>.from(
+              MethodCallHandler.apiCredentials['scopes'] as List<dynamic>));
       expect(
           result.expiresAt,
           DateTime.parse(

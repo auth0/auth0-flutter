@@ -14,8 +14,8 @@ class ClearApiCredentialsRequestHandler : CredentialsManagerRequestHandler {
         request: MethodCallRequest,
         result: MethodChannel.Result
     ) {
-        val audience = request.data["audience"] as String?
-        if (audience == null) {
+        val audience = request.data["audience"] as? String
+        if (audience.isNullOrBlank()) {
             result.error("UNKNOWN ERROR", "audience is required to clear API credentials", null)
             return
         }
