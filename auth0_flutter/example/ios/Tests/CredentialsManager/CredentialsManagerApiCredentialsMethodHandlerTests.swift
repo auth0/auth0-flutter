@@ -46,6 +46,7 @@ extension ApiCredentialsMethodHandlerTests {
                                       scope: "scope")
         let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
         let expectation = self.expectation(description: "API credentials exchange was called")
+        spyAuthentication.credentialsResult = .success(credentials)
         spyStorage.getEntryReturnValue = data
         sut.handle(with: arguments()) { _ in
             XCTAssertEqual(self.spyAuthentication.arguments["refreshToken"] as? String, "refreshToken")
@@ -65,6 +66,7 @@ extension ApiCredentialsMethodHandlerTests {
                                       scope: "a b")
         let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
         let expectation = self.expectation(description: "Produced API credentials")
+        spyAuthentication.credentialsResult = .success(credentials)
         spyStorage.getEntryReturnValue = data
         sut.handle(with: arguments()) { result in
             guard let dictionary = result as? [String: Any] else {
