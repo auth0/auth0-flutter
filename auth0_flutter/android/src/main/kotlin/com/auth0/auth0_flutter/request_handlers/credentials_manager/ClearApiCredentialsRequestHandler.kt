@@ -20,9 +20,10 @@ class ClearApiCredentialsRequestHandler : CredentialsManagerRequestHandler {
             return
         }
 
-        // The stored API credentials on Android are keyed by audience alone;
-        // the optional `scope` argument (iOS/macOS only) is intentionally ignored.
-        credentialsManager.clearApiCredentials(audience)
+        val scope = request.data["scope"] as String?
+
+        // Stored API credentials are keyed by audience and (optional) scope.
+        credentialsManager.clearApiCredentials(audience, scope)
         result.success(true)
     }
 }

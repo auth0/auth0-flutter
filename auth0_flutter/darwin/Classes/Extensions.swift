@@ -100,7 +100,7 @@ extension APICredentials {
         return [
             "accessToken": accessToken,
             "tokenType": tokenType,
-            "expiresAt": expiresAt.asISO8601String,
+            "expiresAt": expiresIn.asISO8601String,
             "scopes": scope.split(separator: " ").map(String.init)
         ]
     }

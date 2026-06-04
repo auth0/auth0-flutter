@@ -14,7 +14,24 @@ import org.robolectric.RobolectricTestRunner
 class ClearApiCredentialsRequestHandlerTest {
 
     @Test
-    fun `should call clearApiCredentials with the provided audience`() {
+    fun `should call clearApiCredentials with the provided audience and scope`() {
+        val handler = ClearApiCredentialsRequestHandler()
+        val options = hashMapOf<String, Any>(
+            "audience" to "test-audience",
+            "scope" to "test-scope"
+        )
+        val mockResult = mock<Result>()
+        val mockAccount = mock<Auth0>()
+        val mockCredentialsManager = mock<SecureCredentialsManager>()
+        val request = MethodCallRequest(account = mockAccount, options)
+
+        handler.handle(mockCredentialsManager, mock(), request, mockResult)
+
+        verify(mockCredentialsManager).clearApiCredentials(eq("test-audience"), eq("test-scope"))
+    }
+
+    @Test
+    fun `should call clearApiCredentials with a null scope when not provided`() {
         val handler = ClearApiCredentialsRequestHandler()
         val options = hashMapOf<String, Any>("audience" to "test-audience")
         val mockResult = mock<Result>()
@@ -24,7 +41,7 @@ class ClearApiCredentialsRequestHandlerTest {
 
         handler.handle(mockCredentialsManager, mock(), request, mockResult)
 
-        verify(mockCredentialsManager).clearApiCredentials(eq("test-audience"))
+        verify(mockCredentialsManager).clearApiCredentials(eq("test-audience"), isNull())
     }
 
     @Test
@@ -53,6 +70,6 @@ class ClearApiCredentialsRequestHandlerTest {
         handler.handle(mockCredentialsManager, mock(), request, mockResult)
 
         verify(mockResult).error(eq("UNKNOWN ERROR"), any(), anyOrNull())
-        verify(mockCredentialsManager, never()).clearApiCredentials(anyString())
+        verify(mockCredentialsManager, never()).clearApiCredentials(anyString(), anyOrNull())
     }
 }
