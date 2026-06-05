@@ -1,6 +1,5 @@
 package com.auth0.auth0_flutter.request_handlers.api
 
-import android.content.Context
 import android.os.Build
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationAPIClient
@@ -51,10 +50,9 @@ class PasskeyLoginApiRequestHandlerTest {
         val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
-        val mockContext = mock<Context>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        handler.handle(mockApi, request, mockResult, mockContext, null)
+        handler.handle(mockApi, request, mockResult)
 
         verify(mockResult).error(
             eq("a0.passkey.invalid_request"),
@@ -75,10 +73,9 @@ class PasskeyLoginApiRequestHandlerTest {
         val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
-        val mockContext = mock<Context>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        handler.handle(mockApi, request, mockResult, mockContext, null)
+        handler.handle(mockApi, request, mockResult)
 
         verify(mockResult).error(
             eq("a0.passkey.invalid_request"),
@@ -94,10 +91,9 @@ class PasskeyLoginApiRequestHandlerTest {
         val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
-        val mockContext = mock<Context>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        handler.handle(mockApi, request, mockResult, mockContext, null)
+        handler.handle(mockApi, request, mockResult)
 
         verify(mockResult).error(
             eq("a0.passkey.invalid_request"),
@@ -122,7 +118,6 @@ class PasskeyLoginApiRequestHandlerTest {
         val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
-        val mockContext = mock<Context>()
         val request = MethodCallRequest(account = mockAccount, options)
 
         doReturn(mockBuilder).`when`(mockApi)
@@ -132,7 +127,7 @@ class PasskeyLoginApiRequestHandlerTest {
         doReturn(mockBuilder).`when`(mockBuilder).setAudience(any())
         doReturn(mockBuilder).`when`(mockBuilder).addParameters(any())
 
-        handler.handle(mockApi, request, mockResult, mockContext, null)
+        handler.handle(mockApi, request, mockResult)
 
         verify(mockApi).signinWithPasskey(
             eq("test-auth-session"),
@@ -158,7 +153,6 @@ class PasskeyLoginApiRequestHandlerTest {
         val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
-        val mockContext = mock<Context>()
         val request = MethodCallRequest(account = mockAccount, options)
         val exception =
             AuthenticationException(code = "test-code", description = "test-description")
@@ -171,7 +165,7 @@ class PasskeyLoginApiRequestHandlerTest {
             cb.onFailure(exception)
         }.`when`(mockBuilder).start(any())
 
-        handler.handle(mockApi, request, mockResult, mockContext, null)
+        handler.handle(mockApi, request, mockResult)
 
         verify(mockResult).error(eq("test-code"), eq("test-description"), any())
     }
@@ -187,7 +181,6 @@ class PasskeyLoginApiRequestHandlerTest {
         val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
-        val mockContext = mock<Context>()
         val request = MethodCallRequest(account = mockAccount, options)
 
         val credentials = Credentials(
@@ -207,7 +200,7 @@ class PasskeyLoginApiRequestHandlerTest {
             cb.onSuccess(credentials)
         }.`when`(mockBuilder).start(any())
 
-        handler.handle(mockApi, request, mockResult, mockContext, null)
+        handler.handle(mockApi, request, mockResult)
 
         val captor = argumentCaptor<Map<String, *>>()
         verify(mockResult).success(captor.capture())

@@ -1013,6 +1013,7 @@ final credentials = await auth0.api.login(
 [Passkeys](https://auth0.com/docs/authenticate/database-connections/passkeys) let an existing user log in with a biometric or device PIN instead of a password, using the platform authenticator (Face ID / Touch ID on iOS, the Credential Manager on Android).
 
 > ⚠️ Passkeys require additional configuration on both your Auth0 tenant and your app:
+> - Set up a [custom domain](https://auth0.com/docs/customize/custom-domains) for your tenant. Passkeys will **not** work without one, since the relying-party domain must be a domain you own and can host the associated domain / Digital Asset Links file on.
 > - Enable passkeys for your database connection and the **Passkey** grant type for your application. See [Configure passkeys](https://auth0.com/docs/authenticate/database-connections/passkeys/configure-passkeys).
 > - Configure the [associated domain (iOS/macOS)](README.md#iosmacos-configure-the-associated-domain) and the equivalent [Digital Asset Links file](https://developer.android.com/identity/sign-in/credential-manager#add-support-dal) (Android) so the OS associates your app with the relying-party domain.
 

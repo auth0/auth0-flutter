@@ -1,8 +1,5 @@
 package com.auth0.auth0_flutter.request_handlers.api
 
-import android.app.Activity
-import android.content.Context
-import android.os.Build
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
@@ -19,7 +16,7 @@ private const val AUTH_PASSKEY_LOGIN_METHOD = "auth#passkeyLogin"
  * for Auth0 tokens by calling the `/oauth/token` endpoint. This handler does
  * not present any UI.
  */
-class PasskeyLoginApiRequestHandler : PasskeyApiRequestHandler {
+class PasskeyLoginApiRequestHandler : ApiRequestHandler {
     override val method: String = AUTH_PASSKEY_LOGIN_METHOD
 
     private val gson = Gson()
@@ -27,30 +24,20 @@ class PasskeyLoginApiRequestHandler : PasskeyApiRequestHandler {
     override fun handle(
         api: AuthenticationAPIClient,
         request: MethodCallRequest,
-        result: MethodChannel.Result,
-        context: Context,
-        activity: Activity?
+        result: MethodChannel.Result
     ) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            failWith(result, "a0.passkey.unsupported", "Passkey authentication requires Android 9 or higher")
-            return
-        }
-
         val args = request.data
-        val challengeMap = args["challenge"] as? Map<*, *>
-        if (challengeMap == null) {
+        val challengeMap = args["challenge"] as? Map<*, *> ?: run {
             failWith(result, "a0.passkey.invalid_request", "Missing challenge argument")
             return
         }
 
-        val authSession = challengeMap["authSession"] as? String
-        if (authSession == null) {
+        val authSession = challengeMap["authSession"] as? String ?: run {
             failWith(result, "a0.passkey.invalid_request", "Missing authSession in challenge")
             return
         }
 
-        val credentialMap = args["credential"] as? Map<*, *>
-        if (credentialMap == null) {
+        val credentialMap = args["credential"] as? Map<*, *> ?: run {
             failWith(result, "a0.passkey.invalid_request", "Missing credential argument")
             return
         }
@@ -58,7 +45,7 @@ class PasskeyLoginApiRequestHandler : PasskeyApiRequestHandler {
         val connection = args["connection"] as? String
         val organization = args["organization"] as? String
         val audience = args["audience"] as? String
-        val scopes = (args["scopes"] as? ArrayList<*>)?.joinToString(" ") ?: ""
+        val scopes = (args["scopes"] as? List<*>)?.filterIsInstance<String>()?.joinToString(" ") ?: ""
         val parameters = (args["parameters"] as? Map<*, *>)?.mapKeys { it.key.toString() }
             ?.mapValues { it.value.toString() } ?: emptyMap()
 

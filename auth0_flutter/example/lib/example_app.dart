@@ -40,7 +40,7 @@ class _ExampleAppState extends State<ExampleApp> {
     }
     if (kIsWeb) {
       auth0Web.onLoad().then((final credentials) => setState(() {
-            _output = credentials?.idToken ?? '';
+            _output = _preview(credentials?.idToken ?? '');
             _isLoggedIn = credentials != null;
           }));
     }
@@ -143,7 +143,7 @@ class _ExampleAppState extends State<ExampleApp> {
           usernameOrEmail: usernameOrEmail,
           password: password,
           connectionOrRealm: 'Username-Password-Authentication');
-      output = result.accessToken;
+      output = _preview(result.accessToken);
     } on ApiException catch (e) {
       output = e.toString();
     }

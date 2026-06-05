@@ -332,6 +332,9 @@ class CredentialsManagerMethodCallHandlerTest {
         val mockPrefs: SharedPreferences = mock()
 
         `when`(context.getSharedPreferences(any(), any())).thenReturn(mockPrefs)
+        // useDPoP=true triggers apiClient.useDPoP(context), which reads
+        // context.applicationContext; stub it so the mock doesn't return null.
+        `when`(context.applicationContext).thenReturn(context)
 
         handler.activity = activity
         handler.context = context
