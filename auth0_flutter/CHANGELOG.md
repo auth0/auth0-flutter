@@ -1,5 +1,14 @@
 # Change Log
 
+## [af-v2.2.0](https://github.com/auth0/auth0-flutter/tree/af-v2.2.0) (2026-06-05)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.1.0...af-v2.2.0)
+
+**Added**
+- feat: add My Account API support for managing MFA authentication method [\#835](https://github.com/auth0/auth0-flutter/pull/835) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: add Flutter Multi-Resource Refresh Token (MRRT) support [\#850](https://github.com/auth0/auth0-flutter/pull/850) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: add Partial Custom Tabs support for Android [\#846](https://github.com/auth0/auth0-flutter/pull/846) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- fix: use safe casts in UserProfileExtensions to prevent ClassCastException [\#836](https://github.com/auth0/auth0-flutter/pull/836) ([sanchitmehtagit](https://github.com/sanchitmehtagit))
+
 ## [af-v2.1.0](https://github.com/auth0/auth0-flutter/tree/af-v2.1.0) (2026-05-21)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.0.2...af-v2.1.0)
 
