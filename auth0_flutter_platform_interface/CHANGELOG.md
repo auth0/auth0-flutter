@@ -1,5 +1,15 @@
 # Change Log
 
+## [afpi-v2.2.0](https://github.com/auth0/auth0-flutter/tree/afpi-v2.2.0) (2026-06-05)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.1.0...afpi-v2.2.0)
+
+**Added**
+- afpi: suppress deprecated allowedBrowsers analyze warnings in ship cli [\#851](https://github.com/auth0/auth0-flutter/pull/851) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: add My Account API support for managing MFA authentication method [\#835](https://github.com/auth0/auth0-flutter/pull/835) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: add Flutter Multi-Resource Refresh Token (MRRT) support [\#850](https://github.com/auth0/auth0-flutter/pull/850) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: add Partial Custom Tabs support for Android [\#846](https://github.com/auth0/auth0-flutter/pull/846) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- fix: use safe casts in UserProfileExtensions to prevent ClassCastException [\#836](https://github.com/auth0/auth0-flutter/pull/836) ([sanchitmehtagit](https://github.com/sanchitmehtagit))
+
 ## [afpi-v2.1.0](https://github.com/auth0/auth0-flutter/tree/afpi-v2.1.0) (2026-05-21)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.0.2...afpi-v2.1.0)
 
