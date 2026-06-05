@@ -27,7 +27,7 @@ private object BiometricAuthLevel {
 }
 
 class CredentialsManagerMethodCallHandler(private val requestHandlers: List<CredentialsManagerRequestHandler>) : MethodCallHandler {
-    var activity: Activity? = null
+    lateinit var activity: Activity
     lateinit var context: Context
 
     private data class ManagerCacheKey(
