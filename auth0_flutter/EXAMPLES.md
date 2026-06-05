@@ -35,6 +35,7 @@
   - [Retrieve stored credentials](#retrieve-stored-credentials-1)
 - [📱 Authentication API](#-authentication-api)
   - [Login with database connection](#login-with-database-connection)
+  - [Log in with passkeys](#log-in-with-passkeys)
   - [Sign up with database connection](#sign-up-with-database-connection)
   - [Passwordless Login](#passwordless-login)
   - [Retrieve user information](#retrieve-user-information)
@@ -1031,6 +1032,7 @@ final credentials = await auth0Web.credentials();
 > This feature is mobile/macOS only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
 
 - [Login with database connection](#login-with-database-connection)
+- [Log in with passkeys](#log-in-with-passkeys)
 - [Sign up with database connection](#sign-up-with-database-connection)
 - [Retrieve user information](#retrieve-user-information)
 - [Renew credentials](#renew-credentials)
@@ -1083,6 +1085,67 @@ final credentials = await auth0.api.login(
     usernameOrEmail: 'jane.smith@example.com',
     password: 'secret-password',
     connectionOrRealm: 'Username-Password-Authentication',
+    scopes: {'profile', 'email', 'offline_access', 'read:todos'});
+```
+
+</details>
+
+### Log in with passkeys
+
+> This feature is available on **iOS 16.6+** and **Android 9+ (API 28)** only.
+
+[Passkeys](https://auth0.com/docs/authenticate/database-connections/passkeys) let an existing user log in with a biometric or device PIN instead of a password, using the platform authenticator (Face ID / Touch ID on iOS, the Credential Manager on Android).
+
+> ⚠️ Passkeys require additional configuration on both your Auth0 tenant and your app:
+> - Set up a [custom domain](https://auth0.com/docs/customize/custom-domains) for your tenant. Passkeys will **not** work without one, since the relying-party domain must be a domain you own and can host the associated domain / Digital Asset Links file on.
+> - Enable passkeys for your database connection and the **Passkey** grant type for your application. See [Configure passkeys](https://auth0.com/docs/authenticate/database-connections/passkeys/configure-passkeys).
+> - Configure the [associated domain (iOS/macOS)](README.md#iosmacos-configure-the-associated-domain) and the equivalent [Digital Asset Links file](https://developer.android.com/identity/sign-in/credential-manager#add-support-dal) (Android) so the OS associates your app with the relying-party domain.
+
+The SDK exposes **two** methods for passkey login — `passkeyLoginChallenge` and `passkeyLogin` — and leaves presenting the OS passkey UI to your app. The flow is:
+
+1. Request a login challenge from Auth0 with `passkeyLoginChallenge`.
+2. **In your app**, present the platform authenticator using that challenge and obtain a WebAuthn assertion. The SDK does **not** do this step — call the OS APIs directly (for example, [`ASAuthorizationController`](https://developer.apple.com/documentation/authenticationservices/asauthorizationcontroller) on iOS/macOS or [Credential Manager](https://developer.android.com/identity/sign-in/credential-manager) on Android, typically over your own platform channel), then map the result into a `PasskeyLoginCredential`.
+3. Exchange that credential for Auth0 tokens with `passkeyLogin`.
+
+```dart
+// 1. Request a login challenge from Auth0.
+final challenge = await auth0.api.passkeyLoginChallenge(
+    connection: 'Username-Password-Authentication');
+
+// 2. Present the OS passkey UI in your app (not provided by the SDK) using
+//    `challenge.authParamsPublicKey`, then build a PasskeyLoginCredential from
+//    the resulting WebAuthn assertion. All values are base64url-encoded.
+final credential = PasskeyLoginCredential(
+    id: '<base64url credentialId>',
+    rawId: '<base64url credentialId>',
+    type: 'public-key',
+    authenticatorAttachment: 'platform',
+    response: PasskeyAuthenticatorAssertionResponse(
+        clientDataJSON: '<base64url clientDataJSON>',
+        authenticatorData: '<base64url authenticatorData>',
+        signature: '<base64url signature>',
+        userHandle: '<base64url userHandle>'));
+
+// 3. Exchange the credential for Auth0 tokens.
+final credentials = await auth0.api.passkeyLogin(
+    challenge: challenge,
+    credential: credential,
+    connection: 'Username-Password-Authentication');
+
+// Store the credentials afterward
+final didStore =
+    await auth0.credentialsManager.storeCredentials(credentials);
+```
+
+<details>
+  <summary>Add an audience and scope values</summary>
+
+```dart
+final credentials = await auth0.api.passkeyLogin(
+    challenge: challenge,
+    credential: credential,
+    connection: 'Username-Password-Authentication',
+    audience: 'YOUR_AUTH0_API_IDENTIFIER',
     scopes: {'profile', 'email', 'offline_access', 'read:todos'});
 ```
 
