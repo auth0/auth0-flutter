@@ -409,10 +409,9 @@ void main() {
   group('clearApiCredentials', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.clearApiCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((final _) async {});
 
-      final result = await DefaultCredentialsManager(account, userAgent)
-          .clearApiCredentials(
+      await DefaultCredentialsManager(account, userAgent).clearApiCredentials(
         audience: 'test-audience',
         scope: 'test-scope',
       );
@@ -424,12 +423,11 @@ void main() {
       expect(verificationResult.account.clientId, 'test-clientId');
       expect(verificationResult.options?.audience, 'test-audience');
       expect(verificationResult.options?.scope, 'test-scope');
-      expect(result, true);
     });
 
     test('leaves the scope null when omitted', () async {
       when(mockedPlatform.clearApiCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((final _) async {});
 
       await DefaultCredentialsManager(account, userAgent)
           .clearApiCredentials(audience: 'test-audience');
