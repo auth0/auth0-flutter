@@ -1,4 +1,5 @@
 export 'src/account.dart';
+export 'src/api_credentials.dart';
 export 'src/auth/api_exception.dart';
 export 'src/auth/auth_custom_token_exchange_options.dart';
 export 'src/auth/auth_dpop_headers_options.dart';
@@ -26,6 +27,8 @@ export 'src/credentials-manager/credentials_manager_configuration.dart';
 export 'src/credentials-manager/credentials_manager_exception.dart';
 export 'src/credentials-manager/credentials_manager_platform.dart';
 export 'src/credentials-manager/method_channel_credentials_manager.dart';
+export 'src/credentials-manager/options/clear_api_credentials_options.dart';
+export 'src/credentials-manager/options/get_api_credentials_options.dart';
 export 'src/credentials-manager/options/get_credentials_options.dart';
 export 'src/credentials-manager/options/get_sso_credentials_options.dart';
 export 'src/credentials-manager/options/has_valid_credentials_options.dart';
