@@ -45,6 +45,13 @@
   - [Log in to an organization](#log-in-to-an-organization)
   - [Accept user invitations](#accept-user-invitations)
 - [📱 Bot detection](#-bot-detection)
+- [📱 My Account API](#-my-account-api)
+  - [Obtaining an access token for the My Account API](#obtaining-an-access-token-for-the-my-account-api)
+  - [Listing and managing authentication methods](#listing-and-managing-authentication-methods)
+  - [Enrolling a factor with OTP (phone, email, TOTP)](#enrolling-a-factor-with-otp-phone-email-totp)
+  - [Enrolling a factor without OTP (push, recovery code)](#enrolling-a-factor-without-otp-push-recovery-code)
+  - [Using DPoP](#using-dpop)
+  - [Errors](#errors-3)
 
 ## 📱 Web Authentication
 
@@ -1321,6 +1328,143 @@ try {
         });
     // ...
   }
+}
+```
+
+---
+
+[Go up ⤴](#examples)
+
+## 📱 My Account API
+
+The My Account API lets authenticated users manage their own multi-factor authentication (MFA) methods — enrolling, confirming, listing, updating, and deleting factors such as phone, email, TOTP, push notifications, and recovery codes. It is available on **mobile (Android/iOS) only**.
+
+> 💡 The My Account API must be enabled for your tenant. If it is not yet available on your account, reach out to Auth0 support to get it enabled.
+
+### Obtaining an access token for the My Account API
+
+The My Account API requires an access token issued specifically for the `https://YOUR_DOMAIN/me/` audience, with the scopes for the operations you intend to perform.
+
+The **recommended approach** is to log in **once** for your application with the `offline_access` scope (so a refresh token is stored), and then exchange that refresh token for a My Account–scoped access token — instead of launching a second interactive login. This is the same pattern the other Auth0 SDKs follow ([react-native-auth0](https://github.com/auth0/react-native-auth0/blob/master/EXAMPLES.md), [Auth0.swift](https://github.com/auth0/Auth0.swift/blob/master/EXAMPLES.md), and [Auth0.Android](https://github.com/auth0/Auth0.Android/blob/main/EXAMPLES.md)).
+
+```dart
+// 1. Log in once for your app, requesting offline_access to get a refresh token.
+final credentials = await auth0.webAuthentication().login(
+  scopes: {'openid', 'profile', 'email', 'offline_access'},
+);
+await auth0.credentialsManager.storeCredentials(credentials);
+
+// 2. Exchange the stored refresh token for a token scoped to the My Account API,
+//    by requesting the `https://YOUR_DOMAIN/me/` audience and the My Account scopes.
+final myAccountCredentials = await auth0.credentialsManager.getApiCredentials(
+  audience: 'https://YOUR_DOMAIN/me/',
+  scope: {
+    'read:me:authentication_methods',
+    'create:me:authentication_methods',
+    'update:me:authentication_methods',
+    'delete:me:authentication_methods',
+    'read:me:factors',
+  },
+);
+
+// 3. Create the My Account client with the resulting access token.
+final myAccount = auth0.myAccount(
+  accessToken: myAccountCredentials.accessToken,
+);
+```
+
+> 💡 `getApiCredentials` returns a **separate**, audience-scoped token via a [Multi-Resource Refresh Token (MRRT)](https://auth0.com/docs/secure/tokens/refresh-tokens/multi-resource-refresh-token) exchange; it does **not** replace the application credentials stored via `storeCredentials`. The token is cached per audience, so subsequent calls return the cached value until it expires.
+
+> ⚠️ Exchanging the refresh token requires MRRT to be enabled for your tenant, and the application must have requested `offline_access` at login so that a refresh token is available.
+
+### Listing and managing authentication methods
+
+```dart
+// List all enrolled MFA methods.
+final methods = await myAccount.getAuthenticationMethods();
+
+// Optionally filter by type.
+final phones = await myAccount.getAuthenticationMethods(
+  type: AuthenticationMethodType.phone,
+);
+
+// Retrieve a single method by id.
+final method = await myAccount.getAuthenticationMethod(id: 'method_id');
+
+// List the factors available for enrollment on the tenant.
+final factors = await myAccount.getFactors();
+
+// Update a method's display name and/or preferred phone channel.
+await myAccount.updateAuthenticationMethod(
+  id: 'method_id',
+  name: 'My personal phone',
+  preferredAuthenticationMethod: PhoneType.voice,
+);
+
+// Delete a method.
+await myAccount.deleteAuthenticationMethod(id: 'method_id');
+```
+
+### Enrolling a factor with OTP (phone, email, TOTP)
+
+Phone, email, and TOTP enrollments are completed by verifying a one-time password with `verifyOtp`. Pass the `factorType` of the factor you enrolled so the correct confirmation endpoint is used.
+
+```dart
+// Start phone enrollment (an OTP is sent via SMS).
+final challenge = await myAccount.enrollPhone(
+  phoneNumber: '+1234567890',
+  type: PhoneType.sms,
+);
+
+// Confirm with the OTP the user received.
+final method = await myAccount.verifyOtp(
+  id: challenge.id,
+  authSession: challenge.authSession,
+  otp: '123456',
+  factorType: 'phone', // 'phone' | 'email' | 'totp'
+);
+```
+
+The same two-step flow applies to `enrollEmail` (`factorType: 'email'`) and `enrollTotp` (`factorType: 'totp'`).
+
+### Enrolling a factor without OTP (push, recovery code)
+
+Push notification and recovery code enrollments do not use an OTP — they are completed with `confirmEnrollment`.
+
+```dart
+// Start push enrollment.
+final challenge = await myAccount.enrollPush();
+
+// ...complete the out-of-band step (e.g. the user approves on their device), then:
+final method = await myAccount.confirmEnrollment(
+  id: challenge.id,
+  authSession: challenge.authSession,
+  factorType: 'push-notification', // 'push-notification' | 'recovery-code'
+);
+```
+
+The same flow applies to `enrollRecoveryCode` (`factorType: 'recovery-code'`).
+
+### Using DPoP
+
+To secure My Account API requests with [DPoP](https://www.rfc-editor.org/rfc/rfc9449.html) (Demonstrating Proof-of-Possession) sender-constrained tokens, set `useDPoP` to `true` when creating the client. It defaults to `false`. The DPoP key pair is generated and stored securely on the device (Keychain on iOS, Keystore on Android).
+
+```dart
+final myAccount = auth0.myAccount(
+  accessToken: myAccountCredentials.accessToken,
+  useDPoP: true,
+);
+```
+
+### Errors
+
+My Account API calls throw a `MyAccountException` on failure.
+
+```dart
+try {
+  await myAccount.getAuthenticationMethods();
+} on MyAccountException catch (e) {
+  print('${e.code}: ${e.message} (${e.statusCode})');
 }
 ```
 

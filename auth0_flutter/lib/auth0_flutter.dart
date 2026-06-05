@@ -3,31 +3,39 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 import 'src/desktop/windows_web_authentication.dart';
 import 'src/mobile/authentication_api.dart';
 import 'src/mobile/credentials_manager.dart';
+import 'src/mobile/my_account_api.dart';
 import 'src/mobile/web_authentication.dart';
 import 'src/version.dart';
 
 export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
     show
-        WebAuthenticationException,
+        AuthenticationMethod,
+        AuthenticationMethodType,
         ApiException,
+        ChallengeType,
+        Credentials,
+        CredentialsManagerException,
+        DatabaseUser,
+        EnrollmentChallenge,
+        Factor,
         IdTokenValidationConfig,
+        LocalAuthentication,
+        LocalAuthenticationLevel,
+        MyAccountException,
+        PasswordlessType,
+        PhoneType,
         SafariViewController,
         SafariViewControllerPresentationStyle,
         CustomTabsOptions,
-        Credentials,
         SSOCredentials,
         ApiCredentials,
         UserProfile,
-        DatabaseUser,
-        ChallengeType,
-        CredentialsManagerException,
-        PasswordlessType,
-        LocalAuthentication,
-        LocalAuthenticationLevel;
+        WebAuthenticationException;
 
 export 'src/desktop/windows_web_authentication.dart';
 export 'src/mobile/authentication_api.dart';
 export 'src/mobile/credentials_manager.dart';
+export 'src/mobile/my_account_api.dart';
 export 'src/mobile/web_authentication.dart';
 
 /// Primary interface for interacting with Auth0 using web authentication,
@@ -128,6 +136,33 @@ class Auth0 {
   /// for Windows desktop applications.
   WindowsWebAuthentication windowsWebAuthentication() =>
       WindowsWebAuthentication(_account, _userAgent);
+
+  /// Creates an instance of [MyAccountApi] for managing the user's
+  /// authentication methods (MFA factors) via the
+  /// [My Account API](https://auth0.com/docs/manage-users/my-account-api).
+  ///
+  /// Requires an [accessToken] with the appropriate scopes and
+  /// audience `https://{domain}/me/`.
+  ///
+  /// Set [useDPoP] to `true` to secure My Account API requests with DPoP
+  /// (Demonstrating Proof-of-Possession) sender-constrained tokens. Defaults
+  /// to `false`.
+  ///
+  /// **Note:** Only supported on mobile platforms (Android/iOS). Web is not
+  /// supported.
+  ///
+  /// Usage example:
+  ///
+  /// ```dart
+  /// final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
+  /// final myAccount = auth0.myAccount(accessToken: 'ACCESS_TOKEN');
+  /// final methods = await myAccount.getAuthenticationMethods();
+  /// ```
+  MyAccountApi myAccount({
+    required final String accessToken,
+    final bool useDPoP = false,
+  }) =>
+      MyAccountApi(_account, _userAgent, accessToken, useDPoP: useDPoP);
 
   /// Generates DPoP (Demonstrating Proof-of-Possession) headers for making
   /// authenticated API calls with DPoP-bound tokens.

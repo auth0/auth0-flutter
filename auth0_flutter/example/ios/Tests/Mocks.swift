@@ -136,6 +136,10 @@ class SpyPluginRegistrar: NSObject, FlutterPluginRegistrar {
 
     func publish(_ value: NSObject) {}
 
+    func valuePublished(byPlugin pluginKey: String) -> NSObject? {
+        return nil
+    }
+
     func lookupKey(forAsset asset: String) -> String {
         return ""
     }
@@ -146,9 +150,5 @@ class SpyPluginRegistrar: NSObject, FlutterPluginRegistrar {
 
     func addMethodCallDelegate(_ delegate: FlutterPlugin, channel: FlutterMethodChannel) {
         self.delegate = delegate
-    }
-    
-    func valuePublished(byPlugin pluginKey: String) -> NSObject? {
-        return nil
     }
 }

@@ -61,11 +61,17 @@ class CredentialsManagerRequest<TOptions extends RequestOptions?>
 
 class ApiRequest<TOptions extends RequestOptions>
     extends BaseRequest<TOptions> {
+  final bool useDPoP;
+
   ApiRequest({
     required final Account account,
     required final TOptions options,
     required final UserAgent userAgent,
+    this.useDPoP = false,
   }) : super(account: account, options: options, userAgent: userAgent);
+
+  @override
+  Map<String, dynamic> toMap() => super.toMap()..addAll({'useDPoP': useDPoP});
 }
 
 class WebAuthRequest<TOptions extends RequestOptions>

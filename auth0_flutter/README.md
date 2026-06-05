@@ -634,6 +634,108 @@ void dispose() {
 - [getApiCredentials](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/DefaultCredentialsManager/getApiCredentials.html)
 - [clearApiCredentials](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/DefaultCredentialsManager/clearApiCredentials.html)
 
+#### My Account API
+
+The My Account API allows users to manage their own multi-factor authentication (MFA) methods. Available on **mobile (Android/iOS) only**.
+
+The My Account API requires an access token issued for the `https://{domain}/me/` audience. The recommended approach is to log in **once** with the `offline_access` scope, then exchange the stored refresh token for a My Account–scoped token — rather than launching a second interactive login. This mirrors the other Auth0 SDKs.
+
+```dart
+// 1. Log in once for your app, requesting offline_access to get a refresh token.
+final credentials = await auth0.webAuthentication().login(
+  scopes: {'openid', 'profile', 'email', 'offline_access'},
+);
+await auth0.credentialsManager.storeCredentials(credentials);
+
+// 2. Exchange the stored refresh token for a token scoped to the My Account API.
+final myAccountCredentials = await auth0.credentialsManager.getApiCredentials(
+  audience: 'https://YOUR_DOMAIN/me/',
+  scope: {
+    'read:me:authentication_methods',
+    'create:me:authentication_methods',
+    'update:me:authentication_methods',
+    'delete:me:authentication_methods',
+    'read:me:factors',
+  },
+);
+```
+
+> `getApiCredentials` returns a **separate**, audience-scoped token; it does **not** replace the application credentials stored via `storeCredentials`. Exchanging the refresh token requires [Multi-Resource Refresh Tokens (MRRT)](https://auth0.com/docs/secure/tokens/refresh-tokens/multi-resource-refresh-token) to be enabled for your tenant.
+
+Then create the My Account client and use it:
+
+```dart
+final myAccount = auth0.myAccount(accessToken: myAccountCredentials.accessToken);
+
+// List enrolled MFA methods
+final methods = await myAccount.getAuthenticationMethods();
+
+// Optionally filter by type
+final phones = await myAccount.getAuthenticationMethods(
+  type: AuthenticationMethodType.phone,
+);
+
+// List available factors
+final factors = await myAccount.getFactors();
+
+// Enroll a new phone factor
+final challenge = await myAccount.enrollPhone(
+  phoneNumber: '+1234567890',
+  type: PhoneType.sms,
+);
+
+// Verify enrollment with OTP (phone, email, TOTP)
+await myAccount.verifyOtp(
+  id: challenge.id,
+  authSession: challenge.authSession,
+  otp: '123456',
+);
+
+// Update an existing method (e.g. rename, change preferred channel)
+await myAccount.updateAuthenticationMethod(
+  id: 'method_id',
+  name: 'My personal phone',
+  preferredAuthenticationMethod: PhoneType.voice,
+);
+
+// Delete a method
+await myAccount.deleteAuthenticationMethod(id: 'method_id');
+```
+
+Other enrollment methods: `enrollEmail`, `enrollTotp`, `enrollPush`, `enrollRecoveryCode`.
+
+Push notification and recovery code enrollments are confirmed without an OTP using `confirmEnrollment`:
+
+```dart
+final challenge = await myAccount.enrollPush();
+// ...complete the out-of-band step, then:
+await myAccount.confirmEnrollment(
+  id: challenge.id,
+  authSession: challenge.authSession,
+);
+```
+
+##### DPoP
+
+To secure My Account API requests with [DPoP](https://www.rfc-editor.org/rfc/rfc9449.html) (Demonstrating Proof-of-Possession) sender-constrained tokens, set `useDPoP` to `true` when creating the client. It defaults to `false`. The DPoP key pair is generated and stored securely on the device (Keychain on iOS, Keystore on Android).
+
+```dart
+final myAccount = auth0.myAccount(
+  accessToken: credentials.accessToken,
+  useDPoP: true,
+);
+```
+
+Error handling:
+
+```dart
+try {
+  await myAccount.getAuthenticationMethods();
+} on MyAccountException catch (e) {
+  print('${e.code}: ${e.message} (${e.statusCode})');
+}
+```
+
 ### 🌐 Web
 
 - [loginWithRedirect](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/loginWithRedirect.html)
