@@ -25,6 +25,7 @@ class WebAuthLogoutOptions implements RequestOptions {
         'returnTo': returnTo,
         'scheme': scheme,
         'federated': federated,
+        // ignore: deprecated_member_use_from_same_package
         'allowedBrowsers': allowedBrowsers,
         ...customTabsOptions != null
             ? {'customTabsOptions': customTabsOptions?.toMap()}

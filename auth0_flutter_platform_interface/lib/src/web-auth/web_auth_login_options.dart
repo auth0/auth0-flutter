@@ -33,6 +33,7 @@ class WebAuthLoginOptions extends LoginOptions {
   Map<String, dynamic> toMap() {
     final map = {
       ...super.toMap(),
+      // ignore: deprecated_member_use_from_same_package
       'allowedBrowsers': allowedBrowsers,
       'useHTTPS': useHTTPS,
       'useEphemeralSession': useEphemeralSession,
