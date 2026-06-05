@@ -50,7 +50,6 @@ class _MyAccountCardState extends State<MyAccountCard> {
 
   // Scopes required to manage authentication methods via the My Account API.
   static const _myAccountScopes = {
-    'openid',
     'read:me:authentication_methods',
     'create:me:authentication_methods',
     'update:me:authentication_methods',
@@ -75,13 +74,15 @@ class _MyAccountCardState extends State<MyAccountCard> {
 
       // 2. Exchange the stored refresh token for an access token scoped to the
       //    My Account API by requesting the `https://{domain}/me/` audience.
+      //    getApiCredentials returns a separate, audience-scoped token and does
+      //    not replace the stored application credentials.
       //    (Requires Multi-Resource Refresh Tokens enabled on the tenant.)
       _log('Exchanging refresh token for a My Account token '
           '(audience: https://${widget.domain}/me/)...');
       final myAccountCredentials =
-          await widget.auth0.credentialsManager.credentials(
-        scopes: _myAccountScopes,
-        parameters: {'audience': 'https://${widget.domain}/me/'},
+          await widget.auth0.credentialsManager.getApiCredentials(
+        audience: 'https://${widget.domain}/me/',
+        scope: _myAccountScopes,
       );
 
       setState(() {

@@ -677,6 +677,7 @@ await auth0.windowsWebAuthentication().logout(
 
 - [Check for stored credentials](#check-for-stored-credentials)
 - [Retrieve stored credentials](#retrieve-stored-credentials)
+- [Retrieve API credentials for a specific audience (MRRT)](#retrieve-api-credentials-for-a-specific-audience-mrrt)
 - [Retrieve user profile](#retrieve-user-profile)
 - [Custom implementations](#custom-implementations)
 - [Local authentication](#local-authentication)
@@ -711,6 +712,43 @@ final credentials = await auth0.credentialsManager.credentials();
 ```
 
 > 💡 You do not need to call `credentialsManager.storeCredentials()` afterward. The Credentials Manager automatically persists the renewed credentials.
+
+### Retrieve API credentials for a specific audience (MRRT)
+
+If your app needs an access token for a **different API** than the one it logged in with, use `getApiCredentials()`. It exchanges the stored refresh token for an access token scoped to the requested `audience` using a [Multi-Resource Refresh Token (MRRT)](https://auth0.com/docs/secure/tokens/refresh-tokens/multi-resource-refresh-token). If valid API credentials for that audience are already cached, they are returned without a network call; otherwise a new token is fetched and cached for next time.
+
+```dart
+final apiCredentials = await auth0.credentialsManager.getApiCredentials(
+  audience: 'https://my-api.example.com',
+);
+
+print('Access token: ${apiCredentials.accessToken}');
+```
+
+You can request specific scopes and pass additional options:
+
+```dart
+final apiCredentials = await auth0.credentialsManager.getApiCredentials(
+  audience: 'https://my-api.example.com',
+  scope: {'read:data', 'write:data'},
+  minTtl: 60,
+  parameters: {'key': 'value'},
+  headers: {'key': 'value'},
+);
+```
+
+To remove the cached API credentials for an audience – for example, on logout:
+
+```dart
+await auth0.credentialsManager.clearApiCredentials(
+  audience: 'https://my-api.example.com',
+  scope: 'read:data write:data',
+);
+```
+
+> ⚠️ **Prerequisites:** Multi-Resource Refresh Tokens must be enabled on your tenant, and the `offline_access` scope must have been requested at login so that a refresh token is available for the exchange.
+>
+> 💡 Stored API credentials are keyed by **both** audience and scope on every platform, so pass the same `scope` to `clearApiCredentials()` that you used when fetching them. The native APIs do not consistently report whether a matching entry existed, so this method returns `void` rather than a success flag.
 
 ### Retrieve user profile
 
@@ -1301,7 +1339,7 @@ try {
 
 The My Account API lets authenticated users manage their own multi-factor authentication (MFA) methods — enrolling, confirming, listing, updating, and deleting factors such as phone, email, TOTP, push notifications, and recovery codes. It is available on **mobile (Android/iOS) only**.
 
-> 💡 The My Account API is currently in [Early Access](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#early-access). It requires a [custom domain](https://auth0.com/docs/customize/custom-domains) and must be enabled for your tenant — reach out to Auth0 support to get it enabled.
+> 💡 The My Account API must be enabled for your tenant. If it is not yet available on your account, reach out to Auth0 support to get it enabled.
 
 ### Obtaining an access token for the My Account API
 
@@ -1318,16 +1356,15 @@ await auth0.credentialsManager.storeCredentials(credentials);
 
 // 2. Exchange the stored refresh token for a token scoped to the My Account API,
 //    by requesting the `https://YOUR_DOMAIN/me/` audience and the My Account scopes.
-final myAccountCredentials = await auth0.credentialsManager.credentials(
-  scopes: {
-    'openid',
+final myAccountCredentials = await auth0.credentialsManager.getApiCredentials(
+  audience: 'https://YOUR_DOMAIN/me/',
+  scope: {
     'read:me:authentication_methods',
     'create:me:authentication_methods',
     'update:me:authentication_methods',
     'delete:me:authentication_methods',
     'read:me:factors',
   },
-  parameters: {'audience': 'https://YOUR_DOMAIN/me/'},
 );
 
 // 3. Create the My Account client with the resulting access token.
@@ -1336,7 +1373,9 @@ final myAccount = auth0.myAccount(
 );
 ```
 
-> ⚠️ Exchanging the refresh token requires [Multi-Resource Refresh Tokens (MRRT)](https://auth0.com/docs/secure/tokens/refresh-tokens/multi-resource-refresh-token) to be enabled for your tenant, and the application must have requested `offline_access` at login so that a refresh token is available.
+> 💡 `getApiCredentials` returns a **separate**, audience-scoped token via a [Multi-Resource Refresh Token (MRRT)](https://auth0.com/docs/secure/tokens/refresh-tokens/multi-resource-refresh-token) exchange; it does **not** replace the application credentials stored via `storeCredentials`. The token is cached per audience, so subsequent calls return the cached value until it expires.
+
+> ⚠️ Exchanging the refresh token requires MRRT to be enabled for your tenant, and the application must have requested `offline_access` at login so that a refresh token is available.
 
 ### Listing and managing authentication methods
 

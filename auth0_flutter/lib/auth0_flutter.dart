@@ -28,6 +28,7 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         SafariViewControllerPresentationStyle,
         CustomTabsOptions,
         SSOCredentials,
+        ApiCredentials,
         UserProfile,
         WebAuthenticationException;
 
