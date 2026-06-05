@@ -19,3 +19,11 @@ extension MethodHandler {
         }
     }
 }
+
+struct UnsupportedMethodHandler: MethodHandler {
+    func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
+        callback(FlutterError(code: "UNSUPPORTED_PLATFORM",
+                              message: "This method is not supported on this platform version.",
+                              details: nil))
+    }
+}

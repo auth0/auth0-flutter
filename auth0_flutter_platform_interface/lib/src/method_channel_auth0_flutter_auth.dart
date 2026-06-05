@@ -6,6 +6,8 @@ import 'auth/auth_login_code_options.dart';
 import 'auth/auth_login_options.dart';
 import 'auth/auth_login_with_otp_options.dart';
 import 'auth/auth_multifactor_challenge_options.dart';
+import 'auth/auth_passkey_login_challenge_options.dart';
+import 'auth/auth_passkey_login_options.dart';
 import 'auth/auth_passwordless_login_options.dart';
 import 'auth/auth_renew_access_token_options.dart';
 import 'auth/auth_reset_password_options.dart';
@@ -13,6 +15,7 @@ import 'auth/auth_signup_options.dart';
 import 'auth/auth_sso_exchange_options.dart';
 import 'auth/auth_user_info_options.dart';
 import 'auth/challenge.dart';
+import 'auth/passkey_login_challenge.dart';
 import 'auth0_flutter_auth_platform.dart';
 import 'credentials.dart';
 import 'database_user.dart';
@@ -39,6 +42,8 @@ const String authCustomTokenExchangeMethod = 'auth#customTokenExchange';
 
 const String authSSOExchangeMethod = 'auth#ssoExchange';
 const String authResetPasswordMethod = 'auth#resetPassword';
+const String authPasskeyLoginChallengeMethod = 'auth#passkeyLoginChallenge';
+const String authPasskeyLoginMethod = 'auth#passkeyLogin';
 
 class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   @override
@@ -156,6 +161,22 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
       final ApiRequest<AuthResetPasswordOptions> request) async {
     await invokeRequest(
         method: authResetPasswordMethod, request: request, throwOnNull: false);
+  }
+
+  @override
+  Future<PasskeyLoginChallenge> passkeyLoginChallenge(
+      final ApiRequest<AuthPasskeyLoginChallengeOptions> request) async {
+    final Map<String, dynamic> result = await invokeRequest(
+        method: authPasskeyLoginChallengeMethod, request: request);
+    return PasskeyLoginChallenge.fromMap(result);
+  }
+
+  @override
+  Future<Credentials> passkeyLogin(
+      final ApiRequest<AuthPasskeyLoginOptions> request) async {
+    final Map<String, dynamic> result =
+        await invokeRequest(method: authPasskeyLoginMethod, request: request);
+    return Credentials.fromMap(result);
   }
 
   Future<Map<String, dynamic>> invokeRequest<TOptions extends RequestOptions>({

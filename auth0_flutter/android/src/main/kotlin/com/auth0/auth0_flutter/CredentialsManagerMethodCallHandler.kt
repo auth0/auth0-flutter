@@ -27,7 +27,10 @@ private object BiometricAuthLevel {
 }
 
 class CredentialsManagerMethodCallHandler(private val requestHandlers: List<CredentialsManagerRequestHandler>) : MethodCallHandler {
-    lateinit var activity: Activity
+    // Null while the plugin is detached from an Activity (see ActivityAware
+    // callbacks in Auth0FlutterPlugin). Only required for biometric/local
+    // authentication, which needs a FragmentActivity.
+    var activity: Activity? = null
     lateinit var context: Context
 
     private data class ManagerCacheKey(

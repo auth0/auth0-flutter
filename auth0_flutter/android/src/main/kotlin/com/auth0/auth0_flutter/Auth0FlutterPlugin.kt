@@ -133,7 +133,9 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
         RenewApiRequestHandler(),
         CustomTokenExchangeApiRequestHandler(),
         SSOExchangeApiRequestHandler(),
-        ResetPasswordApiRequestHandler()
+        ResetPasswordApiRequestHandler(),
+        PasskeyLoginChallengeApiRequestHandler(),
+        PasskeyLoginApiRequestHandler()
       )
     )
     authCallHandler.context = context
@@ -182,6 +184,8 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
+    webAuthCallHandler.activity = null
+    credentialsManagerCallHandler.activity = null
     WebAuthProvider.removeCallback(processDeathCallback)
   }
 
@@ -192,6 +196,8 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   }
 
   override fun onDetachedFromActivity() {
+    webAuthCallHandler.activity = null
+    credentialsManagerCallHandler.activity = null
     WebAuthProvider.removeCallback(processDeathCallback)
   }
 }

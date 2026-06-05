@@ -61,8 +61,37 @@ class MethodCallHandler {
     'refreshToken': 'new-refresh-token'
   };
 
+  static const Map<dynamic, dynamic> passkeyLoginChallengeResult = {
+    'authSession': 'test-auth-session',
+    'authParamsPublicKey': {
+      'challenge': 'test-challenge',
+      'rpId': 'test-rp-id',
+    },
+  };
+
   Future<dynamic>? methodCallHandler(final MethodCall? methodCall) async {}
 }
+
+const PasskeyLoginChallenge _testChallenge = PasskeyLoginChallenge(
+  authSession: 'test-auth-session',
+  authParamsPublicKey: {
+    'challenge': 'test-challenge',
+    'rpId': 'test-rp-id',
+  },
+);
+
+const PasskeyLoginCredential _testCredential = PasskeyLoginCredential(
+  id: 'test-credential-id',
+  rawId: 'test-raw-id',
+  type: 'public-key',
+  authenticatorAttachment: 'platform',
+  response: PasskeyAuthenticatorAssertionResponse(
+    clientDataJSON: 'test-client-data',
+    authenticatorData: 'test-authenticator-data',
+    signature: 'test-signature',
+    userHandle: 'test-user-handle',
+  ),
+);
 
 @GenerateMocks([MethodCallHandler])
 void main() {
@@ -1315,6 +1344,157 @@ void main() {
                       UserAgent(name: 'test-name', version: 'test-version'),
                   options: AuthSSOExchangeOptions(
                       refreshToken: 'test-refresh-token')));
+
+      await expectLater(actual, throwsA(isA<ApiException>()));
+    });
+  });
+
+  group('passkeyLoginChallenge', () {
+    test('calls the correct MethodChannel method', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.passkeyLoginChallengeResult);
+
+      await MethodChannelAuth0FlutterAuth().passkeyLoginChallenge(
+        ApiRequest<AuthPasskeyLoginChallengeOptions>(
+            account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasskeyLoginChallengeOptions(
+                connection: 'test-connection', organization: 'test-org')),
+      );
+
+      expect(
+          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          'auth#passkeyLoginChallenge');
+    });
+
+    test('correctly maps all properties', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.passkeyLoginChallengeResult);
+
+      await MethodChannelAuth0FlutterAuth().passkeyLoginChallenge(
+        ApiRequest<AuthPasskeyLoginChallengeOptions>(
+            account: const Account('test-domain', 'test-clientId'),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasskeyLoginChallengeOptions(
+                connection: 'test-connection', organization: 'test-org')),
+      );
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['_account']['domain'], 'test-domain');
+      expect(verificationResult.arguments['connection'], 'test-connection');
+      expect(verificationResult.arguments['organization'], 'test-org');
+    });
+
+    test('correctly returns the challenge from the Method Channel', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.passkeyLoginChallengeResult);
+
+      final result = await MethodChannelAuth0FlutterAuth().passkeyLoginChallenge(
+        ApiRequest<AuthPasskeyLoginChallengeOptions>(
+            account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasskeyLoginChallengeOptions()),
+      );
+
+      expect(result.authSession, 'test-auth-session');
+      expect(result.authParamsPublicKey['rpId'], 'test-rp-id');
+    });
+
+    test('throws an ApiException when the method channel throws', () async {
+      when(mocked.methodCallHandler(any))
+          .thenThrow(PlatformException(code: '123'));
+
+      Future<PasskeyLoginChallenge> actual() =>
+          MethodChannelAuth0FlutterAuth().passkeyLoginChallenge(
+              ApiRequest<AuthPasskeyLoginChallengeOptions>(
+                  account: const Account('test-domain', 'test-clientId'),
+                  userAgent:
+                      UserAgent(name: 'test-name', version: 'test-version'),
+                  options: AuthPasskeyLoginChallengeOptions()));
+
+      await expectLater(actual, throwsA(isA<ApiException>()));
+    });
+  });
+
+  group('passkeyLogin', () {
+    test('calls the correct MethodChannel method', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      await MethodChannelAuth0FlutterAuth().passkeyLogin(
+        ApiRequest<AuthPasskeyLoginOptions>(
+            account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasskeyLoginOptions(
+                challenge: _testChallenge, credential: _testCredential)),
+      );
+
+      expect(
+          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          'auth#passkeyLogin');
+    });
+
+    test('correctly maps all properties', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      await MethodChannelAuth0FlutterAuth().passkeyLogin(
+        ApiRequest<AuthPasskeyLoginOptions>(
+            account: const Account('test-domain', 'test-clientId'),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasskeyLoginOptions(
+                challenge: _testChallenge,
+                credential: _testCredential,
+                connection: 'test-connection',
+                audience: 'test-audience',
+                scopes: {'a', 'b'},
+                organization: 'test-org',
+                parameters: {'test': 'test-123'})),
+      );
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['_account']['domain'], 'test-domain');
+      expect(verificationResult.arguments['challenge']['authSession'],
+          'test-auth-session');
+      expect(verificationResult.arguments['credential']['id'],
+          'test-credential-id');
+      expect(verificationResult.arguments['credential']['response']['signature'],
+          'test-signature');
+      expect(verificationResult.arguments['connection'], 'test-connection');
+      expect(verificationResult.arguments['audience'], 'test-audience');
+      expect(verificationResult.arguments['scopes'], ['a', 'b']);
+      expect(verificationResult.arguments['organization'], 'test-org');
+      expect(verificationResult.arguments['parameters']['test'], 'test-123');
+    });
+
+    test('correctly returns the credentials from the Method Channel', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      final result = await MethodChannelAuth0FlutterAuth().passkeyLogin(
+        ApiRequest<AuthPasskeyLoginOptions>(
+            account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasskeyLoginOptions(
+                challenge: _testChallenge, credential: _testCredential)),
+      );
+
+      expect(result.accessToken, 'accessToken');
+      expect(result.idToken, 'idToken');
+    });
+
+    test('throws an ApiException when the method channel throws', () async {
+      when(mocked.methodCallHandler(any))
+          .thenThrow(PlatformException(code: '123'));
+
+      Future<Credentials> actual() => MethodChannelAuth0FlutterAuth()
+          .passkeyLogin(ApiRequest<AuthPasskeyLoginOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: AuthPasskeyLoginOptions(
+                  challenge: _testChallenge, credential: _testCredential)));
 
       await expectLater(actual, throwsA(isA<ApiException>()));
     });
