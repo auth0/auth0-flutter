@@ -283,6 +283,7 @@ void main() {
                   useHTTPS: true,
                   returnTo: 'http://localhost:1234',
                   scheme: 'test-scheme',
+                  // ignore: deprecated_member_use_from_same_package
                   allowedBrowsers: ['com.android.chrome', 'org.mozilla.firefox'])));
 
       final verificationResult =
@@ -308,6 +309,7 @@ void main() {
               account: const Account('test-domain', 'test-clientId'),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
               options: WebAuthLogoutOptions(
+                  // ignore: deprecated_member_use_from_same_package
                   allowedBrowsers: ['com.android.chrome'])));
 
       final verificationResult =
