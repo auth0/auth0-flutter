@@ -9,8 +9,8 @@ class ClearApiCredentialsOptions implements RequestOptions {
 
   /// The scope the API credentials were stored with, if any.
   ///
-  /// **iOS/macOS only.** On Android the stored credentials are keyed by
-  /// audience alone, so this value is ignored there.
+  /// Stored API credentials are keyed by both audience and scope on every
+  /// platform, so this must match the scope used to fetch them.
   final String? scope;
 
   ClearApiCredentialsOptions({

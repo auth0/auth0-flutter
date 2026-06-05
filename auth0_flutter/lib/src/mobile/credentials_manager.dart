@@ -73,15 +73,14 @@ abstract class CredentialsManager {
     final Map<String, String> headers = const {},
   });
 
-  /// Removes the API credentials for the given [audience] from the storage if
-  /// present.
+  /// Removes the stored API credentials for the given [audience] and [scope].
   ///
-  /// On iOS and macOS, pass the [scope] the credentials were stored with. On
-  /// Android the stored credentials are keyed by audience alone, so [scope] is
-  /// ignored there.
-  ///
-  /// Returns `true` if credentials for the [audience] were found and removed.
-  Future<bool> clearApiCredentials({
+  /// API credentials are keyed by **both** audience and scope on all
+  /// platforms, so pass the same [scope] you used when fetching them via
+  /// [getApiCredentials]. Omitting [scope] only matches credentials that were
+  /// stored without a scope; it does **not** remove every entry for the
+  /// [audience].
+  Future<void> clearApiCredentials({
     required final String audience,
     final String? scope,
   });
@@ -211,12 +210,11 @@ class DefaultCredentialsManager extends CredentialsManager {
         headers: headers,
       )));
 
-  /// Removes the API credentials for the given [audience] from the storage if
-  /// present.
+  /// Removes the stored API credentials for the given audience and scope.
   ///
   /// See [CredentialsManager.clearApiCredentials] for full documentation.
   @override
-  Future<bool> clearApiCredentials({
+  Future<void> clearApiCredentials({
     required final String audience,
     final String? scope,
   }) =>

@@ -23,7 +23,10 @@ class ClearApiCredentialsRequestHandler : CredentialsManagerRequestHandler {
         val scope = request.data["scope"] as? String
 
         // Stored API credentials are keyed by audience and (optional) scope.
+        // The native API returns void and gives no indication of whether a
+        // matching entry existed, so we report no result rather than a
+        // misleading success value.
         credentialsManager.clearApiCredentials(audience, scope)
-        result.success(true)
+        result.success(null)
     }
 }

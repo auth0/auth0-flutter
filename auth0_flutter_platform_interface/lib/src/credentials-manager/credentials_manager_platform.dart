@@ -86,11 +86,11 @@ abstract class CredentialsManagerPlatform extends PlatformInterface {
     throw UnimplementedError('getApiCredentials() has not been implemented');
   }
 
-  /// Removes the API credentials for the given audience from the native
-  /// storage if present.
+  /// Removes the API credentials for the given audience and scope from the
+  /// native storage if present.
   ///
   /// See `CredentialsManager.clearApiCredentials` for full documentation.
-  Future<bool> clearApiCredentials(
+  Future<void> clearApiCredentials(
     final CredentialsManagerRequest<ClearApiCredentialsOptions> request,
   ) {
     throw UnimplementedError('clearApiCredentials() has not been implemented');

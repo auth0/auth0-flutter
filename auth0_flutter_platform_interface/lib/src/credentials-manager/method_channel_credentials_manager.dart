@@ -133,20 +133,19 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
     return ApiCredentials.fromMap(result);
   }
 
-  /// Removes the API credentials for the given audience from the native
-  /// storage if present.
+  /// Removes the API credentials for the given audience and scope from the
+  /// native storage if present.
   ///
   /// Uses the [MethodChannel] to communicate with the native platforms.
   /// See `CredentialsManager.clearApiCredentials` for full documentation.
   @override
-  Future<bool> clearApiCredentials(
+  Future<void> clearApiCredentials(
       final CredentialsManagerRequest<ClearApiCredentialsOptions>
           request) async {
-    final bool? result = await _invokeRequest<bool, ClearApiCredentialsOptions>(
+    await _invokeRequest<void, ClearApiCredentialsOptions>(
         method: credentialsManagerClearApiCredentialsMethod,
         request: request,
         throwOnNull: false);
-    return result ?? true;
   }
 
   Future<TResult?> _invokeRequest<TResult, TOptions extends RequestOptions?>({

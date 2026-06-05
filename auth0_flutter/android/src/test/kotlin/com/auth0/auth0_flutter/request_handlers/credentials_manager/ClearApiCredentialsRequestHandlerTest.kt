@@ -45,7 +45,7 @@ class ClearApiCredentialsRequestHandlerTest {
     }
 
     @Test
-    fun `should call result success on success`() {
+    fun `should call result success with null because the native API returns void`() {
         val handler = ClearApiCredentialsRequestHandler()
         val options = hashMapOf<String, Any>("audience" to "test-audience")
         val mockResult = mock<Result>()
@@ -55,7 +55,7 @@ class ClearApiCredentialsRequestHandlerTest {
 
         handler.handle(mockCredentialsManager, mock(), request, mockResult)
 
-        verify(mockResult).success(eq(true))
+        verify(mockResult).success(isNull())
     }
 
     @Test
