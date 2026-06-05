@@ -9,7 +9,9 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 
 class Auth0FlutterWebAuthMethodCallHandler(private val requestHandlers: List<WebAuthRequestHandler>) : MethodCallHandler {
-    lateinit var activity: Activity
+    // Null while the plugin is detached from an Activity (see ActivityAware
+    // callbacks in Auth0FlutterPlugin).
+    var activity: Activity? = null
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         val requestHandler = requestHandlers.find { it.method == call.method }
@@ -17,7 +19,7 @@ class Auth0FlutterWebAuthMethodCallHandler(private val requestHandlers: List<Web
         if (requestHandler != null) {
             val request = MethodCallRequest.fromCall(call)
 
-            requestHandler.handle(activity, request, result)
+            requestHandler.handle(activity!!, request, result)
         } else {
             result.notImplemented()
         }

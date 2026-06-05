@@ -11,9 +11,9 @@ import androidx.credentials.GetPublicKeyCredentialOption
 import androidx.credentials.PublicKeyCredential
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.GetCredentialException
+import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import org.json.JSONObject
-import java.util.concurrent.Executors
 
 /**
  * Presents the Android Credential Manager passkey UI and returns a WebAuthn
@@ -23,13 +23,15 @@ import java.util.concurrent.Executors
  * how an app supplies the passkey credential that `auth0.api.passkeyLogin`
  * expects, using the `challenge` and `rpId` from `auth0.api.passkeyLoginChallenge`.
  */
-class PasskeyAuthenticator(private val activity: Activity) {
+class PasskeyAuthenticator {
 
     companion object {
         const val CHANNEL_NAME = "com.auth0.auth0_flutter_example/passkey"
     }
 
-    fun handle(call: io.flutter.plugin.common.MethodCall, result: MethodChannel.Result) {
+    var activity: Activity? = null
+
+    fun handle(call: MethodCall, result: MethodChannel.Result) {
         if (call.method != "getAssertion") {
             result.notImplemented()
             return
@@ -37,6 +39,16 @@ class PasskeyAuthenticator(private val activity: Activity) {
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
             result.error("unsupported", "Passkeys require Android 9 (API 28)+", null)
+            return
+        }
+
+        val activity = this.activity
+        if (activity == null) {
+            result.error(
+                "no_activity",
+                "The passkey UI requires a foreground Activity.",
+                null
+            )
             return
         }
 
@@ -56,13 +68,13 @@ class PasskeyAuthenticator(private val activity: Activity) {
 
         val option = GetPublicKeyCredentialOption(requestJson)
         val request = GetCredentialRequest(listOf(option))
-        val credentialManager = CredentialManager.create(activity)
 
+        val credentialManager = CredentialManager.create(activity.applicationContext)
         credentialManager.getCredentialAsync(
             activity,
             request,
             CancellationSignal(),
-            Executors.newSingleThreadExecutor(),
+            activity.mainExecutor,
             object : CredentialManagerCallback<GetCredentialResponse, GetCredentialException> {
                 override fun onResult(response: GetCredentialResponse) {
                     val credential = response.credential
@@ -86,15 +98,13 @@ class PasskeyAuthenticator(private val activity: Activity) {
                                     else null
                             )
                         )
-                        activity.runOnUiThread { result.success(map) }
+                        result.success(map)
                     } else {
-                        activity.runOnUiThread {
-                            result.error(
-                                "unexpected_credential",
-                                "Unexpected credential type: ${credential.type}",
-                                null
-                            )
-                        }
+                        result.error(
+                            "unexpected_credential",
+                            "Unexpected credential type: ${credential.type}",
+                            null
+                        )
                     }
                 }
 
@@ -104,7 +114,7 @@ class PasskeyAuthenticator(private val activity: Activity) {
                     } else {
                         "passkey_error"
                     }
-                    activity.runOnUiThread { result.error(code, e.message, null) }
+                    result.error(code, e.message, null)
                 }
             }
         )
