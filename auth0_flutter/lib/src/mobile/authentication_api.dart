@@ -443,6 +443,71 @@ class AuthenticationApi {
           AuthResetPasswordOptions(
               email: email, connection: connection, parameters: parameters)));
 
+  /// Requests a challenge for logging in with an existing passkey.
+  ///
+  /// This is the first step of the passkey login flow. Use the returned
+  /// [PasskeyLoginChallenge] to present the OS passkey UI in your app, then
+  /// pass the resulting credential to [passkeyLogin] to exchange it for tokens.
+  ///
+  /// ## Endpoint
+  /// https://auth0.com/docs/api/authentication#passkey
+  ///
+  /// ## Notes
+  ///
+  /// * [connection] is the name of the database connection configured with
+  /// passkeys. Defaults to the application's first passkey connection when
+  /// omitted.
+  /// * [organization] is the optional Auth0 organization to log in to.
+  ///
+  /// ## Usage example
+  ///
+  /// ```dart
+  /// final challenge = await auth0.api.passkeyLoginChallenge(
+  ///   connection: 'Username-Password-Authentication',
+  /// );
+  /// ```
+  Future<PasskeyLoginChallenge> passkeyLoginChallenge({
+    final String? connection,
+    final String? organization,
+  }) =>
+      Auth0FlutterAuthPlatform.instance.passkeyLoginChallenge(
+          _createApiRequest(AuthPasskeyLoginChallengeOptions(
+        connection: connection,
+        organization: organization,
+      )));
+
+  /// Completes passkey login by exchanging a [credential] for Auth0 tokens.
+  ///
+  /// The [credential] is the passkey assertion obtained from the operating
+  /// system's authentication UI (for example, via Apple's
+  /// `ASAuthorizationController` or Android's Credential Manager in your app),
+  /// using the [PasskeyLoginChallenge] returned by [passkeyLoginChallenge].
+  /// This call exchanges that credential at the `/oauth/token` endpoint.
+  Future<Credentials> passkeyLogin({
+    required final PasskeyLoginChallenge challenge,
+    required final PasskeyLoginCredential credential,
+    final String? connection,
+    final String? audience,
+    final Set<String> scopes = const {
+      'openid',
+      'profile',
+      'email',
+      'offline_access'
+    },
+    final String? organization,
+    final Map<String, String> parameters = const {},
+  }) =>
+      Auth0FlutterAuthPlatform.instance
+          .passkeyLogin(_createApiRequest(AuthPasskeyLoginOptions(
+        challenge: challenge,
+        credential: credential,
+        connection: connection,
+        audience: audience,
+        scopes: scopes,
+        organization: organization,
+        parameters: parameters,
+      )));
+
   ApiRequest<TOptions> _createApiRequest<TOptions extends RequestOptions>(
           final TOptions options) =>
       ApiRequest<TOptions>(
