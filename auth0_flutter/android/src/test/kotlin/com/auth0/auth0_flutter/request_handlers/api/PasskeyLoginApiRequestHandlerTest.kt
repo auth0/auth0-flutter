@@ -12,6 +12,7 @@ import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodChannel.Result
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.*
@@ -44,7 +45,7 @@ class PasskeyLoginApiRequestHandlerTest {
     )
 
     @Test
-    fun `should error when challenge is missing`() {
+    fun `should throw when challenge is missing`() {
         val options = hashMapOf<String, Any>("credential" to credentialMap())
         val handler = PasskeyLoginApiRequestHandler()
         val mockApi = mock<AuthenticationAPIClient>()
@@ -52,17 +53,18 @@ class PasskeyLoginApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        handler.handle(mockApi, request, mockResult)
+        val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
+            handler.handle(mockApi, request, mockResult)
+        }
 
-        verify(mockResult).error(
-            eq("a0.passkey.invalid_request"),
-            eq("Missing challenge argument"),
-            anyOrNull()
+        assertThat(
+            exception.message,
+            equalTo("Required property 'challenge.authSession' is not provided.")
         )
     }
 
     @Test
-    fun `should error when authSession is missing`() {
+    fun `should throw when authSession is missing`() {
         val options = hashMapOf<String, Any>(
             "challenge" to mapOf(
                 "authParamsPublicKey" to mapOf("challenge" to "c", "rpId" to "r")
@@ -75,17 +77,18 @@ class PasskeyLoginApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        handler.handle(mockApi, request, mockResult)
+        val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
+            handler.handle(mockApi, request, mockResult)
+        }
 
-        verify(mockResult).error(
-            eq("a0.passkey.invalid_request"),
-            eq("Missing authSession in challenge"),
-            anyOrNull()
+        assertThat(
+            exception.message,
+            equalTo("Required property 'challenge.authSession' is not provided.")
         )
     }
 
     @Test
-    fun `should error when credential is missing`() {
+    fun `should throw when credential is missing`() {
         val options = hashMapOf<String, Any>("challenge" to challengeMap())
         val handler = PasskeyLoginApiRequestHandler()
         val mockApi = mock<AuthenticationAPIClient>()
@@ -93,12 +96,13 @@ class PasskeyLoginApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        handler.handle(mockApi, request, mockResult)
+        val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
+            handler.handle(mockApi, request, mockResult)
+        }
 
-        verify(mockResult).error(
-            eq("a0.passkey.invalid_request"),
-            eq("Missing credential argument"),
-            anyOrNull()
+        assertThat(
+            exception.message,
+            equalTo("Required property 'credential' is not provided.")
         )
     }
 

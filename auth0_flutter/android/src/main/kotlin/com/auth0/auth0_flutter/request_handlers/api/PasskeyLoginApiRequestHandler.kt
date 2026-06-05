@@ -6,6 +6,7 @@ import com.auth0.android.callback.Callback
 import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.toMap
+import com.auth0.auth0_flutter.utils.assertHasProperties
 import com.google.gson.Gson
 import io.flutter.plugin.common.MethodChannel
 
@@ -27,20 +28,11 @@ class PasskeyLoginApiRequestHandler : ApiRequestHandler {
         result: MethodChannel.Result
     ) {
         val args = request.data
-        val challengeMap = args["challenge"] as? Map<*, *> ?: run {
-            failWith(result, "a0.passkey.invalid_request", "Missing challenge argument")
-            return
-        }
 
-        val authSession = challengeMap["authSession"] as? String ?: run {
-            failWith(result, "a0.passkey.invalid_request", "Missing authSession in challenge")
-            return
-        }
+        assertHasProperties(listOf("challenge.authSession", "credential"), args)
 
-        val credentialMap = args["credential"] as? Map<*, *> ?: run {
-            failWith(result, "a0.passkey.invalid_request", "Missing credential argument")
-            return
-        }
+        val authSession = (args["challenge"] as Map<*, *>)["authSession"] as String
+        val credentialMap = args["credential"] as Map<*, *>
 
         val connection = args["connection"] as? String
         val organization = args["organization"] as? String
@@ -97,13 +89,5 @@ class PasskeyLoginApiRequestHandler : ApiRequestHandler {
                 )
             }
         })
-    }
-
-    // Surfaces validation errors through the same AuthenticationException shape
-    // used for runtime failures, so the Dart side always receives a populated
-    // `details` map.
-    private fun failWith(result: MethodChannel.Result, code: String, message: String) {
-        val exception = AuthenticationException(code, message)
-        result.error(exception.getCode(), exception.getDescription(), exception.toMap())
     }
 }
