@@ -90,7 +90,7 @@ abstract class CredentialsManagerPlatform extends PlatformInterface {
   /// storage if present.
   ///
   /// See `CredentialsManager.clearApiCredentials` for full documentation.
-  Future<void> clearApiCredentials(
+  Future<bool> clearApiCredentials(
     final CredentialsManagerRequest<ClearApiCredentialsOptions> request,
   ) {
     throw UnimplementedError('clearApiCredentials() has not been implemented');

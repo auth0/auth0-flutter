@@ -79,7 +79,9 @@ abstract class CredentialsManager {
   /// On iOS and macOS, pass the [scope] the credentials were stored with. On
   /// Android the stored credentials are keyed by audience alone, so [scope] is
   /// ignored there.
-  Future<void> clearApiCredentials({
+  ///
+  /// Returns `true` if credentials for the [audience] were found and removed.
+  Future<bool> clearApiCredentials({
     required final String audience,
     final String? scope,
   });
@@ -214,7 +216,7 @@ class DefaultCredentialsManager extends CredentialsManager {
   ///
   /// See [CredentialsManager.clearApiCredentials] for full documentation.
   @override
-  Future<void> clearApiCredentials({
+  Future<bool> clearApiCredentials({
     required final String audience,
     final String? scope,
   }) =>

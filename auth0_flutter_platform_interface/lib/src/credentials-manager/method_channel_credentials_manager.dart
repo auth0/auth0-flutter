@@ -139,13 +139,14 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
   /// Uses the [MethodChannel] to communicate with the native platforms.
   /// See `CredentialsManager.clearApiCredentials` for full documentation.
   @override
-  Future<void> clearApiCredentials(
+  Future<bool> clearApiCredentials(
       final CredentialsManagerRequest<ClearApiCredentialsOptions>
           request) async {
-    await _invokeRequest<void, ClearApiCredentialsOptions>(
+    final bool? result = await _invokeRequest<bool, ClearApiCredentialsOptions>(
         method: credentialsManagerClearApiCredentialsMethod,
         request: request,
         throwOnNull: false);
+    return result ?? true;
   }
 
   Future<TResult?> _invokeRequest<TResult, TOptions extends RequestOptions?>({

@@ -1172,7 +1172,7 @@ void main() {
     test('calls the correct MethodChannel method', () async {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => true);
 
-      await MethodChannelCredentialsManager().clearApiCredentials(
+      final result = await MethodChannelCredentialsManager().clearApiCredentials(
           CredentialsManagerRequest<ClearApiCredentialsOptions>(
               account: const Account('test-domain', 'test-clientId'),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
@@ -1181,6 +1181,19 @@ void main() {
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
           'credentialsManager#clearApiCredentials');
+      expect(result, true);
+    });
+
+    test('returns false when the audience was not found', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => false);
+
+      final result = await MethodChannelCredentialsManager().clearApiCredentials(
+          CredentialsManagerRequest<ClearApiCredentialsOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: ClearApiCredentialsOptions(audience: 'test-audience')));
+
+      expect(result, false);
     });
 
     test('correctly maps all properties', () async {
@@ -1217,18 +1230,16 @@ void main() {
       expect(verificationResult.arguments.containsKey('scope'), false);
     });
 
-    test('does not throw when the method channel returns null', () async {
+    test('defaults to true when the method channel returns null', () async {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
-      await expectLater(
-          MethodChannelCredentialsManager().clearApiCredentials(
-              CredentialsManagerRequest<ClearApiCredentialsOptions>(
-                  account: const Account('', ''),
-                  userAgent:
-                      UserAgent(name: 'test-name', version: 'test-version'),
-                  options:
-                      ClearApiCredentialsOptions(audience: 'test-audience'))),
-          completes);
+      final result = await MethodChannelCredentialsManager().clearApiCredentials(
+          CredentialsManagerRequest<ClearApiCredentialsOptions>(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: ClearApiCredentialsOptions(audience: 'test-audience')));
+
+      expect(result, true);
     });
 
     test(

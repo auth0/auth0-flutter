@@ -18,7 +18,7 @@ class GetApiCredentialsRequestHandler : CredentialsManagerRequestHandler {
         request: MethodCallRequest,
         result: MethodChannel.Result
     ) {
-        val audience = request.data["audience"] as String?
+        val audience = request.data["audience"] as? String
         if (audience == null) {
             result.error("UNKNOWN ERROR", "audience is required to get API credentials", null)
             return
@@ -30,9 +30,9 @@ class GetApiCredentialsRequestHandler : CredentialsManagerRequestHandler {
             scope = scopes.joinToString(separator = " ")
         }
 
-        val minTtl = request.data["minTtl"] as Int? ?: 0
-        val parameters = request.data["parameters"] as Map<String, String>? ?: mapOf()
-        val headers = request.data["headers"] as Map<String, String>? ?: mapOf()
+        val minTtl = request.data["minTtl"] as? Int ?: 0
+        val parameters = request.data["parameters"] as? Map<String, String> ?: mapOf()
+        val headers = request.data["headers"] as? Map<String, String> ?: mapOf()
 
         credentialsManager.getApiCredentials(
             audience, scope, minTtl, parameters, headers,

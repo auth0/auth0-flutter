@@ -20,7 +20,7 @@ class ClearApiCredentialsRequestHandler : CredentialsManagerRequestHandler {
             return
         }
 
-        val scope = request.data["scope"] as String?
+        val scope = request.data["scope"] as? String
 
         // Stored API credentials are keyed by audience and (optional) scope.
         credentialsManager.clearApiCredentials(audience, scope)
