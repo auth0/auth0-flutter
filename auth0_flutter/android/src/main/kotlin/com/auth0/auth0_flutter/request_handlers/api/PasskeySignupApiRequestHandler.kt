@@ -1,7 +1,5 @@
 package com.auth0.auth0_flutter.request_handlers.api
 
-import android.app.Activity
-import android.content.Context
 import android.os.Build
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
@@ -19,15 +17,13 @@ private const val AUTH_PASSKEY_SIGNUP_METHOD = "auth#passkeySignup"
  * for Auth0 tokens by calling the `/oauth/token` endpoint. This handler does not
  * present any UI.
  */
-class PasskeySignupApiRequestHandler : PasskeyApiRequestHandler {
+class PasskeySignupApiRequestHandler : ApiRequestHandler {
     override val method: String = AUTH_PASSKEY_SIGNUP_METHOD
 
     override fun handle(
         api: AuthenticationAPIClient,
         request: MethodCallRequest,
-        result: MethodChannel.Result,
-        context: Context,
-        activity: Activity?
+        result: MethodChannel.Result
     ) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
             result.error(

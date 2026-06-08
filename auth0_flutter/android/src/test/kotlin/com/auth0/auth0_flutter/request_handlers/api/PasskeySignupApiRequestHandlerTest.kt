@@ -1,6 +1,5 @@
 package com.auth0.auth0_flutter.request_handlers.api
 
-import android.content.Context
 import android.os.Build
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationAPIClient
@@ -49,10 +48,9 @@ class PasskeySignupApiRequestHandlerTest {
         val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
-        val mockContext = mock<Context>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        handler.handle(mockApi, request, mockResult, mockContext, null)
+        handler.handle(mockApi, request, mockResult)
 
         verify(mockResult).error(eq("PASSKEY_ERROR"), eq("Missing challenge argument"), anyOrNull())
     }
@@ -64,10 +62,9 @@ class PasskeySignupApiRequestHandlerTest {
         val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
-        val mockContext = mock<Context>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        handler.handle(mockApi, request, mockResult, mockContext, null)
+        handler.handle(mockApi, request, mockResult)
 
         verify(mockResult).error(eq("PASSKEY_ERROR"), eq("Missing credential argument"), anyOrNull())
     }
@@ -88,7 +85,6 @@ class PasskeySignupApiRequestHandlerTest {
         val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
-        val mockContext = mock<Context>()
         val request = MethodCallRequest(account = mockAccount, options)
 
         doReturn(mockBuilder).`when`(mockApi)
@@ -98,7 +94,7 @@ class PasskeySignupApiRequestHandlerTest {
         doReturn(mockBuilder).`when`(mockBuilder).setAudience(any())
         doReturn(mockBuilder).`when`(mockBuilder).addParameters(any())
 
-        handler.handle(mockApi, request, mockResult, mockContext, null)
+        handler.handle(mockApi, request, mockResult)
 
         verify(mockApi).signinWithPasskey(
             eq("test-auth-session"),
@@ -124,7 +120,6 @@ class PasskeySignupApiRequestHandlerTest {
         val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
-        val mockContext = mock<Context>()
         val request = MethodCallRequest(account = mockAccount, options)
         val exception =
             AuthenticationException(code = "test-code", description = "test-description")
@@ -137,7 +132,7 @@ class PasskeySignupApiRequestHandlerTest {
             cb.onFailure(exception)
         }.`when`(mockBuilder).start(any())
 
-        handler.handle(mockApi, request, mockResult, mockContext, null)
+        handler.handle(mockApi, request, mockResult)
 
         verify(mockResult).error(eq("test-code"), eq("test-description"), any())
     }
@@ -153,7 +148,6 @@ class PasskeySignupApiRequestHandlerTest {
         val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
-        val mockContext = mock<Context>()
         val request = MethodCallRequest(account = mockAccount, options)
 
         val credentials = Credentials(
@@ -173,7 +167,7 @@ class PasskeySignupApiRequestHandlerTest {
             cb.onSuccess(credentials)
         }.`when`(mockBuilder).start(any())
 
-        handler.handle(mockApi, request, mockResult, mockContext, null)
+        handler.handle(mockApi, request, mockResult)
 
         val captor = argumentCaptor<Map<String, *>>()
         verify(mockResult).success(captor.capture())
