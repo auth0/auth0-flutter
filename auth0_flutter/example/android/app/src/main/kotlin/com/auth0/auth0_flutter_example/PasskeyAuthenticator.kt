@@ -32,7 +32,7 @@ import java.util.concurrent.Executors
  * - `getAttestation` registers a new passkey using the `authParamsPublicKey`
  *   from `auth0.api.passkeySignupChallenge` (for `auth0.api.passkeySignup`).
  */
-class PasskeyAuthenticator(private val activity: Activity) {
+class PasskeyAuthenticator {
 
     companion object {
         const val CHANNEL_NAME = "com.auth0.auth0_flutter_example/passkey"
