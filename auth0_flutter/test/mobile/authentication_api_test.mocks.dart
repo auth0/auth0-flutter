@@ -89,6 +89,17 @@ class _FakePasskeyChallenge_5 extends _i1.SmartFake
         );
 }
 
+class _FakePasskeySignupChallenge_6 extends _i1.SmartFake
+    implements _i3.PasskeySignupChallenge {
+  _FakePasskeySignupChallenge_6(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [TestPlatform].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -351,6 +362,41 @@ class MockTestPlatform extends _i1.Mock implements _i4.TestPlatform {
           this,
           Invocation.method(
             #passkeyCredentialExchange,
+            [request],
+          ),
+        )),
+      ) as _i5.Future<_i2.Credentials>);
+
+  @override
+  _i5.Future<_i3.PasskeySignupChallenge> passkeySignupChallenge(
+          _i3.ApiRequest<_i3.AuthPasskeySignupChallengeOptions>? request) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #passkeySignupChallenge,
+          [request],
+        ),
+        returnValue: _i5.Future<_i3.PasskeySignupChallenge>.value(
+            _FakePasskeySignupChallenge_6(
+          this,
+          Invocation.method(
+            #passkeySignupChallenge,
+            [request],
+          ),
+        )),
+      ) as _i5.Future<_i3.PasskeySignupChallenge>);
+
+  @override
+  _i5.Future<_i2.Credentials> passkeySignup(
+          _i3.ApiRequest<_i3.AuthPasskeySignupOptions>? request) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #passkeySignup,
+          [request],
+        ),
+        returnValue: _i5.Future<_i2.Credentials>.value(_FakeCredentials_0(
+          this,
+          Invocation.method(
+            #passkeySignup,
             [request],
           ),
         )),

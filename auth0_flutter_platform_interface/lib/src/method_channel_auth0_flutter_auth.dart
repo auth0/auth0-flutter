@@ -190,6 +190,22 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
     return Credentials.fromMap(result);
   }
 
+  @override
+  Future<PasskeySignupChallenge> passkeySignupChallenge(
+      final ApiRequest<AuthPasskeySignupChallengeOptions> request) async {
+    final Map<String, dynamic> result = await invokeRequest(
+        method: authPasskeySignupChallengeMethod, request: request);
+    return PasskeySignupChallenge.fromMap(result);
+  }
+
+  @override
+  Future<Credentials> passkeySignup(
+      final ApiRequest<AuthPasskeySignupOptions> request) async {
+    final Map<String, dynamic> result =
+        await invokeRequest(method: authPasskeySignupMethod, request: request);
+    return Credentials.fromMap(result);
+  }
+
   Future<Map<String, dynamic>> invokeRequest<TOptions extends RequestOptions>({
     required final String method,
     required final ApiRequest<TOptions> request,

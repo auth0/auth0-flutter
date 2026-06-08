@@ -115,4 +115,15 @@ abstract class Auth0FlutterAuthPlatform extends PlatformInterface {
     throw UnimplementedError(
         'passkeyCredentialExchange() has not been implemented');
   }
+
+  Future<PasskeySignupChallenge> passkeySignupChallenge(
+      final ApiRequest<AuthPasskeySignupChallengeOptions> request) {
+    throw UnimplementedError(
+        'passkeySignupChallenge() has not been implemented');
+  }
+
+  Future<Credentials> passkeySignup(
+      final ApiRequest<AuthPasskeySignupOptions> request) {
+    throw UnimplementedError('passkeySignup() has not been implemented');
+  }
 }

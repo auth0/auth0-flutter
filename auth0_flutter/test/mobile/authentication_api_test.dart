@@ -603,4 +603,98 @@ void main() {
       expect(result, TestPlatform.passkeySignupChallengeResult);
     });
   });
+
+  group('passkeySignupChallenge', () {
+    test('passes through properties to the platform', () async {
+      when(mockedPlatform.passkeySignupChallenge(any)).thenAnswer(
+          (final _) async => TestPlatform.passkeySignupChallengeResult);
+
+      final result = await Auth0('test-domain', 'test-clientId')
+          .api
+          .passkeySignupChallenge(
+        email: 'test-email',
+        phoneNumber: 'test-phone',
+        username: 'test-username',
+        name: 'test-name',
+        givenName: 'test-given-name',
+        familyName: 'test-family-name',
+        nickname: 'test-nickname',
+        picture: 'https://www.okta.com',
+        connection: 'test-connection',
+        organization: 'test-org',
+        userMetadata: {'plan': 'gold'},
+      );
+
+      final verificationResult =
+          verify(mockedPlatform.passkeySignupChallenge(captureAny))
+              .captured
+              .single as ApiRequest<AuthPasskeySignupChallengeOptions>;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.options.email, 'test-email');
+      expect(verificationResult.options.phoneNumber, 'test-phone');
+      expect(verificationResult.options.username, 'test-username');
+      expect(verificationResult.options.name, 'test-name');
+      expect(verificationResult.options.givenName, 'test-given-name');
+      expect(verificationResult.options.familyName, 'test-family-name');
+      expect(verificationResult.options.nickname, 'test-nickname');
+      expect(verificationResult.options.picture, 'https://www.okta.com');
+      expect(verificationResult.options.connection, 'test-connection');
+      expect(verificationResult.options.organization, 'test-org');
+      expect(verificationResult.options.userMetadata, {'plan': 'gold'});
+      expect(result, TestPlatform.passkeySignupChallengeResult);
+    });
+  });
+
+  group('passkeySignup', () {
+    test('passes through properties to the platform', () async {
+      when(mockedPlatform.passkeySignup(any))
+          .thenAnswer((final _) async => TestPlatform.loginResult);
+
+      final result =
+          await Auth0('test-domain', 'test-clientId').api.passkeySignup(
+                challenge: TestPlatform.passkeySignupChallengeResult,
+                credential: TestPlatform.passkeySignupCredential,
+                connection: 'test-connection',
+                audience: 'test-audience',
+                scopes: {'test-scope1', 'test-scope2'},
+                organization: 'test-org',
+                parameters: {'test': 'test-parameter'},
+              );
+
+      final verificationResult =
+          verify(mockedPlatform.passkeySignup(captureAny)).captured.single
+              as ApiRequest<AuthPasskeySignupOptions>;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.options.challenge.authSession,
+          'test-auth-session');
+      expect(verificationResult.options.credential.id, 'test-credential-id');
+      expect(verificationResult.options.connection, 'test-connection');
+      expect(verificationResult.options.audience, 'test-audience');
+      expect(verificationResult.options.scopes, {'test-scope1', 'test-scope2'});
+      expect(verificationResult.options.organization, 'test-org');
+      expect(verificationResult.options.parameters['test'], 'test-parameter');
+      expect(result, TestPlatform.loginResult);
+    });
+
+    test('uses default scopes and empty params/null fields when omitted',
+        () async {
+      when(mockedPlatform.passkeySignup(any))
+          .thenAnswer((final _) async => TestPlatform.loginResult);
+
+      await Auth0('test-domain', 'test-clientId').api.passkeySignup(
+            challenge: TestPlatform.passkeySignupChallengeResult,
+            credential: TestPlatform.passkeySignupCredential,
+          );
+
+      final verificationResult =
+          verify(mockedPlatform.passkeySignup(captureAny)).captured.single
+              as ApiRequest<AuthPasskeySignupOptions>;
+      expect(verificationResult.options.scopes,
+          {'openid', 'profile', 'email', 'offline_access'});
+      expect(verificationResult.options.parameters, isEmpty);
+      expect(verificationResult.options.connection, isNull);
+      expect(verificationResult.options.audience, isNull);
+      expect(verificationResult.options.organization, isNull);
+    });
+  });
 }

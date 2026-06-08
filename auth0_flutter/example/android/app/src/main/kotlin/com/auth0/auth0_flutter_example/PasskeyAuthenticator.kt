@@ -19,6 +19,7 @@ import androidx.credentials.exceptions.GetCredentialException
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import org.json.JSONObject
+import java.util.concurrent.Executors
 
 /**
  * Presents the Android Credential Manager passkey UI and returns a WebAuthn
@@ -31,7 +32,7 @@ import org.json.JSONObject
  * - `getAttestation` registers a new passkey using the `authParamsPublicKey`
  *   from `auth0.api.passkeySignupChallenge` (for `auth0.api.passkeySignup`).
  */
-class PasskeyAuthenticator {
+class PasskeyAuthenticator(private val activity: Activity) {
 
     companion object {
         const val CHANNEL_NAME = "com.auth0.auth0_flutter_example/passkey"
@@ -82,7 +83,7 @@ class PasskeyAuthenticator {
             activity,
             request,
             CancellationSignal(),
-            activity.mainExecutor,
+            Executors.newSingleThreadExecutor(),
             object : CredentialManagerCallback<GetCredentialResponse, GetCredentialException> {
                 override fun onResult(response: GetCredentialResponse) {
                     val credential = response.credential
