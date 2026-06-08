@@ -47,8 +47,8 @@ class TestPlatform extends Mock
     refreshToken: 'new-refresh-token',
   );
 
-  static const PasskeyLoginChallenge passkeyLoginChallengeResult =
-      PasskeyLoginChallenge(
+  static const PasskeyChallenge passkeyLoginChallengeResult =
+      PasskeyChallenge(
     authSession: 'test-auth-session',
     authParamsPublicKey: {
       'challenge': 'test-challenge',
@@ -56,13 +56,13 @@ class TestPlatform extends Mock
     },
   );
 
-  static const PasskeyLoginCredential passkeyLoginCredential =
-      PasskeyLoginCredential(
+  static const PasskeyCredential passkeyLoginCredential =
+      PasskeyCredential(
     id: 'test-credential-id',
     rawId: 'test-raw-id',
     type: 'public-key',
     authenticatorAttachment: 'platform',
-    response: PasskeyAuthenticatorAssertionResponse(
+    response: PasskeyAuthenticatorResponse(
       clientDataJSON: 'test-client-data',
       authenticatorData: 'test-authenticator-data',
       signature: 'test-signature',
@@ -70,8 +70,8 @@ class TestPlatform extends Mock
     ),
   );
 
-  static const PasskeySignupChallenge passkeySignupChallengeResult =
-      PasskeySignupChallenge(
+  static const PasskeyChallenge passkeySignupChallengeResult =
+      PasskeyChallenge(
     authSession: 'test-auth-session',
     authParamsPublicKey: {
       'challenge': 'test-challenge',
@@ -81,13 +81,13 @@ class TestPlatform extends Mock
     },
   );
 
-  static const PasskeySignupCredential passkeySignupCredential =
-      PasskeySignupCredential(
+  static const PasskeyCredential passkeySignupCredential =
+      PasskeyCredential(
     id: 'test-credential-id',
     rawId: 'test-raw-id',
     type: 'public-key',
     authenticatorAttachment: 'platform',
-    response: PasskeyAuthenticatorAttestationResponse(
+    response: PasskeyAuthenticatorResponse(
       clientDataJSON: 'test-client-data',
       attestationObject: 'test-attestation',
     ),
@@ -474,25 +474,28 @@ void main() {
     });
   });
 
-  group('passkeyLogin', () {
-    test('passes through properties to the platform', () async {
-      when(mockedPlatform.passkeyLogin(any))
+  group('passkeyCredentialExchange', () {
+    test('passes through properties to the platform with login credential',
+        () async {
+      when(mockedPlatform.passkeyCredentialExchange(any))
           .thenAnswer((final _) async => TestPlatform.loginResult);
 
-      final result =
-          await Auth0('test-domain', 'test-clientId').api.passkeyLogin(
-                challenge: TestPlatform.passkeyLoginChallengeResult,
-                credential: TestPlatform.passkeyLoginCredential,
-                connection: 'test-connection',
-                audience: 'test-audience',
-                scopes: {'test-scope1', 'test-scope2'},
-                organization: 'test-org',
-                parameters: {'test': 'test-parameter'},
-              );
+      final result = await Auth0('test-domain', 'test-clientId')
+          .api
+          .passkeyCredentialExchange(
+            challenge: TestPlatform.passkeyLoginChallengeResult,
+            credential: TestPlatform.passkeyLoginCredential,
+            connection: 'test-connection',
+            audience: 'test-audience',
+            scopes: {'test-scope1', 'test-scope2'},
+            organization: 'test-org',
+            parameters: {'test': 'test-parameter'},
+          );
 
-      final verificationResult = verify(mockedPlatform.passkeyLogin(captureAny))
-          .captured
-          .single as ApiRequest<AuthPasskeyLoginOptions>;
+      final verificationResult =
+          verify(mockedPlatform.passkeyCredentialExchange(captureAny))
+              .captured
+              .single as ApiRequest<AuthPasskeyExchangeOptions>;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
       expect(verificationResult.options.challenge.authSession,
@@ -500,7 +503,8 @@ void main() {
       expect(verificationResult.options.credential.id, 'test-credential-id');
       expect(verificationResult.options.connection, 'test-connection');
       expect(verificationResult.options.audience, 'test-audience');
-      expect(verificationResult.options.scopes, {'test-scope1', 'test-scope2'});
+      expect(
+          verificationResult.options.scopes, {'test-scope1', 'test-scope2'});
       expect(verificationResult.options.organization, 'test-org');
       expect(verificationResult.options.parameters['test'], 'test-parameter');
       expect(result, TestPlatform.loginResult);
@@ -508,23 +512,61 @@ void main() {
 
     test('uses default scopes and empty params/null fields when omitted',
         () async {
-      when(mockedPlatform.passkeyLogin(any))
+      when(mockedPlatform.passkeyCredentialExchange(any))
           .thenAnswer((final _) async => TestPlatform.loginResult);
 
-      await Auth0('test-domain', 'test-clientId').api.passkeyLogin(
+      await Auth0('test-domain', 'test-clientId')
+          .api
+          .passkeyCredentialExchange(
             challenge: TestPlatform.passkeyLoginChallengeResult,
             credential: TestPlatform.passkeyLoginCredential,
           );
 
-      final verificationResult = verify(mockedPlatform.passkeyLogin(captureAny))
-          .captured
-          .single as ApiRequest<AuthPasskeyLoginOptions>;
+      final verificationResult =
+          verify(mockedPlatform.passkeyCredentialExchange(captureAny))
+              .captured
+              .single as ApiRequest<AuthPasskeyExchangeOptions>;
       expect(verificationResult.options.scopes,
           {'openid', 'profile', 'email', 'offline_access'});
       expect(verificationResult.options.parameters, isEmpty);
       expect(verificationResult.options.connection, isNull);
       expect(verificationResult.options.audience, isNull);
       expect(verificationResult.options.organization, isNull);
+    });
+
+    test('passes through properties to the platform with signup credential',
+        () async {
+      when(mockedPlatform.passkeyCredentialExchange(any))
+          .thenAnswer((final _) async => TestPlatform.loginResult);
+
+      final result = await Auth0('test-domain', 'test-clientId')
+          .api
+          .passkeyCredentialExchange(
+            challenge: TestPlatform.passkeySignupChallengeResult,
+            credential: TestPlatform.passkeySignupCredential,
+            connection: 'test-connection',
+            audience: 'test-audience',
+            scopes: {'test-scope1', 'test-scope2'},
+            organization: 'test-org',
+            parameters: {'test': 'test-parameter'},
+          );
+
+      final verificationResult =
+          verify(mockedPlatform.passkeyCredentialExchange(captureAny))
+              .captured
+              .single as ApiRequest<AuthPasskeyExchangeOptions>;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.account.clientId, 'test-clientId');
+      expect(verificationResult.options.challenge.authSession,
+          'test-auth-session');
+      expect(verificationResult.options.credential.id, 'test-credential-id');
+      expect(verificationResult.options.connection, 'test-connection');
+      expect(verificationResult.options.audience, 'test-audience');
+      expect(
+          verificationResult.options.scopes, {'test-scope1', 'test-scope2'});
+      expect(verificationResult.options.organization, 'test-org');
+      expect(verificationResult.options.parameters['test'], 'test-parameter');
+      expect(result, TestPlatform.loginResult);
     });
   });
 
@@ -566,59 +608,6 @@ void main() {
       expect(verificationResult.options.organization, 'test-org');
       expect(verificationResult.options.userMetadata, {'plan': 'gold'});
       expect(result, TestPlatform.passkeySignupChallengeResult);
-    });
-  });
-
-  group('passkeySignup', () {
-    test('passes through properties to the platform', () async {
-      when(mockedPlatform.passkeySignup(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
-
-      final result =
-          await Auth0('test-domain', 'test-clientId').api.passkeySignup(
-                challenge: TestPlatform.passkeySignupChallengeResult,
-                credential: TestPlatform.passkeySignupCredential,
-                connection: 'test-connection',
-                audience: 'test-audience',
-                scopes: {'test-scope1', 'test-scope2'},
-                organization: 'test-org',
-                parameters: {'test': 'test-parameter'},
-              );
-
-      final verificationResult =
-          verify(mockedPlatform.passkeySignup(captureAny)).captured.single
-              as ApiRequest<AuthPasskeySignupOptions>;
-      expect(verificationResult.account.domain, 'test-domain');
-      expect(verificationResult.options.challenge.authSession,
-          'test-auth-session');
-      expect(verificationResult.options.credential.id, 'test-credential-id');
-      expect(verificationResult.options.connection, 'test-connection');
-      expect(verificationResult.options.audience, 'test-audience');
-      expect(verificationResult.options.scopes, {'test-scope1', 'test-scope2'});
-      expect(verificationResult.options.organization, 'test-org');
-      expect(verificationResult.options.parameters['test'], 'test-parameter');
-      expect(result, TestPlatform.loginResult);
-    });
-
-    test('uses default scopes and empty params/null fields when omitted',
-        () async {
-      when(mockedPlatform.passkeySignup(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
-
-      await Auth0('test-domain', 'test-clientId').api.passkeySignup(
-            challenge: TestPlatform.passkeySignupChallengeResult,
-            credential: TestPlatform.passkeySignupCredential,
-          );
-
-      final verificationResult =
-          verify(mockedPlatform.passkeySignup(captureAny)).captured.single
-              as ApiRequest<AuthPasskeySignupOptions>;
-      expect(verificationResult.options.scopes,
-          {'openid', 'profile', 'email', 'offline_access'});
-      expect(verificationResult.options.parameters, isEmpty);
-      expect(verificationResult.options.connection, isNull);
-      expect(verificationResult.options.audience, isNull);
-      expect(verificationResult.options.organization, isNull);
     });
   });
 }

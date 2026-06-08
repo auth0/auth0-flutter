@@ -29,9 +29,8 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
         case loginWithSMSCode = "auth#loginWithPhoneNumber"
         case ssoExchange = "auth#ssoExchange"
         case passkeyLoginChallenge = "auth#passkeyLoginChallenge"
-        case passkeyLogin = "auth#passkeyLogin"
         case passkeySignupChallenge = "auth#passkeySignupChallenge"
-        case passkeySignup = "auth#passkeySignup"
+        case passkeyCredentialExchange = "auth#passkeyCredentialExchange"
     }
 
     private static let channelName = "auth0.com/auth0_flutter/auth"
@@ -83,23 +82,18 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
                 return AuthAPIPasskeyLoginChallengeMethodHandler(client: client)
             }
             return UnsupportedMethodHandler()
-        case .passkeyLogin:
-            if #available(iOS 16.6, macOS 13.5, visionOS 1.0, *) {
-                return AuthAPIPasskeyLoginMethodHandler(client: client)
-            }
-            return UnsupportedMethodHandler()
         case .passkeySignupChallenge:
             if #available(iOS 16.6, macOS 13.5, visionOS 1.0, *) {
                 return AuthAPIPasskeySignupChallengeMethodHandler(client: client)
             }
             return UnsupportedMethodHandler()
-        case .passkeySignup:
+        case .passkeyCredentialExchange:
             if #available(iOS 16.6, macOS 13.5, visionOS 1.0, *) {
-                return AuthAPIPasskeySignupMethodHandler(client: client)
+                return AuthAPIPasskeyCredentialExchangeMethodHandler(client: client)
             }
             return UnsupportedMethodHandler()
         #else
-        case .passkeyLoginChallenge, .passkeyLogin, .passkeySignupChallenge, .passkeySignup:
+        case .passkeyLoginChallenge, .passkeySignupChallenge, .passkeyCredentialExchange:
             return UnsupportedMethodHandler()
         #endif
         }

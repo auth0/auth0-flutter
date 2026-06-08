@@ -264,14 +264,14 @@ class _ExampleAppState extends State<ExampleApp> {
       // assertion from the platform authenticator — for example via
       // ASAuthorizationController (iOS/macOS) or Credential Manager (Android),
       // typically over your own platform channel — using the `challenge` above,
-      // and constructs a [PasskeyLoginCredential] from the WebAuthn assertion.
+      // and constructs a [PasskeyCredential] from the WebAuthn assertion.
       final credential = await _obtainLoginCredential(challenge);
 
       // Step 2: Exchange the credential for Auth0 tokens.
       output += 'Step 2/2: Exchanging credential for tokens...\n';
       setState(() { _output = output; });
 
-      final result = await auth0.api.passkeyLogin(
+      final result = await auth0.api.passkeyCredentialExchange(
         challenge: challenge,
         credential: credential,
         connection: dotenv.env['AUTH0_PASSKEY_CONNECTION'],
@@ -297,16 +297,16 @@ class _ExampleAppState extends State<ExampleApp> {
     });
   }
 
-  /// Obtains a [PasskeyLoginCredential] from the platform authenticator.
+  /// Obtains a login [PasskeyCredential] from the platform authenticator.
   ///
   /// This is intentionally app-side: the SDK exposes only
   /// [AuthenticationApi.passkeyLoginChallenge] and
-  /// [AuthenticationApi.passkeyLogin], leaving the OS passkey UI to the app.
-  /// Here we delegate to [PasskeyAuthenticator], which calls the native
-  /// platform authenticator over a method channel and maps the resulting
-  /// WebAuthn assertion into a [PasskeyLoginCredential].
-  Future<PasskeyLoginCredential> _obtainLoginCredential(
-    final PasskeyLoginChallenge challenge,
+  /// [AuthenticationApi.passkeyCredentialExchange], leaving the OS passkey UI
+  /// to the app. Here we delegate to [PasskeyAuthenticator], which calls the
+  /// native platform authenticator over a method channel and maps the resulting
+  /// WebAuthn assertion into a [PasskeyCredential].
+  Future<PasskeyCredential> _obtainLoginCredential(
+    final PasskeyChallenge challenge,
   ) =>
       PasskeyAuthenticator.getAssertion(challenge);
 
@@ -354,15 +354,14 @@ class _ExampleAppState extends State<ExampleApp> {
       // with the platform authenticator — for example via
       // ASAuthorizationController (iOS/macOS) or Credential Manager (Android),
       // typically over your own platform channel — using the `challenge` above,
-      // and constructs a [PasskeySignupCredential] from the WebAuthn
-      // attestation.
+      // and constructs a [PasskeyCredential] from the WebAuthn attestation.
       step = 'createCredential';
       setState(() => _output = 'Presenting passkey creation UI...');
       final credential = await _obtainSignupCredential(challenge);
 
-      step = 'passkeySignup';
+      step = 'exchange';
       setState(() => _output = 'Step 2/2: exchanging for tokens...');
-      final result = await auth0.api.passkeySignup(
+      final result = await auth0.api.passkeyCredentialExchange(
         challenge: challenge,
         credential: credential,
         connection: dotenv.env['AUTH0_PASSKEY_CONNECTION'],
@@ -389,16 +388,16 @@ class _ExampleAppState extends State<ExampleApp> {
     });
   }
 
-  /// Obtains a [PasskeySignupCredential] from the platform authenticator.
+  /// Obtains a signup [PasskeyCredential] from the platform authenticator.
   ///
   /// This is intentionally app-side: the SDK exposes only
   /// [AuthenticationApi.passkeySignupChallenge] and
-  /// [AuthenticationApi.passkeySignup], leaving the OS passkey UI to the app.
-  /// Here we delegate to [PasskeyAuthenticator], which calls the native
-  /// platform authenticator over a method channel and maps the resulting
-  /// WebAuthn attestation into a [PasskeySignupCredential].
-  Future<PasskeySignupCredential> _obtainSignupCredential(
-    final PasskeySignupChallenge challenge,
+  /// [AuthenticationApi.passkeyCredentialExchange], leaving the OS passkey UI
+  /// to the app. Here we delegate to [PasskeyAuthenticator], which calls the
+  /// native platform authenticator over a method channel and maps the resulting
+  /// WebAuthn attestation into a [PasskeyCredential].
+  Future<PasskeyCredential> _obtainSignupCredential(
+    final PasskeyChallenge challenge,
   ) =>
       PasskeyAuthenticator.getAttestation(challenge);
 

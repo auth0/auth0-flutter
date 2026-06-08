@@ -78,20 +78,9 @@ class _FakeSSOCredentials_4 extends _i1.SmartFake
         );
 }
 
-class _FakePasskeyLoginChallenge_5 extends _i1.SmartFake
-    implements _i3.PasskeyLoginChallenge {
-  _FakePasskeyLoginChallenge_5(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-}
-
-class _FakePasskeySignupChallenge_6 extends _i1.SmartFake
-    implements _i3.PasskeySignupChallenge {
-  _FakePasskeySignupChallenge_6(
+class _FakePasskeyChallenge_5 extends _i1.SmartFake
+    implements _i3.PasskeyChallenge {
+  _FakePasskeyChallenge_5(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -315,70 +304,53 @@ class MockTestPlatform extends _i1.Mock implements _i4.TestPlatform {
       ) as _i5.Future<void>);
 
   @override
-  _i5.Future<_i3.PasskeyLoginChallenge> passkeyLoginChallenge(
+  _i5.Future<_i3.PasskeyChallenge> passkeyLoginChallenge(
           _i3.ApiRequest<_i3.AuthPasskeyLoginChallengeOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #passkeyLoginChallenge,
           [request],
         ),
-        returnValue: _i5.Future<_i3.PasskeyLoginChallenge>.value(
-            _FakePasskeyLoginChallenge_5(
+        returnValue: _i5.Future<_i3.PasskeyChallenge>.value(
+            _FakePasskeyChallenge_5(
           this,
           Invocation.method(
             #passkeyLoginChallenge,
             [request],
           ),
         )),
-      ) as _i5.Future<_i3.PasskeyLoginChallenge>);
+      ) as _i5.Future<_i3.PasskeyChallenge>);
 
   @override
-  _i5.Future<_i2.Credentials> passkeyLogin(
-          _i3.ApiRequest<_i3.AuthPasskeyLoginOptions>? request) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #passkeyLogin,
-          [request],
-        ),
-        returnValue: _i5.Future<_i2.Credentials>.value(_FakeCredentials_0(
-          this,
-          Invocation.method(
-            #passkeyLogin,
-            [request],
-          ),
-        )),
-      ) as _i5.Future<_i2.Credentials>);
-
-  @override
-  _i5.Future<_i3.PasskeySignupChallenge> passkeySignupChallenge(
+  _i5.Future<_i3.PasskeyChallenge> passkeySignupChallenge(
           _i3.ApiRequest<_i3.AuthPasskeySignupChallengeOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #passkeySignupChallenge,
           [request],
         ),
-        returnValue: _i5.Future<_i3.PasskeySignupChallenge>.value(
-            _FakePasskeySignupChallenge_6(
+        returnValue: _i5.Future<_i3.PasskeyChallenge>.value(
+            _FakePasskeyChallenge_5(
           this,
           Invocation.method(
             #passkeySignupChallenge,
             [request],
           ),
         )),
-      ) as _i5.Future<_i3.PasskeySignupChallenge>);
+      ) as _i5.Future<_i3.PasskeyChallenge>);
 
   @override
-  _i5.Future<_i2.Credentials> passkeySignup(
-          _i3.ApiRequest<_i3.AuthPasskeySignupOptions>? request) =>
+  _i5.Future<_i2.Credentials> passkeyCredentialExchange(
+          _i3.ApiRequest<_i3.AuthPasskeyExchangeOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
-          #passkeySignup,
+          #passkeyCredentialExchange,
           [request],
         ),
         returnValue: _i5.Future<_i2.Credentials>.value(_FakeCredentials_0(
           this,
           Invocation.method(
-            #passkeySignup,
+            #passkeyCredentialExchange,
             [request],
           ),
         )),
