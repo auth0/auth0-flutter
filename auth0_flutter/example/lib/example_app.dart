@@ -227,6 +227,22 @@ class _ExampleAppState extends State<ExampleApp> {
   String _preview(final String token) =>
       token.length <= 20 ? token : '${token.substring(0, 20)}...';
 
+  /// Builds a redacted, display-safe summary of [credentials].
+  ///
+  /// Token values are masked so the example never renders raw secrets on
+  /// screen; only their presence and non-sensitive metadata are shown.
+  String _redactedCredentials(final Credentials credentials) {
+    String mask(final String? token) =>
+        (token == null || token.isEmpty) ? 'N/A' : '••••••••';
+
+    return 'Access Token: ${mask(credentials.accessToken)}\n'
+        'ID Token: ${mask(credentials.idToken)}\n'
+        'Refresh Token: ${mask(credentials.refreshToken)}\n'
+        'Token Type: ${credentials.tokenType}\n'
+        'Expires At: ${credentials.expiresAt}\n'
+        'Scopes: ${credentials.scopes.join(' ')}';
+  }
+
   Future<void> passkeyLogin() async {
     String output;
     try {
@@ -265,8 +281,8 @@ class _ExampleAppState extends State<ExampleApp> {
         _isLoggedIn = true;
       });
       output += 'Login successful!\n'
-          '  Access Token: ${_preview(result.accessToken)}\n'
-          '  User: ${result.user.name ?? result.user.email ?? result.user.sub}';
+          '${_redactedCredentials(result)}\n'
+          'User: ${result.user.name ?? result.user.email ?? result.user.sub}';
     } on ApiException catch (e) {
       output = 'Passkey Login Error:\n'
           'Code: ${e.code}\n'
@@ -356,7 +372,7 @@ class _ExampleAppState extends State<ExampleApp> {
         _isLoggedIn = true;
       });
       output = 'Passkey Signup Successful!\n\n'
-          'Access Token: ${_preview(result.accessToken)}\n'
+          '${_redactedCredentials(result)}\n'
           'User: ${result.user.name ?? result.user.email ?? result.user.sub}';
     } on ApiException catch (e) {
       output = 'Passkey Signup Error (step: $step):\n'
