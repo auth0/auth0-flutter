@@ -181,28 +181,24 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     webAuthCallHandler.activity = binding.activity
     credentialsManagerCallHandler.activity = binding.activity
-    authCallHandler.activity = binding.activity
     WebAuthProvider.addCallback(processDeathCallback)
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
     webAuthCallHandler.activity = null
     credentialsManagerCallHandler.activity = null
-    authCallHandler.activity = null
     WebAuthProvider.removeCallback(processDeathCallback)
   }
 
   override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
     webAuthCallHandler.activity = binding.activity
     credentialsManagerCallHandler.activity = binding.activity
-    authCallHandler.activity = binding.activity
     WebAuthProvider.addCallback(processDeathCallback)
   }
 
   override fun onDetachedFromActivity() {
     webAuthCallHandler.activity = null
     credentialsManagerCallHandler.activity = null
-    authCallHandler.activity = null
     WebAuthProvider.removeCallback(processDeathCallback)
   }
 }
