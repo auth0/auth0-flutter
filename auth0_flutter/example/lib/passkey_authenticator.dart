@@ -3,12 +3,13 @@ import 'package:flutter/services.dart';
 
 /// Bridges to the platform authenticator (iOS/macOS
 /// `ASAuthorizationController`, Android Credential Manager) to obtain a passkey
-/// assertion.
+/// assertion (login) or create a passkey and obtain its attestation (signup).
 ///
 /// The `auth0_flutter` SDK deliberately does **not** present the OS passkey UI;
-/// it only requests the login challenge (`passkeyLoginChallenge`) and exchanges
-/// a credential for tokens (`passkeyLogin`). This class shows how an app can
-/// fill that gap with a small native plumbing layer.
+/// it only requests the challenge (`passkeyLoginChallenge` /
+/// `passkeySignupChallenge`) and exchanges a credential for tokens
+/// (`passkeyLogin` / `passkeySignup`). This class shows how an app can fill that
+/// gap with a small native plumbing layer.
 class PasskeyAuthenticator {
   static const MethodChannel _channel =
       MethodChannel('com.auth0.auth0_flutter_example/passkey');
@@ -51,6 +52,47 @@ class PasskeyAuthenticator {
         authenticatorData: response['authenticatorData'] as String,
         signature: response['signature'] as String,
         userHandle: response['userHandle'] as String?,
+      ),
+    );
+  }
+
+  /// Presents the OS passkey creation UI for [challenge] and returns the
+  /// resulting [PasskeySignupCredential], ready to pass to `passkeySignup`.
+  ///
+  /// The whole `authParamsPublicKey` map is forwarded to the native side, which
+  /// extracts what each platform's authenticator API needs (iOS reads the
+  /// individual fields; Android passes it on as WebAuthn JSON).
+  ///
+  /// Throws a [PlatformException] if the user cancels or the OS fails to
+  /// produce an attestation.
+  static Future<PasskeySignupCredential> getAttestation(
+    final PasskeySignupChallenge challenge,
+  ) async {
+    final result = await _channel.invokeMapMethod<String, dynamic>(
+      'getAttestation',
+      <String, dynamic>{
+        'authParamsPublicKey': challenge.authParamsPublicKey,
+      },
+    );
+
+    if (result == null) {
+      throw PlatformException(
+        code: 'no_credential',
+        message: 'The platform authenticator returned no credential.',
+      );
+    }
+
+    final response = Map<String, dynamic>.from(
+        result['response'] as Map<dynamic, dynamic>);
+
+    return PasskeySignupCredential(
+      id: result['id'] as String,
+      rawId: result['rawId'] as String,
+      type: (result['type'] as String?) ?? 'public-key',
+      authenticatorAttachment: result['authenticatorAttachment'] as String?,
+      response: PasskeyAuthenticatorAttestationResponse(
+        clientDataJSON: response['clientDataJSON'] as String,
+        attestationObject: response['attestationObject'] as String,
       ),
     );
   }

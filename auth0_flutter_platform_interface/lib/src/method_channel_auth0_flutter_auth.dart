@@ -8,6 +8,8 @@ import 'auth/auth_login_with_otp_options.dart';
 import 'auth/auth_multifactor_challenge_options.dart';
 import 'auth/auth_passkey_login_challenge_options.dart';
 import 'auth/auth_passkey_login_options.dart';
+import 'auth/auth_passkey_signup_challenge_options.dart';
+import 'auth/auth_passkey_signup_options.dart';
 import 'auth/auth_passwordless_login_options.dart';
 import 'auth/auth_renew_access_token_options.dart';
 import 'auth/auth_reset_password_options.dart';
@@ -16,6 +18,7 @@ import 'auth/auth_sso_exchange_options.dart';
 import 'auth/auth_user_info_options.dart';
 import 'auth/challenge.dart';
 import 'auth/passkey_login_challenge.dart';
+import 'auth/passkey_signup_challenge.dart';
 import 'auth0_flutter_auth_platform.dart';
 import 'credentials.dart';
 import 'database_user.dart';
@@ -44,6 +47,8 @@ const String authSSOExchangeMethod = 'auth#ssoExchange';
 const String authResetPasswordMethod = 'auth#resetPassword';
 const String authPasskeyLoginChallengeMethod = 'auth#passkeyLoginChallenge';
 const String authPasskeyLoginMethod = 'auth#passkeyLogin';
+const String authPasskeySignupChallengeMethod = 'auth#passkeySignupChallenge';
+const String authPasskeySignupMethod = 'auth#passkeySignup';
 
 class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   @override
@@ -176,6 +181,22 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
       final ApiRequest<AuthPasskeyLoginOptions> request) async {
     final Map<String, dynamic> result =
         await invokeRequest(method: authPasskeyLoginMethod, request: request);
+    return Credentials.fromMap(result);
+  }
+
+  @override
+  Future<PasskeySignupChallenge> passkeySignupChallenge(
+      final ApiRequest<AuthPasskeySignupChallengeOptions> request) async {
+    final Map<String, dynamic> result = await invokeRequest(
+        method: authPasskeySignupChallengeMethod, request: request);
+    return PasskeySignupChallenge.fromMap(result);
+  }
+
+  @override
+  Future<Credentials> passkeySignup(
+      final ApiRequest<AuthPasskeySignupOptions> request) async {
+    final Map<String, dynamic> result =
+        await invokeRequest(method: authPasskeySignupMethod, request: request);
     return Credentials.fromMap(result);
   }
 

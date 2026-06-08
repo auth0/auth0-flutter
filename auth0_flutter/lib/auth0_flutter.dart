@@ -33,7 +33,10 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         WebAuthenticationException;
         PasskeyLoginChallenge,
         PasskeyLoginCredential,
-        PasskeyAuthenticatorAssertionResponse;
+        PasskeyAuthenticatorAssertionResponse,
+        PasskeySignupChallenge,
+        PasskeySignupCredential,
+        PasskeyAuthenticatorAttestationResponse;
 
 export 'src/desktop/windows_web_authentication.dart';
 export 'src/mobile/authentication_api.dart';

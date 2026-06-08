@@ -123,6 +123,8 @@ extension AuthAPIHandlerTests {
         if #available(iOS 16.6, macOS 13.5, visionOS 1.0, *) {
             methodHandlers[.passkeyLoginChallenge] = AuthAPIPasskeyLoginChallengeMethodHandler.self
             methodHandlers[.passkeyLogin] = AuthAPIPasskeyLoginMethodHandler.self
+            methodHandlers[.passkeySignupChallenge] = AuthAPIPasskeySignupChallengeMethodHandler.self
+            methodHandlers[.passkeySignup] = AuthAPIPasskeySignupMethodHandler.self
         }
         #endif
         methodHandlers.forEach { method, methodHandler in

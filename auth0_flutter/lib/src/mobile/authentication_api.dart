@@ -508,6 +508,95 @@ class AuthenticationApi {
         parameters: parameters,
       )));
 
+  /// Requests a challenge for signing up a new user with a passkey.
+  ///
+  /// This is the first step of the passkey signup flow. Use the returned
+  /// [PasskeySignupChallenge] to present the OS passkey creation UI in your
+  /// app, then pass the resulting credential to [passkeySignup] to exchange it
+  /// for tokens.
+  ///
+  /// ## Endpoint
+  /// https://auth0.com/docs/api/authentication#passkey
+  ///
+  /// ## Notes
+  ///
+  /// * Identify the new user with any combination of [email], [phoneNumber],
+  /// [username], [name], [givenName], [familyName], [nickname], and [picture],
+  /// depending on how your connection is configured.
+  /// * [connection] is the name of the database connection configured with
+  /// passkeys. Defaults to the application's first passkey connection when
+  /// omitted.
+  /// * [organization] is the optional Auth0 organization to sign up to.
+  /// * [userMetadata] is optional metadata to associate with the new user.
+  ///
+  /// ## Usage example
+  ///
+  /// ```dart
+  /// final challenge = await auth0.api.passkeySignupChallenge(
+  ///   email: 'jane.smith@example.com',
+  ///   connection: 'Username-Password-Authentication',
+  /// );
+  /// ```
+  Future<PasskeySignupChallenge> passkeySignupChallenge({
+    final String? email,
+    final String? phoneNumber,
+    final String? username,
+    final String? name,
+    final String? givenName,
+    final String? familyName,
+    final String? nickname,
+    final String? picture,
+    final String? connection,
+    final String? organization,
+    final Map<String, String>? userMetadata,
+  }) =>
+      Auth0FlutterAuthPlatform.instance.passkeySignupChallenge(
+          _createApiRequest(AuthPasskeySignupChallengeOptions(
+        email: email,
+        phoneNumber: phoneNumber,
+        username: username,
+        name: name,
+        givenName: givenName,
+        familyName: familyName,
+        nickname: nickname,
+        picture: picture,
+        connection: connection,
+        organization: organization,
+        userMetadata: userMetadata,
+      )));
+
+  /// Completes passkey signup by exchanging a [credential] for Auth0 tokens.
+  ///
+  /// The [credential] is the passkey attestation obtained from the operating
+  /// system's authentication UI (for example, via Apple's
+  /// `ASAuthorizationController` or Android's Credential Manager in your app),
+  /// using the [PasskeySignupChallenge] returned by [passkeySignupChallenge].
+  /// This call exchanges that credential at the `/oauth/token` endpoint.
+  Future<Credentials> passkeySignup({
+    required final PasskeySignupChallenge challenge,
+    required final PasskeySignupCredential credential,
+    final String? connection,
+    final String? audience,
+    final Set<String> scopes = const {
+      'openid',
+      'profile',
+      'email',
+      'offline_access'
+    },
+    final String? organization,
+    final Map<String, String> parameters = const {},
+  }) =>
+      Auth0FlutterAuthPlatform.instance
+          .passkeySignup(_createApiRequest(AuthPasskeySignupOptions(
+        challenge: challenge,
+        credential: credential,
+        connection: connection,
+        audience: audience,
+        scopes: scopes,
+        organization: organization,
+        parameters: parameters,
+      )));
+
   ApiRequest<TOptions> _createApiRequest<TOptions extends RequestOptions>(
           final TOptions options) =>
       ApiRequest<TOptions>(

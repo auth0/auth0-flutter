@@ -249,7 +249,7 @@ class _ExampleAppState extends State<ExampleApp> {
       // ASAuthorizationController (iOS/macOS) or Credential Manager (Android),
       // typically over your own platform channel — using the `challenge` above,
       // and constructs a [PasskeyLoginCredential] from the WebAuthn assertion.
-      final credential = await _obtainPasskeyCredential(challenge);
+      final credential = await _obtainLoginCredential(challenge);
 
       // Step 2: Exchange the credential for Auth0 tokens.
       output += 'Step 2/2: Exchanging credential for tokens...\n';
@@ -289,7 +289,7 @@ class _ExampleAppState extends State<ExampleApp> {
   /// Here we delegate to [PasskeyAuthenticator], which calls the native
   /// platform authenticator over a method channel and maps the resulting
   /// WebAuthn assertion into a [PasskeyLoginCredential].
-  Future<PasskeyLoginCredential> _obtainPasskeyCredential(
+  Future<PasskeyLoginCredential> _obtainLoginCredential(
     final PasskeyLoginChallenge challenge,
   ) =>
       PasskeyAuthenticator.getAssertion(challenge);
@@ -319,6 +319,73 @@ class _ExampleAppState extends State<ExampleApp> {
     });
   }
 
+  /// Signs up a new user with a passkey.
+  ///
+  /// The SDK only requests the challenge and exchanges the credential for
+  /// tokens; presenting the OS passkey creation UI is left to the app, here via
+  /// [_obtainSignupCredential].
+  Future<void> passkeySignup() async {
+    String output;
+    var step = 'challenge';
+    try {
+      setState(() => _output = 'Step 1/2: requesting signup challenge...');
+      final challenge = await auth0.api.passkeySignupChallenge(
+        email: 'passkey-${DateTime.now().millisecondsSinceEpoch}@example.com',
+        connection: dotenv.env['AUTH0_PASSKEY_CONNECTION'],
+      );
+
+      // The SDK does not present the passkey UI. Your app creates the passkey
+      // with the platform authenticator — for example via
+      // ASAuthorizationController (iOS/macOS) or Credential Manager (Android),
+      // typically over your own platform channel — using the `challenge` above,
+      // and constructs a [PasskeySignupCredential] from the WebAuthn
+      // attestation.
+      step = 'createCredential';
+      setState(() => _output = 'Presenting passkey creation UI...');
+      final credential = await _obtainSignupCredential(challenge);
+
+      step = 'passkeySignup';
+      setState(() => _output = 'Step 2/2: exchanging for tokens...');
+      final result = await auth0.api.passkeySignup(
+        challenge: challenge,
+        credential: credential,
+        connection: dotenv.env['AUTH0_PASSKEY_CONNECTION'],
+      );
+
+      setState(() {
+        _isLoggedIn = true;
+      });
+      output = 'Passkey Signup Successful!\n\n'
+          'Access Token: ${_preview(result.accessToken)}\n'
+          'User: ${result.user.name ?? result.user.email ?? result.user.sub}';
+    } on ApiException catch (e) {
+      output = 'Passkey Signup Error (step: $step):\n'
+          'Code: ${e.code}\n'
+          'Message: ${e.message}\n'
+          'Details: ${e.details}';
+    } catch (e) {
+      output = 'Passkey Signup Failed (step: $step):\n$e';
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _output = output;
+    });
+  }
+
+  /// Obtains a [PasskeySignupCredential] from the platform authenticator.
+  ///
+  /// This is intentionally app-side: the SDK exposes only
+  /// [AuthenticationApi.passkeySignupChallenge] and
+  /// [AuthenticationApi.passkeySignup], leaving the OS passkey UI to the app.
+  /// Here we delegate to [PasskeyAuthenticator], which calls the native
+  /// platform authenticator over a method channel and maps the resulting
+  /// WebAuthn attestation into a [PasskeySignupCredential].
+  Future<PasskeySignupCredential> _obtainSignupCredential(
+    final PasskeySignupChallenge challenge,
+  ) =>
+      PasskeyAuthenticator.getAttestation(challenge);
+
   @override
   Widget build(final BuildContext context) {
     return MaterialApp(
@@ -340,6 +407,7 @@ class _ExampleAppState extends State<ExampleApp> {
                         WebAuthCard(
                             label: 'Web Auth Login', action: webAuthLogin),
                       const SizedBox(height: 10),
+                      // Passkey login & signup — only on mobile (iOS/Android)
                       if (!kIsWeb && !Platform.isWindows) ...[
                         const SizedBox(height: 10),
                         ElevatedButton(
@@ -352,6 +420,20 @@ class _ExampleAppState extends State<ExampleApp> {
                           onPressed: passkeyLogin,
                           child: const Text(
                             'Passkey Login',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 12),
+                          ),
+                          onPressed: passkeySignup,
+                          child: const Text(
+                            'Passkey Signup',
                             style: TextStyle(fontSize: 16),
                           ),
                         ),
