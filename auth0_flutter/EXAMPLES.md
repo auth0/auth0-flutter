@@ -35,8 +35,8 @@
   - [Retrieve stored credentials](#retrieve-stored-credentials-1)
 - [📱 Authentication API](#-authentication-api)
   - [Login with database connection](#login-with-database-connection)
-  - [Log in with passkeys](#log-in-with-passkeys)
   - [Sign up with database connection](#sign-up-with-database-connection)
+  - [Log in with passkeys](#log-in-with-passkeys)
   - [Sign up with passkeys](#sign-up-with-passkeys)
   - [Passwordless Login](#passwordless-login)
   - [Retrieve user information](#retrieve-user-information)
@@ -1033,8 +1033,8 @@ final credentials = await auth0Web.credentials();
 > This feature is mobile/macOS only; the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter does not include an API client.
 
 - [Login with database connection](#login-with-database-connection)
-- [Log in with passkeys](#log-in-with-passkeys)
 - [Sign up with database connection](#sign-up-with-database-connection)
+- [Log in with passkeys](#log-in-with-passkeys)
 - [Sign up with passkeys](#sign-up-with-passkeys)
 - [Retrieve user information](#retrieve-user-information)
 - [Renew credentials](#renew-credentials)
@@ -1091,6 +1091,18 @@ final credentials = await auth0.api.login(
 ```
 
 </details>
+
+### Sign up with database connection
+
+```dart
+final databaseUser = await auth0.api.signup(
+    email: 'jane.smith@example.com',
+    password: 'secret-password',
+    connection: 'Username-Password-Authentication',
+    userMetadata: {'first_name': 'Jane', 'last_name': 'Smith'});
+```
+
+> 💡 You might want to log the user in after signup. See [Login with database connection](#login-with-database-connection) above for an example.
 
 ### Log in with passkeys
 
@@ -1152,18 +1164,6 @@ final credentials = await auth0.api.passkeyLogin(
 ```
 
 </details>
-
-### Sign up with database connection
-
-```dart
-final databaseUser = await auth0.api.signup(
-    email: 'jane.smith@example.com',
-    password: 'secret-password',
-    connection: 'Username-Password-Authentication',
-    userMetadata: {'first_name': 'Jane', 'last_name': 'Smith'});
-```
-
-> 💡 You might want to log the user in after signup. See [Login with database connection](#login-with-database-connection) above for an example.
 
 ### Sign up with passkeys
 
