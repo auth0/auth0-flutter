@@ -32,28 +32,35 @@ import java.util.concurrent.Executors
  * - `getAttestation` registers a new passkey using the `authParamsPublicKey`
  *   from `auth0.api.passkeySignupChallenge` (for `auth0.api.passkeySignup`).
  */
-class PasskeyAuthenticator(private val activity: Activity) {
+class PasskeyAuthenticator {
 
     companion object {
         const val CHANNEL_NAME = "com.auth0.auth0_flutter_example/passkey"
     }
 
-    fun handle(call: MethodCall, result: MethodChannel.Result) {
+    // The Activity is passed in per-call rather than held as a field, so this
+    // authenticator never outlives (and never leaks) the Activity that owns the
+    // method channel.
+    fun handle(activity: Activity, call: MethodCall, result: MethodChannel.Result) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
             result.error("unsupported", "Passkeys require Android 9 (API 28)+", null)
             return
         }
 
         when (call.method) {
-            "getAssertion" -> getAssertion(call, result)
-            "getAttestation" -> getAttestation(call, result)
+            "getAssertion" -> getAssertion(activity, call, result)
+            "getAttestation" -> getAttestation(activity, call, result)
             else -> result.notImplemented()
         }
     }
 
     // MARK: Login (assertion)
 
-    private fun getAssertion(call: MethodCall, result: MethodChannel.Result) {
+    private fun getAssertion(
+        activity: Activity,
+        call: MethodCall,
+        result: MethodChannel.Result
+    ) {
         val challenge = call.argument<String>("challenge")
         val rpId = call.argument<String>("rpId")
         if (challenge == null || rpId == null) {
@@ -126,7 +133,11 @@ class PasskeyAuthenticator(private val activity: Activity) {
 
     // MARK: Signup (attestation)
 
-    private fun getAttestation(call: MethodCall, result: MethodChannel.Result) {
+    private fun getAttestation(
+        activity: Activity,
+        call: MethodCall,
+        result: MethodChannel.Result
+    ) {
         val authParamsPublicKey = call.argument<Map<String, Any?>>("authParamsPublicKey")
         if (authParamsPublicKey == null) {
             result.error("bad_args", "Missing authParamsPublicKey", null)
