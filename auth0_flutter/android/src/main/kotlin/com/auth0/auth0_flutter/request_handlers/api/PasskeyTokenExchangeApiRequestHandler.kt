@@ -10,21 +10,18 @@ import com.auth0.auth0_flutter.utils.assertHasProperties
 import com.google.gson.Gson
 import io.flutter.plugin.common.MethodChannel
 
-private const val AUTH_PASSKEY_CREDENTIAL_EXCHANGE_METHOD =
-    "auth#passkeyCredentialExchange"
-
 /**
- * Exchanges an app-supplied passkey credential (a login assertion or a signup
- * attestation) and its challenge for Auth0 tokens at the `/oauth/token`
- * endpoint. This handler does not present any UI.
+ * Shared base for the passkey login and signup token exchanges.
  *
- * Both passkey login and signup finish here: Auth0.Android's `signinWithPasskey`
- * accepts the credential as a JSON string and handles both assertion and
- * attestation payloads, so a single handler serves both flows.
+ * Both flows finish identically: they hand the app-supplied WebAuthn credential
+ * (a login assertion or a signup attestation) plus the challenge's `authSession`
+ * to Auth0's `signinWithPasskey` and exchange them for tokens at the
+ * `/oauth/token` endpoint. Auth0.Android's `signinWithPasskey` accepts the
+ * credential as a JSON string and handles both assertion and attestation
+ * payloads, so the only thing that varies between login and signup is the
+ * method name. Neither flow presents any UI.
  */
-class PasskeyCredentialExchangeApiRequestHandler : ApiRequestHandler {
-    override val method: String = AUTH_PASSKEY_CREDENTIAL_EXCHANGE_METHOD
-
+abstract class PasskeyTokenExchangeApiRequestHandler : ApiRequestHandler {
     private val gson = Gson()
 
     override fun handle(
