@@ -312,7 +312,8 @@ class _ExampleAppState extends State<ExampleApp> {
   /// native platform authenticator over a method channel and maps the resulting
   /// WebAuthn assertion into a [PasskeyCredential].
   Future<PasskeyCredential> _obtainLoginCredential(
-          final PasskeyChallenge challenge) =>
+    final PasskeyChallenge challenge,
+  ) =>
       PasskeyAuthenticator.getAssertion(challenge);
 
   Future<void> getSSOCredentials() async {

@@ -69,7 +69,8 @@ class PasskeyAuthenticator {
   /// Throws a [PlatformException] if the user cancels or the OS fails to
   /// produce an attestation.
   static Future<PasskeyCredential> getAttestation(
-      final PasskeyChallenge challenge) async {
+    final PasskeyChallenge challenge,
+  ) async {
     final result = await _channel.invokeMapMethod<String, dynamic>(
       'getAttestation',
       <String, dynamic>{
@@ -93,8 +94,9 @@ class PasskeyAuthenticator {
       type: (result['type'] as String?) ?? 'public-key',
       authenticatorAttachment: result['authenticatorAttachment'] as String?,
       response: PasskeyAuthenticatorResponse(
-          clientDataJSON: response['clientDataJSON'] as String,
-          attestationObject: response['attestationObject'] as String?),
+        clientDataJSON: response['clientDataJSON'] as String,
+        attestationObject: response['attestationObject'] as String?,
+      ),
     );
   }
 }

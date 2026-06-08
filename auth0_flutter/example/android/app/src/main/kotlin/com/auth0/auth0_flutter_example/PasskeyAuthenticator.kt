@@ -19,7 +19,6 @@ import androidx.credentials.exceptions.GetCredentialException
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import org.json.JSONObject
-import java.util.concurrent.Executors
 
 /**
  * Presents the Android Credential Manager passkey UI and returns a WebAuthn
@@ -83,7 +82,7 @@ class PasskeyAuthenticator {
             activity,
             request,
             CancellationSignal(),
-            Executors.newSingleThreadExecutor(),
+            activity.mainExecutor,
             object : CredentialManagerCallback<GetCredentialResponse, GetCredentialException> {
                 override fun onResult(response: GetCredentialResponse) {
                     val credential = response.credential
