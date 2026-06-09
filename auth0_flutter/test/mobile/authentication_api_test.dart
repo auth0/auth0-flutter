@@ -1,5 +1,6 @@
 import 'package:auth0_flutter/auth0_flutter.dart';
-import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
+import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
+    hide PasskeyAuthenticatorResponse, PasskeyChallenge, PasskeyCredential;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -47,8 +48,7 @@ class TestPlatform extends Mock
     refreshToken: 'new-refresh-token',
   );
 
-  static const PasskeyChallenge passkeyLoginChallengeResult =
-      PasskeyChallenge(
+  static const PasskeyChallenge passkeyLoginChallengeResult = PasskeyChallenge(
     authSession: 'test-auth-session',
     authParamsPublicKey: {
       'challenge': 'test-challenge',
@@ -56,8 +56,7 @@ class TestPlatform extends Mock
     },
   );
 
-  static const PasskeyCredential passkeyLoginCredential =
-      PasskeyCredential(
+  static const PasskeyCredential passkeyLoginCredential = PasskeyCredential(
     id: 'test-credential-id',
     rawId: 'test-raw-id',
     type: 'public-key',
@@ -70,8 +69,7 @@ class TestPlatform extends Mock
     ),
   );
 
-  static const PasskeyChallenge passkeySignupChallengeResult =
-      PasskeyChallenge(
+  static const PasskeyChallenge passkeySignupChallengeResult = PasskeyChallenge(
     authSession: 'test-auth-session',
     authParamsPublicKey: {
       'challenge': 'test-challenge',
@@ -81,8 +79,7 @@ class TestPlatform extends Mock
     },
   );
 
-  static const PasskeyCredential passkeySignupCredential =
-      PasskeyCredential(
+  static const PasskeyCredential passkeySignupCredential = PasskeyCredential(
     id: 'test-credential-id',
     rawId: 'test-raw-id',
     type: 'public-key',
@@ -352,9 +349,9 @@ void main() {
               parameters: {'param1': 'value1'},
               headers: {'X-Custom': 'custom-value'});
 
-      final verificationResult =
-          verify(mockedPlatform.ssoExchange(captureAny)).captured.single
-              as ApiRequest<AuthSSOExchangeOptions>;
+      final verificationResult = verify(mockedPlatform.ssoExchange(captureAny))
+          .captured
+          .single as ApiRequest<AuthSSOExchangeOptions>;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
       expect(verificationResult.options.refreshToken, 'test-refresh-token');
@@ -371,9 +368,9 @@ void main() {
           .api
           .ssoExchange(refreshToken: 'test-refresh-token');
 
-      final verificationResult =
-          verify(mockedPlatform.ssoExchange(captureAny)).captured.single
-              as ApiRequest<AuthSSOExchangeOptions>;
+      final verificationResult = verify(mockedPlatform.ssoExchange(captureAny))
+          .captured
+          .single as ApiRequest<AuthSSOExchangeOptions>;
       expect(verificationResult.options.parameters, isEmpty);
       expect(verificationResult.options.headers, isEmpty);
     });
@@ -503,8 +500,7 @@ void main() {
       expect(verificationResult.options.credential.id, 'test-credential-id');
       expect(verificationResult.options.connection, 'test-connection');
       expect(verificationResult.options.audience, 'test-audience');
-      expect(
-          verificationResult.options.scopes, {'test-scope1', 'test-scope2'});
+      expect(verificationResult.options.scopes, {'test-scope1', 'test-scope2'});
       expect(verificationResult.options.organization, 'test-org');
       expect(verificationResult.options.parameters['test'], 'test-parameter');
       expect(result, TestPlatform.loginResult);
@@ -515,9 +511,7 @@ void main() {
       when(mockedPlatform.passkeyCredentialExchange(any))
           .thenAnswer((final _) async => TestPlatform.loginResult);
 
-      await Auth0('test-domain', 'test-clientId')
-          .api
-          .passkeyCredentialExchange(
+      await Auth0('test-domain', 'test-clientId').api.passkeyCredentialExchange(
             challenge: TestPlatform.passkeyLoginChallengeResult,
             credential: TestPlatform.passkeyLoginCredential,
           );
@@ -562,8 +556,7 @@ void main() {
       expect(verificationResult.options.credential.id, 'test-credential-id');
       expect(verificationResult.options.connection, 'test-connection');
       expect(verificationResult.options.audience, 'test-audience');
-      expect(
-          verificationResult.options.scopes, {'test-scope1', 'test-scope2'});
+      expect(verificationResult.options.scopes, {'test-scope1', 'test-scope2'});
       expect(verificationResult.options.organization, 'test-org');
       expect(verificationResult.options.parameters['test'], 'test-parameter');
       expect(result, TestPlatform.loginResult);
@@ -578,18 +571,18 @@ void main() {
       final result = await Auth0('test-domain', 'test-clientId')
           .api
           .passkeySignupChallenge(
-            email: 'test-email',
-            phoneNumber: 'test-phone',
-            username: 'test-username',
-            name: 'test-name',
-            givenName: 'test-given-name',
-            familyName: 'test-family-name',
-            nickname: 'test-nickname',
-            picture: 'https://www.okta.com',
-            connection: 'test-connection',
-            organization: 'test-org',
-            userMetadata: {'plan': 'gold'},
-          );
+        email: 'test-email',
+        phoneNumber: 'test-phone',
+        username: 'test-username',
+        name: 'test-name',
+        givenName: 'test-given-name',
+        familyName: 'test-family-name',
+        nickname: 'test-nickname',
+        picture: 'https://www.okta.com',
+        connection: 'test-connection',
+        organization: 'test-org',
+        userMetadata: {'plan': 'gold'},
+      );
 
       final verificationResult =
           verify(mockedPlatform.passkeySignupChallenge(captureAny))
