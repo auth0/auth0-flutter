@@ -52,6 +52,7 @@
   - [Listing and managing authentication methods](#listing-and-managing-authentication-methods)
   - [Enrolling a factor with OTP (phone, email, TOTP)](#enrolling-a-factor-with-otp-phone-email-totp)
   - [Enrolling a factor without OTP (push, recovery code)](#enrolling-a-factor-without-otp-push-recovery-code)
+  - [Enrolling a passkey](#enrolling-a-passkey)
   - [Using DPoP](#using-dpop)
   - [Errors](#errors-3)
 
@@ -1576,6 +1577,44 @@ final method = await myAccount.confirmEnrollment(
 ```
 
 The same flow applies to `enrollRecoveryCode` (`factorType: 'recovery-code'`).
+
+### Enrolling a passkey
+
+A signed-in user can add a passkey as a new authentication method. Like passkey login and signup, this is a two-step flow and the SDK leaves presenting the OS passkey UI to your app:
+
+1. Request an enrollment challenge with `enrollPasskeyChallenge`.
+2. **In your app**, present the platform authenticator using `challenge.authParamsPublicKey` to create a passkey, and map the resulting WebAuthn attestation into a `PasskeyCredential`. The SDK does **not** do this step — call the OS APIs directly (for example, [`ASAuthorizationController`](https://developer.apple.com/documentation/authenticationservices/asauthorizationcontroller) on iOS/macOS or [Credential Manager](https://developer.android.com/identity/sign-in/credential-manager) on Android, typically over your own platform channel).
+3. Submit the credential with `enrollPasskey` to complete the enrollment.
+
+> ⚠️ Passkeys require a [custom domain](https://auth0.com/docs/customize/custom-domains) on your tenant and additional configuration. See [Sign up with passkeys](#sign-up-with-passkeys) for details. The My Account passkey enrollment API is in [Early Access](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#early-access) and must be enabled for your tenant.
+
+The access token must include the `create:me:authentication_methods` scope.
+
+```dart
+// 1. Request an enrollment challenge.
+final challenge = await myAccount.enrollPasskeyChallenge();
+
+// 2. Present the OS passkey creation UI in your app (not provided by the SDK)
+//    using `challenge.authParamsPublicKey`, then build a PasskeyCredential from
+//    the resulting WebAuthn attestation.
+final credential = PasskeyCredential(
+  id: '...',
+  rawId: '...',
+  type: 'public-key',
+  response: PasskeyAuthenticatorResponse(
+    clientDataJSON: '...',
+    attestationObject: '...',
+  ),
+);
+
+// 3. Submit the credential to complete the enrollment.
+final method = await myAccount.enrollPasskey(
+  challenge: challenge,
+  credential: credential,
+);
+
+print('Enrolled passkey: ${method.id} (${method.relyingPartyId})');
+```
 
 ### Using DPoP
 

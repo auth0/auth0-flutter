@@ -407,6 +407,85 @@ class _ExampleAppState extends State<ExampleApp> {
   ) =>
       PasskeyAuthenticator.getAttestation(challenge);
 
+  /// Enrolls a passkey for the signed-in user via the My Account API.
+  ///
+  /// This is a two-step flow that mirrors passkey signup: the SDK requests an
+  /// enrollment challenge and submits the resulting credential, while the app
+  /// presents the OS passkey creation UI in between (here reusing
+  /// [PasskeyAuthenticator.getAttestation]).
+  ///
+  /// A My Account access token is required — obtained here by logging in via
+  /// Web Auth with the `https://{domain}/me/` audience and the
+  /// `create:me:authentication_methods` scope.
+  Future<void> enrollPasskeyMyAccount() async {
+    String output;
+    var step = 'token';
+    try {
+      setState(() => _output = 'Step 1/3: obtaining My Account token...');
+      final domain = dotenv.env['AUTH0_DOMAIN']!;
+      final credentials = await webAuth.login(
+        audience: 'https://$domain/me/',
+        scopes: const {
+          'openid',
+          'profile',
+          'email',
+          'offline_access',
+          'create:me:authentication_methods',
+        },
+      );
+
+      final myAccount = auth0.myAccount(accessToken: credentials.accessToken);
+
+      step = 'challenge';
+      setState(() => _output = 'Step 2/3: requesting enrollment challenge...');
+      final challenge = await myAccount.enrollPasskeyChallenge(
+        connection: dotenv.env['AUTH0_PASSKEY_CONNECTION'],
+      );
+
+      // The SDK does not present the passkey UI. Reuse the same OS
+      // create-credential ceremony as passkey signup, adapting the My Account
+      // enrollment challenge into the WebAuthn [PasskeyChallenge] it expects.
+      step = 'createCredential';
+      setState(() => _output = 'Presenting passkey creation UI...');
+      final credential = await PasskeyAuthenticator.getAttestation(
+        PasskeyChallenge(
+          authSession: challenge.authSession,
+          authParamsPublicKey: challenge.authParamsPublicKey,
+        ),
+      );
+
+      step = 'enroll';
+      setState(() => _output = 'Step 3/3: enrolling passkey...');
+      final method = await myAccount.enrollPasskey(
+        challenge: challenge,
+        credential: credential,
+      );
+
+      output = 'Passkey Enrollment Successful!\n\n'
+          'Id: ${method.id}\n'
+          'Type: ${method.type}\n'
+          'Relying Party: ${method.relyingPartyId}\n'
+          'Device Type: ${method.credentialDeviceType}\n'
+          'Backed Up: ${method.credentialBackedUp}\n'
+          'Created At: ${method.createdAt}';
+    } on MyAccountException catch (e) {
+      output = 'Passkey Enrollment Error (step: $step):\n'
+          'Code: ${e.code}\n'
+          'Message: ${e.message}';
+    } on WebAuthenticationException catch (e) {
+      output = 'Passkey Enrollment Error (step: $step):\n'
+          'Code: ${e.code}\n'
+          'Message: ${e.message}';
+    } catch (e) {
+      output = 'Passkey Enrollment Failed (step: $step):\n$e';
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _output = output;
+    });
+  }
+
   @override
   Widget build(final BuildContext context) {
     return MaterialApp(
@@ -455,6 +534,20 @@ class _ExampleAppState extends State<ExampleApp> {
                           onPressed: passkeySignup,
                           child: const Text(
                             'Passkey Signup',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 12),
+                          ),
+                          onPressed: enrollPasskeyMyAccount,
+                          child: const Text(
+                            'Enroll Passkey (My Account)',
                             style: TextStyle(fontSize: 16),
                           ),
                         ),

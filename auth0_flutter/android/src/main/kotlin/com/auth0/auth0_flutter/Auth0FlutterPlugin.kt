@@ -58,6 +58,8 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     GetAuthenticationMethodRequestHandler(),
     DeleteAuthenticationMethodRequestHandler(),
     GetFactorsRequestHandler(),
+    EnrollPasskeyChallengeRequestHandler(),
+    EnrollPasskeyRequestHandler(),
     EnrollPhoneRequestHandler(),
     EnrollEmailRequestHandler(),
     EnrollTotpRequestHandler(),

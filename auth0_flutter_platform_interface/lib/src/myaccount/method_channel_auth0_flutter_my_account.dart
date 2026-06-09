@@ -9,6 +9,8 @@ import 'factor.dart';
 import 'my_account_confirm_enrollment_options.dart';
 import 'my_account_delete_auth_method_options.dart';
 import 'my_account_enroll_email_options.dart';
+import 'my_account_enroll_passkey_challenge_options.dart';
+import 'my_account_enroll_passkey_options.dart';
 import 'my_account_enroll_phone_options.dart';
 import 'my_account_enroll_push_options.dart';
 import 'my_account_enroll_recovery_code_options.dart';
@@ -17,6 +19,8 @@ import 'my_account_exception.dart';
 import 'my_account_get_auth_method_options.dart';
 import 'my_account_get_auth_methods_options.dart';
 import 'my_account_get_factors_options.dart';
+import 'my_account_passkey_authentication_method.dart';
+import 'my_account_passkey_enrollment_challenge.dart';
 import 'my_account_update_auth_method_options.dart';
 import 'my_account_verify_otp_options.dart';
 
@@ -30,6 +34,9 @@ const String myAccountGetAuthMethodMethod =
 const String myAccountDeleteAuthMethodMethod =
     'myAccount#deleteAuthenticationMethod';
 const String myAccountGetFactorsMethod = 'myAccount#getFactors';
+const String myAccountEnrollPasskeyChallengeMethod =
+    'myAccount#enrollPasskeyChallenge';
+const String myAccountEnrollPasskeyMethod = 'myAccount#enrollPasskey';
 const String myAccountEnrollPhoneMethod = 'myAccount#enrollPhone';
 const String myAccountEnrollEmailMethod = 'myAccount#enrollEmail';
 const String myAccountEnrollTotpMethod = 'myAccount#enrollTotp';
@@ -82,6 +89,24 @@ class MethodChannelAuth0FlutterMyAccount
         .map((final item) =>
             Factor.fromMap(Map<String, dynamic>.from(item as Map)))
         .toList();
+  }
+
+  @override
+  Future<PasskeyEnrollmentChallenge> enrollPasskeyChallenge(
+      final ApiRequest<MyAccountEnrollPasskeyChallengeOptions> request) async {
+    final Map<String, dynamic> result = await invokeMapRequest(
+        method: myAccountEnrollPasskeyChallengeMethod, request: request);
+
+    return PasskeyEnrollmentChallenge.fromMap(result);
+  }
+
+  @override
+  Future<MyAccountPasskeyAuthenticationMethod> enrollPasskey(
+      final ApiRequest<MyAccountEnrollPasskeyOptions> request) async {
+    final Map<String, dynamic> result = await invokeMapRequest(
+        method: myAccountEnrollPasskeyMethod, request: request);
+
+    return MyAccountPasskeyAuthenticationMethod.fromMap(result);
   }
 
   @override
