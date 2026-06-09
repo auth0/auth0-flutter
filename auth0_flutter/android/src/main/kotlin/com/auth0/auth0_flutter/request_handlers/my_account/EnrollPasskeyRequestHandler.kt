@@ -95,16 +95,24 @@ class EnrollPasskeyRequestHandler : MyAccountRequestHandler {
             rawId = credentialMap["rawId"] as String,
             response = Response(
                 attestationObject =
-                    (response["attestationObject"] as? String) ?: "",
+                    response.requireResponseString("attestationObject"),
                 authenticatorData =
-                    (response["authenticatorData"] as? String) ?: "",
+                    response.requireResponseString("authenticatorData"),
                 clientDataJSON = response["clientDataJSON"] as String,
                 transports = (response["transports"] as? List<*>)
                     ?.filterIsInstance<String>() ?: emptyList(),
-                signature = (response["signature"] as? String) ?: "",
-                userHandle = (response["userHandle"] as? String) ?: ""
+                signature = response.requireResponseString("signature"),
+                userHandle = response.requireResponseString("userHandle")
             ),
             type = (credentialMap["type"] as? String) ?: "public-key"
         )
+    }
+
+    private fun Map<*, *>.requireResponseString(field: String): String {
+        val value = this[field] as? String
+        require(!value.isNullOrBlank()) {
+            "Required property 'credential.response.$field' is not provided."
+        }
+        return value
     }
 }

@@ -10,6 +10,9 @@ import com.auth0.android.result.PasskeyAuthenticationMethod
 import com.auth0.android.result.PasskeyEnrollmentChallenge
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodChannel.Result
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.MatcherAssert.assertThat
+import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.*
@@ -45,7 +48,10 @@ class EnrollPasskeyRequestHandlerTest {
         "authenticatorAttachment" to "platform",
         "response" to mapOf(
             "clientDataJSON" to "client-data",
-            "attestationObject" to "attestation"
+            "attestationObject" to "attestation",
+            "authenticatorData" to "authenticator-data",
+            "signature" to "signature",
+            "userHandle" to "user-handle"
         ),
         "clientExtensionResults" to mapOf("credProps" to mapOf("rk" to true))
     )
@@ -148,5 +154,36 @@ class EnrollPasskeyRequestHandlerTest {
         )
 
         handler.handle(mockClient, request, mockResult)
+    }
+
+    @Test
+    fun `should throw when required credential response field is missing`() {
+        val handler = EnrollPasskeyRequestHandler()
+        val mockResult = mock<Result>()
+        val mockAccount = mock<Auth0>()
+        val mockClient = mock<MyAccountAPIClient>()
+        val credential = credentialMap()
+        credential["response"] = mapOf(
+            "clientDataJSON" to "client-data",
+            "attestationObject" to "attestation",
+            "authenticatorData" to "authenticator-data",
+            "signature" to ""
+        )
+        val request = MethodCallRequest(
+            account = mockAccount,
+            hashMapOf<String, Any>(
+                "challenge" to challengeMap(),
+                "credential" to credential
+            )
+        )
+
+        val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
+            handler.handle(mockClient, request, mockResult)
+        }
+
+        assertThat(
+            exception.message,
+            equalTo("Required property 'credential.response.signature' is not provided.")
+        )
     }
 }
