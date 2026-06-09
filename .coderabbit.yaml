@@ -39,6 +39,10 @@ reviews:
     - "!**/build/**"
     - "!**/coverage/**"
     - "!**/DerivedData/**"
+    # iOS/macOS symlinks — real source is auth0_flutter/darwin/Classes/
+    # Reviewing these would duplicate every darwin/ review 2x
+    - "!auth0_flutter/ios/Classes/**"
+    - "!auth0_flutter/macos/Classes/**"
     # iOS/macOS generated
     - "!**/Pods/**"
     - "!**/Flutter/ephemeral/**"
@@ -64,7 +68,7 @@ reviews:
     - path: "**/*.dart"
       instructions: |
         - Enforce strict Dart analysis: strict-casts, strict-inference, strict-raw-types are all enabled.
-        - Flag any missing null checks, unsafe casts (use `as?` equivalents / `is` checks before casting).
+        - Flag any missing null checks and unsafe casts (use `is` checks/pattern matching before casting; use `as` only after guards).
         - Prefer `final` for local variables and parameters.
         - Public APIs must have type annotations.
         - `unawaited_futures` is an error — every async call must be awaited or explicitly `unawaited(...)`.
@@ -87,22 +91,14 @@ reviews:
         - Auth errors must be surfaced through `result.error`, never swallowed silently.
         - minSdk is 21; avoid APIs above that level without version guards.
 
-    # iOS/macOS Swift
-    - path: "auth0_flutter/ios/**/*.swift"
+    # iOS/macOS Swift — real source is darwin/; ios/ and macos/ are symlinks excluded above
+    - path: "auth0_flutter/darwin/**/*.swift"
       instructions: |
+        - This is shared iOS/macOS code — changes apply to both platforms (iOS 14.0+, macOS 11.0+).
         - Force-unwraps (`!`) are not acceptable in MethodChannel handlers — use guard/if-let.
         - All FlutterResult callbacks must be invoked exactly once.
         - Auth errors must propagate to Flutter as `FlutterError`, never silently dropped.
-        - iOS deployment target is 14.0; macOS is 11.0 — flag any API usage above those baselines.
-
-    - path: "auth0_flutter/macos/**/*.swift"
-      instructions: |
-        - Same rules as iOS Swift. macOS deployment target is 11.0.
-
-    - path: "auth0_flutter/darwin/**/*.swift"
-      instructions: |
-        - Shared iOS/macOS code — verify changes work for both platform targets.
-        - All FlutterResult callbacks must be invoked exactly once.
+        - Flag any API usage above iOS 14.0 or macOS 11.0 without availability guards.
 
     # Windows C++
     - path: "auth0_flutter/windows/**/*.cpp"
