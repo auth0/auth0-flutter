@@ -446,8 +446,9 @@ class AuthenticationApi {
   /// Requests a challenge for logging in with an existing passkey.
   ///
   /// This is the first step of the passkey login flow. Use the returned
-  /// [PasskeyLoginChallenge] to present the OS passkey UI in your app, then
-  /// pass the resulting credential to [passkeyLogin] to exchange it for tokens.
+  /// [PasskeyChallenge] to present the OS passkey UI in your app, then pass the
+  /// resulting credential to [passkeyCredentialExchange] to exchange it for
+  /// tokens.
   ///
   /// ## Endpoint
   /// https://auth0.com/docs/api/authentication#passkey
@@ -466,7 +467,7 @@ class AuthenticationApi {
   ///   connection: 'Username-Password-Authentication',
   /// );
   /// ```
-  Future<PasskeyLoginChallenge> passkeyLoginChallenge({
+  Future<PasskeyChallenge> passkeyLoginChallenge({
     final String? connection,
     final String? organization,
   }) =>
@@ -476,16 +477,76 @@ class AuthenticationApi {
         organization: organization,
       )));
 
-  /// Completes passkey login by exchanging a [credential] for Auth0 tokens.
+  /// Requests a challenge for signing up a new user with a passkey.
   ///
-  /// The [credential] is the passkey assertion obtained from the operating
-  /// system's authentication UI (for example, via Apple's
-  /// `ASAuthorizationController` or Android's Credential Manager in your app),
-  /// using the [PasskeyLoginChallenge] returned by [passkeyLoginChallenge].
-  /// This call exchanges that credential at the `/oauth/token` endpoint.
-  Future<Credentials> passkeyLogin({
-    required final PasskeyLoginChallenge challenge,
-    required final PasskeyLoginCredential credential,
+  /// This is the first step of the passkey signup flow. Use the returned
+  /// [PasskeyChallenge] to present the OS passkey creation UI in your app, then
+  /// pass the resulting credential to [passkeyCredentialExchange] to exchange
+  /// it for tokens.
+  ///
+  /// ## Endpoint
+  /// https://auth0.com/docs/api/authentication#passkey
+  ///
+  /// ## Notes
+  ///
+  /// * Identify the new user with any combination of [email], [phoneNumber],
+  /// [username], [name], [givenName], [familyName], [nickname], and [picture],
+  /// depending on how your connection is configured.
+  /// * [connection] is the name of the database connection configured with
+  /// passkeys. Defaults to the application's first passkey connection when
+  /// omitted.
+  /// * [organization] is the optional Auth0 organization to sign up to.
+  /// * [userMetadata] is optional metadata to associate with the new user.
+  ///
+  /// ## Usage example
+  ///
+  /// ```dart
+  /// final challenge = await auth0.api.passkeySignupChallenge(
+  ///   email: 'jane.smith@example.com',
+  ///   connection: 'Username-Password-Authentication',
+  /// );
+  /// ```
+  Future<PasskeyChallenge> passkeySignupChallenge({
+    final String? email,
+    final String? phoneNumber,
+    final String? username,
+    final String? name,
+    final String? givenName,
+    final String? familyName,
+    final String? nickname,
+    final String? picture,
+    final String? connection,
+    final String? organization,
+    final Map<String, String>? userMetadata,
+  }) =>
+      Auth0FlutterAuthPlatform.instance.passkeySignupChallenge(
+          _createApiRequest(AuthPasskeySignupChallengeOptions(
+        email: email,
+        phoneNumber: phoneNumber,
+        username: username,
+        name: name,
+        givenName: givenName,
+        familyName: familyName,
+        nickname: nickname,
+        picture: picture,
+        connection: connection,
+        organization: organization,
+        userMetadata: userMetadata,
+      )));
+
+  /// Exchanges a passkey [credential] for Auth0 tokens.
+  ///
+  /// This is the final step of both the passkey login and signup flows. The
+  /// [credential] is the WebAuthn assertion (login) or attestation (signup)
+  /// obtained from the operating system's authentication UI (for example, via
+  /// Apple's `ASAuthorizationController` or Android's Credential Manager in
+  /// your app), using the [PasskeyChallenge] returned by
+  /// [passkeyLoginChallenge] or [passkeySignupChallenge]. This call exchanges
+  /// that credential at the
+  /// `/oauth/token` endpoint.
+  Future<Credentials> passkeyCredentialExchange({
+    required final PasskeyChallenge challenge,
+    required final PasskeyCredential credential,
     final String? connection,
     final String? audience,
     final Set<String> scopes = const {
@@ -497,8 +558,8 @@ class AuthenticationApi {
     final String? organization,
     final Map<String, String> parameters = const {},
   }) =>
-      Auth0FlutterAuthPlatform.instance
-          .passkeyLogin(_createApiRequest(AuthPasskeyLoginOptions(
+      Auth0FlutterAuthPlatform.instance.passkeyCredentialExchange(
+          _createApiRequest(AuthPasskeyExchangeOptions(
         challenge: challenge,
         credential: credential,
         connection: connection,

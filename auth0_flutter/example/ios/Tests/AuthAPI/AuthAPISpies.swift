@@ -35,12 +35,20 @@ class SpyAuthentication: Authentication {
     var calledResetPassword = false
     var calledPasskeyLoginChallenge = false
     var calledLoginWithPasskey = false
+    var calledPasskeySignupChallenge = false
+    var calledSignupWithPasskey = false
     #if PASSKEYS_PLATFORM
     private var _passkeyLoginChallengeResultOverride: Any?
     @available(iOS 16.6, macOS 13.5, visionOS 1.0, *)
     var passkeyLoginChallengeResultOverride: AuthenticationResult<PasskeyLoginChallenge>? {
         get { _passkeyLoginChallengeResultOverride as? AuthenticationResult<PasskeyLoginChallenge> }
         set { _passkeyLoginChallengeResultOverride = newValue }
+    }
+    private var _passkeySignupChallengeResultOverride: Any?
+    @available(iOS 16.6, macOS 13.5, visionOS 1.0, *)
+    var passkeySignupChallengeResultOverride: AuthenticationResult<PasskeySignupChallenge>? {
+        get { _passkeySignupChallengeResultOverride as? AuthenticationResult<PasskeySignupChallenge> }
+        set { _passkeySignupChallengeResultOverride = newValue }
     }
     #endif
     var arguments: [String: Any] = [:]
@@ -117,7 +125,7 @@ class SpyAuthentication: Authentication {
                       redirectURI: String) -> Request<Credentials, AuthenticationError> {
         return request(credentialsResult)
     }
-    
+
     func renew(withRefreshToken refreshToken: String, audience: String?, scope: String?) -> Request<Credentials, AuthenticationError> {
         arguments["refreshToken"] = refreshToken
         arguments["scope"] = scope
@@ -166,23 +174,46 @@ class SpyAuthentication: Authentication {
     }
 
     @available(iOS 16.6, macOS 13.5, visionOS 1.0, *)
+    func passkeySignupChallenge(email: String?,
+                                phoneNumber: String?,
+                                username: String?,
+                                name: String?,
+                                givenName: String?,
+                                familyName: String?,
+                                nickname: String?,
+                                picture: String?,
+                                userMetadata: [String: String]?,
+                                connection: String?,
+                                organization: String?) -> Request<PasskeySignupChallenge, AuthenticationError> {
+        arguments["email"] = email
+        arguments["phoneNumber"] = phoneNumber
+        arguments["username"] = username
+        arguments["name"] = name
+        arguments["givenName"] = givenName
+        arguments["familyName"] = familyName
+        arguments["nickname"] = nickname
+        arguments["picture"] = picture
+        arguments["connection"] = connection
+        arguments["organization"] = organization
+        arguments["userMetadata"] = userMetadata
+        calledPasskeySignupChallenge = true
+        return request(passkeySignupChallengeResultOverride
+            ?? SpyAuthentication.passkeySignupChallengeResult)
+    }
+
+    @available(iOS 16.6, macOS 13.5, visionOS 1.0, *)
     func login(passkey: SignupPasskey,
                challenge: PasskeySignupChallenge,
                connection: String?,
                audience: String?,
                scope: String,
                organization: String?) -> Request<Credentials, AuthenticationError> {
+        arguments["connection"] = connection
+        arguments["audience"] = audience
+        arguments["scope"] = scope
+        arguments["organization"] = organization
+        calledSignupWithPasskey = true
         return request(credentialsResult)
-    }
-
-    @available(iOS 16.6, macOS 13.5, visionOS 1.0, *)
-    func passkeySignupChallenge(email: String?,
-                                phoneNumber: String?,
-                                username: String?,
-                                name: String?,
-                                connection: String?,
-                                organization: String?) -> Request<PasskeySignupChallenge, AuthenticationError> {
-        return request(.failure(AuthenticationError(info: [:], statusCode: 0)))
     }
     #endif
 }
@@ -204,6 +235,24 @@ extension SpyAuthentication {
         """.data(using: .utf8)!
         // swiftlint:disable:next force_try
         let challenge = try! JSONDecoder().decode(PasskeyLoginChallenge.self, from: json)
+        return .success(challenge)
+    }
+
+    /// A decoded `PasskeySignupChallenge` for use as a spy result. The type
+    /// only exposes a `Decodable` initializer, so it is built from JSON.
+    static var passkeySignupChallengeResult: AuthenticationResult<PasskeySignupChallenge> {
+        let json = """
+        {
+            "auth_session": "test-auth-session",
+            "authn_params_public_key": {
+                "rp": { "id": "test-rp-id" },
+                "user": { "id": "dGVzdC11c2VyLWlk", "name": "test-user-name" },
+                "challenge": "dGVzdC1jaGFsbGVuZ2U"
+            }
+        }
+        """.data(using: .utf8)!
+        // swiftlint:disable:next force_try
+        let challenge = try! JSONDecoder().decode(PasskeySignupChallenge.self, from: json)
         return .success(challenge)
     }
 }

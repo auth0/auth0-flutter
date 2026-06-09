@@ -2,9 +2,9 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('PasskeyAuthenticatorAssertionResponse', () {
-    test('toMap includes all properties', () {
-      const response = PasskeyAuthenticatorAssertionResponse(
+  group('PasskeyAuthenticatorResponse', () {
+    test('toMap includes assertion (login) properties', () {
+      const response = PasskeyAuthenticatorResponse(
         clientDataJSON: 'client-data',
         authenticatorData: 'authenticator-data',
         signature: 'signature',
@@ -17,10 +17,25 @@ void main() {
       expect(map['authenticatorData'], 'authenticator-data');
       expect(map['signature'], 'signature');
       expect(map['userHandle'], 'user-handle');
+      expect(map.containsKey('attestationObject'), isFalse);
     });
 
-    test('fromMap parses all properties', () {
-      final response = PasskeyAuthenticatorAssertionResponse.fromMap(const {
+    test('toMap includes attestation (signup) properties', () {
+      const response = PasskeyAuthenticatorResponse(
+        clientDataJSON: 'client-data',
+        attestationObject: 'attestation-object',
+      );
+
+      final map = response.toMap();
+
+      expect(map['clientDataJSON'], 'client-data');
+      expect(map['attestationObject'], 'attestation-object');
+      expect(map.containsKey('authenticatorData'), isFalse);
+      expect(map.containsKey('signature'), isFalse);
+    });
+
+    test('fromMap parses assertion properties', () {
+      final response = PasskeyAuthenticatorResponse.fromMap(const {
         'clientDataJSON': 'client-data',
         'authenticatorData': 'authenticator-data',
         'signature': 'signature',
@@ -31,10 +46,23 @@ void main() {
       expect(response.authenticatorData, 'authenticator-data');
       expect(response.signature, 'signature');
       expect(response.userHandle, 'user-handle');
+      expect(response.attestationObject, isNull);
+    });
+
+    test('fromMap parses attestation properties', () {
+      final response = PasskeyAuthenticatorResponse.fromMap(const {
+        'clientDataJSON': 'client-data',
+        'attestationObject': 'attestation-object',
+      });
+
+      expect(response.clientDataJSON, 'client-data');
+      expect(response.attestationObject, 'attestation-object');
+      expect(response.authenticatorData, isNull);
+      expect(response.signature, isNull);
     });
 
     test('fromMap tolerates a missing userHandle', () {
-      final response = PasskeyAuthenticatorAssertionResponse.fromMap(const {
+      final response = PasskeyAuthenticatorResponse.fromMap(const {
         'clientDataJSON': 'client-data',
         'authenticatorData': 'authenticator-data',
         'signature': 'signature',
@@ -44,35 +72,34 @@ void main() {
     });
   });
 
-  group('PasskeyLoginCredential', () {
-    const credential = PasskeyLoginCredential(
+  group('PasskeyCredential', () {
+    const credential = PasskeyCredential(
       id: 'credential-id',
       rawId: 'raw-id',
       type: 'public-key',
       authenticatorAttachment: 'platform',
-      response: PasskeyAuthenticatorAssertionResponse(
+      response: PasskeyAuthenticatorResponse(
         clientDataJSON: 'client-data',
         authenticatorData: 'authenticator-data',
         signature: 'signature',
         userHandle: 'user-handle',
       ),
-      clientExtensionResults: {'credProps': true},
     );
 
-    test('toMap includes all properties and a nested response map', () {
+    test('toMap includes the nested response', () {
       final map = credential.toMap();
 
       expect(map['id'], 'credential-id');
       expect(map['rawId'], 'raw-id');
       expect(map['type'], 'public-key');
       expect(map['authenticatorAttachment'], 'platform');
-      expect(map['clientExtensionResults'], {'credProps': true});
-      expect(map['response'], isA<Map<String, dynamic>>());
-      expect(map['response']['signature'], 'signature');
+      final response = map['response'] as Map<String, dynamic>;
+      expect(response['clientDataJSON'], 'client-data');
+      expect(response['signature'], 'signature');
     });
 
-    test('fromMap parses all properties including the nested response', () {
-      final parsed = PasskeyLoginCredential.fromMap(const {
+    test('fromMap parses the nested response', () {
+      final parsed = PasskeyCredential.fromMap(const {
         'id': 'credential-id',
         'rawId': 'raw-id',
         'type': 'public-key',
@@ -83,7 +110,6 @@ void main() {
           'signature': 'signature',
           'userHandle': 'user-handle',
         },
-        'clientExtensionResults': {'credProps': true},
       });
 
       expect(parsed.id, 'credential-id');
@@ -91,37 +117,33 @@ void main() {
       expect(parsed.type, 'public-key');
       expect(parsed.authenticatorAttachment, 'platform');
       expect(parsed.response.clientDataJSON, 'client-data');
+      expect(parsed.response.authenticatorData, 'authenticator-data');
       expect(parsed.response.signature, 'signature');
-      expect(parsed.clientExtensionResults?['credProps'], true);
+      expect(parsed.response.userHandle, 'user-handle');
     });
 
-    test('survives a toMap/fromMap round-trip', () {
-      final parsed = PasskeyLoginCredential.fromMap(credential.toMap());
+    test('survives a toMap/fromMap round trip', () {
+      final parsed = PasskeyCredential.fromMap(credential.toMap());
 
       expect(parsed.id, credential.id);
       expect(parsed.rawId, credential.rawId);
-      expect(parsed.type, credential.type);
-      expect(parsed.authenticatorAttachment,
-          credential.authenticatorAttachment);
       expect(parsed.response.clientDataJSON,
           credential.response.clientDataJSON);
-      expect(parsed.response.userHandle, credential.response.userHandle);
+      expect(parsed.response.signature, credential.response.signature);
     });
 
-    test('fromMap defaults type to public-key when missing', () {
-      final parsed = PasskeyLoginCredential.fromMap(const {
+    test('defaults type to public-key when missing', () {
+      final parsed = PasskeyCredential.fromMap(const {
         'id': 'credential-id',
         'rawId': 'raw-id',
         'response': {
           'clientDataJSON': 'client-data',
-          'authenticatorData': 'authenticator-data',
-          'signature': 'signature',
+          'attestationObject': 'attestation-object',
         },
       });
 
       expect(parsed.type, 'public-key');
-      expect(parsed.authenticatorAttachment, isNull);
-      expect(parsed.clientExtensionResults, isNull);
+      expect(parsed.response.attestationObject, 'attestation-object');
     });
   });
 }
