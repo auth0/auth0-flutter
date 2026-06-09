@@ -10,15 +10,20 @@ import com.auth0.auth0_flutter.utils.assertHasProperties
 import com.google.gson.Gson
 import io.flutter.plugin.common.MethodChannel
 
-private const val AUTH_PASSKEY_LOGIN_METHOD = "auth#passkeyLogin"
+private const val AUTH_PASSKEY_CREDENTIAL_EXCHANGE_METHOD =
+    "auth#passkeyCredentialExchange"
 
 /**
- * Exchanges a passkey credential (presented by the app) and a login challenge
- * for Auth0 tokens by calling the `/oauth/token` endpoint. This handler does
- * not present any UI.
+ * Exchanges an app-supplied passkey credential (a login assertion or a signup
+ * attestation) and its challenge for Auth0 tokens at the `/oauth/token`
+ * endpoint. This handler does not present any UI.
+ *
+ * Both passkey login and signup finish here: Auth0.Android's `signinWithPasskey`
+ * accepts the credential as a JSON string and handles both assertion and
+ * attestation payloads, so a single handler serves both flows.
  */
-class PasskeyLoginApiRequestHandler : ApiRequestHandler {
-    override val method: String = AUTH_PASSKEY_LOGIN_METHOD
+class PasskeyCredentialExchangeApiRequestHandler : ApiRequestHandler {
+    override val method: String = AUTH_PASSKEY_CREDENTIAL_EXCHANGE_METHOD
 
     private val gson = Gson()
 
@@ -37,16 +42,16 @@ class PasskeyLoginApiRequestHandler : ApiRequestHandler {
         val connection = args["connection"] as? String
         val organization = args["organization"] as? String
         val audience = args["audience"] as? String
-        val scopes = (args["scopes"] as? List<*>)?.filterIsInstance<String>()?.joinToString(" ") ?: ""
+        val scopes = (args["scopes"] as? List<*>)?.filterIsInstance<String>()
+            ?.joinToString(" ") ?: ""
         val parameters = (args["parameters"] as? Map<*, *>)?.mapKeys { it.key.toString() }
             ?.mapValues { it.value.toString() } ?: emptyMap()
 
-        // signinWithPasskey accepts the WebAuthn authentication response as a
-        // JSON string in the standard format produced by the create-credential
-        // step.
+        // signinWithPasskey accepts the WebAuthn credential response as a JSON
+        // string in the standard format produced by the platform authenticator.
         val authResponseJson = gson.toJson(credentialMap)
 
-        val loginBuilder = api.signinWithPasskey(
+        val builder = api.signinWithPasskey(
             authSession,
             authResponseJson,
             connection,
@@ -55,16 +60,16 @@ class PasskeyLoginApiRequestHandler : ApiRequestHandler {
             .validateClaims()
 
         if (scopes.isNotEmpty()) {
-            loginBuilder.setScope(scopes)
+            builder.setScope(scopes)
         }
         if (audience != null) {
-            loginBuilder.setAudience(audience)
+            builder.setAudience(audience)
         }
         if (parameters.isNotEmpty()) {
-            loginBuilder.addParameters(parameters)
+            builder.addParameters(parameters)
         }
 
-        loginBuilder.start(object : Callback<Credentials, AuthenticationException> {
+        builder.start(object : Callback<Credentials, AuthenticationException> {
             override fun onFailure(exception: AuthenticationException) {
                 result.error(
                     exception.getCode(),

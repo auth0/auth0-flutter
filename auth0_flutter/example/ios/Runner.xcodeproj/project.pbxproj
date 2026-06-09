@@ -62,9 +62,10 @@
 		B0CA0002000000000000000C /* MyAccountConfirmEnrollmentMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA0001000000000000000C /* MyAccountConfirmEnrollmentMethodHandlerTests.swift */; };
 		B0CA0002000000000000000D /* MyAccountUpdateAuthMethodMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA0001000000000000000D /* MyAccountUpdateAuthMethodMethodHandlerTests.swift */; };
 		PK00000000000000000001 /* AuthAPIPasskeyLoginChallengeMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PK00000000000000000003 /* AuthAPIPasskeyLoginChallengeMethodHandlerTests.swift */; };
-		PK00000000000000000002 /* AuthAPIPasskeyLoginMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PK00000000000000000004 /* AuthAPIPasskeyLoginMethodHandlerTests.swift */; };
 		PK00000000000000000005 /* AuthAPIPasskeyExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PK00000000000000000006 /* AuthAPIPasskeyExtensionsTests.swift */; };
 		PK00000000000000000011 /* PasskeyAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = PK00000000000000000012 /* PasskeyAuthenticator.swift */; };
+		PK10000000000000000001 /* AuthAPIPasskeySignupChallengeMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PK10000000000000000003 /* AuthAPIPasskeySignupChallengeMethodHandlerTests.swift */; };
+		PK20000000000000000001 /* AuthAPIPasskeyCredentialExchangeMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PK20000000000000000002 /* AuthAPIPasskeyCredentialExchangeMethodHandlerTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -172,9 +173,10 @@
 		B0CA0001000000000000000C /* MyAccountConfirmEnrollmentMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountConfirmEnrollmentMethodHandlerTests.swift; sourceTree = "<group>"; };
 		B0CA0001000000000000000D /* MyAccountUpdateAuthMethodMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountUpdateAuthMethodMethodHandlerTests.swift; sourceTree = "<group>"; };
 		PK00000000000000000003 /* AuthAPIPasskeyLoginChallengeMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIPasskeyLoginChallengeMethodHandlerTests.swift; sourceTree = "<group>"; };
-		PK00000000000000000004 /* AuthAPIPasskeyLoginMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIPasskeyLoginMethodHandlerTests.swift; sourceTree = "<group>"; };
 		PK00000000000000000006 /* AuthAPIPasskeyExtensionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIPasskeyExtensionsTests.swift; sourceTree = "<group>"; };
 		PK00000000000000000012 /* PasskeyAuthenticator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasskeyAuthenticator.swift; sourceTree = "<group>"; };
+		PK10000000000000000003 /* AuthAPIPasskeySignupChallengeMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIPasskeySignupChallengeMethodHandlerTests.swift; sourceTree = "<group>"; };
+		PK20000000000000000002 /* AuthAPIPasskeyCredentialExchangeMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIPasskeyCredentialExchangeMethodHandlerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -254,9 +256,10 @@
 				5C59DA822809214200365CDB /* AuthAPIUserInfoMethodHandlerTests.swift */,
 				5C59DA702807B19800365CDB /* AuthAPIRenewMethodHandlerTests.swift */,
 				PK00000000000000000003 /* AuthAPIPasskeyLoginChallengeMethodHandlerTests.swift */,
-				PK00000000000000000004 /* AuthAPIPasskeyLoginMethodHandlerTests.swift */,
 				PK00000000000000000006 /* AuthAPIPasskeyExtensionsTests.swift */,
 				5C59DA722807B1A300365CDB /* AuthAPIResetPasswordMethodHandlerTests.swift */,
+				PK10000000000000000003 /* AuthAPIPasskeySignupChallengeMethodHandlerTests.swift */,
+				PK20000000000000000002 /* AuthAPIPasskeyCredentialExchangeMethodHandlerTests.swift */,
 				5C59DA8A2809386B00365CDB /* AuthAPIExtensionsTests.swift */,
 				5CA2853929C14EBA008A06B8 /* AuthAPIMultifactorChallengeMethodHandlerTests.swift */,
 			);
@@ -666,7 +669,6 @@
 				5C4E65C7286D24A900141449 /* CredentialsManagerSaveMethodHandlerTests.swift in Sources */,
 				5C59DA712807B19900365CDB /* AuthAPIRenewMethodHandlerTests.swift in Sources */,
 				PK00000000000000000001 /* AuthAPIPasskeyLoginChallengeMethodHandlerTests.swift in Sources */,
-				PK00000000000000000002 /* AuthAPIPasskeyLoginMethodHandlerTests.swift in Sources */,
 				PK00000000000000000005 /* AuthAPIPasskeyExtensionsTests.swift in Sources */,
 				5C328B5027F7B0E700451E70 /* Utilities.swift in Sources */,
 				5C328B5527F7B1F300451E70 /* WebAuthLoginMethodHandlerTests.swift in Sources */,
@@ -681,6 +683,8 @@
 				A0AC1D0F2E0000000000AC04 /* CredentialsManagerClearApiCredentialsMethodHandlerTests.swift in Sources */,
 				5C335E4127FBD2FE00EDDE3A /* ExtensionsTests.swift in Sources */,
 				5C59DA732807B1A300365CDB /* AuthAPIResetPasswordMethodHandlerTests.swift in Sources */,
+				PK10000000000000000001 /* AuthAPIPasskeySignupChallengeMethodHandlerTests.swift in Sources */,
+				PK20000000000000000001 /* AuthAPIPasskeyCredentialExchangeMethodHandlerTests.swift in Sources */,
 				5C59DA832809214200365CDB /* AuthAPIUserInfoMethodHandlerTests.swift in Sources */,
 				5C4E65C1286D15AF00141449 /* CredentialsManagerSpies.swift in Sources */,
 				B0CA00020000000000000001 /* MyAccountSpies.swift in Sources */,

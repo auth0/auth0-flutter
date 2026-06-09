@@ -1,17 +1,17 @@
 import '../request/request_options.dart';
-import 'passkey_login_challenge.dart';
-import 'passkey_login_credential.dart';
+import 'passkey_challenge.dart';
+import 'passkey_credential.dart';
 
-class AuthPasskeyLoginOptions implements RequestOptions {
-  final PasskeyLoginChallenge challenge;
-  final PasskeyLoginCredential credential;
+class AuthPasskeyExchangeOptions implements RequestOptions {
+  final PasskeyChallenge challenge;
+  final PasskeyCredential credential;
   final String? connection;
   final String? audience;
   final Set<String> scopes;
   final String? organization;
   final Map<String, String> parameters;
 
-  AuthPasskeyLoginOptions({
+  AuthPasskeyExchangeOptions({
     required this.challenge,
     required this.credential,
     this.connection,

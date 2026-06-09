@@ -2,12 +2,14 @@ import AuthenticationServices
 import Flutter
 import UIKit
 
-/// Presents the OS passkey UI and returns a WebAuthn assertion to Flutter.
+/// Presents the OS passkey UI and returns a WebAuthn credential to Flutter.
 ///
 /// This lives in the example app — not the `auth0_flutter` SDK — to demonstrate
-/// how an app supplies the passkey credential that `Auth0.api.passkeyLogin`
-/// expects. It assertions an existing passkey using the `challenge` and `rpId`
-/// from `Auth0.api.passkeyLoginChallenge`.
+/// how an app supplies the passkey credential that the SDK expects:
+/// - `getAssertion` authenticates an existing passkey using the `challenge` and
+///   `rpId` from `Auth0.api.passkeyLoginChallenge` (for `Auth0.api.passkeyLogin`).
+/// - `getAttestation` registers a new passkey using the `authParamsPublicKey`
+///   from `Auth0.api.passkeySignupChallenge` (for `Auth0.api.passkeySignup`).
 @available(iOS 16.6, *)
 class PasskeyAuthenticator: NSObject,
     ASAuthorizationControllerDelegate,
@@ -31,9 +33,19 @@ class PasskeyAuthenticator: NSObject,
     }
 
     private func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        guard call.method == "getAssertion" else {
-            return result(FlutterMethodNotImplemented)
+        switch call.method {
+        case "getAssertion":
+            handleAssertion(call, result: result)
+        case "getAttestation":
+            handleAttestation(call, result: result)
+        default:
+            result(FlutterMethodNotImplemented)
         }
+    }
+
+    // MARK: - Login (assertion)
+
+    private func handleAssertion(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         guard let args = call.arguments as? [String: Any],
               let challengeString = args["challenge"] as? String,
               let challengeData = Self.decodeBase64URL(challengeString),
@@ -51,6 +63,39 @@ class PasskeyAuthenticator: NSObject,
         let request = provider.createCredentialAssertionRequest(
             challenge: challengeData)
 
+        performRequest(request)
+    }
+
+    // MARK: - Signup (attestation)
+
+    private func handleAttestation(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        guard let args = call.arguments as? [String: Any],
+              let publicKey = args["authParamsPublicKey"] as? [String: Any],
+              let challengeString = publicKey["challenge"] as? String,
+              let challengeData = Self.decodeBase64URL(challengeString),
+              let rpId = publicKey["rpId"] as? String,
+              let userIdString = publicKey["userId"] as? String,
+              let userId = Self.decodeBase64URL(userIdString),
+              let userName = publicKey["userName"] as? String else {
+            return result(FlutterError(code: "bad_args",
+                                       message: "Missing or malformed authParamsPublicKey",
+                                       details: nil))
+        }
+
+        pendingResult = result
+        selfRetain = self
+
+        let provider = ASAuthorizationPlatformPublicKeyCredentialProvider(
+            relyingPartyIdentifier: rpId)
+        let request = provider.createCredentialRegistrationRequest(
+            challenge: challengeData,
+            name: userName,
+            userID: userId)
+
+        performRequest(request)
+    }
+
+    private func performRequest(_ request: ASAuthorizationRequest) {
         let controller = ASAuthorizationController(authorizationRequests: [request])
         controller.delegate = self
         controller.presentationContextProvider = self
@@ -68,33 +113,54 @@ class PasskeyAuthenticator: NSObject,
         controller: ASAuthorizationController,
         didCompleteWithAuthorization authorization: ASAuthorization) {
         guard let result = pendingResult else { return }
-        guard let credential = authorization.credential
-                as? ASAuthorizationPlatformPublicKeyCredentialAssertion else {
-            result(FlutterError(code: "unexpected_credential",
-                                message: "Unexpected credential type",
-                                details: nil))
+
+        if let credential = authorization.credential
+                as? ASAuthorizationPlatformPublicKeyCredentialAssertion {
+            // Login assertion.
+            var response: [String: Any] = [
+                "clientDataJSON": Self.encodeBase64URL(credential.rawClientDataJSON),
+                "authenticatorData":
+                    Self.encodeBase64URL(credential.rawAuthenticatorData ?? Data()),
+                "signature": Self.encodeBase64URL(credential.signature ?? Data())
+            ]
+            if let userID = credential.userID {
+                response["userHandle"] = Self.encodeBase64URL(userID)
+            }
+            let credentialId = Self.encodeBase64URL(credential.credentialID)
+            result([
+                "id": credentialId,
+                "rawId": credentialId,
+                "type": "public-key",
+                "authenticatorAttachment": "platform",
+                "response": response
+            ])
             cleanup()
             return
         }
 
-        var response: [String: Any] = [
-            "clientDataJSON": Self.encodeBase64URL(credential.rawClientDataJSON),
-            "authenticatorData":
-                Self.encodeBase64URL(credential.rawAuthenticatorData ?? Data()),
-            "signature": Self.encodeBase64URL(credential.signature ?? Data())
-        ]
-        if let userID = credential.userID {
-            response["userHandle"] = Self.encodeBase64URL(userID)
+        if let credential = authorization.credential
+                as? ASAuthorizationPlatformPublicKeyCredentialRegistration {
+            // Signup attestation.
+            let response: [String: Any] = [
+                "clientDataJSON": Self.encodeBase64URL(credential.rawClientDataJSON),
+                "attestationObject":
+                    Self.encodeBase64URL(credential.rawAttestationObject ?? Data())
+            ]
+            let credentialId = Self.encodeBase64URL(credential.credentialID)
+            result([
+                "id": credentialId,
+                "rawId": credentialId,
+                "type": "public-key",
+                "authenticatorAttachment": "platform",
+                "response": response
+            ])
+            cleanup()
+            return
         }
 
-        let credentialId = Self.encodeBase64URL(credential.credentialID)
-        result([
-            "id": credentialId,
-            "rawId": credentialId,
-            "type": "public-key",
-            "authenticatorAttachment": "platform",
-            "response": response
-        ])
+        result(FlutterError(code: "unexpected_credential",
+                            message: "Unexpected credential type",
+                            details: nil))
         cleanup()
     }
 

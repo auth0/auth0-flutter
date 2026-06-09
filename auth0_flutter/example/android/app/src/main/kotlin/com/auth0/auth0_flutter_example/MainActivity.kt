@@ -5,24 +5,15 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity: FlutterFragmentActivity() {
-    private val passkeyAuthenticator = PasskeyAuthenticator()
-
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
-        passkeyAuthenticator.activity = this
+        val passkeyAuthenticator = PasskeyAuthenticator()
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             PasskeyAuthenticator.CHANNEL_NAME
         ).setMethodCallHandler { call, result ->
-            passkeyAuthenticator.handle(call, result)
+            passkeyAuthenticator.handle(this, call, result)
         }
-    }
-
-    override fun onDestroy() {
-        // Clear the Activity reference so it isn't retained past its lifecycle,
-        // mirroring the SDK's onDetachedFromActivity handling.
-        passkeyAuthenticator.activity = null
-        super.onDestroy()
     }
 }
