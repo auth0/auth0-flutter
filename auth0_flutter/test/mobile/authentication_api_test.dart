@@ -603,45 +603,4 @@ void main() {
       expect(result, TestPlatform.passkeySignupChallengeResult);
     });
   });
-
-  group('passkeySignupChallenge', () {
-    test('passes through properties to the platform', () async {
-      when(mockedPlatform.passkeySignupChallenge(any)).thenAnswer(
-          (final _) async => TestPlatform.passkeySignupChallengeResult);
-
-      final result = await Auth0('test-domain', 'test-clientId')
-          .api
-          .passkeySignupChallenge(
-        email: 'test-email',
-        phoneNumber: 'test-phone',
-        username: 'test-username',
-        name: 'test-name',
-        givenName: 'test-given-name',
-        familyName: 'test-family-name',
-        nickname: 'test-nickname',
-        picture: 'https://www.okta.com',
-        connection: 'test-connection',
-        organization: 'test-org',
-        userMetadata: {'plan': 'gold'},
-      );
-
-      final verificationResult =
-          verify(mockedPlatform.passkeySignupChallenge(captureAny))
-              .captured
-              .single as ApiRequest<AuthPasskeySignupChallengeOptions>;
-      expect(verificationResult.account.domain, 'test-domain');
-      expect(verificationResult.options.email, 'test-email');
-      expect(verificationResult.options.phoneNumber, 'test-phone');
-      expect(verificationResult.options.username, 'test-username');
-      expect(verificationResult.options.name, 'test-name');
-      expect(verificationResult.options.givenName, 'test-given-name');
-      expect(verificationResult.options.familyName, 'test-family-name');
-      expect(verificationResult.options.nickname, 'test-nickname');
-      expect(verificationResult.options.picture, 'https://www.okta.com');
-      expect(verificationResult.options.connection, 'test-connection');
-      expect(verificationResult.options.organization, 'test-org');
-      expect(verificationResult.options.userMetadata, {'plan': 'gold'});
-      expect(result, TestPlatform.passkeySignupChallengeResult);
-    });
-  });
 }
