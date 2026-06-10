@@ -19,8 +19,8 @@ reviews:
     drafts: false
     base_branches:
       - main
-      - "beta-release/**"
-      - "release/**"
+      - "beta-release/.*"
+      - "release/.*"
 
   # Ignore generated, example, and lock files
   path_filters:
@@ -139,6 +139,7 @@ chat:
 
 knowledge_base:
   opt_out: false
-  web_search: true
+  web_search:
+    enabled: true
   learnings:
     scope: auto
