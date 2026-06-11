@@ -28,7 +28,21 @@ class EnrollPasskeyRequestHandler : MyAccountRequestHandler {
         request: MethodCallRequest,
         result: MethodChannel.Result
     ) {
-        assertHasProperties(listOf("challenge", "credential"), request.data)
+        assertHasProperties(
+            listOf(
+                "challenge",
+                "challenge.authSession",
+                "challenge.authenticationMethodId",
+                "challenge.authParamsPublicKey",
+                "credential",
+                "credential.id",
+                "credential.rawId",
+                "credential.response",
+                "credential.response.clientDataJSON",
+                "credential.response.attestationObject",
+            ),
+            request.data
+        )
 
         val challengeMap = request.data["challenge"] as Map<*, *>
         val credentialMap = request.data["credential"] as Map<*, *>
@@ -94,25 +108,15 @@ class EnrollPasskeyRequestHandler : MyAccountRequestHandler {
             id = credentialMap["id"] as String,
             rawId = credentialMap["rawId"] as String,
             response = Response(
-                attestationObject =
-                    response.requireResponseString("attestationObject"),
-                authenticatorData =
-                    response.requireResponseString("authenticatorData"),
+                attestationObject = response["attestationObject"] as String,
+                authenticatorData = (response["authenticatorData"] as? String) ?: "",
                 clientDataJSON = response["clientDataJSON"] as String,
                 transports = (response["transports"] as? List<*>)
                     ?.filterIsInstance<String>() ?: emptyList(),
-                signature = response.requireResponseString("signature"),
-                userHandle = response.requireResponseString("userHandle")
+                signature = (response["signature"] as? String) ?: "",
+                userHandle = (response["userHandle"] as? String) ?: ""
             ),
             type = (credentialMap["type"] as? String) ?: "public-key"
         )
-    }
-
-    private fun Map<*, *>.requireResponseString(field: String): String {
-        val value = this[field] as? String
-        require(!value.isNullOrBlank()) {
-            "Required property 'credential.response.$field' is not provided."
-        }
-        return value
     }
 }

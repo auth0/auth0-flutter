@@ -1472,8 +1472,6 @@ try {
 
 The My Account API lets authenticated users manage their own multi-factor authentication (MFA) methods — enrolling, confirming, listing, updating, and deleting factors such as phone, email, TOTP, push notifications, and recovery codes. It is available on **mobile (Android/iOS) only**.
 
-> 💡 The My Account API must be enabled for your tenant. If it is not yet available on your account, reach out to Auth0 support to get it enabled.
-
 ### Obtaining an access token for the My Account API
 
 The My Account API requires an access token issued specifically for the `https://YOUR_DOMAIN/me/` audience, with the scopes for the operations you intend to perform.
@@ -1586,7 +1584,7 @@ A signed-in user can add a passkey as a new authentication method. Like passkey 
 2. **In your app**, present the platform authenticator using `challenge.authParamsPublicKey` to create a passkey, and map the resulting WebAuthn attestation into a `PasskeyCredential`. The SDK does **not** do this step — call the OS APIs directly (for example, [`ASAuthorizationController`](https://developer.apple.com/documentation/authenticationservices/asauthorizationcontroller) on iOS/macOS or [Credential Manager](https://developer.android.com/identity/sign-in/credential-manager) on Android, typically over your own platform channel).
 3. Submit the credential with `enrollPasskey` to complete the enrollment.
 
-> ⚠️ Passkeys require a [custom domain](https://auth0.com/docs/customize/custom-domains) on your tenant and additional configuration. See [Sign up with passkeys](#sign-up-with-passkeys) for details. The My Account passkey enrollment API is in [Early Access](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#early-access) and must be enabled for your tenant.
+> ⚠️ Passkeys require a [custom domain](https://auth0.com/docs/customize/custom-domains) on your tenant and additional configuration. See [Sign up with passkeys](#sign-up-with-passkeys) for details.
 
 The access token must include the `create:me:authentication_methods` scope.
 

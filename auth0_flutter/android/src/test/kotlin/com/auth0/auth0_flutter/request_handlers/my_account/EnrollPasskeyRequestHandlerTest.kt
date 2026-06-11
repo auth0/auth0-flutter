@@ -48,10 +48,7 @@ class EnrollPasskeyRequestHandlerTest {
         "authenticatorAttachment" to "platform",
         "response" to mapOf(
             "clientDataJSON" to "client-data",
-            "attestationObject" to "attestation",
-            "authenticatorData" to "authenticator-data",
-            "signature" to "signature",
-            "userHandle" to "user-handle"
+            "attestationObject" to "attestation"
         ),
         "clientExtensionResults" to mapOf("credProps" to mapOf("rk" to true))
     )
@@ -164,10 +161,7 @@ class EnrollPasskeyRequestHandlerTest {
         val mockClient = mock<MyAccountAPIClient>()
         val credential = credentialMap()
         credential["response"] = mapOf(
-            "clientDataJSON" to "client-data",
-            "attestationObject" to "attestation",
-            "authenticatorData" to "authenticator-data",
-            "signature" to ""
+            "clientDataJSON" to "client-data"
         )
         val request = MethodCallRequest(
             account = mockAccount,
@@ -183,7 +177,7 @@ class EnrollPasskeyRequestHandlerTest {
 
         assertThat(
             exception.message,
-            equalTo("Required property 'credential.response.signature' is not provided.")
+            equalTo("Required property 'credential.response.attestationObject' is not provided.")
         )
     }
 }
