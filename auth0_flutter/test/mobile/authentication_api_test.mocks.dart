@@ -311,8 +311,8 @@ class MockTestPlatform extends _i1.Mock implements _i4.TestPlatform {
           #passkeyLoginChallenge,
           [request],
         ),
-        returnValue: _i5.Future<_i3.PasskeyChallenge>.value(
-            _FakePasskeyChallenge_5(
+        returnValue:
+            _i5.Future<_i3.PasskeyChallenge>.value(_FakePasskeyChallenge_5(
           this,
           Invocation.method(
             #passkeyLoginChallenge,
@@ -329,8 +329,8 @@ class MockTestPlatform extends _i1.Mock implements _i4.TestPlatform {
           #passkeySignupChallenge,
           [request],
         ),
-        returnValue: _i5.Future<_i3.PasskeyChallenge>.value(
-            _FakePasskeyChallenge_5(
+        returnValue:
+            _i5.Future<_i3.PasskeyChallenge>.value(_FakePasskeyChallenge_5(
           this,
           Invocation.method(
             #passkeySignupChallenge,

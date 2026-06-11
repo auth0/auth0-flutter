@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'api_card.dart';
 import 'constants.dart';
-import 'passkey_authenticator.dart';
 import 'web_auth_card.dart';
 
 class ExampleApp extends StatefulWidget {
@@ -40,7 +39,7 @@ class _ExampleAppState extends State<ExampleApp> {
     }
     if (kIsWeb) {
       auth0Web.onLoad().then((final credentials) => setState(() {
-            _output = _preview(credentials?.idToken ?? '');
+            _output = credentials?.idToken ?? '';
             _isLoggedIn = credentials != null;
           }));
     }
@@ -143,7 +142,7 @@ class _ExampleAppState extends State<ExampleApp> {
           usernameOrEmail: usernameOrEmail,
           password: password,
           connectionOrRealm: 'Username-Password-Authentication');
-      output = _preview(result.accessToken);
+      output = result.accessToken;
     } on ApiException catch (e) {
       output = e.toString();
     }
@@ -223,99 +222,6 @@ class _ExampleAppState extends State<ExampleApp> {
     });
   }
 
-  /// Returns a short, safe preview of a token for display.
-  String _preview(final String token) =>
-      token.length <= 20 ? token : '${token.substring(0, 20)}...';
-
-  /// Builds a redacted, display-safe summary of [credentials].
-  ///
-  /// Token values are masked so the example never renders raw secrets on
-  /// screen; only their presence and non-sensitive metadata are shown.
-  String _redactedCredentials(final Credentials credentials) {
-    String mask(final String? token) =>
-        (token == null || token.isEmpty) ? 'N/A' : '••••••••';
-
-    return 'Access Token: ${mask(credentials.accessToken)}\n'
-        'ID Token: ${mask(credentials.idToken)}\n'
-        'Refresh Token: ${mask(credentials.refreshToken)}\n'
-        'Token Type: ${credentials.tokenType}\n'
-        'Expires At: ${credentials.expiresAt}\n'
-        'Scopes: ${credentials.scopes.join(' ')}';
-  }
-
-  Future<void> passkeyLogin() async {
-    String output;
-    try {
-      // Step 1: Request a login challenge from Auth0.
-      output = 'Step 1/2: Requesting challenge...\n';
-      setState(() {
-        _output = output;
-      });
-
-      final challenge = await auth0.api.passkeyLoginChallenge(
-        connection: dotenv.env['AUTH0_PASSKEY_CONNECTION'],
-      );
-
-      output += 'Challenge received!\n'
-          '  authSession: ${_preview(challenge.authSession)}\n'
-          '  rpId: ${challenge.authParamsPublicKey['rpId']}\n\n'
-          'Presenting passkey UI & obtaining credential...\n';
-      setState(() {
-        _output = output;
-      });
-
-      // The SDK does not present the passkey UI. Your app obtains the
-      // assertion from the platform authenticator — for example via
-      // ASAuthorizationController (iOS/macOS) or Credential Manager (Android),
-      // typically over your own platform channel — using the `challenge` above,
-      // and constructs a [PasskeyCredential] from the WebAuthn assertion.
-      final credential = await _obtainLoginCredential(challenge);
-
-      // Step 2: Exchange the credential for Auth0 tokens.
-      output += 'Step 2/2: Exchanging credential for tokens...\n';
-      setState(() {
-        _output = output;
-      });
-
-      final result = await auth0.api.passkeyCredentialExchange(
-        challenge: challenge,
-        credential: credential,
-        connection: dotenv.env['AUTH0_PASSKEY_CONNECTION'],
-      );
-
-      setState(() {
-        _isLoggedIn = true;
-      });
-      output += 'Login successful!\n'
-          '${_redactedCredentials(result)}\n'
-          'User: ${result.user.name ?? result.user.email ?? result.user.sub}';
-    } on ApiException catch (e) {
-      output = 'Passkey Login Error:\n'
-          'Code: ${e.code}\n'
-          'Message: ${e.message}';
-    } catch (e) {
-      output = 'Passkey Login Failed:\n$e';
-    }
-
-    if (!mounted) return;
-    setState(() {
-      _output = output;
-    });
-  }
-
-  /// Obtains a login [PasskeyCredential] from the platform authenticator.
-  ///
-  /// This is intentionally app-side: the SDK exposes only
-  /// [AuthenticationApi.passkeyLoginChallenge] and
-  /// [AuthenticationApi.passkeyCredentialExchange], leaving the OS passkey UI
-  /// to the app. Here we delegate to [PasskeyAuthenticator], which calls the
-  /// native platform authenticator over a method channel and maps the resulting
-  /// WebAuthn assertion into a [PasskeyCredential].
-  Future<PasskeyCredential> _obtainLoginCredential(
-    final PasskeyChallenge challenge,
-  ) =>
-      PasskeyAuthenticator.getAssertion(challenge);
-
   Future<void> getSSOCredentials() async {
     String output;
     try {
@@ -341,72 +247,6 @@ class _ExampleAppState extends State<ExampleApp> {
     });
   }
 
-  /// Signs up a new user with a passkey.
-  ///
-  /// The SDK only requests the challenge and exchanges the credential for
-  /// tokens; presenting the OS passkey creation UI is left to the app, here via
-  /// [_obtainSignupCredential].
-  Future<void> passkeySignup() async {
-    String output;
-    var step = 'challenge';
-    try {
-      setState(() => _output = 'Step 1/2: requesting signup challenge...');
-      final challenge = await auth0.api.passkeySignupChallenge(
-        email: 'passkey-${DateTime.now().millisecondsSinceEpoch}@example.com',
-        connection: dotenv.env['AUTH0_PASSKEY_CONNECTION'],
-      );
-
-      // The SDK does not present the passkey UI. Your app creates the passkey
-      // with the platform authenticator — for example via
-      // ASAuthorizationController (iOS/macOS) or Credential Manager (Android),
-      // typically over your own platform channel — using the `challenge` above,
-      // and constructs a [PasskeyCredential] from the WebAuthn attestation.
-      step = 'createCredential';
-      setState(() => _output = 'Presenting passkey creation UI...');
-      final credential = await _obtainSignupCredential(challenge);
-
-      step = 'exchange';
-      setState(() => _output = 'Step 2/2: exchanging for tokens...');
-      final result = await auth0.api.passkeyCredentialExchange(
-        challenge: challenge,
-        credential: credential,
-        connection: dotenv.env['AUTH0_PASSKEY_CONNECTION'],
-      );
-
-      setState(() {
-        _isLoggedIn = true;
-      });
-      output = 'Passkey Signup Successful!\n\n'
-          '${_redactedCredentials(result)}\n'
-          'User: ${result.user.name ?? result.user.email ?? result.user.sub}';
-    } on ApiException catch (e) {
-      output = 'Passkey Signup Error (step: $step):\n'
-          'Code: ${e.code}\n'
-          'Message: ${e.message}\n'
-          'Details: ${e.details}';
-    } catch (e) {
-      output = 'Passkey Signup Failed (step: $step):\n$e';
-    }
-
-    if (!mounted) return;
-    setState(() {
-      _output = output;
-    });
-  }
-
-  /// Obtains a signup [PasskeyCredential] from the platform authenticator.
-  ///
-  /// This is intentionally app-side: the SDK exposes only
-  /// [AuthenticationApi.passkeySignupChallenge] and
-  /// [AuthenticationApi.passkeyCredentialExchange], leaving the OS passkey UI
-  /// to the app. Here we delegate to [PasskeyAuthenticator], which calls the
-  /// native platform authenticator over a method channel and maps the resulting
-  /// WebAuthn attestation into a [PasskeyCredential].
-  Future<PasskeyCredential> _obtainSignupCredential(
-    final PasskeyChallenge challenge,
-  ) =>
-      PasskeyAuthenticator.getAttestation(challenge);
-
   @override
   Widget build(final BuildContext context) {
     return MaterialApp(
@@ -427,38 +267,6 @@ class _ExampleAppState extends State<ExampleApp> {
                       else
                         WebAuthCard(
                             label: 'Web Auth Login', action: webAuthLogin),
-                      const SizedBox(height: 10),
-                      // Passkey login & signup — only on mobile (iOS/Android)
-                      if (!kIsWeb && !Platform.isWindows) ...[
-                        const SizedBox(height: 10),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 32, vertical: 12),
-                          ),
-                          onPressed: passkeyLogin,
-                          child: const Text(
-                            'Passkey Login',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 32, vertical: 12),
-                          ),
-                          onPressed: passkeySignup,
-                          child: const Text(
-                            'Passkey Signup',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ],
                       const SizedBox(height: 10),
                       // DPoP button — not shown on Windows
                       // (DPoP is not yet implemented on that platform)
