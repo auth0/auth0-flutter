@@ -316,6 +316,49 @@ void main() {
             e.message == 'test exception')));
   });
 
+  test('getApiCredentials exchanges the refresh token for an audience',
+      () async {
+    when(mockClientProxy.getTokenSilently(any))
+        .thenAnswer((final _) => Future.value(webCredentials));
+
+    final result = await auth0.getApiCredentials(
+        audience: 'http://my.api',
+        scopes: {'read:messages', 'write:messages'},
+        parameters: {'prompt': 'none'});
+
+    final options =
+        verify(mockClientProxy.getTokenSilently(captureAny)).captured.first;
+
+    expect(options.authorizationParams.audience, 'http://my.api');
+    expect(options.authorizationParams.scope, 'read:messages write:messages');
+    expect(options.authorizationParams.prompt, 'none');
+    expect(options.detailedResponse, true);
+
+    expect(result, isA<ApiCredentials>());
+    expect(result.accessToken, jwt);
+    expect(result.scopes, {'openid', 'read_messages'});
+  });
+
+  test('getApiCredentials is called and throws', () async {
+    when(mockClientProxy.getTokenSilently(any))
+        .thenThrow(createJsException('test', 'test exception'));
+
+    expect(
+        () async => auth0.getApiCredentials(audience: 'http://my.api'),
+        throwsA(predicate((final e) =>
+            e is WebException &&
+            e.code == 'test' &&
+            e.message == 'test exception')));
+  });
+
+  test('clearApiCredentials is a no-op and completes without throwing',
+      () async {
+    await expectLater(
+        auth0.clearApiCredentials(audience: 'http://my.api'), completes);
+
+    verifyNever(mockClientProxy.getTokenSilently(any));
+  });
+
   test('logout is called and succeeds', () async {
     when(mockClientProxy.logout(any)).thenAnswer((final _) => Future.value());
     await auth0.logout(federated: true, returnToUrl: 'http://returnto.url');
