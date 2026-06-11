@@ -116,9 +116,6 @@ class MyAccountApi {
   /// Requires an access token with the `create:me:authentication_methods`
   /// scope and audience `https://{domain}/me/`.
   ///
-  /// **Note:** This feature is currently in Early Access and must be enabled
-  /// for your tenant.
-  ///
   /// ## Usage example
   ///
   /// ```dart
@@ -149,8 +146,6 @@ class MyAccountApi {
   /// Requires an access token with the `create:me:authentication_methods`
   /// scope and audience `https://{domain}/me/`.
   ///
-  /// **Note:** This feature is currently in Early Access and must be enabled
-  /// for your tenant.
   ///
   /// ## Usage example
   ///
@@ -232,9 +227,8 @@ class MyAccountApi {
   /// // Use challenge.totpUri to display a QR code
   /// ```
   Future<EnrollmentChallenge> enrollTotp() =>
-      Auth0FlutterMyAccountPlatform.instance.enrollTotp(
-          _createApiRequest(MyAccountEnrollTotpOptions(
-              accessToken: _accessToken)));
+      Auth0FlutterMyAccountPlatform.instance.enrollTotp(_createApiRequest(
+          MyAccountEnrollTotpOptions(accessToken: _accessToken)));
 
   /// Initiates push notification enrollment.
   ///
@@ -250,9 +244,8 @@ class MyAccountApi {
   /// final challenge = await myAccount.enrollPush();
   /// ```
   Future<EnrollmentChallenge> enrollPush() =>
-      Auth0FlutterMyAccountPlatform.instance.enrollPush(
-          _createApiRequest(MyAccountEnrollPushOptions(
-              accessToken: _accessToken)));
+      Auth0FlutterMyAccountPlatform.instance.enrollPush(_createApiRequest(
+          MyAccountEnrollPushOptions(accessToken: _accessToken)));
 
   /// Initiates recovery code enrollment.
   ///
@@ -269,8 +262,8 @@ class MyAccountApi {
   /// ```
   Future<EnrollmentChallenge> enrollRecoveryCode() =>
       Auth0FlutterMyAccountPlatform.instance.enrollRecoveryCode(
-          _createApiRequest(MyAccountEnrollRecoveryCodeOptions(
-              accessToken: _accessToken)));
+          _createApiRequest(
+              MyAccountEnrollRecoveryCodeOptions(accessToken: _accessToken)));
 
   /// Verifies an enrollment using a one-time password [otp].
   ///

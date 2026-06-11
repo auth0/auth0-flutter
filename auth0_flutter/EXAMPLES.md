@@ -1472,6 +1472,8 @@ try {
 
 The My Account API lets authenticated users manage their own multi-factor authentication (MFA) methods — enrolling, confirming, listing, updating, and deleting factors such as phone, email, TOTP, push notifications, and recovery codes. It is available on **mobile (Android/iOS) only**.
 
+> 💡 The My Account API must be enabled for your tenant. If it is not yet available on your account, reach out to Auth0 support to get it enabled.
+
 ### Obtaining an access token for the My Account API
 
 The My Account API requires an access token issued specifically for the `https://YOUR_DOMAIN/me/` audience, with the scopes for the operations you intend to perform.
