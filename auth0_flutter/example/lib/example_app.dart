@@ -77,7 +77,7 @@ class _ExampleAppState extends State<ExampleApp> {
           _isLoggedIn = true;
         });
 
-        output = result.idToken.replaceAll(RegExp(r'.'), '*');
+        output = result.idToken.replaceAll(RegExp('.'), '*');
       }
     } catch (e) {
       output = e.toString();
@@ -231,7 +231,7 @@ class _ExampleAppState extends State<ExampleApp> {
           'Session Transfer Token: ${token.substring(0, 20)}...\n'
           'Token Type: ${ssoCredentials.tokenType}\n'
           'Expires In: ${ssoCredentials.expiresIn}s\n'
-          'ID Token: ${ssoCredentials.idToken != null ? '****' : 'N/A'}\n'
+          'ID Token: ****\n'
           'Refresh Token: '
           '${ssoCredentials.refreshToken != null ? '****' : 'N/A'}';
     } on CredentialsManagerException catch (e) {
