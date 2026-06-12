@@ -232,8 +232,7 @@ class _ExampleAppState extends State<ExampleApp> {
           'Token Type: ${ssoCredentials.tokenType}\n'
           'Expires In: ${ssoCredentials.expiresIn}s\n'
           'ID Token: ${ssoCredentials.idToken != null ? '****' : 'N/A'}\n'
-          'Refresh Token: '
-          '${ssoCredentials.refreshToken != null ? '****' : 'N/A'}';
+          'Refresh Token: ${ssoCredentials.refreshToken != null ? '****' : 'N/A'}';
     } on CredentialsManagerException catch (e) {
       output = 'SSO Error: ${e.code}\n${e.message}';
     } catch (e) {

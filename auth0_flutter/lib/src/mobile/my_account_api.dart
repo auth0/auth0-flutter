@@ -101,6 +101,70 @@ class MyAccountApi {
       Auth0FlutterMyAccountPlatform.instance.getFactors(_createApiRequest(
           MyAccountGetFactorsOptions(accessToken: _accessToken)));
 
+  /// Requests a challenge for enrolling a new passkey. This is the first part
+  /// of the passkey enrollment flow.
+  ///
+  /// Returns a [PasskeyEnrollmentChallenge] containing the WebAuthn creation
+  /// options. Use it to present the OS passkey creation UI in your app, then
+  /// pass the challenge together with the resulting [PasskeyCredential] to
+  /// [enrollPasskey] to complete the enrollment.
+  ///
+  /// Optionally pass a [userIdentityId] (needed if the user logged in with a
+  /// linked account) and/or a database [connection] name. If a connection name
+  /// is not specified, your tenant's default directory is used.
+  ///
+  /// Requires an access token with the `create:me:authentication_methods`
+  /// scope and audience `https://{domain}/me/`.
+  ///
+  /// ## Usage example
+  ///
+  /// ```dart
+  /// final challenge = await myAccount.enrollPasskeyChallenge();
+  /// // Present the OS passkey creation UI with challenge.authParamsPublicKey,
+  /// // then call enrollPasskey with the resulting credential.
+  /// ```
+  Future<PasskeyEnrollmentChallenge> enrollPasskeyChallenge({
+    final String? userIdentityId,
+    final String? connection,
+  }) =>
+      Auth0FlutterMyAccountPlatform.instance.enrollPasskeyChallenge(
+          _createApiRequest(MyAccountEnrollPasskeyChallengeOptions(
+              accessToken: _accessToken,
+              userIdentityId: userIdentityId,
+              connection: connection)));
+
+  /// Enrolls a new passkey [credential]. This is the last part of the passkey
+  /// enrollment flow.
+  ///
+  /// Call this after [enrollPasskeyChallenge] and after obtaining the passkey
+  /// [credential] from the platform authenticator (for example, via Apple's
+  /// `ASAuthorizationController` or Android's Credential Manager). Pass the
+  /// same [challenge] returned by [enrollPasskeyChallenge].
+  ///
+  /// Returns the enrolled [MyAccountPasskeyAuthenticationMethod].
+  ///
+  /// Requires an access token with the `create:me:authentication_methods`
+  /// scope and audience `https://{domain}/me/`.
+  ///
+  ///
+  /// ## Usage example
+  ///
+  /// ```dart
+  /// final method = await myAccount.enrollPasskey(
+  ///   challenge: challenge,
+  ///   credential: credential,
+  /// );
+  /// ```
+  Future<MyAccountPasskeyAuthenticationMethod> enrollPasskey({
+    required final PasskeyEnrollmentChallenge challenge,
+    required final PasskeyCredential credential,
+  }) =>
+      Auth0FlutterMyAccountPlatform.instance.enrollPasskey(_createApiRequest(
+          MyAccountEnrollPasskeyOptions(
+              accessToken: _accessToken,
+              challenge: challenge,
+              credential: credential)));
+
   /// Initiates phone enrollment with the specified [phoneNumber] and [type].
   ///
   /// Returns an [EnrollmentChallenge] containing the enrollment `id` and
@@ -163,9 +227,8 @@ class MyAccountApi {
   /// // Use challenge.totpUri to display a QR code
   /// ```
   Future<EnrollmentChallenge> enrollTotp() =>
-      Auth0FlutterMyAccountPlatform.instance.enrollTotp(
-          _createApiRequest(MyAccountEnrollTotpOptions(
-              accessToken: _accessToken)));
+      Auth0FlutterMyAccountPlatform.instance.enrollTotp(_createApiRequest(
+          MyAccountEnrollTotpOptions(accessToken: _accessToken)));
 
   /// Initiates push notification enrollment.
   ///
@@ -181,9 +244,8 @@ class MyAccountApi {
   /// final challenge = await myAccount.enrollPush();
   /// ```
   Future<EnrollmentChallenge> enrollPush() =>
-      Auth0FlutterMyAccountPlatform.instance.enrollPush(
-          _createApiRequest(MyAccountEnrollPushOptions(
-              accessToken: _accessToken)));
+      Auth0FlutterMyAccountPlatform.instance.enrollPush(_createApiRequest(
+          MyAccountEnrollPushOptions(accessToken: _accessToken)));
 
   /// Initiates recovery code enrollment.
   ///
@@ -200,8 +262,8 @@ class MyAccountApi {
   /// ```
   Future<EnrollmentChallenge> enrollRecoveryCode() =>
       Auth0FlutterMyAccountPlatform.instance.enrollRecoveryCode(
-          _createApiRequest(MyAccountEnrollRecoveryCodeOptions(
-              accessToken: _accessToken)));
+          _createApiRequest(
+              MyAccountEnrollRecoveryCodeOptions(accessToken: _accessToken)));
 
   /// Verifies an enrollment using a one-time password [otp].
   ///

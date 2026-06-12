@@ -23,6 +23,9 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         LocalAuthenticationLevel,
         MyAccountException,
         PasswordlessType,
+        PasskeyAuthenticatorResponse,
+        PasskeyChallenge,
+        PasskeyCredential,
         PhoneType,
         SafariViewController,
         SafariViewControllerPresentationStyle,
@@ -30,7 +33,9 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         SSOCredentials,
         ApiCredentials,
         UserProfile,
-        WebAuthenticationException;
+        WebAuthenticationException,
+        PasskeyEnrollmentChallenge,
+        MyAccountPasskeyAuthenticationMethod;
 
 export 'src/desktop/windows_web_authentication.dart';
 export 'src/mobile/authentication_api.dart';
