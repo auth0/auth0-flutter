@@ -55,6 +55,13 @@ class SpyMyAccountAuthenticationMethods: MyAccountAuthenticationMethods {
     var confirmResult: Result<AuthenticationMethod, MyAccountError> = .success(makeAuthMethod(confirmed: true))
     var updateResult: Result<AuthenticationMethod, MyAccountError> = .success(makeAuthMethod())
 
+    var calledEnrollPasskeyChallenge = false
+    var calledEnrollPasskey = false
+    var enrollPasskeyChallengeUserIdentityIdArg: String?
+    var enrollPasskeyChallengeConnectionArg: String?
+    var enrollPasskeyChallengeShouldFail = false
+    var enrollPasskeyShouldFail = false
+
     var calledGetAuthMethods = false
     var calledGetAuthMethod = false
     var calledDelete = false
@@ -156,13 +163,48 @@ class SpyMyAccountAuthenticationMethods: MyAccountAuthenticationMethods {
     @available(iOS 16.6, macOS 13.5, visionOS 1.0, *)
     func passkeyEnrollmentChallenge(userIdentityId: String?,
                                     connection: String?) -> Request<PasskeyEnrollmentChallenge, MyAccountError> {
-        fatalError("Not implemented in tests")
+        calledEnrollPasskeyChallenge = true
+        enrollPasskeyChallengeUserIdentityIdArg = userIdentityId
+        enrollPasskeyChallengeConnectionArg = connection
+        if enrollPasskeyChallengeShouldFail {
+            return request(.failure(MyAccountError(info: [:], statusCode: 401)))
+        }
+        let challenge = PasskeyEnrollmentChallenge(
+            authenticationMethodId: "passkey|test",
+            authenticationSession: "session123",
+            relyingPartyId: "example.com",
+            userId: Data("user-id".utf8),
+            userName: "john@example.com",
+            challengeData: Data("challenge-data".utf8)
+        )
+        return request(.success(challenge))
     }
 
     @available(iOS 16.6, macOS 13.5, visionOS 1.0, *)
     func enroll(passkey: NewPasskey,
                 challenge: PasskeyEnrollmentChallenge) -> Request<PasskeyAuthenticationMethod, MyAccountError> {
-        fatalError("Not implemented in tests")
+        calledEnrollPasskey = true
+        if enrollPasskeyShouldFail {
+            return request(.failure(MyAccountError(info: [:], statusCode: 401)))
+        }
+        let credential = PasskeyCredential(
+            id: "key-id",
+            publicKey: Data("public-key".utf8),
+            userHandle: Data("user-handle".utf8),
+            deviceType: .multiDevice,
+            isBackedUp: true
+        )
+        let method = PasskeyAuthenticationMethod(
+            id: "passkey|test",
+            type: "passkey",
+            userIdentityId: "user-id",
+            userAgent: "test-agent",
+            credential: credential,
+            createdAt: Date(timeIntervalSince1970: 0),
+            aaguid: "aaguid",
+            relyingPartyIdentifier: "example.com"
+        )
+        return request(.success(method))
     }
 
     func confirmTOTPEnrollment(id: String, authSession: String,

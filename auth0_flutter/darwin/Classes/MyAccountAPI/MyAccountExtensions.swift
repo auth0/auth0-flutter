@@ -105,3 +105,47 @@ extension RecoveryCodeEnrollmentChallenge {
         ]
     }
 }
+
+#if PASSKEYS_PLATFORM
+@available(iOS 16.6, macOS 13.5, visionOS 1.0, *)
+extension PasskeyEnrollmentChallenge {
+    func asDictionary() -> [String: Any?] {
+        // Forward the WebAuthn creation options in the flat shape the app's
+        // platform-authenticator ceremony consumes, plus the authentication
+        // method id needed to finish enrollment.
+        return [
+            "authenticationMethodId": authenticationMethodId,
+            "authSession": authenticationSession,
+            "authParamsPublicKey": [
+                "challenge": challengeData.base64URLEncodedString(),
+                "rpId": relyingPartyId,
+                "userId": userId.base64URLEncodedString(),
+                "userName": userName
+            ]
+        ]
+    }
+}
+
+@available(iOS 16.6, macOS 13.5, visionOS 1.0, *)
+extension PasskeyAuthenticationMethod {
+    func asDictionary() -> [String: Any?] {
+        let createdAtFormatter = ISO8601DateFormatter()
+        createdAtFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+
+        return [
+            "id": id,
+            "type": type,
+            "identity_user_id": userIdentityId,
+            "user_agent": userAgent,
+            "key_id": credential.id,
+            "public_key": credential.publicKey.base64EncodedString(),
+            "user_handle": credential.userHandle.base64URLEncodedString(),
+            "credential_device_type": credential.deviceType.rawValue,
+            "credential_backed_up": credential.isBackedUp,
+            "aaguid": aaguid,
+            "relying_party_id": relyingPartyIdentifier,
+            "created_at": createdAtFormatter.string(from: createdAt)
+        ]
+    }
+}
+#endif

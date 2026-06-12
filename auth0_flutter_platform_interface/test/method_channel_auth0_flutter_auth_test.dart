@@ -61,8 +61,68 @@ class MethodCallHandler {
     'refreshToken': 'new-refresh-token'
   };
 
+  static const Map<dynamic, dynamic> passkeyLoginChallengeResult = {
+    'authSession': 'test-auth-session',
+    'authParamsPublicKey': {
+      'challenge': 'test-challenge',
+      'rpId': 'test-rp-id',
+    },
+  };
+
+  static const Map<dynamic, dynamic> passkeySignupChallengeResult = {
+    'authSession': 'test-auth-session',
+    'authParamsPublicKey': {
+      'challenge': 'test-challenge',
+      'rpId': 'test-rp-id',
+      'userId': 'test-user-id',
+      'userName': 'test-user-name',
+    },
+  };
+
   Future<dynamic>? methodCallHandler(final MethodCall? methodCall) async {}
 }
+
+const PasskeyChallenge _testChallenge = PasskeyChallenge(
+  authSession: 'test-auth-session',
+  authParamsPublicKey: {
+    'challenge': 'test-challenge',
+    'rpId': 'test-rp-id',
+  },
+);
+
+const PasskeyCredential _testLoginCredential = PasskeyCredential(
+  id: 'test-credential-id',
+  rawId: 'test-raw-id',
+  type: 'public-key',
+  authenticatorAttachment: 'platform',
+  response: PasskeyAuthenticatorResponse(
+    clientDataJSON: 'test-client-data',
+    authenticatorData: 'test-authenticator-data',
+    signature: 'test-signature',
+    userHandle: 'test-user-handle',
+  ),
+);
+
+const PasskeyChallenge _testSignupChallenge = PasskeyChallenge(
+  authSession: 'test-auth-session',
+  authParamsPublicKey: {
+    'challenge': 'test-challenge',
+    'rpId': 'test-rp-id',
+    'userId': 'test-user-id',
+    'userName': 'test-user-name',
+  },
+);
+
+const PasskeyCredential _testSignupCredential = PasskeyCredential(
+  id: 'test-credential-id',
+  rawId: 'test-raw-id',
+  type: 'public-key',
+  authenticatorAttachment: 'platform',
+  response: PasskeyAuthenticatorResponse(
+    clientDataJSON: 'test-client-data',
+    attestationObject: 'test-attestation',
+  ),
+);
 
 @GenerateMocks([MethodCallHandler])
 void main() {
@@ -918,12 +978,13 @@ void main() {
       expect(verificationResult.arguments['_userAgent']['name'], 'test-name');
       expect(verificationResult.arguments['_userAgent']['version'],
           'test-version');
-      expect(
-          verificationResult.arguments['subjectToken'], 'existing-token');
+      expect(verificationResult.arguments['subjectToken'], 'existing-token');
       expect(verificationResult.arguments['subjectTokenType'],
           'http://acme.com/legacy-token');
-      expect(verificationResult.arguments['audience'], 'https://example.com/api');
-      expect(verificationResult.arguments['scopes'], ['openid', 'profile', 'email']);
+      expect(
+          verificationResult.arguments['audience'], 'https://example.com/api');
+      expect(verificationResult.arguments['scopes'],
+          ['openid', 'profile', 'email']);
     });
 
     test(
@@ -991,15 +1052,14 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
       Future<Credentials> actual() async {
-        final result =
-            await MethodChannelAuth0FlutterAuth().customTokenExchange(
-                ApiRequest<AuthCustomTokenExchangeOptions>(
-                    account: const Account('test-domain', 'test-clientId'),
-                    userAgent:
-                        UserAgent(name: 'test-name', version: 'test-version'),
-                    options: const AuthCustomTokenExchangeOptions(
-                        subjectToken: 'existing-token',
-                        subjectTokenType: 'http://acme.com/legacy-token')));
+        final result = await MethodChannelAuth0FlutterAuth()
+            .customTokenExchange(ApiRequest<AuthCustomTokenExchangeOptions>(
+                account: const Account('test-domain', 'test-clientId'),
+                userAgent:
+                    UserAgent(name: 'test-name', version: 'test-version'),
+                options: const AuthCustomTokenExchangeOptions(
+                    subjectToken: 'existing-token',
+                    subjectTokenType: 'http://acme.com/legacy-token')));
 
         return result;
       }
@@ -1014,15 +1074,14 @@ void main() {
           .thenThrow(PlatformException(code: '123'));
 
       Future<Credentials> actual() async {
-        final result =
-            await MethodChannelAuth0FlutterAuth().customTokenExchange(
-                ApiRequest<AuthCustomTokenExchangeOptions>(
-                    account: const Account('test-domain', 'test-clientId'),
-                    userAgent:
-                        UserAgent(name: 'test-name', version: 'test-version'),
-                    options: const AuthCustomTokenExchangeOptions(
-                        subjectToken: 'existing-token',
-                        subjectTokenType: 'http://acme.com/legacy-token')));
+        final result = await MethodChannelAuth0FlutterAuth()
+            .customTokenExchange(ApiRequest<AuthCustomTokenExchangeOptions>(
+                account: const Account('test-domain', 'test-clientId'),
+                userAgent:
+                    UserAgent(name: 'test-name', version: 'test-version'),
+                options: const AuthCustomTokenExchangeOptions(
+                    subjectToken: 'existing-token',
+                    subjectTokenType: 'http://acme.com/legacy-token')));
 
         return result;
       }
@@ -1241,9 +1300,9 @@ void main() {
       expect(verificationResult.arguments['_userAgent']['name'], 'test-name');
       expect(verificationResult.arguments['_userAgent']['version'],
           'test-version');
-      expect(verificationResult.arguments['refreshToken'], 'test-refresh-token');
       expect(
-          verificationResult.arguments['parameters']['param1'], 'value1');
+          verificationResult.arguments['refreshToken'], 'test-refresh-token');
+      expect(verificationResult.arguments['parameters']['param1'], 'value1');
       expect(
           verificationResult.arguments['headers']['X-Custom'], 'custom-value');
     });
@@ -1292,12 +1351,11 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
       Future<SSOCredentials> actual() => MethodChannelAuth0FlutterAuth()
-              .ssoExchange(ApiRequest<AuthSSOExchangeOptions>(
-                  account: const Account('test-domain', 'test-clientId'),
-                  userAgent:
-                      UserAgent(name: 'test-name', version: 'test-version'),
-                  options: AuthSSOExchangeOptions(
-                      refreshToken: 'test-refresh-token')));
+          .ssoExchange(ApiRequest<AuthSSOExchangeOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options:
+                  AuthSSOExchangeOptions(refreshToken: 'test-refresh-token')));
 
       await expectLater(actual, throwsA(isA<ApiException>()));
     });
@@ -1309,12 +1367,285 @@ void main() {
           .thenThrow(PlatformException(code: '123'));
 
       Future<SSOCredentials> actual() => MethodChannelAuth0FlutterAuth()
-              .ssoExchange(ApiRequest<AuthSSOExchangeOptions>(
-                  account: const Account('test-domain', 'test-clientId'),
-                  userAgent:
-                      UserAgent(name: 'test-name', version: 'test-version'),
-                  options: AuthSSOExchangeOptions(
-                      refreshToken: 'test-refresh-token')));
+          .ssoExchange(ApiRequest<AuthSSOExchangeOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options:
+                  AuthSSOExchangeOptions(refreshToken: 'test-refresh-token')));
+
+      await expectLater(actual, throwsA(isA<ApiException>()));
+    });
+  });
+
+  group('passkeyLoginChallenge', () {
+    test('calls the correct MethodChannel method', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.passkeyLoginChallengeResult);
+
+      await MethodChannelAuth0FlutterAuth().passkeyLoginChallenge(
+        ApiRequest<AuthPasskeyLoginChallengeOptions>(
+            account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasskeyLoginChallengeOptions(
+                connection: 'test-connection', organization: 'test-org')),
+      );
+
+      expect(
+          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          'auth#passkeyLoginChallenge');
+    });
+
+    test('correctly maps all properties', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.passkeyLoginChallengeResult);
+
+      await MethodChannelAuth0FlutterAuth().passkeyLoginChallenge(
+        ApiRequest<AuthPasskeyLoginChallengeOptions>(
+            account: const Account('test-domain', 'test-clientId'),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasskeyLoginChallengeOptions(
+                connection: 'test-connection', organization: 'test-org')),
+      );
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['_account']['domain'], 'test-domain');
+      expect(verificationResult.arguments['connection'], 'test-connection');
+      expect(verificationResult.arguments['organization'], 'test-org');
+    });
+
+    test('correctly returns the challenge from the Method Channel', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.passkeyLoginChallengeResult);
+
+      final result =
+          await MethodChannelAuth0FlutterAuth().passkeyLoginChallenge(
+        ApiRequest<AuthPasskeyLoginChallengeOptions>(
+            account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasskeyLoginChallengeOptions()),
+      );
+
+      expect(result.authSession, 'test-auth-session');
+      expect(result.authParamsPublicKey['rpId'], 'test-rp-id');
+    });
+
+    test('throws an ApiException when the method channel throws', () async {
+      when(mocked.methodCallHandler(any))
+          .thenThrow(PlatformException(code: '123'));
+
+      Future<PasskeyChallenge> actual() => MethodChannelAuth0FlutterAuth()
+          .passkeyLoginChallenge(ApiRequest<AuthPasskeyLoginChallengeOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: AuthPasskeyLoginChallengeOptions()));
+
+      await expectLater(actual, throwsA(isA<ApiException>()));
+    });
+  });
+
+  group('passkeyCredentialExchange', () {
+    test('calls the correct MethodChannel method for login', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      await MethodChannelAuth0FlutterAuth().passkeyCredentialExchange(
+        ApiRequest<AuthPasskeyExchangeOptions>(
+            account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasskeyExchangeOptions(
+                challenge: _testChallenge, credential: _testLoginCredential)),
+      );
+
+      expect(
+          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          'auth#passkeyCredentialExchange');
+    });
+
+    test('correctly maps all properties for login', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      await MethodChannelAuth0FlutterAuth().passkeyCredentialExchange(
+        ApiRequest<AuthPasskeyExchangeOptions>(
+            account: const Account('test-domain', 'test-clientId'),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasskeyExchangeOptions(
+                challenge: _testChallenge,
+                credential: _testLoginCredential,
+                connection: 'test-connection',
+                audience: 'test-audience',
+                scopes: {'a', 'b'},
+                organization: 'test-org',
+                parameters: {'test': 'test-123'})),
+      );
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['_account']['domain'], 'test-domain');
+      expect(verificationResult.arguments['challenge']['authSession'],
+          'test-auth-session');
+      expect(verificationResult.arguments['credential']['id'],
+          'test-credential-id');
+      expect(
+          verificationResult.arguments['credential']['response']['signature'],
+          'test-signature');
+      expect(verificationResult.arguments['connection'], 'test-connection');
+      expect(verificationResult.arguments['audience'], 'test-audience');
+      expect(verificationResult.arguments['scopes'], ['a', 'b']);
+      expect(verificationResult.arguments['organization'], 'test-org');
+      expect(verificationResult.arguments['parameters']['test'], 'test-123');
+    });
+
+    test('correctly maps all properties for signup', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      await MethodChannelAuth0FlutterAuth().passkeyCredentialExchange(
+        ApiRequest<AuthPasskeyExchangeOptions>(
+            account: const Account('test-domain', 'test-clientId'),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasskeyExchangeOptions(
+                challenge: _testSignupChallenge,
+                credential: _testSignupCredential,
+                connection: 'test-connection',
+                audience: 'test-audience',
+                scopes: {'a', 'b'},
+                organization: 'test-org',
+                parameters: {'test': 'test-123'})),
+      );
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['_account']['domain'], 'test-domain');
+      expect(verificationResult.arguments['challenge']['authSession'],
+          'test-auth-session');
+      expect(verificationResult.arguments['credential']['id'],
+          'test-credential-id');
+      expect(
+          verificationResult.arguments['credential']['response']
+              ['attestationObject'],
+          'test-attestation');
+      expect(verificationResult.arguments['connection'], 'test-connection');
+      expect(verificationResult.arguments['audience'], 'test-audience');
+      expect(verificationResult.arguments['scopes'], ['a', 'b']);
+      expect(verificationResult.arguments['organization'], 'test-org');
+      expect(verificationResult.arguments['parameters']['test'], 'test-123');
+    });
+
+    test('correctly returns credentials from Method Channel', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      final result =
+          await MethodChannelAuth0FlutterAuth().passkeyCredentialExchange(
+        ApiRequest<AuthPasskeyExchangeOptions>(
+            account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasskeyExchangeOptions(
+                challenge: _testChallenge, credential: _testLoginCredential)),
+      );
+
+      expect(result.accessToken, 'accessToken');
+      expect(result.idToken, 'idToken');
+    });
+
+    test('throws an ApiException when the method channel throws', () async {
+      when(mocked.methodCallHandler(any))
+          .thenThrow(PlatformException(code: '123'));
+
+      Future<Credentials> actual() => MethodChannelAuth0FlutterAuth()
+          .passkeyCredentialExchange(ApiRequest<AuthPasskeyExchangeOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: AuthPasskeyExchangeOptions(
+                  challenge: _testChallenge,
+                  credential: _testLoginCredential)));
+
+      await expectLater(actual, throwsA(isA<ApiException>()));
+    });
+  });
+
+  group('passkeySignupChallenge', () {
+    test('calls the correct MethodChannel method', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.passkeySignupChallengeResult);
+
+      await MethodChannelAuth0FlutterAuth().passkeySignupChallenge(
+        ApiRequest<AuthPasskeySignupChallengeOptions>(
+            account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasskeySignupChallengeOptions(
+                email: 'test-email', connection: 'test-connection')),
+      );
+
+      expect(
+          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          'auth#passkeySignupChallenge');
+    });
+
+    test('correctly maps all properties', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.passkeySignupChallengeResult);
+
+      await MethodChannelAuth0FlutterAuth().passkeySignupChallenge(
+        ApiRequest<AuthPasskeySignupChallengeOptions>(
+            account: const Account('test-domain', 'test-clientId'),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasskeySignupChallengeOptions(
+                email: 'test-email',
+                phoneNumber: 'test-phone',
+                username: 'test-username',
+                name: 'test-name',
+                givenName: 'test-given-name',
+                familyName: 'test-family-name',
+                nickname: 'test-nickname',
+                picture: 'https://www.okta.com',
+                connection: 'test-connection',
+                organization: 'test-org',
+                userMetadata: {'plan': 'gold'})),
+      );
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['email'], 'test-email');
+      expect(verificationResult.arguments['phoneNumber'], 'test-phone');
+      expect(verificationResult.arguments['username'], 'test-username');
+      expect(verificationResult.arguments['name'], 'test-name');
+      expect(verificationResult.arguments['givenName'], 'test-given-name');
+      expect(verificationResult.arguments['familyName'], 'test-family-name');
+      expect(verificationResult.arguments['nickname'], 'test-nickname');
+      expect(verificationResult.arguments['picture'], 'https://www.okta.com');
+      expect(verificationResult.arguments['connection'], 'test-connection');
+      expect(verificationResult.arguments['organization'], 'test-org');
+      expect(verificationResult.arguments['userMetadata'], {'plan': 'gold'});
+    });
+
+    test('correctly returns the challenge from the Method Channel', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.passkeySignupChallengeResult);
+
+      final result =
+          await MethodChannelAuth0FlutterAuth().passkeySignupChallenge(
+        ApiRequest<AuthPasskeySignupChallengeOptions>(
+            account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasskeySignupChallengeOptions()),
+      );
+
+      expect(result.authSession, 'test-auth-session');
+      expect(result.authParamsPublicKey['userName'], 'test-user-name');
+    });
+
+    test('throws an ApiException when the method channel throws', () async {
+      when(mocked.methodCallHandler(any))
+          .thenThrow(PlatformException(code: '123'));
+
+      Future<PasskeyChallenge> actual() => MethodChannelAuth0FlutterAuth()
+          .passkeySignupChallenge(ApiRequest<AuthPasskeySignupChallengeOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: AuthPasskeySignupChallengeOptions()));
 
       await expectLater(actual, throwsA(isA<ApiException>()));
     });

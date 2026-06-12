@@ -586,6 +586,8 @@ void dispose() {
 - [Check for stored credentials](EXAMPLES.md#check-for-stored-credentials) - check if the user is already logged in when your app starts up.
 - [Retrieve stored credentials](EXAMPLES.md#retrieve-stored-credentials) - fetch the user's credentials from the storage, automatically renewing them if they have expired.
 - [Retrieve user information](EXAMPLES.md#retrieve-user-information) - fetch the latest user information from the `/userinfo` endpoint.
+- [Log in with passkeys](EXAMPLES.md#log-in-with-passkeys) - authenticate an existing user with a passkey using the platform authenticator (iOS/Android only).
+- [Sign up with passkeys](EXAMPLES.md#sign-up-with-passkeys) - register a new user with a passkey using the platform authenticator (iOS/Android only).
 - [Native to Web SSO](EXAMPLES.md#native-to-web-sso) - obtain a session transfer token to authenticate a WebView without re-prompting the user.
 - [Handle Android process death](#android-handle-process-death-during-login) - recover credentials when the OS kills your app during login.
 
@@ -621,6 +623,9 @@ void dispose() {
 - [resetPassword](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/resetPassword.html)
 - [signup](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/signup.html)
 - [userProfile](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/userProfile.html)
+- [passkeyLoginChallenge](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/passkeyLoginChallenge.html) - request a WebAuthn assertion challenge to log in an existing user with a passkey (iOS 16.6+ / Android 9+)
+- [passkeySignupChallenge](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/passkeySignupChallenge.html) - request a WebAuthn attestation challenge to register a new user with a passkey (iOS 16.6+ / Android 9+)
+- [passkeyCredentialExchange](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/passkeyCredentialExchange.html) - exchange a passkey credential (assertion or attestation) for Auth0 tokens
 
 #### Credentials Manager
 
@@ -714,6 +719,36 @@ await myAccount.confirmEnrollment(
   authSession: challenge.authSession,
 );
 ```
+
+##### Passkey enrollment
+
+A signed-in user can add a passkey as a new authentication method. Like passkey login and signup, the SDK handles only the Auth0 API calls — presenting the OS passkey UI is left to your app:
+
+```dart
+// 1. Request an enrollment challenge.
+final challenge = await myAccount.enrollPasskeyChallenge();
+
+// 2. Present the OS passkey-creation UI in your app (not provided by the SDK)
+//    using `challenge.authParamsPublicKey`, then build a PasskeyCredential from
+//    the resulting WebAuthn attestation.
+final credential = PasskeyCredential(
+  id: '...',
+  rawId: '...',
+  type: 'public-key',
+  response: PasskeyAuthenticatorResponse(
+    clientDataJSON: '...',
+    attestationObject: '...',
+  ),
+);
+
+// 3. Submit the credential to complete enrollment.
+final method = await myAccount.enrollPasskey(
+  challenge: challenge,
+  credential: credential,
+);
+```
+
+The access token must include the `create:me:authentication_methods` scope. See [Enrolling a passkey](EXAMPLES.md#enrolling-a-passkey) for the full example.
 
 ##### DPoP
 

@@ -309,7 +309,7 @@ jobs:
 
     test-windows-unit:
         name: Run native Windows unit tests
-        runs-on: windows-2022
+        runs-on: windows-latest
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
         steps:
@@ -349,7 +349,7 @@ jobs:
                 ${{ github.workspace }}\vcpkg\vcpkg install cpprestsdk:x64-windows openssl:x64-windows boost-system:x64-windows boost-date-time:x64-windows boost-regex:x64-windows
               shell: cmd
               env:
-                VCPKG_BINARY_SOURCES: 'clear;files,${{ github.workspace }}/vcpkg-binary-cache,readwrite'
+                VCPKG_BINARY_SOURCES: 'clear;files,${{ github.workspace }}/vcpkg-binary-cache,readwrite;x-gha,readwrite'
 
             - name: Cache Windows example app build
               uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # pin@v5.0.5
