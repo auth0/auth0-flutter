@@ -24,8 +24,9 @@ class PasskeySignupChallengeApiRequestHandler : ApiRequestHandler {
         val connection = args["connection"] as? String
         val organization = args["organization"] as? String
 
-        @Suppress("UNCHECKED_CAST")
-        val userMetadata = args["userMetadata"] as? Map<String, String>
+        val userMetadata = (args["userMetadata"] as? Map<*, *>)
+            ?.mapKeys { it.key.toString() }
+            ?.mapValues { it.value.toString() }
         val userData = UserData(
             email = args["email"] as? String,
             phoneNumber = args["phoneNumber"] as? String,

@@ -36,7 +36,8 @@ class PasskeyCredentialExchangeApiRequestHandler : ApiRequestHandler {
 
         assertHasProperties(listOf("challenge.authSession", "credential"), args)
 
-        val authSession = (args["challenge"] as Map<*, *>)["authSession"] as String
+        val challenge = args["challenge"] as Map<*, *>
+        val authSession = challenge["authSession"] as String
         val credentialMap = args["credential"] as Map<*, *>
 
         val connection = args["connection"] as? String
