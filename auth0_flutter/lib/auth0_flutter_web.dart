@@ -2,7 +2,7 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 import 'src/version.dart';
 
 export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
-    show WebException, CacheLocation;
+    show WebException, CacheLocation, ApiCredentials;
 
 /// Primary interface for interacting with Auth0 on web platforms.
 class Auth0Web {
@@ -66,6 +66,12 @@ class Auth0Web {
   /// to learn more.
   /// * [scopes] defaults to `openid profile email`. You can override these
   /// scopes, but `openid` is always requested regardless of this setting.
+  /// * [useMrrt] enables Multi-Resource Refresh Tokens, allowing a single
+  /// refresh token to be reused to obtain access tokens for multiple APIs
+  /// (audiences). Once enabled, request per-audience tokens via
+  /// [getApiCredentials] or [credentials]. Enabling this implicitly enables
+  /// [useRefreshTokens] when it is not set explicitly, and requires MRRT to be
+  /// enabled on your Auth0 tenant.
   Future<Credentials?> onLoad(
       {final int? authorizeTimeoutInSeconds,
       final CacheLocation? cacheLocation,
@@ -79,6 +85,7 @@ class Auth0Web {
       final bool? useFormData,
       final bool? useRefreshTokens,
       final bool? useRefreshTokensFallback,
+      final bool? useMrrt,
       final String? audience,
       final Set<String>? scopes,
       final Map<String, String> parameters = const {}}) async {
@@ -98,6 +105,7 @@ class Auth0Web {
             useFormData: useFormData,
             useRefreshTokens: useRefreshTokens,
             useRefreshTokensFallback: useRefreshTokensFallback,
+            useMrrt: useMrrt,
             audience: audience,
             scopes: scopes,
             parameters: {
@@ -367,6 +375,48 @@ class Auth0Web {
           scopes: scopes,
           organizationId: organizationId,
         ),
+      );
+
+  /// Retrieves a set of [ApiCredentials] scoped to a specific API ([audience])
+  /// by reusing the stored refresh token via Multi-Resource Refresh Tokens
+  /// (MRRT).
+  ///
+  /// Enable MRRT by passing `useMrrt: true` to [onLoad]. This exchanges the
+  /// single refresh token obtained at login for an access token valid for the
+  /// requested [audience], without requiring the user to log in again.
+  ///
+  /// Additional notes:
+  /// * [scopes] are the scopes to request for the new access token. If empty,
+  /// the default scopes configured for the API are used.
+  /// * Arbitrary [parameters] can be specified and then picked up in a custom
+  /// Auth0 [Action](https://auth0.com/docs/customize/actions).
+  ///
+  /// **Prerequisites:**
+  /// * MRRT must be enabled on your Auth0 tenant.
+  /// * The user must have logged in with the `offline_access` scope so that a
+  /// refresh token is available for the exchange.
+  ///
+  /// **Throws** a [WebException] if the exchange fails.
+  Future<ApiCredentials> getApiCredentials({
+    required final String audience,
+    final Set<String> scopes = const {},
+    final Map<String, String> parameters = const {},
+  }) =>
+      Auth0FlutterWebPlatform.instance.getApiCredentials(
+        GetApiCredentialsOptions(
+          audience: audience,
+          scopes: scopes,
+          parameters: parameters,
+        ),
+      );
+
+  /// Removes the stored API credentials for the given [audience].
+  Future<void> clearApiCredentials({
+    required final String audience,
+    final String? scope,
+  }) =>
+      Auth0FlutterWebPlatform.instance.clearApiCredentials(
+        ClearApiCredentialsOptions(audience: audience, scope: scope),
       );
 
   /// Indicates whether a user is currently authenticated.

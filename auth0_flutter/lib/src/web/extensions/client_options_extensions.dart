@@ -19,9 +19,10 @@ extension ClientOptionsExtension on ClientOptions {
           sessionCheckExpiryDays: sessionCheckExpiryInDays,
           useCookiesForTransactions: useCookiesForTransactions,
           useFormData: useFormData,
-          useRefreshTokens: useRefreshTokens,
+          useRefreshTokens: useRefreshTokens ?? useMrrt,
           useRefreshTokensFallback: useRefreshTokensFallback,
           useDpop: useDPoP,
+          useMrrt: useMrrt,
           authorizationParams: JsInteropUtils.stripNulls(
               JsInteropUtils.addCustomParams(
                   AuthorizationParams(
