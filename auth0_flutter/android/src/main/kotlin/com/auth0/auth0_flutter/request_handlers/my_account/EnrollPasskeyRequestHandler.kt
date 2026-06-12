@@ -44,8 +44,10 @@ class EnrollPasskeyRequestHandler : MyAccountRequestHandler {
             request.data
         )
 
-        val challengeMap = request.data["challenge"] as Map<*, *>
-        val credentialMap = request.data["credential"] as Map<*, *>
+        val challengeMap = request.data["challenge"] as? Map<*, *>
+            ?: throw IllegalArgumentException("Required property 'challenge' must be a map.")
+        val credentialMap = request.data["credential"] as? Map<*, *>
+            ?: throw IllegalArgumentException("Required property 'credential' must be a map.")
 
         val challenge = reconstructChallenge(challengeMap)
         val credentials = reconstructCredentials(credentialMap)
@@ -83,8 +85,12 @@ class EnrollPasskeyRequestHandler : MyAccountRequestHandler {
             AuthnParamsPublicKey::class.java
         )
         return PasskeyEnrollmentChallenge(
-            challengeMap["authenticationMethodId"] as String,
-            challengeMap["authSession"] as String,
+            challengeMap["authenticationMethodId"] as? String
+                ?: throw IllegalArgumentException(
+                    "Required property 'challenge.authenticationMethodId' must be a string."),
+            challengeMap["authSession"] as? String
+                ?: throw IllegalArgumentException(
+                    "Required property 'challenge.authSession' must be a string."),
             authParamsPublicKey
         )
     }
@@ -92,7 +98,9 @@ class EnrollPasskeyRequestHandler : MyAccountRequestHandler {
     private fun reconstructCredentials(
         credentialMap: Map<*, *>
     ): PublicKeyCredentials {
-        val response = credentialMap["response"] as Map<*, *>
+        val response = credentialMap["response"] as? Map<*, *>
+            ?: throw IllegalArgumentException(
+                "Required property 'credential.response' must be a map.")
         val clientExtensionResults =
             credentialMap["clientExtensionResults"] as? Map<*, *>
         val credProps = clientExtensionResults?.get("credProps") as? Map<*, *>
@@ -105,12 +113,20 @@ class EnrollPasskeyRequestHandler : MyAccountRequestHandler {
             clientExtensionResults = ClientExtensionResults(
                 credProps = CredProps(rk = residentKey)
             ),
-            id = credentialMap["id"] as String,
-            rawId = credentialMap["rawId"] as String,
+            id = credentialMap["id"] as? String
+                ?: throw IllegalArgumentException(
+                    "Required property 'credential.id' must be a string."),
+            rawId = credentialMap["rawId"] as? String
+                ?: throw IllegalArgumentException(
+                    "Required property 'credential.rawId' must be a string."),
             response = Response(
-                attestationObject = response["attestationObject"] as String,
+                attestationObject = response["attestationObject"] as? String
+                    ?: throw IllegalArgumentException(
+                        "Required property 'credential.response.attestationObject' must be a string."),
                 authenticatorData = (response["authenticatorData"] as? String) ?: "",
-                clientDataJSON = response["clientDataJSON"] as String,
+                clientDataJSON = response["clientDataJSON"] as? String
+                    ?: throw IllegalArgumentException(
+                        "Required property 'credential.response.clientDataJSON' must be a string."),
                 transports = (response["transports"] as? List<*>)
                     ?.filterIsInstance<String>() ?: emptyList(),
                 signature = (response["signature"] as? String) ?: "",

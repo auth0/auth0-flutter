@@ -139,6 +139,110 @@ class EnrollPasskeyRequestHandlerTest {
         verify(mockResult).error(eq("server_error"), eq("Server error"), any())
     }
 
+    @Test
+    fun `should throw when challenge is not a map`() {
+        // assertHasProperties fires first because tryGetByKey returns null for a
+        // non-Map value; the message still identifies the bad field.
+        val handler = EnrollPasskeyRequestHandler()
+        val mockResult = mock<Result>()
+        val mockAccount = mock<Auth0>()
+        val mockClient = mock<MyAccountAPIClient>()
+        val request = MethodCallRequest(
+            account = mockAccount,
+            hashMapOf<String, Any>(
+                "challenge" to "not-a-map",
+                "credential" to credentialMap()
+            )
+        )
+
+        val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
+            handler.handle(mockClient, request, mockResult)
+        }
+
+        assertThat(
+            exception.message,
+            equalTo("Required property 'challenge.authSession' is not provided.")
+        )
+    }
+
+    @Test
+    fun `should throw when credential is not a map`() {
+        // assertHasProperties fires first because tryGetByKey returns null for a
+        // non-Map value; the message identifies the first missing nested field.
+        val handler = EnrollPasskeyRequestHandler()
+        val mockResult = mock<Result>()
+        val mockAccount = mock<Auth0>()
+        val mockClient = mock<MyAccountAPIClient>()
+        val request = MethodCallRequest(
+            account = mockAccount,
+            hashMapOf<String, Any>(
+                "challenge" to challengeMap(),
+                "credential" to "not-a-map"
+            )
+        )
+
+        val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
+            handler.handle(mockClient, request, mockResult)
+        }
+
+        assertThat(
+            exception.message,
+            equalTo("Required property 'credential.id' is not provided.")
+        )
+    }
+
+    @Test
+    fun `should throw when authenticationMethodId is not a string`() {
+        val handler = EnrollPasskeyRequestHandler()
+        val mockResult = mock<Result>()
+        val mockAccount = mock<Auth0>()
+        val mockClient = mock<MyAccountAPIClient>()
+        val challenge = challengeMap()
+        challenge["authenticationMethodId"] = 42
+        val request = MethodCallRequest(
+            account = mockAccount,
+            hashMapOf<String, Any>(
+                "challenge" to challenge,
+                "credential" to credentialMap()
+            )
+        )
+
+        val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
+            handler.handle(mockClient, request, mockResult)
+        }
+
+        assertThat(
+            exception.message,
+            equalTo("Required property 'challenge.authenticationMethodId' must be a string.")
+        )
+    }
+
+    @Test
+    fun `should throw when authSession is not a string`() {
+        val handler = EnrollPasskeyRequestHandler()
+        val mockResult = mock<Result>()
+        val mockAccount = mock<Auth0>()
+        val mockClient = mock<MyAccountAPIClient>()
+        val challenge = challengeMap()
+        challenge["authSession"] = 42
+        val request = MethodCallRequest(
+            account = mockAccount,
+            hashMapOf<String, Any>(
+                "challenge" to challenge,
+                "credential" to credentialMap()
+            )
+        )
+
+        val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
+            handler.handle(mockClient, request, mockResult)
+        }
+
+        assertThat(
+            exception.message,
+            equalTo("Required property 'challenge.authSession' must be a string.")
+        )
+    }
+
     @Test(expected = IllegalArgumentException::class)
     fun `should throw when challenge is missing`() {
         val handler = EnrollPasskeyRequestHandler()

@@ -120,6 +120,74 @@ class PasskeyCredentialExchangeApiRequestHandlerTest {
     }
 
     @Test
+    fun `should throw when challenge is not a map`() {
+        // assertHasProperties fires first because tryGetByKey returns null for a
+        // non-Map; the resulting message still clearly identifies the bad field.
+        val options = hashMapOf<String, Any>(
+            "challenge" to "not-a-map",
+            "credential" to loginCredentialMap()
+        )
+        val handler = PasskeyCredentialExchangeApiRequestHandler()
+        val mockApi = mock<AuthenticationAPIClient>()
+        val mockAccount = mock<Auth0>()
+        val mockResult = mock<Result>()
+        val request = MethodCallRequest(account = mockAccount, options)
+
+        val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
+            handler.handle(mockApi, request, mockResult)
+        }
+
+        assertThat(
+            exception.message,
+            equalTo("Required property 'challenge.authSession' is not provided.")
+        )
+    }
+
+    @Test
+    fun `should throw when authSession is not a string`() {
+        val options = hashMapOf<String, Any>(
+            "challenge" to mapOf("authSession" to 42),
+            "credential" to loginCredentialMap()
+        )
+        val handler = PasskeyCredentialExchangeApiRequestHandler()
+        val mockApi = mock<AuthenticationAPIClient>()
+        val mockAccount = mock<Auth0>()
+        val mockResult = mock<Result>()
+        val request = MethodCallRequest(account = mockAccount, options)
+
+        val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
+            handler.handle(mockApi, request, mockResult)
+        }
+
+        assertThat(
+            exception.message,
+            equalTo("Required property 'challenge.authSession' must be a string.")
+        )
+    }
+
+    @Test
+    fun `should throw when credential is not a map`() {
+        val options = hashMapOf<String, Any>(
+            "challenge" to challengeMap(),
+            "credential" to "not-a-map"
+        )
+        val handler = PasskeyCredentialExchangeApiRequestHandler()
+        val mockApi = mock<AuthenticationAPIClient>()
+        val mockAccount = mock<Auth0>()
+        val mockResult = mock<Result>()
+        val request = MethodCallRequest(account = mockAccount, options)
+
+        val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
+            handler.handle(mockApi, request, mockResult)
+        }
+
+        assertThat(
+            exception.message,
+            equalTo("Required property 'credential' must be a map.")
+        )
+    }
+
+    @Test
     fun `should call signinWithPasskey and configure scope, audience and parameters`() {
         val options = hashMapOf<String, Any>(
             "challenge" to challengeMap(),

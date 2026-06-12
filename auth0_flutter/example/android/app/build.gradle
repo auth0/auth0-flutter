@@ -94,11 +94,6 @@ flutter {
 
 dependencies {
     kover(project(":auth0_flutter"))
-
-    // Credential Manager — used by the example's PasskeyAuthenticator to present
-    // the OS passkey UI. The auth0_flutter SDK does not present this UI itself.
-    implementation 'androidx.credentials:credentials:1.3.0'
-    implementation 'androidx.credentials:credentials-play-services-auth:1.3.0'
 }
 
 koverReport {

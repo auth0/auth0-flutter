@@ -36,9 +36,12 @@ class PasskeyCredentialExchangeApiRequestHandler : ApiRequestHandler {
 
         assertHasProperties(listOf("challenge.authSession", "credential"), args)
 
-        val challenge = args["challenge"] as Map<*, *>
-        val authSession = challenge["authSession"] as String
-        val credentialMap = args["credential"] as Map<*, *>
+        val challenge = args["challenge"] as? Map<*, *>
+            ?: throw IllegalArgumentException("Required property 'challenge' must be a map.")
+        val authSession = challenge["authSession"] as? String
+            ?: throw IllegalArgumentException("Required property 'challenge.authSession' must be a string.")
+        val credentialMap = args["credential"] as? Map<*, *>
+            ?: throw IllegalArgumentException("Required property 'credential' must be a map.")
 
         val connection = args["connection"] as? String
         val organization = args["organization"] as? String

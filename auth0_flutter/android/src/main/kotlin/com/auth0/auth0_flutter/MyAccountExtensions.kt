@@ -13,6 +13,7 @@ import com.auth0.android.result.RecoveryCodeEnrollmentChallenge
 import com.auth0.android.result.TotpAuthenticationMethod
 import com.auth0.android.result.TotpEnrollmentChallenge
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 fun AuthenticationMethod.toMyAccountMethodMap(): Map<String, Any?> {
     return buildMap {
@@ -67,16 +68,17 @@ fun PasskeyAuthenticationMethod.toMyAccountPasskeyMethodMap(): Map<String, Any?>
 }
 
 fun PasskeyEnrollmentChallenge.toMyAccountPasskeyChallengeMap(): Map<String, Any?> {
-    // Forward the full WebAuthn creation options so the create-credential step
-    // can pass them to the platform authenticator verbatim.
-    val authParamsPublicKey: Map<*, *> = Gson().fromJson(
-        Gson().toJson(authParamsPublicKey),
-        Map::class.java
+    val gson = Gson()
+    // AuthnParamsPublicKey is a typed data class; convert via JSON tree to avoid
+    // a toJson()/fromJson(String) round-trip through an intermediate String.
+    val authParamsPublicKeyMap: Map<String, Any> = gson.fromJson(
+        gson.toJsonTree(authParamsPublicKey),
+        object : TypeToken<Map<String, Any>>() {}.type
     )
     return buildMap {
         put("authenticationMethodId", authenticationMethodId)
         put("authSession", authSession)
-        put("authParamsPublicKey", authParamsPublicKey)
+        put("authParamsPublicKey", authParamsPublicKeyMap)
     }
 }
 
