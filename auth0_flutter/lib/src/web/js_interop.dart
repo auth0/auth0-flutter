@@ -46,11 +46,13 @@ extension type RedirectLoginOptions._(JSObject _) implements JSObject {
   external JSAny? get appState;
   external AuthorizationParams? get authorizationParams;
   external String? get fragment;
+  external Future<void> Function(String url)? openUrl;
 
   external factory RedirectLoginOptions({
     final JSAny? appState,
     final AuthorizationParams authorizationParams,
     final String fragment,
+    final Future<void> Function(String url)? openUrl,
   });
 }
 
@@ -172,8 +174,12 @@ extension type LogoutParams._(JSObject _) implements JSObject {
 @anonymous
 extension type LogoutOptions._(JSObject _) implements JSObject {
   external LogoutParams? get logoutParams;
+  external Future<void> Function(String url)? openUrl;
 
-  external factory LogoutOptions({final LogoutParams? logoutParams});
+  external factory LogoutOptions({
+    final LogoutParams? logoutParams,
+    final Future<void> Function(String url)? openUrl,
+  });
 }
 
 @JS()
@@ -237,7 +243,7 @@ extension type Auth0Client._(JSObject _) implements JSObject {
     final ExchangeTokenOptions options,
   );
   external JSPromise<JSBoolean> isAuthenticated();
-  external JSPromise<JSAny?> logout([final LogoutOptions? logoutParams]);
+  external JSPromise<JSAny?> logout([final LogoutOptions? logoutOptions]);
 }
 
 // TODO: remove this extension when updating to Dart 3.6.0
