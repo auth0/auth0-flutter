@@ -1,0 +1,1 @@
+../../darwin/Classes/Auth0FlutterPlugin.m
