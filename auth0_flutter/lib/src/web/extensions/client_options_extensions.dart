@@ -19,7 +19,7 @@ extension ClientOptionsExtension on ClientOptions {
           sessionCheckExpiryDays: sessionCheckExpiryInDays,
           useCookiesForTransactions: useCookiesForTransactions,
           useFormData: useFormData,
-          useRefreshTokens: useRefreshTokens ?? useMrrt,
+          useRefreshTokens: useMrrt == true ? true : useRefreshTokens,
           useRefreshTokensFallback: useRefreshTokensFallback,
           useDpop: useDPoP,
           useMrrt: useMrrt,

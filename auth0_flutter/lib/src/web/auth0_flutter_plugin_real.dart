@@ -199,13 +199,10 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   @override
   Future<void> clearApiCredentials(
       final ClearApiCredentialsOptions options) async {
-    final scopeInfo =
-        options.scope != null ? ' and scope ${options.scope}' : '';
-    final message =
-        "'clearApiCredentials' for audience ${options.audience}$scopeInfo "
-        'is a no-op on the web. auth0-spa-js handles credential storage '
-        'automatically.';
-    console.warn(message.toJS);
+    console.warn(
+        "'clearApiCredentials' is not supported on the web. auth0-spa-js "
+                'handles credential storage automatically.'
+            .toJS);
   }
 
   @override

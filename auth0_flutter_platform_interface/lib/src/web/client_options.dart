@@ -115,8 +115,8 @@ class ClientOptions {
   /// single refresh token to be reused to obtain access tokens for multiple
   /// APIs (audiences).
   ///
-  /// MRRT requires refresh tokens, so enabling this implicitly enables
-  /// [useRefreshTokens] when it has not been set explicitly.
+  /// MRRT requires refresh tokens, so enabling this forces [useRefreshTokens]
+  /// on, overriding it even if it was explicitly set to `false`.
   ///
   /// Defaults to `false`. Requires MRRT to be enabled on the Auth0 tenant.
   final bool? useMrrt;

@@ -25,14 +25,14 @@ void main() {
       expect(_readBool(result, 'useRefreshTokens'), true);
     });
 
-    test('explicit useRefreshTokens is preserved when useMrrt is true', () {
+    test('useMrrt forces refresh tokens on even when set to false', () {
       final options = ClientOptions(
           account: account, useMrrt: true, useRefreshTokens: false);
 
       final result = options.toAuth0ClientOptions(userAgent) as JSObject;
 
       expect(_readBool(result, 'useMrrt'), true);
-      expect(_readBool(result, 'useRefreshTokens'), false);
+      expect(_readBool(result, 'useRefreshTokens'), true);
     });
 
     test('useMrrt is not enabled by default', () {

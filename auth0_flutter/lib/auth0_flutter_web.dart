@@ -69,9 +69,9 @@ class Auth0Web {
   /// * [useMrrt] enables Multi-Resource Refresh Tokens, allowing a single
   /// refresh token to be reused to obtain access tokens for multiple APIs
   /// (audiences). Once enabled, request per-audience tokens via
-  /// [getApiCredentials] or [credentials]. Enabling this implicitly enables
-  /// [useRefreshTokens] when it is not set explicitly, and requires MRRT to be
-  /// enabled on your Auth0 tenant.
+  /// [getApiCredentials]. Enabling this forces [useRefreshTokens] on (even if
+  /// it was explicitly set to `false`), and requires MRRT to be enabled on your
+  /// Auth0 tenant.
   Future<Credentials?> onLoad(
       {final int? authorizeTimeoutInSeconds,
       final CacheLocation? cacheLocation,
@@ -410,7 +410,12 @@ class Auth0Web {
         ),
       );
 
-  /// Removes the stored API credentials for the given [audience].
+  /// No-op on the web, kept for cross-platform API parity.
+  ///
+  /// `auth0-spa-js` manages API token caching internally and exposes no
+  /// single-audience eviction API, so this completes without removing anything
+  /// and logs a warning to the browser console. The [audience] and [scope]
+  /// arguments are accepted only for consistency with the mobile API.
   Future<void> clearApiCredentials({
     required final String audience,
     final String? scope,
