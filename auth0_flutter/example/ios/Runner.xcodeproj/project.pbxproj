@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		06FCF69BF7F84D607295C71B /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C5483C34779CA72998DEA52 /* Pods_RunnerTests.framework */; };
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		2D82163828F9A89300467FD1 /* AuthAPILoginWithOTPMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D82163728F9A89300467FD1 /* AuthAPILoginWithOTPMethodHandlerTests.swift */; };
-		A1B2C3D42AECB46A00862998 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D32AECB46A00862998 /* FlutterGeneratedPluginSwiftPackage */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		5C08DBC8288A7646000D2F37 /* CredentialsManagerExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C08DBC7288A7646000D2F37 /* CredentialsManagerExtensionsTests.swift */; };
 		5C328B4827F7822600451E70 /* WebAuthHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C328B4727F7822600451E70 /* WebAuthHandlerTests.swift */; };
@@ -27,9 +27,6 @@
 		5C4E65C5286D1CFB00141449 /* CredentialsManagerHasValidMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4E65C4286D1CFB00141449 /* CredentialsManagerHasValidMethodHandlerTests.swift */; };
 		5C4E65C7286D24A900141449 /* CredentialsManagerSaveMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4E65C6286D24A900141449 /* CredentialsManagerSaveMethodHandlerTests.swift */; };
 		5C4E65C9286D26D800141449 /* CredentialsManagerGetMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4E65C8286D26D800141449 /* CredentialsManagerGetMethodHandlerTests.swift */; };
-		A09B2E3F1D4C7891BA000002 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A09B2E3F1D4C7891BA000001 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift */; };
-		A0AC1D0F2E0000000000AC02 /* CredentialsManagerApiCredentialsMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AC1D0F2E0000000000AC01 /* CredentialsManagerApiCredentialsMethodHandlerTests.swift */; };
-		A0AC1D0F2E0000000000AC04 /* CredentialsManagerClearApiCredentialsMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AC1D0F2E0000000000AC03 /* CredentialsManagerClearApiCredentialsMethodHandlerTests.swift */; };
 		5C59DA6527FFCF0600365CDB /* AuthAPIHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C59DA6427FFCF0600365CDB /* AuthAPIHandlerTests.swift */; };
 		5C59DA6727FFE75600365CDB /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C59DA6627FFE75600365CDB /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift */; };
 		5C59DA6928011D4F00365CDB /* AuthAPISignupMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C59DA6828011D4F00365CDB /* AuthAPISignupMethodHandlerTests.swift */; };
@@ -43,9 +40,14 @@
 		5CAAA4A2281A0C7D007666F1 /* ModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CAAA4A1281A0C7D007666F1 /* ModelsTests.swift */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */; };
+		82FCE04B4D34064CD03272F0 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22621E40BED0AB508F0967BC /* Pods_Runner.framework */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		A09B2E3F1D4C7891BA000002 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A09B2E3F1D4C7891BA000001 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift */; };
+		A0AC1D0F2E0000000000AC02 /* CredentialsManagerApiCredentialsMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AC1D0F2E0000000000AC01 /* CredentialsManagerApiCredentialsMethodHandlerTests.swift */; };
+		A0AC1D0F2E0000000000AC04 /* CredentialsManagerClearApiCredentialsMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AC1D0F2E0000000000AC03 /* CredentialsManagerClearApiCredentialsMethodHandlerTests.swift */; };
+		A1B2C3D42AECB46A00862998 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = A1B2C3D32AECB46A00862998 /* FlutterGeneratedPluginSwiftPackage */; };
 		B0CA00020000000000000001 /* MyAccountSpies.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA00010000000000000001 /* MyAccountSpies.swift */; };
 		B0CA00020000000000000002 /* MyAccountDeleteAuthMethodMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA00010000000000000002 /* MyAccountDeleteAuthMethodMethodHandlerTests.swift */; };
 		B0CA00020000000000000003 /* MyAccountEnrollEmailMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA00010000000000000003 /* MyAccountEnrollEmailMethodHandlerTests.swift */; };
@@ -98,10 +100,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0385195E6E4B40D5D2CAE9CF /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
+		22621E40BED0AB508F0967BC /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D82163728F9A89300467FD1 /* AuthAPILoginWithOTPMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPILoginWithOTPMethodHandlerTests.swift; sourceTree = "<group>"; };
+		30E92729F56505552C6FEAB6 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
+		3C5483C34779CA72998DEA52 /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		50097CA0E4860ED2F61D15E4 /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5C08DBC7288A7646000D2F37 /* CredentialsManagerExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerExtensionsTests.swift; sourceTree = "<group>"; };
 		5C328B4527F7822600451E70 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C328B4727F7822600451E70 /* WebAuthHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthHandlerTests.swift; sourceTree = "<group>"; };
@@ -119,9 +126,6 @@
 		5C4E65C4286D1CFB00141449 /* CredentialsManagerHasValidMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerHasValidMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C4E65C6286D24A900141449 /* CredentialsManagerSaveMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerSaveMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C4E65C8286D26D800141449 /* CredentialsManagerGetMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerGetMethodHandlerTests.swift; sourceTree = "<group>"; };
-		A09B2E3F1D4C7891BA000001 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerSSOCredentialsMethodHandlerTests.swift; sourceTree = "<group>"; };
-		A0AC1D0F2E0000000000AC01 /* CredentialsManagerApiCredentialsMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerApiCredentialsMethodHandlerTests.swift; sourceTree = "<group>"; };
-		A0AC1D0F2E0000000000AC03 /* CredentialsManagerClearApiCredentialsMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerClearApiCredentialsMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C59DA6427FFCF0600365CDB /* AuthAPIHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPIHandlerTests.swift; sourceTree = "<group>"; };
 		5C59DA6627FFE75600365CDB /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPILoginUsernameOrEmailMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C59DA6828011D4F00365CDB /* AuthAPISignupMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPISignupMethodHandlerTests.swift; sourceTree = "<group>"; };
@@ -137,6 +141,9 @@
 		5CAAA4A1281A0C7D007666F1 /* ModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelsTests.swift; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		784666492D4C4C64000A1A5F /* FlutterFramework */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterFramework; path = Flutter/ephemeral/Packages/.packages/FlutterFramework; sourceTree = "<group>"; };
+		78DABEA22ED26510000E7860 /* auth0_flutter */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = auth0_flutter; path = ../../darwin/auth0_flutter; sourceTree = "<group>"; };
+		78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterGeneratedPluginSwiftPackage; path = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
@@ -145,9 +152,9 @@
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		78E0A7A72DC9AD7400C4905E /* FlutterGeneratedPluginSwiftPackage */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterGeneratedPluginSwiftPackage; path = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage; sourceTree = "<group>"; };
-		784666492D4C4C64000A1A5F /* FlutterFramework */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterFramework; path = Flutter/ephemeral/Packages/.packages/FlutterFramework; sourceTree = "<group>"; };
-		78DABEA22ED26510000E7860 /* auth0_flutter */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = auth0_flutter; path = ../../darwin/auth0_flutter; sourceTree = "<group>"; };
+		A09B2E3F1D4C7891BA000001 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerSSOCredentialsMethodHandlerTests.swift; sourceTree = "<group>"; };
+		A0AC1D0F2E0000000000AC01 /* CredentialsManagerApiCredentialsMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerApiCredentialsMethodHandlerTests.swift; sourceTree = "<group>"; };
+		A0AC1D0F2E0000000000AC03 /* CredentialsManagerClearApiCredentialsMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerClearApiCredentialsMethodHandlerTests.swift; sourceTree = "<group>"; };
 		B0CA00010000000000000001 /* MyAccountSpies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountSpies.swift; sourceTree = "<group>"; };
 		B0CA00010000000000000002 /* MyAccountDeleteAuthMethodMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountDeleteAuthMethodMethodHandlerTests.swift; sourceTree = "<group>"; };
 		B0CA00010000000000000003 /* MyAccountEnrollEmailMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountEnrollEmailMethodHandlerTests.swift; sourceTree = "<group>"; };
@@ -163,6 +170,9 @@
 		B0CA0001000000000000000D /* MyAccountUpdateAuthMethodMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountUpdateAuthMethodMethodHandlerTests.swift; sourceTree = "<group>"; };
 		B0CA0001000000000000000E /* MyAccountEnrollPasskeyChallengeMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountEnrollPasskeyChallengeMethodHandlerTests.swift; sourceTree = "<group>"; };
 		B0CA0001000000000000000F /* MyAccountEnrollPasskeyMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountEnrollPasskeyMethodHandlerTests.swift; sourceTree = "<group>"; };
+		B53DC26EF5BF473819173843 /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
+		ED10EF5476E15471E11081E4 /* Pods-RunnerTests.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.profile.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.profile.xcconfig"; sourceTree = "<group>"; };
+		F4387C1CC70C6144C6484B93 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		PK00000000000000000003 /* AuthAPIPasskeyLoginChallengeMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIPasskeyLoginChallengeMethodHandlerTests.swift; sourceTree = "<group>"; };
 		PK00000000000000000006 /* AuthAPIPasskeyExtensionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIPasskeyExtensionsTests.swift; sourceTree = "<group>"; };
 		PK10000000000000000003 /* AuthAPIPasskeySignupChallengeMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIPasskeySignupChallengeMethodHandlerTests.swift; sourceTree = "<group>"; };
@@ -175,6 +185,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1B2C3D42AECB46A00862998 /* FlutterGeneratedPluginSwiftPackage in Frameworks */,
+				06FCF69BF7F84D607295C71B /* Pods_RunnerTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -190,12 +201,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */,
+				82FCE04B4D34064CD03272F0 /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		580B3B91EC8E84DE36DB36EC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				22621E40BED0AB508F0967BC /* Pods_Runner.framework */,
+				3C5483C34779CA72998DEA52 /* Pods_RunnerTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		5C328B4627F7822600451E70 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -270,6 +291,20 @@
 			path = UITests;
 			sourceTree = "<group>";
 		};
+		864738979C51BD93855BAF3A /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				0385195E6E4B40D5D2CAE9CF /* Pods-Runner.debug.xcconfig */,
+				30E92729F56505552C6FEAB6 /* Pods-Runner.release.xcconfig */,
+				F4387C1CC70C6144C6484B93 /* Pods-Runner.profile.xcconfig */,
+				50097CA0E4860ED2F61D15E4 /* Pods-RunnerTests.debug.xcconfig */,
+				B53DC26EF5BF473819173843 /* Pods-RunnerTests.release.xcconfig */,
+				ED10EF5476E15471E11081E4 /* Pods-RunnerTests.profile.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		9740EEB11CF90186004384FC /* Flutter */ = {
 			isa = PBXGroup;
 			children = (
@@ -292,6 +327,8 @@
 				5C328B4627F7822600451E70 /* Tests */,
 				5C59DA95280958FB00365CDB /* UITests */,
 				97C146EF1CF9000F007C117D /* Products */,
+				864738979C51BD93855BAF3A /* Pods */,
+				580B3B91EC8E84DE36DB36EC /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -350,6 +387,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5C328B4E27F7822600451E70 /* Build configuration list for PBXNativeTarget "RunnerTests" */;
 			buildPhases = (
+				F3657A947D4D019FEC8C29B2 /* [CP] Check Pods Manifest.lock */,
 				5C328B4127F7822600451E70 /* Sources */,
 				5C328B4227F7822600451E70 /* Frameworks */,
 				5C328B4327F7822600451E70 /* Resources */,
@@ -389,6 +427,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 97C147051CF9000F007C117D /* Build configuration list for PBXNativeTarget "Runner" */;
 			buildPhases = (
+				6CB688709F2751765277EB52 /* [CP] Check Pods Manifest.lock */,
 				9740EEB61CF901F6004384FC /* Run Script */,
 				97C146EA1CF9000F007C117D /* Sources */,
 				97C146EB1CF9000F007C117D /* Frameworks */,
@@ -500,6 +539,28 @@
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin\n";
 		};
+		6CB688709F2751765277EB52 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Runner-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		9740EEB61CF901F6004384FC /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
@@ -514,6 +575,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build\n";
+		};
+		F3657A947D4D019FEC8C29B2 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-RunnerTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
