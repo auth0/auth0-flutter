@@ -1,13 +1,12 @@
 {
-  "originHash" : "3c279fd5c5483a7b76f5c53ea753e7e0bf2ac6c3ac0d932844d1239b906e972c",
   "pins" : [
     {
       "identity" : "auth0.swift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/auth0/Auth0.swift",
       "state" : {
-        "revision" : "4ef92edb3c4b630d541a1b28f410bf0095e81c60",
-        "version" : "2.18.0"
+        "revision" : "b07565e7c859906815411d441a94e2c3c1f36085",
+        "version" : "2.22.0"
       }
     },
     {
@@ -29,5 +28,5 @@
       }
     }
   ],
-  "version" : 3
+  "version" : 2
 }
