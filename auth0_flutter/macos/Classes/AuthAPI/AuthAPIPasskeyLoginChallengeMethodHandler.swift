@@ -1,1 +1,1 @@
-../../../darwin/Classes/AuthAPI/AuthAPIPasskeyLoginChallengeMethodHandler.swift
+../../../darwin/auth0_flutter/Sources/auth0_flutter/AuthAPI/AuthAPIPasskeyLoginChallengeMethodHandler.swift
