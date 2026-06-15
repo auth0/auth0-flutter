@@ -1,6 +1,12 @@
 import XCTest
 import Auth0
 
+#if os(iOS)
+import Flutter
+#else
+import FlutterMacOS
+#endif
+
 @testable import auth0_flutter
 
 class WebAuthHandlerTests: XCTestCase {

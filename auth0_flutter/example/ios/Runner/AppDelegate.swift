@@ -1,6 +1,5 @@
 import UIKit
 import Flutter
-import Auth0
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -15,12 +14,4 @@ import Auth0
         }
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
-    
-    override func application(
-        _ application: UIApplication,
-        open url: URL,
-        options: [UIApplication.OpenURLOptionsKey: Any]) -> Bool {
-                WebAuthentication.resume(with: url)
-            return super.application(application, open: url, options: options);
-        }
 }

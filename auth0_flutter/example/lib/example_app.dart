@@ -61,7 +61,6 @@ class _ExampleAppState extends State<ExampleApp> {
           appCustomURL: 'auth0flutter://callback',
           authTimeout: const Duration(minutes: 5),
         );
-
         setState(() {
           _isLoggedIn = true;
         });
