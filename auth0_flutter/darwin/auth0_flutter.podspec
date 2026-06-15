@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name         = 'auth0_flutter'
-  s.version      = '2.1.0'
+  s.version      = '2.2.0'
   s.summary      = 'Auth0 SDK for Flutter'
   s.description  = 'Auth0 SDK for Flutter Android, iOS, macOS, Windows, and web apps.'
   s.homepage     = 'https://auth0.com'
@@ -19,11 +19,11 @@ Pod::Spec.new do |s|
   s.osx.deployment_target = '11.0'
   s.osx.dependency 'FlutterMacOS'
 
-  s.dependency 'Auth0', '2.18.0'
+  s.dependency 'Auth0', '2.21.2'
   s.dependency 'JWTDecode', '3.3.0'
   s.dependency 'SimpleKeychain', '1.3.0'
 
   # Flutter.framework does not contain a i386 slice.
-  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
+  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386', 'SWIFT_ACTIVE_COMPILATION_CONDITIONS' => '$(inherited) PASSKEYS_PLATFORM' }
   s.swift_version       = ['5.7', '5.8', '5.9']
 end
