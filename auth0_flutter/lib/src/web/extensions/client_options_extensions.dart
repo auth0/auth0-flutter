@@ -19,6 +19,10 @@ extension ClientOptionsExtension on ClientOptions {
           sessionCheckExpiryDays: sessionCheckExpiryInDays,
           useCookiesForTransactions: useCookiesForTransactions,
           useFormData: useFormData,
+          // MRRT requires refresh tokens, so enabling it forces them on even
+          // if `useRefreshTokens` was explicitly set to false. `== true`
+          // null-guards the nullable flag (a bare `useMrrt ?` is not a valid
+          // bool condition).
           useRefreshTokens: useMrrt == true ? true : useRefreshTokens,
           useRefreshTokensFallback: useRefreshTokensFallback,
           useDpop: useDPoP,
