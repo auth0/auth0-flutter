@@ -1,1 +1,1 @@
-../../auth0_flutter/Sources/auth0_flutter/CredentialsManager/ApiCredentialsMethodHandler.swift
+../../../../auth0_flutter/Sources/auth0_flutter/CredentialsManager/ApiCredentialsMethodHandler.swift

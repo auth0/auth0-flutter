@@ -1,1 +1,1 @@
-../../../darwin/Classes/MyAccountAPI/MyAccountEnrollPushMethodHandler.swift
+../../../../darwin/Classes/MyAccountAPI/MyAccountEnrollPushMethodHandler.swift

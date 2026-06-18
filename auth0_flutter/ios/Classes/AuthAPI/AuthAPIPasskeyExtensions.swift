@@ -1,1 +1,1 @@
-../../../darwin/auth0_flutter/Sources/auth0_flutter/AuthAPI/AuthAPIPasskeyExtensions.swift
+../../../../darwin/Classes/AuthAPI/AuthAPIPasskeyExtensions.swift

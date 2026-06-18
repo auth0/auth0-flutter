@@ -1,1 +1,1 @@
-../../../darwin/Classes/MyAccountAPI/MyAccountGetFactorsMethodHandler.swift
+../../../../darwin/Classes/MyAccountAPI/MyAccountGetFactorsMethodHandler.swift

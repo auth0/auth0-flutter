@@ -1,1 +1,1 @@
-../../auth0_flutter/Sources/auth0_flutter/CredentialsManager/CredentialsManagerHasValidMethodHandler.swift
+../../../../auth0_flutter/Sources/auth0_flutter/CredentialsManager/CredentialsManagerHasValidMethodHandler.swift

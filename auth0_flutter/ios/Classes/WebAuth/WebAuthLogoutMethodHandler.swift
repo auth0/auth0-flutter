@@ -1,1 +1,1 @@
-../../../darwin/Classes/WebAuth/WebAuthLogoutMethodHandler.swift
+../../../../darwin/Classes/WebAuth/WebAuthLogoutMethodHandler.swift

@@ -1,1 +1,1 @@
-../../auth0_flutter/Sources/auth0_flutter/AuthAPI/AuthAPILoginWithEmailMethodHandler.swift
+../../../../auth0_flutter/Sources/auth0_flutter/AuthAPI/AuthAPILoginWithEmailMethodHandler.swift

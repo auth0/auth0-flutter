@@ -1,1 +1,1 @@
-../../../darwin/Classes/MyAccountAPI/MyAccountVerifyOtpMethodHandler.swift
+../../../../darwin/Classes/MyAccountAPI/MyAccountVerifyOtpMethodHandler.swift

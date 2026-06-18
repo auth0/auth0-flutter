@@ -1,1 +1,1 @@
-../../../darwin/auth0_flutter/Sources/auth0_flutter/CredentialsManager/ClearApiCredentialsMethodHandler.swift
+../../../../darwin/Classes/CredentialsManager/ClearApiCredentialsMethodHandler.swift

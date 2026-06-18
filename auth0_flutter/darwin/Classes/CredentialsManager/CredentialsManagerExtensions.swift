@@ -1,1 +1,1 @@
-../../auth0_flutter/Sources/auth0_flutter/CredentialsManager/CredentialsManagerExtensions.swift
+../../../../auth0_flutter/Sources/auth0_flutter/CredentialsManager/CredentialsManagerExtensions.swift
