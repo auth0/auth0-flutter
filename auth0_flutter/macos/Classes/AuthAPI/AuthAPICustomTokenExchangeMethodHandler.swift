@@ -1,1 +1,1 @@
-../../../darwin/Classes/AuthAPI/AuthAPICustomTokenExchangeMethodHandler.swift
+../../../../darwin/Classes/AuthAPI/AuthAPICustomTokenExchangeMethodHandler.swift

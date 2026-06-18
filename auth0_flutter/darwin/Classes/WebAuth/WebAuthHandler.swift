@@ -1,1 +1,1 @@
-../../auth0_flutter/Sources/auth0_flutter/WebAuth/WebAuthHandler.swift
+../../../../auth0_flutter/Sources/auth0_flutter/WebAuth/WebAuthHandler.swift

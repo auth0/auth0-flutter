@@ -1,1 +1,1 @@
-../../../darwin/Classes/AuthAPI/AuthAPILoginWithPhoneNumberMethodHandler.swift
+../../../../darwin/Classes/AuthAPI/AuthAPILoginWithPhoneNumberMethodHandler.swift
