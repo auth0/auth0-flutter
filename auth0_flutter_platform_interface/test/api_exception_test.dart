@@ -282,4 +282,63 @@ void main() {
     final exception = ApiException.fromPlatformException(platformException);
     expect(exception.isRetryable, false);
   });
+
+  group('mfaRequirements', () {
+    test('returns null when mfa_requirements is not present', () async {
+      const details = <String, dynamic>{};
+      final platformException =
+          PlatformException(code: 'mfa_required', details: details);
+
+      final exception = ApiException.fromPlatformException(platformException);
+      expect(exception.mfaRequirements, null);
+    });
+
+    test('returns null when mfa_requirements is not a map', () async {
+      final details = {'mfa_requirements': 'not-a-map'};
+      final platformException =
+          PlatformException(code: 'mfa_required', details: details);
+
+      final exception = ApiException.fromPlatformException(platformException);
+      expect(exception.mfaRequirements, null);
+    });
+
+    test('parses challenge and enroll factors', () async {
+      final details = {
+        'mfa_requirements': {
+          'challenge': [
+            {'type': 'otp'},
+            {'type': 'oob'}
+          ],
+          'enroll': [
+            {'type': 'push-notification'}
+          ]
+        }
+      };
+      final platformException =
+          PlatformException(code: 'mfa_required', details: details);
+
+      final exception = ApiException.fromPlatformException(platformException);
+      final requirements = exception.mfaRequirements;
+
+      expect(requirements, isNotNull);
+      expect(
+          requirements!.challenge.map((final f) => f.type), ['otp', 'oob']);
+      expect(
+          requirements.enroll.map((final f) => f.type), ['push-notification']);
+    });
+
+    test('defaults to empty lists when challenge and enroll omitted',
+        () async {
+      final details = {'mfa_requirements': <String, dynamic>{}};
+      final platformException =
+          PlatformException(code: 'mfa_required', details: details);
+
+      final exception = ApiException.fromPlatformException(platformException);
+      final requirements = exception.mfaRequirements;
+
+      expect(requirements, isNotNull);
+      expect(requirements!.challenge, isEmpty);
+      expect(requirements.enroll, isEmpty);
+    });
+  });
 }

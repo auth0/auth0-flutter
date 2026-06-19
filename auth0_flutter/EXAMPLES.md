@@ -55,6 +55,12 @@
   - [Enrolling a passkey](#enrolling-a-passkey)
   - [Using DPoP](#using-dpop)
   - [Errors](#errors-3)
+- [📱 Multi-Factor Authentication (MFA)](#-multi-factor-authentication-mfa)
+  - [Obtaining an `mfa_token`](#obtaining-an-mfa_token)
+  - [Listing authenticators and challenging a factor](#listing-authenticators-and-challenging-a-factor)
+  - [Enrolling a new factor](#enrolling-a-new-factor)
+  - [Verifying and exchanging for credentials](#verifying-and-exchanging-for-credentials)
+  - [Errors](#errors-4)
 
 ## 📱 Web Authentication
 
@@ -1636,6 +1642,131 @@ try {
   await myAccount.getAuthenticationMethods();
 } on MyAccountException catch (e) {
   print('${e.code}: ${e.message} (${e.statusCode})');
+}
+```
+
+---
+
+[Go up ⤴](#examples)
+
+## 📱 Multi-Factor Authentication (MFA)
+
+The MFA API lets you complete a multi-factor authentication flow using an `mfa_token` — Auth0's [flexible/expanded grant support](https://auth0.com/docs/secure/multi-factor-authentication). It is available on **mobile (Android/iOS) only**; Web and Windows are not supported.
+
+Unlike the [My Account API](#-my-account-api) — which manages a signed-in user's authenticators — the MFA API is used **mid-login**, when a token request fails because MFA is required. You use the `mfa_token` from that failure to list, challenge, enroll, and verify a factor, and the successful verification returns the user's `Credentials`.
+
+### Obtaining an `mfa_token`
+
+When an authentication request (for example a database login or a credentials renewal) requires a second factor, the SDK throws an `ApiException` whose `isMultifactorRequired` flag is `true` and which carries an `mfaToken`. Pass that token to `auth0.mfa(...)` to start the flow.
+
+```dart
+final auth0 = Auth0('YOUR_DOMAIN', 'YOUR_CLIENT_ID');
+
+try {
+  await auth0.api.login(
+    usernameOrEmail: 'user@example.com',
+    password: 'secret',
+    connectionOrRealm: 'Username-Password-Authentication',
+    scopes: {'openid', 'profile', 'email'},
+  );
+} on ApiException catch (e) {
+  if (e.isMultifactorRequired && e.mfaToken != null) {
+    final mfa = auth0.mfa(mfaToken: e.mfaToken!);
+
+    // `mfaRequirements` (when present) tells you which factors the user can
+    // be challenged with, and which they can newly enroll.
+    final requirements = e.mfaRequirements;
+    print('Can challenge: '
+        '${requirements?.challenge.map((f) => f.type).toList()}');
+    print('Can enroll: '
+        '${requirements?.enroll.map((f) => f.type).toList()}');
+
+    // ...drive the challenge or enrollment flow with `mfa` (see below).
+  }
+}
+```
+
+### Listing authenticators and challenging a factor
+
+If the user already has authenticators enrolled, list them and trigger a challenge on the one they choose. For out-of-band factors (SMS, Voice, Email, Push) the challenge delivers the code and returns an `oobCode`; for TOTP you verify the code directly without challenging.
+
+```dart
+final authenticators = await mfa.getAuthenticators();
+
+// Optionally narrow the results to specific factor types.
+final oobOnly = await mfa.getAuthenticators(factorsAllowed: ['oob']);
+
+final selected = authenticators.first;
+final challenge = await mfa.challenge(authenticatorId: selected.id);
+
+// `challenge.oobCode` is used to verify out-of-band factors (see below).
+// When `challenge.bindingMethod == 'prompt'`, the user must also enter the
+// code they received as the `bindingCode`.
+```
+
+### Enrolling a new factor
+
+If the user has no suitable authenticator yet, enroll one. Each enrollment returns an `MfaEnrollmentChallenge`; which of its fields are populated depends on the factor.
+
+```dart
+// TOTP (authenticator app): render `barcodeUri` as a QR code (or show
+// `totpSecret`), then verify with the OTP from the app.
+final totp = await mfa.enrollTotp();
+// totp.barcodeUri, totp.totpSecret, totp.recoveryCodes
+
+// Phone (SMS by default, or Voice): an OOB code is sent to the number.
+final phone = await mfa.enrollPhone(
+  phoneNumber: '+1234567890',
+  type: PhoneType.sms, // or PhoneType.voice
+);
+
+// Email: an OOB code is sent to the address.
+final email = await mfa.enrollEmail(email: 'user@example.com');
+
+// Push (Auth0 Guardian): render `barcodeUri` for the user to scan.
+final push = await mfa.enrollPush();
+```
+
+### Verifying and exchanging for credentials
+
+Verifying completes the flow and exchanges the `mfa_token` for the user's `Credentials`. Pick the method that matches the factor:
+
+```dart
+// TOTP — the code from the authenticator app.
+final credentials = await mfa.verifyOtp(otp: '123456');
+
+// Out-of-band (SMS, Voice, Email, Push) — the `oobCode` from the challenge
+// (or enrollment). Provide `bindingCode` when the challenge's bindingMethod
+// is `prompt` (the user enters the code they received).
+final credentials = await mfa.verifyOob(
+  oobCode: challenge.oobCode!,
+  bindingCode: '123456',
+);
+
+// Recovery code — a one-time code the user saved during enrollment.
+final credentials = await mfa.verifyRecoveryCode(recoveryCode: 'ABCD1234...');
+
+// On success, persist the credentials as usual.
+await auth0.credentialsManager.storeCredentials(credentials);
+```
+
+### Errors
+
+MFA API calls throw an `MfaException` on failure. It exposes convenience getters for the common cases so you can branch without inspecting raw error codes.
+
+```dart
+try {
+  final credentials = await mfa.verifyOtp(otp: '000000');
+} on MfaException catch (e) {
+  if (e.isMfaTokenExpired) {
+    // The mfa_token is no longer valid — restart the login flow.
+  } else if (e.isInvalidCode) {
+    // The user entered a wrong/expired code — let them retry.
+  } else if (e.isNetworkError) {
+    // Transient — `e.isRetryable` is true.
+  } else {
+    print('${e.code}: ${e.message}');
+  }
 }
 ```
 
