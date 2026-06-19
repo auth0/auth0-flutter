@@ -1651,6 +1651,8 @@ try {
 
 ## 📱 Multi-Factor Authentication (MFA)
 
+> **Note:** This feature is currently available in [Early Access](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#early-access). Please reach out to Auth0 support to enable it for your tenant.
+
 The MFA API lets you complete a multi-factor authentication flow using an `mfa_token` — Auth0's [flexible/expanded grant support](https://auth0.com/docs/secure/multi-factor-authentication). It is available on **mobile (Android/iOS) only**; Web and Windows are not supported.
 
 Unlike the [My Account API](#-my-account-api) — which manages a signed-in user's authenticators — the MFA API is used **mid-login**, when a token request fails because MFA is required. You use the `mfa_token` from that failure to list, challenge, enroll, and verify a factor, and the successful verification returns the user's `Credentials`.
