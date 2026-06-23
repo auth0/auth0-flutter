@@ -55,7 +55,7 @@
   - [Enrolling a passkey](#enrolling-a-passkey)
   - [Using DPoP](#using-dpop)
   - [Errors](#errors-3)
-- [📱 Multi-Factor Authentication (MFA)](#-multi-factor-authentication-mfa)
+- [🌐📱 Multi-Factor Authentication (MFA)](#-multi-factor-authentication-mfa)
   - [Obtaining an `mfa_token`](#obtaining-an-mfa_token)
   - [Listing authenticators and challenging a factor](#listing-authenticators-and-challenging-a-factor)
   - [Enrolling a new factor](#enrolling-a-new-factor)
@@ -1649,17 +1649,24 @@ try {
 
 [Go up ⤴](#examples)
 
-## 📱 Multi-Factor Authentication (MFA)
+## 🌐📱 Multi-Factor Authentication (MFA)
 
 > **Note:** This feature is currently available in [Early Access](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#early-access). Please reach out to Auth0 support to enable it for your tenant.
 
-The MFA API lets you complete a multi-factor authentication flow using an `mfa_token` — Auth0's [flexible/expanded grant support](https://auth0.com/docs/secure/multi-factor-authentication). It is available on **mobile (Android/iOS) only**; Web and Windows are not supported.
+The MFA API lets you complete a multi-factor authentication flow using an `mfa_token` — Auth0's [flexible/expanded grant support](https://auth0.com/docs/secure/multi-factor-authentication). It is available on **mobile (Android/iOS)** and **Web**; Windows is not supported.
 
 Unlike the [My Account API](#-my-account-api) — which manages a signed-in user's authenticators — the MFA API is used **mid-login**, when a token request fails because MFA is required. You use the `mfa_token` from that failure to list, challenge, enroll, and verify a factor, and the successful verification returns the user's `Credentials`.
 
+The mobile and web APIs are intentionally symmetric — `getAuthenticators`, `enrollTotp`/`enrollPhone`/`enrollEmail`/`enrollPush`, `challenge`, `verifyOtp`/`verifyOob`/`verifyRecoveryCode` — so the examples below apply to both. The differences are noted inline.
+
 ### Obtaining an `mfa_token`
 
-When an authentication request (for example a database login or a credentials renewal) requires a second factor, the SDK throws an `ApiException` whose `isMultifactorRequired` flag is `true` and which carries an `mfaToken`. Pass that token to `auth0.mfa(...)` to start the flow.
+When an authentication request requires a second factor, the SDK surfaces an `mfa_token` in the resulting error. Pass that token to `mfa(...)` to start the flow.
+
+<details>
+  <summary>Mobile (Android/iOS)</summary>
+
+A failing token request (for example a database login or a credentials renewal) throws an `ApiException` whose `isMultifactorRequired` flag is `true` and which carries an `mfaToken`.
 
 ```dart
 final auth0 = Auth0('YOUR_DOMAIN', 'YOUR_CLIENT_ID');
@@ -1688,6 +1695,32 @@ try {
 }
 ```
 
+</details>
+
+<details>
+  <summary>Web</summary>
+
+> **Note:** Web MFA is backed by the [auth0-spa-js](https://github.com/auth0/auth0-spa-js) programmatic MFA API and requires **auth0-spa-js v2.21.0 or later** loaded on your page. The MFA context is stored on the underlying client, so you must call `mfa(...)` on the **same `Auth0Web` instance** that triggered the error.
+
+On the web, a failing token request throws a `WebException` with `code == 'MFA_REQUIRED'`. The `mfa_token` is carried in its `details` map under the `mfaToken` key.
+
+```dart
+final auth0Web = Auth0Web('YOUR_DOMAIN', 'YOUR_CLIENT_ID');
+
+try {
+  await auth0Web.credentials();
+} on WebException catch (e) {
+  final mfaToken = e.details['mfaToken'] as String?;
+  if (e.code == 'MFA_REQUIRED' && mfaToken != null) {
+    final mfa = auth0Web.mfa(mfaToken: mfaToken);
+
+    // ...drive the challenge or enrollment flow with `mfa` (see below).
+  }
+}
+```
+
+</details>
+
 ### Listing authenticators and challenging a factor
 
 If the user already has authenticators enrolled, list them and trigger a challenge on the one they choose. For out-of-band factors (SMS, Voice, Email, Push) the challenge delivers the code and returns an `oobCode`; for TOTP you verify the code directly without challenging.
@@ -1695,7 +1728,9 @@ If the user already has authenticators enrolled, list them and trigger a challen
 ```dart
 final authenticators = await mfa.getAuthenticators();
 
-// Optionally narrow the results to specific factor types.
+// Mobile only: optionally narrow the results to specific factor types.
+// (The web `getAuthenticators()` takes no `factorsAllowed` argument —
+// filtering is applied server-side from the mfa_token's requirements.)
 final oobOnly = await mfa.getAuthenticators(factorsAllowed: ['oob']);
 
 final selected = authenticators.first;
@@ -1747,14 +1782,19 @@ final credentials = await mfa.verifyOob(
 
 // Recovery code — a one-time code the user saved during enrollment.
 final credentials = await mfa.verifyRecoveryCode(recoveryCode: 'ABCD1234...');
+```
 
-// On success, persist the credentials as usual.
+On **mobile**, persist the returned credentials as usual:
+
+```dart
 await auth0.credentialsManager.storeCredentials(credentials);
 ```
 
+On **Web**, auth0-spa-js manages the credential cache for you, so there is no separate store step — retrieve credentials afterward with `auth0Web.credentials()`.
+
 ### Errors
 
-MFA API calls throw an `MfaException` on failure. It exposes convenience getters for the common cases so you can branch without inspecting raw error codes.
+On **mobile**, MFA API calls throw an `MfaException` on failure. It exposes convenience getters for the common cases so you can branch without inspecting raw error codes.
 
 ```dart
 try {
@@ -1769,6 +1809,16 @@ try {
   } else {
     print('${e.code}: ${e.message}');
   }
+}
+```
+
+On **Web**, MFA API calls throw a `WebException`. Inspect its `code` and `message` to branch (for example, an expired `mfa_token` surfaces with code `expired_token`).
+
+```dart
+try {
+  final credentials = await mfa.verifyOtp(otp: '000000');
+} on WebException catch (e) {
+  print('${e.code}: ${e.message}');
 }
 ```
 
