@@ -8,6 +8,7 @@ import com.auth0.android.callback.Callback
 import com.auth0.android.request.Request
 import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
+import com.auth0.auth0_flutter.toMap
 import io.flutter.plugin.common.MethodChannel.Result
 import org.junit.Test
 import org.junit.runner.RunWith
