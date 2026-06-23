@@ -1,5 +1,5 @@
 import XCTest
-import Auth0
+@testable import Auth0
 
 @testable import auth0_flutter
 
@@ -44,8 +44,8 @@ class MfaGetAuthenticatorsMethodHandlerTests: XCTestCase {
     func testProducesAuthenticatorListOnSuccess() {
         let expectation = self.expectation(description: "Produced list")
         spy.getAuthenticatorsResult = .success([
-            Authenticator(id: "sms|dev_1", authenticatorType: "oob", active: true,
-                          oobChannel: "sms", name: "+1******90")
+            Authenticator(authenticatorType: "oob", oobChannel: "sms", id: "sms|dev_1",
+                          name: "+1******90", active: true, type: "sms")
         ])
         sut.handle(with: ["mfaToken": "mfa-token"]) { result in
             guard let list = result as? [[String: Any?]] else {

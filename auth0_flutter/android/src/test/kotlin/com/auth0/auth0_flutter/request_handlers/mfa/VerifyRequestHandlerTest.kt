@@ -7,8 +7,8 @@ import com.auth0.android.authentication.mfa.MfaVerificationType
 import com.auth0.android.callback.Callback
 import com.auth0.android.request.Request
 import com.auth0.android.result.Credentials
+import com.auth0.android.result.UserProfile
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
-import com.auth0.auth0_flutter.toMap
 import io.flutter.plugin.common.MethodChannel.Result
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -97,8 +97,21 @@ class VerifyRequestHandlerTest {
         whenever(credentials.type).thenReturn("Bearer")
         whenever(credentials.scope).thenReturn("openid")
         whenever(credentials.expiresAt).thenReturn(java.util.Date(0))
-        val user = mock<com.auth0.android.result.UserProfile>()
-        whenever(user.toMap()).thenReturn(mapOf("sub" to "user-id"))
+        val user = UserProfile(
+            "user-id",
+            "John Doe",
+            "johndoe",
+            null,
+            "john.doe@example.com",
+            true,
+            "Doe",
+            null,
+            null,
+            mapOf("sub" to "user-id"),
+            null,
+            null,
+            "John"
+        )
         whenever(credentials.user).thenReturn(user)
 
         whenever(mockClient.verify(any())).thenReturn(mockRequest)
