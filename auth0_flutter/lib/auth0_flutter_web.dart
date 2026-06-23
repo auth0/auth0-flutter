@@ -1,8 +1,18 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'src/version.dart';
+import 'src/web/mfa_web.dart';
 
 export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
-    show WebException, CacheLocation, ApiCredentials;
+    show
+        WebException,
+        CacheLocation,
+        ApiCredentials,
+        MfaAuthenticator,
+        MfaChallenge,
+        MfaEnrollmentChallenge,
+        PhoneType;
+
+export 'src/web/mfa_web.dart' show MfaWeb;
 
 /// Primary interface for interacting with Auth0 on web platforms.
 class Auth0Web {
@@ -427,4 +437,26 @@ class Auth0Web {
   /// Indicates whether a user is currently authenticated.
   Future<bool> hasValidCredentials() =>
       Auth0FlutterWebPlatform.instance.hasValidCredentials();
+
+  /// Creates an [MfaWeb] instance for completing a Multi-Factor Authentication
+  /// flow with the given [mfaToken].
+  ///
+  /// Obtain the [mfaToken] from a [WebException] with `code == 'MFA_REQUIRED'`
+  /// (its `details['mfaToken']`) that was thrown by a previous authentication
+  /// call (such as [credentials] or [customTokenExchange]) on this same
+  /// [Auth0Web] instance.
+  ///
+  /// **Note:** This is backed by the `auth0-spa-js` programmatic MFA API and
+  /// requires `auth0-spa-js` v2.21.0 or later. The MFA context is stored on the
+  /// underlying `Auth0Client`, so this must be called on the same [Auth0Web]
+  /// instance that triggered the `MFA_REQUIRED` error.
+  ///
+  /// ## Usage example
+  ///
+  /// ```dart
+  /// final mfa = auth0Web.mfa(mfaToken: mfaToken);
+  /// final authenticators = await mfa.getAuthenticators();
+  /// final credentials = await mfa.verifyOtp(otp: '123456');
+  /// ```
+  MfaWeb mfa({required final String mfaToken}) => MfaWeb(mfaToken);
 }

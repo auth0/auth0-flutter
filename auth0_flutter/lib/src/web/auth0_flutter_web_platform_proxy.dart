@@ -40,4 +40,17 @@ class Auth0FlutterWebClientProxy {
 
   Future<void> logout(final LogoutOptions? options) =>
       JSPromiseToFuture(client.logout(options)).toDart;
+
+  Future<JSArray<MfaAuthenticatorJS>> mfaGetAuthenticators(
+          final String mfaToken) =>
+      JSPromiseToFuture(client.mfa.getAuthenticators(mfaToken)).toDart;
+
+  Future<MfaEnrollmentResponse> mfaEnroll(final MfaEnrollParams params) =>
+      JSPromiseToFuture(client.mfa.enroll(params)).toDart;
+
+  Future<MfaChallengeResponse> mfaChallenge(final MfaChallengeParams params) =>
+      JSPromiseToFuture(client.mfa.challenge(params)).toDart;
+
+  Future<WebCredentials> mfaVerify(final MfaVerifyParams params) =>
+      JSPromiseToFuture(client.mfa.verify(params)).toDart;
 }
