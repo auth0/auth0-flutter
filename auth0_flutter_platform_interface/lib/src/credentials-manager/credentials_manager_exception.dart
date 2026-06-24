@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 
 import '../auth0_exception.dart';
 import '../extensions/exception_extensions.dart';
+import '../extensions/map_extensions.dart';
 
 // ignore: comment_references
 /// Exception thrown by [MethodChannelCredentialsManager] when something goes
@@ -37,4 +38,10 @@ An error occurred while trying to use the Refresh Token to renew the Credentials
       code ==
           '''
 Credentials need to be renewed but no Refresh Token is available to renew them.''';
+
+  /// Whether the error is transient and the operation can be retried.
+  /// When `true`, the failure is likely due to a temporary condition such as
+  /// a network outage. When `false`, the failure is permanent (e.g. an
+  /// invalid refresh token) and the user should be logged out instead.
+  bool get isRetryable => details.getBooleanOrFalse('_isRetryable');
 }

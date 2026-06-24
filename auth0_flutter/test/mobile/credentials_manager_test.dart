@@ -33,14 +33,20 @@ class TestPlatform extends Mock
     'tokenType': 'Bearer'
   });
 
-  static const SSOCredentials ssoResult =
-      SSOCredentials(
+  static const SSOCredentials ssoResult = SSOCredentials(
     sessionTransferToken: 'ssoToken',
     tokenType: 'session_transfer',
     expiresIn: 60,
     idToken: 'idToken',
     refreshToken: 'refreshToken',
   );
+
+  static ApiCredentials apiResult = ApiCredentials.fromMap({
+    'accessToken': 'apiAccessToken',
+    'tokenType': 'Bearer',
+    'expiresAt': DateTime.now().toIso8601String(),
+    'scopes': ['a', 'b'],
+  });
 }
 
 @GenerateMocks([TestPlatform])
@@ -230,9 +236,9 @@ void main() {
 
       final result = await DefaultCredentialsManager(account, userAgent).user();
 
-      final verificationResult =
-          verify(mockedPlatform.user(captureAny)).captured.single
-              as CredentialsManagerRequest;
+      final verificationResult = verify(mockedPlatform.user(captureAny))
+          .captured
+          .single as CredentialsManagerRequest;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
       expect(result, isNotNull);
@@ -278,8 +284,8 @@ void main() {
           .thenThrow(const CredentialsManagerException(
               'FAILED', 'No credentials stored', {}));
 
-      Future<UserProfile?> actual() async => DefaultCredentialsManager(
-          account, userAgent).user();
+      Future<UserProfile?> actual() async =>
+          DefaultCredentialsManager(account, userAgent).user();
 
       await expectLater(
           actual,
@@ -329,8 +335,8 @@ void main() {
       when(mockedPlatform.getSSOCredentials(any))
           .thenAnswer((final _) async => TestPlatform.ssoResult);
 
-      final result = await DefaultCredentialsManager(account, userAgent)
-          .ssoCredentials();
+      final result =
+          await DefaultCredentialsManager(account, userAgent).ssoCredentials();
 
       expect(result.sessionTransferToken,
           TestPlatform.ssoResult.sessionTransferToken);
@@ -338,6 +344,99 @@ void main() {
       expect(result.expiresIn, TestPlatform.ssoResult.expiresIn);
       expect(result.idToken, TestPlatform.ssoResult.idToken);
       expect(result.refreshToken, TestPlatform.ssoResult.refreshToken);
+    });
+  });
+
+  group('getApiCredentials', () {
+    test('passes through properties to the platform', () async {
+      when(mockedPlatform.getApiCredentials(any))
+          .thenAnswer((final _) async => TestPlatform.apiResult);
+
+      await DefaultCredentialsManager(account, userAgent).getApiCredentials(
+        audience: 'test-audience',
+        scope: {'a', 'b'},
+        minTtl: 30,
+        parameters: {'param': 'value'},
+        headers: {'header': 'header-value'},
+      );
+
+      final verificationResult =
+          verify(mockedPlatform.getApiCredentials(captureAny)).captured.single
+              as CredentialsManagerRequest<GetApiCredentialsOptions>;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.account.clientId, 'test-clientId');
+      expect(verificationResult.options?.audience, 'test-audience');
+      expect(verificationResult.options?.scopes, {'a', 'b'});
+      expect(verificationResult.options?.minTtl, 30);
+      expect(verificationResult.options?.parameters, {'param': 'value'});
+      expect(verificationResult.options?.headers, {'header': 'header-value'});
+    });
+
+    test('uses default values for optional properties when omitted', () async {
+      when(mockedPlatform.getApiCredentials(any))
+          .thenAnswer((final _) async => TestPlatform.apiResult);
+
+      await DefaultCredentialsManager(account, userAgent)
+          .getApiCredentials(audience: 'test-audience');
+
+      final verificationResult =
+          verify(mockedPlatform.getApiCredentials(captureAny)).captured.single
+              as CredentialsManagerRequest<GetApiCredentialsOptions>;
+      expect(verificationResult.options?.audience, 'test-audience');
+      // ignore: inference_failure_on_collection_literal
+      expect(verificationResult.options?.scopes, isEmpty);
+      expect(verificationResult.options?.minTtl, 0);
+      // ignore: inference_failure_on_collection_literal
+      expect(verificationResult.options?.parameters, isEmpty);
+      // ignore: inference_failure_on_collection_literal
+      expect(verificationResult.options?.headers, isEmpty);
+    });
+
+    test('returns the ApiCredentials from the platform', () async {
+      when(mockedPlatform.getApiCredentials(any))
+          .thenAnswer((final _) async => TestPlatform.apiResult);
+
+      final result = await DefaultCredentialsManager(account, userAgent)
+          .getApiCredentials(audience: 'test-audience');
+
+      expect(result.accessToken, TestPlatform.apiResult.accessToken);
+      expect(result.tokenType, TestPlatform.apiResult.tokenType);
+      expect(result.expiresAt, TestPlatform.apiResult.expiresAt);
+      expect(result.scopes, TestPlatform.apiResult.scopes);
+    });
+  });
+
+  group('clearApiCredentials', () {
+    test('passes through properties to the platform', () async {
+      when(mockedPlatform.clearApiCredentials(any))
+          .thenAnswer((final _) async {});
+
+      await DefaultCredentialsManager(account, userAgent).clearApiCredentials(
+        audience: 'test-audience',
+        scope: 'test-scope',
+      );
+
+      final verificationResult =
+          verify(mockedPlatform.clearApiCredentials(captureAny)).captured.single
+              as CredentialsManagerRequest<ClearApiCredentialsOptions>;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.account.clientId, 'test-clientId');
+      expect(verificationResult.options?.audience, 'test-audience');
+      expect(verificationResult.options?.scope, 'test-scope');
+    });
+
+    test('leaves the scope null when omitted', () async {
+      when(mockedPlatform.clearApiCredentials(any))
+          .thenAnswer((final _) async {});
+
+      await DefaultCredentialsManager(account, userAgent)
+          .clearApiCredentials(audience: 'test-audience');
+
+      final verificationResult =
+          verify(mockedPlatform.clearApiCredentials(captureAny)).captured.single
+              as CredentialsManagerRequest<ClearApiCredentialsOptions>;
+      expect(verificationResult.options?.audience, 'test-audience');
+      expect(verificationResult.options?.scope, isNull);
     });
   });
 }

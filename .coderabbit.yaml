@@ -1,0 +1,145 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: "en-US"
+tone_instructions: "Be concise and direct. Focus on correctness, security, and API contract adherence. This is an Auth0 SDK — any deviation from expected authentication/token behaviors is high severity."
+early_access: false
+
+reviews:
+  profile: "assertive"
+  request_changes_workflow: false
+  high_level_summary: true
+  high_level_summary_placeholder: "@coderabbitai summary"
+  auto_title_placeholder: "@coderabbitai"
+  review_status: true
+  commit_status: true
+  collapse_walkthrough: false
+  sequence_diagrams: true
+
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - main
+      - "beta-release/.*"
+      - "release/.*"
+
+  # Ignore generated, example, and lock files
+  path_filters:
+    # Example app — not part of the published SDK
+    - "!**/example/**"
+    # Appium/E2E test infra
+    - "!appium-test/**"
+    # Dart generated files
+    - "!**/*.g.dart"
+    - "!**/*.mocks.dart"
+    - "!**/doc/api/**"
+    - "!**/.dart_tool/**"
+    - "!**/.flutter-plugins"
+    - "!**/.flutter-plugins-dependencies"
+    # Build outputs
+    - "!**/build/**"
+    - "!**/coverage/**"
+    - "!**/DerivedData/**"
+    # iOS/macOS symlinks — real source is auth0_flutter/darwin/Classes/
+    # Reviewing these would duplicate every darwin/ review 2x
+    - "!auth0_flutter/ios/Classes/**"
+    - "!auth0_flutter/macos/Classes/**"
+    # iOS/macOS generated
+    - "!**/Pods/**"
+    - "!**/Flutter/ephemeral/**"
+    - "!**/Flutter/Generated.xcconfig"
+    - "!**/Flutter/flutter_export_environment.sh"
+    - "!**/GeneratedPluginRegistrant.*"
+    # Android generated
+    - "!**/.gradle/**"
+    - "!**/local.properties"
+    - "!**/GeneratedPluginRegistrant.java"
+    - "!**/*.class"
+    # Windows generated
+    - "!**/flutter/ephemeral/**"
+    # Lock files and package caches
+    - "!**/*.lock"
+    - "!**/node_modules/**"
+    # Windows native deps
+    - "!**/vcpkg/**"
+    - "!**/vcpkg-binary-cache/**"
+
+  path_instructions:
+    # Dart/Flutter — both packages
+    - path: "**/*.dart"
+      instructions: |
+        - Enforce strict Dart analysis: strict-casts, strict-inference, strict-raw-types are all enabled.
+        - Flag any missing null checks and unsafe casts (use `is` checks/pattern matching before casting; use `as` only after guards).
+        - Prefer `final` for local variables and parameters.
+        - Public APIs must have type annotations.
+        - `unawaited_futures` is an error — every async call must be awaited or explicitly `unawaited(...)`.
+        - Lines must not exceed 80 characters.
+        - Check that new public symbols are covered by tests.
+
+    # Platform interface — contract stability is critical
+    - path: "auth0_flutter_platform_interface/**/*.dart"
+      instructions: |
+        - Platform interface changes are breaking API changes. Flag any removal or signature change of public methods.
+        - New methods added to the platform interface must have a default implementation or be abstract with a clear migration path.
+        - Ensure method channel argument names and types stay consistent with native implementations.
+
+    # Android/Kotlin
+    - path: "auth0_flutter/android/**/*.kt"
+      instructions: |
+        - Avoid force-casts (`as Type`) — use safe casts (`as? Type`) and handle null/failure cases explicitly.
+        - ClassCastException from unsafe casts in MethodChannel handlers has caused crashes in the past — treat any unchecked cast as a bug.
+        - Ensure all MethodChannel result callbacks (`result.success`, `result.error`, `result.notImplemented`) are called exactly once per invocation.
+        - Auth errors must be surfaced through `result.error`, never swallowed silently.
+        - minSdk is 21; avoid APIs above that level without version guards.
+
+    # iOS/macOS Swift — real source is darwin/; ios/ and macos/ are symlinks excluded above
+    - path: "auth0_flutter/darwin/**/*.swift"
+      instructions: |
+        - This is shared iOS/macOS code — changes apply to both platforms (iOS 14.0+, macOS 11.0+).
+        - Force-unwraps (`!`) are not acceptable in MethodChannel handlers — use guard/if-let.
+        - All FlutterResult callbacks must be invoked exactly once.
+        - Auth errors must propagate to Flutter as `FlutterError`, never silently dropped.
+        - Flag any API usage above iOS 14.0 or macOS 11.0 without availability guards.
+
+    # Windows C++
+    - path: "auth0_flutter/windows/**/*.cpp"
+      instructions: |
+        - All MethodChannel result callbacks must be called exactly once.
+        - Auth errors must surface to Flutter, not be silently ignored.
+        - Flag any raw pointer usage that could leak or dangle — prefer smart pointers.
+
+    # Web Dart
+    - path: "auth0_flutter/lib/src/web/**"
+      instructions: |
+        - Web implementation wraps auth0-spa-js — verify any token/session behavior matches the JS SDK contract.
+        - Browser security: check for XSS risks in any HTML/JS interop.
+
+    # CI/CD
+    - path: ".github/workflows/**"
+      instructions: |
+        - All actions must be pinned to a full commit SHA, not a mutable tag.
+        - Secrets must use `${{ secrets.NAME }}` syntax, never hardcoded.
+        - Permissions block should follow least-privilege — flag any `write-all` or unnecessary write permissions.
+        - Check that new jobs are added to the `upload-coverage.needs` list if they produce coverage.
+
+    # Pubspec files
+    - path: "**/pubspec.yaml"
+      instructions: |
+        - Dependency version bumps that cross a major version are breaking changes — flag them prominently.
+        - `secure_pubspec_urls` lint is enabled — all URLs must use HTTPS.
+        - Check that `version` fields in auth0_flutter and auth0_flutter_platform_interface are bumped consistently when the interface changes.
+
+    # Changelogs
+    - path: "**/CHANGELOG.md"
+      instructions: |
+        - Entries must follow Keep a Changelog format.
+        - PR title prefixes are `af:` (auth0_flutter) and `afpi:` (auth0_flutter_platform_interface) — verify the correct changelog is updated.
+
+chat:
+  auto_reply: true
+
+knowledge_base:
+  opt_out: false
+  web_search:
+    enabled: true
+  learnings:
+    scope: auto

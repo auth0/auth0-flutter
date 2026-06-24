@@ -46,6 +46,16 @@ abstract class Auth0FlutterWebPlatform extends PlatformInterface {
     );
   }
 
+  Future<ApiCredentials> getApiCredentials(
+      final GetApiCredentialsOptions options) {
+    throw UnimplementedError('web.getApiCredentials has not been implemented');
+  }
+
+  Future<void> clearApiCredentials(final ClearApiCredentialsOptions options) {
+    throw UnimplementedError(
+        'web.clearApiCredentials has not been implemented');
+  }
+
   Future<bool> hasValidCredentials() {
     throw UnimplementedError(
       'web.hasValidCredentials has not been implemented',

@@ -305,7 +305,36 @@ class LoginWebAuthRequestHandlerTest {
         val mockRequest = MethodCallRequest(mockAccount, hashMapOf<String, Any>())
         handler.handle(mock(), mockRequest, mockResult)
 
-        verify(mockResult).error("code", "description", exception)
+        verify(mockResult).error(eq("code"), eq("description"), eq(mapOf("_isRetryable" to false)))
+    }
+
+    @Test
+    fun `returns cause and causeStackTrace in error details when cause is present`() {
+        val builder = mock<WebAuthProvider.Builder>()
+        val mockResult = mock<Result>()
+        val cause = RuntimeException("network error")
+        val exception = mock<AuthenticationException>()
+        whenever(exception.getCode()).thenReturn("code")
+        whenever(exception.getDescription()).thenReturn("description")
+        whenever(exception.isNetworkError).thenReturn(true)
+        whenever(exception.cause).thenReturn(cause)
+
+        doAnswer { invocation ->
+            val cb = invocation.getArgument<Callback<Credentials, AuthenticationException>>(1)
+            cb.onFailure(exception)
+        }.`when`(builder).start(any(), any())
+
+        val handler = LoginWebAuthRequestHandler { _ -> builder }
+        val mockAccount = mock<Auth0>()
+        val mockRequest = MethodCallRequest(mockAccount, hashMapOf<String, Any>())
+        handler.handle(mock(), mockRequest, mockResult)
+
+        verify(mockResult).error(eq("code"), eq("description"), check {
+            val map = it as Map<*, *>
+            assertThat(map["_isRetryable"], equalTo(true))
+            assertThat(map["cause"], equalTo(cause.toString()))
+            assertThat(map["causeStackTrace"], equalTo(cause.stackTraceToString()))
+        })
     }
 
     @Test
@@ -360,6 +389,76 @@ class LoginWebAuthRequestHandlerTest {
         runRequestHandler(args) { _, builder ->
             verify(builder, never()).withCustomTabsOptions(CustomTabsOptions.newBuilder().withBrowserPicker(
                 BrowserPicker.newBuilder().withAllowedPackages(listOf<String>()).build()).build())
+        }
+    }
+
+    @Test
+    fun `handler should apply customTabsOptions when initialHeight is specified`() {
+        val args = hashMapOf<String, Any?>(
+            "customTabsOptions" to mapOf(
+                "initialHeight" to 700,
+                "allowedBrowsers" to listOf<String>()
+            )
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withCustomTabsOptions(any())
+        }
+    }
+
+    @Test
+    fun `handler should apply customTabsOptions when all partial tab options are specified`() {
+        val args = hashMapOf<String, Any?>(
+            "customTabsOptions" to mapOf(
+                "initialHeight" to 700,
+                "resizable" to false,
+                "toolbarCornerRadius" to 16,
+                "initialWidth" to 500,
+                "sideSheetBreakpoint" to 840,
+                "backgroundInteractionEnabled" to true,
+                "allowedBrowsers" to listOf("com.android.chrome")
+            )
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withCustomTabsOptions(any())
+        }
+    }
+
+    @Test
+    fun `handler should not apply customTabsOptions when not specified and allowedBrowsers is empty`() {
+        val args = hashMapOf<String, Any?>(
+            "allowedBrowsers" to listOf<String>()
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder, never()).withCustomTabsOptions(any())
+        }
+    }
+
+    @Test
+    fun `handler should prefer customTabsOptions over top-level allowedBrowsers`() {
+        val args = hashMapOf<String, Any?>(
+            "allowedBrowsers" to listOf("org.mozilla.firefox"),
+            "customTabsOptions" to mapOf(
+                "initialHeight" to 700,
+                "allowedBrowsers" to listOf("com.android.chrome")
+            )
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withCustomTabsOptions(any())
+        }
+    }
+
+    @Test
+    fun `handler should fall back to top-level allowedBrowsers when customTabsOptions is absent`() {
+        val args = hashMapOf<String, Any?>(
+            "allowedBrowsers" to listOf("com.android.chrome", "org.mozilla.firefox")
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withCustomTabsOptions(any())
         }
     }
 

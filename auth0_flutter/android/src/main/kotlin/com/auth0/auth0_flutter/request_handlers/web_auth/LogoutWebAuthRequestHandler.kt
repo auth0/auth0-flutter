@@ -3,10 +3,9 @@ package com.auth0.auth0_flutter.request_handlers.web_auth
 import android.content.Context
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
-import com.auth0.android.provider.BrowserPicker
-import com.auth0.android.provider.CustomTabsOptions
 import com.auth0.android.provider.WebAuthProvider
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
+import com.auth0.auth0_flutter.utils.buildCustomTabsOptions
 import io.flutter.plugin.common.MethodChannel
 
 class LogoutWebAuthRequestHandler(private val builderResolver: (MethodCallRequest) -> WebAuthProvider.LogoutBuilder) :
@@ -33,20 +32,16 @@ class LogoutWebAuthRequestHandler(private val builderResolver: (MethodCallReques
             builder.withFederated()
         }
 
-        val allowedBrowsers =
-            (args["allowedBrowsers"] as? List<*>)?.filterIsInstance<String>().orEmpty()
-        if (allowedBrowsers.isNotEmpty()) {
-            builder.withCustomTabsOptions(
-                CustomTabsOptions.newBuilder().withBrowserPicker(
-                    BrowserPicker.newBuilder()
-                        .withAllowedPackages(allowedBrowsers).build()
-                ).build()
-            )
-        }
+        buildCustomTabsOptions(args)?.let { builder.withCustomTabsOptions(it) }
 
         builder.start(context, object : Callback<Void?, AuthenticationException> {
             override fun onFailure(exception: AuthenticationException) {
-                result.error(exception.getCode(), exception.getDescription(), exception)
+                val details = mutableMapOf<String, Any>("_isRetryable" to exception.isNetworkError)
+                exception.cause?.let {
+                    details["cause"] = it.toString()
+                    details["causeStackTrace"] = it.stackTraceToString()
+                }
+                result.error(exception.getCode(), exception.getDescription(), details)
             }
 
             override fun onSuccess(res: Void?) {

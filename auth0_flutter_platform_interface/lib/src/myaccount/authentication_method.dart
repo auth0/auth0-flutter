@@ -1,0 +1,67 @@
+class AuthenticationMethod {
+  final String id;
+  final String type;
+  final String? name;
+  final String? phoneNumber;
+  final String? email;
+  final String? totpSecret;
+  final String? totpUri;
+  final String? preferredAuthenticationMethod;
+  final DateTime? createdAt;
+  final DateTime? lastAuthAt;
+  final bool? confirmed;
+  final List<String>? usage;
+
+  const AuthenticationMethod({
+    required this.id,
+    required this.type,
+    this.name,
+    this.phoneNumber,
+    this.email,
+    this.totpSecret,
+    this.totpUri,
+    this.preferredAuthenticationMethod,
+    this.createdAt,
+    this.lastAuthAt,
+    this.confirmed,
+    this.usage,
+  });
+
+  factory AuthenticationMethod.fromMap(final Map<String, dynamic> result) =>
+      AuthenticationMethod(
+        id: result['id'] as String,
+        type: result['type'] as String,
+        name: result['name'] as String?,
+        phoneNumber: result['phone_number'] as String?,
+        email: result['email'] as String?,
+        totpSecret: result['totp_secret'] as String?,
+        totpUri: result['totp_uri'] as String?,
+        preferredAuthenticationMethod:
+            result['preferred_authentication_method'] as String?,
+        createdAt: result['created_at'] != null
+            ? DateTime.parse(result['created_at'].toString())
+            : null,
+        lastAuthAt: result['last_auth_at'] != null
+            ? DateTime.parse(result['last_auth_at'].toString())
+            : null,
+        confirmed: result['confirmed'] as bool?,
+        usage: (result['usage'] as List<dynamic>?)
+            ?.map((final e) => e as String)
+            .toList(),
+      );
+
+  Map<String, dynamic> toMap() => {
+        'id': id,
+        'type': type,
+        'name': name,
+        'phone_number': phoneNumber,
+        'email': email,
+        'totp_secret': totpSecret,
+        'totp_uri': totpUri,
+        'preferred_authentication_method': preferredAuthenticationMethod,
+        'created_at': createdAt?.toUtc().toIso8601String(),
+        'last_auth_at': lastAuthAt?.toUtc().toIso8601String(),
+        'confirmed': confirmed,
+        'usage': usage,
+      };
+}

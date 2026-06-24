@@ -20,6 +20,7 @@ void main() {
         useEphemeralSession: true,
         scheme: 'demo',
         safariViewController: safariViewController,
+        // ignore: deprecated_member_use_from_same_package
         allowedBrowsers: ['chrome', 'firefox'],
       );
 

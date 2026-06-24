@@ -6,6 +6,7 @@ import com.auth0.android.authentication.storage.SecureCredentialsManager
 import com.auth0.android.callback.Callback
 import com.auth0.android.result.SSOCredentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
+import com.auth0.auth0_flutter.toMap
 import io.flutter.plugin.common.MethodChannel
 
 class GetSSOCredentialsRequestHandler : CredentialsManagerRequestHandler {
@@ -22,7 +23,7 @@ class GetSSOCredentialsRequestHandler : CredentialsManagerRequestHandler {
         credentialsManager.getSsoCredentials(parameters, object :
             Callback<SSOCredentials, CredentialsManagerException> {
             override fun onFailure(exception: CredentialsManagerException) {
-                result.error(exception.message ?: "UNKNOWN ERROR", exception.message, exception)
+                result.error(exception.message ?: "UNKNOWN ERROR", exception.message, exception.toMap())
             }
 
             override fun onSuccess(credentials: SSOCredentials) {

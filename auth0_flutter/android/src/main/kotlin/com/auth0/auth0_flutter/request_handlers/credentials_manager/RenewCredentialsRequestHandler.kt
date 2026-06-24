@@ -24,7 +24,7 @@ class RenewCredentialsRequestHandler : CredentialsManagerRequestHandler {
         credentialsManager.getCredentials(null, 0, parameters, true, object :
             Callback<Credentials, CredentialsManagerException> {
             override fun onFailure(exception: CredentialsManagerException) {
-                result.error(exception.message ?: "UNKNOWN ERROR", exception.message, exception)
+                result.error(exception.message ?: "UNKNOWN ERROR", exception.message, exception.toMap())
             }
 
             override fun onSuccess(credentials: Credentials) {

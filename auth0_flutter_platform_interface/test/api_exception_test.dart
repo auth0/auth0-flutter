@@ -251,4 +251,35 @@ void main() {
     final exception = ApiException.fromPlatformException(platformException);
     expect(exception.mfaToken, null);
   });
+
+  test('isRetryable returns true when isNetworkError is true', () async {
+    final details = {
+      '_errorFlags': {'isNetworkError': true}
+    };
+    final platformException =
+        PlatformException(code: 'test-code', details: details);
+
+    final exception = ApiException.fromPlatformException(platformException);
+    expect(exception.isRetryable, true);
+  });
+
+  test('isRetryable returns false when isNetworkError is false', () async {
+    final details = {
+      '_errorFlags': {'isNetworkError': false}
+    };
+    final platformException =
+        PlatformException(code: 'test-code', details: details);
+
+    final exception = ApiException.fromPlatformException(platformException);
+    expect(exception.isRetryable, false);
+  });
+
+  test('isRetryable returns false when errorFlags are missing', () async {
+    final details = <String, dynamic>{};
+    final platformException =
+        PlatformException(code: 'test-code', details: details);
+
+    final exception = ApiException.fromPlatformException(platformException);
+    expect(exception.isRetryable, false);
+  });
 }

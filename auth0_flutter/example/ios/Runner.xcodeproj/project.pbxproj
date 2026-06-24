@@ -27,6 +27,8 @@
 		5C4E65C7286D24A900141449 /* CredentialsManagerSaveMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4E65C6286D24A900141449 /* CredentialsManagerSaveMethodHandlerTests.swift */; };
 		5C4E65C9286D26D800141449 /* CredentialsManagerGetMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C4E65C8286D26D800141449 /* CredentialsManagerGetMethodHandlerTests.swift */; };
 		A09B2E3F1D4C7891BA000002 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A09B2E3F1D4C7891BA000001 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift */; };
+		A0AC1D0F2E0000000000AC02 /* CredentialsManagerApiCredentialsMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AC1D0F2E0000000000AC01 /* CredentialsManagerApiCredentialsMethodHandlerTests.swift */; };
+		A0AC1D0F2E0000000000AC04 /* CredentialsManagerClearApiCredentialsMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AC1D0F2E0000000000AC03 /* CredentialsManagerClearApiCredentialsMethodHandlerTests.swift */; };
 		5C59DA6527FFCF0600365CDB /* AuthAPIHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C59DA6427FFCF0600365CDB /* AuthAPIHandlerTests.swift */; };
 		5C59DA6727FFE75600365CDB /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C59DA6627FFE75600365CDB /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift */; };
 		5C59DA6928011D4F00365CDB /* AuthAPISignupMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C59DA6828011D4F00365CDB /* AuthAPISignupMethodHandlerTests.swift */; };
@@ -44,7 +46,27 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		A09B2E3F1D4C7891BA000002 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A09B2E3F1D4C7891BA000001 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift */; };
 		A128A3E84540D9257B15491D /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03C97032096FE7868ACD2E52 /* Pods_Runner.framework */; };
+		B0CA00020000000000000001 /* MyAccountSpies.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA00010000000000000001 /* MyAccountSpies.swift */; };
+		B0CA00020000000000000002 /* MyAccountDeleteAuthMethodMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA00010000000000000002 /* MyAccountDeleteAuthMethodMethodHandlerTests.swift */; };
+		B0CA00020000000000000003 /* MyAccountEnrollEmailMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA00010000000000000003 /* MyAccountEnrollEmailMethodHandlerTests.swift */; };
+		B0CA00020000000000000004 /* MyAccountEnrollPhoneMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA00010000000000000004 /* MyAccountEnrollPhoneMethodHandlerTests.swift */; };
+		B0CA00020000000000000005 /* MyAccountEnrollPushMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA00010000000000000005 /* MyAccountEnrollPushMethodHandlerTests.swift */; };
+		B0CA00020000000000000006 /* MyAccountEnrollRecoveryCodeMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA00010000000000000006 /* MyAccountEnrollRecoveryCodeMethodHandlerTests.swift */; };
+		B0CA00020000000000000007 /* MyAccountEnrollTotpMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA00010000000000000007 /* MyAccountEnrollTotpMethodHandlerTests.swift */; };
+		B0CA00020000000000000008 /* MyAccountGetAuthMethodMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA00010000000000000008 /* MyAccountGetAuthMethodMethodHandlerTests.swift */; };
+		B0CA00020000000000000009 /* MyAccountGetAuthMethodsMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA00010000000000000009 /* MyAccountGetAuthMethodsMethodHandlerTests.swift */; };
+		B0CA0002000000000000000A /* MyAccountGetFactorsMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA0001000000000000000A /* MyAccountGetFactorsMethodHandlerTests.swift */; };
+		B0CA0002000000000000000B /* MyAccountVerifyOtpMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA0001000000000000000B /* MyAccountVerifyOtpMethodHandlerTests.swift */; };
+		B0CA0002000000000000000C /* MyAccountConfirmEnrollmentMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA0001000000000000000C /* MyAccountConfirmEnrollmentMethodHandlerTests.swift */; };
+		B0CA0002000000000000000D /* MyAccountUpdateAuthMethodMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA0001000000000000000D /* MyAccountUpdateAuthMethodMethodHandlerTests.swift */; };
+		B0CA0002000000000000000E /* MyAccountEnrollPasskeyChallengeMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA0001000000000000000E /* MyAccountEnrollPasskeyChallengeMethodHandlerTests.swift */; };
+		B0CA0002000000000000000F /* MyAccountEnrollPasskeyMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA0001000000000000000F /* MyAccountEnrollPasskeyMethodHandlerTests.swift */; };
+		PK00000000000000000001 /* AuthAPIPasskeyLoginChallengeMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PK00000000000000000003 /* AuthAPIPasskeyLoginChallengeMethodHandlerTests.swift */; };
+		PK00000000000000000005 /* AuthAPIPasskeyExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PK00000000000000000006 /* AuthAPIPasskeyExtensionsTests.swift */; };
+		PK10000000000000000001 /* AuthAPIPasskeySignupChallengeMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PK10000000000000000003 /* AuthAPIPasskeySignupChallengeMethodHandlerTests.swift */; };
+		PK20000000000000000001 /* AuthAPIPasskeyCredentialExchangeMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PK20000000000000000002 /* AuthAPIPasskeyCredentialExchangeMethodHandlerTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -104,6 +126,8 @@
 		5C4E65C6286D24A900141449 /* CredentialsManagerSaveMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerSaveMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C4E65C8286D26D800141449 /* CredentialsManagerGetMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerGetMethodHandlerTests.swift; sourceTree = "<group>"; };
 		A09B2E3F1D4C7891BA000001 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerSSOCredentialsMethodHandlerTests.swift; sourceTree = "<group>"; };
+		A0AC1D0F2E0000000000AC01 /* CredentialsManagerApiCredentialsMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerApiCredentialsMethodHandlerTests.swift; sourceTree = "<group>"; };
+		A0AC1D0F2E0000000000AC03 /* CredentialsManagerClearApiCredentialsMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerClearApiCredentialsMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C59DA6427FFCF0600365CDB /* AuthAPIHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPIHandlerTests.swift; sourceTree = "<group>"; };
 		5C59DA6627FFE75600365CDB /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPILoginUsernameOrEmailMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C59DA6828011D4F00365CDB /* AuthAPISignupMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPISignupMethodHandlerTests.swift; sourceTree = "<group>"; };
@@ -132,9 +156,29 @@
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		99BD47CB4C5EF89E894B6230 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		9B5F0CE7EB2CCC504C7678ED /* Pods-Runner-RunnerUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner-RunnerUITests.release.xcconfig"; path = "Target Support Files/Pods-Runner-RunnerUITests/Pods-Runner-RunnerUITests.release.xcconfig"; sourceTree = "<group>"; };
+		A09B2E3F1D4C7891BA000001 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerSSOCredentialsMethodHandlerTests.swift; sourceTree = "<group>"; };
 		C16443EA2BA08C71AE68B41B /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
 		C7412C9A0F502116EC6D51D0 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		C8270E3F40357C2A1DB27BB8 /* Pods_Runner_RunnerUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner_RunnerUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B0CA00010000000000000001 /* MyAccountSpies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountSpies.swift; sourceTree = "<group>"; };
+		B0CA00010000000000000002 /* MyAccountDeleteAuthMethodMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountDeleteAuthMethodMethodHandlerTests.swift; sourceTree = "<group>"; };
+		B0CA00010000000000000003 /* MyAccountEnrollEmailMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountEnrollEmailMethodHandlerTests.swift; sourceTree = "<group>"; };
+		B0CA00010000000000000004 /* MyAccountEnrollPhoneMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountEnrollPhoneMethodHandlerTests.swift; sourceTree = "<group>"; };
+		B0CA00010000000000000005 /* MyAccountEnrollPushMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountEnrollPushMethodHandlerTests.swift; sourceTree = "<group>"; };
+		B0CA00010000000000000006 /* MyAccountEnrollRecoveryCodeMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountEnrollRecoveryCodeMethodHandlerTests.swift; sourceTree = "<group>"; };
+		B0CA00010000000000000007 /* MyAccountEnrollTotpMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountEnrollTotpMethodHandlerTests.swift; sourceTree = "<group>"; };
+		B0CA00010000000000000008 /* MyAccountGetAuthMethodMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountGetAuthMethodMethodHandlerTests.swift; sourceTree = "<group>"; };
+		B0CA00010000000000000009 /* MyAccountGetAuthMethodsMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountGetAuthMethodsMethodHandlerTests.swift; sourceTree = "<group>"; };
+		B0CA0001000000000000000A /* MyAccountGetFactorsMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountGetFactorsMethodHandlerTests.swift; sourceTree = "<group>"; };
+		B0CA0001000000000000000B /* MyAccountVerifyOtpMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountVerifyOtpMethodHandlerTests.swift; sourceTree = "<group>"; };
+		B0CA0001000000000000000C /* MyAccountConfirmEnrollmentMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountConfirmEnrollmentMethodHandlerTests.swift; sourceTree = "<group>"; };
+		B0CA0001000000000000000D /* MyAccountUpdateAuthMethodMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountUpdateAuthMethodMethodHandlerTests.swift; sourceTree = "<group>"; };
+		B0CA0001000000000000000E /* MyAccountEnrollPasskeyChallengeMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountEnrollPasskeyChallengeMethodHandlerTests.swift; sourceTree = "<group>"; };
+		B0CA0001000000000000000F /* MyAccountEnrollPasskeyMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountEnrollPasskeyMethodHandlerTests.swift; sourceTree = "<group>"; };
+		PK00000000000000000003 /* AuthAPIPasskeyLoginChallengeMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIPasskeyLoginChallengeMethodHandlerTests.swift; sourceTree = "<group>"; };
+		PK00000000000000000006 /* AuthAPIPasskeyExtensionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIPasskeyExtensionsTests.swift; sourceTree = "<group>"; };
+		PK10000000000000000003 /* AuthAPIPasskeySignupChallengeMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIPasskeySignupChallengeMethodHandlerTests.swift; sourceTree = "<group>"; };
+		PK20000000000000000002 /* AuthAPIPasskeyCredentialExchangeMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIPasskeyCredentialExchangeMethodHandlerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -181,6 +225,7 @@
 				5C335E4627FE68A500EDDE3A /* AuthAPI */,
 				5C328B5127F7B11300451E70 /* WebAuth */,
 				5C4E65BC286D022200141449 /* CredentialsManager */,
+				B0CA000300000000000000A1 /* MyAccount */,
 				5C335E3E27FBCD1D00EDDE3A /* SwiftAuth0FlutterPluginTests.swift */,
 				5CAAA4A1281A0C7D007666F1 /* ModelsTests.swift */,
 				5C335E4027FBD2FE00EDDE3A /* ExtensionsTests.swift */,
@@ -212,7 +257,11 @@
 				5C59DA6828011D4F00365CDB /* AuthAPISignupMethodHandlerTests.swift */,
 				5C59DA822809214200365CDB /* AuthAPIUserInfoMethodHandlerTests.swift */,
 				5C59DA702807B19800365CDB /* AuthAPIRenewMethodHandlerTests.swift */,
+				PK00000000000000000003 /* AuthAPIPasskeyLoginChallengeMethodHandlerTests.swift */,
+				PK00000000000000000006 /* AuthAPIPasskeyExtensionsTests.swift */,
 				5C59DA722807B1A300365CDB /* AuthAPIResetPasswordMethodHandlerTests.swift */,
+				PK10000000000000000003 /* AuthAPIPasskeySignupChallengeMethodHandlerTests.swift */,
+				PK20000000000000000002 /* AuthAPIPasskeyCredentialExchangeMethodHandlerTests.swift */,
 				5C59DA8A2809386B00365CDB /* AuthAPIExtensionsTests.swift */,
 				5CA2853929C14EBA008A06B8 /* AuthAPIMultifactorChallengeMethodHandlerTests.swift */,
 			);
@@ -230,6 +279,8 @@
 				5C4E65BD286D151400141449 /* CredentialsManagerClearMethodHandlerTests.swift */,
 				5C08DBC7288A7646000D2F37 /* CredentialsManagerExtensionsTests.swift */,
 				A09B2E3F1D4C7891BA000001 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift */,
+				A0AC1D0F2E0000000000AC01 /* CredentialsManagerApiCredentialsMethodHandlerTests.swift */,
+				A0AC1D0F2E0000000000AC03 /* CredentialsManagerClearApiCredentialsMethodHandlerTests.swift */,
 			);
 			path = CredentialsManager;
 			sourceTree = "<group>";
@@ -306,6 +357,28 @@
 				022D2524EC0626250560078D /* Pods-RunnerTests.profile.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		B0CA000300000000000000A1 /* MyAccount */ = {
+			isa = PBXGroup;
+			children = (
+				B0CA00010000000000000001 /* MyAccountSpies.swift */,
+				B0CA00010000000000000002 /* MyAccountDeleteAuthMethodMethodHandlerTests.swift */,
+				B0CA00010000000000000003 /* MyAccountEnrollEmailMethodHandlerTests.swift */,
+				B0CA00010000000000000004 /* MyAccountEnrollPhoneMethodHandlerTests.swift */,
+				B0CA00010000000000000005 /* MyAccountEnrollPushMethodHandlerTests.swift */,
+				B0CA00010000000000000006 /* MyAccountEnrollRecoveryCodeMethodHandlerTests.swift */,
+				B0CA00010000000000000007 /* MyAccountEnrollTotpMethodHandlerTests.swift */,
+				B0CA00010000000000000008 /* MyAccountGetAuthMethodMethodHandlerTests.swift */,
+				B0CA00010000000000000009 /* MyAccountGetAuthMethodsMethodHandlerTests.swift */,
+				B0CA0001000000000000000A /* MyAccountGetFactorsMethodHandlerTests.swift */,
+				B0CA0001000000000000000B /* MyAccountVerifyOtpMethodHandlerTests.swift */,
+				B0CA0001000000000000000C /* MyAccountConfirmEnrollmentMethodHandlerTests.swift */,
+				B0CA0001000000000000000D /* MyAccountUpdateAuthMethodMethodHandlerTests.swift */,
+				B0CA0001000000000000000E /* MyAccountEnrollPasskeyChallengeMethodHandlerTests.swift */,
+				B0CA0001000000000000000F /* MyAccountEnrollPasskeyMethodHandlerTests.swift */,
+			);
+			path = MyAccount;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -598,6 +671,8 @@
 				5C59DA6527FFCF0600365CDB /* AuthAPIHandlerTests.swift in Sources */,
 				5C4E65C7286D24A900141449 /* CredentialsManagerSaveMethodHandlerTests.swift in Sources */,
 				5C59DA712807B19900365CDB /* AuthAPIRenewMethodHandlerTests.swift in Sources */,
+				PK00000000000000000001 /* AuthAPIPasskeyLoginChallengeMethodHandlerTests.swift in Sources */,
+				PK00000000000000000005 /* AuthAPIPasskeyExtensionsTests.swift in Sources */,
 				5C328B5027F7B0E700451E70 /* Utilities.swift in Sources */,
 				5C328B5527F7B1F300451E70 /* WebAuthLoginMethodHandlerTests.swift in Sources */,
 				5C4E65C3286D19DC00141449 /* CredentialsManagerHandlerTests.swift in Sources */,
@@ -607,10 +682,29 @@
 				5C335E3D27FBBC2300EDDE3A /* WebAuthLogoutMethodHandlerTests.swift in Sources */,
 				5C08DBC8288A7646000D2F37 /* CredentialsManagerExtensionsTests.swift in Sources */,
 				A09B2E3F1D4C7891BA000002 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift in Sources */,
+				A0AC1D0F2E0000000000AC02 /* CredentialsManagerApiCredentialsMethodHandlerTests.swift in Sources */,
+				A0AC1D0F2E0000000000AC04 /* CredentialsManagerClearApiCredentialsMethodHandlerTests.swift in Sources */,
 				5C335E4127FBD2FE00EDDE3A /* ExtensionsTests.swift in Sources */,
 				5C59DA732807B1A300365CDB /* AuthAPIResetPasswordMethodHandlerTests.swift in Sources */,
+				PK10000000000000000001 /* AuthAPIPasskeySignupChallengeMethodHandlerTests.swift in Sources */,
+				PK20000000000000000001 /* AuthAPIPasskeyCredentialExchangeMethodHandlerTests.swift in Sources */,
 				5C59DA832809214200365CDB /* AuthAPIUserInfoMethodHandlerTests.swift in Sources */,
 				5C4E65C1286D15AF00141449 /* CredentialsManagerSpies.swift in Sources */,
+				B0CA00020000000000000001 /* MyAccountSpies.swift in Sources */,
+				B0CA00020000000000000002 /* MyAccountDeleteAuthMethodMethodHandlerTests.swift in Sources */,
+				B0CA00020000000000000003 /* MyAccountEnrollEmailMethodHandlerTests.swift in Sources */,
+				B0CA00020000000000000004 /* MyAccountEnrollPhoneMethodHandlerTests.swift in Sources */,
+				B0CA00020000000000000005 /* MyAccountEnrollPushMethodHandlerTests.swift in Sources */,
+				B0CA00020000000000000006 /* MyAccountEnrollRecoveryCodeMethodHandlerTests.swift in Sources */,
+				B0CA00020000000000000007 /* MyAccountEnrollTotpMethodHandlerTests.swift in Sources */,
+				B0CA00020000000000000008 /* MyAccountGetAuthMethodMethodHandlerTests.swift in Sources */,
+				B0CA00020000000000000009 /* MyAccountGetAuthMethodsMethodHandlerTests.swift in Sources */,
+				B0CA0002000000000000000A /* MyAccountGetFactorsMethodHandlerTests.swift in Sources */,
+				B0CA0002000000000000000B /* MyAccountVerifyOtpMethodHandlerTests.swift in Sources */,
+				B0CA0002000000000000000C /* MyAccountConfirmEnrollmentMethodHandlerTests.swift in Sources */,
+				B0CA0002000000000000000D /* MyAccountUpdateAuthMethodMethodHandlerTests.swift in Sources */,
+				B0CA0002000000000000000E /* MyAccountEnrollPasskeyChallengeMethodHandlerTests.swift in Sources */,
+				B0CA0002000000000000000F /* MyAccountEnrollPasskeyMethodHandlerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -722,7 +816,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Runner/RunnerDebug.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
@@ -759,7 +855,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.sdks.Flutter.Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG PASSKEYS_PLATFORM";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -1020,6 +1116,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/RunnerDebug.entitlements;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
@@ -1031,6 +1128,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.auth0FlutterExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "Runner/Runner-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
