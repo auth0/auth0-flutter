@@ -9,9 +9,9 @@
 📚 <a href="#documentation">Documentation</a> • 🚀 <a href="#getting-started">Getting started</a> • 🌐 <a href="#api-reference">API reference</a> • 💬 <a href="#feedback">Feedback</a>
 </div>
 
-## What's New: v2.1.0
+## What's New: v2.3.0
 
-**auth0_flutter v2.1.0** adds **Windows Desktop** support. You can now use `windowsWebAuthentication()` to authenticate users on Windows using the same PKCE-based flow available on mobile. See the [Windows configuration section](#windows-configure-protocol-handler) below for setup instructions.
+**auth0_flutter v2.3.0** adds **Passkeys** support. You can now authenticate users with passkeys via the `webAuthentication()` flow on Android, iOS, and Web. See the [Auth0 passkeys documentation](https://auth0.com/docs/authenticate/database-connections/passkeys) for setup instructions.
 
 ## Important Migration Notice: v2.0.0
 
