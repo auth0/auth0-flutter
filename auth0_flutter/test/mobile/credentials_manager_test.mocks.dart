@@ -48,6 +48,17 @@ class _FakeSSOCredentials_1 extends _i1.SmartFake
         );
 }
 
+class _FakeApiCredentials_2 extends _i1.SmartFake
+    implements _i3.ApiCredentials {
+  _FakeApiCredentials_2(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [TestPlatform].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -153,4 +164,35 @@ class MockTestPlatform extends _i1.Mock implements _i4.TestPlatform {
           ),
         )),
       ) as _i5.Future<_i3.SSOCredentials>);
+
+  @override
+  _i5.Future<_i3.ApiCredentials> getApiCredentials(
+          _i3.CredentialsManagerRequest<_i3.GetApiCredentialsOptions>?
+              request) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getApiCredentials,
+          [request],
+        ),
+        returnValue: _i5.Future<_i3.ApiCredentials>.value(_FakeApiCredentials_2(
+          this,
+          Invocation.method(
+            #getApiCredentials,
+            [request],
+          ),
+        )),
+      ) as _i5.Future<_i3.ApiCredentials>);
+
+  @override
+  _i5.Future<void> clearApiCredentials(
+          _i3.CredentialsManagerRequest<_i3.ClearApiCredentialsOptions>?
+              request) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #clearApiCredentials,
+          [request],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
 }

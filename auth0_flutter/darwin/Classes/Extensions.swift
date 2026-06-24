@@ -95,6 +95,17 @@ extension Credentials {
     }
 }
 
+extension APICredentials {
+    func asDictionary() -> [String: Any] {
+        return [
+            "accessToken": accessToken,
+            "tokenType": tokenType,
+            "expiresAt": expiresIn.asISO8601String,
+            "scopes": scope.split(separator: " ").map(String.init)
+        ]
+    }
+}
+
 extension UserInfo {
     func asDictionary() -> [String: Any] {
         let claimsToFilter = ["aud",

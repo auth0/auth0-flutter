@@ -47,6 +47,7 @@ class CredentialsManagerMethodCallHandlerTest {
             val ctx: Context = mock()
             val mockPrefs: SharedPreferences = mock()
             `when`(ctx.getSharedPreferences(any(), any())).thenReturn(mockPrefs)
+            `when`(ctx.applicationContext).thenReturn(ctx)
             ctx
         } else {
             context
@@ -332,6 +333,9 @@ class CredentialsManagerMethodCallHandlerTest {
         val mockPrefs: SharedPreferences = mock()
 
         `when`(context.getSharedPreferences(any(), any())).thenReturn(mockPrefs)
+        // Auth0.Android 3.18.0's useDPoP(context) eagerly builds a DPoP instance that
+        // reads context.applicationContext, so the mock must return a non-null context.
+        `when`(context.applicationContext).thenReturn(context)
 
         handler.activity = activity
         handler.context = context
@@ -515,4 +519,3 @@ class CredentialsManagerMethodCallHandlerTest {
         verify(mockResult).success(userProfileMap)
     }
 }
-

@@ -1,0 +1,1 @@
+../../../darwin/Classes/MyAccountAPI/MyAccountDeleteAuthMethodMethodHandler.swift

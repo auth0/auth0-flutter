@@ -1,0 +1,75 @@
+package com.auth0.auth0_flutter.request_handlers.credentials_manager
+
+import com.auth0.android.Auth0
+import com.auth0.android.authentication.storage.SecureCredentialsManager
+import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
+import io.flutter.plugin.common.MethodChannel.Result
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.kotlin.*
+import org.robolectric.RobolectricTestRunner
+
+@RunWith(RobolectricTestRunner::class)
+class ClearApiCredentialsRequestHandlerTest {
+
+    @Test
+    fun `should call clearApiCredentials with the provided audience and scope`() {
+        val handler = ClearApiCredentialsRequestHandler()
+        val options = hashMapOf<String, Any>(
+            "audience" to "test-audience",
+            "scope" to "test-scope"
+        )
+        val mockResult = mock<Result>()
+        val mockAccount = mock<Auth0>()
+        val mockCredentialsManager = mock<SecureCredentialsManager>()
+        val request = MethodCallRequest(account = mockAccount, options)
+
+        handler.handle(mockCredentialsManager, mock(), request, mockResult)
+
+        verify(mockCredentialsManager).clearApiCredentials(eq("test-audience"), eq("test-scope"))
+    }
+
+    @Test
+    fun `should call clearApiCredentials with a null scope when not provided`() {
+        val handler = ClearApiCredentialsRequestHandler()
+        val options = hashMapOf<String, Any>("audience" to "test-audience")
+        val mockResult = mock<Result>()
+        val mockAccount = mock<Auth0>()
+        val mockCredentialsManager = mock<SecureCredentialsManager>()
+        val request = MethodCallRequest(account = mockAccount, options)
+
+        handler.handle(mockCredentialsManager, mock(), request, mockResult)
+
+        verify(mockCredentialsManager).clearApiCredentials(eq("test-audience"), isNull())
+    }
+
+    @Test
+    fun `should call result success with null because the native API returns void`() {
+        val handler = ClearApiCredentialsRequestHandler()
+        val options = hashMapOf<String, Any>("audience" to "test-audience")
+        val mockResult = mock<Result>()
+        val mockAccount = mock<Auth0>()
+        val mockCredentialsManager = mock<SecureCredentialsManager>()
+        val request = MethodCallRequest(account = mockAccount, options)
+
+        handler.handle(mockCredentialsManager, mock(), request, mockResult)
+
+        verify(mockResult).success(isNull())
+    }
+
+    @Test
+    fun `should error when audience is missing`() {
+        val handler = ClearApiCredentialsRequestHandler()
+        val options = hashMapOf<String, Any>()
+        val mockResult = mock<Result>()
+        val mockAccount = mock<Auth0>()
+        val mockCredentialsManager = mock<SecureCredentialsManager>()
+        val request = MethodCallRequest(account = mockAccount, options)
+
+        handler.handle(mockCredentialsManager, mock(), request, mockResult)
+
+        verify(mockResult).error(eq("UNKNOWN ERROR"), any(), anyOrNull())
+        verify(mockCredentialsManager, never()).clearApiCredentials(anyString(), anyOrNull())
+    }
+}

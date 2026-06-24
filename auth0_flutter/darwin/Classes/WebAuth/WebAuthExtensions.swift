@@ -10,14 +10,14 @@ extension FlutterError {
     convenience init(from webAuthError: WebAuthError) {
         var code: String
         switch webAuthError {
-        case .noBundleIdentifier: code = "NO_BUNDLE_IDENTIFIER"
-        case .invalidInvitationURL: code = "INVALID_INVITATION_URL"
-        case .userCancelled: code = "USER_CANCELLED"
-        case .noAuthorizationCode: code = "NO_AUTHORIZATION_CODE"
-        case .pkceNotAllowed: code = "PKCE_NOT_ALLOWED"
-        case .idTokenValidationFailed: code = "ID_TOKEN_VALIDATION_FAILED"
-        case .transactionActiveAlready: code = "TRANSACTION_ACTIVE_ALREADY"
-        case .other: code = "OTHER"
+        case WebAuthError.noBundleIdentifier: code = "NO_BUNDLE_IDENTIFIER"
+        case WebAuthError.invalidInvitationURL: code = "INVALID_INVITATION_URL"
+        case WebAuthError.userCancelled: code = "USER_CANCELLED"
+        case WebAuthError.noAuthorizationCode: code = "NO_AUTHORIZATION_CODE"
+        case WebAuthError.pkceNotAllowed: code = "PKCE_NOT_ALLOWED"
+        case WebAuthError.idTokenValidationFailed: code = "ID_TOKEN_VALIDATION_FAILED"
+        case WebAuthError.transactionActiveAlready: code = "TRANSACTION_ACTIVE_ALREADY"
+        case WebAuthError.other: code = "OTHER"
         default: code = "UNKNOWN"
         }
         var details = webAuthError.details

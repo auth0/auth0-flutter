@@ -26,6 +26,13 @@ class MethodCallHandler {
     'refreshToken': 'refreshToken',
   };
 
+  static const Map<dynamic, dynamic> apiCredentials = {
+    'accessToken': 'apiAccessToken',
+    'tokenType': 'Bearer',
+    'expiresAt': '2023-11-01T22:16:35.760Z',
+    'scopes': ['a', 'b'],
+  };
+
   Future<dynamic>? methodCallHandler(final MethodCall? methodCall) async {}
 }
 
@@ -669,7 +676,7 @@ void main() {
       final Map<dynamic, dynamic> renewedCredentials = {
         'accessToken': 'renewedAccessToken',
         'idToken': 'idToken',
-        'refreshToken':'refreshToken',
+        'refreshToken': 'refreshToken',
         'expiresAt': '2023-11-01T22:16:35.760Z',
         'scopes': ['a', 'b'],
         'userProfile': {'sub': '123', 'name': 'John Doe'},
@@ -744,10 +751,11 @@ void main() {
       when(mocked.methodCallHandler(any))
           .thenAnswer((final _) async => {'sub': '123', 'name': 'John Doe'});
 
-      await MethodChannelCredentialsManager()
-          .user(CredentialsManagerRequest<RequestOptions?>(
+      await MethodChannelCredentialsManager().user(
+          CredentialsManagerRequest<RequestOptions?>(
               account: const Account('test-domain', 'test-clientId'),
-              userAgent: UserAgent(name: 'test-name', version: 'test-version')));
+              userAgent:
+                  UserAgent(name: 'test-name', version: 'test-version')));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -758,10 +766,11 @@ void main() {
       when(mocked.methodCallHandler(any))
           .thenAnswer((final _) async => {'sub': '123', 'name': 'John Doe'});
 
-      await MethodChannelCredentialsManager()
-          .user(CredentialsManagerRequest<RequestOptions?>(
+      await MethodChannelCredentialsManager().user(
+          CredentialsManagerRequest<RequestOptions?>(
               account: const Account('test-domain', 'test-clientId'),
-              userAgent: UserAgent(name: 'test-name', version: 'test-version')));
+              userAgent:
+                  UserAgent(name: 'test-name', version: 'test-version')));
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
@@ -790,10 +799,11 @@ void main() {
       when(mocked.methodCallHandler(any))
           .thenAnswer((final _) async => userProfileData);
 
-      final result = await MethodChannelCredentialsManager()
-          .user(CredentialsManagerRequest<RequestOptions?>(
+      final result = await MethodChannelCredentialsManager().user(
+          CredentialsManagerRequest<RequestOptions?>(
               account: const Account('test-domain', 'test-clientId'),
-              userAgent: UserAgent(name: 'test-name', version: 'test-version')));
+              userAgent:
+                  UserAgent(name: 'test-name', version: 'test-version')));
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -813,23 +823,25 @@ void main() {
     test('returns null when native returns null', () async {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
-      final result = await MethodChannelCredentialsManager()
-          .user(CredentialsManagerRequest<RequestOptions?>(
+      final result = await MethodChannelCredentialsManager().user(
+          CredentialsManagerRequest<RequestOptions?>(
               account: const Account('test-domain', 'test-clientId'),
-              userAgent: UserAgent(name: 'test-name', version: 'test-version')));
+              userAgent:
+                  UserAgent(name: 'test-name', version: 'test-version')));
 
       verify(mocked.methodCallHandler(captureAny));
       expect(result, isNull);
     });
 
     test('throws CredentialsManagerException on PlatformException', () async {
-      when(mocked.methodCallHandler(any))
-          .thenThrow(PlatformException(code: 'FAILED', message: 'No credentials stored'));
+      when(mocked.methodCallHandler(any)).thenThrow(
+          PlatformException(code: 'FAILED', message: 'No credentials stored'));
 
       Future<UserProfile?> actual() async => MethodChannelCredentialsManager()
-            .user(CredentialsManagerRequest<RequestOptions?>(
-                account: const Account('test-domain', 'test-clientId'),
-                userAgent: UserAgent(name: 'test-name', version: 'test-version')));
+          .user(CredentialsManagerRequest<RequestOptions?>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent:
+                  UserAgent(name: 'test-name', version: 'test-version')));
 
       await expectLater(
           actual,
@@ -847,10 +859,11 @@ void main() {
       when(mocked.methodCallHandler(any))
           .thenAnswer((final _) async => minimalProfile);
 
-      final result = await MethodChannelCredentialsManager()
-          .user(CredentialsManagerRequest<RequestOptions?>(
+      final result = await MethodChannelCredentialsManager().user(
+          CredentialsManagerRequest<RequestOptions?>(
               account: const Account('test-domain', 'test-clientId'),
-              userAgent: UserAgent(name: 'test-name', version: 'test-version')));
+              userAgent:
+                  UserAgent(name: 'test-name', version: 'test-version')));
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -941,13 +954,11 @@ void main() {
       expect(result.tokenType, MethodCallHandler.ssoCredentials['tokenType']);
       expect(result.expiresIn, MethodCallHandler.ssoCredentials['expiresIn']);
       expect(result.idToken, MethodCallHandler.ssoCredentials['idToken']);
-      expect(
-          result.refreshToken, MethodCallHandler.ssoCredentials['refreshToken']);
+      expect(result.refreshToken,
+          MethodCallHandler.ssoCredentials['refreshToken']);
     });
 
-    test(
-        'correctly returns SSOCredentials with null refreshToken',
-        () async {
+    test('correctly returns SSOCredentials with null refreshToken', () async {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
             'sessionTransferToken': 'ssoToken',
             'tokenType': 'session_transfer',
@@ -974,12 +985,13 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
 
       Future<SSOCredentials> actual() async {
-        final result = await MethodChannelCredentialsManager().getSSOCredentials(
-            CredentialsManagerRequest<GetSSOCredentialsOptions>(
-                account: const Account('', ''),
-                userAgent:
-                    UserAgent(name: 'test-name', version: 'test-version'),
-                options: GetSSOCredentialsOptions()));
+        final result = await MethodChannelCredentialsManager()
+            .getSSOCredentials(
+                CredentialsManagerRequest<GetSSOCredentialsOptions>(
+                    account: const Account('', ''),
+                    userAgent:
+                        UserAgent(name: 'test-name', version: 'test-version'),
+                    options: GetSSOCredentialsOptions()));
 
         return result;
       }
@@ -998,15 +1010,227 @@ void main() {
           .thenThrow(PlatformException(code: '123'));
 
       Future<SSOCredentials> actual() async {
-        final result = await MethodChannelCredentialsManager().getSSOCredentials(
-            CredentialsManagerRequest<GetSSOCredentialsOptions>(
-                account: const Account('', ''),
-                userAgent:
-                    UserAgent(name: 'test-name', version: 'test-version'),
-                options: GetSSOCredentialsOptions()));
+        final result = await MethodChannelCredentialsManager()
+            .getSSOCredentials(
+                CredentialsManagerRequest<GetSSOCredentialsOptions>(
+                    account: const Account('', ''),
+                    userAgent:
+                        UserAgent(name: 'test-name', version: 'test-version'),
+                    options: GetSSOCredentialsOptions()));
 
         return result;
       }
+
+      await expectLater(actual, throwsA(isA<CredentialsManagerException>()));
+    });
+  });
+
+  group('getApiCredentials', () {
+    test('calls the correct MethodChannel method', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.apiCredentials);
+
+      await MethodChannelCredentialsManager().getApiCredentials(
+          CredentialsManagerRequest<GetApiCredentialsOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: GetApiCredentialsOptions(audience: 'test-audience')));
+
+      expect(
+          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          'credentialsManager#getApiCredentials');
+    });
+
+    test('correctly maps all properties', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.apiCredentials);
+
+      await MethodChannelCredentialsManager().getApiCredentials(
+          CredentialsManagerRequest<GetApiCredentialsOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: GetApiCredentialsOptions(
+                audience: 'test-audience',
+                scopes: {'test-scope1', 'test-scope2'},
+                minTtl: 30,
+                parameters: {'test-param': 'test-value'},
+                headers: {'test-header': 'test-header-value'},
+              )));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['_account']['domain'], 'test-domain');
+      expect(verificationResult.arguments['_account']['clientId'],
+          'test-clientId');
+      expect(verificationResult.arguments['_userAgent']['name'], 'test-name');
+      expect(verificationResult.arguments['_userAgent']['version'],
+          'test-version');
+      expect(verificationResult.arguments['audience'], 'test-audience');
+      expect(verificationResult.arguments['scopes'],
+          ['test-scope1', 'test-scope2']);
+      expect(verificationResult.arguments['minTtl'], 30);
+      expect(verificationResult.arguments['parameters']['test-param'],
+          'test-value');
+      expect(verificationResult.arguments['headers']['test-header'],
+          'test-header-value');
+    });
+
+    test(
+        'correctly assigns default values to all non-required properties when missing',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.apiCredentials);
+
+      await MethodChannelCredentialsManager().getApiCredentials(
+          CredentialsManagerRequest<GetApiCredentialsOptions>(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: '', version: ''),
+              options: GetApiCredentialsOptions(audience: 'test-audience')));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['scopes'], isEmpty);
+      expect(verificationResult.arguments['minTtl'], 0);
+      expect(verificationResult.arguments['parameters'], isEmpty);
+      expect(verificationResult.arguments['headers'], isEmpty);
+    });
+
+    test('correctly returns the response from the Method Channel', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.apiCredentials);
+
+      final result = await MethodChannelCredentialsManager().getApiCredentials(
+          CredentialsManagerRequest<GetApiCredentialsOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: GetApiCredentialsOptions(audience: 'test-audience')));
+
+      verify(mocked.methodCallHandler(captureAny));
+
+      expect(result.accessToken,
+          MethodCallHandler.apiCredentials['accessToken']);
+      expect(result.tokenType, MethodCallHandler.apiCredentials['tokenType']);
+      expect(
+          result.scopes,
+          Set<String>.from(
+              MethodCallHandler.apiCredentials['scopes'] as List<dynamic>));
+      expect(
+          result.expiresAt,
+          DateTime.parse(
+              MethodCallHandler.apiCredentials['expiresAt'] as String));
+    });
+
+    test(
+        'throws a CredentialsManagerException when method channel returns null',
+        () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      Future<ApiCredentials> actual() async {
+        final result = await MethodChannelCredentialsManager()
+            .getApiCredentials(
+                CredentialsManagerRequest<GetApiCredentialsOptions>(
+                    account: const Account('', ''),
+                    userAgent:
+                        UserAgent(name: 'test-name', version: 'test-version'),
+                    options:
+                        GetApiCredentialsOptions(audience: 'test-audience')));
+
+        return result;
+      }
+
+      expectLater(
+          actual,
+          throwsA(predicate((final e) =>
+              e is CredentialsManagerException &&
+              e.message == 'Channel returned null.')));
+    });
+
+    test(
+        'throws a CredentialsManagerException when method channel throws a PlatformException',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenThrow(PlatformException(code: '123'));
+
+      Future<ApiCredentials> actual() async {
+        final result = await MethodChannelCredentialsManager()
+            .getApiCredentials(
+                CredentialsManagerRequest<GetApiCredentialsOptions>(
+                    account: const Account('', ''),
+                    userAgent:
+                        UserAgent(name: 'test-name', version: 'test-version'),
+                    options:
+                        GetApiCredentialsOptions(audience: 'test-audience')));
+
+        return result;
+      }
+
+      await expectLater(actual, throwsA(isA<CredentialsManagerException>()));
+    });
+  });
+
+  group('clearApiCredentials', () {
+    test('calls the correct MethodChannel method', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      await MethodChannelCredentialsManager().clearApiCredentials(
+          CredentialsManagerRequest<ClearApiCredentialsOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: ClearApiCredentialsOptions(audience: 'test-audience')));
+
+      expect(
+          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          'credentialsManager#clearApiCredentials');
+    });
+
+    test('correctly maps all properties', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      await MethodChannelCredentialsManager().clearApiCredentials(
+          CredentialsManagerRequest<ClearApiCredentialsOptions>(
+              account: const Account('test-domain', 'test-clientId'),
+              userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+              options: ClearApiCredentialsOptions(
+                  audience: 'test-audience', scope: 'test-scope')));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['_account']['domain'], 'test-domain');
+      expect(verificationResult.arguments['_account']['clientId'],
+          'test-clientId');
+      expect(verificationResult.arguments['audience'], 'test-audience');
+      expect(verificationResult.arguments['scope'], 'test-scope');
+    });
+
+    test('omits the scope when not provided', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => null);
+
+      await MethodChannelCredentialsManager().clearApiCredentials(
+          CredentialsManagerRequest<ClearApiCredentialsOptions>(
+              account: const Account('', ''),
+              userAgent: UserAgent(name: '', version: ''),
+              options: ClearApiCredentialsOptions(audience: 'test-audience')));
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['audience'], 'test-audience');
+      expect(verificationResult.arguments.containsKey('scope'), false);
+    });
+
+    test(
+        'throws a CredentialsManagerException when method channel throws a PlatformException',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenThrow(PlatformException(code: '123'));
+
+      Future<void> actual() async =>
+          MethodChannelCredentialsManager().clearApiCredentials(
+              CredentialsManagerRequest<ClearApiCredentialsOptions>(
+                  account: const Account('', ''),
+                  userAgent:
+                      UserAgent(name: 'test-name', version: 'test-version'),
+                  options:
+                      ClearApiCredentialsOptions(audience: 'test-audience')));
 
       await expectLater(actual, throwsA(isA<CredentialsManagerException>()));
     });

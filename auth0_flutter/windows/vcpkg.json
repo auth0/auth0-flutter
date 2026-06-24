@@ -1,0 +1,12 @@
+{
+  "name": "auth0-flutter",
+  "version-string": "0.1.0",
+  "description": "Auth0 Flutter plugin native C++ dependencies",
+  "dependencies": [
+    "cpprestsdk",
+    "openssl",
+    "boost-system",
+    "boost-date-time",
+    "boost-regex"
+  ]
+}

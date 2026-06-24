@@ -136,6 +136,10 @@ class SpyPluginRegistrar: NSObject, FlutterPluginRegistrar {
 
     func publish(_ value: NSObject) {}
 
+    func valuePublished(byPlugin pluginKey: String) -> NSObject? {
+        return nil
+    }
+
     func lookupKey(forAsset asset: String) -> String {
         return ""
     }

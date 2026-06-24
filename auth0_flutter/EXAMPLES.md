@@ -10,8 +10,17 @@
   - [Using `SFSafariViewController` (iOS only)](#using-sfsafariviewcontroller-ios-only)
     - [1. Configure a custom URL scheme](#1-configure-a-custom-url-scheme)
     - [2. Capture the callback URL](#2-capture-the-callback-url)
+  - [Using Partial Custom Tabs (Android only)](#using-partial-custom-tabs-android-only)
   - [Errors](#errors)
   - [Android: Custom schemes](#android-custom-schemes)
+- [🪟 Windows Web Authentication](#-windows-web-authentication)
+  - [Prerequisites](#prerequisites)
+    - [1. Install vcpkg and native dependencies](#1-install-vcpkg-and-native-dependencies)
+    - [2. Configure your app's CMakeLists.txt](#2-configure-your-apps-cmakeliststxt)
+    - [3. Register the custom URL scheme (protocol handler)](#3-register-the-custom-url-scheme-protocol-handler)
+    - [4. Update the runner (main.cpp)](#4-update-the-runner-maincpp)
+  - [Login](#login)
+  - [Logout](#logout)
 - [📱 Credentials Manager](#-credentials-manager)
   - [Check for stored credentials](#check-for-stored-credentials)
   - [Retrieve stored credentials](#retrieve-stored-credentials)
@@ -27,6 +36,8 @@
 - [📱 Authentication API](#-authentication-api)
   - [Login with database connection](#login-with-database-connection)
   - [Sign up with database connection](#sign-up-with-database-connection)
+  - [Log in with passkeys](#log-in-with-passkeys)
+  - [Sign up with passkeys](#sign-up-with-passkeys)
   - [Passwordless Login](#passwordless-login)
   - [Retrieve user information](#retrieve-user-information)
   - [Renew credentials](#renew-credentials)
@@ -36,6 +47,14 @@
   - [Log in to an organization](#log-in-to-an-organization)
   - [Accept user invitations](#accept-user-invitations)
 - [📱 Bot detection](#-bot-detection)
+- [📱 My Account API](#-my-account-api)
+  - [Obtaining an access token for the My Account API](#obtaining-an-access-token-for-the-my-account-api)
+  - [Listing and managing authentication methods](#listing-and-managing-authentication-methods)
+  - [Enrolling a factor with OTP (phone, email, TOTP)](#enrolling-a-factor-with-otp-phone-email-totp)
+  - [Enrolling a factor without OTP (push, recovery code)](#enrolling-a-factor-without-otp-push-recovery-code)
+  - [Enrolling a passkey](#enrolling-a-passkey)
+  - [Using DPoP](#using-dpop)
+  - [Errors](#errors-3)
 
 ## 📱 Web Authentication
 
@@ -48,8 +67,17 @@
   - [Using `SFSafariViewController` (iOS only)](#using-sfsafariviewcontroller-ios-only)
     - [1. Configure a custom URL scheme](#1-configure-a-custom-url-scheme)
     - [2. Capture the callback URL](#2-capture-the-callback-url)
+  - [Using Partial Custom Tabs (Android only)](#using-partial-custom-tabs-android-only)
   - [Errors](#errors)
   - [Android: Custom schemes](#android-custom-schemes)
+- [🪟 Windows Web Authentication](#-windows-web-authentication)
+  - [Prerequisites](#prerequisites)
+    - [1. Install vcpkg and native dependencies](#1-install-vcpkg-and-native-dependencies)
+    - [2. Configure your app's CMakeLists.txt](#2-configure-your-apps-cmakeliststxt)
+    - [3. Register the custom URL scheme (protocol handler)](#3-register-the-custom-url-scheme-protocol-handler)
+    - [4. Update the runner (main.cpp)](#4-update-the-runner-maincpp)
+  - [Login](#login)
+  - [Logout](#logout)
 
 ---
 
@@ -68,6 +96,27 @@ If you're using your own credentials storage, make sure to delete the credential
 // Use a Universal Link logout URL on iOS 17.4+ / macOS 14.4+
 // useHTTPS is ignored on Android
 await auth0.webAuthentication().logout(useHTTPS: true);
+```
+
+</details>
+
+<details>
+  <summary>Windows</summary>
+
+`appCustomURL` is required for logout. It is the custom-scheme URL your Windows app listens on. `returnTo` is optional — if omitted, `appCustomURL` is used in the Auth0 logout URL as well.
+
+```dart
+// Option A — direct custom scheme (appCustomURL is used as returnTo too)
+await auth0.windowsWebAuthentication().logout(
+  appCustomURL: 'myapp://callback',
+);
+
+// Option B — intermediary HTTPS server
+// Auth0 redirects to the HTTPS URL; the server redirects on to your custom scheme
+await auth0.windowsWebAuthentication().logout(
+  appCustomURL: 'myapp://callback',
+  returnTo: 'https://your-app.example.com/logout',
+);
 ```
 
 </details>
@@ -333,6 +382,43 @@ func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>)
 
 </details>
 
+### Using Partial Custom Tabs (Android only)
+
+On Android, auth0_flutter supports [Partial Custom Tabs](https://developer.chrome.com/docs/android/custom-tabs/guide-partial-custom-tabs), which display the authentication page as a bottom sheet or side sheet instead of a full-screen browser tab. This requires Chrome 107+ (bottom sheet) or Chrome 120+ (side sheet). On older browsers, the options are ignored and the tab opens full-screen.
+
+```dart
+await auth0.webAuthentication().login(
+    customTabsOptions: const CustomTabsOptions(
+        initialHeight: 700,
+        toolbarCornerRadius: 16,
+        resizable: false,
+        backgroundInteractionEnabled: true,
+        allowedBrowsers: ['com.android.chrome'],
+    ));
+```
+
+The available options are:
+
+| Option | Type | Description |
+|--------|------|-------------|
+| `initialHeight` | `int?` | Bottom sheet height in dp. Chrome enforces a minimum of 50% of screen height. |
+| `resizable` | `bool?` | Whether the user can drag to resize the bottom sheet. Defaults to `true`. |
+| `toolbarCornerRadius` | `int?` | Top corner radius in dp (0–16). Only applies in bottom sheet mode. |
+| `initialWidth` | `int?` | Side sheet width in dp. Only applies on screens wider than `sideSheetBreakpoint`. |
+| `sideSheetBreakpoint` | `int?` | Screen width threshold (dp) to switch between bottom sheet and side sheet. Defaults to the browser's built-in value (typically 840dp). |
+| `backgroundInteractionEnabled` | `bool?` | Whether the user can interact with the app behind the partial tab. Defaults to `false`. |
+| `allowedBrowsers` | `List<String>` | Allowlist of browser packages for Custom Tabs. |
+
+You can also use `customTabsOptions` during logout:
+
+```dart
+await auth0.webAuthentication().logout(
+    customTabsOptions: const CustomTabsOptions(
+        initialHeight: 500,
+        toolbarCornerRadius: 12,
+    ));
+```
+
 ### Errors
 
 <details>
@@ -396,12 +482,205 @@ await webAuth.logout();
 
 [Go up ⤴](#examples)
 
+## 🪟 Windows Web Authentication
+
+Windows uses `windowsWebAuthentication()` instead of `webAuthentication()`.
+
+### `appCustomURL` — why it is required
+
+On Windows, the browser cannot directly activate a desktop app the way iOS/Android handle universal links. Instead, the app registers a **custom URL scheme** (e.g. `myapp://callback`) as a protocol handler in the Windows registry. When the browser navigates to that URL, Windows launches (or brings to the front) your Flutter app and passes the URL as a command-line argument — this is the `appCustomURL`.
+
+`appCustomURL` must always be passed. It tells the SDK which URL scheme your app is listening on so it can intercept the browser redirect.
+
+### `redirectUrl` (login) and `returnTo` (logout) — when to pass them
+
+| Scenario | What to pass | What happens |
+|----------|-------------|--------------|
+| **Simple setup** (recommended) | `appCustomURL` only | Auth0 redirects straight to the custom scheme; `appCustomURL` is used as `redirect_uri` / `returnTo` in the Auth0 URL. Register your scheme (e.g. `myapp://callback`) in your dashboard. |
+| **Intermediary HTTPS server** | `appCustomURL` + `redirectUrl` / `returnTo` | Auth0 redirects to your HTTPS server; the server then redirects onward to `appCustomURL`. Register the HTTPS URL in your dashboard. Useful when you want no custom-scheme URL visible in the browser address bar. |
+
+See the [Windows configuration section](README.md#windows-configure-protocol-handler) in the README for the full setup guide, including the required runner changes.
+
+### Prerequisites
+
+Before using `windowsWebAuthentication()`, your Windows Flutter app needs a few one-time setup steps.
+
+#### 1. Install vcpkg and native dependencies
+
+The auth0_flutter Windows plugin depends on native C++ libraries managed by [vcpkg](https://vcpkg.io/). Install vcpkg and set the `VCPKG_ROOT` environment variable:
+
+```powershell
+# Clone vcpkg (if you haven't already)
+git clone https://github.com/microsoft/vcpkg.git C:\vcpkg
+cd C:\vcpkg
+.\bootstrap-vcpkg.bat
+
+# Set the environment variable (persist it in System Properties > Environment Variables)
+setx VCPKG_ROOT "C:\vcpkg"
+```
+
+The plugin's `vcpkg.json` manifest automatically pulls the required packages (`cpprestsdk`, `openssl`, `boost-system`, `boost-date-time`, `boost-regex`) at build time — no manual `vcpkg install` is needed.
+
+#### 2. Configure your app's CMakeLists.txt
+
+Your app's top-level `windows/CMakeLists.txt` must enable vcpkg toolchain integration so that the plugin's native dependencies can be resolved. Add the following **before** the first `project()` call:
+
+```cmake
+# windows/CMakeLists.txt
+
+cmake_minimum_required(VERSION 3.14)
+
+# --- vcpkg integration (required for auth0_flutter) ---
+if(DEFINED ENV{VCPKG_ROOT} AND EXISTS "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        CACHE STRING "Vcpkg toolchain file")
+endif()
+
+project(your_app LANGUAGES CXX)
+
+# ... rest of your CMakeLists.txt ...
+```
+
+> ⚠️ The `CMAKE_TOOLCHAIN_FILE` line **must** appear before `project()`. If it appears after, CMake will have already configured the compiler and vcpkg packages will not be found, resulting in build errors like `Could not find a package configuration file provided by "cpprestsdk"`.
+
+#### 3. Register the custom URL scheme (protocol handler)
+
+For Windows to route your custom-scheme callback URLs (e.g. `myapp://callback`) back to your app, you must register the scheme as a protocol handler in the Windows Registry. Choose a scheme name that is unique to your application. This is typically done once when the app is installed.
+
+> 💡 The scheme can be anything you choose — `myapp`, `com.example.myapp`, etc. Use the same value as `appCustomURL` in your Dart code and register it in the Auth0 dashboard's **Allowed Callback URLs** / **Allowed Logout URLs**.
+
+**Option A — Manual registration (development)**
+
+Create a `.reg` file with the following contents and double-click it to import. Replace `myapp` with your chosen scheme and update the executable path:
+
+```reg
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Classes\myapp]
+@="URL:myapp Protocol"
+"URL Protocol"=""
+
+[HKEY_CURRENT_USER\Software\Classes\myapp\shell]
+
+[HKEY_CURRENT_USER\Software\Classes\myapp\shell\open]
+
+[HKEY_CURRENT_USER\Software\Classes\myapp\shell\open\command]
+@="\"C:\\Path\\To\\Your\\App\\your_app.exe\" \"%1\""
+```
+
+Replace `C:\Path\To\Your\App\your_app.exe` with the actual path to your built Flutter executable (e.g. `build\windows\x64\runner\Release\your_app.exe`).
+
+> 💡 During development you can point this at your debug build path. Remember to update it when you move to a release/installed location.
+
+**Option B — Programmatic registration (installer / first-run)**
+
+If you use an installer (MSIX, Inno Setup, WiX, etc.), add the registry entries as part of the install step. For MSIX, declare the protocol in your `Package.appxmanifest`:
+
+```xml
+<Extensions>
+  <uap:Extension Category="windows.protocol">
+    <uap:Protocol Name="myapp">
+      <uap:DisplayName>My App Callback</uap:DisplayName>
+    </uap:Protocol>
+  </uap:Extension>
+</Extensions>
+```
+
+For a first-run self-registration approach, you can write the registry keys programmatically from your app's `main.cpp`. Replace `myapp` with your chosen scheme:
+
+```cpp
+// Call once on first launch to register the protocol handler.
+// schemeName: your custom scheme (e.g. L"myapp")
+// exePath:    full path to the running executable
+void RegisterProtocolHandler(const std::wstring& schemeName,
+                             const std::wstring& exePath) {
+    HKEY hKey;
+    std::wstring keyPath = L"Software\\Classes\\" + schemeName;
+
+    RegCreateKeyExW(HKEY_CURRENT_USER, keyPath.c_str(), 0, NULL,
+                    0, KEY_WRITE, NULL, &hKey, NULL);
+    std::wstring desc = L"URL:" + schemeName + L" Protocol";
+    RegSetValueExW(hKey, NULL, 0, REG_SZ,
+                   (const BYTE*)desc.c_str(), (DWORD)((desc.size() + 1) * sizeof(wchar_t)));
+    RegSetValueExW(hKey, L"URL Protocol", 0, REG_SZ, (const BYTE*)L"", sizeof(wchar_t));
+    RegCloseKey(hKey);
+
+    std::wstring cmdKeyPath = keyPath + L"\\shell\\open\\command";
+    RegCreateKeyExW(HKEY_CURRENT_USER, cmdKeyPath.c_str(), 0, NULL,
+                    0, KEY_WRITE, NULL, &hKey, NULL);
+    std::wstring cmd = L"\"" + exePath + L"\" \"%1\"";
+    RegSetValueExW(hKey, NULL, 0, REG_SZ,
+                   (const BYTE*)cmd.c_str(), (DWORD)((cmd.size() + 1) * sizeof(wchar_t)));
+    RegCloseKey(hKey);
+}
+```
+
+> ⚠️ Without the protocol handler registration, clicking the Auth0 login link in the browser will **not** launch your app and authentication will time out with `USER_CANCELLED`.
+
+#### 4. Update the runner (main.cpp)
+
+Your app's `windows/runner/main.cpp` must be updated to handle single-instance enforcement, capture the callback URI from `argv[1]`, and forward it to the plugin via the `PLUGIN_STARTUP_URL` environment variable. Copy the reference implementation from the [example runner](example/windows/runner/main.cpp) and adapt it to your app. Update the callback prefix constant to match your chosen scheme (e.g. `L"myapp://callback"`). The key pieces are:
+
+1. **Single-instance mutex** — prevents a second app instance when the OS launches your app for the protocol callback; instead, the URI is forwarded to the running instance.
+2. **Named pipe server** — the running instance listens on a named pipe for URIs forwarded by the second launch.
+3. **Startup URI capture** — on first launch, `argv[1]` (the callback URI) is written to `PLUGIN_STARTUP_URL` before Flutter initializes.
+
+> 💡 See the [Windows configuration section](README.md#windows-configure-protocol-handler) in the README for a detailed walkthrough of each piece.
+
+### Login
+
+```dart
+// Simple setup — appCustomURL only (recommended for most apps)
+// Register your custom scheme (e.g. 'myapp://callback') in Allowed Callback URLs
+// in the Auth0 dashboard.
+final credentials = await auth0.windowsWebAuthentication().login(
+  appCustomURL: 'myapp://callback',
+);
+
+// Intermediary HTTPS server
+// Register 'https://your-app.example.com/callback' in Allowed Callback URLs.
+// Auth0 redirects to the HTTPS URL; your server redirects onward to
+// myapp://callback?code=...&state=... to activate the app.
+final credentials = await auth0.windowsWebAuthentication().login(
+  appCustomURL: 'myapp://callback',
+  redirectUrl: 'https://your-app.example.com/callback',
+);
+
+// Access token -> credentials.accessToken
+// User profile -> credentials.user
+```
+
+> ⚠️ Credentials are **not** automatically stored on Windows. Store and manage the returned `credentials` object yourself (e.g., using `shared_preferences` or secure storage).
+
+### Logout
+
+```dart
+// Simple setup — appCustomURL only (recommended for most apps)
+// Register your custom scheme (e.g. 'myapp://callback') in Allowed Logout URLs
+// in the Auth0 dashboard.
+await auth0.windowsWebAuthentication().logout(
+  appCustomURL: 'myapp://callback',
+);
+
+// Intermediary HTTPS server
+// Register 'https://your-app.example.com/logout' in Allowed Logout URLs.
+// Auth0 redirects to the HTTPS URL; your server redirects onward to
+// myapp://callback to re-activate the app.
+await auth0.windowsWebAuthentication().logout(
+  appCustomURL: 'myapp://callback',
+  returnTo: 'https://your-app.example.com/logout',
+);
+```
+
+[Go up ⤴](#examples)
+
 ## 📱 Credentials Manager
 
 > This feature is mobile/macOS only; on web, the [SPA SDK](https://github.com/auth0/auth0-spa-js) used by auth0_flutter keeps its own cache. See [Handling Credentials on the Web](#-handling-credentials-on-the-web) for more details.
 
 - [Check for stored credentials](#check-for-stored-credentials)
 - [Retrieve stored credentials](#retrieve-stored-credentials)
+- [Retrieve API credentials for a specific audience (MRRT)](#retrieve-api-credentials-for-a-specific-audience-mrrt)
 - [Retrieve user profile](#retrieve-user-profile)
 - [Custom implementations](#custom-implementations)
 - [Local authentication](#local-authentication)
@@ -436,6 +715,43 @@ final credentials = await auth0.credentialsManager.credentials();
 ```
 
 > 💡 You do not need to call `credentialsManager.storeCredentials()` afterward. The Credentials Manager automatically persists the renewed credentials.
+
+### Retrieve API credentials for a specific audience (MRRT)
+
+If your app needs an access token for a **different API** than the one it logged in with, use `getApiCredentials()`. It exchanges the stored refresh token for an access token scoped to the requested `audience` using a [Multi-Resource Refresh Token (MRRT)](https://auth0.com/docs/secure/tokens/refresh-tokens/multi-resource-refresh-token). If valid API credentials for that audience are already cached, they are returned without a network call; otherwise a new token is fetched and cached for next time.
+
+```dart
+final apiCredentials = await auth0.credentialsManager.getApiCredentials(
+  audience: 'https://my-api.example.com',
+);
+
+print('Access token: ${apiCredentials.accessToken}');
+```
+
+You can request specific scopes and pass additional options:
+
+```dart
+final apiCredentials = await auth0.credentialsManager.getApiCredentials(
+  audience: 'https://my-api.example.com',
+  scope: {'read:data', 'write:data'},
+  minTtl: 60,
+  parameters: {'key': 'value'},
+  headers: {'key': 'value'},
+);
+```
+
+To remove the cached API credentials for an audience – for example, on logout:
+
+```dart
+await auth0.credentialsManager.clearApiCredentials(
+  audience: 'https://my-api.example.com',
+  scope: 'read:data write:data',
+);
+```
+
+> ⚠️ **Prerequisites:** Multi-Resource Refresh Tokens must be enabled on your tenant, and the `offline_access` scope must have been requested at login so that a refresh token is available for the exchange.
+>
+> 💡 Stored API credentials are keyed by **both** audience and scope on every platform, so pass the same `scope` to `clearApiCredentials()` that you used when fetching them. The native APIs do not consistently report whether a matching entry existed, so this method returns `void` rather than a success flag.
 
 ### Retrieve user profile
 
@@ -719,6 +1035,8 @@ final credentials = await auth0Web.credentials();
 
 - [Login with database connection](#login-with-database-connection)
 - [Sign up with database connection](#sign-up-with-database-connection)
+- [Log in with passkeys](#log-in-with-passkeys)
+- [Sign up with passkeys](#sign-up-with-passkeys)
 - [Retrieve user information](#retrieve-user-information)
 - [Renew credentials](#renew-credentials)
 - [API client errors](#api-client-errors)
@@ -786,6 +1104,134 @@ final databaseUser = await auth0.api.signup(
 ```
 
 > 💡 You might want to log the user in after signup. See [Login with database connection](#login-with-database-connection) above for an example.
+
+### Log in with passkeys
+
+> This feature is available on **iOS 16.6+** and **Android 9+ (API 28)** only.
+
+[Passkeys](https://auth0.com/docs/authenticate/database-connections/passkeys) let an existing user log in with a biometric or device PIN instead of a password, using the platform authenticator (Face ID / Touch ID on iOS, the Credential Manager on Android).
+
+> ⚠️ Passkeys require additional configuration on both your Auth0 tenant and your app:
+> - Set up a [custom domain](https://auth0.com/docs/customize/custom-domains) for your tenant. Passkeys will **not** work without one, since the relying-party domain must be a domain you own and can host the associated domain / Digital Asset Links file on.
+> - Enable passkeys for your database connection and the **Passkey** grant type for your application. See [Configure passkeys](https://auth0.com/docs/authenticate/database-connections/passkeys/configure-passkeys).
+> - Configure the [associated domain (iOS/macOS)](README.md#iosmacos-configure-the-associated-domain) and the equivalent [Digital Asset Links file](https://developer.android.com/identity/sign-in/credential-manager#add-support-dal) (Android) so the OS associates your app with the relying-party domain.
+
+The SDK exposes **two** methods for passkey login — `passkeyLoginChallenge` and `passkeyCredentialExchange` — and leaves presenting the OS passkey UI to your app. The flow is:
+
+1. Request a login challenge from Auth0 with `passkeyLoginChallenge`.
+2. **In your app**, present the platform authenticator using that challenge and obtain a WebAuthn assertion. The SDK does **not** do this step — call the OS APIs directly (for example, [`ASAuthorizationController`](https://developer.apple.com/documentation/authenticationservices/asauthorizationcontroller) on iOS/macOS or [Credential Manager](https://developer.android.com/identity/sign-in/credential-manager) on Android, typically over your own platform channel), then map the result into a `PasskeyCredential`.
+3. Exchange that credential for Auth0 tokens with `passkeyCredentialExchange`.
+
+```dart
+// 1. Request a login challenge from Auth0.
+final challenge = await auth0.api.passkeyLoginChallenge(
+    connection: 'Username-Password-Authentication');
+
+// 2. Present the OS passkey UI in your app (not provided by the SDK) using
+//    `challenge.authParamsPublicKey`, then build a PasskeyCredential from the
+//    resulting WebAuthn assertion. All values are base64url-encoded.
+final credential = PasskeyCredential(
+    id: '<base64url credentialId>',
+    rawId: '<base64url credentialId>',
+    type: 'public-key',
+    authenticatorAttachment: 'platform',
+    response: PasskeyAuthenticatorResponse(
+        clientDataJSON: '<base64url clientDataJSON>',
+        authenticatorData: '<base64url authenticatorData>',
+        signature: '<base64url signature>',
+        userHandle: '<base64url userHandle>'));
+
+// 3. Exchange the credential for Auth0 tokens.
+final credentials = await auth0.api.passkeyCredentialExchange(
+    challenge: challenge,
+    credential: credential,
+    connection: 'Username-Password-Authentication');
+
+// Store the credentials afterward
+final didStore =
+    await auth0.credentialsManager.storeCredentials(credentials);
+```
+
+<details>
+  <summary>Add an audience and scope values</summary>
+
+```dart
+final credentials = await auth0.api.passkeyCredentialExchange(
+    challenge: challenge,
+    credential: credential,
+    connection: 'Username-Password-Authentication',
+    audience: 'YOUR_AUTH0_API_IDENTIFIER',
+    scopes: {'profile', 'email', 'offline_access', 'read:todos'});
+```
+
+</details>
+
+### Sign up with passkeys
+
+> This feature is available on **iOS 16.6+** and **Android 9+ (API 28)** only.
+
+[Passkeys](https://auth0.com/docs/authenticate/database-connections/passkeys) let users register with a biometric or device PIN instead of a password, using the platform authenticator (Face ID / Touch ID on iOS, the Credential Manager on Android).
+
+> ⚠️ Passkeys require additional configuration on both your Auth0 tenant and your app:
+> - Set up a [custom domain](https://auth0.com/docs/customize/custom-domains) for your tenant. Passkeys will **not** work without one, since the relying-party domain must be a domain you own and can host the associated domain / Digital Asset Links file on.
+> - Enable passkeys for your database connection and the **Passkey** grant type for your application. See [Configure passkeys](https://auth0.com/docs/authenticate/database-connections/passkeys/configure-passkeys).
+> - Configure the [associated domain (iOS/macOS)](README.md#iosmacos-configure-the-associated-domain) and the equivalent [Digital Asset Links file](https://developer.android.com/identity/sign-in/credential-manager#add-support-dal) (Android) so the OS associates your app with the relying-party domain.
+
+The SDK exposes **two** methods for passkey signup — `passkeySignupChallenge` and `passkeyCredentialExchange` — and leaves presenting the OS passkey UI to your app. The flow is:
+
+1. Request a registration challenge from Auth0 with `passkeySignupChallenge`.
+2. **In your app**, present the platform authenticator using that challenge and obtain a WebAuthn attestation. The SDK does **not** do this step — call the OS APIs directly (for example, [`ASAuthorizationController`](https://developer.apple.com/documentation/authenticationservices/asauthorizationcontroller) on iOS/macOS or [Credential Manager](https://developer.android.com/identity/sign-in/credential-manager) on Android, typically over your own platform channel), then map the result into a `PasskeyCredential`.
+3. Exchange that credential for Auth0 tokens with `passkeyCredentialExchange` — the same method used for login.
+
+You can identify the new user with any combination of `email`, `phoneNumber`, `username`, `name`, `givenName`, `familyName`, `nickname`, and `picture`, depending on how your connection is configured.
+
+```dart
+// 1. Request a registration challenge from Auth0. You can identify the new
+//    user with any combination of email, phoneNumber, username, name,
+//    givenName, familyName, nickname, and picture.
+final challenge = await auth0.api.passkeySignupChallenge(
+    email: 'jane.smith@example.com',
+    name: 'Jane Smith',
+    givenName: 'Jane',
+    familyName: 'Smith',
+    connection: 'Username-Password-Authentication');
+
+// 2. Present the OS passkey-creation UI in your app (not provided by the SDK)
+//    using `challenge.authParamsPublicKey`, then build a PasskeyCredential from
+//    the resulting WebAuthn attestation. All values are base64url-encoded.
+final credential = PasskeyCredential(
+    id: '<base64url credentialId>',
+    rawId: '<base64url credentialId>',
+    type: 'public-key',
+    authenticatorAttachment: 'platform',
+    response: PasskeyAuthenticatorResponse(
+        clientDataJSON: '<base64url clientDataJSON>',
+        attestationObject: '<base64url attestationObject>'));
+
+// 3. Exchange the credential for Auth0 tokens.
+final credentials = await auth0.api.passkeyCredentialExchange(
+    challenge: challenge,
+    credential: credential,
+    connection: 'Username-Password-Authentication');
+
+// Store the credentials afterward
+final didStore =
+    await auth0.credentialsManager.storeCredentials(credentials);
+```
+
+<details>
+  <summary>Add an audience and scope values</summary>
+
+```dart
+final credentials = await auth0.api.passkeyCredentialExchange(
+    challenge: challenge,
+    credential: credential,
+    connection: 'Username-Password-Authentication',
+    audience: 'YOUR_AUTH0_API_IDENTIFIER',
+    scopes: {'profile', 'email', 'offline_access', 'read:todos'});
+```
+
+</details>
 
 ### Passwordless Login
 Passwordless is a two-step authentication flow that requires the **Passwordless OTP** grant to be enabled for your Auth0 application. Check [our documentation](https://auth0.com/docs/get-started/applications/application-grant-types) for more information.
@@ -873,6 +1319,7 @@ final didStore =
 - Integrate an external identity provider 
 - Migrate to Auth0
 
+> **Note:** This feature is currently available in [Early Access](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#early-access). Please reach out to Auth0 support to enable it for your tenant.
 
 <details>
   <summary>Mobile (Android/iOS)</summary>
@@ -1014,6 +1461,181 @@ try {
         });
     // ...
   }
+}
+```
+
+---
+
+[Go up ⤴](#examples)
+
+## 📱 My Account API
+
+The My Account API lets authenticated users manage their own multi-factor authentication (MFA) methods — enrolling, confirming, listing, updating, and deleting factors such as phone, email, TOTP, push notifications, and recovery codes. It is available on **mobile (Android/iOS) only**.
+
+> 💡 The My Account API must be enabled for your tenant. If it is not yet available on your account, reach out to Auth0 support to get it enabled.
+
+### Obtaining an access token for the My Account API
+
+The My Account API requires an access token issued specifically for the `https://YOUR_DOMAIN/me/` audience, with the scopes for the operations you intend to perform.
+
+The **recommended approach** is to log in **once** for your application with the `offline_access` scope (so a refresh token is stored), and then exchange that refresh token for a My Account–scoped access token — instead of launching a second interactive login. This is the same pattern the other Auth0 SDKs follow ([react-native-auth0](https://github.com/auth0/react-native-auth0/blob/master/EXAMPLES.md), [Auth0.swift](https://github.com/auth0/Auth0.swift/blob/master/EXAMPLES.md), and [Auth0.Android](https://github.com/auth0/Auth0.Android/blob/main/EXAMPLES.md)).
+
+```dart
+// 1. Log in once for your app, requesting offline_access to get a refresh token.
+final credentials = await auth0.webAuthentication().login(
+  scopes: {'openid', 'profile', 'email', 'offline_access'},
+);
+await auth0.credentialsManager.storeCredentials(credentials);
+
+// 2. Exchange the stored refresh token for a token scoped to the My Account API,
+//    by requesting the `https://YOUR_DOMAIN/me/` audience and the My Account scopes.
+final myAccountCredentials = await auth0.credentialsManager.getApiCredentials(
+  audience: 'https://YOUR_DOMAIN/me/',
+  scope: {
+    'read:me:authentication_methods',
+    'create:me:authentication_methods',
+    'update:me:authentication_methods',
+    'delete:me:authentication_methods',
+    'read:me:factors',
+  },
+);
+
+// 3. Create the My Account client with the resulting access token.
+final myAccount = auth0.myAccount(
+  accessToken: myAccountCredentials.accessToken,
+);
+```
+
+> 💡 `getApiCredentials` returns a **separate**, audience-scoped token via a [Multi-Resource Refresh Token (MRRT)](https://auth0.com/docs/secure/tokens/refresh-tokens/multi-resource-refresh-token) exchange; it does **not** replace the application credentials stored via `storeCredentials`. The token is cached per audience, so subsequent calls return the cached value until it expires.
+
+> ⚠️ Exchanging the refresh token requires MRRT to be enabled for your tenant, and the application must have requested `offline_access` at login so that a refresh token is available.
+
+### Listing and managing authentication methods
+
+```dart
+// List all enrolled MFA methods.
+final methods = await myAccount.getAuthenticationMethods();
+
+// Optionally filter by type.
+final phones = await myAccount.getAuthenticationMethods(
+  type: AuthenticationMethodType.phone,
+);
+
+// Retrieve a single method by id.
+final method = await myAccount.getAuthenticationMethod(id: 'method_id');
+
+// List the factors available for enrollment on the tenant.
+final factors = await myAccount.getFactors();
+
+// Update a method's display name and/or preferred phone channel.
+await myAccount.updateAuthenticationMethod(
+  id: 'method_id',
+  name: 'My personal phone',
+  preferredAuthenticationMethod: PhoneType.voice,
+);
+
+// Delete a method.
+await myAccount.deleteAuthenticationMethod(id: 'method_id');
+```
+
+### Enrolling a factor with OTP (phone, email, TOTP)
+
+Phone, email, and TOTP enrollments are completed by verifying a one-time password with `verifyOtp`. Pass the `factorType` of the factor you enrolled so the correct confirmation endpoint is used.
+
+```dart
+// Start phone enrollment (an OTP is sent via SMS).
+final challenge = await myAccount.enrollPhone(
+  phoneNumber: '+1234567890',
+  type: PhoneType.sms,
+);
+
+// Confirm with the OTP the user received.
+final method = await myAccount.verifyOtp(
+  id: challenge.id,
+  authSession: challenge.authSession,
+  otp: '123456',
+  factorType: 'phone', // 'phone' | 'email' | 'totp'
+);
+```
+
+The same two-step flow applies to `enrollEmail` (`factorType: 'email'`) and `enrollTotp` (`factorType: 'totp'`).
+
+### Enrolling a factor without OTP (push, recovery code)
+
+Push notification and recovery code enrollments do not use an OTP — they are completed with `confirmEnrollment`.
+
+```dart
+// Start push enrollment.
+final challenge = await myAccount.enrollPush();
+
+// ...complete the out-of-band step (e.g. the user approves on their device), then:
+final method = await myAccount.confirmEnrollment(
+  id: challenge.id,
+  authSession: challenge.authSession,
+  factorType: 'push-notification', // 'push-notification' | 'recovery-code'
+);
+```
+
+The same flow applies to `enrollRecoveryCode` (`factorType: 'recovery-code'`).
+
+### Enrolling a passkey
+
+A signed-in user can add a passkey as a new authentication method. Like passkey login and signup, this is a two-step flow and the SDK leaves presenting the OS passkey UI to your app:
+
+1. Request an enrollment challenge with `enrollPasskeyChallenge`.
+2. **In your app**, present the platform authenticator using `challenge.authParamsPublicKey` to create a passkey, and map the resulting WebAuthn attestation into a `PasskeyCredential`. The SDK does **not** do this step — call the OS APIs directly (for example, [`ASAuthorizationController`](https://developer.apple.com/documentation/authenticationservices/asauthorizationcontroller) on iOS/macOS or [Credential Manager](https://developer.android.com/identity/sign-in/credential-manager) on Android, typically over your own platform channel).
+3. Submit the credential with `enrollPasskey` to complete the enrollment.
+
+> ⚠️ Passkeys require a [custom domain](https://auth0.com/docs/customize/custom-domains) on your tenant and additional configuration. See [Sign up with passkeys](#sign-up-with-passkeys) for details.
+
+The access token must include the `create:me:authentication_methods` scope.
+
+```dart
+// 1. Request an enrollment challenge.
+final challenge = await myAccount.enrollPasskeyChallenge();
+
+// 2. Present the OS passkey creation UI in your app (not provided by the SDK)
+//    using `challenge.authParamsPublicKey`, then build a PasskeyCredential from
+//    the resulting WebAuthn attestation.
+final credential = PasskeyCredential(
+  id: '...',
+  rawId: '...',
+  type: 'public-key',
+  response: PasskeyAuthenticatorResponse(
+    clientDataJSON: '...',
+    attestationObject: '...',
+  ),
+);
+
+// 3. Submit the credential to complete the enrollment.
+final method = await myAccount.enrollPasskey(
+  challenge: challenge,
+  credential: credential,
+);
+
+print('Enrolled passkey: ${method.id} (${method.relyingPartyId})');
+```
+
+### Using DPoP
+
+To secure My Account API requests with [DPoP](https://www.rfc-editor.org/rfc/rfc9449.html) (Demonstrating Proof-of-Possession) sender-constrained tokens, set `useDPoP` to `true` when creating the client. It defaults to `false`. The DPoP key pair is generated and stored securely on the device (Keychain on iOS, Keystore on Android).
+
+```dart
+final myAccount = auth0.myAccount(
+  accessToken: myAccountCredentials.accessToken,
+  useDPoP: true,
+);
+```
+
+### Errors
+
+My Account API calls throw a `MyAccountException` on failure.
+
+```dart
+try {
+  await myAccount.getAuthenticationMethods();
+} on MyAccountException catch (e) {
+  print('${e.code}: ${e.message} (${e.statusCode})');
 }
 ```
 

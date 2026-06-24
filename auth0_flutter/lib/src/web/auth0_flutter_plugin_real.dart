@@ -6,6 +6,7 @@ import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:web/web.dart';
 
 import 'auth0_flutter_web_platform_proxy.dart';
+import 'extensions/api_credentials_extension.dart';
 import 'extensions/client_options_extensions.dart';
 import 'extensions/credentials_extension.dart';
 import 'extensions/credentials_options_extension.dart';
@@ -171,6 +172,37 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     } catch (e) {
       throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
     }
+  }
+
+  @override
+  Future<ApiCredentials> getApiCredentials(
+      final GetApiCredentialsOptions options) async {
+    final clientProxy = _ensureClient();
+    final tokenOptions = interop.GetTokenSilentlyOptions(
+        authorizationParams: JsInteropUtils.stripNulls(
+            JsInteropUtils.addCustomParams(
+                interop.GetTokenSilentlyAuthParams(
+                    audience: options.audience,
+                    scope: options.scopes.isNotEmpty
+                        ? options.scopes.join(' ')
+                        : null),
+                options.parameters)),
+        detailedResponse: true);
+    try {
+      final result = await clientProxy.getTokenSilently(tokenOptions);
+      return ApiCredentialsExtension.fromWeb(result);
+    } catch (e) {
+      throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
+    }
+  }
+
+  @override
+  Future<void> clearApiCredentials(
+      final ClearApiCredentialsOptions options) async {
+    console.warn(
+        "'clearApiCredentials' is not supported on the web. auth0-spa-js "
+                'handles credential storage automatically.'
+            .toJS);
   }
 
   @override

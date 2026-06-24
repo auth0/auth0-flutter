@@ -48,6 +48,42 @@ abstract class CredentialsManager {
     final Map<String, String> parameters = const {},
     final Map<String, String> headers = const {},
   });
+
+  /// Exchanges the stored refresh token for [ApiCredentials] scoped to a
+  /// specific API (audience), using a Multi-Resource Refresh Token (MRRT).
+  ///
+  /// If valid API credentials for the [audience] are already cached, they are
+  /// returned. Otherwise the stored refresh token is exchanged for a new
+  /// access token for that API and the result is cached for subsequent calls.
+  ///
+  /// Use [scope] to set the scopes to request for the access token; if empty,
+  /// the default scopes configured for the API are used. Set [minTtl] to the
+  /// minimum time in seconds the access token should last before expiration.
+  /// Pass optional [parameters] to include in the token exchange request. On
+  /// iOS and macOS, [headers] can also be forwarded to the Auth0 endpoint.
+  ///
+  /// **Prerequisites:**
+  /// - Multi-Resource Refresh Tokens must be enabled on the tenant.
+  /// - `offline_access` scope must be present in the stored credentials.
+  Future<ApiCredentials> getApiCredentials({
+    required final String audience,
+    final Set<String> scope = const {},
+    final int minTtl = 0,
+    final Map<String, String> parameters = const {},
+    final Map<String, String> headers = const {},
+  });
+
+  /// Removes the stored API credentials for the given [audience] and [scope].
+  ///
+  /// API credentials are keyed by **both** audience and scope on all
+  /// platforms, so pass the same [scope] you used when fetching them via
+  /// [getApiCredentials]. Omitting [scope] only matches credentials that were
+  /// stored without a scope; it does **not** remove every entry for the
+  /// [audience].
+  Future<void> clearApiCredentials({
+    required final String audience,
+    final String? scope,
+  });
 }
 
 /// Default [CredentialsManager] implementation that passes calls to
@@ -147,11 +183,43 @@ class DefaultCredentialsManager extends CredentialsManager {
     final Map<String, String> parameters = const {},
     final Map<String, String> headers = const {},
   }) =>
-      CredentialsManagerPlatform.instance.getSSOCredentials(
-          _createApiRequest(GetSSOCredentialsOptions(
+      CredentialsManagerPlatform.instance
+          .getSSOCredentials(_createApiRequest(GetSSOCredentialsOptions(
         parameters: parameters,
         headers: headers,
       )));
+
+  /// Exchanges the stored refresh token for [ApiCredentials] scoped to a
+  /// specific API (audience), using a Multi-Resource Refresh Token (MRRT).
+  ///
+  /// See [CredentialsManager.getApiCredentials] for full documentation.
+  @override
+  Future<ApiCredentials> getApiCredentials({
+    required final String audience,
+    final Set<String> scope = const {},
+    final int minTtl = 0,
+    final Map<String, String> parameters = const {},
+    final Map<String, String> headers = const {},
+  }) =>
+      CredentialsManagerPlatform.instance
+          .getApiCredentials(_createApiRequest(GetApiCredentialsOptions(
+        audience: audience,
+        scopes: scope,
+        minTtl: minTtl,
+        parameters: parameters,
+        headers: headers,
+      )));
+
+  /// Removes the stored API credentials for the given audience and scope.
+  ///
+  /// See [CredentialsManager.clearApiCredentials] for full documentation.
+  @override
+  Future<void> clearApiCredentials({
+    required final String audience,
+    final String? scope,
+  }) =>
+      CredentialsManagerPlatform.instance.clearApiCredentials(_createApiRequest(
+          ClearApiCredentialsOptions(audience: audience, scope: scope)));
 
   CredentialsManagerRequest<TOptions>
       _createApiRequest<TOptions extends RequestOptions>(

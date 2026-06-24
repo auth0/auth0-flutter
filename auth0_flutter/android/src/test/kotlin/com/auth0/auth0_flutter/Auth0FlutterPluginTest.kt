@@ -38,8 +38,9 @@ class Auth0FlutterPluginTest {
             assertMethodcallHandler<Auth0FlutterAuthMethodCallHandler>(1)
             assertMethodcallHandler<CredentialsManagerMethodCallHandler>(2)
             assertMethodcallHandler<Auth0FlutterDPoPMethodCallHandler>(3)
+            assertMethodcallHandler<Auth0FlutterMyAccountMethodCallHandler>(4)
 
-            assert(constructed.size == 4)
+            assert(constructed.size == 5)
         }
     }
 
@@ -69,8 +70,9 @@ class Auth0FlutterPluginTest {
             assertMethodcallHandler(1)
             assertMethodcallHandler(2)
             assertMethodcallHandler(3)
+            assertMethodcallHandler(4)
 
-            assert(constructed.size == 4)
+            assert(constructed.size == 5)
         }
     }
 
@@ -103,11 +105,12 @@ class Auth0FlutterPluginTest {
                 return captor.firstValue as TMethodCallHandler
             }
 
-            assert(getHandler<Auth0FlutterWebAuthMethodCallHandler>(0).activity == mockActivity)
+            val webAuthHandler = getHandler<MethodChannel.MethodCallHandler>(0)
+            assert(webAuthHandler is Auth0FlutterPlugin)
             assert(getHandler<CredentialsManagerMethodCallHandler>(1).activity == mockActivity)
             assert(getHandler<CredentialsManagerMethodCallHandler>(1).context == mockContext)
 
-            assert(constructed.size == 4)
+            assert(constructed.size == 5)
         }
     }
 }

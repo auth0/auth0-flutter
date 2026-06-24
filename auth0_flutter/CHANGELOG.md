@@ -1,5 +1,48 @@
 # Change Log
 
+## [af-v2.3.0](https://github.com/auth0/auth0-flutter/tree/af-v2.3.0) (2026-06-16)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.2.0...af-v2.3.0)
+
+**Added**
+- feat: Adds passkeys support to flutter SDK [\#858](https://github.com/auth0/auth0-flutter/pull/858) ([NandanPrabhu](https://github.com/NandanPrabhu))
+
+## [af-v2.2.0](https://github.com/auth0/auth0-flutter/tree/af-v2.2.0) (2026-06-05)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.1.0...af-v2.2.0)
+
+**Added**
+- feat: add My Account API support for managing MFA authentication method [\#835](https://github.com/auth0/auth0-flutter/pull/835) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: add Flutter Multi-Resource Refresh Token (MRRT) support [\#850](https://github.com/auth0/auth0-flutter/pull/850) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: add Partial Custom Tabs support for Android [\#846](https://github.com/auth0/auth0-flutter/pull/846) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- fix: use safe casts in UserProfileExtensions to prevent ClassCastException [\#836](https://github.com/auth0/auth0-flutter/pull/836) ([sanchitmehtagit](https://github.com/sanchitmehtagit))
+
+## [af-v2.1.0](https://github.com/auth0/auth0-flutter/tree/af-v2.1.0) (2026-05-21)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.0.2...af-v2.1.0)
+
+**Added**
+- auth0_flutter from v2.1.0-beta.1 to v2.1.0 (GA)  [\#843](https://github.com/auth0/auth0-flutter/pull/843) ([NandanPrabhu](https://github.com/NandanPrabhu))
+- feat: Flutter Windows support (GA) [#834](https://github.com/auth0/auth0-flutter/pull/834)([NandanPrabhu](https://github.com/NandanPrabhu))
+
+## [af-v2.0.2](https://github.com/auth0/auth0-flutter/tree/af-v2.0.2) (2026-05-07)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.0.1...af-v2.0.2)
+
+**Added**
+- Handle Android process death during web authentication [\#820](https://github.com/auth0/auth0-flutter/pull/820) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
+## [af-v2.0.1](https://github.com/auth0/auth0-flutter/tree/af-v2.0.1) (2026-04-15)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.0.0...af-v2.0.1)
+
+**Changed**
+- feat: Expose isRetryable property on CredentialsManagerException, ApiException, and WebAuthenticationException [\#786](https://github.com/auth0/auth0-flutter/pull/786) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
+**Fixed**
+- Set explicit type for .other in switch in FlutterError [\#808](https://github.com/auth0/auth0-flutter/pull/808) ([crazycatk](https://github.com/crazycatk))
+
+## [af-v2.1.0-beta.1](https://github.com/auth0/auth0-flutter/tree/af-v2.1.0-beta.1) (2026-03-30)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.0.0...af-v2.1.0-beta.1)
+
+**Added**
+- feat: Flutter Windows  Desktop support [\#656](https://github.com/auth0/auth0-flutter/pull/656) ([NandanPrabhu](https://github.com/NandanPrabhu))
+
 ## [af-v2.0.0](https://github.com/auth0/auth0-flutter/tree/af-v2.0.0) (2026-03-18)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.0.0-beta.5...af-v2.0.0)
 
