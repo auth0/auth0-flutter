@@ -534,7 +534,7 @@ final auth0Web = Auth0Web(
 
 > **Note:** In most cases, DPoP is managed automatically when `useDPoP: true` is enabled. Manual DPoP APIs are available for advanced use cases where you need direct control over DPoP proof generation.
 
-📖 **For complete DPoP documentation, examples, and troubleshooting, see [DPOP.md](DPOP.md)**
+📖 **For complete DPoP documentation, examples, and troubleshooting, see [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)**
 
 ### iOS SSO Alert Box
 
