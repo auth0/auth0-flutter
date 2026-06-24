@@ -13,10 +13,6 @@
 
 **auth0_flutter v2.3.0** adds **Passkeys** support. You can now authenticate users with passkeys via the `webAuthentication()` flow on Android, iOS, and Web. See the [Auth0 passkeys documentation](https://auth0.com/docs/authenticate/database-connections/passkeys) for setup instructions.
 
-## Important Migration Notice: v2.0.0
-
-**auth0_flutter v2.0.0** includes updates to the underlying native Auth0 SDKs to support **DPoP (Demonstrating Proof of Possession)** and other improvements. See the [Migration Guide](https://github.com/auth0/auth0-flutter/blob/main/auth0_flutter/MIGRATION_GUIDE.md) for compatibility requirements and upgrade instructions.
-
 ## Documentation
 
 - Quickstarts: [Native](https://auth0.com/docs/quickstart/native/flutter/interactive) / [Web](https://auth0.com/docs/quickstart/spa/flutter/interactive) / [Windows](https://auth0.com/docs/quickstart/native/flutter-windows) - our interactive guide for quickly adding login, logout and user information to your app using Auth0
