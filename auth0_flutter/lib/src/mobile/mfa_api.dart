@@ -13,8 +13,8 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 /// It is not intended for you to instantiate this class yourself; an instance
 /// is available via `Auth0.mfa(mfaToken:)`.
 ///
-/// **Note:** This API is only supported on mobile platforms (Android/iOS).
-/// Web and Windows are not supported.
+/// **Note:** This class drives MFA on mobile platforms (Android/iOS). MFA is
+/// also supported on the Web via `Auth0Web.mfa`; Windows is not supported.
 ///
 /// ## Usage example
 ///
@@ -27,7 +27,8 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 ///   if (e.isMultifactorRequired && e.mfaToken != null) {
 ///     final mfa = auth0.mfa(mfaToken: e.mfaToken!);
 ///
-///     final authenticators = await mfa.getAuthenticators();
+///     final authenticators =
+///         await mfa.getAuthenticators(factorsAllowed: ['otp', 'oob']);
 ///     final challenge = await mfa.challenge(
 ///       authenticatorId: authenticators.first.id,
 ///     );
@@ -46,17 +47,19 @@ class MfaApi {
 
   /// Lists the authenticators that can be used with the current `mfa_token`.
   ///
-  /// The results are filtered to the factors allowed by the `mfa_token`'s
-  /// `mfa_requirements`. Optionally narrow the results further by passing
-  /// [factorsAllowed] (e.g. `['otp', 'oob']`).
+  /// [factorsAllowed] is the list of factor types to return (e.g.
+  /// `['otp', 'oob']`) and must contain at least one factor type — the
+  /// underlying native SDKs reject an empty list with an `invalid_request`
+  /// error.
   ///
   /// ## Usage example
   ///
   /// ```dart
-  /// final authenticators = await mfa.getAuthenticators();
+  /// final authenticators =
+  ///     await mfa.getAuthenticators(factorsAllowed: ['otp', 'oob']);
   /// ```
   Future<List<MfaAuthenticator>> getAuthenticators(
-          {final List<String> factorsAllowed = const []}) =>
+          {required final List<String> factorsAllowed}) =>
       Auth0FlutterMfaPlatform.instance.getAuthenticators(_createApiRequest(
           MfaGetAuthenticatorsOptions(
               mfaToken: _mfaToken, factorsAllowed: factorsAllowed)));
@@ -79,10 +82,15 @@ class MfaApi {
       Auth0FlutterMfaPlatform.instance.enrollTotp(
           _createApiRequest(MfaEnrollTotpOptions(mfaToken: _mfaToken)));
 
-  /// Enrolls a new phone (SMS or Voice) factor for the given [phoneNumber].
+  /// Enrolls a new phone (SMS) factor for the given [phoneNumber].
   ///
   /// Returns an [MfaEnrollmentChallenge] containing the `oobCode` used to
   /// complete verification via [verifyOob] once the user receives the code.
+  ///
+  /// **Note:** the underlying native SDKs only support the SMS out-of-band
+  /// channel for phone enrollment (they always request
+  /// `oob_channels: ['sms']`), so there is no option to select a voice channel
+  /// here. Voice enrollment is available on the Web (`Auth0Web.mfa`) only.
   ///
   /// ## Usage example
   ///
@@ -95,11 +103,10 @@ class MfaApi {
   /// ```
   Future<MfaEnrollmentChallenge> enrollPhone({
     required final String phoneNumber,
-    final PhoneType type = PhoneType.sms,
   }) =>
       Auth0FlutterMfaPlatform.instance.enrollPhone(_createApiRequest(
           MfaEnrollPhoneOptions(
-              mfaToken: _mfaToken, phoneNumber: phoneNumber, type: type)));
+              mfaToken: _mfaToken, phoneNumber: phoneNumber)));
 
   /// Enrolls a new email factor for the given [email] address.
   ///

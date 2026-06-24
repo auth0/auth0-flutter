@@ -1657,7 +1657,7 @@ The MFA API lets you complete a multi-factor authentication flow using an `mfa_t
 
 Unlike the [My Account API](#-my-account-api) — which manages a signed-in user's authenticators — the MFA API is used **mid-login**, when a token request fails because MFA is required. You use the `mfa_token` from that failure to list, challenge, enroll, and verify a factor, and the successful verification returns the user's `Credentials`.
 
-The mobile and web APIs are intentionally symmetric — `getAuthenticators`, `enrollTotp`/`enrollPhone`/`enrollEmail`/`enrollPush`, `challenge`, `verifyOtp`/`verifyOob`/`verifyRecoveryCode` — so the examples below apply to both. The differences are noted inline.
+The mobile and web APIs are largely symmetric — `getAuthenticators`, `enrollTotp`/`enrollPhone`/`enrollEmail`/`enrollPush`, `challenge`, `verifyOtp`/`verifyOob`/`verifyRecoveryCode` — so the examples below apply to both. Two differences follow the underlying native SDKs and are noted inline: mobile `getAuthenticators` requires a non-empty `factorsAllowed` list (web takes none), and mobile `enrollPhone` is SMS-only while web also supports voice.
 
 ### Obtaining an `mfa_token`
 
@@ -1726,12 +1726,15 @@ try {
 If the user already has authenticators enrolled, list them and trigger a challenge on the one they choose. For out-of-band factors (SMS, Voice, Email, Push) the challenge delivers the code and returns an `oobCode`; for TOTP you verify the code directly without challenging.
 
 ```dart
-final authenticators = await mfa.getAuthenticators();
+// Mobile: `factorsAllowed` is required and must list at least one factor type
+// (e.g. ['otp', 'oob']) — the native SDKs reject an empty list with
+// `invalid_request`.
+final authenticators =
+    await mfa.getAuthenticators(factorsAllowed: ['otp', 'oob']);
 
-// Mobile only: optionally narrow the results to specific factor types.
-// (The web `getAuthenticators()` takes no `factorsAllowed` argument —
-// filtering is applied server-side from the mfa_token's requirements.)
-final oobOnly = await mfa.getAuthenticators(factorsAllowed: ['oob']);
+// Web: `getAuthenticators()` takes no `factorsAllowed` argument — filtering is
+// applied server-side from the mfa_token's requirements.
+// final authenticators = await mfa.getAuthenticators();
 
 final selected = authenticators.first;
 final challenge = await mfa.challenge(authenticatorId: selected.id);
@@ -1751,11 +1754,10 @@ If the user has no suitable authenticator yet, enroll one. Each enrollment retur
 final totp = await mfa.enrollTotp();
 // totp.barcodeUri, totp.totpSecret, totp.recoveryCodes
 
-// Phone (SMS by default, or Voice): an OOB code is sent to the number.
-final phone = await mfa.enrollPhone(
-  phoneNumber: '+1234567890',
-  type: PhoneType.sms, // or PhoneType.voice
-);
+// Phone: an OOB code is sent to the number via SMS.
+// On mobile the native SDKs only support the SMS channel, so `enrollPhone`
+// takes no `type`. On web you may pass `type: PhoneType.voice` for a voice call.
+final phone = await mfa.enrollPhone(phoneNumber: '+1234567890');
 
 // Email: an OOB code is sent to the address.
 final email = await mfa.enrollEmail(email: 'user@example.com');
@@ -1768,10 +1770,14 @@ final push = await mfa.enrollPush();
 
 Verifying completes the flow and exchanges the `mfa_token` for the user's `Credentials`. Pick the method that matches the factor:
 
+Call the one method that matches the factor (each returns `Credentials`):
+
 ```dart
 // TOTP — the code from the authenticator app.
 final credentials = await mfa.verifyOtp(otp: '123456');
+```
 
+```dart
 // Out-of-band (SMS, Voice, Email, Push) — the `oobCode` from the challenge
 // (or enrollment). Provide `bindingCode` when the challenge's bindingMethod
 // is `prompt` (the user enters the code they received).
@@ -1779,7 +1785,9 @@ final credentials = await mfa.verifyOob(
   oobCode: challenge.oobCode!,
   bindingCode: '123456',
 );
+```
 
+```dart
 // Recovery code — a one-time code the user saved during enrollment.
 final credentials = await mfa.verifyRecoveryCode(recoveryCode: 'ABCD1234...');
 ```

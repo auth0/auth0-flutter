@@ -29,6 +29,11 @@ extension FlutterError {
             ?? info["description"] as? String
             ?? code
         let details: [String: Any] = [
+            // `code` and `description` carry the actual error; surface them in
+            // the details map (in addition to the top-level code/message) so the
+            // Dart layer always has them.
+            "code": code,
+            "description": description,
             "_statusCode": statusCode,
             "_errorFlags": [
                 "isNetworkError": isNetworkError

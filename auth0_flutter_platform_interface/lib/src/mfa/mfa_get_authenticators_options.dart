@@ -6,13 +6,14 @@ class MfaGetAuthenticatorsOptions implements RequestOptions {
   /// The `mfa_token` obtained from a `mfa_required` authentication error.
   final String mfaToken;
 
-  /// An optional allow-list of factor types to return. When empty, all
-  /// enrolled authenticators are returned.
+  /// The allow-list of factor types to return (e.g. `['otp', 'oob']`). Must
+  /// contain at least one factor type; the native SDKs reject an empty list
+  /// with an `invalid_request` error.
   final List<String> factorsAllowed;
 
   MfaGetAuthenticatorsOptions({
     required this.mfaToken,
-    this.factorsAllowed = const [],
+    required this.factorsAllowed,
   });
 
   @override

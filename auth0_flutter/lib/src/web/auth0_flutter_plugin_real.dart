@@ -258,8 +258,9 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     final client = _ensureClient();
     // auth0-spa-js requires the challenge type; derive it from the
     // authenticator id, which is of the form `{authenticatorType}|{id}`.
-    // Anything that is not a TOTP authenticator is challenged out-of-band.
-    final challengeType = authenticatorId.startsWith('totp|') ? 'otp' : 'oob';
+    // OTP authenticators use the `otp|` prefix (see auth0-spa-js MfaApiClient);
+    // anything else is challenged out-of-band.
+    final challengeType = authenticatorId.startsWith('otp|') ? 'otp' : 'oob';
     try {
       final result = await client.mfaChallenge(interop.MfaChallengeParams(
           mfaToken: mfaToken,

@@ -88,18 +88,16 @@ void main() {
       expect(result.totpSecret, 'SECRET');
     });
 
-    test('enrollPhone forwards phoneNumber and type', () async {
+    test('enrollPhone forwards phoneNumber', () async {
       when(mockedPlatform.enrollPhone(any))
           .thenAnswer((final _) async => TestPlatform.enrollmentChallenge);
 
-      await mfa()
-          .enrollPhone(phoneNumber: '+1234567890', type: PhoneType.voice);
+      await mfa().enrollPhone(phoneNumber: '+1234567890');
 
       final captured = verify(mockedPlatform.enrollPhone(captureAny))
           .captured
           .single as ApiRequest<MfaEnrollPhoneOptions>;
       expect(captured.options.phoneNumber, '+1234567890');
-      expect(captured.options.type, PhoneType.voice);
     });
 
     test('enrollEmail forwards the email', () async {

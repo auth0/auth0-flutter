@@ -24,15 +24,23 @@ void main() {
       expect(map['factorsAllowed'], ['otp', 'oob']);
     });
 
-    test('enroll phone serializes phoneNumber and type', () {
+    test('get authenticators forwards an empty factors list unchanged', () {
+      // The native SDKs reject an empty list with `invalid_request`; the bridge
+      // must forward it verbatim rather than substituting a default, so that
+      // native validation is the single source of truth.
+      final map = MfaGetAuthenticatorsOptions(
+              mfaToken: 'mfa-token', factorsAllowed: const [])
+          .toMap();
+      expect(map['factorsAllowed'], isEmpty);
+    });
+
+    test('enroll phone serializes phoneNumber', () {
       final map = MfaEnrollPhoneOptions(
         mfaToken: 'mfa-token',
         phoneNumber: '+1234567890',
-        type: PhoneType.voice,
       ).toMap();
       expect(map['mfaToken'], 'mfa-token');
       expect(map['phoneNumber'], '+1234567890');
-      expect(map['type'], 'voice');
     });
 
     test('enroll email serializes email', () {
@@ -217,8 +225,7 @@ void main() {
 
       await platform.enrollPhone(request(MfaEnrollPhoneOptions(
           mfaToken: 'mfa-token',
-          phoneNumber: '+123',
-          type: PhoneType.sms)));
+          phoneNumber: '+123')));
 
       expect(log.single.method, 'mfa#enrollPhone');
       expect((log.single.arguments as Map)['phoneNumber'], '+123');

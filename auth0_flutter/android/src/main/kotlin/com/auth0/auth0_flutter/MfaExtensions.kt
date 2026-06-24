@@ -63,10 +63,15 @@ fun Credentials.toMfaCredentialsMap(): Map<String, Any?> {
 }
 
 fun MfaException.toMfaMap(): Map<String, Any> = buildMap {
+    // `code` and `description` carry the actual error from the native MFA
+    // SDK; surface them in the details map (in addition to the top-level
+    // result.error code/message) so the Dart layer always has them.
+    put("code", getCode())
+    put("description", getDescription())
     put("_statusCode", statusCode)
     put(
         "_errorFlags", mapOf(
-            "isNetworkError" to false
+            "isNetworkError" to (getCode() == "network_error")
         )
     )
 }
