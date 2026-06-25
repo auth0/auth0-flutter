@@ -42,7 +42,17 @@ class VerifyRequestHandler : MfaRequestHandler {
             else -> throw IllegalArgumentException("Unknown grantType: $grantType")
         }
 
-        client.verify(type)
+        val verifyRequest = client.verify(type)
+
+        val scopes = (request.data["scopes"] ?: arrayListOf<String>()) as ArrayList<*>
+        if (scopes.isNotEmpty()) {
+            verifyRequest.addParameter("scope", scopes.joinToString(separator = " "))
+        }
+        if (request.data["audience"] is String) {
+            verifyRequest.addParameter("audience", request.data["audience"] as String)
+        }
+
+        verifyRequest
             .start(object : Callback<Credentials, MfaVerifyException> {
                 override fun onFailure(exception: MfaVerifyException) {
                     result.error(

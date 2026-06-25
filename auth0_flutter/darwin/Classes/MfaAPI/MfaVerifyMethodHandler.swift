@@ -40,7 +40,19 @@ struct MfaVerifyMethodHandler: MethodHandler {
             return callback(FlutterError(from: .requiredArgumentMissing("grantType")))
         }
 
-        request.start {
+        var extraParameters: [String: String] = [:]
+        if let scopes = arguments["scopes"] as? [String], !scopes.isEmpty {
+            extraParameters["scope"] = scopes.joined(separator: " ")
+        }
+        if let audience = arguments["audience"] as? String {
+            extraParameters["audience"] = audience
+        }
+
+        let finalRequest = extraParameters.isEmpty
+            ? request
+            : request.parameters(extraParameters)
+
+        finalRequest.start {
             switch $0 {
             case let .success(credentials):
                 callback(self.result(from: credentials))

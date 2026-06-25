@@ -163,6 +163,20 @@ void main() {
       final options = call[2] as MfaVerifyOptions;
       expect(options.grantType, MfaVerifyGrantType.otp);
       expect(options.otp, '123456');
+      expect(options.scopes, isEmpty);
+      expect(options.audience, isNull);
+    });
+
+    test('verifyOtp forwards scopes and audience', () async {
+      await auth0.mfa(mfaToken: mfaToken).verifyOtp(
+        otp: '123456',
+        scopes: {'openid', 'profile'},
+        audience: 'https://my-api.example.com',
+      );
+
+      final options = platform.calls.single[2] as MfaVerifyOptions;
+      expect(options.scopes, {'openid', 'profile'});
+      expect(options.audience, 'https://my-api.example.com');
     });
 
     test('verifyOob builds an oob grant with the binding code', () async {

@@ -149,7 +149,26 @@ void main() {
           .single as ApiRequest<MfaVerifyOptions>;
       expect(captured.options.grantType, MfaVerifyGrantType.otp);
       expect(captured.options.otp, '123456');
+      expect(captured.options.scopes, isEmpty);
+      expect(captured.options.audience, isNull);
       expect(result.accessToken, 'accessToken');
+    });
+
+    test('verifyOtp forwards scopes and audience', () async {
+      when(mockedPlatform.verify(any))
+          .thenAnswer((final _) async => TestPlatform.credentials);
+
+      await mfa().verifyOtp(
+        otp: '123456',
+        scopes: {'openid', 'profile'},
+        audience: 'https://my-api.example.com',
+      );
+
+      final captured = verify(mockedPlatform.verify(captureAny))
+          .captured
+          .single as ApiRequest<MfaVerifyOptions>;
+      expect(captured.options.scopes, {'openid', 'profile'});
+      expect(captured.options.audience, 'https://my-api.example.com');
     });
 
     test('verifyOob uses the oob grant type with binding code', () async {

@@ -102,13 +102,22 @@ class MfaWeb {
 
   /// Verifies a one-time password ([otp]) for a TOTP authenticator and
   /// exchanges the `mfa_token` for [Credentials].
-  Future<Credentials> verifyOtp({required final String otp}) =>
+  ///
+  /// Optionally pass [scopes] and [audience] to request specific scopes and an
+  /// API audience for the returned [Credentials].
+  Future<Credentials> verifyOtp({
+    required final String otp,
+    final Set<String> scopes = const {},
+    final String? audience,
+  }) =>
       Auth0FlutterWebPlatform.instance.mfaVerify(
           _mfaToken,
           MfaVerifyOptions(
               mfaToken: _mfaToken,
               grantType: MfaVerifyGrantType.otp,
-              otp: otp));
+              otp: otp,
+              scopes: scopes,
+              audience: audience));
 
   /// Verifies an out-of-band challenge (SMS, Email, Push) and exchanges the
   /// `mfa_token` for [Credentials].
@@ -116,9 +125,14 @@ class MfaWeb {
   /// [oobCode] comes from the [MfaChallenge] returned by [challenge] (or the
   /// [MfaEnrollmentChallenge] returned by an enrollment). Provide [bindingCode]
   /// when the challenge's `bindingMethod` is `prompt`.
+  ///
+  /// Optionally pass [scopes] and [audience] to request specific scopes and an
+  /// API audience for the returned [Credentials].
   Future<Credentials> verifyOob({
     required final String oobCode,
     final String? bindingCode,
+    final Set<String> scopes = const {},
+    final String? audience,
   }) =>
       Auth0FlutterWebPlatform.instance.mfaVerify(
           _mfaToken,
@@ -126,15 +140,25 @@ class MfaWeb {
               mfaToken: _mfaToken,
               grantType: MfaVerifyGrantType.oob,
               oobCode: oobCode,
-              bindingCode: bindingCode));
+              bindingCode: bindingCode,
+              scopes: scopes,
+              audience: audience));
 
   /// Verifies a [recoveryCode] and exchanges the `mfa_token` for [Credentials].
-  Future<Credentials> verifyRecoveryCode(
-          {required final String recoveryCode}) =>
+  ///
+  /// Optionally pass [scopes] and [audience] to request specific scopes and an
+  /// API audience for the returned [Credentials].
+  Future<Credentials> verifyRecoveryCode({
+    required final String recoveryCode,
+    final Set<String> scopes = const {},
+    final String? audience,
+  }) =>
       Auth0FlutterWebPlatform.instance.mfaVerify(
           _mfaToken,
           MfaVerifyOptions(
               mfaToken: _mfaToken,
               grantType: MfaVerifyGrantType.recoveryCode,
-              recoveryCode: recoveryCode));
+              recoveryCode: recoveryCode,
+              scopes: scopes,
+              audience: audience));
 }

@@ -158,17 +158,30 @@ class MfaApi {
   /// Verifies a one-time password ([otp]) for a TOTP authenticator and
   /// exchanges the `mfa_token` for [Credentials].
   ///
+  /// Optionally pass [scopes] and [audience] to request specific scopes and an
+  /// API audience for the returned [Credentials].
+  ///
   /// ## Usage example
   ///
   /// ```dart
-  /// final credentials = await mfa.verifyOtp(otp: '123456');
+  /// final credentials = await mfa.verifyOtp(
+  ///   otp: '123456',
+  ///   audience: 'https://my-api.example.com',
+  ///   scopes: {'openid', 'profile', 'read:messages'},
+  /// );
   /// ```
-  Future<Credentials> verifyOtp({required final String otp}) =>
+  Future<Credentials> verifyOtp({
+    required final String otp,
+    final Set<String> scopes = const {},
+    final String? audience,
+  }) =>
       Auth0FlutterMfaPlatform.instance.verify(_createApiRequest(
           MfaVerifyOptions(
               mfaToken: _mfaToken,
               grantType: MfaVerifyGrantType.otp,
-              otp: otp)));
+              otp: otp,
+              scopes: scopes,
+              audience: audience)));
 
   /// Verifies an out-of-band challenge (SMS, Email, Push) and exchanges the
   /// `mfa_token` for [Credentials].
@@ -178,42 +191,61 @@ class MfaApi {
   /// [bindingCode] when the challenge's `bindingMethod` is `prompt` (i.e. the
   /// user must enter a code received via the channel).
   ///
+  /// Optionally pass [scopes] and [audience] to request specific scopes and an
+  /// API audience for the returned [Credentials].
+  ///
   /// ## Usage example
   ///
   /// ```dart
   /// final credentials = await mfa.verifyOob(
   ///   oobCode: challenge.oobCode!,
   ///   bindingCode: '123456',
+  ///   audience: 'https://my-api.example.com',
+  ///   scopes: {'openid', 'profile', 'read:messages'},
   /// );
   /// ```
   Future<Credentials> verifyOob({
     required final String oobCode,
     final String? bindingCode,
+    final Set<String> scopes = const {},
+    final String? audience,
   }) =>
       Auth0FlutterMfaPlatform.instance.verify(_createApiRequest(
           MfaVerifyOptions(
               mfaToken: _mfaToken,
               grantType: MfaVerifyGrantType.oob,
               oobCode: oobCode,
-              bindingCode: bindingCode)));
+              bindingCode: bindingCode,
+              scopes: scopes,
+              audience: audience)));
 
   /// Verifies a [recoveryCode] and exchanges the `mfa_token` for
   /// [Credentials].
+  ///
+  /// Optionally pass [scopes] and [audience] to request specific scopes and an
+  /// API audience for the returned [Credentials].
   ///
   /// ## Usage example
   ///
   /// ```dart
   /// final credentials = await mfa.verifyRecoveryCode(
   ///   recoveryCode: 'ABCD1234...',
+  ///   audience: 'https://my-api.example.com',
+  ///   scopes: {'openid', 'profile', 'read:messages'},
   /// );
   /// ```
-  Future<Credentials> verifyRecoveryCode(
-          {required final String recoveryCode}) =>
+  Future<Credentials> verifyRecoveryCode({
+    required final String recoveryCode,
+    final Set<String> scopes = const {},
+    final String? audience,
+  }) =>
       Auth0FlutterMfaPlatform.instance.verify(_createApiRequest(
           MfaVerifyOptions(
               mfaToken: _mfaToken,
               grantType: MfaVerifyGrantType.recoveryCode,
-              recoveryCode: recoveryCode)));
+              recoveryCode: recoveryCode,
+              scopes: scopes,
+              audience: audience)));
 
   ApiRequest<TOptions> _createApiRequest<TOptions extends RequestOptions>(
           final TOptions options) =>

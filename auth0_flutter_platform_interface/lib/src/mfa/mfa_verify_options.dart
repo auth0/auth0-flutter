@@ -48,6 +48,13 @@ class MfaVerifyOptions implements RequestOptions {
   /// Required when [grantType] is [MfaVerifyGrantType.recoveryCode].
   final String? recoveryCode;
 
+  /// The scopes to request for the credentials returned by the verification.
+  final Set<String> scopes;
+
+  /// The API audience to request for the credentials returned by the
+  /// verification.
+  final String? audience;
+
   MfaVerifyOptions({
     required this.mfaToken,
     required this.grantType,
@@ -55,6 +62,8 @@ class MfaVerifyOptions implements RequestOptions {
     this.oobCode,
     this.bindingCode,
     this.recoveryCode,
+    this.scopes = const {},
+    this.audience,
   });
 
   @override
@@ -65,5 +74,7 @@ class MfaVerifyOptions implements RequestOptions {
         'oobCode': oobCode,
         'bindingCode': bindingCode,
         'recoveryCode': recoveryCode,
+        'scopes': scopes.toList(),
+        if (audience != null) 'audience': audience,
       };
 }

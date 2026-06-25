@@ -285,7 +285,9 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
               otp: options.otp,
               oobCode: options.oobCode,
               bindingCode: options.bindingCode,
-              recoveryCode: options.recoveryCode)));
+              recoveryCode: options.recoveryCode,
+              scope: options.scopes.isEmpty ? null : options.scopes.join(' '),
+              audience: options.audience)));
       return CredentialsExtension.fromWeb(result);
     } catch (e) {
       throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));

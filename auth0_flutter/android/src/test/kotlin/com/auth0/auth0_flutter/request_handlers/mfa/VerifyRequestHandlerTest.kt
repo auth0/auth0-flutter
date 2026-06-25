@@ -85,6 +85,52 @@ class VerifyRequestHandlerTest {
     }
 
     @Test
+    fun `should add scope and audience parameters when provided`() {
+        val handler = VerifyRequestHandler()
+        val mockResult = mock<Result>()
+        val mockClient = mock<MfaApiClient>()
+        val mockRequest = mock<Request<Credentials, MfaVerifyException>>()
+
+        whenever(mockClient.verify(any())).thenReturn(mockRequest)
+        whenever(mockRequest.addParameter(any(), any<String>())).thenReturn(mockRequest)
+
+        handler.handle(
+            mockClient,
+            requestWith(
+                mapOf(
+                    "grantType" to "otp",
+                    "otp" to "123456",
+                    "scopes" to arrayListOf("openid", "profile"),
+                    "audience" to "https://my-api.example.com"
+                )
+            ),
+            mockResult
+        )
+
+        verify(mockRequest).addParameter("scope", "openid profile")
+        verify(mockRequest).addParameter("audience", "https://my-api.example.com")
+    }
+
+    @Test
+    fun `should not add scope or audience parameters when absent`() {
+        val handler = VerifyRequestHandler()
+        val mockResult = mock<Result>()
+        val mockClient = mock<MfaApiClient>()
+        val mockRequest = mock<Request<Credentials, MfaVerifyException>>()
+
+        whenever(mockClient.verify(any())).thenReturn(mockRequest)
+
+        handler.handle(
+            mockClient,
+            requestWith(mapOf("grantType" to "otp", "otp" to "123456")),
+            mockResult
+        )
+
+        verify(mockRequest, never()).addParameter(eq("scope"), any<String>())
+        verify(mockRequest, never()).addParameter(eq("audience"), any<String>())
+    }
+
+    @Test
     fun `should call result success with credentials on success`() {
         val handler = VerifyRequestHandler()
         val mockResult = mock<Result>()

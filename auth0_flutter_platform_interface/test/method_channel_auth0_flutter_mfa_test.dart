@@ -67,6 +67,28 @@ void main() {
       expect(map['otp'], '123456');
     });
 
+    test('verify serializes scopes and audience when provided', () {
+      final map = MfaVerifyOptions(
+        mfaToken: 'mfa-token',
+        grantType: MfaVerifyGrantType.otp,
+        otp: '123456',
+        scopes: {'openid', 'profile'},
+        audience: 'https://my-api.example.com',
+      ).toMap();
+      expect(map['scopes'], ['openid', 'profile']);
+      expect(map['audience'], 'https://my-api.example.com');
+    });
+
+    test('verify omits audience and sends empty scopes by default', () {
+      final map = MfaVerifyOptions(
+        mfaToken: 'mfa-token',
+        grantType: MfaVerifyGrantType.otp,
+        otp: '123456',
+      ).toMap();
+      expect(map['scopes'], isEmpty);
+      expect(map.containsKey('audience'), isFalse);
+    });
+
     test('verify serializes oob grant with binding code', () {
       final map = MfaVerifyOptions(
         mfaToken: 'mfa-token',

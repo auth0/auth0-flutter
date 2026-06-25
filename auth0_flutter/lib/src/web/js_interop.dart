@@ -287,6 +287,8 @@ extension type MfaVerifyParams._(JSObject _) implements JSObject {
   external String? get oobCode;
   external String? get bindingCode;
   external String? get recoveryCode;
+  external String? get scope;
+  external String? get audience;
 
   external factory MfaVerifyParams({
     required final String mfaToken,
@@ -294,6 +296,8 @@ extension type MfaVerifyParams._(JSObject _) implements JSObject {
     final String? oobCode,
     final String? bindingCode,
     final String? recoveryCode,
+    final String? scope,
+    final String? audience,
   });
 }
 
