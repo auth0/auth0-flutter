@@ -34,6 +34,19 @@ updates:
       - ignore title check
       - dependencies
 
+  - package-ecosystem: gradle
+    directory: auth0_flutter/android
+    schedule:
+      interval: daily
+    allow:
+      - dependency-name: 'com.auth0.android:auth0'
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+    labels:
+      - ignore title check
+      - dependencies
+
   - package-ecosystem: github-actions
     directory: /
     schedule:
