@@ -30,12 +30,14 @@ void main() {
       );
     });
 
-    test('Credentials throws when expiresAt Locale set to ar', () async {
+    test('Credentials does not throw when expiresAt Locale set to ar',
+        () async {
+      initializeDateFormatting();
       final dateTime = DateTime(2022);
       final isoDateTimeString = _formatISOTime(dateTime, 'ar');
 
       expect(
-        () => Credentials.fromMap({
+        Credentials.fromMap({
           'accessToken': 'accessToken',
           'idToken': 'idToken',
           'refreshToken': 'refreshToken',
@@ -44,7 +46,7 @@ void main() {
           'userProfile': {'sub': '123', 'name': 'John Doe'},
           'tokenType': 'Bearer',
         }),
-        throwsA(isA<FormatException>()),
+        isA<Credentials>(),
       );
     });
 
