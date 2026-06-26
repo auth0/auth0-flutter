@@ -14,14 +14,14 @@ class Auth0FlutterAuthMethodCallHandler(
     private val apiRequestHandlers: List<ApiRequestHandler>
 ) : MethodCallHandler {
     lateinit var context: Context
-    
+
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
         val request = MethodCallRequest.fromCall(call)
-        
+
         val apiHandler = apiRequestHandlers.find { it.method == call.method }
         if (apiHandler != null) {
             val api = AuthenticationAPIClient(request.account)
-            
+
             val useDPoP = request.data["useDPoP"] as? Boolean ?: false
             if (useDPoP) {
                 api.useDPoP(context)

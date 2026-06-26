@@ -58,6 +58,8 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     GetAuthenticationMethodRequestHandler(),
     DeleteAuthenticationMethodRequestHandler(),
     GetFactorsRequestHandler(),
+    EnrollPasskeyChallengeRequestHandler(),
+    EnrollPasskeyRequestHandler(),
     EnrollPhoneRequestHandler(),
     EnrollEmailRequestHandler(),
     EnrollTotpRequestHandler(),
@@ -133,7 +135,10 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
         RenewApiRequestHandler(),
         CustomTokenExchangeApiRequestHandler(),
         SSOExchangeApiRequestHandler(),
-        ResetPasswordApiRequestHandler()
+        ResetPasswordApiRequestHandler(),
+        PasskeyLoginChallengeApiRequestHandler(),
+        PasskeySignupChallengeApiRequestHandler(),
+        PasskeyCredentialExchangeApiRequestHandler()
       )
     )
     authCallHandler.context = context

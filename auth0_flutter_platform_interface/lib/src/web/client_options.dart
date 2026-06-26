@@ -111,6 +111,16 @@ class ClientOptions {
   /// Enables DPoP for token security. Defaults to `false`.
   final bool useDPoP;
 
+  /// Whether Multi-Resource Refresh Tokens (MRRT) are enabled, allowing a
+  /// single refresh token to be reused to obtain access tokens for multiple
+  /// APIs (audiences).
+  ///
+  /// MRRT requires refresh tokens, so enabling this forces [useRefreshTokens]
+  /// on, overriding it even if it was explicitly set to `false`.
+  ///
+  /// Defaults to `false`. Requires MRRT to be enabled on the Auth0 tenant.
+  final bool? useMrrt;
+
   ClientOptions(
       {required this.account,
       this.authorizeTimeoutInSeconds,
@@ -127,5 +137,6 @@ class ClientOptions {
       this.audience,
       this.scopes,
       this.parameters = const {},
-      this.useDPoP = false});
+      this.useDPoP = false,
+      this.useMrrt});
 }

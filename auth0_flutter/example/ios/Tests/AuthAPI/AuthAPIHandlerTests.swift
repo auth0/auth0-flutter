@@ -109,7 +109,7 @@ extension AuthAPIHandlerTests {
 extension AuthAPIHandlerTests {
     func testReturnsMethodHandlers() {
         var expectations: [XCTestExpectation] = []
-        let methodHandlers: [AuthAPIHandler.Method: MethodHandler.Type] = [
+        var methodHandlers: [AuthAPIHandler.Method: MethodHandler.Type] = [
             .loginWithUsernameOrEmail: AuthAPILoginUsernameOrEmailMethodHandler.self,
             .loginWithOTP: AuthAPILoginWithOTPMethodHandler.self,
             .signup: AuthAPISignupMethodHandler.self,
@@ -119,6 +119,13 @@ extension AuthAPIHandlerTests {
             .resetPassword: AuthAPIResetPasswordMethodHandler.self,
             .ssoExchange: SSOExchangeMethodHandler.self
         ]
+        #if PASSKEYS_PLATFORM
+        if #available(iOS 16.6, macOS 13.5, visionOS 1.0, *) {
+            methodHandlers[.passkeyLoginChallenge] = AuthAPIPasskeyLoginChallengeMethodHandler.self
+            methodHandlers[.passkeySignupChallenge] = AuthAPIPasskeySignupChallengeMethodHandler.self
+            methodHandlers[.passkeyCredentialExchange] = AuthAPIPasskeyCredentialExchangeMethodHandler.self
+        }
+        #endif
         methodHandlers.forEach { method, methodHandler in
             let methodCall = FlutterMethodCall(methodName: method.rawValue, arguments: arguments())
             let expectation = self.expectation(description: "Returned \(methodHandler)")

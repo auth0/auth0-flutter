@@ -1,5 +1,11 @@
 # Change Log
 
+## [af-v2.3.0](https://github.com/auth0/auth0-flutter/tree/af-v2.3.0) (2026-06-16)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.2.0...af-v2.3.0)
+
+**Added**
+- feat: Adds passkeys support to flutter SDK [\#858](https://github.com/auth0/auth0-flutter/pull/858) ([NandanPrabhu](https://github.com/NandanPrabhu))
+
 ## [af-v2.2.0](https://github.com/auth0/auth0-flutter/tree/af-v2.2.0) (2026-06-05)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.1.0...af-v2.2.0)
 

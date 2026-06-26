@@ -15,6 +15,8 @@ public class MyAccountHandler: NSObject, FlutterPlugin {
         case getAuthenticationMethod = "myAccount#getAuthenticationMethod"
         case deleteAuthenticationMethod = "myAccount#deleteAuthenticationMethod"
         case getFactors = "myAccount#getFactors"
+        case enrollPasskeyChallenge = "myAccount#enrollPasskeyChallenge"
+        case enrollPasskey = "myAccount#enrollPasskey"
         case enrollPhone = "myAccount#enrollPhone"
         case enrollEmail = "myAccount#enrollEmail"
         case enrollTotp = "myAccount#enrollTotp"
@@ -55,6 +57,21 @@ public class MyAccountHandler: NSObject, FlutterPlugin {
         case .getAuthenticationMethod: return MyAccountGetAuthMethodMethodHandler(client: client)
         case .deleteAuthenticationMethod: return MyAccountDeleteAuthMethodMethodHandler(client: client)
         case .getFactors: return MyAccountGetFactorsMethodHandler(client: client)
+        #if PASSKEYS_PLATFORM
+        case .enrollPasskeyChallenge:
+            if #available(iOS 16.6, macOS 13.5, visionOS 1.0, *) {
+                return MyAccountEnrollPasskeyChallengeMethodHandler(client: client)
+            }
+            return UnsupportedMethodHandler()
+        case .enrollPasskey:
+            if #available(iOS 16.6, macOS 13.5, visionOS 1.0, *) {
+                return MyAccountEnrollPasskeyMethodHandler(client: client)
+            }
+            return UnsupportedMethodHandler()
+        #else
+        case .enrollPasskeyChallenge, .enrollPasskey:
+            return UnsupportedMethodHandler()
+        #endif
         case .enrollPhone: return MyAccountEnrollPhoneMethodHandler(client: client)
         case .enrollEmail: return MyAccountEnrollEmailMethodHandler(client: client)
         case .enrollTotp: return MyAccountEnrollTotpMethodHandler(client: client)

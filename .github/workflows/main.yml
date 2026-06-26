@@ -26,7 +26,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+              uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
             - name: Install Flutter
               uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
@@ -49,7 +49,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+              uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
             - name: Install Flutter
               uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
@@ -80,7 +80,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+              uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
             - name: Install Flutter
               uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
@@ -99,7 +99,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+              uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
             - name: Install Flutter
               uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
@@ -133,7 +133,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+              uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
             - name: Set up environment
               uses: ./.github/actions/setup-darwin
@@ -178,7 +178,7 @@ jobs:
 
     #     steps:
     #         - name: Checkout
-    #           uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+    #           uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
     #         - name: Set up environment
     #           uses: ./.github/actions/setup-darwin
@@ -211,7 +211,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+              uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
             - name: Set up environment
               uses: ./.github/actions/setup-darwin
@@ -251,7 +251,7 @@ jobs:
 
     #     steps:
     #         - name: Checkout
-    #           uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+    #           uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
     #         - name: Set up environment
     #           uses: ./.github/actions/setup-darwin
@@ -276,7 +276,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+              uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
             - name: Set up environment
               uses: ./.github/actions/setup-android
@@ -309,12 +309,12 @@ jobs:
 
     test-windows-unit:
         name: Run native Windows unit tests
-        runs-on: windows-latest
+        runs-on: windows-2022
         environment: ${{ github.event.pull_request.head.repo.fork && 'external' || 'internal' }}
 
         steps:
             - name: Checkout
-              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+              uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
             - name: Install Flutter
               uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
@@ -349,7 +349,7 @@ jobs:
                 ${{ github.workspace }}\vcpkg\vcpkg install cpprestsdk:x64-windows openssl:x64-windows boost-system:x64-windows boost-date-time:x64-windows boost-regex:x64-windows
               shell: cmd
               env:
-                VCPKG_BINARY_SOURCES: 'clear;files,${{ github.workspace }}/vcpkg-binary-cache,readwrite;x-gha,readwrite'
+                VCPKG_BINARY_SOURCES: 'clear;files,${{ github.workspace }}/vcpkg-binary-cache,readwrite'
 
             - name: Cache Windows example app build
               uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # pin@v5.0.5
@@ -420,7 +420,7 @@ jobs:
 
     #     steps:
     #         - name: Checkout
-    #           uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+    #           uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
     #         - name: Gradle cache
     #           uses: gradle/gradle-build-action@ef76a971e2fa3f867b617efd72f2fbd72cf6f8bc
@@ -523,7 +523,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3
+              uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
             - name: Download coverage report for auth0_flutter
               uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
@@ -556,35 +556,35 @@ jobs:
                 path: coverage/windows
 
             - name: Upload coverage report for auth0_flutter
-              uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354
+              uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter
                   directory: coverage/auth0_flutter
 
             - name: Upload coverage report for auth0_flutter_platform_interface
-              uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354
+              uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter_platform_interface
                   directory: coverage/auth0_flutter_platform_interface
 
             - name: Upload coverage report for iOS
-              uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354
+              uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter_ios
                   directory: coverage/ios
 
             - name: Upload coverage report for Android
-              uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354
+              uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter_android
                   directory: coverage/android
 
             - name: Upload coverage report for Windows
-              uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354
+              uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f
               with:
                   name: Auth0 Flutter
                   flags: auth0_flutter_windows

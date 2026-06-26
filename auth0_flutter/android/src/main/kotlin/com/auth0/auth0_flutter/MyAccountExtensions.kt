@@ -5,11 +5,15 @@ import com.auth0.android.result.EmailAuthenticationMethod
 import com.auth0.android.result.EnrollmentChallenge
 import com.auth0.android.result.MfaAuthenticationMethod
 import com.auth0.android.result.MfaEnrollmentChallenge
+import com.auth0.android.result.PasskeyAuthenticationMethod
+import com.auth0.android.result.PasskeyEnrollmentChallenge
 import com.auth0.android.result.PhoneAuthenticationMethod
 import com.auth0.android.result.PushNotificationAuthenticationMethod
 import com.auth0.android.result.RecoveryCodeEnrollmentChallenge
 import com.auth0.android.result.TotpAuthenticationMethod
 import com.auth0.android.result.TotpEnrollmentChallenge
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 fun AuthenticationMethod.toMyAccountMethodMap(): Map<String, Any?> {
     return buildMap {
@@ -41,6 +45,40 @@ fun AuthenticationMethod.toMyAccountMethodMap(): Map<String, Any?> {
         if (this@toMyAccountMethodMap is MfaAuthenticationMethod) {
             put("confirmed", confirmed)
         }
+    }
+}
+
+fun PasskeyAuthenticationMethod.toMyAccountPasskeyMethodMap(): Map<String, Any?> {
+    return buildMap {
+        put("id", id)
+        put("type", type)
+        put("created_at", createdAt)
+        put("usage", usage)
+        put("identity_user_id", identityUserId)
+        put("user_agent", userAgent)
+        put("key_id", keyId)
+        put("public_key", publicKey)
+        put("user_handle", userHandle)
+        put("credential_device_type", credentialDeviceType)
+        put("credential_backed_up", credentialBackedUp)
+        put("transports", transports)
+        put("aaguid", aaguid)
+        put("relying_party_id", relyingPartyId)
+    }
+}
+
+fun PasskeyEnrollmentChallenge.toMyAccountPasskeyChallengeMap(): Map<String, Any?> {
+    val gson = Gson()
+    // AuthnParamsPublicKey is a typed data class; convert via JSON tree to avoid
+    // a toJson()/fromJson(String) round-trip through an intermediate String.
+    val authParamsPublicKeyMap: Map<String, Any> = gson.fromJson(
+        gson.toJsonTree(authParamsPublicKey),
+        object : TypeToken<Map<String, Any>>() {}.type
+    )
+    return buildMap {
+        put("authenticationMethodId", authenticationMethodId)
+        put("authSession", authSession)
+        put("authParamsPublicKey", authParamsPublicKeyMap)
     }
 }
 
