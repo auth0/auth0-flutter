@@ -149,7 +149,7 @@ void main() {
           .single as ApiRequest<MfaVerifyOptions>;
       expect(captured.options.grantType, MfaVerifyGrantType.otp);
       expect(captured.options.otp, '123456');
-      expect(captured.options.scopes, isEmpty);
+      expect(captured.options.scopes, {'openid', 'profile', 'email'});
       expect(captured.options.audience, isNull);
       expect(result.accessToken, 'accessToken');
     });

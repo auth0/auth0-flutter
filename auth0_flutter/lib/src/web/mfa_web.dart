@@ -104,10 +104,11 @@ class MfaWeb {
   /// exchanges the `mfa_token` for [Credentials].
   ///
   /// Optionally pass [scopes] and [audience] to request specific scopes and an
-  /// API audience for the returned [Credentials].
+  /// API audience for the returned [Credentials]. [scopes] defaults to
+  /// `{'openid', 'profile', 'email'}`.
   Future<Credentials> verifyOtp({
     required final String otp,
-    final Set<String> scopes = const {},
+    final Set<String> scopes = const {'openid', 'profile', 'email'},
     final String? audience,
   }) =>
       Auth0FlutterWebPlatform.instance.mfaVerify(
@@ -127,11 +128,12 @@ class MfaWeb {
   /// when the challenge's `bindingMethod` is `prompt`.
   ///
   /// Optionally pass [scopes] and [audience] to request specific scopes and an
-  /// API audience for the returned [Credentials].
+  /// API audience for the returned [Credentials]. [scopes] defaults to
+  /// `{'openid', 'profile', 'email'}`.
   Future<Credentials> verifyOob({
     required final String oobCode,
     final String? bindingCode,
-    final Set<String> scopes = const {},
+    final Set<String> scopes = const {'openid', 'profile', 'email'},
     final String? audience,
   }) =>
       Auth0FlutterWebPlatform.instance.mfaVerify(
@@ -147,10 +149,11 @@ class MfaWeb {
   /// Verifies a [recoveryCode] and exchanges the `mfa_token` for [Credentials].
   ///
   /// Optionally pass [scopes] and [audience] to request specific scopes and an
-  /// API audience for the returned [Credentials].
+  /// API audience for the returned [Credentials]. [scopes] defaults to
+  /// `{'openid', 'profile', 'email'}`.
   Future<Credentials> verifyRecoveryCode({
     required final String recoveryCode,
-    final Set<String> scopes = const {},
+    final Set<String> scopes = const {'openid', 'profile', 'email'},
     final String? audience,
   }) =>
       Auth0FlutterWebPlatform.instance.mfaVerify(

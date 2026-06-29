@@ -163,7 +163,7 @@ void main() {
       final options = call[2] as MfaVerifyOptions;
       expect(options.grantType, MfaVerifyGrantType.otp);
       expect(options.otp, '123456');
-      expect(options.scopes, isEmpty);
+      expect(options.scopes, {'openid', 'profile', 'email'});
       expect(options.audience, isNull);
     });
 

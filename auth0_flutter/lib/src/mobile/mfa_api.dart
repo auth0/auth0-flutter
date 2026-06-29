@@ -159,7 +159,8 @@ class MfaApi {
   /// exchanges the `mfa_token` for [Credentials].
   ///
   /// Optionally pass [scopes] and [audience] to request specific scopes and an
-  /// API audience for the returned [Credentials].
+  /// API audience for the returned [Credentials]. [scopes] defaults to
+  /// `{'openid', 'profile', 'email'}`.
   ///
   /// ## Usage example
   ///
@@ -172,7 +173,7 @@ class MfaApi {
   /// ```
   Future<Credentials> verifyOtp({
     required final String otp,
-    final Set<String> scopes = const {},
+    final Set<String> scopes = const {'openid', 'profile', 'email'},
     final String? audience,
   }) =>
       Auth0FlutterMfaPlatform.instance.verify(_createApiRequest(
@@ -192,7 +193,8 @@ class MfaApi {
   /// user must enter a code received via the channel).
   ///
   /// Optionally pass [scopes] and [audience] to request specific scopes and an
-  /// API audience for the returned [Credentials].
+  /// API audience for the returned [Credentials]. [scopes] defaults to
+  /// `{'openid', 'profile', 'email'}`.
   ///
   /// ## Usage example
   ///
@@ -207,7 +209,7 @@ class MfaApi {
   Future<Credentials> verifyOob({
     required final String oobCode,
     final String? bindingCode,
-    final Set<String> scopes = const {},
+    final Set<String> scopes = const {'openid', 'profile', 'email'},
     final String? audience,
   }) =>
       Auth0FlutterMfaPlatform.instance.verify(_createApiRequest(
@@ -223,7 +225,8 @@ class MfaApi {
   /// [Credentials].
   ///
   /// Optionally pass [scopes] and [audience] to request specific scopes and an
-  /// API audience for the returned [Credentials].
+  /// API audience for the returned [Credentials]. [scopes] defaults to
+  /// `{'openid', 'profile', 'email'}`.
   ///
   /// ## Usage example
   ///
@@ -236,7 +239,7 @@ class MfaApi {
   /// ```
   Future<Credentials> verifyRecoveryCode({
     required final String recoveryCode,
-    final Set<String> scopes = const {},
+    final Set<String> scopes = const {'openid', 'profile', 'email'},
     final String? audience,
   }) =>
       Auth0FlutterMfaPlatform.instance.verify(_createApiRequest(
