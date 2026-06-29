@@ -76,7 +76,7 @@ class CustomTokenExchangeApiRequestHandlerTest {
             "openid profile email"
         )
 
-        whenever(mockApi.customTokenExchange(any(), any(), isNull())).thenReturn(mockRequest)
+        whenever(mockApi.customTokenExchange(any(), any(), isNull(), isNull())).thenReturn(mockRequest)
         whenever(mockRequest.validateClaims()).thenReturn(mockRequest)
 
         doAnswer {
@@ -90,6 +90,7 @@ class CustomTokenExchangeApiRequestHandlerTest {
         verify(mockApi).customTokenExchange(
             "urn:acme:legacy-token",
             "external-token-123",
+            null,
             null
         )
         verify(mockRequest).validateClaims()
@@ -115,7 +116,7 @@ class CustomTokenExchangeApiRequestHandlerTest {
             on { getDescription() } doReturn "Token validation failed"
         }
 
-        whenever(mockApi.customTokenExchange(any(), any(), isNull())).thenReturn(mockRequest)
+        whenever(mockApi.customTokenExchange(any(), any(), isNull(), isNull())).thenReturn(mockRequest)
         whenever(mockRequest.validateClaims()).thenReturn(mockRequest)
 
         doAnswer {
@@ -152,7 +153,7 @@ class CustomTokenExchangeApiRequestHandlerTest {
             "openid"
         )
 
-        whenever(mockApi.customTokenExchange(any(), any(), isNull())).thenReturn(mockRequest)
+        whenever(mockApi.customTokenExchange(any(), any(), isNull(), isNull())).thenReturn(mockRequest)
         whenever(mockRequest.setAudience(any())).thenReturn(mockRequest)
         whenever(mockRequest.validateClaims()).thenReturn(mockRequest)
 
@@ -191,7 +192,7 @@ class CustomTokenExchangeApiRequestHandlerTest {
             "openid profile email read:data"
         )
 
-        whenever(mockApi.customTokenExchange(any(), any(), isNull())).thenReturn(mockRequest)
+        whenever(mockApi.customTokenExchange(any(), any(), isNull(), isNull())).thenReturn(mockRequest)
         whenever(mockRequest.setScope(any())).thenReturn(mockRequest)
         whenever(mockRequest.validateClaims()).thenReturn(mockRequest)
 
@@ -231,7 +232,7 @@ class CustomTokenExchangeApiRequestHandlerTest {
             "openid profile email"
         )
 
-        whenever(mockApi.customTokenExchange(any(), any(), isNull())).thenReturn(mockRequest)
+        whenever(mockApi.customTokenExchange(any(), any(), isNull(), isNull())).thenReturn(mockRequest)
         whenever(mockRequest.setAudience(any())).thenReturn(mockRequest)
         whenever(mockRequest.setScope(any())).thenReturn(mockRequest)
         whenever(mockRequest.validateClaims()).thenReturn(mockRequest)
@@ -273,7 +274,7 @@ class CustomTokenExchangeApiRequestHandlerTest {
             "openid"
         )
 
-        whenever(mockApi.customTokenExchange(any(), any(), eq("org_abc123"))).thenReturn(mockRequest)
+        whenever(mockApi.customTokenExchange(any(), any(), eq("org_abc123"), isNull())).thenReturn(mockRequest)
         whenever(mockRequest.validateClaims()).thenReturn(mockRequest)
 
         doAnswer {
@@ -287,7 +288,8 @@ class CustomTokenExchangeApiRequestHandlerTest {
         verify(mockApi).customTokenExchange(
             "urn:acme:legacy-token",
             "external-token-org",
-            "org_abc123"
+            "org_abc123",
+            null
         )
         verify(mockResult).success(any())
     }
