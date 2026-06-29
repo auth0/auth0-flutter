@@ -58,29 +58,6 @@
 
 ## 📱 Web Authentication
 
-  - [Log out](#log-out)
-  - [Sign up](#sign-up)
-  - [Adding an audience](#adding-an-audience)
-  - [Adding scopes](#adding-scopes)
-  - [Adding custom parameters](#adding-custom-parameters)
-  - [ID token validation](#id-token-validation)
-  - [Using `SFSafariViewController` (iOS only)](#using-sfsafariviewcontroller-ios-only)
-    - [1. Configure a custom URL scheme](#1-configure-a-custom-url-scheme)
-    - [2. Capture the callback URL](#2-capture-the-callback-url)
-  - [Using Partial Custom Tabs (Android only)](#using-partial-custom-tabs-android-only)
-  - [Errors](#errors)
-  - [Android: Custom schemes](#android-custom-schemes)
-- [🪟 Windows Web Authentication](#-windows-web-authentication)
-  - [Prerequisites](#prerequisites)
-    - [1. Install vcpkg and native dependencies](#1-install-vcpkg-and-native-dependencies)
-    - [2. Configure your app's CMakeLists.txt](#2-configure-your-apps-cmakeliststxt)
-    - [3. Register the custom URL scheme (protocol handler)](#3-register-the-custom-url-scheme-protocol-handler)
-    - [4. Update the runner (main.cpp)](#4-update-the-runner-maincpp)
-  - [Login](#login)
-  - [Logout](#logout)
-
----
-
 ### Log out
 
 Logging the user out involves clearing the Universal Login session cookie and then deleting the user's credentials from your app.
@@ -767,7 +744,7 @@ if (userProfile != null) {
 
 ### Custom implementations
 
-flutter_auth0 exposes a built-in, default Credentials Manager implementation through the `credentialsManager` property. You can pass your own implementation to the `Auth0` constructor. If you're using Web Auth, this implementation will be used to store the user's credentials after login and delete them after logout.
+auth0_flutter exposes a built-in, default Credentials Manager implementation through the `credentialsManager` property. You can pass your own implementation to the `Auth0` constructor. If you're using Web Auth, this implementation will be used to store the user's credentials after login and delete them after logout.
 
 ```dart
 final customCredentialsManager = CustomCredentialsManager();
@@ -1472,7 +1449,7 @@ try {
 
 The My Account API lets authenticated users manage their own multi-factor authentication (MFA) methods — enrolling, confirming, listing, updating, and deleting factors such as phone, email, TOTP, push notifications, and recovery codes. It is available on **mobile (Android/iOS) only**.
 
-> 💡 The My Account API must be enabled for your tenant. If it is not yet available on your account, reach out to Auth0 support to get it enabled.
+> 💡 The My Account API requires [Multi-Resource Refresh Tokens (MRRT)](https://auth0.com/docs/secure/tokens/refresh-tokens/multi-resource-refresh-token) to be enabled for your tenant. Contact Auth0 support if MRRT is not yet available on your account.
 
 ### Obtaining an access token for the My Account API
 
