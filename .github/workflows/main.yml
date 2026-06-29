@@ -335,7 +335,7 @@ jobs:
                 vcpkgGitCommitId: '66c0373dc7fca549e5803087b9487edfe3aca0a1'
 
             - name: Cache vcpkg packages and binaries
-              uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # pin@v6.0.0
+              uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
               with:
                 path: |
                   ${{ github.workspace }}/vcpkg/installed
@@ -352,7 +352,7 @@ jobs:
                 VCPKG_BINARY_SOURCES: 'clear;files,${{ github.workspace }}/vcpkg-binary-cache,readwrite'
 
             - name: Cache Windows example app build
-              uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # pin@v6.0.0
+              uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
               with:
                 path: auth0_flutter/example/build/windows
                 key: win-example-build-${{ runner.os }}-${{ hashFiles('auth0_flutter/windows/**/*.cpp', 'auth0_flutter/windows/**/*.h', 'auth0_flutter/windows/CMakeLists.txt', 'auth0_flutter/windows/vcpkg.json') }}-${{ hashFiles('auth0_flutter/example/lib/**/*.dart') }}
@@ -373,7 +373,7 @@ jobs:
               shell: powershell
 
             - name: Cache Windows unit test build
-              uses: actions/cache@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # pin@v6.0.0
+              uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
               with:
                 path: auth0_flutter/windows/build
                 key: win-test-build-${{ runner.os }}-${{ hashFiles('auth0_flutter/windows/**/*.cpp', 'auth0_flutter/windows/**/*.h', 'auth0_flutter/windows/CMakeLists.txt', 'auth0_flutter/windows/test/**', 'auth0_flutter/windows/vcpkg.json') }}
