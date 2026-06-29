@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import '../auth0_exception.dart';
 import '../extensions/exception_extensions.dart';
 import '../extensions/map_extensions.dart';
+import '../mfa/mfa_requirements.dart';
 
 class ApiException extends Auth0Exception {
   static const _errorFlagsKey = '_errorFlags';
@@ -38,6 +39,15 @@ class ApiException extends Auth0Exception {
   String? get mfaToken =>
       details.containsKey('mfa_token') && details['mfa_token'] is String
           ? details['mfa_token'] as String
+          : null;
+
+  /// The MFA factors the user can challenge or enroll, parsed from the
+  /// `mfa_requirements` field of an `mfa_required` error. Returns `null` when
+  /// the error carries no requirements.
+  MfaRequirements? get mfaRequirements =>
+      details['mfa_requirements'] is Map
+          ? MfaRequirements.fromMap(
+              Map<String, dynamic>.from(details['mfa_requirements'] as Map))
           : null;
   bool get isMultifactorEnrollRequired =>
       _errorFlags.getBooleanOrFalse('isMultifactorEnrollRequired');

@@ -63,6 +63,14 @@
 		B0CA0002000000000000000D /* MyAccountUpdateAuthMethodMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA0001000000000000000D /* MyAccountUpdateAuthMethodMethodHandlerTests.swift */; };
 		B0CA0002000000000000000E /* MyAccountEnrollPasskeyChallengeMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA0001000000000000000E /* MyAccountEnrollPasskeyChallengeMethodHandlerTests.swift */; };
 		B0CA0002000000000000000F /* MyAccountEnrollPasskeyMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA0001000000000000000F /* MyAccountEnrollPasskeyMethodHandlerTests.swift */; };
+		B0CB00020000000000000001 /* MfaSpies.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CB00010000000000000001 /* MfaSpies.swift */; };
+		B0CB00020000000000000002 /* MfaGetAuthenticatorsMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CB00010000000000000002 /* MfaGetAuthenticatorsMethodHandlerTests.swift */; };
+		B0CB00020000000000000003 /* MfaEnrollTotpMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CB00010000000000000003 /* MfaEnrollTotpMethodHandlerTests.swift */; };
+		B0CB00020000000000000004 /* MfaEnrollPhoneMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CB00010000000000000004 /* MfaEnrollPhoneMethodHandlerTests.swift */; };
+		B0CB00020000000000000005 /* MfaEnrollEmailMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CB00010000000000000005 /* MfaEnrollEmailMethodHandlerTests.swift */; };
+		B0CB00020000000000000006 /* MfaEnrollPushMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CB00010000000000000006 /* MfaEnrollPushMethodHandlerTests.swift */; };
+		B0CB00020000000000000007 /* MfaChallengeMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CB00010000000000000007 /* MfaChallengeMethodHandlerTests.swift */; };
+		B0CB00020000000000000008 /* MfaVerifyMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CB00010000000000000008 /* MfaVerifyMethodHandlerTests.swift */; };
 		PK00000000000000000001 /* AuthAPIPasskeyLoginChallengeMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PK00000000000000000003 /* AuthAPIPasskeyLoginChallengeMethodHandlerTests.swift */; };
 		PK00000000000000000005 /* AuthAPIPasskeyExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PK00000000000000000006 /* AuthAPIPasskeyExtensionsTests.swift */; };
 		PK10000000000000000001 /* AuthAPIPasskeySignupChallengeMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PK10000000000000000003 /* AuthAPIPasskeySignupChallengeMethodHandlerTests.swift */; };
@@ -175,6 +183,14 @@
 		B0CA0001000000000000000D /* MyAccountUpdateAuthMethodMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountUpdateAuthMethodMethodHandlerTests.swift; sourceTree = "<group>"; };
 		B0CA0001000000000000000E /* MyAccountEnrollPasskeyChallengeMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountEnrollPasskeyChallengeMethodHandlerTests.swift; sourceTree = "<group>"; };
 		B0CA0001000000000000000F /* MyAccountEnrollPasskeyMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountEnrollPasskeyMethodHandlerTests.swift; sourceTree = "<group>"; };
+		B0CB00010000000000000001 /* MfaSpies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MfaSpies.swift; sourceTree = "<group>"; };
+		B0CB00010000000000000002 /* MfaGetAuthenticatorsMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MfaGetAuthenticatorsMethodHandlerTests.swift; sourceTree = "<group>"; };
+		B0CB00010000000000000003 /* MfaEnrollTotpMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MfaEnrollTotpMethodHandlerTests.swift; sourceTree = "<group>"; };
+		B0CB00010000000000000004 /* MfaEnrollPhoneMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MfaEnrollPhoneMethodHandlerTests.swift; sourceTree = "<group>"; };
+		B0CB00010000000000000005 /* MfaEnrollEmailMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MfaEnrollEmailMethodHandlerTests.swift; sourceTree = "<group>"; };
+		B0CB00010000000000000006 /* MfaEnrollPushMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MfaEnrollPushMethodHandlerTests.swift; sourceTree = "<group>"; };
+		B0CB00010000000000000007 /* MfaChallengeMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MfaChallengeMethodHandlerTests.swift; sourceTree = "<group>"; };
+		B0CB00010000000000000008 /* MfaVerifyMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MfaVerifyMethodHandlerTests.swift; sourceTree = "<group>"; };
 		PK00000000000000000003 /* AuthAPIPasskeyLoginChallengeMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIPasskeyLoginChallengeMethodHandlerTests.swift; sourceTree = "<group>"; };
 		PK00000000000000000006 /* AuthAPIPasskeyExtensionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIPasskeyExtensionsTests.swift; sourceTree = "<group>"; };
 		PK10000000000000000003 /* AuthAPIPasskeySignupChallengeMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIPasskeySignupChallengeMethodHandlerTests.swift; sourceTree = "<group>"; };
@@ -226,6 +242,7 @@
 				5C328B5127F7B11300451E70 /* WebAuth */,
 				5C4E65BC286D022200141449 /* CredentialsManager */,
 				B0CA000300000000000000A1 /* MyAccount */,
+				B0CB000300000000000000A1 /* Mfa */,
 				5C335E3E27FBCD1D00EDDE3A /* SwiftAuth0FlutterPluginTests.swift */,
 				5CAAA4A1281A0C7D007666F1 /* ModelsTests.swift */,
 				5C335E4027FBD2FE00EDDE3A /* ExtensionsTests.swift */,
@@ -379,6 +396,21 @@
 				B0CA0001000000000000000F /* MyAccountEnrollPasskeyMethodHandlerTests.swift */,
 			);
 			path = MyAccount;
+			sourceTree = "<group>";
+		};
+		B0CB000300000000000000A1 /* Mfa */ = {
+			isa = PBXGroup;
+			children = (
+				B0CB00010000000000000001 /* MfaSpies.swift */,
+				B0CB00010000000000000002 /* MfaGetAuthenticatorsMethodHandlerTests.swift */,
+				B0CB00010000000000000003 /* MfaEnrollTotpMethodHandlerTests.swift */,
+				B0CB00010000000000000004 /* MfaEnrollPhoneMethodHandlerTests.swift */,
+				B0CB00010000000000000005 /* MfaEnrollEmailMethodHandlerTests.swift */,
+				B0CB00010000000000000006 /* MfaEnrollPushMethodHandlerTests.swift */,
+				B0CB00010000000000000007 /* MfaChallengeMethodHandlerTests.swift */,
+				B0CB00010000000000000008 /* MfaVerifyMethodHandlerTests.swift */,
+			);
+			path = Mfa;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -705,6 +737,14 @@
 				B0CA0002000000000000000D /* MyAccountUpdateAuthMethodMethodHandlerTests.swift in Sources */,
 				B0CA0002000000000000000E /* MyAccountEnrollPasskeyChallengeMethodHandlerTests.swift in Sources */,
 				B0CA0002000000000000000F /* MyAccountEnrollPasskeyMethodHandlerTests.swift in Sources */,
+				B0CB00020000000000000001 /* MfaSpies.swift in Sources */,
+				B0CB00020000000000000002 /* MfaGetAuthenticatorsMethodHandlerTests.swift in Sources */,
+				B0CB00020000000000000003 /* MfaEnrollTotpMethodHandlerTests.swift in Sources */,
+				B0CB00020000000000000004 /* MfaEnrollPhoneMethodHandlerTests.swift in Sources */,
+				B0CB00020000000000000005 /* MfaEnrollEmailMethodHandlerTests.swift in Sources */,
+				B0CB00020000000000000006 /* MfaEnrollPushMethodHandlerTests.swift in Sources */,
+				B0CB00020000000000000007 /* MfaChallengeMethodHandlerTests.swift in Sources */,
+				B0CB00020000000000000008 /* MfaVerifyMethodHandlerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

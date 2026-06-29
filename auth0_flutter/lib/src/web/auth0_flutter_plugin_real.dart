@@ -12,6 +12,7 @@ import 'extensions/credentials_extension.dart';
 import 'extensions/credentials_options_extension.dart';
 import 'extensions/exchange_token_options_extension.dart';
 import 'extensions/logout_options.extension.dart';
+import 'extensions/mfa_extensions.dart';
 import 'extensions/web_exception_extensions.dart';
 import 'js_interop.dart' as interop;
 import 'js_interop_utils.dart';
@@ -207,6 +208,102 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
 
   @override
   Future<bool> hasValidCredentials() => clientProxy!.isAuthenticated();
+
+  @override
+  Future<List<MfaAuthenticator>> mfaGetAuthenticators(
+      final String mfaToken) async {
+    final client = _ensureClient();
+    try {
+      final result = await client.mfaGetAuthenticators(mfaToken);
+      return result.toDart
+          .map(MfaAuthenticatorWebExtension.fromWeb)
+          .toList();
+    } catch (e) {
+      throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
+    }
+  }
+
+  @override
+  Future<MfaEnrollmentChallenge> mfaEnrollTotp(final String mfaToken) =>
+      _enroll(interop.MfaEnrollParams(mfaToken: mfaToken, factorType: 'otp'));
+
+  @override
+  Future<MfaEnrollmentChallenge> mfaEnrollPhone(
+    final String mfaToken,
+    final String phoneNumber,
+    final PhoneType type,
+  ) =>
+      _enroll(interop.MfaEnrollParams(
+          mfaToken: mfaToken,
+          factorType: type.toWebFactorType(),
+          phoneNumber: phoneNumber));
+
+  @override
+  Future<MfaEnrollmentChallenge> mfaEnrollEmail(
+    final String mfaToken,
+    final String email,
+  ) =>
+      _enroll(interop.MfaEnrollParams(
+          mfaToken: mfaToken, factorType: 'email', email: email));
+
+  @override
+  Future<MfaEnrollmentChallenge> mfaEnrollPush(final String mfaToken) =>
+      _enroll(interop.MfaEnrollParams(mfaToken: mfaToken, factorType: 'push'));
+
+  @override
+  Future<MfaChallenge> mfaChallenge(
+    final String mfaToken,
+    final String authenticatorId,
+  ) async {
+    final client = _ensureClient();
+    // auth0-spa-js requires the challenge type; derive it from the
+    // authenticator id, which is of the form `{authenticatorType}|{id}`.
+    // OTP authenticators use the `otp|` prefix (see auth0-spa-js MfaApiClient);
+    // anything else is challenged out-of-band.
+    final challengeType = authenticatorId.startsWith('otp|') ? 'otp' : 'oob';
+    try {
+      final result = await client.mfaChallenge(interop.MfaChallengeParams(
+          mfaToken: mfaToken,
+          challengeType: challengeType,
+          authenticatorId: authenticatorId));
+      return MfaChallengeWebExtension.fromWeb(result);
+    } catch (e) {
+      throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
+    }
+  }
+
+  @override
+  Future<Credentials> mfaVerify(
+    final String mfaToken,
+    final MfaVerifyOptions options,
+  ) async {
+    final client = _ensureClient();
+    try {
+      final result = await client.mfaVerify(JsInteropUtils.stripNulls(
+          interop.MfaVerifyParams(
+              mfaToken: mfaToken,
+              otp: options.otp,
+              oobCode: options.oobCode,
+              bindingCode: options.bindingCode,
+              recoveryCode: options.recoveryCode,
+              scope: options.scopes.isEmpty ? null : options.scopes.join(' '),
+              audience: options.audience)));
+      return CredentialsExtension.fromWeb(result);
+    } catch (e) {
+      throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
+    }
+  }
+
+  Future<MfaEnrollmentChallenge> _enroll(
+      final interop.MfaEnrollParams params) async {
+    final client = _ensureClient();
+    try {
+      final result = await client.mfaEnroll(JsInteropUtils.stripNulls(params));
+      return MfaEnrollmentChallengeWebExtension.fromWeb(result);
+    } catch (e) {
+      throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
+    }
+  }
 
   String? _getInvitationTicket(final String? invitationUrl) {
     if (invitationUrl == null || invitationUrl.isEmpty) {

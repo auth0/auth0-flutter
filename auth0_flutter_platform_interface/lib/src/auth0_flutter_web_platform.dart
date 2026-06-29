@@ -65,4 +65,46 @@ abstract class Auth0FlutterWebPlatform extends PlatformInterface {
   Future<void> logout(final LogoutOptions? options) {
     throw UnimplementedError('web.logout has not been implemented');
   }
+
+  Future<List<MfaAuthenticator>> mfaGetAuthenticators(final String mfaToken) {
+    throw UnimplementedError(
+        'web.mfaGetAuthenticators has not been implemented');
+  }
+
+  Future<MfaEnrollmentChallenge> mfaEnrollTotp(final String mfaToken) {
+    throw UnimplementedError('web.mfaEnrollTotp has not been implemented');
+  }
+
+  Future<MfaEnrollmentChallenge> mfaEnrollPhone(
+    final String mfaToken,
+    final String phoneNumber,
+    final PhoneType type,
+  ) {
+    throw UnimplementedError('web.mfaEnrollPhone has not been implemented');
+  }
+
+  Future<MfaEnrollmentChallenge> mfaEnrollEmail(
+    final String mfaToken,
+    final String email,
+  ) {
+    throw UnimplementedError('web.mfaEnrollEmail has not been implemented');
+  }
+
+  Future<MfaEnrollmentChallenge> mfaEnrollPush(final String mfaToken) {
+    throw UnimplementedError('web.mfaEnrollPush has not been implemented');
+  }
+
+  Future<MfaChallenge> mfaChallenge(
+    final String mfaToken,
+    final String authenticatorId,
+  ) {
+    throw UnimplementedError('web.mfaChallenge has not been implemented');
+  }
+
+  Future<Credentials> mfaVerify(
+    final String mfaToken,
+    final MfaVerifyOptions options,
+  ) {
+    throw UnimplementedError('web.mfaVerify has not been implemented');
+  }
 }

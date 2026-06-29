@@ -29,6 +29,7 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   private lateinit var credentialsManagerMethodChannel : MethodChannel
   private lateinit var dpopMethodChannel : MethodChannel
   private lateinit var myAccountMethodChannel : MethodChannel
+  private lateinit var mfaMethodChannel : MethodChannel
   private lateinit var binding: FlutterPlugin.FlutterPluginBinding
   private lateinit var authCallHandler: Auth0FlutterAuthMethodCallHandler
   private var pendingRecoveredCredentials: Map<String, Any?>? = null
@@ -68,6 +69,15 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     VerifyOtpRequestHandler(),
     ConfirmEnrollmentRequestHandler(),
     UpdateAuthenticationMethodRequestHandler()
+  ))
+  private val mfaCallHandler = Auth0FlutterMfaMethodCallHandler(listOf(
+    com.auth0.auth0_flutter.request_handlers.mfa.GetAuthenticatorsRequestHandler(),
+    com.auth0.auth0_flutter.request_handlers.mfa.EnrollTotpRequestHandler(),
+    com.auth0.auth0_flutter.request_handlers.mfa.EnrollPhoneRequestHandler(),
+    com.auth0.auth0_flutter.request_handlers.mfa.EnrollEmailRequestHandler(),
+    com.auth0.auth0_flutter.request_handlers.mfa.EnrollPushRequestHandler(),
+    com.auth0.auth0_flutter.request_handlers.mfa.ChallengeRequestHandler(),
+    com.auth0.auth0_flutter.request_handlers.mfa.VerifyRequestHandler()
   ))
 
   private val processDeathCallback = object : Callback<Credentials, AuthenticationException> {
@@ -152,6 +162,9 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     myAccountMethodChannel = MethodChannel(messenger, "auth0.com/auth0_flutter/my_account")
     myAccountMethodChannel.setMethodCallHandler(myAccountCallHandler)
     myAccountCallHandler.context = context
+
+    mfaMethodChannel = MethodChannel(messenger, "auth0.com/auth0_flutter/mfa")
+    mfaMethodChannel.setMethodCallHandler(mfaCallHandler)
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: MethodChannel.Result) {
@@ -178,6 +191,7 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     credentialsManagerMethodChannel.setMethodCallHandler(null)
     dpopMethodChannel.setMethodCallHandler(null)
     myAccountMethodChannel.setMethodCallHandler(null)
+    mfaMethodChannel.setMethodCallHandler(null)
   }
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
