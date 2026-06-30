@@ -1,1 +1,1 @@
-../../../darwin/Classes/CredentialsManager/ApiCredentialsMethodHandler.swift
+../../../../darwin/Classes/CredentialsManager/ApiCredentialsMethodHandler.swift

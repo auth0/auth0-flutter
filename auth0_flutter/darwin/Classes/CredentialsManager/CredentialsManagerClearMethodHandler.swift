@@ -1,15 +1,1 @@
-import Auth0
-
-#if os(iOS)
-import Flutter
-#else
-import FlutterMacOS
-#endif
-
-struct CredentialsManagerClearMethodHandler: MethodHandler {
-    let credentialsManager: CredentialsManager
-
-    func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
-        callback(self.credentialsManager.clear())
-    }
-}
+../../../../auth0_flutter/Sources/auth0_flutter/CredentialsManager/CredentialsManagerClearMethodHandler.swift

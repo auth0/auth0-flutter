@@ -1,1 +1,1 @@
-../../../darwin/Classes/CredentialsManager/SSOCredentialsMethodHandler.swift
+../../../../darwin/Classes/CredentialsManager/SSOCredentialsMethodHandler.swift

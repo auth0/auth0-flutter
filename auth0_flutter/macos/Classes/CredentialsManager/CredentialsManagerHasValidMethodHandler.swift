@@ -1,1 +1,1 @@
-../../../darwin/Classes/CredentialsManager/CredentialsManagerHasValidMethodHandler.swift
+../../../../darwin/Classes/CredentialsManager/CredentialsManagerHasValidMethodHandler.swift

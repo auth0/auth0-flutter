@@ -7,11 +7,12 @@ fileprivate typealias Argument = CredentialsManagerHasValidMethodHandler.Argumen
 
 class CredentialsManagerHasValidMethodHandlerTests: XCTestCase {
     var spy: SpyCredentialsStorage!
+    var credentialsManager: CredentialsManager!
     var sut: CredentialsManagerHasValidMethodHandler!
 
     override func setUpWithError() throws {
         spy = SpyCredentialsStorage()
-        let credentialsManager = CredentialsManager(authentication: SpyAuthentication(), storage: spy)
+        credentialsManager = CredentialsManager(authentication: SpyAuthentication(), storage: spy)
         sut = CredentialsManagerHasValidMethodHandler(credentialsManager: credentialsManager)
     }
 }
@@ -40,9 +41,8 @@ extension CredentialsManagerHasValidMethodHandlerTests {
 
     func testProducesTrueWithValidCredentialsAndNoRefreshToken() {
         let credentials = Credentials(refreshToken: nil, expiresIn: Date(timeIntervalSinceNow: 3600))
-        let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
         let expectation = self.expectation(description: "Produced true")
-        spy.getEntryReturnValue = data
+        _ = credentialsManager.store(credentials: credentials)
         sut.handle(with: arguments()) { result in
             XCTAssertEqual(result as? Bool, true)
             expectation.fulfill()
@@ -52,11 +52,8 @@ extension CredentialsManagerHasValidMethodHandlerTests {
 
     func testProducesTrueWithRefreshTokenAndInvalidCredentials() {
         let credentials = Credentials(refreshToken: "foo", expiresIn: Date(timeIntervalSinceNow: -3600))
-        let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
         let expectation = self.expectation(description: "Produced true")
-        let credentialsManager = CredentialsManager(authentication: SpyAuthentication(), storage: spy)
-        sut = CredentialsManagerHasValidMethodHandler(credentialsManager: credentialsManager)
-        spy.getEntryReturnValue = data
+        _ = credentialsManager.store(credentials: credentials)
         sut.handle(with: arguments()) { result in
             XCTAssertEqual(result as? Bool, true)
             expectation.fulfill()
@@ -66,11 +63,8 @@ extension CredentialsManagerHasValidMethodHandlerTests {
 
     func testProducesTrueWithRefreshTokenAndValidCredentials() {
         let credentials = Credentials(refreshToken: "foo", expiresIn: Date(timeIntervalSinceNow: 3600))
-        let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
         let expectation = self.expectation(description: "Produced true")
-        let credentialsManager = CredentialsManager(authentication: SpyAuthentication(), storage: spy)
-        sut = CredentialsManagerHasValidMethodHandler(credentialsManager: credentialsManager)
-        spy.getEntryReturnValue = data
+        _ = credentialsManager.store(credentials: credentials)
         sut.handle(with: arguments()) { result in
             XCTAssertEqual(result as? Bool, true)
             expectation.fulfill()
@@ -90,9 +84,8 @@ extension CredentialsManagerHasValidMethodHandlerTests {
 
     func testProducesFalseWithInvalidCredentialsAndNoRefreshToken() {
         let credentials = Credentials(refreshToken: nil, expiresIn: Date(timeIntervalSinceNow: -3600))
-        let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
         let expectation = self.expectation(description: "Produced false")
-        spy.getEntryReturnValue = data
+        _ = credentialsManager.store(credentials: credentials)
         sut.handle(with: arguments()) { result in
             XCTAssertEqual(result as? Bool, false)
             expectation.fulfill()

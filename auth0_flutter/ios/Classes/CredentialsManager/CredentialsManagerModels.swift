@@ -1,1 +1,1 @@
-../../../darwin/Classes/CredentialsManager/CredentialsManagerModels.swift
+../../../../darwin/Classes/CredentialsManager/CredentialsManagerModels.swift
