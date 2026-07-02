@@ -1014,6 +1014,8 @@ final credentials = await auth0Web.credentials();
 - [Sign up with database connection](#sign-up-with-database-connection)
 - [Log in with passkeys](#log-in-with-passkeys)
 - [Sign up with passkeys](#sign-up-with-passkeys)
+- [Passwordless Login](#passwordless-login)
+- [Passwordless OTP on database connections](#passwordless-otp-on-database-connections)
 - [Retrieve user information](#retrieve-user-information)
 - [Renew credentials](#renew-credentials)
 - [API client errors](#api-client-errors)
@@ -1250,6 +1252,84 @@ final credentials = await auth0.api.loginWithSmsCode(
 
 > [!NOTE]
 > Sending additional parameters is supported only on iOS at the moment.
+
+### Passwordless OTP on database connections
+
+> This feature is mobile/macOS only. It requires **Auth0.Android** 3.20.0+ / **Auth0.swift** 2.23.0+ (already pinned by `auth0_flutter`) and the **Passwordless OTP** grant enabled for your Auth0 application.
+
+Unlike [Passwordless Login](#passwordless-login) — which targets dedicated `email`/`sms` connections — this flow authenticates against a standard Auth0 **database connection** configured with `email_otp`/`phone_otp`. It is a challenge/response flow exposed through the dedicated `auth0.passwordless` client:
+
+1. Request a challenge for an email or phone identifier. Auth0 delivers a one-time code and returns an opaque `PasswordlessChallenge`.
+2. Exchange the challenge's `authSession` and the user-entered code for a set of `Credentials`.
+
+> [!NOTE]
+> The challenge always succeeds for a valid request, whether or not the user exists (user-enumeration prevention). A new user is only signed up when you pass `allowSignup: true`. Treat `authSession` as opaque — do not parse, log, or persist it beyond the in-flight flow.
+
+#### 1. Request a challenge
+
+```dart
+final challenge = await auth0.passwordless.challengeWithEmail(
+    email: 'jane.smith@example.com', connection: 'my-database-connection');
+```
+
+<details>
+<summary>Using a phone number</summary>
+
+```dart
+final challenge = await auth0.passwordless.challengeWithPhoneNumber(
+    phoneNumber: '+15551234567',
+    connection: 'my-database-connection',
+    deliveryMethod: DeliveryMethod.text); // DeliveryMethod.text | DeliveryMethod.voice
+```
+
+</details>
+
+<details>
+<summary>Allowing signup</summary>
+
+```dart
+final challenge = await auth0.passwordless.challengeWithEmail(
+    email: 'jane.smith@example.com',
+    connection: 'my-database-connection',
+    allowSignup: true);
+```
+
+</details>
+
+#### 2. Exchange the code for tokens
+
+To complete authentication, send back the code the user received along with the `authSession` from the challenge.
+
+```dart
+final credentials = await auth0.passwordless.loginWithOtp(
+    authSession: challenge.authSession, otp: '123456');
+
+// Store the credentials afterward
+final didStore =
+    await auth0.credentialsManager.storeCredentials(credentials);
+```
+
+<details>
+<summary>Add an audience and scopes</summary>
+
+```dart
+final credentials = await auth0.passwordless.loginWithOtp(
+    authSession: challenge.authSession,
+    otp: '123456',
+    audience: 'YOUR_AUTH0_API_IDENTIFIER',
+    scopes: {'openid', 'profile', 'email', 'offline_access'});
+```
+
+</details>
+
+> [!NOTE]
+> If the user has MFA configured, `loginWithOtp` fails with an [`ApiException`](#api-client-errors) whose `isMultifactorRequired` is `true`. Continue the flow using the existing MFA APIs (`auth0.api.multifactorChallenge` / `auth0.api.loginWithOtp`).
+
+To receive DPoP-bound tokens from the token exchange when DPoP is enabled for your client, construct your `Auth0` instance with `useDPoP: true`:
+
+```dart
+final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID', useDPoP: true);
+```
 
 ### Retrieve user information
 
