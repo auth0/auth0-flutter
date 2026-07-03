@@ -1,1 +1,1 @@
-../../../../darwin/Classes/MyAccountAPI/MyAccountEnrollPasskeyChallengeMethodHandler.swift
+../../../darwin/Classes/MyAccountAPI/MyAccountEnrollPasskeyChallengeMethodHandler.swift

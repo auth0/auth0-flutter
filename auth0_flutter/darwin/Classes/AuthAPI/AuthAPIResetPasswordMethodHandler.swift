@@ -1,1 +1,1 @@
-../../../../auth0_flutter/Sources/auth0_flutter/AuthAPI/AuthAPIResetPasswordMethodHandler.swift
+../../auth0_flutter/Sources/auth0_flutter/AuthAPI/AuthAPIResetPasswordMethodHandler.swift

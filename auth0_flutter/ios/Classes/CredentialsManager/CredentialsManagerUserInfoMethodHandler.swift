@@ -1,1 +1,1 @@
-../../../../darwin/Classes/CredentialsManager/CredentialsManagerUserInfoMethodHandler.swift
+../../../darwin/Classes/CredentialsManager/CredentialsManagerUserInfoMethodHandler.swift

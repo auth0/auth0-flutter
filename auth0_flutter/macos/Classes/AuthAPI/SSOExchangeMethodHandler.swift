@@ -1,1 +1,1 @@
-../../../../darwin/Classes/AuthAPI/SSOExchangeMethodHandler.swift
+../../../darwin/Classes/AuthAPI/SSOExchangeMethodHandler.swift

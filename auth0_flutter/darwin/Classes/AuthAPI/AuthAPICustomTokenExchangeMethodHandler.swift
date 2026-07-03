@@ -1,1 +1,1 @@
-../../../../auth0_flutter/Sources/auth0_flutter/AuthAPI/AuthAPICustomTokenExchangeMethodHandler.swift
+../../auth0_flutter/Sources/auth0_flutter/AuthAPI/AuthAPICustomTokenExchangeMethodHandler.swift

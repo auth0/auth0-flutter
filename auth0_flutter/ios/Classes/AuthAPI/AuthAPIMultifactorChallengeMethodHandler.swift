@@ -1,1 +1,1 @@
-../../../../darwin/Classes/AuthAPI/AuthAPIMultifactorChallengeMethodHandler.swift
+../../../darwin/Classes/AuthAPI/AuthAPIMultifactorChallengeMethodHandler.swift

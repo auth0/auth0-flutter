@@ -1,1 +1,1 @@
-../../../../darwin/Classes/AuthAPI/AuthAPIResetPasswordMethodHandler.swift
+../../../darwin/Classes/AuthAPI/AuthAPIResetPasswordMethodHandler.swift

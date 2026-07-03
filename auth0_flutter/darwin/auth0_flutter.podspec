@@ -11,8 +11,7 @@ Pod::Spec.new do |s|
   s.license      = { :file => '../LICENSE' }
   s.author       = { 'Auth0' => 'support@auth0.com' }
   s.source       = { :path => '.' }
-  s.source_files = 'auth0_flutter/Sources/auth0_flutter/**/*.{h,m,swift}'
-  s.public_header_files = 'auth0_flutter/Sources/auth0_flutter/include/**/*.h'
+  s.source_files = 'auth0_flutter/Sources/auth0_flutter/**/*.swift'
 
   s.ios.deployment_target = '14.0'
   s.ios.dependency 'Flutter'
@@ -20,7 +19,7 @@ Pod::Spec.new do |s|
   s.osx.deployment_target = '11.0'
   s.osx.dependency 'FlutterMacOS'
 
-  s.dependency 'Auth0', '2.23.0'
+  s.dependency 'Auth0', '~> 2.21'
   s.dependency 'JWTDecode', '3.3.0'
   s.dependency 'SimpleKeychain', '1.3.0'
 

@@ -1,1 +1,1 @@
-../../../auth0_flutter/Sources/auth0_flutter/MethodHandler.swift
+../auth0_flutter/Sources/auth0_flutter/MethodHandler.swift

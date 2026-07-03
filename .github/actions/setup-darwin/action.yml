@@ -68,7 +68,7 @@ runs:
       shell: bash
 
     - name: Fix iOS minimum deployment target for SPM
-      if: inputs.platform == 'iOS'
+      if: steps.lowercase-platform.outputs.platform == 'ios'
       run: |
         PACKAGE_FILE="auth0_flutter/example/ios/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Package.swift"
         if [ ! -f "$PACKAGE_FILE" ]; then
@@ -79,7 +79,7 @@ runs:
       shell: bash
 
     - name: Fix macOS minimum deployment target for SPM
-      if: inputs.platform == 'macOS'
+      if: steps.lowercase-platform.outputs.platform == 'macos'
       run: |
         PACKAGE_FILE="auth0_flutter/example/macos/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Package.swift"
         if [ ! -f "$PACKAGE_FILE" ]; then

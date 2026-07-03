@@ -1,1 +1,1 @@
-../../../../darwin/Classes/WebAuth/WebAuthHandler.swift
+../../../darwin/Classes/WebAuth/WebAuthHandler.swift

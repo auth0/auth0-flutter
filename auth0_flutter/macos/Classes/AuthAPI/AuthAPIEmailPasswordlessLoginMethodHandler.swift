@@ -1,1 +1,1 @@
-../../../../darwin/Classes/AuthAPI/AuthAPIEmailPasswordlessLoginMethodHandler.swift
+../../../darwin/Classes/AuthAPI/AuthAPIEmailPasswordlessLoginMethodHandler.swift

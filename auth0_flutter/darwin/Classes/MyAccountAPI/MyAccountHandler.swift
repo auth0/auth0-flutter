@@ -1,1 +1,1 @@
-../../../../auth0_flutter/Sources/auth0_flutter/MyAccountAPI/MyAccountHandler.swift
+../../auth0_flutter/Sources/auth0_flutter/MyAccountAPI/MyAccountHandler.swift

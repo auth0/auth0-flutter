@@ -155,7 +155,7 @@ jobs:
             - name: Convert xcresult to Cobertura coverage
               working-directory: auth0_flutter/example/ios
               run: |
-                brew install a7ex/homebrew-formulae/xcresultparser
+                brew install a7ex/homebrew-formulae/xcresultparser@2.0.1
                 xcresultparser --output-format cobertura unit-tests.xcresult > coverage.xml
               shell: bash
 

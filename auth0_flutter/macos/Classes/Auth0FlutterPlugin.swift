@@ -1,1 +1,1 @@
-../../../darwin/Classes/Auth0FlutterPlugin.swift
+../../darwin/Classes/Auth0FlutterPlugin.swift

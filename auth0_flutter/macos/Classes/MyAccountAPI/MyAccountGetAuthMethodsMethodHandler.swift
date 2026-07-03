@@ -1,1 +1,1 @@
-../../../../darwin/Classes/MyAccountAPI/MyAccountGetAuthMethodsMethodHandler.swift
+../../../darwin/Classes/MyAccountAPI/MyAccountGetAuthMethodsMethodHandler.swift

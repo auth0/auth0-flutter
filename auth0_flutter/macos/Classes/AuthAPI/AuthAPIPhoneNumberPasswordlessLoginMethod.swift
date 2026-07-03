@@ -1,1 +1,1 @@
-../../../../darwin/Classes/AuthAPI/AuthAPIPhoneNumberPasswordlessLoginMethod.swift
+../../../darwin/Classes/AuthAPI/AuthAPIPhoneNumberPasswordlessLoginMethod.swift

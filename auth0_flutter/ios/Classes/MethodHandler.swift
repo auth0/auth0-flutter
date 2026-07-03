@@ -1,1 +1,1 @@
-../../../darwin/Classes/MethodHandler.swift
+../../darwin/Classes/MethodHandler.swift

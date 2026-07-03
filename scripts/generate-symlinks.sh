@@ -46,9 +46,10 @@ for file in "${files[@]}"; do
     darwin_link_dir=$(dirname "$darwin_link")
     mkdir -p "$darwin_link_dir"
 
-    # Depth of the symlink inside darwin/Classes (e.g. AuthAPI/X.swift -> depth 2)
-    link_depth=$(echo "$darwin_link" | awk -F '/' '{print NF-1}')
-    # We need to go up (link_depth) levels then down into auth0_flutter/Sources/auth0_flutter/
+    # Depth of rel's subdirectories (e.g. AuthAPI/X.swift -> 1), plus 1 to
+    # step out of darwin/Classes/ itself and into darwin/.
+    rel_depth=$(echo "$rel" | awk -F '/' '{print NF-1}')
+    link_depth=$((rel_depth + 1))
     up=$(printf '../%.0s' $(seq 1 "$link_depth"))
     ln -sf "${up}auth0_flutter/Sources/auth0_flutter/$rel" "$darwin_link"
 done
@@ -65,16 +66,31 @@ for platform in ios macos; do
         platform_link_dir=$(dirname "$platform_link")
         mkdir -p "$platform_link_dir"
 
-        # Symlink ios/Classes/<rel> -> ../../../darwin/Classes/<rel>
-        # Depth of the link inside ios/Classes/
-        link_depth=$(echo "$platform_link" | awk -F '/' '{print NF-1}')
+        # Depth of rel's subdirectories, plus 1 to step out of
+        # <platform>/Classes/ itself and into <platform>/.
+        rel_depth=$(echo "$rel" | awk -F '/' '{print NF-1}')
+        link_depth=$((rel_depth + 1))
         up=$(printf '../%.0s' $(seq 1 "$link_depth"))
-        ln -sf "${up}darwin/Classes/$rel" "$platform_link"
+        ln -sf "${up}../darwin/Classes/$rel" "$platform_link"
     done
 
     git add "$base_dir/$platform"
 done
 
 git add "$darwin_classes_dir"
+
+# Verify every symlink we just created actually resolves.
+dangling=0
+while IFS= read -r link; do
+    if [ ! -e "$link" ]; then
+        echo "::error::Dangling symlink: $link -> $(readlink "$link")"
+        dangling=1
+    fi
+done < <(find "$darwin_classes_dir" "$base_dir/ios/Classes" "$base_dir/macos/Classes" -type l)
+
+if [ "$dangling" -ne 0 ]; then
+    echo "One or more symlinks are dangling. See errors above."
+    exit 1
+fi
 
 echo "Symlinks regenerated successfully."

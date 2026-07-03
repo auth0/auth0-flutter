@@ -1,1 +1,1 @@
-../../../../auth0_flutter/Sources/auth0_flutter/MyAccountAPI/MyAccountUpdateAuthMethodMethodHandler.swift
+../../auth0_flutter/Sources/auth0_flutter/MyAccountAPI/MyAccountUpdateAuthMethodMethodHandler.swift
