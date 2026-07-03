@@ -121,8 +121,9 @@ class Passwordless {
   /// using the existing MFA APIs (`auth0.api.multifactorChallenge` /
   /// `auth0.api.loginWithOtp`).
   ///
-  /// * [scopes] defaults to the native SDK default when left empty. `openid` is
-  /// always requested regardless of this setting.
+  /// * [scopes] the scopes to request. When left empty, the native SDK's
+  /// default scope is applied. When you provide scopes, include `openid` if you
+  /// need an ID token to be issued.
   /// * [audience] relates to the API Identifier you want to reference in your
   /// access tokens.
   ///

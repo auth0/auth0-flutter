@@ -1018,7 +1018,7 @@ final credentials = await auth0Web.credentials();
 - [Passwordless OTP on database connections](#passwordless-otp-on-database-connections)
 - [Retrieve user information](#retrieve-user-information)
 - [Renew credentials](#renew-credentials)
-- [API client errors](#api-client-errors)
+- [Errors](#errors-2)
 
 The Authentication API exposes the AuthN/AuthZ functionality of Auth0, as well as the supported identity protocols like OpenID Connect, OAuth 2.0, and SAML.
 We recommend using [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login), but if you prefer to build your own UI you can use our API endpoints to do so. However, some Auth flows (grant types) are disabled by default so you must enable them on the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/), as explained in [Update Grant Types](https://auth0.com/docs/get-started/applications/update-grant-types).
@@ -1255,6 +1255,9 @@ final credentials = await auth0.api.loginWithSmsCode(
 
 ### Passwordless OTP on database connections
 
+> [!IMPORTANT]
+> This feature is currently in **Early Access (EA)**. The API may change in a future release, and it must be enabled for your tenant. Contact Auth0 support to request access.
+
 > This feature is mobile/macOS only. It requires **Auth0.Android** 3.20.0+ / **Auth0.swift** 2.23.0+ (already pinned by `auth0_flutter`) and the **Passwordless OTP** grant enabled for your Auth0 application.
 
 Unlike [Passwordless Login](#passwordless-login) — which targets dedicated `email`/`sms` connections — this flow authenticates against a standard Auth0 **database connection** configured with `email_otp`/`phone_otp`. It is a challenge/response flow exposed through the dedicated `auth0.passwordless` client:
@@ -1323,7 +1326,7 @@ final credentials = await auth0.passwordless.loginWithOtp(
 </details>
 
 > [!NOTE]
-> If the user has MFA configured, `loginWithOtp` fails with an [`ApiException`](#api-client-errors) whose `isMultifactorRequired` is `true`. Continue the flow using the existing MFA APIs (`auth0.api.multifactorChallenge` / `auth0.api.loginWithOtp`).
+> If the user has MFA configured, `loginWithOtp` fails with an [`ApiException`](#errors-2) whose `isMultifactorRequired` is `true`. Continue the flow using the existing MFA APIs (`auth0.api.multifactorChallenge` / `auth0.api.loginWithOtp`).
 
 To receive DPoP-bound tokens from the token exchange when DPoP is enabled for your client, construct your `Auth0` instance with `useDPoP: true`:
 

@@ -35,20 +35,20 @@ struct AuthAPIPasswordlessLoginWithOtpMethodHandler: MethodHandler {
         let audience = arguments[Argument.audience] as? String
         let scopes = arguments[Argument.scopes] as? [String] ?? []
 
-        // When no scopes are provided, fall back to the default scope rather
-        // than sending an empty string.
-        let scope = scopes.isEmpty ? "openid profile email" : scopes.asSpaceSeparatedString
+        // When no scopes are provided, let the native SDK apply its own default
+        // scope (matching the Android handler) rather than hardcoding one here.
+        let request = scopes.isEmpty
+            ? client.login(otp: otp, challenge: challenge, audience: audience)
+            : client.login(otp: otp,
+                           challenge: challenge,
+                           audience: audience,
+                           scope: scopes.asSpaceSeparatedString)
 
-        client
-            .login(otp: otp,
-                   challenge: challenge,
-                   audience: audience,
-                   scope: scope)
-            .start {
-                switch $0 {
-                case let .success(credentials): callback(result(from: credentials))
-                case let .failure(error): callback(FlutterError(from: error))
-                }
+        request.start {
+            switch $0 {
+            case let .success(credentials): callback(result(from: credentials))
+            case let .failure(error): callback(FlutterError(from: error))
             }
+        }
     }
 }

@@ -25,8 +25,10 @@ class PasswordlessChallengeWithPhoneNumberApiRequestHandler : ApiRequestHandler 
         val args = request.data
         assertHasProperties(listOf("phoneNumber", "connection"), args)
 
-        val phoneNumber = args["phoneNumber"] as String
-        val connection = args["connection"] as String
+        val phoneNumber = args["phoneNumber"] as? String
+            ?: return result.error("INVALID_ARGUMENT", "'phoneNumber' must be a String.", null)
+        val connection = args["connection"] as? String
+            ?: return result.error("INVALID_ARGUMENT", "'connection' must be a String.", null)
         val allowSignup = args["allowSignup"] as? Boolean ?: false
         val deliveryMethod =
             if (args["deliveryMethod"] == "voice") DeliveryMethod.VOICE

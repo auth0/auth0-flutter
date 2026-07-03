@@ -23,8 +23,10 @@ class PasswordlessChallengeWithEmailApiRequestHandler : ApiRequestHandler {
         val args = request.data
         assertHasProperties(listOf("email", "connection"), args)
 
-        val email = args["email"] as String
-        val connection = args["connection"] as String
+        val email = args["email"] as? String
+            ?: return result.error("INVALID_ARGUMENT", "'email' must be a String.", null)
+        val connection = args["connection"] as? String
+            ?: return result.error("INVALID_ARGUMENT", "'connection' must be a String.", null)
         val allowSignup = args["allowSignup"] as? Boolean ?: false
 
         api.passwordlessClient()

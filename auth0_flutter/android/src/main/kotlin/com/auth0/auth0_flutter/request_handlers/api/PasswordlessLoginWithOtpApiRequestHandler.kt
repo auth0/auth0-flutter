@@ -24,8 +24,10 @@ class PasswordlessLoginWithOtpApiRequestHandler : ApiRequestHandler {
         val args = request.data
         assertHasProperties(listOf("authSession", "otp"), args)
 
-        val authSession = args["authSession"] as String
-        val otp = args["otp"] as String
+        val authSession = args["authSession"] as? String
+            ?: return result.error("INVALID_ARGUMENT", "'authSession' must be a String.", null)
+        val otp = args["otp"] as? String
+            ?: return result.error("INVALID_ARGUMENT", "'otp' must be a String.", null)
 
         val loginBuilder = api.passwordlessClient()
             .loginWithOTP(PasswordlessChallenge(authSession), otp)

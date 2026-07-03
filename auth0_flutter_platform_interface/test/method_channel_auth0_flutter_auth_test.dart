@@ -1695,6 +1695,23 @@ void main() {
       expect(verificationResult.arguments['allowSignup'], true);
     });
 
+    test('defaults allowSignup to false', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.passwordlessChallengeResult);
+
+      await MethodChannelAuth0FlutterAuth().passwordlessChallengeWithEmail(
+        ApiRequest<AuthPasswordlessChallengeEmailOptions>(
+            account: const Account('test-domain', 'test-clientId'),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasswordlessChallengeEmailOptions(
+                email: 'test@example.com', connection: 'test-connection')),
+      );
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['allowSignup'], false);
+    });
+
     test('correctly returns the challenge from the Method Channel', () async {
       when(mocked.methodCallHandler(any)).thenAnswer(
           (final _) async => MethodCallHandler.passwordlessChallengeResult);
@@ -1863,6 +1880,25 @@ void main() {
       expect(verificationResult.arguments['otp'], '123456');
       expect(verificationResult.arguments['scopes'], ['a', 'b']);
       expect(verificationResult.arguments['audience'], 'test-audience');
+    });
+
+    test('defaults scopes to empty and omits audience when not provided',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      await MethodChannelAuth0FlutterAuth().passwordlessLoginWithOtp(
+        ApiRequest<AuthPasswordlessLoginWithOtpOptions>(
+            account: const Account('test-domain', 'test-clientId'),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasswordlessLoginWithOtpOptions(
+                authSession: 'test-auth-session', otp: '123456')),
+      );
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['scopes'], isEmpty);
+      expect(verificationResult.arguments['audience'], isNull);
     });
 
     test('correctly returns credentials from the Method Channel', () async {
