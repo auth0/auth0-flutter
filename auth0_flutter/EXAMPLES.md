@@ -1256,7 +1256,7 @@ final credentials = await auth0.api.loginWithSmsCode(
 ### Passwordless OTP on database connections
 
 > [!IMPORTANT]
-> This feature is currently in **Early Access (EA)**. The API may change in a future release, and it must be enabled for your tenant. Contact Auth0 support to request access.
+> Passwordless Login for database connections is currently in Early Access. Please reach out to Auth0 support to get it enabled for your tenant.
 
 > This feature is mobile/macOS only. It requires **Auth0.Android** 3.20.0+ / **Auth0.swift** 2.23.0+ (already pinned by `auth0_flutter`) and the **Passwordless OTP** grant enabled for your Auth0 application.
 
