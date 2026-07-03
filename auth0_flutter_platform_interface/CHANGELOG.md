@@ -1,5 +1,15 @@
 # Change Log
 
+## [afpi-v2.4.0](https://github.com/auth0/auth0-flutter/tree/afpi-v2.4.0) (2026-07-03)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.3.0...afpi-v2.4.0)
+
+**Added**
+- feat: add passwordless OTP on database connections [\#886](https://github.com/auth0/auth0-flutter/pull/886) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- docs: fix README drift — broken DPoP link, stale What's New banner, stale migration notice [\#878](https://github.com/auth0/auth0-flutter/pull/878) ([sanchitmehtagit](https://github.com/sanchitmehtagit))
+- chore: CI simulator bump and project housekeeping [\#866](https://github.com/auth0/auth0-flutter/pull/866) ([frederikprijck](https://github.com/frederikprijck))
+- chore(example): bump Android Gradle plugin and Kotlin toolchain [\#865](https://github.com/auth0/auth0-flutter/pull/865) ([frederikprijck](https://github.com/frederikprijck))
+- feat: Add Multi-Resource Refresh Token (MRRT) support for Flutter Web [\#864](https://github.com/auth0/auth0-flutter/pull/864) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
 ## [afpi-v2.3.0](https://github.com/auth0/auth0-flutter/tree/afpi-v2.3.0) (2026-06-15)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.2.0...afpi-v2.3.0)
 
