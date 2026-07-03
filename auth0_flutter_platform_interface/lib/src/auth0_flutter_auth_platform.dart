@@ -9,7 +9,10 @@ import 'auth/auth_multifactor_challenge_options.dart';
 import 'auth/auth_passkey_exchange_options.dart';
 import 'auth/auth_passkey_login_challenge_options.dart';
 import 'auth/auth_passkey_signup_challenge_options.dart';
+import 'auth/auth_passwordless_challenge_email_options.dart';
+import 'auth/auth_passwordless_challenge_phone_options.dart';
 import 'auth/auth_passwordless_login_options.dart';
+import 'auth/auth_passwordless_login_with_otp_options.dart';
 import 'auth/auth_renew_access_token_options.dart';
 import 'auth/auth_reset_password_options.dart';
 import 'auth/auth_signup_options.dart';
@@ -17,6 +20,7 @@ import 'auth/auth_sso_exchange_options.dart';
 import 'auth/auth_user_info_options.dart';
 import 'auth/challenge.dart';
 import 'auth/passkey_challenge.dart';
+import 'auth/passwordless_challenge.dart';
 import 'credentials.dart';
 import 'database_user.dart';
 import 'method_channel_auth0_flutter_auth.dart';
@@ -114,5 +118,23 @@ abstract class Auth0FlutterAuthPlatform extends PlatformInterface {
       final ApiRequest<AuthPasskeyExchangeOptions> request) {
     throw UnimplementedError(
         'passkeyCredentialExchange() has not been implemented');
+  }
+
+  Future<PasswordlessChallenge> passwordlessChallengeWithEmail(
+      final ApiRequest<AuthPasswordlessChallengeEmailOptions> request) {
+    throw UnimplementedError(
+        'passwordlessChallengeWithEmail() has not been implemented');
+  }
+
+  Future<PasswordlessChallenge> passwordlessChallengeWithPhoneNumber(
+      final ApiRequest<AuthPasswordlessChallengePhoneOptions> request) {
+    throw UnimplementedError(
+        'passwordlessChallengeWithPhoneNumber() has not been implemented');
+  }
+
+  Future<Credentials> passwordlessLoginWithOtp(
+      final ApiRequest<AuthPasswordlessLoginWithOtpOptions> request) {
+    throw UnimplementedError(
+        'passwordlessLoginWithOtp() has not been implemented');
   }
 }

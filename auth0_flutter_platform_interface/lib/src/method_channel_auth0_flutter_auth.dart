@@ -9,7 +9,10 @@ import 'auth/auth_multifactor_challenge_options.dart';
 import 'auth/auth_passkey_exchange_options.dart';
 import 'auth/auth_passkey_login_challenge_options.dart';
 import 'auth/auth_passkey_signup_challenge_options.dart';
+import 'auth/auth_passwordless_challenge_email_options.dart';
+import 'auth/auth_passwordless_challenge_phone_options.dart';
 import 'auth/auth_passwordless_login_options.dart';
+import 'auth/auth_passwordless_login_with_otp_options.dart';
 import 'auth/auth_renew_access_token_options.dart';
 import 'auth/auth_reset_password_options.dart';
 import 'auth/auth_signup_options.dart';
@@ -17,6 +20,7 @@ import 'auth/auth_sso_exchange_options.dart';
 import 'auth/auth_user_info_options.dart';
 import 'auth/challenge.dart';
 import 'auth/passkey_challenge.dart';
+import 'auth/passwordless_challenge.dart';
 import 'auth0_flutter_auth_platform.dart';
 import 'credentials.dart';
 import 'database_user.dart';
@@ -47,6 +51,12 @@ const String authPasskeyLoginChallengeMethod = 'auth#passkeyLoginChallenge';
 const String authPasskeySignupChallengeMethod = 'auth#passkeySignupChallenge';
 const String authPasskeyCredentialExchangeMethod =
     'auth#passkeyCredentialExchange';
+const String authPasswordlessChallengeWithEmailMethod =
+    'auth#passwordlessChallengeWithEmail';
+const String authPasswordlessChallengeWithPhoneNumberMethod =
+    'auth#passwordlessChallengeWithPhoneNumber';
+const String authPasswordlessLoginWithOtpMethod =
+    'auth#passwordlessLoginWithOtp';
 
 class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
   @override
@@ -187,6 +197,31 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
       final ApiRequest<AuthPasskeyExchangeOptions> request) async {
     final Map<String, dynamic> result = await invokeRequest(
         method: authPasskeyCredentialExchangeMethod, request: request);
+    return Credentials.fromMap(result);
+  }
+
+  @override
+  Future<PasswordlessChallenge> passwordlessChallengeWithEmail(
+      final ApiRequest<AuthPasswordlessChallengeEmailOptions> request) async {
+    final Map<String, dynamic> result = await invokeRequest(
+        method: authPasswordlessChallengeWithEmailMethod, request: request);
+    return PasswordlessChallenge.fromMap(result);
+  }
+
+  @override
+  Future<PasswordlessChallenge> passwordlessChallengeWithPhoneNumber(
+      final ApiRequest<AuthPasswordlessChallengePhoneOptions> request) async {
+    final Map<String, dynamic> result = await invokeRequest(
+        method: authPasswordlessChallengeWithPhoneNumberMethod,
+        request: request);
+    return PasswordlessChallenge.fromMap(result);
+  }
+
+  @override
+  Future<Credentials> passwordlessLoginWithOtp(
+      final ApiRequest<AuthPasswordlessLoginWithOtpOptions> request) async {
+    final Map<String, dynamic> result = await invokeRequest(
+        method: authPasswordlessLoginWithOtpMethod, request: request);
     return Credentials.fromMap(result);
   }
 
