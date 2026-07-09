@@ -320,6 +320,19 @@ class Auth0Web {
   ///   token exchange with a specific organization context. The organization ID
   ///   will be present in the access token payload.
   ///
+  /// * [actorToken] - Optional token representing the acting party in a
+  ///   delegation or impersonation flow (for example, an AI agent acting on
+  ///   behalf of a user). When provided, [actorTokenType] must also be
+  ///   provided.
+  ///
+  /// * [actorTokenType] - Optional URI identifying the type of the [actorToken]
+  ///   (for example, `urn:ietf:params:oauth:token-type:id_token`). When
+  ///   provided, [actorToken] must also be provided.
+  ///
+  ///   When an actor token is provided, Auth0 does not issue a refresh token
+  ///   regardless of the requested scopes, and the resulting ID token may
+  ///   contain an `act` claim.
+  ///
   /// **Returns** a [Credentials] object containing:
   /// * `accessToken` - The new Auth0 access token
   /// * `idToken` - The Auth0 ID token with user information
@@ -366,16 +379,26 @@ class Auth0Web {
     final String? audience,
     final Set<String>? scopes,
     final String? organizationId,
-  }) =>
-      Auth0FlutterWebPlatform.instance.customTokenExchange(
-        ExchangeTokenOptions(
-          subjectToken: subjectToken,
-          subjectTokenType: subjectTokenType,
-          audience: audience,
-          scopes: scopes,
-          organizationId: organizationId,
-        ),
-      );
+    final String? actorToken,
+    final String? actorTokenType,
+  }) {
+    if ((actorToken == null) != (actorTokenType == null)) {
+      throw ArgumentError(
+          'actorToken and actorTokenType must be provided together.');
+    }
+
+    return Auth0FlutterWebPlatform.instance.customTokenExchange(
+      ExchangeTokenOptions(
+        subjectToken: subjectToken,
+        subjectTokenType: subjectTokenType,
+        audience: audience,
+        scopes: scopes,
+        organizationId: organizationId,
+        actorToken: actorToken,
+        actorTokenType: actorTokenType,
+      ),
+    );
+  }
 
   /// Retrieves a set of [ApiCredentials] scoped to a specific API ([audience])
   /// by reusing the stored refresh token via Multi-Resource Refresh Tokens

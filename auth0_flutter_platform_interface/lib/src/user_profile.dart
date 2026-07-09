@@ -1,3 +1,5 @@
+import 'user_actor.dart';
+
 /// A collection of properties that represents the authenticated user, extracted
 ///  from ID token claims.
 class UserProfile {
@@ -102,6 +104,14 @@ class UserProfile {
   /// Any custom claims
   final Map<String, dynamic>? customClaims;
 
+  /// The actor (`act`) claim from the ID token, representing the acting party
+  /// in a Custom Token Exchange delegation or impersonation flow (for example,
+  /// an AI agent acting on behalf of a user).
+  ///
+  /// Only present when the token was issued via Custom Token Exchange with an
+  /// actor token.
+  final UserActor? actor;
+
   const UserProfile({
     required this.sub,
     this.name,
@@ -124,6 +134,7 @@ class UserProfile {
     this.address,
     this.updatedAt,
     this.customClaims,
+    this.actor,
   });
 
   factory UserProfile.fromMap(final Map<String, dynamic> result) => UserProfile(
@@ -162,6 +173,9 @@ class UserProfile {
             ? Map<String, dynamic>.from(
                 result['custom_claims'] as Map<dynamic, dynamic>)
             : null,
+        actor: result['act'] is Map
+            ? UserActor.fromMap(result['act'] as Map<dynamic, dynamic>)
+            : null,
       );
 
   Map<String, dynamic> toMap() => {
@@ -186,5 +200,6 @@ class UserProfile {
         'address': address,
         'updated_at': updatedAt?.toUtc().toIso8601String(),
         'custom_claims': customClaims,
+        'act': actor?.toMap(),
       };
 }

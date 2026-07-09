@@ -12,12 +12,19 @@
 /// * [scopes] - Set of OAuth scopes to request (optional)
 /// * [organizationId] - organization ID or name of the organization to
 ///   authenticate with (optional)
+/// * [actorToken] - The token representing the acting party in a delegation or
+///   impersonation flow (optional). When provided, [actorTokenType] must also
+///   be provided.
+/// * [actorTokenType] - A URI identifying the type of the [actorToken]
+///   (optional). When provided, [actorToken] must also be provided.
 class ExchangeTokenOptions {
   final String subjectToken;
   final String subjectTokenType;
   final String? audience;
   final Set<String>? scopes;
   final String? organizationId;
+  final String? actorToken;
+  final String? actorTokenType;
 
   ExchangeTokenOptions({
     required this.subjectToken,
@@ -25,5 +32,7 @@ class ExchangeTokenOptions {
     this.audience,
     this.scopes,
     this.organizationId,
+    this.actorToken,
+    this.actorTokenType,
   });
 }

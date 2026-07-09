@@ -42,6 +42,7 @@
   - [Retrieve user information](#retrieve-user-information)
   - [Renew credentials](#renew-credentials)
   - [Custom Token Exchange](#custom-token-exchange)
+    - [Delegation and impersonation (actor token)](#delegation-and-impersonation-actor-token)
   - [Errors](#errors-2)
 - [🌐📱 Organizations](#-organizations)
   - [Log in to an organization](#log-in-to-an-organization)
@@ -1412,6 +1413,52 @@ final credentials = await auth0Web.customTokenExchange(
 </details>
 
 > 💡 For more information, see the [Custom Token Exchange documentation](https://auth0.com/docs/authenticate/custom-token-exchange) and [RFC 8693](https://tools.ietf.org/html/rfc8693).
+
+#### Delegation and impersonation (actor token)
+
+For delegation or impersonation scenarios, where one principal acts on behalf of another (for example, an AI agent acting on behalf of a user), provide `actorToken` and `actorTokenType`. Both must be provided together — supplying only one throws an `ArgumentError`.
+
+When present, the resulting ID token may contain an `act` claim (set server-side via an Auth0 Action using `api.authentication.setActor()`), exposed on the returned credentials' user profile via `.actor`.
+
+> **Note:** When an actor token is provided, Auth0 does **not** issue a refresh token regardless of whether `offline_access` is in the requested scopes, so `credentials.refreshToken` will be `null` in this flow.
+
+<details>
+  <summary>Mobile (Android/iOS)</summary>
+
+```dart
+final credentials = await auth0.api.customTokenExchange(
+  subjectToken: 'external-idp-token',
+  subjectTokenType: 'urn:acme:legacy-token',
+  actorToken: 'actor-id-token',
+  actorTokenType: 'urn:ietf:params:oauth:token-type:id_token',
+);
+
+final actor = credentials.user.actor;
+if (actor != null) {
+  print('Acting party: ${actor.sub}');
+  print('Actor claims: ${actor.extraClaims}');
+  // Nested delegation chain, if present:
+  print('Original actor: ${actor.actor?.sub}');
+}
+```
+
+</details>
+
+<details>
+  <summary>Web</summary>
+
+```dart
+final credentials = await auth0Web.customTokenExchange(
+  subjectToken: 'external-idp-token',
+  subjectTokenType: 'urn:acme:legacy-token',
+  actorToken: 'actor-id-token',
+  actorTokenType: 'urn:ietf:params:oauth:token-type:id_token',
+);
+
+final actor = credentials.user.actor;
+```
+
+</details>
 
 ### Errors
 

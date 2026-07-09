@@ -376,6 +376,65 @@ void main() {
     });
   });
 
+  group('customTokenExchange', () {
+    test('passes actor token and type through to the platform', () async {
+      when(mockedPlatform.customTokenExchange(any))
+          .thenAnswer((final _) async => TestPlatform.loginResult);
+
+      await Auth0('test-domain', 'test-clientId').api.customTokenExchange(
+            subjectToken: 'subject-token',
+            subjectTokenType: 'urn:acme:legacy-token',
+            actorToken: 'actor-token',
+            actorTokenType: 'urn:ietf:params:oauth:token-type:id_token',
+          );
+
+      final verificationResult =
+          verify(mockedPlatform.customTokenExchange(captureAny))
+              .captured
+              .single as ApiRequest<AuthCustomTokenExchangeOptions>;
+      expect(verificationResult.options.actorToken, 'actor-token');
+      expect(verificationResult.options.actorTokenType,
+          'urn:ietf:params:oauth:token-type:id_token');
+    });
+
+    test('leaves actor token null when omitted', () async {
+      when(mockedPlatform.customTokenExchange(any))
+          .thenAnswer((final _) async => TestPlatform.loginResult);
+
+      await Auth0('test-domain', 'test-clientId').api.customTokenExchange(
+            subjectToken: 'subject-token',
+            subjectTokenType: 'urn:acme:legacy-token',
+          );
+
+      final verificationResult =
+          verify(mockedPlatform.customTokenExchange(captureAny))
+              .captured
+              .single as ApiRequest<AuthCustomTokenExchangeOptions>;
+      expect(verificationResult.options.actorToken, isNull);
+      expect(verificationResult.options.actorTokenType, isNull);
+    });
+
+    test('throws when only actorToken is provided', () async {
+      expect(
+          () => Auth0('test-domain', 'test-clientId').api.customTokenExchange(
+                subjectToken: 'subject-token',
+                subjectTokenType: 'urn:acme:legacy-token',
+                actorToken: 'actor-token',
+              ),
+          throwsArgumentError);
+    });
+
+    test('throws when only actorTokenType is provided', () async {
+      expect(
+          () => Auth0('test-domain', 'test-clientId').api.customTokenExchange(
+                subjectToken: 'subject-token',
+                subjectTokenType: 'urn:acme:legacy-token',
+                actorTokenType: 'urn:ietf:params:oauth:token-type:id_token',
+              ),
+          throwsArgumentError);
+    });
+  });
+
   group('userInfo', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.userInfo(any))

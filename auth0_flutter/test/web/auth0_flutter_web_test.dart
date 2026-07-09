@@ -502,6 +502,44 @@ void main() {
       expect(options.organization, 'org_abc123');
     });
 
+    test('customTokenExchange passes actor token and type when provided',
+        () async {
+      when(mockClientProxy.exchangeToken(argThat(anything)))
+          .thenAnswer((final _) => Future.value(webCredentials));
+
+      await auth0.customTokenExchange(
+          subjectToken: 'external-token-456',
+          subjectTokenType: 'urn:example:custom-token',
+          actorToken: 'actor-token-789',
+          actorTokenType: 'urn:ietf:params:oauth:token-type:id_token');
+
+      final options =
+          verify(mockClientProxy.exchangeToken(captureAny)).captured.first;
+      expect(options.actor_token, 'actor-token-789');
+      expect(options.actor_token_type,
+          'urn:ietf:params:oauth:token-type:id_token');
+    });
+
+    test('customTokenExchange throws when only actorToken is provided',
+        () async {
+      expect(
+          () => auth0.customTokenExchange(
+              subjectToken: 'token',
+              subjectTokenType: 'urn:example:token',
+              actorToken: 'actor-token-789'),
+          throwsArgumentError);
+    });
+
+    test('customTokenExchange throws when only actorTokenType is provided',
+        () async {
+      expect(
+          () => auth0.customTokenExchange(
+              subjectToken: 'token',
+              subjectTokenType: 'urn:example:token',
+              actorTokenType: 'urn:ietf:params:oauth:token-type:id_token'),
+          throwsArgumentError);
+    });
+
     test('customTokenExchange handles empty scopes correctly', () async {
       when(mockClientProxy.exchangeToken(any))
           .thenAnswer((final _) => Future.value(webCredentials));

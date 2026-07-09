@@ -2,6 +2,7 @@ package com.auth0.auth0_flutter.request_handlers.api
 
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
+import com.auth0.android.authentication.request.ActorToken
 import com.auth0.android.callback.Callback
 import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
@@ -25,10 +26,19 @@ class CustomTokenExchangeApiRequestHandler : ApiRequestHandler {
 
         val organization = if (args["organization"] is String) args["organization"] as String else null
 
+        val actorTokenValue = args["actorToken"] as? String
+        val actorTokenType = args["actorTokenType"] as? String
+        val actorToken = if (actorTokenValue != null && actorTokenType != null) {
+            ActorToken(actorTokenValue, actorTokenType)
+        } else {
+            null
+        }
+
         val builder = api.customTokenExchange(
             args["subjectTokenType"] as String,
             args["subjectToken"] as String,
-            organization
+            organization,
+            actorToken
         ).apply {
             val scopes = (args["scopes"] ?: arrayListOf<String>()) as ArrayList<*>
             if (scopes.isNotEmpty()) {

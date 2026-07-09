@@ -195,6 +195,8 @@ extension type ExchangeTokenOptions._(JSObject _) implements JSObject {
   external String? get audience;
   external String? get scope;
   external String? get organization;
+  external String? get actor_token;
+  external String? get actor_token_type;
 
   external factory ExchangeTokenOptions({
     required final String subject_token,
@@ -202,6 +204,8 @@ extension type ExchangeTokenOptions._(JSObject _) implements JSObject {
     final String? audience,
     final String? scope,
     final String? organization,
+    final String? actor_token,
+    final String? actor_token_type,
   });
 }
 
