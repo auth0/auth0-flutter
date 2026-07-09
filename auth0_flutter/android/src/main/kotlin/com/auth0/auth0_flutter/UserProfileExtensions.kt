@@ -35,6 +35,7 @@ fun UserProfile.toMap(): Map<String, Any?> {
         "address" to this.address,
         "updated_at" to this.updatedAt,
         "custom_claims" to this.customClaims,
+        "act" to this.actor?.toMap(),
     )
 }
 
