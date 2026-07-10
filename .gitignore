@@ -8,3 +8,7 @@ coverage/
 appium-test/node_modules/*
 
 .idea/*
+
+# Swift Package Manager
+.build/
+.swiftpm/

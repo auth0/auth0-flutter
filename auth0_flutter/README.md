@@ -40,6 +40,8 @@ Add auth0_flutter into your project:
 flutter pub add auth0_flutter
 ```
 
+> 💡 **iOS/macOS dependency management:** auth0_flutter supports both [Swift Package Manager](https://docs.flutter.dev/packages-and-plugins/swift-package-manager) and CocoaPods. If you have Swift Package Manager enabled in Flutter (`flutter config --enable-swift-package-manager`), the plugin and its native dependencies are resolved via SPM automatically. Otherwise, CocoaPods is used as a fallback — no extra setup is required either way.
+
 ### Configure Auth0
 
 #### 📱 Mobile/macOS
