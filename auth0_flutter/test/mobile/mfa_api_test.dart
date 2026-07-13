@@ -62,14 +62,14 @@ void main() {
       when(mockedPlatform.getAuthenticators(any))
           .thenAnswer((final _) async => [TestPlatform.authenticator]);
 
-      final result = await mfa().getAuthenticators(factorsAllowed: ['oob']);
+      final result = await mfa().getAuthenticators(factorsAllowed: ['phone']);
 
       final captured = verify(mockedPlatform.getAuthenticators(captureAny))
           .captured
           .single as ApiRequest<MfaGetAuthenticatorsOptions>;
       expect(captured.account.domain, 'test-domain');
       expect(captured.options.mfaToken, 'mfa-token');
-      expect(captured.options.factorsAllowed, ['oob']);
+      expect(captured.options.factorsAllowed, ['phone']);
       expect(result.single.id, 'sms|dev_1');
     });
   });

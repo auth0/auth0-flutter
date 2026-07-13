@@ -23,10 +23,11 @@ class MfaGetAuthenticatorsMethodHandlerTests: XCTestCase {
 
     func testPassesMfaTokenAndFactorsToSDK() {
         let expectation = self.expectation(description: "Args passed to SDK")
-        sut.handle(with: ["mfaToken": "mfa-token", "factorsAllowed": ["otp", "oob"]]) { _ in
+
+        sut.handle(with: ["mfaToken": "mfa-token", "factorsAllowed": ["totp", "phone"]]) { _ in
             XCTAssertTrue(self.spy.calledGetAuthenticators)
             XCTAssertEqual(self.spy.getAuthenticatorsMfaTokenArg, "mfa-token")
-            XCTAssertEqual(self.spy.getAuthenticatorsFactorsArg, ["otp", "oob"])
+            XCTAssertEqual(self.spy.getAuthenticatorsFactorsArg, ["totp", "phone"])
             expectation.fulfill()
         }
         wait(for: [expectation])

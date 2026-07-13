@@ -28,7 +28,7 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 ///     final mfa = auth0.mfa(mfaToken: e.mfaToken!);
 ///
 ///     final authenticators =
-///         await mfa.getAuthenticators(factorsAllowed: ['otp', 'oob']);
+///         await mfa.getAuthenticators(factorsAllowed: ['totp', 'phone']);
 ///     final challenge = await mfa.challenge(
 ///       authenticatorId: authenticators.first.id,
 ///     );
@@ -47,16 +47,21 @@ class MfaApi {
 
   /// Lists the authenticators that can be used with the current `mfa_token`.
   ///
-  /// [factorsAllowed] is the list of factor types to return (e.g.
-  /// `['otp', 'oob']`) and must contain at least one factor type — the
-  /// underlying native SDKs reject an empty list with an `invalid_request`
-  /// error.
+  /// [factorsAllowed] is the list of factor types to return and must contain at
+  /// least one factor type — the underlying native SDKs reject an empty list
+  /// with an `invalid_request` error.
+  ///
+  /// Values are matched exactly against each authenticator's `type` field, so
+  /// pass the resolved factor types — e.g. `'totp'`, `'phone'`, `'email'`,
+  /// `'recovery-code'` (the same values exposed as `MfaFactor.type` on
+  /// [ApiException.mfaRequirements]) — rather than the higher-level
+  /// `'otp'`/`'oob'` categories.
   ///
   /// ## Usage example
   ///
   /// ```dart
   /// final authenticators =
-  ///     await mfa.getAuthenticators(factorsAllowed: ['otp', 'oob']);
+  ///     await mfa.getAuthenticators(factorsAllowed: ['totp', 'phone']);
   /// ```
   Future<List<MfaAuthenticator>> getAuthenticators(
           {required final List<String> factorsAllowed}) =>

@@ -1726,11 +1726,14 @@ try {
 If the user already has authenticators enrolled, list them and trigger a challenge on the one they choose. For out-of-band factors (SMS, Voice, Email, Push) the challenge delivers the code and returns an `oobCode`; for TOTP you verify the code directly without challenging.
 
 ```dart
-// Mobile: `factorsAllowed` is required and must list at least one factor type
-// (e.g. ['otp', 'oob']) — the native SDKs reject an empty list with
-// `invalid_request`.
-final authenticators =
-    await mfa.getAuthenticators(factorsAllowed: ['otp', 'oob']);
+// Mobile: `factorsAllowed` is required and must list at least one factor type.
+// Values are matched exactly against each authenticator's `type` field, so pass
+// resolved types — e.g. 'totp', 'phone', 'email', 'recovery-code' (the same
+// values exposed as `MfaFactor.type` on `mfaRequirements`) — not the
+// higher-level 'otp'/'oob' categories. The native SDKs reject an empty list
+// with `invalid_request`.
+final authenticators = await mfa
+    .getAuthenticators(factorsAllowed: ['totp', 'phone', 'email']);
 
 // Web: `getAuthenticators()` takes no `factorsAllowed` argument — filtering is
 // applied server-side from the mfa_token's requirements.

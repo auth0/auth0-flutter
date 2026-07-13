@@ -23,9 +23,10 @@ class GetAuthenticatorsRequestHandlerTest {
         val mockAccount = mock<Auth0>()
         val mockClient = mock<MfaApiClient>()
         val mockRequest = mock<Request<List<Authenticator>, MfaListAuthenticatorsException>>()
+
         val options = hashMapOf<String, Any>(
             "mfaToken" to "mfa-token",
-            "factorsAllowed" to listOf("oob")
+            "factorsAllowed" to listOf("phone")
         )
         val request = MethodCallRequest(account = mockAccount, options)
 
@@ -33,7 +34,7 @@ class GetAuthenticatorsRequestHandlerTest {
 
         handler.handle(mockClient, request, mockResult)
 
-        verify(mockClient).getAuthenticators(eq(listOf("oob")))
+        verify(mockClient).getAuthenticators(eq(listOf("phone")))
     }
 
     @Test

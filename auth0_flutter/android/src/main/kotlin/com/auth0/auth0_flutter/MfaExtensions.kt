@@ -32,8 +32,9 @@ fun EnrollmentChallenge.toMfaEnrollmentMap(): Map<String, Any?> = buildMap {
     when (val challenge = this@toMfaEnrollmentMap) {
         is TotpEnrollmentChallenge -> {
             put("authenticator_type", "otp")
-            put("totp_secret", challenge.manualInputCode)
+            put("totp_secret", challenge.secret ?: challenge.manualInputCode)
             put("barcode_uri", challenge.barcodeUri)
+            put("recovery_codes", challenge.recoveryCodes)
         }
         is OobEnrollmentChallenge -> {
             put("authenticator_type", "oob")

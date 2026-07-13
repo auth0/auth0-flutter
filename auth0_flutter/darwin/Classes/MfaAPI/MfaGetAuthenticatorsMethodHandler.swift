@@ -17,7 +17,8 @@ struct MfaGetAuthenticatorsMethodHandler: MethodHandler {
         let factorsAllowed = arguments["factorsAllowed"] as? [String] ?? []
 
         client
-            .getAuthenticators(mfaToken: mfaToken, factorsAllowed: factorsAllowed)
+            .getAuthenticators(mfaToken: mfaToken,
+                               factorsAllowed: factorsAllowed)
             .start {
                 switch $0 {
                 case let .success(authenticators):

@@ -6,9 +6,10 @@ class MfaGetAuthenticatorsOptions implements RequestOptions {
   /// The `mfa_token` obtained from a `mfa_required` authentication error.
   final String mfaToken;
 
-  /// The allow-list of factor types to return (e.g. `['otp', 'oob']`). Must
-  /// contain at least one factor type; the native SDKs reject an empty list
-  /// with an `invalid_request` error.
+  /// The allow-list of factor types to return, matched exactly against each
+  /// authenticator's `type` field (e.g. `['totp', 'phone', 'email',
+  /// 'recovery-code']`). Must contain at least one factor type; the native
+  /// SDKs reject an empty list with an `invalid_request` error.
   final List<String> factorsAllowed;
 
   MfaGetAuthenticatorsOptions({
