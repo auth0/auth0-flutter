@@ -69,6 +69,10 @@ class MethodCallHandler {
     },
   };
 
+  static const Map<dynamic, dynamic> passwordlessChallengeResult = {
+    'authSession': 'test-auth-session',
+  };
+
   static const Map<dynamic, dynamic> passkeySignupChallengeResult = {
     'authSession': 'test-auth-session',
     'authParamsPublicKey': {
@@ -1646,6 +1650,286 @@ void main() {
               account: const Account('test-domain', 'test-clientId'),
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
               options: AuthPasskeySignupChallengeOptions()));
+
+      await expectLater(actual, throwsA(isA<ApiException>()));
+    });
+  });
+
+  group('passwordlessChallengeWithEmail', () {
+    test('calls the correct MethodChannel method', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.passwordlessChallengeResult);
+
+      await MethodChannelAuth0FlutterAuth().passwordlessChallengeWithEmail(
+        ApiRequest<AuthPasswordlessChallengeEmailOptions>(
+            account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasswordlessChallengeEmailOptions(
+                email: 'test@example.com', connection: 'test-connection')),
+      );
+
+      expect(
+          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          'auth#passwordlessChallengeWithEmail');
+    });
+
+    test('correctly maps all properties', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.passwordlessChallengeResult);
+
+      await MethodChannelAuth0FlutterAuth().passwordlessChallengeWithEmail(
+        ApiRequest<AuthPasswordlessChallengeEmailOptions>(
+            account: const Account('test-domain', 'test-clientId'),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasswordlessChallengeEmailOptions(
+                email: 'test@example.com',
+                connection: 'test-connection',
+                allowSignup: true)),
+      );
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['_account']['domain'], 'test-domain');
+      expect(verificationResult.arguments['email'], 'test@example.com');
+      expect(verificationResult.arguments['connection'], 'test-connection');
+      expect(verificationResult.arguments['allowSignup'], true);
+    });
+
+    test('defaults allowSignup to false', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.passwordlessChallengeResult);
+
+      await MethodChannelAuth0FlutterAuth().passwordlessChallengeWithEmail(
+        ApiRequest<AuthPasswordlessChallengeEmailOptions>(
+            account: const Account('test-domain', 'test-clientId'),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasswordlessChallengeEmailOptions(
+                email: 'test@example.com', connection: 'test-connection')),
+      );
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['allowSignup'], false);
+    });
+
+    test('correctly returns the challenge from the Method Channel', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.passwordlessChallengeResult);
+
+      final result =
+          await MethodChannelAuth0FlutterAuth().passwordlessChallengeWithEmail(
+        ApiRequest<AuthPasswordlessChallengeEmailOptions>(
+            account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasswordlessChallengeEmailOptions(
+                email: 'test@example.com', connection: 'test-connection')),
+      );
+
+      expect(result.authSession, 'test-auth-session');
+    });
+
+    test('throws an ApiException when the method channel throws', () async {
+      when(mocked.methodCallHandler(any))
+          .thenThrow(PlatformException(code: '123'));
+
+      Future<PasswordlessChallenge> actual() =>
+          MethodChannelAuth0FlutterAuth().passwordlessChallengeWithEmail(
+              ApiRequest<AuthPasswordlessChallengeEmailOptions>(
+                  account: const Account('test-domain', 'test-clientId'),
+                  userAgent:
+                      UserAgent(name: 'test-name', version: 'test-version'),
+                  options: AuthPasswordlessChallengeEmailOptions(
+                      email: 'test@example.com',
+                      connection: 'test-connection')));
+
+      await expectLater(actual, throwsA(isA<ApiException>()));
+    });
+  });
+
+  group('passwordlessChallengeWithPhoneNumber', () {
+    test('calls the correct MethodChannel method', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.passwordlessChallengeResult);
+
+      await MethodChannelAuth0FlutterAuth().passwordlessChallengeWithPhoneNumber(
+        ApiRequest<AuthPasswordlessChallengePhoneOptions>(
+            account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasswordlessChallengePhoneOptions(
+                phoneNumber: '+15551234567', connection: 'test-connection')),
+      );
+
+      expect(
+          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          'auth#passwordlessChallengeWithPhoneNumber');
+    });
+
+    test('correctly maps all properties', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.passwordlessChallengeResult);
+
+      await MethodChannelAuth0FlutterAuth().passwordlessChallengeWithPhoneNumber(
+        ApiRequest<AuthPasswordlessChallengePhoneOptions>(
+            account: const Account('test-domain', 'test-clientId'),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasswordlessChallengePhoneOptions(
+                phoneNumber: '+15551234567',
+                connection: 'test-connection',
+                deliveryMethod: DeliveryMethod.voice,
+                allowSignup: true)),
+      );
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['_account']['domain'], 'test-domain');
+      expect(verificationResult.arguments['phoneNumber'], '+15551234567');
+      expect(verificationResult.arguments['connection'], 'test-connection');
+      expect(verificationResult.arguments['deliveryMethod'], 'voice');
+      expect(verificationResult.arguments['allowSignup'], true);
+    });
+
+    test('defaults deliveryMethod to text', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.passwordlessChallengeResult);
+
+      await MethodChannelAuth0FlutterAuth().passwordlessChallengeWithPhoneNumber(
+        ApiRequest<AuthPasswordlessChallengePhoneOptions>(
+            account: const Account('test-domain', 'test-clientId'),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasswordlessChallengePhoneOptions(
+                phoneNumber: '+15551234567', connection: 'test-connection')),
+      );
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['deliveryMethod'], 'text');
+      expect(verificationResult.arguments['allowSignup'], false);
+    });
+
+    test('correctly returns the challenge from the Method Channel', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.passwordlessChallengeResult);
+
+      final result = await MethodChannelAuth0FlutterAuth()
+          .passwordlessChallengeWithPhoneNumber(
+        ApiRequest<AuthPasswordlessChallengePhoneOptions>(
+            account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasswordlessChallengePhoneOptions(
+                phoneNumber: '+15551234567', connection: 'test-connection')),
+      );
+
+      expect(result.authSession, 'test-auth-session');
+    });
+
+    test('throws an ApiException when the method channel throws', () async {
+      when(mocked.methodCallHandler(any))
+          .thenThrow(PlatformException(code: '123'));
+
+      Future<PasswordlessChallenge> actual() =>
+          MethodChannelAuth0FlutterAuth().passwordlessChallengeWithPhoneNumber(
+              ApiRequest<AuthPasswordlessChallengePhoneOptions>(
+                  account: const Account('test-domain', 'test-clientId'),
+                  userAgent:
+                      UserAgent(name: 'test-name', version: 'test-version'),
+                  options: AuthPasswordlessChallengePhoneOptions(
+                      phoneNumber: '+15551234567',
+                      connection: 'test-connection')));
+
+      await expectLater(actual, throwsA(isA<ApiException>()));
+    });
+  });
+
+  group('passwordlessLoginWithOtp', () {
+    test('calls the correct MethodChannel method', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      await MethodChannelAuth0FlutterAuth().passwordlessLoginWithOtp(
+        ApiRequest<AuthPasswordlessLoginWithOtpOptions>(
+            account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasswordlessLoginWithOtpOptions(
+                authSession: 'test-auth-session', otp: '123456')),
+      );
+
+      expect(
+          verify(mocked.methodCallHandler(captureAny)).captured.single.method,
+          'auth#passwordlessLoginWithOtp');
+    });
+
+    test('correctly maps all properties', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      await MethodChannelAuth0FlutterAuth().passwordlessLoginWithOtp(
+        ApiRequest<AuthPasswordlessLoginWithOtpOptions>(
+            account: const Account('test-domain', 'test-clientId'),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasswordlessLoginWithOtpOptions(
+                authSession: 'test-auth-session',
+                otp: '123456',
+                scopes: {'a', 'b'},
+                audience: 'test-audience')),
+      );
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['_account']['domain'], 'test-domain');
+      expect(verificationResult.arguments['authSession'], 'test-auth-session');
+      expect(verificationResult.arguments['otp'], '123456');
+      expect(verificationResult.arguments['scopes'], ['a', 'b']);
+      expect(verificationResult.arguments['audience'], 'test-audience');
+    });
+
+    test('defaults scopes to empty and omits audience when not provided',
+        () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      await MethodChannelAuth0FlutterAuth().passwordlessLoginWithOtp(
+        ApiRequest<AuthPasswordlessLoginWithOtpOptions>(
+            account: const Account('test-domain', 'test-clientId'),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasswordlessLoginWithOtpOptions(
+                authSession: 'test-auth-session', otp: '123456')),
+      );
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['scopes'], isEmpty);
+      expect(verificationResult.arguments['audience'], isNull);
+    });
+
+    test('correctly returns credentials from the Method Channel', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      final result = await MethodChannelAuth0FlutterAuth()
+          .passwordlessLoginWithOtp(
+        ApiRequest<AuthPasswordlessLoginWithOtpOptions>(
+            account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasswordlessLoginWithOtpOptions(
+                authSession: 'test-auth-session', otp: '123456')),
+      );
+
+      expect(result.accessToken, 'accessToken');
+      expect(result.refreshToken, 'refreshToken');
+    });
+
+    test('throws an ApiException when the method channel throws', () async {
+      when(mocked.methodCallHandler(any))
+          .thenThrow(PlatformException(code: '123'));
+
+      Future<Credentials> actual() =>
+          MethodChannelAuth0FlutterAuth().passwordlessLoginWithOtp(
+              ApiRequest<AuthPasswordlessLoginWithOtpOptions>(
+                  account: const Account('test-domain', 'test-clientId'),
+                  userAgent:
+                      UserAgent(name: 'test-name', version: 'test-version'),
+                  options: AuthPasswordlessLoginWithOtpOptions(
+                      authSession: 'test-auth-session', otp: '123456')));
 
       await expectLater(actual, throwsA(isA<ApiException>()));
     });

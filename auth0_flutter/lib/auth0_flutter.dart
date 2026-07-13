@@ -5,6 +5,7 @@ import 'src/mobile/authentication_api.dart';
 import 'src/mobile/credentials_manager.dart';
 import 'src/mobile/mfa_api.dart';
 import 'src/mobile/my_account_api.dart';
+import 'src/mobile/passwordless_api.dart';
 import 'src/mobile/web_authentication.dart';
 import 'src/version.dart';
 
@@ -42,13 +43,16 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         UserProfile,
         WebAuthenticationException,
         PasskeyEnrollmentChallenge,
-        MyAccountPasskeyAuthenticationMethod;
+        MyAccountPasskeyAuthenticationMethod,
+        PasswordlessChallenge,
+        DeliveryMethod;
 
 export 'src/desktop/windows_web_authentication.dart';
 export 'src/mobile/authentication_api.dart';
 export 'src/mobile/credentials_manager.dart';
 export 'src/mobile/mfa_api.dart';
 export 'src/mobile/my_account_api.dart';
+export 'src/mobile/passwordless_api.dart';
 export 'src/mobile/web_authentication.dart';
 
 /// Primary interface for interacting with Auth0 using web authentication,
@@ -58,6 +62,8 @@ class Auth0 {
 
   final UserAgent _userAgent =
       UserAgent(name: 'auth0-flutter', version: version);
+
+  final bool _useDPoP;
 
   late final CredentialsManager _credentialsManager;
 
@@ -83,7 +89,8 @@ class Auth0 {
       final CredentialsManager? credentialsManager,
       final CredentialsManagerConfiguration? credentialsManagerConfiguration,
       final bool useDPoP = false})
-      : _account = Account(domain, clientId) {
+      : _account = Account(domain, clientId),
+        _useDPoP = useDPoP {
     _credentialsManager = credentialsManager ??
         DefaultCredentialsManager(_account, _userAgent,
             localAuthentication: localAuthentication,
@@ -108,6 +115,34 @@ class Auth0 {
   /// final accessToken = result.accessToken;
   /// ```
   AuthenticationApi get api => AuthenticationApi(_account, _userAgent);
+
+  /// An instance of [Passwordless], the interface for the embedded
+  /// **Passwordless OTP on database connections** flow.
+  ///
+  /// This is distinct from the passwordless methods on [api], which target
+  /// dedicated `email`/`sms` strategy connections. Use this against a standard
+  /// database connection configured with `email_otp`/`phone_otp`.
+  ///
+  /// Set `useDPoP` to `true` on the [Auth0] constructor to obtain DPoP-bound
+  /// tokens from the OTP token exchange, when DPoP is enabled for the client.
+  ///
+  /// Usage example:
+  ///
+  /// ```dart
+  /// final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
+  ///
+  /// final challenge = await auth0.passwordless.challengeWithEmail(
+  ///   email: 'user@example.com',
+  ///   connection: 'my-db-connection',
+  /// );
+  ///
+  /// final credentials = await auth0.passwordless.loginWithOtp(
+  ///   authSession: challenge.authSession,
+  ///   otp: '123456',
+  /// );
+  /// ```
+  Passwordless get passwordless =>
+      Passwordless(_account, _userAgent, useDPoP: _useDPoP);
 
   /// Creates an instance of [WebAuthentication], the primary interface for interacting with the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login).
   ///

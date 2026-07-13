@@ -64,29 +64,6 @@
 
 ## 📱 Web Authentication
 
-  - [Log out](#log-out)
-  - [Sign up](#sign-up)
-  - [Adding an audience](#adding-an-audience)
-  - [Adding scopes](#adding-scopes)
-  - [Adding custom parameters](#adding-custom-parameters)
-  - [ID token validation](#id-token-validation)
-  - [Using `SFSafariViewController` (iOS only)](#using-sfsafariviewcontroller-ios-only)
-    - [1. Configure a custom URL scheme](#1-configure-a-custom-url-scheme)
-    - [2. Capture the callback URL](#2-capture-the-callback-url)
-  - [Using Partial Custom Tabs (Android only)](#using-partial-custom-tabs-android-only)
-  - [Errors](#errors)
-  - [Android: Custom schemes](#android-custom-schemes)
-- [🪟 Windows Web Authentication](#-windows-web-authentication)
-  - [Prerequisites](#prerequisites)
-    - [1. Install vcpkg and native dependencies](#1-install-vcpkg-and-native-dependencies)
-    - [2. Configure your app's CMakeLists.txt](#2-configure-your-apps-cmakeliststxt)
-    - [3. Register the custom URL scheme (protocol handler)](#3-register-the-custom-url-scheme-protocol-handler)
-    - [4. Update the runner (main.cpp)](#4-update-the-runner-maincpp)
-  - [Login](#login)
-  - [Logout](#logout)
-
----
-
 ### Log out
 
 Logging the user out involves clearing the Universal Login session cookie and then deleting the user's credentials from your app.
@@ -773,7 +750,7 @@ if (userProfile != null) {
 
 ### Custom implementations
 
-flutter_auth0 exposes a built-in, default Credentials Manager implementation through the `credentialsManager` property. You can pass your own implementation to the `Auth0` constructor. If you're using Web Auth, this implementation will be used to store the user's credentials after login and delete them after logout.
+auth0_flutter exposes a built-in, default Credentials Manager implementation through the `credentialsManager` property. You can pass your own implementation to the `Auth0` constructor. If you're using Web Auth, this implementation will be used to store the user's credentials after login and delete them after logout.
 
 ```dart
 final customCredentialsManager = CustomCredentialsManager();
@@ -1043,9 +1020,11 @@ final credentials = await auth0Web.credentials();
 - [Sign up with database connection](#sign-up-with-database-connection)
 - [Log in with passkeys](#log-in-with-passkeys)
 - [Sign up with passkeys](#sign-up-with-passkeys)
+- [Passwordless Login](#passwordless-login)
+- [Passwordless OTP on database connections](#passwordless-otp-on-database-connections)
 - [Retrieve user information](#retrieve-user-information)
 - [Renew credentials](#renew-credentials)
-- [API client errors](#api-client-errors)
+- [Errors](#errors-2)
 
 The Authentication API exposes the AuthN/AuthZ functionality of Auth0, as well as the supported identity protocols like OpenID Connect, OAuth 2.0, and SAML.
 We recommend using [Universal Login](https://auth0.com/docs/authenticate/login/auth0-universal-login), but if you prefer to build your own UI you can use our API endpoints to do so. However, some Auth flows (grant types) are disabled by default so you must enable them on the settings page of your [Auth0 application](https://manage.auth0.com/#/applications/), as explained in [Update Grant Types](https://auth0.com/docs/get-started/applications/update-grant-types).
@@ -1280,6 +1259,87 @@ final credentials = await auth0.api.loginWithSmsCode(
 > [!NOTE]
 > Sending additional parameters is supported only on iOS at the moment.
 
+### Passwordless OTP on database connections
+
+> [!IMPORTANT]
+> Passwordless Login for database connections is currently in Early Access. Please reach out to Auth0 support to get it enabled for your tenant.
+
+> This feature is mobile/macOS only. It requires **Auth0.Android** 3.20.0+ / **Auth0.swift** 2.23.0+ (already pinned by `auth0_flutter`) and the **Passwordless OTP** grant enabled for your Auth0 application.
+
+Unlike [Passwordless Login](#passwordless-login) — which targets dedicated `email`/`sms` connections — this flow authenticates against a standard Auth0 **database connection** configured with `email_otp`/`phone_otp`. It is a challenge/response flow exposed through the dedicated `auth0.passwordless` client:
+
+1. Request a challenge for an email or phone identifier. Auth0 delivers a one-time code and returns an opaque `PasswordlessChallenge`.
+2. Exchange the challenge's `authSession` and the user-entered code for a set of `Credentials`.
+
+> [!NOTE]
+> The challenge always succeeds for a valid request, whether or not the user exists (user-enumeration prevention). A new user is only signed up when you pass `allowSignup: true`. Treat `authSession` as opaque — do not parse, log, or persist it beyond the in-flight flow.
+
+#### 1. Request a challenge
+
+```dart
+final challenge = await auth0.passwordless.challengeWithEmail(
+    email: 'jane.smith@example.com', connection: 'my-database-connection');
+```
+
+<details>
+<summary>Using a phone number</summary>
+
+```dart
+final challenge = await auth0.passwordless.challengeWithPhoneNumber(
+    phoneNumber: '+15551234567',
+    connection: 'my-database-connection',
+    deliveryMethod: DeliveryMethod.text); // DeliveryMethod.text | DeliveryMethod.voice
+```
+
+</details>
+
+<details>
+<summary>Allowing signup</summary>
+
+```dart
+final challenge = await auth0.passwordless.challengeWithEmail(
+    email: 'jane.smith@example.com',
+    connection: 'my-database-connection',
+    allowSignup: true);
+```
+
+</details>
+
+#### 2. Exchange the code for tokens
+
+To complete authentication, send back the code the user received along with the `authSession` from the challenge.
+
+```dart
+final credentials = await auth0.passwordless.loginWithOtp(
+    authSession: challenge.authSession, otp: '123456');
+
+// Store the credentials afterward
+final didStore =
+    await auth0.credentialsManager.storeCredentials(credentials);
+```
+
+<details>
+<summary>Add an audience and scopes</summary>
+
+```dart
+final credentials = await auth0.passwordless.loginWithOtp(
+    authSession: challenge.authSession,
+    otp: '123456',
+    audience: 'YOUR_AUTH0_API_IDENTIFIER',
+    scopes: {'openid', 'profile', 'email', 'offline_access'});
+```
+
+</details>
+
+> [!NOTE]
+> If the user has MFA configured, `loginWithOtp` fails with an [`ApiException`](#errors-2) whose `isMultifactorRequired` is `true`. Continue the flow using the existing MFA APIs (`auth0.api.multifactorChallenge` / `auth0.api.loginWithOtp`).
+
+To receive DPoP-bound tokens from the token exchange when DPoP is enabled for your client, construct your `Auth0` instance with `useDPoP: true`:
+
+```dart
+final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID', useDPoP: true);
+```
+
 ### Retrieve user information
 
 Fetch the latest user information from the `/userinfo` endpoint.
@@ -1478,7 +1538,7 @@ try {
 
 The My Account API lets authenticated users manage their own multi-factor authentication (MFA) methods — enrolling, confirming, listing, updating, and deleting factors such as phone, email, TOTP, push notifications, and recovery codes. It is available on **mobile (Android/iOS) only**.
 
-> 💡 The My Account API must be enabled for your tenant. If it is not yet available on your account, reach out to Auth0 support to get it enabled.
+> 💡 The My Account API requires [Multi-Resource Refresh Tokens (MRRT)](https://auth0.com/docs/secure/tokens/refresh-tokens/multi-resource-refresh-token) to be enabled for your tenant. Contact Auth0 support if MRRT is not yet available on your account.
 
 ### Obtaining an access token for the My Account API
 
