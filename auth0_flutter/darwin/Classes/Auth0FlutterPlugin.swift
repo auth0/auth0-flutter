@@ -1,0 +1,1 @@
+../auth0_flutter/Sources/auth0_flutter/Auth0FlutterPlugin.swift
