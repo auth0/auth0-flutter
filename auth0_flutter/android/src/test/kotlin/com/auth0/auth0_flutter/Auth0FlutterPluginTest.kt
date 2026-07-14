@@ -39,8 +39,9 @@ class Auth0FlutterPluginTest {
             assertMethodcallHandler<CredentialsManagerMethodCallHandler>(2)
             assertMethodcallHandler<Auth0FlutterDPoPMethodCallHandler>(3)
             assertMethodcallHandler<Auth0FlutterMyAccountMethodCallHandler>(4)
+            assertMethodcallHandler<Auth0FlutterMfaMethodCallHandler>(5)
 
-            assert(constructed.size == 5)
+            assert(constructed.size == 6)
         }
     }
 
@@ -71,8 +72,9 @@ class Auth0FlutterPluginTest {
             assertMethodcallHandler(2)
             assertMethodcallHandler(3)
             assertMethodcallHandler(4)
+            assertMethodcallHandler(5)
 
-            assert(constructed.size == 5)
+            assert(constructed.size == 6)
         }
     }
 
@@ -110,7 +112,7 @@ class Auth0FlutterPluginTest {
             assert(getHandler<CredentialsManagerMethodCallHandler>(1).activity == mockActivity)
             assert(getHandler<CredentialsManagerMethodCallHandler>(1).context == mockContext)
 
-            assert(constructed.size == 5)
+            assert(constructed.size == 6)
         }
     }
 }

@@ -3,6 +3,7 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 import 'src/desktop/windows_web_authentication.dart';
 import 'src/mobile/authentication_api.dart';
 import 'src/mobile/credentials_manager.dart';
+import 'src/mobile/mfa_api.dart';
 import 'src/mobile/my_account_api.dart';
 import 'src/mobile/passwordless_api.dart';
 import 'src/mobile/web_authentication.dart';
@@ -22,6 +23,12 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         IdTokenValidationConfig,
         LocalAuthentication,
         LocalAuthenticationLevel,
+        MfaAuthenticator,
+        MfaChallenge,
+        MfaEnrollmentChallenge,
+        MfaException,
+        MfaFactor,
+        MfaRequirements,
         MyAccountException,
         PasswordlessType,
         PasskeyAuthenticatorResponse,
@@ -43,6 +50,7 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 export 'src/desktop/windows_web_authentication.dart';
 export 'src/mobile/authentication_api.dart';
 export 'src/mobile/credentials_manager.dart';
+export 'src/mobile/mfa_api.dart';
 export 'src/mobile/my_account_api.dart';
 export 'src/mobile/passwordless_api.dart';
 export 'src/mobile/web_authentication.dart';
@@ -203,6 +211,27 @@ class Auth0 {
     final bool useDPoP = false,
   }) =>
       MyAccountApi(_account, _userAgent, accessToken, useDPoP: useDPoP);
+
+  /// Creates an instance of [MfaApi] for completing a Multi-Factor
+  /// Authentication flow with the given [mfaToken].
+  ///
+  /// Obtain the [mfaToken] from an [ApiException] raised when a token request
+  /// fails with an `mfa_required` error (see [ApiException.mfaToken] and
+  /// [ApiException.mfaRequirements]). Use the returned [MfaApi] to list,
+  /// enroll, challenge and verify authenticators.
+  ///
+  /// **Note:** Only supported on mobile platforms (Android/iOS). Web and
+  /// Windows are not supported.
+  ///
+  /// Usage example:
+  ///
+  /// ```dart
+  /// final auth0 = Auth0('DOMAIN', 'CLIENT_ID');
+  /// final mfa = auth0.mfa(mfaToken: 'MFA_TOKEN');
+  /// final authenticators = await mfa.getAuthenticators();
+  /// ```
+  MfaApi mfa({required final String mfaToken}) =>
+      MfaApi(_account, _userAgent, mfaToken);
 
   /// Generates DPoP (Demonstrating Proof-of-Possession) headers for making
   /// authenticated API calls with DPoP-bound tokens.

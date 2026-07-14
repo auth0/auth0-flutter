@@ -585,6 +585,7 @@ void dispose() {
 - [Log in with passkeys](EXAMPLES.md#log-in-with-passkeys) - authenticate an existing user with a passkey using the platform authenticator (iOS/Android only).
 - [Sign up with passkeys](EXAMPLES.md#sign-up-with-passkeys) - register a new user with a passkey using the platform authenticator (iOS/Android only).
 - [Native to Web SSO](EXAMPLES.md#native-to-web-sso) - obtain a session transfer token to authenticate a WebView without re-prompting the user.
+- [Multi-Factor Authentication (MFA)](EXAMPLES.md#-multi-factor-authentication-mfa) - complete an MFA flow mid-login using an `mfa_token`: list, challenge, enroll, and verify factors.
 - [Handle Android process death](#android-handle-process-death-during-login) - recover credentials when the OS kills your app during login.
 
 ### 🪟 Windows
@@ -597,6 +598,7 @@ void dispose() {
 ### 🌐 Web
 
 - [Handling credentials on the web](EXAMPLES.md#handling-credentials-on-the-web) - how to check and retrieve credentials on the web platform.
+- [Multi-Factor Authentication (MFA)](EXAMPLES.md#-multi-factor-authentication-mfa) - complete an MFA flow mid-login using an `mfa_token`. Backed by [auth0-spa-js](https://github.com/auth0/auth0-spa-js) and requires auth0-spa-js v2.21.0+ loaded on your page.
 
 ## API reference
 
@@ -774,6 +776,7 @@ try {
 - [onLoad](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/onLoad.html)
 - [logout](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/logout.html)
 - [credentials](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/credentials.html)
+- [mfa](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/mfa.html) - drive a Multi-Factor Authentication flow with an `mfa_token`
 - [hasValidCredentials](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/hasValidCredentials.html)
 
 ## Feedback

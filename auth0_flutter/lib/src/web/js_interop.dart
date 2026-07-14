@@ -218,6 +218,104 @@ extension type PopupConfigOptions._(JSObject _) implements JSObject {
 }
 
 @JS()
+@anonymous
+extension type MfaAuthenticatorJS._(JSObject _) implements JSObject {
+  external String get id;
+  external String? get authenticatorType;
+  external String? get type;
+  external bool? get active;
+  external String? get oobChannel;
+  external String? get name;
+}
+
+@JS()
+@anonymous
+extension type MfaEnrollParams._(JSObject _) implements JSObject {
+  external String get mfaToken;
+  external String get factorType;
+  external String? get phoneNumber;
+  external String? get email;
+
+  external factory MfaEnrollParams({
+    required final String mfaToken,
+    required final String factorType,
+    final String? phoneNumber,
+    final String? email,
+  });
+}
+
+@JS()
+@anonymous
+extension type MfaEnrollmentResponse._(JSObject _) implements JSObject {
+  external String? get authenticatorType;
+  external String? get secret;
+  external String? get barcodeUri;
+  external String? get oobChannel;
+  external String? get oobCode;
+  external String? get bindingMethod;
+  external JSArray<JSString>? get recoveryCodes;
+  external String? get id;
+}
+
+@JS()
+@anonymous
+extension type MfaChallengeParams._(JSObject _) implements JSObject {
+  external String get mfaToken;
+  external String get challengeType;
+  external String? get authenticatorId;
+
+  external factory MfaChallengeParams({
+    required final String mfaToken,
+    required final String challengeType,
+    final String? authenticatorId,
+  });
+}
+
+@JS()
+@anonymous
+extension type MfaChallengeResponse._(JSObject _) implements JSObject {
+  external String get challengeType;
+  external String? get oobCode;
+  external String? get bindingMethod;
+}
+
+@JS()
+@anonymous
+extension type MfaVerifyParams._(JSObject _) implements JSObject {
+  external String get mfaToken;
+  external String? get otp;
+  external String? get oobCode;
+  external String? get bindingCode;
+  external String? get recoveryCode;
+  external String? get scope;
+  external String? get audience;
+
+  external factory MfaVerifyParams({
+    required final String mfaToken,
+    final String? otp,
+    final String? oobCode,
+    final String? bindingCode,
+    final String? recoveryCode,
+    final String? scope,
+    final String? audience,
+  });
+}
+
+@JS()
+extension type MfaApiClient._(JSObject _) implements JSObject {
+  external JSPromise<JSArray<MfaAuthenticatorJS>> getAuthenticators(
+    final String mfaToken,
+  );
+  external JSPromise<MfaEnrollmentResponse> enroll(
+    final MfaEnrollParams params,
+  );
+  external JSPromise<MfaChallengeResponse> challenge(
+    final MfaChallengeParams params,
+  );
+  external JSPromise<WebCredentials> verify(final MfaVerifyParams params);
+}
+
+@JS()
 extension type Auth0Client._(JSObject _) implements JSObject {
   external Auth0Client(final Auth0ClientOptions options);
   external JSPromise<JSAny?> loginWithRedirect([
@@ -239,6 +337,10 @@ extension type Auth0Client._(JSObject _) implements JSObject {
   );
   external JSPromise<JSBoolean> isAuthenticated();
   external JSPromise<JSAny?> logout([final LogoutOptions? logoutParams]);
+
+  /// The MFA API client exposed by auth0-spa-js (v2.21.0+) for driving
+  /// programmatic multi-factor authentication flows.
+  external MfaApiClient get mfa;
 }
 
 // TODO: remove this extension when updating to Dart 3.6.0

@@ -9,7 +9,8 @@ public class SwiftAuth0FlutterPlugin: NSObject, FlutterPlugin {
                                                  AuthAPIHandler.self,
                                                  DPoPHandler.self,
                                                  CredentialsManagerHandler.self,
-                                                 MyAccountHandler.self]
+                                                 MyAccountHandler.self,
+                                                 MfaHandler.self]
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         handlers.forEach { $0.register(with: registrar) }
