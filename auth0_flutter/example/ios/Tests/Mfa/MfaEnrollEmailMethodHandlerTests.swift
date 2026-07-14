@@ -3,6 +3,12 @@ import Auth0
 
 @testable import auth0_flutter
 
+#if os(iOS)
+import Flutter
+#else
+import FlutterMacOS
+#endif
+
 class MfaEnrollEmailMethodHandlerTests: XCTestCase {
     var spy: SpyMFAClient!
     var sut: MfaEnrollEmailMethodHandler!
