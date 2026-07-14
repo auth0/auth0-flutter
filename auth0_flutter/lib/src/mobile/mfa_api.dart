@@ -48,8 +48,7 @@ class MfaApi {
   /// Lists the authenticators that can be used with the current `mfa_token`.
   ///
   /// [factorsAllowed] is the list of factor types to return and must contain at
-  /// least one factor type — the underlying native SDKs reject an empty list
-  /// with an `invalid_request` error.
+  /// least one factor type; an empty list throws an [ArgumentError].
   ///
   /// Values are matched exactly against each authenticator's `type` field, so
   /// pass the resolved factor types — e.g. `'totp'`, `'phone'`, `'email'`,
@@ -64,10 +63,19 @@ class MfaApi {
   ///     await mfa.getAuthenticators(factorsAllowed: ['totp', 'phone']);
   /// ```
   Future<List<MfaAuthenticator>> getAuthenticators(
-          {required final List<String> factorsAllowed}) =>
-      Auth0FlutterMfaPlatform.instance.getAuthenticators(_createApiRequest(
-          MfaGetAuthenticatorsOptions(
-              mfaToken: _mfaToken, factorsAllowed: factorsAllowed)));
+      {required final List<String> factorsAllowed}) {
+    if (factorsAllowed.isEmpty) {
+      throw ArgumentError.value(
+        factorsAllowed,
+        'factorsAllowed',
+        'must contain at least one factor type',
+      );
+    }
+
+    return Auth0FlutterMfaPlatform.instance.getAuthenticators(_createApiRequest(
+        MfaGetAuthenticatorsOptions(
+            mfaToken: _mfaToken, factorsAllowed: factorsAllowed)));
+  }
 
   /// Enrolls a new TOTP (authenticator app) factor.
   ///

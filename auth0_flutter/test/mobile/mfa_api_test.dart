@@ -72,6 +72,14 @@ void main() {
       expect(captured.options.factorsAllowed, ['phone']);
       expect(result.single.id, 'sms|dev_1');
     });
+
+    test('throws ArgumentError when factorsAllowed is empty', () {
+      expect(
+        () => mfa().getAuthenticators(factorsAllowed: []),
+        throwsArgumentError,
+      );
+      verifyNever(mockedPlatform.getAuthenticators(any));
+    });
   });
 
   group('enroll', () {

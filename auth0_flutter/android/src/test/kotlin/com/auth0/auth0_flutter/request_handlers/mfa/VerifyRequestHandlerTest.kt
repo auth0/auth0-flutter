@@ -209,4 +209,52 @@ class VerifyRequestHandlerTest {
 
         handler.handle(mockClient, requestWith(emptyMap()), mockResult)
     }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `should throw when grantType is not a string`() {
+        val handler = VerifyRequestHandler()
+        val mockResult = mock<Result>()
+        val mockClient = mock<MfaApiClient>()
+
+        handler.handle(mockClient, requestWith(mapOf("grantType" to 42)), mockResult)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `should throw when otp is not a string`() {
+        val handler = VerifyRequestHandler()
+        val mockResult = mock<Result>()
+        val mockClient = mock<MfaApiClient>()
+
+        handler.handle(
+            mockClient,
+            requestWith(mapOf("grantType" to "otp", "otp" to 123456)),
+            mockResult
+        )
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `should throw when oobCode is not a string`() {
+        val handler = VerifyRequestHandler()
+        val mockResult = mock<Result>()
+        val mockClient = mock<MfaApiClient>()
+
+        handler.handle(
+            mockClient,
+            requestWith(mapOf("grantType" to "oob", "oobCode" to 1)),
+            mockResult
+        )
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `should throw when recoveryCode is not a string`() {
+        val handler = VerifyRequestHandler()
+        val mockResult = mock<Result>()
+        val mockClient = mock<MfaApiClient>()
+
+        handler.handle(
+            mockClient,
+            requestWith(mapOf("grantType" to "recovery_code", "recoveryCode" to 1)),
+            mockResult
+        )
+    }
 }

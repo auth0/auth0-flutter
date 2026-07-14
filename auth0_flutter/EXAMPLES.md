@@ -1790,8 +1790,7 @@ If the user already has authenticators enrolled, list them and trigger a challen
 // Values are matched exactly against each authenticator's `type` field, so pass
 // resolved types — e.g. 'totp', 'phone', 'email', 'recovery-code' (the same
 // values exposed as `MfaFactor.type` on `mfaRequirements`) — not the
-// higher-level 'otp'/'oob' categories. The native SDKs reject an empty list
-// with `invalid_request`.
+// higher-level 'otp'/'oob' categories. An empty list throws an `ArgumentError`.
 final authenticators = await mfa
     .getAuthenticators(factorsAllowed: ['totp', 'phone', 'email']);
 

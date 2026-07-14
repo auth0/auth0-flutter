@@ -8,7 +8,6 @@ import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.toMfaCredentialsMap
 import com.auth0.auth0_flutter.toMfaMap
-import com.auth0.auth0_flutter.utils.assertHasProperties
 import io.flutter.plugin.common.MethodChannel
 
 private const val MFA_VERIFY_METHOD = "mfa#verify"
@@ -21,23 +20,27 @@ class VerifyRequestHandler : MfaRequestHandler {
         request: MethodCallRequest,
         result: MethodChannel.Result
     ) {
-        assertHasProperties(listOf("grantType"), request.data)
+        val grantType = request.data["grantType"] as? String
+            ?: throw IllegalArgumentException("Required property 'grantType' must be a string.")
 
-        val type = when (val grantType = request.data["grantType"] as String) {
+        val type = when (grantType) {
             "otp" -> {
-                assertHasProperties(listOf("otp"), request.data)
-                MfaVerificationType.Otp(request.data["otp"] as String)
+                val otp = request.data["otp"] as? String
+                    ?: throw IllegalArgumentException("Required property 'otp' must be a string.")
+                MfaVerificationType.Otp(otp)
             }
             "oob" -> {
-                assertHasProperties(listOf("oobCode"), request.data)
+                val oobCode = request.data["oobCode"] as? String
+                    ?: throw IllegalArgumentException("Required property 'oobCode' must be a string.")
                 MfaVerificationType.Oob(
-                    request.data["oobCode"] as String,
+                    oobCode,
                     request.data["bindingCode"] as? String
                 )
             }
             "recovery_code" -> {
-                assertHasProperties(listOf("recoveryCode"), request.data)
-                MfaVerificationType.RecoveryCode(request.data["recoveryCode"] as String)
+                val recoveryCode = request.data["recoveryCode"] as? String
+                    ?: throw IllegalArgumentException("Required property 'recoveryCode' must be a string.")
+                MfaVerificationType.RecoveryCode(recoveryCode)
             }
             else -> throw IllegalArgumentException("Unknown grantType: $grantType")
         }
