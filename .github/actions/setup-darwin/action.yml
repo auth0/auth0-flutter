@@ -32,7 +32,9 @@ runs:
   steps:
     - name: Lowercase platform value
       id: lowercase-platform
-      run: echo "platform=$(echo ${{ inputs.platform }} | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+      env:
+        PLATFORM: ${{ inputs.platform }}
+      run: echo "platform=$(echo "$PLATFORM" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
       shell: bash
 
     - name: Set up Ruby
@@ -56,7 +58,9 @@ runs:
       shell: bash
 
     - name: Setup Xcode
-      run: sudo xcode-select --switch /Applications/Xcode_${{ inputs.xcode }}.app/Contents/Developer
+      env:
+        XCODE: ${{ inputs.xcode }}
+      run: sudo xcode-select --switch "/Applications/Xcode_$XCODE.app/Contents/Developer"
       shell: bash
 
     - name: Save Xcode version
@@ -77,5 +81,8 @@ runs:
 
     - name: Set .env
       working-directory: auth0_flutter/example
-      run: printf '%s\n%s\n%s' 'AUTH0_DOMAIN=${{ inputs.auth0-domain }}' 'AUTH0_CLIENT_ID=${{ inputs.auth0-client-id }}' 'AUTH0_CUSTOM_SCHEME=demo' >> .env
+      env:
+        AUTH0_DOMAIN: ${{ inputs.auth0-domain }}
+        AUTH0_CLIENT_ID: ${{ inputs.auth0-client-id }}
+      run: printf 'AUTH0_DOMAIN=%s\nAUTH0_CLIENT_ID=%s\nAUTH0_CUSTOM_SCHEME=demo' "$AUTH0_DOMAIN" "$AUTH0_CLIENT_ID" >> .env
       shell: bash
