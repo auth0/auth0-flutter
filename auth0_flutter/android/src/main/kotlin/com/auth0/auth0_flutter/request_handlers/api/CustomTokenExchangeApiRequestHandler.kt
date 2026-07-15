@@ -7,7 +7,6 @@ import com.auth0.android.callback.Callback
 import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.toMap
-import com.auth0.auth0_flutter.utils.assertHasProperties
 import io.flutter.plugin.common.MethodChannel
 import java.util.ArrayList
 
@@ -22,7 +21,6 @@ class CustomTokenExchangeApiRequestHandler : ApiRequestHandler {
         result: MethodChannel.Result
     ) {
         val args = request.data
-        assertHasProperties(listOf("subjectToken", "subjectTokenType"), args)
 
         val subjectToken = args["subjectToken"] as? String
             ?: return result.error("INVALID_ARGUMENT", "'subjectToken' must be a String.", null)
