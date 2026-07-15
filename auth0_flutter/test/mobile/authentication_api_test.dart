@@ -643,4 +643,27 @@ void main() {
       expect(result, TestPlatform.passkeySignupChallengeResult);
     });
   });
+
+  group('CTE delegation types are exported from the package barrel', () {
+    // Guards against a regression in the `show` list of
+    // `package:auth0_flutter/auth0_flutter.dart` (imported at the top of this
+    // file). If `ActorToken` or `UserActor` were dropped from the export, this
+    // group would fail to compile.
+    test('ActorToken is usable via the package barrel', () {
+      const actor = ActorToken(
+          token: 'actor-token', tokenType: 'urn:example:token-type');
+      expect(actor.token, 'actor-token');
+      expect(actor.tokenType, 'urn:example:token-type');
+    });
+
+    test('UserActor is usable via the package barrel', () {
+      const actor = UserActor(
+          sub: 'actor-agent-123',
+          actor: UserActor(sub: 'delegated-agent-456'),
+          extraClaims: {'org': 'auth0'});
+      expect(actor.sub, 'actor-agent-123');
+      expect(actor.actor?.sub, 'delegated-agent-456');
+      expect(actor.extraClaims['org'], 'auth0');
+    });
+  });
 }

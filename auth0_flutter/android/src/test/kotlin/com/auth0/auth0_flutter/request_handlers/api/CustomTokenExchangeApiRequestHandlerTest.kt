@@ -12,7 +12,6 @@ import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodChannel.Result
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
-import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.*
@@ -23,7 +22,7 @@ import java.util.*
 @RunWith(RobolectricTestRunner::class)
 class CustomTokenExchangeApiRequestHandlerTest {
     @Test
-    fun `should throw when missing subjectToken`() {
+    fun `should send error when missing subjectToken`() {
         val options = hashMapOf("subjectTokenType" to "urn:acme:legacy-token")
         val handler = CustomTokenExchangeApiRequestHandler()
         val mockApi = mock<AuthenticationAPIClient>()
@@ -31,13 +30,13 @@ class CustomTokenExchangeApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        Assert.assertThrows(IllegalArgumentException::class.java) {
-            handler.handle(mockApi, request, mockResult)
-        }
+        handler.handle(mockApi, request, mockResult)
+
+        verify(mockResult).error(eq("INVALID_ARGUMENT"), any(), anyOrNull())
     }
 
     @Test
-    fun `should throw when missing subjectTokenType`() {
+    fun `should send error when missing subjectTokenType`() {
         val options = hashMapOf("subjectToken" to "external-token-123")
         val handler = CustomTokenExchangeApiRequestHandler()
         val mockApi = mock<AuthenticationAPIClient>()
@@ -45,13 +44,13 @@ class CustomTokenExchangeApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        Assert.assertThrows(IllegalArgumentException::class.java) {
-            handler.handle(mockApi, request, mockResult)
-        }
+        handler.handle(mockApi, request, mockResult)
+
+        verify(mockResult).error(eq("INVALID_ARGUMENT"), any(), anyOrNull())
     }
 
     @Test
-    fun `should throw when subjectToken is not a String`() {
+    fun `should send error when subjectToken is not a String`() {
         val options = hashMapOf<String, Any>(
             "subjectToken" to 123,
             "subjectTokenType" to "urn:acme:legacy-token"
@@ -62,9 +61,9 @@ class CustomTokenExchangeApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        Assert.assertThrows(IllegalArgumentException::class.java) {
-            handler.handle(mockApi, request, mockResult)
-        }
+        handler.handle(mockApi, request, mockResult)
+
+        verify(mockResult).error(eq("INVALID_ARGUMENT"), any(), anyOrNull())
     }
 
     @Test

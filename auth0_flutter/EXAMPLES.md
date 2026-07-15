@@ -1427,7 +1427,7 @@ For delegation or impersonation scenarios, where one principal acts on behalf of
 When present, the resulting ID token may contain an `act` claim (set server-side via an Auth0 Action using `api.authentication.setActor()`), exposed on the returned credentials' user profile via `.actor`.
 
 > **Note:** When an actor token is provided, Auth0 does **not** issue a refresh token regardless of whether `offline_access` is in the requested scopes, so `credentials.refreshToken` will be `null` in this flow.
-
+>
 > ⚠️ **Web requires `auth0-spa-js` >= 2.20.0.** Delegation/impersonation support (forwarding the actor token to `/oauth/token`) was added to the underlying [SPA SDK](https://github.com/auth0/auth0-spa-js) in [2.20.0](https://github.com/auth0/auth0-spa-js/releases/tag/v2.20.0). With an older SDK the `actor` is accepted but silently dropped before the request, so the returned ID token has no `act` claim and `credentials.user.actor` is `null`. Make sure the `<script>` tag in your `index.html` references 2.20.0 or later.
 
 <details>

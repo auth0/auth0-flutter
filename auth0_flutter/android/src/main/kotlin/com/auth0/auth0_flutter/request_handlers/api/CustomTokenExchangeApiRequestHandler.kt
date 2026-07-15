@@ -25,9 +25,9 @@ class CustomTokenExchangeApiRequestHandler : ApiRequestHandler {
         assertHasProperties(listOf("subjectToken", "subjectTokenType"), args)
 
         val subjectToken = args["subjectToken"] as? String
-            ?: throw IllegalArgumentException("subjectToken must be a String.")
+            ?: return result.error("INVALID_ARGUMENT", "'subjectToken' must be a String.", null)
         val subjectTokenType = args["subjectTokenType"] as? String
-            ?: throw IllegalArgumentException("subjectTokenType must be a String.")
+            ?: return result.error("INVALID_ARGUMENT", "'subjectTokenType' must be a String.", null)
 
         val organization = args["organization"] as? String
 
