@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.license      = { :file => '../LICENSE' }
   s.author       = { 'Auth0' => 'support@auth0.com' }
   s.source       = { :path => '.' }
-  s.source_files = 'Classes/**/*'
+  s.source_files = 'auth0_flutter/Sources/auth0_flutter/**/*.swift'
 
   s.ios.deployment_target = '14.0'
   s.ios.dependency 'Flutter'

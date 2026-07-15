@@ -34,8 +34,12 @@ extension WebExceptionExtension on WebException {
         return WebException.authenticationError(
             error.toDart, description.toDart, {'state': details['state']});
       case 'mfa_required':
-        return WebException.mfaError(description.toDart,
-            jsException.getProperty('mfaToken'.toJS) as String);
+        final mfaToken =
+            (jsException.getProperty<JSString?>('mfa_token'.toJS) ??
+                    jsException.getProperty<JSString?>('mfaToken'.toJS))
+                ?.toDart ??
+                '';
+        return WebException.mfaError(description.toDart, mfaToken);
       case 'timeout':
         return WebException.timeout(description.toDart);
       case 'cancelled':

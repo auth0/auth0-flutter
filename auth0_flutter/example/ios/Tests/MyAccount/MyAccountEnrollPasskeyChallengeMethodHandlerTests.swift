@@ -4,6 +4,12 @@ import Auth0
 
 @testable import auth0_flutter
 
+#if os(iOS)
+import Flutter
+#else
+import FlutterMacOS
+#endif
+
 @available(iOS 16.6, macOS 13.5, visionOS 1.0, *)
 class MyAccountEnrollPasskeyChallengeMethodHandlerTests: XCTestCase {
     var spy: SpyMyAccountAuthenticationMethods!

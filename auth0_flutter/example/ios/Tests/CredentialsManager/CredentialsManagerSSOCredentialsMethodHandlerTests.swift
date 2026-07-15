@@ -8,12 +8,13 @@ fileprivate typealias Argument = SSOCredentialsMethodHandler.Argument
 final class SSOCredentialsMethodHandlerTests: XCTestCase {
     var spyAuthentication: SpyAuthentication!
     var spyStorage: SpyCredentialsStorage!
+    var credentialsManager: CredentialsManager!
     var sut: SSOCredentialsMethodHandler!
 
     override func setUpWithError() throws {
         spyAuthentication = SpyAuthentication()
         spyStorage = SpyCredentialsStorage()
-        let credentialsManager = CredentialsManager(authentication: spyAuthentication, storage: spyStorage)
+        credentialsManager = CredentialsManager(authentication: spyAuthentication, storage: spyStorage)
         sut = SSOCredentialsMethodHandler(credentialsManager: credentialsManager)
     }
 }
@@ -44,9 +45,8 @@ extension SSOCredentialsMethodHandlerTests {
                                       refreshToken: "refreshToken",
                                       expiresIn: Date(timeIntervalSinceNow: 3600),
                                       scope: "scope")
-        let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
         let expectation = self.expectation(description: "SSO exchange was called")
-        spyStorage.getEntryReturnValue = data
+        _ = credentialsManager.store(credentials: credentials)
         sut.handle(with: arguments()) { _ in
             XCTAssertEqual(self.spyAuthentication.arguments["refreshToken"] as? String, "refreshToken")
             expectation.fulfill()
@@ -61,9 +61,8 @@ extension SSOCredentialsMethodHandlerTests {
                                       refreshToken: "refreshToken",
                                       expiresIn: Date(timeIntervalSinceNow: 3600),
                                       scope: "scope")
-        let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
         let expectation = self.expectation(description: "Produced SSO credentials")
-        spyStorage.getEntryReturnValue = data
+        _ = credentialsManager.store(credentials: credentials)
         sut.handle(with: arguments()) { result in
             let expectedKeys: [SSOCredentialsProperty] = [
                 .sessionTransferToken, .tokenType, .expiresIn, .idToken

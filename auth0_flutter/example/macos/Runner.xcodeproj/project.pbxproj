@@ -45,7 +45,7 @@
 		5C1399332B0EB5F3006DCE54 /* AuthAPIResetPasswordMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399172B0EB5F3006DCE54 /* AuthAPIResetPasswordMethodHandlerTests.swift */; };
 		5C1399342B0EB5F3006DCE54 /* AuthAPISpies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399182B0EB5F3006DCE54 /* AuthAPISpies.swift */; };
 		5C1399352B0EB5F3006DCE54 /* AuthAPIUserInfoMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399192B0EB5F3006DCE54 /* AuthAPIUserInfoMethodHandlerTests.swift */; };
-		5C1399362B0EB5F3006DCE54 /* SwiftAuth0FlutterPluginTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C13991A2B0EB5F3006DCE54 /* SwiftAuth0FlutterPluginTests.swift */; };
+		5C1399362B0EB5F3006DCE54 /* Auth0FlutterPluginTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C13991A2B0EB5F3006DCE54 /* Auth0FlutterPluginTests.swift */; };
 		5C1399372B0EB5F3006DCE54 /* CredentialsManagerHasValidMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C13991C2B0EB5F3006DCE54 /* CredentialsManagerHasValidMethodHandlerTests.swift */; };
 		5C1399382B0EB5F3006DCE54 /* CredentialsManagerSaveMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C13991D2B0EB5F3006DCE54 /* CredentialsManagerSaveMethodHandlerTests.swift */; };
 		5C1399392B0EB5F3006DCE54 /* CredentialsManagerSpies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C13991E2B0EB5F3006DCE54 /* CredentialsManagerSpies.swift */; };
@@ -137,7 +137,7 @@
 		5C1399172B0EB5F3006DCE54 /* AuthAPIResetPasswordMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIResetPasswordMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C1399182B0EB5F3006DCE54 /* AuthAPISpies.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPISpies.swift; sourceTree = "<group>"; };
 		5C1399192B0EB5F3006DCE54 /* AuthAPIUserInfoMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIUserInfoMethodHandlerTests.swift; sourceTree = "<group>"; };
-		5C13991A2B0EB5F3006DCE54 /* SwiftAuth0FlutterPluginTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftAuth0FlutterPluginTests.swift; sourceTree = "<group>"; };
+		5C13991A2B0EB5F3006DCE54 /* Auth0FlutterPluginTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Auth0FlutterPluginTests.swift; sourceTree = "<group>"; };
 		5C13991C2B0EB5F3006DCE54 /* CredentialsManagerHasValidMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CredentialsManagerHasValidMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C13991D2B0EB5F3006DCE54 /* CredentialsManagerSaveMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CredentialsManagerSaveMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C13991E2B0EB5F3006DCE54 /* CredentialsManagerSpies.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CredentialsManagerSpies.swift; sourceTree = "<group>"; };
@@ -289,7 +289,7 @@
 				5C1399082B0EB5F3006DCE54 /* WebAuth */,
 				5C13990E2B0EB5F3006DCE54 /* Mocks.swift */,
 				5C13990F2B0EB5F3006DCE54 /* AuthAPI */,
-				5C13991A2B0EB5F3006DCE54 /* SwiftAuth0FlutterPluginTests.swift */,
+				5C13991A2B0EB5F3006DCE54 /* Auth0FlutterPluginTests.swift */,
 				5C13991B2B0EB5F3006DCE54 /* CredentialsManager */,
 			);
 			name = Tests;
@@ -651,7 +651,7 @@
 				5C13992D2B0EB5F3006DCE54 /* AuthAPIMultifactorChallengeMethodHandlerTests.swift in Sources */,
 				5C1399262B0EB5F3006DCE54 /* WebAuthSpies.swift in Sources */,
 				5C1399322B0EB5F3006DCE54 /* AuthAPIHandlerTests.swift in Sources */,
-				5C1399362B0EB5F3006DCE54 /* SwiftAuth0FlutterPluginTests.swift in Sources */,
+				5C1399362B0EB5F3006DCE54 /* Auth0FlutterPluginTests.swift in Sources */,
 				5C1399302B0EB5F3006DCE54 /* AuthAPILoginWithOTPMethodHandlerTests.swift in Sources */,
 				5C1399372B0EB5F3006DCE54 /* CredentialsManagerHasValidMethodHandlerTests.swift in Sources */,
 				5C13993B2B0EB5F3006DCE54 /* CredentialsManagerClearMethodHandlerTests.swift in Sources */,
