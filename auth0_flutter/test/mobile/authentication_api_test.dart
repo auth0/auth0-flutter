@@ -384,20 +384,22 @@ void main() {
       await Auth0('test-domain', 'test-clientId').api.customTokenExchange(
             subjectToken: 'subject-token',
             subjectTokenType: 'urn:acme:legacy-token',
-            actorToken: 'actor-token',
-            actorTokenType: 'urn:ietf:params:oauth:token-type:id_token',
+            actor: const ActorToken(
+              token: 'actor-token',
+              tokenType: 'urn:ietf:params:oauth:token-type:id_token',
+            ),
           );
 
       final verificationResult =
           verify(mockedPlatform.customTokenExchange(captureAny))
               .captured
               .single as ApiRequest<AuthCustomTokenExchangeOptions>;
-      expect(verificationResult.options.actorToken, 'actor-token');
-      expect(verificationResult.options.actorTokenType,
+      expect(verificationResult.options.actor?.token, 'actor-token');
+      expect(verificationResult.options.actor?.tokenType,
           'urn:ietf:params:oauth:token-type:id_token');
     });
 
-    test('leaves actor token null when omitted', () async {
+    test('leaves actor null when omitted', () async {
       when(mockedPlatform.customTokenExchange(any))
           .thenAnswer((final _) async => TestPlatform.loginResult);
 
@@ -410,28 +412,7 @@ void main() {
           verify(mockedPlatform.customTokenExchange(captureAny))
               .captured
               .single as ApiRequest<AuthCustomTokenExchangeOptions>;
-      expect(verificationResult.options.actorToken, isNull);
-      expect(verificationResult.options.actorTokenType, isNull);
-    });
-
-    test('throws when only actorToken is provided', () async {
-      expect(
-          () => Auth0('test-domain', 'test-clientId').api.customTokenExchange(
-                subjectToken: 'subject-token',
-                subjectTokenType: 'urn:acme:legacy-token',
-                actorToken: 'actor-token',
-              ),
-          throwsArgumentError);
-    });
-
-    test('throws when only actorTokenType is provided', () async {
-      expect(
-          () => Auth0('test-domain', 'test-clientId').api.customTokenExchange(
-                subjectToken: 'subject-token',
-                subjectTokenType: 'urn:acme:legacy-token',
-                actorTokenType: 'urn:ietf:params:oauth:token-type:id_token',
-              ),
-          throwsArgumentError);
+      expect(verificationResult.options.actor, isNull);
     });
   });
 

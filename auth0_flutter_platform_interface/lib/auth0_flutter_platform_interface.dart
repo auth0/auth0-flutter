@@ -1,4 +1,5 @@
 export 'src/account.dart';
+export 'src/actor_token.dart';
 export 'src/api_credentials.dart';
 export 'src/auth/api_exception.dart';
 export 'src/auth/auth_custom_token_exchange_options.dart';

@@ -1,3 +1,4 @@
+import '../actor_token.dart';
 import '../request/request_options.dart';
 
 class AuthCustomTokenExchangeOptions implements RequestOptions {
@@ -7,13 +8,10 @@ class AuthCustomTokenExchangeOptions implements RequestOptions {
   final Set<String> scopes;
   final String? organization;
 
-  /// The token representing the acting party in a delegation or impersonation
-  /// flow. When provided, [actorTokenType] must also be provided.
-  final String? actorToken;
-
-  /// A URI identifying the type of the [actorToken]. When provided,
-  /// [actorToken] must also be provided.
-  final String? actorTokenType;
+  /// The acting party in a delegation or impersonation flow. Because
+  /// [ActorToken] bundles the token with its type, the pair can never be
+  /// partially supplied.
+  final ActorToken? actor;
 
   const AuthCustomTokenExchangeOptions({
     required this.subjectToken,
@@ -21,8 +19,7 @@ class AuthCustomTokenExchangeOptions implements RequestOptions {
     this.audience,
     this.scopes = const {},
     this.organization,
-    this.actorToken,
-    this.actorTokenType,
+    this.actor,
   });
 
   @override
@@ -32,7 +29,9 @@ class AuthCustomTokenExchangeOptions implements RequestOptions {
         if (audience != null) 'audience': audience,
         'scopes': scopes.toList(),
         if (organization != null) 'organization': organization,
-        if (actorToken != null) 'actorToken': actorToken,
-        if (actorTokenType != null) 'actorTokenType': actorTokenType,
+        if (actor != null) ...{
+          'actorToken': actor!.token,
+          'actorTokenType': actor!.tokenType,
+        },
       };
 }

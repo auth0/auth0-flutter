@@ -5,12 +5,17 @@ extension UserProfileExtension on UserProfile {
     final customClaims = {...claims};
     final claimsToRemove = [
       ...RegisteredClaims.toList(),
-      ...PublicClaims.toList()
+      ...PublicClaims.toList(),
+      PublicClaims.act,
     ];
 
     for (final key in claimsToRemove) {
       customClaims.remove(key);
     }
+
+    final actor = claims[PublicClaims.act] is Map
+        ? UserActor.fromMap(claims[PublicClaims.act] as Map)
+        : null;
 
     final profileUrl = claims[PublicClaims.profile] != null
         ? Uri.parse(claims[PublicClaims.profile] as String)
@@ -65,6 +70,7 @@ extension UserProfileExtension on UserProfile {
       address: address,
       updatedAt: updatedAt,
       customClaims: customClaims.isNotEmpty ? customClaims : null,
+      actor: actor,
     );
   }
 }
@@ -118,6 +124,7 @@ class PublicClaims {
   static const phoneNumberVerified = 'phone_number_verified';
   static const address = 'address';
   static const updatedAt = 'updated_at';
+  static const act = 'act';
 
   static List<String> toList() => [
         PublicClaims.sub,

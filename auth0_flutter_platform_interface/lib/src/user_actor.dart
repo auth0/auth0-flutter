@@ -62,8 +62,8 @@ class UserActor {
   }
 
   Map<String, dynamic> toMap() => {
+        ...extraClaims,
         'sub': sub,
         if (actor != null) 'act': actor!.toMap(),
-        ...extraClaims,
       };
 }

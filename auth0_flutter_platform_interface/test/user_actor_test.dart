@@ -61,5 +61,18 @@ void main() {
         'org': 'auth0',
       });
     });
+
+    test('toMap does not let extraClaims overwrite sub or act', () {
+      const actor = UserActor(
+        sub: 'actor-agent-123',
+        actor: UserActor(sub: 'original-actor-456'),
+        extraClaims: {'sub': 'spoofed', 'act': 'spoofed'},
+      );
+
+      final map = actor.toMap();
+
+      expect(map['sub'], 'actor-agent-123');
+      expect(map['act'], {'sub': 'original-actor-456'});
+    });
   });
 }

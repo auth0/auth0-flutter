@@ -1,3 +1,5 @@
+import '../actor_token.dart';
+
 /// Options for custom token exchange on web platforms.
 ///
 /// This class encapsulates the parameters needed to exchange an external
@@ -12,19 +14,16 @@
 /// * [scopes] - Set of OAuth scopes to request (optional)
 /// * [organizationId] - organization ID or name of the organization to
 ///   authenticate with (optional)
-/// * [actorToken] - The token representing the acting party in a delegation or
-///   impersonation flow (optional). When provided, [actorTokenType] must also
-///   be provided.
-/// * [actorTokenType] - A URI identifying the type of the [actorToken]
-///   (optional). When provided, [actorToken] must also be provided.
+/// * [actor] - The acting party in a delegation or impersonation flow
+///   (optional). Bundles the actor token with its type so the pair can never
+///   be partially supplied.
 class ExchangeTokenOptions {
   final String subjectToken;
   final String subjectTokenType;
   final String? audience;
   final Set<String>? scopes;
   final String? organizationId;
-  final String? actorToken;
-  final String? actorTokenType;
+  final ActorToken? actor;
 
   ExchangeTokenOptions({
     required this.subjectToken,
@@ -32,7 +31,6 @@ class ExchangeTokenOptions {
     this.audience,
     this.scopes,
     this.organizationId,
-    this.actorToken,
-    this.actorTokenType,
+    this.actor,
   });
 }

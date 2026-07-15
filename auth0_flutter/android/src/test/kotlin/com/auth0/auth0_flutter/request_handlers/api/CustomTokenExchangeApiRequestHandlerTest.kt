@@ -51,6 +51,23 @@ class CustomTokenExchangeApiRequestHandlerTest {
     }
 
     @Test
+    fun `should throw when subjectToken is not a String`() {
+        val options = hashMapOf<String, Any>(
+            "subjectToken" to 123,
+            "subjectTokenType" to "urn:acme:legacy-token"
+        )
+        val handler = CustomTokenExchangeApiRequestHandler()
+        val mockApi = mock<AuthenticationAPIClient>()
+        val mockAccount = mock<Auth0>()
+        val mockResult = mock<Result>()
+        val request = MethodCallRequest(account = mockAccount, options)
+
+        Assert.assertThrows(IllegalArgumentException::class.java) {
+            handler.handle(mockApi, request, mockResult)
+        }
+    }
+
+    @Test
     fun `should call success with required parameters only`() {
         val options = hashMapOf(
             "subjectToken" to "external-token-123",

@@ -2,7 +2,13 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 import 'src/version.dart';
 
 export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
-    show WebException, CacheLocation, ApiCredentials;
+    show
+        WebException,
+        CacheLocation,
+        ApiCredentials,
+        ActorToken,
+        UserActor,
+        UserProfile;
 
 /// Primary interface for interacting with Auth0 on web platforms.
 class Auth0Web {
@@ -320,18 +326,13 @@ class Auth0Web {
   ///   token exchange with a specific organization context. The organization ID
   ///   will be present in the access token payload.
   ///
-  /// * [actorToken] - Optional token representing the acting party in a
-  ///   delegation or impersonation flow (for example, an AI agent acting on
-  ///   behalf of a user). When provided, [actorTokenType] must also be
-  ///   provided.
-  ///
-  /// * [actorTokenType] - Optional URI identifying the type of the [actorToken]
-  ///   (for example, `urn:ietf:params:oauth:token-type:id_token`). When
-  ///   provided, [actorToken] must also be provided.
+  /// * [actor] - Optional acting party in a delegation or impersonation flow
+  ///   (for example, an AI agent acting on behalf of a user), as an
+  ///   [ActorToken] bundling the token with its type.
   ///
   ///   When an actor token is provided, Auth0 does not issue a refresh token
   ///   regardless of the requested scopes, and the resulting ID token may
-  ///   contain an `act` claim.
+  ///   contain an `act` claim, exposed via [Credentials.user] `.actor`.
   ///
   /// **Returns** a [Credentials] object containing:
   /// * `accessToken` - The new Auth0 access token
@@ -379,26 +380,18 @@ class Auth0Web {
     final String? audience,
     final Set<String>? scopes,
     final String? organizationId,
-    final String? actorToken,
-    final String? actorTokenType,
-  }) {
-    if ((actorToken == null) != (actorTokenType == null)) {
-      throw ArgumentError(
-          'actorToken and actorTokenType must be provided together.');
-    }
-
-    return Auth0FlutterWebPlatform.instance.customTokenExchange(
-      ExchangeTokenOptions(
-        subjectToken: subjectToken,
-        subjectTokenType: subjectTokenType,
-        audience: audience,
-        scopes: scopes,
-        organizationId: organizationId,
-        actorToken: actorToken,
-        actorTokenType: actorTokenType,
-      ),
-    );
-  }
+    final ActorToken? actor,
+  }) =>
+      Auth0FlutterWebPlatform.instance.customTokenExchange(
+        ExchangeTokenOptions(
+          subjectToken: subjectToken,
+          subjectTokenType: subjectTokenType,
+          audience: audience,
+          scopes: scopes,
+          organizationId: organizationId,
+          actor: actor,
+        ),
+      );
 
   /// Retrieves a set of [ApiCredentials] scoped to a specific API ([audience])
   /// by reusing the stored refresh token via Multi-Resource Refresh Tokens

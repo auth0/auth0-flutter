@@ -24,7 +24,12 @@ class CustomTokenExchangeApiRequestHandler : ApiRequestHandler {
         val args = request.data
         assertHasProperties(listOf("subjectToken", "subjectTokenType"), args)
 
-        val organization = if (args["organization"] is String) args["organization"] as String else null
+        val subjectToken = args["subjectToken"] as? String
+            ?: throw IllegalArgumentException("subjectToken must be a String.")
+        val subjectTokenType = args["subjectTokenType"] as? String
+            ?: throw IllegalArgumentException("subjectTokenType must be a String.")
+
+        val organization = args["organization"] as? String
 
         val actorTokenValue = args["actorToken"] as? String
         val actorTokenType = args["actorTokenType"] as? String
@@ -35,8 +40,8 @@ class CustomTokenExchangeApiRequestHandler : ApiRequestHandler {
         }
 
         val builder = api.customTokenExchange(
-            args["subjectTokenType"] as String,
-            args["subjectToken"] as String,
+            subjectTokenType,
+            subjectToken,
             organization,
             actorToken
         ).apply {

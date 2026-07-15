@@ -96,12 +96,14 @@ void main() {
       expect(map['scopes'], isEmpty);
     });
 
-    test('toMap includes actor token and type when provided', () {
+    test('toMap includes actor token and type when actor provided', () {
       const options = AuthCustomTokenExchangeOptions(
         subjectToken: 'existing-token',
         subjectTokenType: 'http://acme.com/legacy-token',
-        actorToken: 'actor-token-value',
-        actorTokenType: 'urn:ietf:params:oauth:token-type:id_token',
+        actor: ActorToken(
+          token: 'actor-token-value',
+          tokenType: 'urn:ietf:params:oauth:token-type:id_token',
+        ),
       );
 
       final map = options.toMap();
@@ -111,7 +113,7 @@ void main() {
           'urn:ietf:params:oauth:token-type:id_token');
     });
 
-    test('toMap excludes actor token and type when not provided', () {
+    test('toMap excludes actor token and type when actor not provided', () {
       const options = AuthCustomTokenExchangeOptions(
         subjectToken: 'existing-token',
         subjectTokenType: 'http://acme.com/legacy-token',

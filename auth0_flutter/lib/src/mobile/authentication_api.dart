@@ -392,16 +392,14 @@ class AuthenticationApi {
   ///
   /// For delegation or impersonation scenarios, where one principal acts on
   /// behalf of another (for example, an AI agent acting on behalf of a user),
-  /// provide [actorToken] and [actorTokenType]:
+  /// provide an [actor]:
   ///
-  /// * [actorToken] the token representing the acting party.
-  /// * [actorTokenType] a URI identifying the type of the [actorToken] (for
-  ///   example, `urn:ietf:params:oauth:token-type:id_token`, or a custom URI
-  ///   like `http://corporate-idp/id-token`).
+  /// * [actor] the acting party, as an [ActorToken] bundling the token with its
+  ///   type (for example, `ActorToken(token: '...', tokenType:
+  ///   'urn:ietf:params:oauth:token-type:id_token')`).
   ///
-  /// Both must be provided together — supplying only one throws an
-  /// [ArgumentError]. When present, the resulting ID token may contain an `act`
-  /// claim, exposed via [Credentials.user] `.actor`.
+  /// When present, the resulting ID token may contain an `act` claim, exposed
+  /// via [Credentials.user] `.actor`.
   ///
   /// **Note:** When an actor token is provided, Auth0 does not issue a refresh
   /// token regardless of whether `offline_access` is in [scopes], so
@@ -430,24 +428,16 @@ class AuthenticationApi {
     final String? audience,
     final Set<String> scopes = const {'openid', 'profile', 'email'},
     final String? organization,
-    final String? actorToken,
-    final String? actorTokenType,
-  }) {
-    if ((actorToken == null) != (actorTokenType == null)) {
-      throw ArgumentError(
-          'actorToken and actorTokenType must be provided together.');
-    }
-
-    return Auth0FlutterAuthPlatform.instance.customTokenExchange(
-        _createApiRequest(AuthCustomTokenExchangeOptions(
-            subjectToken: subjectToken,
-            subjectTokenType: subjectTokenType,
-            audience: audience,
-            scopes: scopes,
-            organization: organization,
-            actorToken: actorToken,
-            actorTokenType: actorTokenType)));
-  }
+    final ActorToken? actor,
+  }) =>
+      Auth0FlutterAuthPlatform.instance.customTokenExchange(
+          _createApiRequest(AuthCustomTokenExchangeOptions(
+              subjectToken: subjectToken,
+              subjectTokenType: subjectTokenType,
+              audience: audience,
+              scopes: scopes,
+              organization: organization,
+              actor: actor)));
 
   /// Initiates a reset of password of the user with the specific [email]
   /// address in the specific [connection].
