@@ -14,6 +14,7 @@ let package = Package(
         .package(url: "https://github.com/auth0/Auth0.swift", exact: "2.23.0"),
         .package(url: "https://github.com/auth0/JWTDecode.swift", exact: "3.3.0"),
         .package(url: "https://github.com/auth0/SimpleKeychain", exact: "1.3.0"),
+        .package(name: "FlutterFramework", path: "../FlutterFramework"),
     ],
     targets: [
         .target(
@@ -22,6 +23,7 @@ let package = Package(
                 .product(name: "Auth0", package: "Auth0.swift"),
                 .product(name: "JWTDecode", package: "JWTDecode.swift"),
                 .product(name: "SimpleKeychain", package: "SimpleKeychain"),
+                .product(name: "FlutterFramework", package: "FlutterFramework"),
             ],
             path: "Sources/auth0_flutter",
             swiftSettings: [.define("PASSKEYS_PLATFORM")]
