@@ -95,5 +95,34 @@ void main() {
 
       expect(map['scopes'], isEmpty);
     });
+
+    test('toMap includes actor token and type when actor provided', () {
+      const options = AuthCustomTokenExchangeOptions(
+        subjectToken: 'existing-token',
+        subjectTokenType: 'http://acme.com/legacy-token',
+        actor: ActorToken(
+          token: 'actor-token-value',
+          tokenType: 'urn:ietf:params:oauth:token-type:id_token',
+        ),
+      );
+
+      final map = options.toMap();
+
+      expect(map['actorToken'], 'actor-token-value');
+      expect(map['actorTokenType'],
+          'urn:ietf:params:oauth:token-type:id_token');
+    });
+
+    test('toMap excludes actor token and type when actor not provided', () {
+      const options = AuthCustomTokenExchangeOptions(
+        subjectToken: 'existing-token',
+        subjectTokenType: 'http://acme.com/legacy-token',
+      );
+
+      final map = options.toMap();
+
+      expect(map.containsKey('actorToken'), isFalse);
+      expect(map.containsKey('actorTokenType'), isFalse);
+    });
   });
 }

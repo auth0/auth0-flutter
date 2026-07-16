@@ -7,6 +7,9 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         WebException,
         CacheLocation,
         ApiCredentials,
+        ActorToken,
+        UserActor,
+        UserProfile,
         MfaAuthenticator,
         MfaChallenge,
         MfaEnrollmentChallenge,
@@ -330,6 +333,14 @@ class Auth0Web {
   ///   token exchange with a specific organization context. The organization ID
   ///   will be present in the access token payload.
   ///
+  /// * [actor] - Optional acting party in a delegation or impersonation flow
+  ///   (for example, an AI agent acting on behalf of a user), as an
+  ///   [ActorToken] bundling the token with its type.
+  ///
+  ///   When an actor token is provided, Auth0 does not issue a refresh token
+  ///   regardless of the requested scopes, and the resulting ID token may
+  ///   contain an `act` claim, exposed via [Credentials.user] `.actor`.
+  ///
   /// **Returns** a [Credentials] object containing:
   /// * `accessToken` - The new Auth0 access token
   /// * `idToken` - The Auth0 ID token with user information
@@ -376,6 +387,7 @@ class Auth0Web {
     final String? audience,
     final Set<String>? scopes,
     final String? organizationId,
+    final ActorToken? actor,
   }) =>
       Auth0FlutterWebPlatform.instance.customTokenExchange(
         ExchangeTokenOptions(
@@ -384,6 +396,7 @@ class Auth0Web {
           audience: audience,
           scopes: scopes,
           organizationId: organizationId,
+          actor: actor,
         ),
       );
 

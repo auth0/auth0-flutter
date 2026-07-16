@@ -13,6 +13,8 @@ struct AuthAPICustomTokenExchangeMethodHandler: MethodHandler {
         case audience
         case scopes
         case organization
+        case actorToken
+        case actorTokenType
     }
 
     let client: Authentication
@@ -32,12 +34,19 @@ struct AuthAPICustomTokenExchangeMethodHandler: MethodHandler {
         let audience = arguments[Argument.audience] as? String
         let organization = arguments[Argument.organization] as? String
 
+        var actorToken: ActorToken?
+        if let actorTokenValue = arguments[Argument.actorToken] as? String,
+           let actorTokenType = arguments[Argument.actorTokenType] as? String {
+            actorToken = ActorToken(token: actorTokenValue, tokenType: actorTokenType)
+        }
+
         client
             .customTokenExchange(subjectToken: subjectToken,
                                subjectTokenType: subjectTokenType,
                                audience: audience,
                                scope: scope,
-                               organization: organization)
+                               organization: organization,
+                               actorToken: actorToken)
             .start {
                 switch $0 {
                 case .success(let credentials): callback(self.result(from: credentials))

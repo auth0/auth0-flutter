@@ -140,6 +140,25 @@ class SpyAuthentication: Authentication {
         return request(ssoCredentialsResult)
     }
 
+    var calledCustomTokenExchange = false
+
+    func customTokenExchange(subjectToken: String,
+                             subjectTokenType: String,
+                             audience: String?,
+                             scope: String,
+                             organization: String?,
+                             parameters: [String: Any]) -> Request<Credentials, AuthenticationError> {
+        arguments["subjectToken"] = subjectToken
+        arguments["subjectTokenType"] = subjectTokenType
+        arguments["audience"] = audience
+        arguments["scope"] = scope
+        arguments["organization"] = organization
+        arguments["actor_token"] = parameters["actor_token"]
+        arguments["actor_token_type"] = parameters["actor_token_type"]
+        calledCustomTokenExchange = true
+        return request(credentialsResult)
+    }
+
     func revoke(refreshToken: String) -> Request<Void, AuthenticationError> {
         return request(voidResult)
     }

@@ -38,4 +38,5 @@ enum UserInfoProperty: String, CaseIterable {
     case address
     case updatedAt = "updated_at"
     case customClaims = "custom_claims"
+    case act
 }

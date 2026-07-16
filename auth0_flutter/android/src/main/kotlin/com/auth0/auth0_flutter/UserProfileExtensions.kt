@@ -1,7 +1,16 @@
 package com.auth0.auth0_flutter
 
+import com.auth0.android.result.ActorClaim
 import com.auth0.android.result.UserProfile
 import com.auth0.auth0_flutter.utils.getCustomClaims
+
+fun ActorClaim.toMap(): Map<String, Any?> {
+    return buildMap {
+        put("sub", sub)
+        actor?.let { put("act", it.toMap()) }
+        putAll(extraProperties)
+    }
+}
 
 fun UserProfile.toMap(): Map<String, Any?> {
     return mapOf(
@@ -26,6 +35,7 @@ fun UserProfile.toMap(): Map<String, Any?> {
         "address" to this.address,
         "updated_at" to this.updatedAt,
         "custom_claims" to this.customClaims,
+        "act" to this.actor?.toMap(),
     )
 }
 

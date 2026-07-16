@@ -3,6 +3,7 @@ package com.auth0.auth0_flutter.request_handlers.api
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
+import com.auth0.android.authentication.request.ActorToken
 import com.auth0.android.callback.Callback
 import com.auth0.android.request.AuthenticationRequest
 import com.auth0.android.result.Credentials
@@ -11,7 +12,6 @@ import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodChannel.Result
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
-import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.*
@@ -22,7 +22,7 @@ import java.util.*
 @RunWith(RobolectricTestRunner::class)
 class CustomTokenExchangeApiRequestHandlerTest {
     @Test
-    fun `should throw when missing subjectToken`() {
+    fun `should send error when missing subjectToken`() {
         val options = hashMapOf("subjectTokenType" to "urn:acme:legacy-token")
         val handler = CustomTokenExchangeApiRequestHandler()
         val mockApi = mock<AuthenticationAPIClient>()
@@ -30,13 +30,13 @@ class CustomTokenExchangeApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        Assert.assertThrows(IllegalArgumentException::class.java) {
-            handler.handle(mockApi, request, mockResult)
-        }
+        handler.handle(mockApi, request, mockResult)
+
+        verify(mockResult).error(eq("INVALID_ARGUMENT"), any(), anyOrNull())
     }
 
     @Test
-    fun `should throw when missing subjectTokenType`() {
+    fun `should send error when missing subjectTokenType`() {
         val options = hashMapOf("subjectToken" to "external-token-123")
         val handler = CustomTokenExchangeApiRequestHandler()
         val mockApi = mock<AuthenticationAPIClient>()
@@ -44,9 +44,26 @@ class CustomTokenExchangeApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        Assert.assertThrows(IllegalArgumentException::class.java) {
-            handler.handle(mockApi, request, mockResult)
-        }
+        handler.handle(mockApi, request, mockResult)
+
+        verify(mockResult).error(eq("INVALID_ARGUMENT"), any(), anyOrNull())
+    }
+
+    @Test
+    fun `should send error when subjectToken is not a String`() {
+        val options = hashMapOf<String, Any>(
+            "subjectToken" to 123,
+            "subjectTokenType" to "urn:acme:legacy-token"
+        )
+        val handler = CustomTokenExchangeApiRequestHandler()
+        val mockApi = mock<AuthenticationAPIClient>()
+        val mockAccount = mock<Auth0>()
+        val mockResult = mock<Result>()
+        val request = MethodCallRequest(account = mockAccount, options)
+
+        handler.handle(mockApi, request, mockResult)
+
+        verify(mockResult).error(eq("INVALID_ARGUMENT"), any(), anyOrNull())
     }
 
     @Test
@@ -290,6 +307,93 @@ class CustomTokenExchangeApiRequestHandlerTest {
             "external-token-org",
             "org_abc123",
             null
+        )
+        verify(mockResult).success(any())
+    }
+
+    @Test
+    fun `should pass actor token when actorToken and actorTokenType provided`() {
+        val options = hashMapOf(
+            "subjectToken" to "external-token-actor",
+            "subjectTokenType" to "urn:acme:legacy-token",
+            "actorToken" to "actor-token-value",
+            "actorTokenType" to "urn:ietf:params:oauth:token-type:id_token"
+        )
+        val handler = CustomTokenExchangeApiRequestHandler()
+        val mockApi = mock<AuthenticationAPIClient>()
+        val mockAccount = mock<Auth0>()
+        val mockResult = mock<Result>()
+        val mockRequest = mock<AuthenticationRequest>()
+        val request = MethodCallRequest(account = mockAccount, options)
+
+        val credentials = Credentials(
+            JwtTestUtils.createJwt("openid"),
+            JwtTestUtils.createJwt("openid"),
+            "Bearer",
+            null,
+            Date(),
+            "openid"
+        )
+
+        whenever(mockApi.customTokenExchange(any(), any(), isNull(), any())).thenReturn(mockRequest)
+        whenever(mockRequest.validateClaims()).thenReturn(mockRequest)
+
+        doAnswer {
+            val callback = it.arguments[0] as Callback<Credentials, AuthenticationException>
+            callback.onSuccess(credentials)
+            null
+        }.whenever(mockRequest).start(any())
+
+        handler.handle(mockApi, request, mockResult)
+
+        verify(mockApi).customTokenExchange(
+            eq("urn:acme:legacy-token"),
+            eq("external-token-actor"),
+            isNull(),
+            eq(ActorToken("actor-token-value", "urn:ietf:params:oauth:token-type:id_token"))
+        )
+        verify(mockResult).success(any())
+    }
+
+    @Test
+    fun `should not pass actor token when only actorToken provided`() {
+        val options = hashMapOf(
+            "subjectToken" to "external-token-actor",
+            "subjectTokenType" to "urn:acme:legacy-token",
+            "actorToken" to "actor-token-value"
+        )
+        val handler = CustomTokenExchangeApiRequestHandler()
+        val mockApi = mock<AuthenticationAPIClient>()
+        val mockAccount = mock<Auth0>()
+        val mockResult = mock<Result>()
+        val mockRequest = mock<AuthenticationRequest>()
+        val request = MethodCallRequest(account = mockAccount, options)
+
+        val credentials = Credentials(
+            JwtTestUtils.createJwt("openid"),
+            JwtTestUtils.createJwt("openid"),
+            "Bearer",
+            "refresh-token",
+            Date(),
+            "openid"
+        )
+
+        whenever(mockApi.customTokenExchange(any(), any(), isNull(), isNull())).thenReturn(mockRequest)
+        whenever(mockRequest.validateClaims()).thenReturn(mockRequest)
+
+        doAnswer {
+            val callback = it.arguments[0] as Callback<Credentials, AuthenticationException>
+            callback.onSuccess(credentials)
+            null
+        }.whenever(mockRequest).start(any())
+
+        handler.handle(mockApi, request, mockResult)
+
+        verify(mockApi).customTokenExchange(
+            eq("urn:acme:legacy-token"),
+            eq("external-token-actor"),
+            isNull(),
+            isNull()
         )
         verify(mockResult).success(any())
     }

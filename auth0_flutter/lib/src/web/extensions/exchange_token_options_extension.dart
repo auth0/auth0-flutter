@@ -12,6 +12,8 @@ extension ExchangeTokenOptionsExtension on ExchangeTokenOptions {
       audience: audience,
       scope: scopeString,
       organization: organizationId,
+      actor_token: actor?.token,
+      actor_token_type: actor?.tokenType,
     ));
   }
 }

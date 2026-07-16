@@ -137,5 +137,88 @@ void main() {
       expect(map['updated_at'], '2023-01-01T00:00:00.000Z');
       expect(map['custom_claims'], {'role': 'admin'});
     });
+
+    test('fromMap parses the act claim into an actor', () {
+      final map = {
+        'sub': 'user123',
+        'act': {
+          'sub': 'actor-agent-123',
+          'org': 'auth0',
+          'role': 'support',
+        },
+      };
+
+      final userProfile = UserProfile.fromMap(map);
+
+      expect(userProfile.actor, isNotNull);
+      expect(userProfile.actor!.sub, 'actor-agent-123');
+      expect(userProfile.actor!.actor, isNull);
+      expect(userProfile.actor!.extraClaims['org'], 'auth0');
+      expect(userProfile.actor!.extraClaims['role'], 'support');
+    });
+
+    test('fromMap parses nested act claims into a delegation chain', () {
+      final map = {
+        'sub': 'user123',
+        'act': {
+          'sub': 'actor-agent-123',
+          'org': 'auth0',
+          'act': {
+            'sub': 'delegated-agent-456',
+            'role': 'admin',
+          },
+        },
+      };
+
+      final userProfile = UserProfile.fromMap(map);
+
+      expect(userProfile.actor, isNotNull);
+      expect(userProfile.actor!.sub, 'actor-agent-123');
+      expect(userProfile.actor!.extraClaims['org'], 'auth0');
+      expect(userProfile.actor!.actor, isNotNull);
+      expect(userProfile.actor!.actor!.sub, 'delegated-agent-456');
+      expect(userProfile.actor!.actor!.extraClaims['role'], 'admin');
+      expect(userProfile.actor!.actor!.actor, isNull);
+    });
+
+    test('fromMap leaves actor null when act claim is absent', () {
+      final userProfile = UserProfile.fromMap({'sub': 'user123'});
+
+      expect(userProfile.actor, isNull);
+    });
+
+    test('toMap emits the act claim when actor is present', () {
+      const userProfile = UserProfile(
+        sub: 'user123',
+        actor: UserActor(sub: 'actor-agent-123', extraClaims: {'org': 'auth0'}),
+      );
+
+      final map = userProfile.toMap();
+
+      expect(map['act'], {'sub': 'actor-agent-123', 'org': 'auth0'});
+    });
+
+    test('toMap emits nested act claims when delegation chain is present', () {
+      const userProfile = UserProfile(
+        sub: 'user123',
+        actor: UserActor(
+          sub: 'actor-agent-123',
+          extraClaims: {'org': 'auth0'},
+          actor: UserActor(
+              sub: 'delegated-agent-456', extraClaims: {'role': 'admin'}),
+        ),
+      );
+
+      final map = userProfile.toMap();
+
+      expect(map['act'], {
+        'sub': 'actor-agent-123',
+        'org': 'auth0',
+        'act': {
+          'sub': 'delegated-agent-456',
+          'role': 'admin',
+        },
+      });
+    });
   });
 }

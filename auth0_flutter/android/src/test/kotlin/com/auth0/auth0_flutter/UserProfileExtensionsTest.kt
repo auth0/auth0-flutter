@@ -1,8 +1,10 @@
 package com.auth0.auth0_flutter
 
+import com.auth0.android.result.ActorClaim
 import com.auth0.android.result.UserProfile
 
 import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.CoreMatchers.nullValue
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -154,5 +156,47 @@ class UserProfileExtensionsTest {
         assertThat(user.isPhoneNumberVerified, equalTo(true))
         assertThat(user.updatedAt, equalTo("2022-04-22"))
         assertThat(user.address?.get("street"), equalTo("test-street"))
+    }
+
+    @Test
+    fun `should map the actor claim including nested chain when calling toMap`() {
+        val nestedActor = ActorClaim(
+            sub = "original-actor-456",
+            extraProperties = mapOf("role" to "admin")
+        )
+        val actor = ActorClaim(
+            sub = "actor-agent-123",
+            actor = nestedActor,
+            extraProperties = mapOf("org" to "auth0")
+        )
+        val user = UserProfile(
+            "",
+            "test-name",
+            null, null, null, null, null, null, null,
+            mapOf("sub" to "test-sub"),
+            null, null, null,
+            actor
+        )
+
+        val act = user.toMap()["act"] as Map<*, *>
+        assertThat(act["sub"], equalTo("actor-agent-123"))
+        assertThat(act["org"], equalTo("auth0"))
+
+        val nested = act["act"] as Map<*, *>
+        assertThat(nested["sub"], equalTo("original-actor-456"))
+        assertThat(nested["role"], equalTo("admin"))
+    }
+
+    @Test
+    fun `should map null act when the actor claim is absent`() {
+        val user = UserProfile(
+            "",
+            "test-name",
+            null, null, null, null, null, null, null,
+            mapOf("sub" to "test-sub"),
+            null, null, null
+        )
+
+        assertThat(user.toMap()["act"], nullValue())
     }
 }

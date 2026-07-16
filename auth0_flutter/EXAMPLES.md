@@ -42,6 +42,7 @@
   - [Retrieve user information](#retrieve-user-information)
   - [Renew credentials](#renew-credentials)
   - [Custom Token Exchange](#custom-token-exchange)
+    - [Delegation and impersonation (actor token)](#delegation-and-impersonation-actor-token)
   - [Errors](#errors-2)
 - [🌐📱 Organizations](#-organizations)
   - [Log in to an organization](#log-in-to-an-organization)
@@ -1418,6 +1419,58 @@ final credentials = await auth0Web.customTokenExchange(
 </details>
 
 > 💡 For more information, see the [Custom Token Exchange documentation](https://auth0.com/docs/authenticate/custom-token-exchange) and [RFC 8693](https://tools.ietf.org/html/rfc8693).
+
+#### Delegation and impersonation (actor token)
+
+For delegation or impersonation scenarios, where one principal acts on behalf of another (for example, an AI agent acting on behalf of a user), provide an `actor` as an `ActorToken`, which bundles the token with its type so the pair can never be partially supplied.
+
+When present, the resulting ID token may contain an `act` claim (set server-side via an Auth0 Action using `api.authentication.setActor()`), exposed on the returned credentials' user profile via `.actor`.
+
+> **Note:** When an actor token is provided, Auth0 does **not** issue a refresh token regardless of whether `offline_access` is in the requested scopes, so `credentials.refreshToken` will be `null` in this flow.
+>
+> ⚠️ **Web requires `auth0-spa-js` >= 2.20.0.** Delegation/impersonation support (forwarding the actor token to `/oauth/token`) was added to the underlying [SPA SDK](https://github.com/auth0/auth0-spa-js) in [2.20.0](https://github.com/auth0/auth0-spa-js/releases/tag/v2.20.0). With an older SDK the `actor` is accepted but silently dropped before the request, so the returned ID token has no `act` claim and `credentials.user.actor` is `null`. Make sure the `<script>` tag in your `index.html` references 2.20.0 or later.
+
+<details>
+  <summary>Mobile (Android/iOS)</summary>
+
+```dart
+final credentials = await auth0.api.customTokenExchange(
+  subjectToken: 'external-idp-token',
+  subjectTokenType: 'urn:acme:legacy-token',
+  actor: const ActorToken(
+    token: 'actor-id-token',
+    tokenType: 'urn:ietf:params:oauth:token-type:id_token',
+  ),
+);
+
+final actor = credentials.user.actor;
+if (actor != null) {
+  print('Acting party: ${actor.sub}');
+  print('Actor claims: ${actor.extraClaims}');
+  // Nested delegation chain, if present:
+  print('Original actor: ${actor.actor?.sub}');
+}
+```
+
+</details>
+
+<details>
+  <summary>Web</summary>
+
+```dart
+final credentials = await auth0Web.customTokenExchange(
+  subjectToken: 'external-idp-token',
+  subjectTokenType: 'urn:acme:legacy-token',
+  actor: const ActorToken(
+    token: 'actor-id-token',
+    tokenType: 'urn:ietf:params:oauth:token-type:id_token',
+  ),
+);
+
+final actor = credentials.user.actor;
+```
+
+</details>
 
 ### Errors
 

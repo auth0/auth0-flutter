@@ -366,8 +366,10 @@ final auth0Web = Auth0Web('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID');
 Finally, in your `index.html` add the following `<script>` tag:
 
 ```html
-<script src="https://cdn.auth0.com/js/auth0-spa-js/2.9/auth0-spa-js.production.js" defer></script>
+<script src="https://cdn.auth0.com/js/auth0-spa-js/2.23/auth0-spa-js.production.js" defer></script>
 ```
+
+> ⚠️ If you use [Custom Token Exchange](EXAMPLES.md#custom-token-exchange) with delegation/impersonation (an actor token), you must reference `auth0-spa-js` **2.20.0 or later**. Actor-token support was added to the underlying SPA SDK in [2.20.0](https://github.com/auth0/auth0-spa-js/releases/tag/v2.20.0); older versions silently drop the actor token, so the returned ID token has no `act` claim and `credentials.user.actor` is `null`.
 
 ### Logging in
 
