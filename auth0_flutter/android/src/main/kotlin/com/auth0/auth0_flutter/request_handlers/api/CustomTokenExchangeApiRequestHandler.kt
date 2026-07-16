@@ -2,11 +2,11 @@ package com.auth0.auth0_flutter.request_handlers.api
 
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
+import com.auth0.android.authentication.request.ActorToken
 import com.auth0.android.callback.Callback
 import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.toMap
-import com.auth0.auth0_flutter.utils.assertHasProperties
 import io.flutter.plugin.common.MethodChannel
 import java.util.ArrayList
 
@@ -21,14 +21,27 @@ class CustomTokenExchangeApiRequestHandler : ApiRequestHandler {
         result: MethodChannel.Result
     ) {
         val args = request.data
-        assertHasProperties(listOf("subjectToken", "subjectTokenType"), args)
 
-        val organization = if (args["organization"] is String) args["organization"] as String else null
+        val subjectToken = args["subjectToken"] as? String
+            ?: return result.error("INVALID_ARGUMENT", "'subjectToken' must be a String.", null)
+        val subjectTokenType = args["subjectTokenType"] as? String
+            ?: return result.error("INVALID_ARGUMENT", "'subjectTokenType' must be a String.", null)
+
+        val organization = args["organization"] as? String
+
+        val actorTokenValue = args["actorToken"] as? String
+        val actorTokenType = args["actorTokenType"] as? String
+        val actorToken = if (actorTokenValue != null && actorTokenType != null) {
+            ActorToken(actorTokenValue, actorTokenType)
+        } else {
+            null
+        }
 
         val builder = api.customTokenExchange(
-            args["subjectTokenType"] as String,
-            args["subjectToken"] as String,
-            organization
+            subjectTokenType,
+            subjectToken,
+            organization,
+            actorToken
         ).apply {
             val scopes = (args["scopes"] ?: arrayListOf<String>()) as ArrayList<*>
             if (scopes.isNotEmpty()) {

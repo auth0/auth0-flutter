@@ -502,6 +502,65 @@ void main() {
       expect(options.organization, 'org_abc123');
     });
 
+    test('customTokenExchange passes actor token and type when provided',
+        () async {
+      when(mockClientProxy.exchangeToken(argThat(anything)))
+          .thenAnswer((final _) => Future.value(webCredentials));
+
+      await auth0.customTokenExchange(
+          subjectToken: 'external-token-456',
+          subjectTokenType: 'urn:example:custom-token',
+          actor: const ActorToken(
+              token: 'actor-token-789',
+              tokenType: 'urn:ietf:params:oauth:token-type:id_token'));
+
+      final options =
+          verify(mockClientProxy.exchangeToken(captureAny)).captured.first;
+      expect(options.actor_token, 'actor-token-789');
+      expect(options.actor_token_type,
+          'urn:ietf:params:oauth:token-type:id_token');
+    });
+
+    test(
+        'customTokenExchange populates user.actor from the act claim and '
+        'keeps it out of customClaims', () async {
+      final actJwtPayload = {
+        'sub': 'user-123',
+        'act': {
+          'sub': 'actor-agent-123',
+          'org': 'auth0',
+          'act': {
+            'sub': 'delegated-agent-456',
+            'role': 'admin',
+          },
+        },
+      };
+      final actJwt = JWT(actJwtPayload).sign(SecretKey('secret'));
+      final actCredentials = interop.WebCredentials(
+          access_token: actJwt,
+          id_token: actJwt,
+          refresh_token: actJwt,
+          scope: 'openid',
+          expires_in: 0.toJS);
+      when(mockClientProxy.exchangeToken(argThat(anything)))
+          .thenAnswer((final _) => Future.value(actCredentials));
+
+      final result = await auth0.customTokenExchange(
+          subjectToken: 'external-token-456',
+          subjectTokenType: 'urn:example:custom-token',
+          actor: const ActorToken(
+              token: 'actor-token-789',
+              tokenType: 'urn:ietf:params:oauth:token-type:id_token'));
+
+      expect(result.user.actor, isNotNull);
+      expect(result.user.actor!.sub, 'actor-agent-123');
+      expect(result.user.actor!.extraClaims['org'], 'auth0');
+      expect(result.user.actor!.actor, isNotNull);
+      expect(result.user.actor!.actor!.sub, 'delegated-agent-456');
+      expect(result.user.actor!.actor!.extraClaims['role'], 'admin');
+      expect(result.user.customClaims?.containsKey('act'), isNot(true));
+    });
+
     test('customTokenExchange handles empty scopes correctly', () async {
       when(mockClientProxy.exchangeToken(any))
           .thenAnswer((final _) => Future.value(webCredentials));

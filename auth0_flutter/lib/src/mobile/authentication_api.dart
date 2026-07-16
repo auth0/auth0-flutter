@@ -388,6 +388,23 @@ class AuthenticationApi {
   /// * [scopes] defaults to `openid profile email`. You can override this to
   ///   specify a different set of scopes.
   ///
+  /// ## Delegation and impersonation
+  ///
+  /// For delegation or impersonation scenarios, where one principal acts on
+  /// behalf of another (for example, an AI agent acting on behalf of a user),
+  /// provide an [actor]:
+  ///
+  /// * [actor] the acting party, as an [ActorToken] bundling the token with its
+  ///   type (for example, `ActorToken(token: '...', tokenType:
+  ///   'urn:ietf:params:oauth:token-type:id_token')`).
+  ///
+  /// When present, the resulting ID token may contain an `act` claim, exposed
+  /// via [Credentials.user] `.actor`.
+  ///
+  /// **Note:** When an actor token is provided, Auth0 does not issue a refresh
+  /// token regardless of whether `offline_access` is in [scopes], so
+  /// [Credentials.refreshToken] will be `null` in this flow.
+  ///
   /// ## Usage example
   ///
   /// ```dart
@@ -411,14 +428,16 @@ class AuthenticationApi {
     final String? audience,
     final Set<String> scopes = const {'openid', 'profile', 'email'},
     final String? organization,
+    final ActorToken? actor,
   }) =>
-      Auth0FlutterAuthPlatform.instance.customTokenExchange(_createApiRequest(
-          AuthCustomTokenExchangeOptions(
+      Auth0FlutterAuthPlatform.instance.customTokenExchange(
+          _createApiRequest(AuthCustomTokenExchangeOptions(
               subjectToken: subjectToken,
               subjectTokenType: subjectTokenType,
               audience: audience,
               scopes: scopes,
-              organization: organization)));
+              organization: organization,
+              actor: actor)));
 
   /// Initiates a reset of password of the user with the specific [email]
   /// address in the specific [connection].

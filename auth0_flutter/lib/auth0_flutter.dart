@@ -11,6 +11,7 @@ import 'src/version.dart';
 
 export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
     show
+        ActorToken,
         AuthenticationMethod,
         AuthenticationMethodType,
         ApiException,
@@ -41,6 +42,7 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         SSOCredentials,
         ApiCredentials,
         UserProfile,
+        UserActor,
         WebAuthenticationException,
         PasskeyEnrollmentChallenge,
         MyAccountPasskeyAuthenticationMethod,

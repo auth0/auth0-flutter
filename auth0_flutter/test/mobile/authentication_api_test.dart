@@ -376,6 +376,46 @@ void main() {
     });
   });
 
+  group('customTokenExchange', () {
+    test('passes actor token and type through to the platform', () async {
+      when(mockedPlatform.customTokenExchange(any))
+          .thenAnswer((final _) async => TestPlatform.loginResult);
+
+      await Auth0('test-domain', 'test-clientId').api.customTokenExchange(
+            subjectToken: 'subject-token',
+            subjectTokenType: 'urn:acme:legacy-token',
+            actor: const ActorToken(
+              token: 'actor-token',
+              tokenType: 'urn:ietf:params:oauth:token-type:id_token',
+            ),
+          );
+
+      final verificationResult =
+          verify(mockedPlatform.customTokenExchange(captureAny))
+              .captured
+              .single as ApiRequest<AuthCustomTokenExchangeOptions>;
+      expect(verificationResult.options.actor?.token, 'actor-token');
+      expect(verificationResult.options.actor?.tokenType,
+          'urn:ietf:params:oauth:token-type:id_token');
+    });
+
+    test('leaves actor null when omitted', () async {
+      when(mockedPlatform.customTokenExchange(any))
+          .thenAnswer((final _) async => TestPlatform.loginResult);
+
+      await Auth0('test-domain', 'test-clientId').api.customTokenExchange(
+            subjectToken: 'subject-token',
+            subjectTokenType: 'urn:acme:legacy-token',
+          );
+
+      final verificationResult =
+          verify(mockedPlatform.customTokenExchange(captureAny))
+              .captured
+              .single as ApiRequest<AuthCustomTokenExchangeOptions>;
+      expect(verificationResult.options.actor, isNull);
+    });
+  });
+
   group('userInfo', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.userInfo(any))
@@ -601,6 +641,29 @@ void main() {
       expect(verificationResult.options.organization, 'test-org');
       expect(verificationResult.options.userMetadata, {'plan': 'gold'});
       expect(result, TestPlatform.passkeySignupChallengeResult);
+    });
+  });
+
+  group('CTE delegation types are exported from the package barrel', () {
+    // Guards against a regression in the `show` list of
+    // `package:auth0_flutter/auth0_flutter.dart` (imported at the top of this
+    // file). If `ActorToken` or `UserActor` were dropped from the export, this
+    // group would fail to compile.
+    test('ActorToken is usable via the package barrel', () {
+      const actor = ActorToken(
+          token: 'actor-token', tokenType: 'urn:example:token-type');
+      expect(actor.token, 'actor-token');
+      expect(actor.tokenType, 'urn:example:token-type');
+    });
+
+    test('UserActor is usable via the package barrel', () {
+      const actor = UserActor(
+          sub: 'actor-agent-123',
+          actor: UserActor(sub: 'delegated-agent-456'),
+          extraClaims: {'org': 'auth0'});
+      expect(actor.sub, 'actor-agent-123');
+      expect(actor.actor?.sub, 'delegated-agent-456');
+      expect(actor.extraClaims['org'], 'auth0');
     });
   });
 }

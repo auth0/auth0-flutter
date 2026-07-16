@@ -1,4 +1,5 @@
 export 'src/account.dart';
+export 'src/actor_token.dart';
 export 'src/api_credentials.dart';
 export 'src/auth/api_exception.dart';
 export 'src/auth/auth_custom_token_exchange_options.dart';
@@ -94,6 +95,7 @@ export 'src/request/dpop_request.dart';
 export 'src/request/request.dart';
 export 'src/request/request_options.dart';
 export 'src/sso_credentials.dart';
+export 'src/user_actor.dart';
 export 'src/user_agent.dart';
 export 'src/user_profile.dart';
 export 'src/web-auth/custom_tabs_options.dart';

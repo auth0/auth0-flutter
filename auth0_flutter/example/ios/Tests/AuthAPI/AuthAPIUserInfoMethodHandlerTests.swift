@@ -75,7 +75,8 @@ extension AuthAPIUserInfoMethodHandlerTests {
             UserInfoProperty.phoneNumberVerified.rawValue: true,
             UserInfoProperty.address.rawValue: ["foo": "bar"],
             UserInfoProperty.updatedAt.rawValue: "2022-04-15T03:15:51.787Z",
-            UserInfoProperty.customClaims.rawValue: ["foo": "bar"]
+            UserInfoProperty.customClaims.rawValue: ["foo": "bar"],
+            UserInfoProperty.act.rawValue: ["sub": "actor-sub"]
         ]
         let userInfo = UserInfo(json: data)!
         let expectation = self.expectation(description: "Produced a user profile")

@@ -140,6 +140,20 @@ extension UserInfo {
         data[UserInfoProperty.address] = address
         data[UserInfoProperty.updatedAt] = updatedAt?.asISO8601String
         data[UserInfoProperty.customClaims] = customClaims?.filter { !claimsToFilter.contains($0.key) }
+        data[UserInfoProperty.act] = act?.asDictionary()
+        return data
+    }
+}
+
+extension ActClaim {
+    func asDictionary() -> [String: Any] {
+        var data: [String: Any] = ["sub": sub]
+        if let act = act {
+            data["act"] = act.asDictionary()
+        }
+        for (key, value) in additionalClaims {
+            data[key] = value
+        }
         return data
     }
 }
