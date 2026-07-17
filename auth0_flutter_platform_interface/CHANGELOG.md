@@ -1,5 +1,13 @@
 # Change Log
 
+## [afpi-v2.5.0](https://github.com/auth0/auth0-flutter/tree/afpi-v2.5.0) (2026-07-17)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.4.0...afpi-v2.5.0)
+
+**Added**
+- feat: Swift Package Manager dependency support for Flutter iOS/macOS SDK [\#893](https://github.com/auth0/auth0-flutter/pull/893) ([NandanPrabhu](https://github.com/NandanPrabhu))
+- feat: Add custom token exchange delegation and impersonation support [\#891](https://github.com/auth0/auth0-flutter/pull/891) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: Add Multi-Factor Authentication (MFA) support for mobile [\#872](https://github.com/auth0/auth0-flutter/pull/872) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
 ## [afpi-v2.4.0](https://github.com/auth0/auth0-flutter/tree/afpi-v2.4.0) (2026-07-03)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.3.0...afpi-v2.4.0)
 
