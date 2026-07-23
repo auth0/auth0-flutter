@@ -11,7 +11,7 @@ let package = Package(
         .library(name: "auth0-flutter", targets: ["auth0_flutter"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/auth0/Auth0.swift", exact: "2.23.0"),
+        .package(url: "https://github.com/auth0/Auth0.swift", exact: "2.24.1"),
         .package(url: "https://github.com/auth0/JWTDecode.swift", exact: "3.3.0"),
         .package(url: "https://github.com/auth0/SimpleKeychain", exact: "1.3.0"),
     ],

@@ -82,18 +82,7 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
   private val processDeathCallback = object : Callback<Credentials, AuthenticationException> {
     override fun onSuccess(credentials: Credentials) {
-      val scopes = credentials.scope?.split(" ") ?: listOf()
-      val formattedDate = credentials.expiresAt.toInstant().toString()
-
-      val credentialsMap = mapOf(
-        "accessToken" to credentials.accessToken,
-        "idToken" to credentials.idToken,
-        "refreshToken" to credentials.refreshToken,
-        "userProfile" to credentials.user.toMap(),
-        "expiresAt" to formattedDate,
-        "scopes" to scopes,
-        "tokenType" to credentials.type
-      )
+      val credentialsMap = credentials.toMap()
 
       if (dartReady) {
         webAuthMethodChannel.invokeMethod("webAuth#onLoginResult", credentialsMap)

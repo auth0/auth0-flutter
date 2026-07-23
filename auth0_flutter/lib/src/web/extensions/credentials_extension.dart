@@ -13,6 +13,17 @@ extension CredentialsExtension on Credentials {
     final expiresAt = DateTime.now().add(Duration(seconds: expiresIn));
     final claims = JWT.decode(webCredentials.id_token);
     final user = UserProfileExtension.fromClaims(claims);
+    // IPSIE session_expiry: an absolute Unix-seconds ceiling asserted by the
+    // upstream IdP. auth0-spa-js (>= 2.22.0) enforces it on silent renewal;
+    // here we surface the value so app code can read
+    // `credentials.sessionExpiry`.
+    final sessionExpiryClaim = claims['session_expiry'];
+    final sessionExpiry = sessionExpiryClaim is num
+        ? DateTime.fromMillisecondsSinceEpoch(
+            sessionExpiryClaim.toInt() * 1000,
+            isUtc: true,
+          )
+        : null;
     return Credentials(
         idToken: webCredentials.id_token,
         accessToken: webCredentials.access_token,
@@ -20,6 +31,7 @@ extension CredentialsExtension on Credentials {
         user: user,
         refreshToken: webCredentials.refresh_token,
         scopes: {...webCredentials.scope?.splitBySingleSpace() ?? []},
-        tokenType: webCredentials.token_type ?? 'Bearer');
+        tokenType: webCredentials.token_type ?? 'Bearer',
+        sessionExpiry: sessionExpiry);
   }
 }

@@ -373,6 +373,8 @@ Finally, in your `index.html` add the following `<script>` tag:
 
 > ⚠️ If you use [Custom Token Exchange](EXAMPLES.md#custom-token-exchange) with delegation/impersonation (an actor token), you must reference `auth0-spa-js` **2.20.0 or later**. Actor-token support was added to the underlying SPA SDK in [2.20.0](https://github.com/auth0/auth0-spa-js/releases/tag/v2.20.0); older versions silently drop the actor token, so the returned ID token has no `act` claim and `credentials.user.actor` is `null`.
 
+> ⚠️ Enforcement of the [`session_expiry` upstream-IdP session ceiling](EXAMPLES.md#-session-expiry-from-an-upstream-idp) requires `auth0-spa-js` **2.22.0 or later** on the web. Support was added to the underlying SPA SDK in [2.22.0](https://github.com/auth0/auth0-spa-js/releases/tag/v2.22.0).
+
 ### Logging in
 
 #### 📱 Mobile/macOS

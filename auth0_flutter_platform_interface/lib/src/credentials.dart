@@ -48,6 +48,25 @@ class Credentials {
   final UserProfile user;
   final String tokenType;
 
+  /// The absolute date and time at which the upstream Identity Provider (IdP)
+  /// session expires, when the connection has **"Use ID Token for Session
+  /// Expiry"** enabled (`id_token_session_expiry_supported: true`).
+  ///
+  /// This is derived from the `session_expiry` claim (a Unix-seconds timestamp)
+  /// in the ID token and acts as a hard ceiling on the local session: the
+  /// underlying native SDK treats the credentials as expired once this time is
+  /// reached and will not renew them past it, regardless of [expiresAt].
+  ///
+  /// It is layered *on top of* the access-token [expiresAt] and any idle/
+  /// absolute timeouts — not a replacement for them.
+  ///
+  /// This is `null` when the claim is absent (the connection option is not
+  /// enabled, or the session predates the feature). A `null` value means
+  /// **no ceiling** and must never be treated as an already-expired session.
+  ///
+  /// [Read more about upstream IdP session expiry](https://auth0.com/docs).
+  final DateTime? sessionExpiry;
+
   Credentials({
     required this.idToken,
     required this.accessToken,
@@ -56,6 +75,7 @@ class Credentials {
     this.scopes = const {},
     required this.user,
     required this.tokenType,
+    this.sessionExpiry,
   });
 
   factory Credentials.fromMap(final Map<dynamic, dynamic> result) =>
@@ -68,6 +88,9 @@ class Credentials {
         user: UserProfile.fromMap(Map<String, dynamic>.from(
             result['userProfile'] as Map<dynamic, dynamic>)),
         tokenType: result['tokenType'] as String,
+        sessionExpiry: result['sessionExpiry'] == null
+            ? null
+            : DateTime.parse(result['sessionExpiry'] as String).toUtc(),
       );
 
   Map<String, dynamic> toMap() => {
@@ -78,5 +101,6 @@ class Credentials {
         'scopes': scopes.toList(),
         'userProfile': user.toMap(),
         'tokenType': tokenType,
+        'sessionExpiry': sessionExpiry?.toUtc().toIso8601String(),
       };
 }

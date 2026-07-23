@@ -6,6 +6,7 @@ enum CredentialsProperty: String, CaseIterable {
     case expiresAt
     case scopes
     case tokenType
+    case sessionExpiry
 }
 
 enum SSOCredentialsProperty: String, CaseIterable {

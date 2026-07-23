@@ -347,6 +347,67 @@ class GetCredentialsRequestHandlerTest {
     }
 
     @Test
+    fun `should include sessionExpiry when the session_expiry claim is present`() {
+        val options = hashMapOf<String, Any>()
+        val handler = GetCredentialsRequestHandler()
+        val mockResult = mock<Result>()
+        val mockAccount = mock<Auth0>()
+        val mockCredentialsManager = mock<SecureCredentialsManager>()
+        val request = MethodCallRequest(account = mockAccount, options)
+        // 2023-11-02T10:00:00Z == 1698919200 Unix seconds.
+        val sessionExpirySeconds = 1698919200L
+        val idToken = JwtTestUtils.createJwt(
+            claims = mapOf("name" to "John Doe"),
+            numberClaims = mapOf("session_expiry" to sessionExpirySeconds)
+        )
+        val credentials = Credentials(idToken, "test", "", null, Date(), "scope1")
+
+        whenever(mockCredentialsManager.getCredentials(isNull(), anyInt(), anyMap(), any())).thenAnswer {
+            val callback = it.getArgument<Callback<Credentials, CredentialsManagerException>>(3)
+            callback.onSuccess(credentials)
+        }
+
+        handler.handle(mockCredentialsManager, mock(), request, mockResult)
+
+        val captor = argumentCaptor<Map<String, *>>()
+        verify(mockResult).success(captor.capture())
+
+        MatcherAssert.assertThat(
+            captor.firstValue["sessionExpiry"] as String,
+            CoreMatchers.equalTo(
+                java.time.Instant.ofEpochSecond(sessionExpirySeconds).toString()
+            )
+        )
+    }
+
+    @Test
+    fun `should omit sessionExpiry when the session_expiry claim is absent`() {
+        val options = hashMapOf<String, Any>()
+        val handler = GetCredentialsRequestHandler()
+        val mockResult = mock<Result>()
+        val mockAccount = mock<Auth0>()
+        val mockCredentialsManager = mock<SecureCredentialsManager>()
+        val request = MethodCallRequest(account = mockAccount, options)
+        val idToken = JwtTestUtils.createJwt(claims = mapOf("name" to "John Doe"))
+        val credentials = Credentials(idToken, "test", "", null, Date(), "scope1")
+
+        whenever(mockCredentialsManager.getCredentials(isNull(), anyInt(), anyMap(), any())).thenAnswer {
+            val callback = it.getArgument<Callback<Credentials, CredentialsManagerException>>(3)
+            callback.onSuccess(credentials)
+        }
+
+        handler.handle(mockCredentialsManager, mock(), request, mockResult)
+
+        val captor = argumentCaptor<Map<String, *>>()
+        verify(mockResult).success(captor.capture())
+
+        MatcherAssert.assertThat(
+            captor.firstValue.containsKey("sessionExpiry"),
+            CoreMatchers.equalTo(false)
+        )
+    }
+
+    @Test
     fun `should call result success on success without scopes`() {
         val options = hashMapOf<String, Any>()
         val handler = GetCredentialsRequestHandler()
