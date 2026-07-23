@@ -1,5 +1,6 @@
 @Tags(['browser'])
 
+import 'dart:convert';
 import 'dart:js_interop';
 import 'package:auth0_flutter/src/web/extensions/credentials_extension.dart';
 import 'package:auth0_flutter/src/web/extensions/string_extension.dart';
@@ -10,6 +11,14 @@ import 'package:flutter_test/flutter_test.dart';
 const idToken =
     'HEADER.eyJzdWIiOiJjb20uc29td2hlcmUuZmFyLmJleW9uZDphcGkiLCJpc3Mi'
     'OiJhdXRoMCIsInVzZXJfcm9sZSI6ImFkbWluIn0.SIGNATURE';
+
+/// Builds a JWT-shaped string whose payload contains the given [claims].
+String _tokenWithClaims(final Map<String, dynamic> claims) {
+  final body = <String, dynamic>{'sub': '123', ...claims};
+  final payload =
+      base64Url.encode(utf8.encode(jsonEncode(body))).replaceAll('=', '');
+  return 'HEADER.$payload.SIGNATURE';
+}
 
 void main() {
   group('CredentialsExtension', () {
@@ -52,6 +61,33 @@ void main() {
 
       expect(result.refreshToken, refreshToken);
       expect(result.scopes, {...scope.splitBySingleSpace()});
+    });
+
+    test('decodes sessionExpiry from the session_expiry claim', () {
+      // 2023-11-02T10:00:00Z == 1698919200 Unix seconds.
+      const sessionExpirySeconds = 1698919200;
+      final webCredentials = WebCredentials(
+        access_token: 'foo',
+        id_token: _tokenWithClaims({'session_expiry': sessionExpirySeconds}),
+        expires_in: 3600.toJS,
+      );
+      final result = CredentialsExtension.fromWeb(webCredentials);
+
+      expect(result.sessionExpiry, isNotNull);
+      expect(result.sessionExpiry!.isUtc, true);
+      expect(result.sessionExpiry!.millisecondsSinceEpoch,
+          sessionExpirySeconds * 1000);
+    });
+
+    test('sessionExpiry is null when the claim is absent', () {
+      final webCredentials = WebCredentials(
+        access_token: 'foo',
+        id_token: _tokenWithClaims({}),
+        expires_in: 3600.toJS,
+      );
+      final result = CredentialsExtension.fromWeb(webCredentials);
+
+      expect(result.sessionExpiry, isNull);
     });
   });
 }

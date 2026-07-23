@@ -69,6 +69,40 @@ void main() {
         isA<Credentials>(),
       );
     });
+
+    test('sessionExpiry is a UTC DateTime when present', () async {
+      const isoDateTimeString = '2023-11-01T22:16:35.760Z';
+      final credentials = Credentials.fromMap({
+        'accessToken': 'accessToken',
+        'idToken': 'idToken',
+        'refreshToken': 'refreshToken',
+        'expiresAt': isoDateTimeString,
+        'scopes': ['a'],
+        'userProfile': {'sub': '123', 'name': 'John Doe'},
+        'tokenType': 'Bearer',
+        'sessionExpiry': '2023-11-02T10:00:00.000Z',
+      });
+
+      expect(credentials.sessionExpiry, isNotNull);
+      expect(credentials.sessionExpiry!.isUtc, true);
+      expect(credentials.sessionExpiry,
+          DateTime.utc(2023, 11, 2, 10));
+    });
+
+    test('sessionExpiry is null when the claim is absent', () async {
+      const isoDateTimeString = '2023-11-01T22:16:35.760Z';
+      final credentials = Credentials.fromMap({
+        'accessToken': 'accessToken',
+        'idToken': 'idToken',
+        'refreshToken': 'refreshToken',
+        'expiresAt': isoDateTimeString,
+        'scopes': ['a'],
+        'userProfile': {'sub': '123', 'name': 'John Doe'},
+        'tokenType': 'Bearer',
+      });
+
+      expect(credentials.sessionExpiry, isNull);
+    });
   });
 
   group('toMap', () {
@@ -84,6 +118,33 @@ void main() {
           tokenType: 'Bearer');
 
       expect(credentials.toMap()['expiresAt'], '2023-11-01T22:16:35.760Z');
+    });
+
+    test('sessionExpiry is an ISO 8601 UTC date when set', () async {
+      final credentials = Credentials(
+          accessToken: 'accessToken',
+          idToken: 'idToken',
+          refreshToken: 'refreshToken',
+          expiresAt: DateTime(2023, 11, 1, 22, 16, 35, 760),
+          scopes: {'a'},
+          user: const UserProfile(sub: '123', name: 'John Doe'),
+          tokenType: 'Bearer',
+          sessionExpiry: DateTime.utc(2023, 11, 2, 10));
+
+      expect(credentials.toMap()['sessionExpiry'], '2023-11-02T10:00:00.000Z');
+    });
+
+    test('sessionExpiry is null in the map when not set', () async {
+      final credentials = Credentials(
+          accessToken: 'accessToken',
+          idToken: 'idToken',
+          refreshToken: 'refreshToken',
+          expiresAt: DateTime(2023, 11, 1, 22, 16, 35, 760),
+          scopes: {'a'},
+          user: const UserProfile(sub: '123', name: 'John Doe'),
+          tokenType: 'Bearer');
+
+      expect(credentials.toMap()['sessionExpiry'], isNull);
     });
   });
 }

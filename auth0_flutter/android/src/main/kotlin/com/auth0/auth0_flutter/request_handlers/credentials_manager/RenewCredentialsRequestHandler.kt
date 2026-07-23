@@ -28,19 +28,7 @@ class RenewCredentialsRequestHandler : CredentialsManagerRequestHandler {
             }
 
             override fun onSuccess(credentials: Credentials) {
-                val scopes = credentials.scope?.split(" ") ?: listOf()
-                val formattedDate = credentials.expiresAt.toInstant().toString()
-                result.success(
-                    mapOf(
-                        "accessToken" to credentials.accessToken,
-                        "idToken" to credentials.idToken,
-                        "refreshToken" to credentials.refreshToken,
-                        "userProfile" to credentials.user.toMap(),
-                        "expiresAt" to formattedDate,
-                        "scopes" to scopes,
-                        "tokenType" to credentials.type
-                    )
-                )
+                result.success(credentials.toMap())
             }
         })
     }
