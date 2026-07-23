@@ -120,9 +120,13 @@ void StartPipeServer() {
       sa.lpSecurityDescriptor = pSD;
       sa.bInheritHandle       = FALSE;
 
+      // FILE_FLAG_FIRST_PIPE_INSTANCE causes this call to fail if a pipe with
+      // this name already exists, preventing an attacker from squatting the
+      // name before the app starts and having later client connections
+      // round-robin onto their instance instead of ours.
       HANDLE hPipe = CreateNamedPipeW(
           kRedirectPipeName,
-          PIPE_ACCESS_INBOUND,
+          PIPE_ACCESS_INBOUND | FILE_FLAG_FIRST_PIPE_INSTANCE,
           PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_WAIT,
           1, 0, 0, 0, &sa);
 
@@ -130,6 +134,11 @@ void StartPipeServer() {
       LocalFree(pSD);
 
       if (hPipe == INVALID_HANDLE_VALUE) {
+        // ERROR_ACCESS_DENIED here means a pipe instance with this name
+        // already existed (e.g. squatted before this app started, or a
+        // stale instance from another process) — refuse to run the
+        // redirect-forwarding thread rather than risk operating alongside
+        // an attacker-controlled instance.
         return;
       }
 
