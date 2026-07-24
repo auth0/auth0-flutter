@@ -22,14 +22,12 @@
 #include "../id_token_signature_validator.h"
 #include "../id_token_validator.h"
 
-#include <cpprest/http_listener.h>
+#include <httplib.h>
 
 #include <algorithm>
+#include <chrono>
 #include <string>
-
-using web::http::experimental::listener::http_listener;
-using web::http::http_response;
-using web::http::status_codes;
+#include <thread>
 
 using namespace auth0_flutter;
 using ::testing::HasSubstr;
@@ -236,7 +234,7 @@ TEST(IdTokenSignatureValidatorTest, HeaderIsValidBase64ButNotJsonThrowsDecodeMes
 
 TEST(IdTokenSignatureValidatorTest, HeaderIsJsonArrayNotObjectThrowsDecodeMessage)
 {
-    // A JSON array [] is valid JSON but not a JWT header object; cpprestsdk
+    // A JSON array [] is valid JSON but not a JWT header object; nlohmann::json
     // should reject it when accessing fields, or we catch the parse difference.
     std::string token = Base64UrlEncode("[1,2,3]") + ".payload.sig";
     try
@@ -672,46 +670,60 @@ TEST(IdTokenSignatureValidatorTest, Step3FailureThrowsIdTokenValidationException
 // which avoids long test timeouts.
 //
 // HTTP 5xx, malformed JSON, and missing 'keys' array are tested with a real
-// cpprestsdk http_listener spun up inline.  Each test binds a unique port so
+// httplib::Server spun up inline.  Each test binds a unique port so
 // that the in-process g_jwksCache cannot serve a stale entry from a prior run.
 // ===========================================================================
 
 // ---------------------------------------------------------------------------
-// TestJwksServer — RAII HTTP listener for step-4 tests
+// TestJwksServer — RAII HTTP server for step-4 tests
 //
-// Starts a cpprestsdk http_listener on localhost:<port>.  Every GET request
+// Starts an httplib::Server on localhost:<port>.  Every GET request
 // receives the caller-supplied HTTP status code and response body.
-// Destructor closes the listener; any close() error is swallowed so that test
+// Destructor stops the server and joins its background thread so that test
 // teardown is always clean.
 // ---------------------------------------------------------------------------
 
 class TestJwksServer
 {
 public:
-    TestJwksServer(int port, web::http::status_code status, const std::string &body)
-        : uri_("http://127.0.0.1:" + std::to_string(port) + "/jwks.json"),
-          listener_(utility::conversions::to_string_t(uri_))
+    TestJwksServer(int port, int status, const std::string &body)
+        : uri_("http://127.0.0.1:" + std::to_string(port) + "/jwks.json")
     {
-        listener_.support(
-            [status, body](web::http::http_request req)
+        server_.Get("/jwks.json",
+            [status, body](const httplib::Request &, httplib::Response &res)
             {
-                http_response resp(status);
-                resp.set_body(body, "application/json");
-                req.reply(resp);
+                res.status = status;
+                res.set_content(body, "application/json");
             });
-        listener_.open().wait();
+
+        serverThread_ = std::thread([this, port]() {
+            server_.listen("127.0.0.1", port);
+        });
+
+        // listen() runs the accept loop on the background thread above and
+        // only starts accepting once bound — wait for that so the test's
+        // immediate follow-up request doesn't race the bind.
+        while (!server_.is_running())
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        }
     }
 
     ~TestJwksServer()
     {
-        try { listener_.close().wait(); } catch (...) {}
+        server_.stop();
+        if (serverThread_.joinable())
+        {
+            serverThread_.join();
+        }
     }
 
     const std::string &uri() const { return uri_; }
 
 private:
-    std::string   uri_;
-    http_listener listener_;
+    std::string uri_;
+    httplib::Server server_;
+    std::thread serverThread_;
 };
 
 // Build a JWT whose header passes steps 1-3 so the validator reaches step 4.
@@ -751,7 +763,7 @@ TEST(IdTokenSignatureValidatorJwksTest, ThrowsWhenJwksEndpointIsUnreachable)
 TEST(IdTokenSignatureValidatorJwksTest, ThrowsIdTokenValidationExceptionNotStdException)
 {
     // A network failure must be wrapped in IdTokenValidationException, not
-    // propagated as a raw cpprestsdk or std::exception.
+    // propagated as a raw httplib or std::exception.
     const std::string unreachableJwksUri =
         "http://127.0.0.1:9/jwks.json";
 
@@ -779,7 +791,7 @@ TEST(IdTokenSignatureValidatorJwksTest, ThrowsOnHttp5xxResponse)
 {
     // Listener returns HTTP 500; FetchJwksFromNetwork should throw
     // IdTokenValidationException("Failed to fetch JWKS: HTTP 500").
-    TestJwksServer server(19081, status_codes::InternalError, "");
+    TestJwksServer server(19081, 500, "");
     std::string token = MakeValidHeaderJwt("kid-5xx");
 
     try
@@ -803,7 +815,7 @@ TEST(IdTokenSignatureValidatorJwksTest, ThrowsOnMalformedJsonResponse)
     // Listener returns HTTP 200 with a body that is not valid JSON.
     // extract_json() throws; the catch in ValidateIdTokenSignature wraps it as
     // "Failed to fetch JWKS: <parse error>".
-    TestJwksServer server(19082, status_codes::OK, "not-valid-json!!!");
+    TestJwksServer server(19082, 200, "not-valid-json!!!");
     std::string token = MakeValidHeaderJwt("kid-malformed");
 
     try
@@ -827,7 +839,7 @@ TEST(IdTokenSignatureValidatorJwksTest, ThrowsWhenJwksResponseMissingKeysArray)
     // Listener returns a valid JSON object that has no "keys" field.
     // FindKeyByKid detects this and throws
     // IdTokenValidationException("Invalid JWKS response: missing 'keys' array").
-    TestJwksServer server(19083, status_codes::OK, R"({"foo":"bar"})");
+    TestJwksServer server(19083, 200, R"({"foo":"bar"})");
     std::string token = MakeValidHeaderJwt("kid-no-keys");
 
     try
@@ -875,7 +887,7 @@ TEST(IdTokenSignatureValidatorJwksTest, SkipsKeyWithUseEncryption)
         ]
     })";
 
-    TestJwksServer server(19084, status_codes::OK, jwksJson);
+    TestJwksServer server(19084, 200, jwksJson);
     std::string token = MakeValidHeaderJwt("test-kid");
 
     try
@@ -910,7 +922,7 @@ TEST(IdTokenSignatureValidatorJwksTest, SkipsKeyWithWrongAlgorithm)
         ]
     })";
 
-    TestJwksServer server(19085, status_codes::OK, jwksJson);
+    TestJwksServer server(19085, 200, jwksJson);
     std::string token = MakeValidHeaderJwt("test-kid");
 
     try
@@ -941,7 +953,7 @@ TEST(IdTokenSignatureValidatorJwksTest, AcceptsKeyWithoutUseField)
         ]
     })";
 
-    TestJwksServer server(19086, status_codes::OK, jwksJson);
+    TestJwksServer server(19086, 200, jwksJson);
     std::string token = MakeValidHeaderJwt("test-kid");
 
     try

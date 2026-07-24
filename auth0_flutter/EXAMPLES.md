@@ -503,7 +503,7 @@ cd C:\vcpkg
 setx VCPKG_ROOT "C:\vcpkg"
 ```
 
-The plugin's `vcpkg.json` manifest automatically pulls the required packages (`cpprestsdk`, `openssl`, `boost-system`, `boost-date-time`, `boost-regex`) at build time — no manual `vcpkg install` is needed.
+The plugin's `vcpkg.json` manifest automatically pulls the required packages (`cpp-httplib`, `nlohmann-json`, `openssl`) at build time — no manual `vcpkg install` is needed.
 
 #### 2. Configure your app's CMakeLists.txt
 
@@ -525,7 +525,7 @@ project(your_app LANGUAGES CXX)
 # ... rest of your CMakeLists.txt ...
 ```
 
-> ⚠️ The `CMAKE_TOOLCHAIN_FILE` line **must** appear before `project()`. If it appears after, CMake will have already configured the compiler and vcpkg packages will not be found, resulting in build errors like `Could not find a package configuration file provided by "cpprestsdk"`.
+> ⚠️ The `CMAKE_TOOLCHAIN_FILE` line **must** appear before `project()`. If it appears after, CMake will have already configured the compiler and vcpkg packages will not be found, resulting in build errors like `Could not find a package configuration file provided by "httplib"`.
 
 #### 3. Register the custom URL scheme (protocol handler)
 

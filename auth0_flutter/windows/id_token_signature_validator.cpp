@@ -15,8 +15,8 @@
 #include <openssl/evp.h>
 #include <openssl/param_build.h>
 
-#include <cpprest/http_client.h>
-#include <cpprest/json.h>
+#include <httplib.h>
+#include <nlohmann/json.hpp>
 
 #include <chrono>
 #include <mutex>
@@ -24,6 +24,7 @@
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace auth0_flutter
@@ -37,7 +38,7 @@ namespace auth0_flutter
     {
         struct JwksCacheEntry
         {
-            web::json::value jwks;
+            nlohmann::json jwks;
             std::chrono::steady_clock::time_point fetchedAt;
         };
 
@@ -92,26 +93,64 @@ namespace auth0_flutter
     // JWKS fetching
     // -------------------------------------------------------------------------
 
-    static web::json::value FetchJwksFromNetwork(const std::string &jwksUri)
+    // httplib::Client is constructed against a fixed scheme+host and takes a
+    // bare path per request, unlike cpprestsdk's http_client which accepted
+    // the full URL directly — split jwksUri into the two parts it needs.
+    static std::pair<std::string, std::string> SplitJwksUri(const std::string &uri)
     {
-        web::http::client::http_client_config config;
-        config.set_timeout(std::chrono::seconds(10));
-        web::http::client::http_client client(
-            utility::conversions::to_string_t(jwksUri), config);
+        auto schemeEnd = uri.find("://");
+        if (schemeEnd == std::string::npos)
+        {
+            throw IdTokenValidationException("Invalid JWKS URI: missing scheme");
+        }
 
-        auto response = client.request(web::http::methods::GET).get();
+        auto pathStart = uri.find('/', schemeEnd + 3);
+        if (pathStart == std::string::npos)
+        {
+            return {uri, "/"};
+        }
 
-        if (response.status_code() != web::http::status_codes::OK)
+        return {uri.substr(0, pathStart), uri.substr(pathStart)};
+    }
+
+    static nlohmann::json FetchJwksFromNetwork(const std::string &jwksUri)
+    {
+        auto [hostPart, path] = SplitJwksUri(jwksUri);
+
+        httplib::Client client(hostPart);
+        client.set_connection_timeout(10, 0);
+        client.set_read_timeout(10, 0);
+
+        auto response = client.Get(path);
+
+        // cpp-httplib returns a null Result on connection failure instead of
+        // throwing like cpprestsdk did — translate that into the same
+        // exception type/message shape callers already expect.
+        if (!response)
+        {
+            throw IdTokenValidationException(
+                "Failed to fetch JWKS: " + httplib::to_string(response.error()));
+        }
+
+        if (response->status != 200)
         {
             throw IdTokenValidationException(
                 "Failed to fetch JWKS: HTTP " +
-                std::to_string(response.status_code()));
+                std::to_string(response->status));
         }
 
-        return response.extract_json().get();
+        try
+        {
+            return nlohmann::json::parse(response->body);
+        }
+        catch (const nlohmann::json::exception &ex)
+        {
+            throw IdTokenValidationException(
+                std::string("Failed to fetch JWKS: ") + ex.what());
+        }
     }
 
-    static web::json::value FetchJwks(const std::string &jwksUri)
+    static nlohmann::json FetchJwks(const std::string &jwksUri)
     {
         auto now = std::chrono::steady_clock::now();
 
@@ -125,7 +164,7 @@ namespace auth0_flutter
             }
         }
 
-        web::json::value fresh = FetchJwksFromNetwork(jwksUri);
+        nlohmann::json fresh = FetchJwksFromNetwork(jwksUri);
 
         {
             std::lock_guard<std::mutex> lock(g_jwksCacheMutex);
@@ -136,35 +175,34 @@ namespace auth0_flutter
     }
 
     // Search JWKS for key matching kid. Validates RFC 7517 "use" and "alg" fields.
-    static web::json::value FindKeyByKid(
-        const web::json::value &jwks,
+    static nlohmann::json FindKeyByKid(
+        const nlohmann::json &jwks,
         const std::string &kid)
     {
         // Verify JWKS has "keys" array; throw if missing or not an array
-        if (!jwks.has_field(U("keys")) || !jwks.at(U("keys")).is_array())
+        if (!jwks.contains("keys") || !jwks.at("keys").is_array())
         {
             throw IdTokenValidationException("Invalid JWKS response: missing 'keys' array");
         }
 
         // Iterate through each key in the JWKS keys array
-        for (const auto &jwk : jwks.at(U("keys")).as_array())
+        for (const auto &jwk : jwks.at("keys"))
         {
             // Skip key if it doesn't have a "kid" field or "kid" is not a string
-            if (!jwk.has_field(U("kid")) || !jwk.at(U("kid")).is_string())
+            if (!jwk.contains("kid") || !jwk.at("kid").is_string())
                 continue;
 
-            // Convert key's kid value to UTF-8 string
-            std::string jwkKid =
-                utility::conversions::to_utf8string(jwk.at(U("kid")).as_string());
+            // Convert key's kid value to a string
+            std::string jwkKid = jwk.at("kid").get<std::string>();
 
             // Check if this key's kid matches the requested kid
             if (jwkKid == kid)
             {
                 // Check "use" field if present (must be "sig" for signature verification, not "enc")
-                if (jwk.has_field(U("use")) && jwk.at(U("use")).is_string())
+                if (jwk.contains("use") && jwk.at("use").is_string())
                 {
                     // Convert "use" field to string
-                    std::string use = utility::conversions::to_utf8string(jwk.at(U("use")).as_string());
+                    std::string use = jwk.at("use").get<std::string>();
                     // Skip this key if "use" is not "sig" (prevents using encryption keys for signatures)
                     if (use != "sig")
                     {
@@ -173,10 +211,10 @@ namespace auth0_flutter
                 }
 
                 // Check "alg" field if present (must be "RS256", our only supported algorithm)
-                if (jwk.has_field(U("alg")) && jwk.at(U("alg")).is_string())
+                if (jwk.contains("alg") && jwk.at("alg").is_string())
                 {
                     // Convert "alg" field to string
-                    std::string alg = utility::conversions::to_utf8string(jwk.at(U("alg")).as_string());
+                    std::string alg = jwk.at("alg").get<std::string>();
                     // Skip this key if algorithm is not RS256 (prevents using keys for unsupported algorithms)
                     if (alg != "RS256")
                     {
@@ -190,7 +228,7 @@ namespace auth0_flutter
         }
 
         // Return null if no matching kid found after checking all keys
-        return web::json::value::null();
+        return nlohmann::json(nullptr);
     }
 
     /**
@@ -289,18 +327,18 @@ namespace auth0_flutter
         const std::string &alg,
         const std::string &signingInput,
         const std::vector<uint8_t> &signatureBytes,
-        const web::json::value &jwk)
+        const nlohmann::json &jwk)
     {
         if (alg == "RS256")
         {
-            if (!jwk.has_field(U("n")) || !jwk.has_field(U("e")))
+            if (!jwk.contains("n") || !jwk.contains("e"))
             {
                 throw IdTokenValidationException(
                     "JWK is missing required RSA key material (n, e)");
             }
 
-            std::string nStr = utility::conversions::to_utf8string(jwk.at(U("n")).as_string());
-            std::string eStr = utility::conversions::to_utf8string(jwk.at(U("e")).as_string());
+            std::string nStr = jwk.at("n").get<std::string>();
+            std::string eStr = jwk.at("e").get<std::string>();
 
             std::vector<uint8_t> modulusBytes, exponentBytes;
             try
@@ -339,7 +377,7 @@ namespace auth0_flutter
         const std::string &jwksUri)
     {
         // --- 1. Extract algorithm and kid from JWT header ---
-        web::json::value header;
+        nlohmann::json header;
         try
         {
             header = DecodeJwtHeader(idToken);
@@ -351,9 +389,9 @@ namespace auth0_flutter
         }
 
         std::string alg;
-        if (header.has_field(U("alg")) && header.at(U("alg")).is_string())
+        if (header.contains("alg") && header.at("alg").is_string())
         {
-            alg = utility::conversions::to_utf8string(header.at(U("alg")).as_string());
+            alg = header.at("alg").get<std::string>();
         }
         if (alg.empty())
         {
@@ -371,9 +409,9 @@ namespace auth0_flutter
         }
 
         std::string kid;
-        if (header.has_field(U("kid")) && header.at(U("kid")).is_string())
+        if (header.contains("kid") && header.at("kid").is_string())
         {
-            kid = utility::conversions::to_utf8string(header.at(U("kid")).as_string());
+            kid = header.at("kid").get<std::string>();
         }
         if (kid.empty())
         {
@@ -382,7 +420,7 @@ namespace auth0_flutter
         }
 
         // --- 2. Fetch JWKS ---
-        web::json::value jwks;
+        nlohmann::json jwks;
         try
         {
             jwks = FetchJwks(jwksUri);
@@ -417,7 +455,7 @@ namespace auth0_flutter
         }
 
         // --- 3. Find JWK by kid ---
-        web::json::value jwk = FindKeyByKid(jwks, kid);
+        nlohmann::json jwk = FindKeyByKid(jwks, kid);
 
         if (jwk.is_null())
         {

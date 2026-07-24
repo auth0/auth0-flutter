@@ -168,14 +168,14 @@ namespace auth0_flutter
         std::string logoutUrl = BuildLogoutUrl(httpsUrl(domain), clientId, returnTo, federated);
 
         // Create new cancellation token for this logout task
-        pplx::cancellation_token token = pplx::cancellation_token::none();
+        concurrency::cancellation_token token = concurrency::cancellation_token::none();
         {
             // Lock cancellation token source during update
             std::lock_guard<std::mutex> lock(_cts_mutex);
             // Cancel any existing logout task
             _cts.cancel();
             // Create new token source for this logout task
-            _cts = pplx::cancellation_token_source{};
+            _cts = concurrency::cancellation_token_source{};
             // Get cancellation token from new source
             token = _cts.get_token();
         }
@@ -187,7 +187,7 @@ namespace auth0_flutter
         // if the handler is destroyed while the background task is still running.
         auto taskRunner = ui_task_runner_;
 
-        pplx::create_task([taskRunner, sharedResult, logoutUrl, appCustomURL, token]()
+        concurrency::create_task([taskRunner, sharedResult, logoutUrl, appCustomURL, token]()
         {
             try
             {
@@ -211,7 +211,7 @@ namespace auth0_flutter
                 }
             }
             // Catch task cancellation (engine shutdown or subsequent handle() call)
-            catch (const pplx::task_canceled &)
+            catch (const concurrency::task_canceled &)
             {
                 // Exit silently; result is no longer valid after cancellation
             }

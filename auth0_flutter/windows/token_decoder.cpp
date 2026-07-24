@@ -3,56 +3,50 @@
 #include <sstream>
 #include "time_util.h"
 Credentials DecodeTokenResponse(
-    const web::json::value &json)
+    const nlohmann::json &json)
 {
 
   Credentials creds;
 
   // ---- Required fields ----
-  if (!json.has_field(U("access_token")) || !json.at(U("access_token")).is_string())
+  if (!json.contains("access_token") || !json.at("access_token").is_string())
   {
     throw std::runtime_error("Token response missing required 'access_token' field");
   }
-  creds.accessToken =
-      utility::conversions::to_utf8string(
-          json.at(U("access_token")).as_string());
+  creds.accessToken = json.at("access_token").get<std::string>();
 
-  if (!json.has_field(U("token_type")) || !json.at(U("token_type")).is_string())
+  if (!json.contains("token_type") || !json.at("token_type").is_string())
   {
     throw std::runtime_error("Token response missing required 'token_type' field");
   }
-  creds.tokenType =
-      utility::conversions::to_utf8string(
-          json.at(U("token_type")).as_string());
+  creds.tokenType = json.at("token_type").get<std::string>();
 
   // ---- Optional fields ----
-  if (json.has_field(U("id_token")))
+  if (json.contains("id_token"))
   {
-    creds.idToken =
-        utility::conversions::to_utf8string(
-            json.at(U("id_token")).as_string());
+    creds.idToken = json.at("id_token").get<std::string>();
   }
 
-  if (json.has_field(U("refresh_token")))
+  if (json.contains("refresh_token"))
   {
-    creds.refreshToken =
-        utility::conversions::to_utf8string(
-            json.at(U("refresh_token")).as_string());
+    creds.refreshToken = json.at("refresh_token").get<std::string>();
   }
 
-  if (json.has_field(U("expires_in")) &&
-      json.at(U("expires_in")).is_integer())
+  // Use is_number() rather than a strict integer-only check: a server may
+  // legitimately emit "expires_in" as a float (e.g. 86400.0), which nlohmann
+  // would not consider is_number_integer() even though it is a whole number.
+  if (json.contains("expires_in") &&
+      json.at("expires_in").is_number())
   {
-    creds.expiresIn = json.at(U("expires_in")).as_integer();
+    creds.expiresIn = json.at("expires_in").get<int64_t>();
   }
 
   // Try expires_at from JSON
-  if (json.has_field(U("expires_at")) &&
-      json.at(U("expires_at")).is_string())
+  if (json.contains("expires_at") &&
+      json.at("expires_at").is_string())
   {
 
-    auto iso = utility::conversions::to_utf8string(
-        json.at(U("expires_at")).as_string());
+    auto iso = json.at("expires_at").get<std::string>();
 
     creds.expiresAt = ParseIso8601(iso);
   }
@@ -68,12 +62,11 @@ Credentials DecodeTokenResponse(
   // --------------------------------------------------
 
   // scope (optional, space-separated string)
-  if (json.has_field(U("scope")) &&
-      json.at(U("scope")).is_string())
+  if (json.contains("scope") &&
+      json.at("scope").is_string())
   {
 
-    auto scopeStr = utility::conversions::to_utf8string(
-        json.at(U("scope")).as_string());
+    auto scopeStr = json.at("scope").get<std::string>();
 
     std::istringstream iss(scopeStr);
     std::string s;
