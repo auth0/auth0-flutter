@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <cpprest/json.h>
+#include <nlohmann/json.hpp>
 
 #include <flutter/encodable_value.h>
 
@@ -13,7 +13,7 @@ struct JwtParts
 };
 
 JwtParts SplitJwt(const std::string &token);
-web::json::value DecodeJwtHeader(const std::string &token);
-web::json::value DecodeJwtPayload(const std::string &token);
+nlohmann::json DecodeJwtHeader(const std::string &token);
+nlohmann::json DecodeJwtPayload(const std::string &token);
 
-flutter::EncodableValue JsonToEncodable(const web::json::value &v);
+flutter::EncodableValue JsonToEncodable(const nlohmann::json &v);

@@ -14,18 +14,18 @@ class MockNetworking : public Networking
 public:
     MOCK_METHOD(NetworkResponse, post,
                 (const std::string &path,
-                 const web::json::value &body,
+                 const nlohmann::json &body,
                  const HeaderMap &headers),
                 (override));
 };
 
-static web::json::value MakeTokenResponse()
+static nlohmann::json MakeTokenResponse()
 {
-    web::json::value json;
-    json[U("access_token")] = web::json::value::string(U("test-access-token"));
-    json[U("id_token")] = web::json::value::string(U("test-id-token"));
-    json[U("token_type")] = web::json::value::string(U("Bearer"));
-    json[U("expires_in")] = web::json::value::number(86400);
+    nlohmann::json json;
+    json["access_token"] = "test-access-token";
+    json["id_token"] = "test-id-token";
+    json["token_type"] = "Bearer";
+    json["expires_in"] = 86400;
     return json;
 }
 
@@ -41,7 +41,7 @@ TEST_F(AuthenticationApiClientTest, ExchangeCodeForTokensSendsAuth0ClientHeader)
     HeaderMap capturedHeaders;
 
     EXPECT_CALL(*mockNet, post(::testing::_, ::testing::_, ::testing::_))
-        .WillOnce([&](const std::string &, const web::json::value &,
+        .WillOnce([&](const std::string &, const nlohmann::json &,
                        const HeaderMap &headers) {
             capturedHeaders = headers;
             return NetworkResponse{200, MakeTokenResponse()};
@@ -59,7 +59,7 @@ TEST_F(AuthenticationApiClientTest, ExchangeCodeForTokensOmitsHeaderWhenEmpty)
     HeaderMap capturedHeaders;
 
     EXPECT_CALL(*mockNet, post(::testing::_, ::testing::_, ::testing::_))
-        .WillOnce([&](const std::string &, const web::json::value &,
+        .WillOnce([&](const std::string &, const nlohmann::json &,
                        const HeaderMap &headers) {
             capturedHeaders = headers;
             return NetworkResponse{200, MakeTokenResponse()};
@@ -76,7 +76,7 @@ TEST_F(AuthenticationApiClientTest, ExchangeCodeForTokensPostsToCorrectPath)
     std::string capturedPath;
 
     EXPECT_CALL(*mockNet, post(::testing::_, ::testing::_, ::testing::_))
-        .WillOnce([&](const std::string &path, const web::json::value &,
+        .WillOnce([&](const std::string &path, const nlohmann::json &,
                        const HeaderMap &) {
             capturedPath = path;
             return NetworkResponse{200, MakeTokenResponse()};
@@ -90,10 +90,10 @@ TEST_F(AuthenticationApiClientTest, ExchangeCodeForTokensPostsToCorrectPath)
 
 TEST_F(AuthenticationApiClientTest, ExchangeCodeForTokensSendsCorrectBody)
 {
-    web::json::value capturedBody;
+    nlohmann::json capturedBody;
 
     EXPECT_CALL(*mockNet, post(::testing::_, ::testing::_, ::testing::_))
-        .WillOnce([&](const std::string &, const web::json::value &body,
+        .WillOnce([&](const std::string &, const nlohmann::json &body,
                        const HeaderMap &) {
             capturedBody = body;
             return NetworkResponse{200, MakeTokenResponse()};
@@ -102,17 +102,17 @@ TEST_F(AuthenticationApiClientTest, ExchangeCodeForTokensSendsCorrectBody)
     AuthenticationApiClient client("test.auth0.com", "client123", headerValue, mockNet);
     client.ExchangeCodeForTokens("https://callback", "auth-code", "verifier");
 
-    EXPECT_EQ(utility::conversions::to_utf8string(capturedBody[U("grant_type")].as_string()), "authorization_code");
-    EXPECT_EQ(utility::conversions::to_utf8string(capturedBody[U("client_id")].as_string()), "client123");
-    EXPECT_EQ(utility::conversions::to_utf8string(capturedBody[U("code")].as_string()), "auth-code");
-    EXPECT_EQ(utility::conversions::to_utf8string(capturedBody[U("redirect_uri")].as_string()), "https://callback");
-    EXPECT_EQ(utility::conversions::to_utf8string(capturedBody[U("code_verifier")].as_string()), "verifier");
+    EXPECT_EQ(capturedBody["grant_type"].get<std::string>(), "authorization_code");
+    EXPECT_EQ(capturedBody["client_id"].get<std::string>(), "client123");
+    EXPECT_EQ(capturedBody["code"].get<std::string>(), "auth-code");
+    EXPECT_EQ(capturedBody["redirect_uri"].get<std::string>(), "https://callback");
+    EXPECT_EQ(capturedBody["code_verifier"].get<std::string>(), "verifier");
 }
 
 TEST_F(AuthenticationApiClientTest, ExchangeCodeForTokensReturnsCredentials)
 {
     EXPECT_CALL(*mockNet, post(::testing::_, ::testing::_, ::testing::_))
-        .WillOnce([](const std::string &, const web::json::value &,
+        .WillOnce([](const std::string &, const nlohmann::json &,
                       const HeaderMap &) {
             return NetworkResponse{200, MakeTokenResponse()};
         });
@@ -127,12 +127,12 @@ TEST_F(AuthenticationApiClientTest, ExchangeCodeForTokensReturnsCredentials)
 
 TEST_F(AuthenticationApiClientTest, ExchangeCodeForTokensThrowsOnApiError)
 {
-    web::json::value errorBody;
-    errorBody[U("error")] = web::json::value::string(U("invalid_grant"));
-    errorBody[U("error_description")] = web::json::value::string(U("Invalid authorization code"));
+    nlohmann::json errorBody;
+    errorBody["error"] = "invalid_grant";
+    errorBody["error_description"] = "Invalid authorization code";
 
     EXPECT_CALL(*mockNet, post(::testing::_, ::testing::_, ::testing::_))
-        .WillOnce([&](const std::string &, const web::json::value &,
+        .WillOnce([&](const std::string &, const nlohmann::json &,
                        const HeaderMap &) {
             return NetworkResponse{403, errorBody};
         });
@@ -154,7 +154,7 @@ TEST_F(AuthenticationApiClientTest, ExchangeCodeForTokensThrowsOnApiError)
 TEST_F(AuthenticationApiClientTest, ExchangeCodeForTokensThrowsNetworkErrorOnException)
 {
     EXPECT_CALL(*mockNet, post(::testing::_, ::testing::_, ::testing::_))
-        .WillOnce([](const std::string &, const web::json::value &,
+        .WillOnce([](const std::string &, const nlohmann::json &,
                       const HeaderMap &) -> NetworkResponse {
             throw std::runtime_error("connection refused");
         });

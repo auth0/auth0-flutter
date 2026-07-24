@@ -17,7 +17,7 @@
 #define FLUTTER_PLUGIN_LOGOUT_WEB_AUTH_REQUEST_HANDLER_H_
 
 #include "web_auth_request_handler.h"
-#include <pplx/pplxtasks.h>
+#include <ppltasks.h>
 #include <functional>
 #include <mutex>
 
@@ -68,7 +68,7 @@ namespace auth0_flutter
     private:
         std::function<void(std::function<void()>)> ui_task_runner_;
         std::mutex _cts_mutex;
-        pplx::cancellation_token_source _cts;
+        concurrency::cancellation_token_source _cts;
     };
 
 

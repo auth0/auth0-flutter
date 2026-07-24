@@ -274,13 +274,13 @@ TEST(WaitForAuthCodeCustomSchemeTest, TimeoutReturnsError) {
 TEST(WaitForAuthCodeCustomSchemeTest, CancelsWhenTokenIsAlreadyCancelled) {
   // Pre-cancel the token before passing it to the function.
   // The polling loop checks ct.is_canceled() on the very first tick and
-  // calls pplx::cancel_current_task(), which throws pplx::task_canceled.
-  pplx::cancellation_token_source cts;
+  // calls concurrency::cancel_current_task(), which throws concurrency::task_canceled.
+  concurrency::cancellation_token_source cts;
   cts.cancel();
 
   EXPECT_THROW(
       waitForAuthCode_CustomScheme(180, "", cts.get_token()),
-      pplx::task_canceled);
+      concurrency::task_canceled);
 }
 
 // Note: The HTTP listener-based waitForAuthCode function has been removed.
@@ -585,7 +585,7 @@ TEST(WaitForAuthCodeEnvVarTest, TrailingSlashInExpectedUrlMatches) {
       L"auth0flutter://callback?code=my_code&state=s2");
 
   OAuthCallbackResult result = waitForAuthCode_CustomScheme(
-      5, "s2", pplx::cancellation_token::none(), "auth0flutter://callback/");
+      5, "s2", concurrency::cancellation_token::none(), "auth0flutter://callback/");
 
   EXPECT_TRUE(result.success);
   EXPECT_EQ(result.code, "my_code");
@@ -753,12 +753,12 @@ TEST(WaitForLogoutCallbackTest, WrongPrefixUrlIsIgnoredAndTimesOut) {
 }
 
 TEST(WaitForLogoutCallbackTest, CancelsWhenTokenIsAlreadyCancelled) {
-  pplx::cancellation_token_source cts;
+  concurrency::cancellation_token_source cts;
   cts.cancel();
 
   EXPECT_THROW(
       waitForLogoutCallback("auth0flutter://callback", 180, cts.get_token()),
-      pplx::task_canceled);
+      concurrency::task_canceled);
 }
 
 /* -------- Reader-Writer Lock Tests (Issue #4 - TOCTOU Race Prevention) -------- */
