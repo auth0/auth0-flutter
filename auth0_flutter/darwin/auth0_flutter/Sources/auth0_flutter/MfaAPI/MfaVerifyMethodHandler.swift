@@ -17,7 +17,7 @@ struct MfaVerifyMethodHandler: MethodHandler {
             return callback(FlutterError(from: .requiredArgumentMissing("grantType")))
         }
 
-        let request: Request<Credentials, MFAVerifyError>
+        let request: any TokenRequestable<Credentials, MFAVerifyError>
 
         switch grantType {
         case "otp":

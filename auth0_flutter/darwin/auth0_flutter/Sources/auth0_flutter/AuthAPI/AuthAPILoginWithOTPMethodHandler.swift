@@ -6,13 +6,16 @@ import Flutter
 import FlutterMacOS
 #endif
 
+// `Authentication.login(withOTP:mfaToken:)` was removed in Auth0.swift v3.
+// Use the dedicated `MFAClient` instead (see Auth0.swift's V3_MIGRATION_GUIDE.md).
+// `FlutterError(from: MFAVerifyError)` is defined in MfaExtensions.swift.
 struct AuthAPILoginWithOTPMethodHandler: MethodHandler {
     enum Argument: String {
         case otp
         case mfaToken
     }
 
-    let client: Authentication
+    let client: MFAClient
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
         guard let otp = arguments[Argument.otp] as? String else {
@@ -23,7 +26,7 @@ struct AuthAPILoginWithOTPMethodHandler: MethodHandler {
         }
 
         client
-            .login(withOTP: otp, mfaToken: mfaToken)
+            .verify(otp: otp, mfaToken: mfaToken)
             .start {
                 switch $0 {
                 case let .success(credentials): callback(result(from: credentials))

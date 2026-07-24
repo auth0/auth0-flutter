@@ -11,7 +11,7 @@ struct CredentialsManagerUserInfoMethodHandler: MethodHandler {
     let credentialsManager: CredentialsManager
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
-        if let user = credentialsManager.user {
+        if let user = try? credentialsManager.userProfile() {
             callback(user.asDictionary())
         } else {
             callback(nil)
