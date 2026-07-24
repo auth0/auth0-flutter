@@ -1,10 +1,8 @@
 #include "networking.h"
 
-#include <cpprest/http_client.h>
+#include <httplib.h>
 
-using namespace web;
-using namespace web::http;
-using namespace web::http::client;
+#include <stdexcept>
 
 namespace auth0_flutter
 {
@@ -15,31 +13,33 @@ HttpNetworking::HttpNetworking(std::string baseUrl, int timeoutSeconds)
 
 NetworkResponse HttpNetworking::post(
     const std::string &path,
-    const web::json::value &body,
+    const nlohmann::json &body,
     const std::map<std::string, std::string> &headers)
 {
-    http_client_config config;
-    config.set_timeout(std::chrono::seconds(timeoutSeconds_));
+    httplib::Client client(baseUrl_);
+    client.set_connection_timeout(timeoutSeconds_, 0);
+    client.set_read_timeout(timeoutSeconds_, 0);
+    client.set_write_timeout(timeoutSeconds_, 0);
 
-    http_client client(utility::conversions::to_string_t(baseUrl_), config);
-
-    http_request request(methods::POST);
-    request.set_request_uri(utility::conversions::to_string_t(path));
-    request.headers().set_content_type(U("application/json"));
-
+    httplib::Headers httpHeaders;
     for (const auto &[key, value] : headers)
     {
-        request.headers().add(
-            utility::conversions::to_string_t(key),
-            utility::conversions::to_string_t(value));
+        httpHeaders.emplace(key, value);
     }
 
-    request.set_body(body);
+    auto res = client.Post(path, httpHeaders, body.dump(), "application/json");
 
-    auto response = client.request(request).get();
-    auto json = response.extract_json().get();
+    // cpp-httplib returns a null Result on connection failure (DNS, refused
+    // connection, timeout before any response, etc.) instead of throwing like
+    // cpprestsdk did — translate that into an exception so callers (e.g.
+    // AuthenticationApiClient) can still catch it as a network error.
+    if (!res)
+    {
+        throw std::runtime_error(
+            "HTTP request failed: " + httplib::to_string(res.error()));
+    }
 
-    return {response.status_code(), json};
+    return {res->status, nlohmann::json::parse(res->body)};
 }
 
 } // namespace auth0_flutter

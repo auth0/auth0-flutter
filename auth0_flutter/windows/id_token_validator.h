@@ -11,7 +11,7 @@
 #include <string>
 #include <optional>
 #include <stdexcept>
-#include <cpprest/json.h>
+#include <nlohmann/json.hpp>
 
 namespace auth0_flutter
 {
@@ -73,6 +73,6 @@ namespace auth0_flutter
     void ValidateIdToken(
         const std::string &idToken,
         const IdTokenValidationConfig &config,
-        web::json::value *payload = nullptr);
+        nlohmann::json *payload = nullptr);
 
 } // namespace auth0_flutter

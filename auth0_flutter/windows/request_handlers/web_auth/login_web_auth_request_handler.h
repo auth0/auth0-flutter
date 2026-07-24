@@ -18,7 +18,7 @@
 #define FLUTTER_PLUGIN_LOGIN_WEB_AUTH_REQUEST_HANDLER_H_
 
 #include "web_auth_request_handler.h"
-#include <pplx/pplxtasks.h>
+#include <ppltasks.h>
 #include <functional>
 #include <mutex>
 
@@ -58,7 +58,7 @@ namespace auth0_flutter
         explicit LoginWebAuthRequestHandler(std::function<void(std::function<void()>)> post_ui_task)
             : ui_task_runner_(std::move(post_ui_task)) {}
 
-        // Cancels any in-flight pplx task so the task body stops
+        // Cancels any in-flight PPL task so the task body stops
         // before it can touch the (now-destroyed) MethodResult.
         ~LoginWebAuthRequestHandler() override {
             std::lock_guard<std::mutex> lock(_cts_mutex);
@@ -77,7 +77,7 @@ namespace auth0_flutter
     private:
         std::function<void(std::function<void()>)> ui_task_runner_;
         std::mutex _cts_mutex;
-        pplx::cancellation_token_source _cts;
+        concurrency::cancellation_token_source _cts;
     };
 
 } // namespace auth0_flutter
