@@ -4,12 +4,6 @@
 # customers of the plugin.
 cmake_minimum_required(VERSION 3.14)
 
-# CMP0167 (FindBoost deprecation) was introduced in CMake 3.27.
-# Guard it so the file stays compatible with older CMake versions.
-if(POLICY CMP0167)
-  cmake_policy(SET CMP0167 NEW)
-endif()
-
 #if (DEFINED ENV{VCPKG_ROOT} AND EXISTS "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
 #    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
 #        CACHE STRING "Vcpkg toolchain file")
@@ -40,10 +34,10 @@ list(APPEND PLUGIN_SOURCES
 )
 
 # === vcpkg dependencies ===
-# These are resolved via vcpkg.json automatically (cpprestsdk, boost)
-find_package(cpprestsdk CONFIG REQUIRED)
+# These are resolved via vcpkg.json automatically (cpp-httplib, nlohmann-json, openssl)
+find_package(httplib CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED)
-find_package(Boost REQUIRED COMPONENTS system date_time regex)
 
 # Define the plugin library target only if flutter targets are available
 if(TARGET flutter)
@@ -89,6 +83,7 @@ if(TARGET flutter)
   target_compile_definitions(${PLUGIN_NAME}
     PRIVATE
       _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
+      CPPHTTPLIB_OPENSSL_SUPPORT
   )
   # Source include directories and library dependencies.
   target_include_directories(${PLUGIN_NAME} INTERFACE
@@ -100,12 +95,10 @@ if(TARGET flutter)
   target_link_libraries(${PLUGIN_NAME} PRIVATE
     flutter
     flutter_wrapper_plugin
-    cpprestsdk::cpprest
+    httplib::httplib
+    nlohmann_json::nlohmann_json
     OpenSSL::SSL
     OpenSSL::Crypto
-    Boost::system
-    Boost::date_time
-    Boost::regex
   )
 
   # List of absolute paths to libraries that should be bundled with the plugin.
@@ -187,17 +180,16 @@ if (AUTH0_FLUTTER_ENABLE_TESTS)
 
   target_compile_definitions(${TEST_RUNNER} PRIVATE
     _SILENCE_STDEXT_ARR_ITERS_DEPRECATION_WARNING
+    CPPHTTPLIB_OPENSSL_SUPPORT
   )
 
   target_link_libraries(${TEST_RUNNER} PRIVATE
     gtest_main
     gmock
-    cpprestsdk::cpprest
+    httplib::httplib
+    nlohmann_json::nlohmann_json
     OpenSSL::SSL
     OpenSSL::Crypto
-    Boost::system
-    Boost::date_time
-    Boost::regex
   )
 
   # Link flutter_wrapper_plugin if available (when building as part of Flutter app)

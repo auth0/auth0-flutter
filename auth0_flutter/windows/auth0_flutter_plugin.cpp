@@ -61,7 +61,7 @@ namespace auth0_flutter
 
         // Pass a direct-call task runner. All operations posted through it
         // (ShellExecuteW, window focus, MethodResult callbacks) are safe to
-        // invoke from a pplx background thread, so no UI-thread dispatch is
+        // invoke from a PPL background thread, so no UI-thread dispatch is
         // required.  This avoids depending on flutter::TaskRunner / GetTaskRunner()
         // which was only introduced in Flutter 3.7 and may not exist on all
         // build environments.

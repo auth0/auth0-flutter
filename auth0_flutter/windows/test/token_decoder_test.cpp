@@ -1,20 +1,18 @@
 #include <gtest/gtest.h>
 
 #include "token_decoder.h"
-#include <cpprest/json.h>
+#include <nlohmann/json.hpp>
 #include <chrono>
-
-using web::json::value;
 
 /* ---------------- DecodeTokenResponse ---------------- */
 
 TEST(DecodeTokenResponseTest, DecodesMinimalResponse) {
   // openid is always requested, so Auth0 always returns an id_token.
   // The minimal real-world response always includes access_token, token_type, and id_token.
-  value json;
-  json[U("access_token")] = value::string(U("test_access_token"));
-  json[U("token_type")]   = value::string(U("Bearer"));
-  json[U("id_token")]     = value::string(U("test_id_token"));
+  nlohmann::json json;
+  json["access_token"] = "test_access_token";
+  json["token_type"]   = "Bearer";
+  json["id_token"]     = "test_id_token";
 
   Credentials creds = DecodeTokenResponse(json);
 
@@ -29,13 +27,13 @@ TEST(DecodeTokenResponseTest, DecodesMinimalResponse) {
 }
 
 TEST(DecodeTokenResponseTest, DecodesFullResponse) {
-  value json;
-  json[U("access_token")] = value::string(U("test_access_token"));
-  json[U("token_type")] = value::string(U("Bearer"));
-  json[U("id_token")] = value::string(U("test_id_token"));
-  json[U("refresh_token")] = value::string(U("test_refresh_token"));
-  json[U("expires_in")] = value::number(3600);
-  json[U("scope")] = value::string(U("openid profile email"));
+  nlohmann::json json;
+  json["access_token"] = "test_access_token";
+  json["token_type"] = "Bearer";
+  json["id_token"] = "test_id_token";
+  json["refresh_token"] = "test_refresh_token";
+  json["expires_in"] = 3600;
+  json["scope"] = "openid profile email";
 
   Credentials creds = DecodeTokenResponse(json);
 
@@ -57,10 +55,10 @@ TEST(DecodeTokenResponseTest, DecodesFullResponse) {
 TEST(DecodeTokenResponseTest, ComputesExpiresAtFromExpiresIn) {
   auto before = std::chrono::system_clock::now();
 
-  value json;
-  json[U("access_token")] = value::string(U("test_access_token"));
-  json[U("token_type")] = value::string(U("Bearer"));
-  json[U("expires_in")] = value::number(7200);  // 2 hours
+  nlohmann::json json;
+  json["access_token"] = "test_access_token";
+  json["token_type"] = "Bearer";
+  json["expires_in"] = 7200;  // 2 hours
 
   Credentials creds = DecodeTokenResponse(json);
 
@@ -80,10 +78,10 @@ TEST(DecodeTokenResponseTest, ComputesExpiresAtFromExpiresIn) {
 }
 
 TEST(DecodeTokenResponseTest, UsesExplicitExpiresAt) {
-  value json;
-  json[U("access_token")] = value::string(U("test_access_token"));
-  json[U("token_type")] = value::string(U("Bearer"));
-  json[U("expires_at")] = value::string(U("2025-12-31T23:59:59Z"));
+  nlohmann::json json;
+  json["access_token"] = "test_access_token";
+  json["token_type"] = "Bearer";
+  json["expires_at"] = "2025-12-31T23:59:59Z";
 
   Credentials creds = DecodeTokenResponse(json);
 
@@ -105,11 +103,11 @@ TEST(DecodeTokenResponseTest, UsesExplicitExpiresAt) {
 }
 
 TEST(DecodeTokenResponseTest, PrefersExpiresAtOverExpiresIn) {
-  value json;
-  json[U("access_token")] = value::string(U("test_access_token"));
-  json[U("token_type")] = value::string(U("Bearer"));
-  json[U("expires_at")] = value::string(U("2025-12-31T23:59:59Z"));
-  json[U("expires_in")] = value::number(3600);  // This should be ignored
+  nlohmann::json json;
+  json["access_token"] = "test_access_token";
+  json["token_type"] = "Bearer";
+  json["expires_at"] = "2025-12-31T23:59:59Z";
+  json["expires_in"] = 3600;  // This should be ignored
 
   Credentials creds = DecodeTokenResponse(json);
 
@@ -129,10 +127,10 @@ TEST(DecodeTokenResponseTest, PrefersExpiresAtOverExpiresIn) {
 }
 
 TEST(DecodeTokenResponseTest, HandlesSingleScope) {
-  value json;
-  json[U("access_token")] = value::string(U("test_access_token"));
-  json[U("token_type")] = value::string(U("Bearer"));
-  json[U("scope")] = value::string(U("openid"));
+  nlohmann::json json;
+  json["access_token"] = "test_access_token";
+  json["token_type"] = "Bearer";
+  json["scope"] = "openid";
 
   Credentials creds = DecodeTokenResponse(json);
 
@@ -141,10 +139,10 @@ TEST(DecodeTokenResponseTest, HandlesSingleScope) {
 }
 
 TEST(DecodeTokenResponseTest, HandlesEmptyScope) {
-  value json;
-  json[U("access_token")] = value::string(U("test_access_token"));
-  json[U("token_type")] = value::string(U("Bearer"));
-  json[U("scope")] = value::string(U(""));
+  nlohmann::json json;
+  json["access_token"] = "test_access_token";
+  json["token_type"] = "Bearer";
+  json["scope"] = "";
 
   Credentials creds = DecodeTokenResponse(json);
 
@@ -152,10 +150,10 @@ TEST(DecodeTokenResponseTest, HandlesEmptyScope) {
 }
 
 TEST(DecodeTokenResponseTest, HandlesScopeWithMultipleSpaces) {
-  value json;
-  json[U("access_token")] = value::string(U("test_access_token"));
-  json[U("token_type")] = value::string(U("Bearer"));
-  json[U("scope")] = value::string(U("openid  profile   email"));
+  nlohmann::json json;
+  json["access_token"] = "test_access_token";
+  json["token_type"] = "Bearer";
+  json["scope"] = "openid  profile   email";
 
   Credentials creds = DecodeTokenResponse(json);
 
@@ -167,24 +165,24 @@ TEST(DecodeTokenResponseTest, HandlesScopeWithMultipleSpaces) {
 }
 
 TEST(DecodeTokenResponseTest, ThrowsOnMissingAccessToken) {
-  value json;
-  json[U("token_type")] = value::string(U("Bearer"));
+  nlohmann::json json;
+  json["token_type"] = "Bearer";
 
   EXPECT_THROW(DecodeTokenResponse(json), std::runtime_error);
 }
 
 TEST(DecodeTokenResponseTest, ThrowsOnMissingTokenType) {
-  value json;
-  json[U("access_token")] = value::string(U("test_access_token"));
+  nlohmann::json json;
+  json["access_token"] = "test_access_token";
 
   EXPECT_THROW(DecodeTokenResponse(json), std::runtime_error);
 }
 
 TEST(DecodeTokenResponseTest, HandlesNonIntegerExpiresIn) {
-  value json;
-  json[U("access_token")] = value::string(U("test_access_token"));
-  json[U("token_type")] = value::string(U("Bearer"));
-  json[U("expires_in")] = value::string(U("not_a_number"));
+  nlohmann::json json;
+  json["access_token"] = "test_access_token";
+  json["token_type"] = "Bearer";
+  json["expires_in"] = "not_a_number";
 
   // Should not throw, just skip expires_in
   Credentials creds = DecodeTokenResponse(json);
@@ -194,11 +192,11 @@ TEST(DecodeTokenResponseTest, HandlesNonIntegerExpiresIn) {
 }
 
 TEST(DecodeTokenResponseTest, HandlesInvalidExpiresAtFormat) {
-  value json;
-  json[U("access_token")] = value::string(U("test_access_token"));
-  json[U("token_type")] = value::string(U("Bearer"));
-  json[U("expires_at")] = value::string(U("invalid-date"));
-  json[U("expires_in")] = value::number(3600);
+  nlohmann::json json;
+  json["access_token"] = "test_access_token";
+  json["token_type"] = "Bearer";
+  json["expires_at"] = "invalid-date";
+  json["expires_in"] = 3600;
 
   Credentials creds = DecodeTokenResponse(json);
 
@@ -208,9 +206,9 @@ TEST(DecodeTokenResponseTest, HandlesInvalidExpiresAtFormat) {
 
 TEST(DecodeTokenResponseTest, DPoPTokenType) {
   // DPoP token type must be preserved exactly as returned by Auth0.
-  value json;
-  json[U("access_token")] = value::string(U("dpop_bound_token"));
-  json[U("token_type")]   = value::string(U("DPoP"));
+  nlohmann::json json;
+  json["access_token"] = "dpop_bound_token";
+  json["token_type"]   = "DPoP";
 
   Credentials creds = DecodeTokenResponse(json);
 
@@ -221,10 +219,10 @@ TEST(DecodeTokenResponseTest, DPoPTokenType) {
 TEST(DecodeTokenResponseTest, ZeroExpiresInProducesExpiresAtApproximatelyNow) {
   auto before = std::chrono::system_clock::now();
 
-  value json;
-  json[U("access_token")] = value::string(U("tok"));
-  json[U("token_type")]   = value::string(U("Bearer"));
-  json[U("expires_in")]   = value::number(0);
+  nlohmann::json json;
+  json["access_token"] = "tok";
+  json["token_type"]   = "Bearer";
+  json["expires_in"]   = 0;
 
   Credentials creds = DecodeTokenResponse(json);
 
@@ -244,10 +242,10 @@ TEST(DecodeTokenResponseTest, ZeroExpiresInProducesExpiresAtApproximatelyNow) {
 TEST(DecodeTokenResponseTest, LargeExpiresInOneYear) {
   const int oneYear = 365 * 24 * 3600;
 
-  value json;
-  json[U("access_token")] = value::string(U("tok"));
-  json[U("token_type")]   = value::string(U("Bearer"));
-  json[U("expires_in")]   = value::number(oneYear);
+  nlohmann::json json;
+  json["access_token"] = "tok";
+  json["token_type"]   = "Bearer";
+  json["expires_in"]   = oneYear;
 
   Credentials creds = DecodeTokenResponse(json);
 
@@ -263,10 +261,10 @@ TEST(DecodeTokenResponseTest, LargeExpiresInOneYear) {
 
 TEST(DecodeTokenResponseTest, ScopeWithLeadingAndTrailingSpaces) {
   // istringstream-based parsing skips leading/trailing whitespace.
-  value json;
-  json[U("access_token")] = value::string(U("tok"));
-  json[U("token_type")]   = value::string(U("Bearer"));
-  json[U("scope")]        = value::string(U("  openid profile  "));
+  nlohmann::json json;
+  json["access_token"] = "tok";
+  json["token_type"]   = "Bearer";
+  json["scope"]        = "  openid profile  ";
 
   Credentials creds = DecodeTokenResponse(json);
 
@@ -276,10 +274,10 @@ TEST(DecodeTokenResponseTest, ScopeWithLeadingAndTrailingSpaces) {
 }
 
 TEST(DecodeTokenResponseTest, ScopeWithOnlyWhitespaceIsEmpty) {
-  value json;
-  json[U("access_token")] = value::string(U("tok"));
-  json[U("token_type")]   = value::string(U("Bearer"));
-  json[U("scope")]        = value::string(U("   "));
+  nlohmann::json json;
+  json["access_token"] = "tok";
+  json["token_type"]   = "Bearer";
+  json["scope"]        = "   ";
 
   Credentials creds = DecodeTokenResponse(json);
 
@@ -290,9 +288,9 @@ TEST(DecodeTokenResponseTest, ScopeWithOnlyWhitespaceIsEmpty) {
 TEST(DecodeTokenResponseTest, NoExpiryFieldsProducesNoExpiresAt) {
   // When neither expires_at nor expires_in is present, expiresAt must be
   // absent (not guessed or defaulted).
-  value json;
-  json[U("access_token")] = value::string(U("tok"));
-  json[U("token_type")]   = value::string(U("Bearer"));
+  nlohmann::json json;
+  json["access_token"] = "tok";
+  json["token_type"]   = "Bearer";
 
   Credentials creds = DecodeTokenResponse(json);
 
@@ -302,10 +300,10 @@ TEST(DecodeTokenResponseTest, NoExpiryFieldsProducesNoExpiresAt) {
 
 TEST(DecodeTokenResponseTest, InvalidExpiresAtWithNoFallbackProducesNoExpiresAt) {
   // Malformed expires_at with no expires_in → no expiry information at all.
-  value json;
-  json[U("access_token")] = value::string(U("tok"));
-  json[U("token_type")]   = value::string(U("Bearer"));
-  json[U("expires_at")]   = value::string(U("not-a-date"));
+  nlohmann::json json;
+  json["access_token"] = "tok";
+  json["token_type"]   = "Bearer";
+  json["expires_at"]   = "not-a-date";
 
   Credentials creds = DecodeTokenResponse(json);
 

@@ -2,13 +2,11 @@
 
 #include "jwt_util.h"
 
-// cpprestsdk
-#include <cpprest/json.h>
+#include <nlohmann/json.hpp>
 
 // Flutter
 #include <flutter/encodable_value.h>
 
-using web::json::value;
 
 /*
  * Helper: Create a minimal valid JWT with a known payload.
@@ -55,31 +53,31 @@ TEST(SplitJwtTest, InvalidJwtThrows) {
 
 TEST(DecodeJwtPayloadTest, DecodesPayloadCorrectly) {
   std::string jwt = CreateTestJwt();
-  value payload = DecodeJwtPayload(jwt);
+  nlohmann::json payload = DecodeJwtPayload(jwt);
 
   ASSERT_TRUE(payload.is_object());
-  EXPECT_EQ(payload.at(U("sub")).as_string(), U("123"));
-  EXPECT_EQ(payload.at(U("name")).as_string(), U("John"));
-  EXPECT_TRUE(payload.at(U("admin")).as_bool());
+  EXPECT_EQ(payload.at("sub").get<std::string>(), "123");
+  EXPECT_EQ(payload.at("name").get<std::string>(), "John");
+  EXPECT_TRUE(payload.at("admin").get<bool>());
 }
 
 /* ---------------- JsonToEncodable ---------------- */
 
 TEST(JsonToEncodableTest, ConvertsPrimitiveTypes) {
   EXPECT_TRUE(
-      std::holds_alternative<bool>(JsonToEncodable(value::boolean(true))));
+      std::holds_alternative<bool>(JsonToEncodable(true)));
   EXPECT_TRUE(
-      std::holds_alternative<double>(JsonToEncodable(value::number(1.5))));
+      std::holds_alternative<double>(JsonToEncodable(1.5)));
   EXPECT_TRUE(
       std::holds_alternative<std::string>(
-          JsonToEncodable(value::string(U("hello")))));
+          JsonToEncodable("hello")));
 }
 
 TEST(JsonToEncodableTest, ConvertsArray) {
-  value arr = value::array({
-      value::number(1),
-      value::string(U("two")),
-      value::boolean(true),
+  nlohmann::json arr = nlohmann::json::array({
+      1,
+      "two",
+      true,
   });
 
   flutter::EncodableValue ev = JsonToEncodable(arr);
@@ -90,9 +88,9 @@ TEST(JsonToEncodableTest, ConvertsArray) {
 }
 
 TEST(JsonToEncodableTest, ConvertsObject) {
-  value obj;
-  obj[U("a")] = value::number(1);
-  obj[U("b")] = value::string(U("two"));
+  nlohmann::json obj;
+  obj["a"] = 1;
+  obj["b"] = "two";
 
   flutter::EncodableValue ev = JsonToEncodable(obj);
   ASSERT_TRUE(std::holds_alternative<flutter::EncodableMap>(ev));
