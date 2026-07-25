@@ -40,9 +40,9 @@ extension CredentialsManagerHasValidMethodHandlerTests {
     }
 
     func testProducesTrueWithValidCredentialsAndNoRefreshToken() {
-        let credentials = Credentials(refreshToken: nil, expiresIn: Date(timeIntervalSinceNow: 3600))
+        let credentials = Credentials(refreshToken: nil, expiresAt: Date(timeIntervalSinceNow: 3600))
         let expectation = self.expectation(description: "Produced true")
-        _ = credentialsManager.store(credentials: credentials)
+        try? credentialsManager.store(credentials: credentials)
         sut.handle(with: arguments()) { result in
             XCTAssertEqual(result as? Bool, true)
             expectation.fulfill()
@@ -51,9 +51,9 @@ extension CredentialsManagerHasValidMethodHandlerTests {
     }
 
     func testProducesTrueWithRefreshTokenAndInvalidCredentials() {
-        let credentials = Credentials(refreshToken: "foo", expiresIn: Date(timeIntervalSinceNow: -3600))
+        let credentials = Credentials(refreshToken: "foo", expiresAt: Date(timeIntervalSinceNow: -3600))
         let expectation = self.expectation(description: "Produced true")
-        _ = credentialsManager.store(credentials: credentials)
+        try? credentialsManager.store(credentials: credentials)
         sut.handle(with: arguments()) { result in
             XCTAssertEqual(result as? Bool, true)
             expectation.fulfill()
@@ -62,9 +62,9 @@ extension CredentialsManagerHasValidMethodHandlerTests {
     }
 
     func testProducesTrueWithRefreshTokenAndValidCredentials() {
-        let credentials = Credentials(refreshToken: "foo", expiresIn: Date(timeIntervalSinceNow: 3600))
+        let credentials = Credentials(refreshToken: "foo", expiresAt: Date(timeIntervalSinceNow: 3600))
         let expectation = self.expectation(description: "Produced true")
-        _ = credentialsManager.store(credentials: credentials)
+        try? credentialsManager.store(credentials: credentials)
         sut.handle(with: arguments()) { result in
             XCTAssertEqual(result as? Bool, true)
             expectation.fulfill()
@@ -83,9 +83,9 @@ extension CredentialsManagerHasValidMethodHandlerTests {
     }
 
     func testProducesFalseWithInvalidCredentialsAndNoRefreshToken() {
-        let credentials = Credentials(refreshToken: nil, expiresIn: Date(timeIntervalSinceNow: -3600))
+        let credentials = Credentials(refreshToken: nil, expiresAt: Date(timeIntervalSinceNow: -3600))
         let expectation = self.expectation(description: "Produced false")
-        _ = credentialsManager.store(credentials: credentials)
+        try? credentialsManager.store(credentials: credentials)
         sut.handle(with: arguments()) { result in
             XCTAssertEqual(result as? Bool, false)
             expectation.fulfill()

@@ -32,7 +32,7 @@ extension CredentialsManagerUserInfoMethodHandlerTests {
                                       tokenType: "tokenType",
                                       idToken: testIdToken,
                                       refreshToken: "refreshToken",
-                                      expiresIn: Date(timeIntervalSinceNow: 3600),
+                                      expiresAt: Date(timeIntervalSinceNow: 3600),
                                       scope: "foo bar")
         let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
         let expectation = self.expectation(description: "Called userInfo property")
@@ -50,7 +50,7 @@ extension CredentialsManagerUserInfoMethodHandlerTests {
                                       tokenType: "tokenType",
                                       idToken: testIdToken,
                                       refreshToken: "refreshToken",
-                                      expiresIn: Date(timeIntervalSinceNow: 3600),
+                                      expiresAt: Date(timeIntervalSinceNow: 3600),
                                       scope: "foo bar")
         let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
         let expectation = self.expectation(description: "Returned user info dictionary")
@@ -94,7 +94,7 @@ extension CredentialsManagerUserInfoMethodHandlerTests {
                                       tokenType: "tokenType",
                                       idToken: testIdToken,
                                       refreshToken: "refreshToken",
-                                      expiresIn: Date(timeIntervalSinceNow: 3600),
+                                      expiresAt: Date(timeIntervalSinceNow: 3600),
                                       scope: "foo bar")
         let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
         let expectation = self.expectation(description: "Converted all fields correctly")
@@ -124,7 +124,7 @@ extension CredentialsManagerUserInfoMethodHandlerTests {
                                       tokenType: "tokenType",
                                       idToken: testIdTokenWithCustomClaims,
                                       refreshToken: "refreshToken",
-                                      expiresIn: Date(timeIntervalSinceNow: 3600),
+                                      expiresAt: Date(timeIntervalSinceNow: 3600),
                                       scope: "foo bar")
         let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
         let expectation = self.expectation(description: "Handled custom claims")

@@ -1,6 +1,12 @@
 import XCTest
 import Auth0
 
+#if os(iOS)
+import Flutter
+#else
+import FlutterMacOS
+#endif
+
 @testable import auth0_flutter
 
 fileprivate typealias Argument = ApiCredentialsMethodHandler.Argument
@@ -42,7 +48,7 @@ extension ApiCredentialsMethodHandlerTests {
                                       tokenType: "tokenType",
                                       idToken: testIdToken,
                                       refreshToken: "refreshToken",
-                                      expiresIn: Date(timeIntervalSinceNow: 3600),
+                                      expiresAt: Date(timeIntervalSinceNow: 3600),
                                       scope: "scope")
         let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
         let expectation = self.expectation(description: "API credentials exchange was called")
@@ -62,7 +68,7 @@ extension ApiCredentialsMethodHandlerTests {
                                       tokenType: "tokenType",
                                       idToken: testIdToken,
                                       refreshToken: "refreshToken",
-                                      expiresIn: Date(timeIntervalSinceNow: 3600),
+                                      expiresAt: Date(timeIntervalSinceNow: 3600),
                                       scope: "a b")
         let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
         let expectation = self.expectation(description: "Produced API credentials")
@@ -84,11 +90,13 @@ extension ApiCredentialsMethodHandlerTests {
 
 extension ApiCredentialsMethodHandlerTests {
     func testProducesCredentialsManagerError() {
-        let error = CredentialsManagerError.noCredentials
-        let expectation = self.expectation(description: "Produced the CredentialsManagerError \(error)")
+        let expectation = self.expectation(description: "Produced a CredentialsManagerError")
         spyStorage.getEntryReturnValue = nil
         sut.handle(with: arguments()) { result in
-            assert(result: result, isError: error)
+            guard let flutterError = result as? FlutterError else {
+                return XCTFail("The handler did not produce a FlutterError")
+            }
+            XCTAssertTrue(flutterError.message?.contains("SpyCredentialsStorageError") == true)
             expectation.fulfill()
         }
         wait(for: [expectation])

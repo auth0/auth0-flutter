@@ -1,16 +1,22 @@
 import XCTest
 
+#if os(iOS)
+import Flutter
+#else
+import FlutterMacOS
+#endif
+
 @testable import Auth0
 @testable import auth0_flutter
 
 fileprivate typealias Argument = AuthAPIMultifactorChallengeMethodHandler.Argument
 
 class AuthAPIMultifactorChallengeMethodHandlerTests: XCTestCase {
-    var spy: SpyAuthentication!
+    var spy: SpyMFAClient!
     var sut: AuthAPIMultifactorChallengeMethodHandler!
 
     override func setUpWithError() throws {
-        spy = SpyAuthentication()
+        spy = SpyMFAClient()
         sut = AuthAPIMultifactorChallengeMethodHandler(client: spy)
     }
 }
@@ -27,77 +33,61 @@ extension AuthAPIMultifactorChallengeMethodHandlerTests {
         }
         wait(for: [expectation])
     }
+
+    func testProducesErrorWhenAuthenticatorIdIsMissing() {
+        let key = Argument.authenticatorId
+        let expectation = self.expectation(description: "authenticatorId is missing")
+        sut.handle(with: arguments(without: key)) { result in
+            assert(result: result, isError: .requiredArgumentMissing(key.rawValue))
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
+    }
 }
 
 // MARK: - Arguments
 
 extension AuthAPIMultifactorChallengeMethodHandlerTests {
 
-    // MARK: mfaToken
-
-    func testAddsMFAToken() {
-        let key = Argument.mfaToken
-        let value = "foo"
-        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
-        XCTAssertEqual(spy.arguments[key] as? String, value)
-    }
-
-    // MARK: types
-
-    func testAddsTypes() {
-        let key = Argument.types
-        let value = ["foo"]
-        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
-        XCTAssertEqual(spy.arguments[key] as? [String], value)
-    }
-
-    func testDoesNotAddTypesWhenNil() {
-        let argument = Argument.types
-        sut.handle(with: arguments(without: argument)) { _ in }
-        XCTAssertNil(spy.arguments[argument])
-    }
-
     // MARK: authenticatorId
 
     func testAddsAuthenticatorId() {
-        let key = Argument.authenticatorId
         let value = "foo"
-        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
-        XCTAssertEqual(spy.arguments[key] as? String, value)
-    }
-
-    func testDoesNotAddAuthenticatorIdWhenNil() {
-        let argument = Argument.authenticatorId
-        sut.handle(with: arguments(without: argument)) { _ in }
-        XCTAssertNil(spy.arguments[argument])
+        sut.handle(with: arguments(withKey: Argument.authenticatorId, value: value)) { _ in }
+        XCTAssertEqual(spy.challengeAuthenticatorIdArg, value)
     }
 }
 
 // MARK: - Multifactor Challenge Result
 
 extension AuthAPIMultifactorChallengeMethodHandlerTests {
-    func testCallsSDKMultifactorChallengeMethod() {
+    func testCallsSDKChallengeMethod() {
         sut.handle(with: arguments()) { _ in }
-        XCTAssertTrue(spy.calledMultifactorChallenge)
+        XCTAssertTrue(spy.calledChallenge)
     }
 
     func testProducesChallenge() {
-        let challenge = Challenge(challengeType: "foo", oobCode: "bar", bindingMethod: "baz")
+        let challenge = MFAChallenge(challengeType: "foo", oobCode: "bar", bindingMethod: "baz")
         let expectation = self.expectation(description: "Produced a challenge")
         spy.challengeResult = .success(challenge)
         sut.handle(with: arguments()) { result in
-            assert(result: result, has: challenge)
+            guard let dict = result as? [String: Any?] else {
+                return XCTFail("Did not produce dictionary")
+            }
+            XCTAssertEqual(dict["challengeType"] as? String, challenge.challengeType)
+            XCTAssertEqual(dict["oobCode"] as? String, challenge.oobCode)
+            XCTAssertEqual(dict["bindingMethod"] as? String, challenge.bindingMethod)
             expectation.fulfill()
         }
         wait(for: [expectation])
     }
 
-    func testProducesAuthenticationError() {
-        let error = AuthenticationError(info: [:], statusCode: 0)
-        let expectation = self.expectation(description: "Produced the AuthenticationError \(error)")
+    func testProducesMfaChallengeError() {
+        let error = MfaChallengeError(info: [:], statusCode: 0)
+        let expectation = self.expectation(description: "Produced the MfaChallengeError \(error)")
         spy.challengeResult = .failure(error)
         sut.handle(with: arguments()) { result in
-            assert(result: result, isError: error)
+            XCTAssertTrue(result is FlutterError)
             expectation.fulfill()
         }
         wait(for: [expectation])
@@ -110,7 +100,6 @@ extension AuthAPIMultifactorChallengeMethodHandlerTests {
     override func arguments() -> [String: Any] {
         return [
             Argument.mfaToken.rawValue: "",
-            Argument.types.rawValue: [],
             Argument.authenticatorId.rawValue: ""
         ]
     }

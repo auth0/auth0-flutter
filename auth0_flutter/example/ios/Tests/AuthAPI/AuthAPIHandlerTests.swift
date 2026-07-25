@@ -115,9 +115,11 @@ extension AuthAPIHandlerTests {
 extension AuthAPIHandlerTests {
     func testReturnsMethodHandlers() {
         var expectations: [XCTestExpectation] = []
+        // `.loginWithOTP` and `.multifactorChallenge` are routed directly to an
+        // `MFAClient`-backed handler in `handle(_:result:)` and never reach
+        // `methodHandlerProvider`, so they are intentionally excluded here.
         var methodHandlers: [AuthAPIHandler.Method: MethodHandler.Type] = [
             .loginWithUsernameOrEmail: AuthAPILoginUsernameOrEmailMethodHandler.self,
-            .loginWithOTP: AuthAPILoginWithOTPMethodHandler.self,
             .signup: AuthAPISignupMethodHandler.self,
             .userInfo: AuthAPIUserInfoMethodHandler.self,
             .renew: AuthAPIRenewMethodHandler.self,
@@ -149,7 +151,13 @@ extension AuthAPIHandlerTests {
 
     func testCallsMethodHandlers() {
         var expectations: [XCTestExpectation] = []
-        AuthAPIHandler.Method.allCases.forEach { method in
+        // `.loginWithOTP` and `.multifactorChallenge` are routed directly to an
+        // `MFAClient`-backed handler in `handle(_:result:)` and never reach
+        // `methodHandlerProvider`, so they are intentionally excluded here.
+        let methods = AuthAPIHandler.Method.allCases.filter {
+            $0 != .loginWithOTP && $0 != .multifactorChallenge
+        }
+        methods.forEach { method in
             let arguments: [String: Any] = arguments()
             let expectation = self.expectation(description: "\(method.rawValue) handler call")
             expectations.append(expectation)

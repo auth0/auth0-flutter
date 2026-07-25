@@ -1,16 +1,22 @@
 import XCTest
 import Auth0
 
+#if os(iOS)
+import Flutter
+#else
+import FlutterMacOS
+#endif
+
 @testable import auth0_flutter
 
 fileprivate typealias Argument = AuthAPILoginWithOTPMethodHandler.Argument
 
 class AuthAPILoginWithOTPMethodHandlerTests: XCTestCase {
-    var spy: SpyAuthentication!
+    var spy: SpyMFAClient!
     var sut: AuthAPILoginWithOTPMethodHandler!
 
     override func setUpWithError() throws {
-        spy = SpyAuthentication()
+        spy = SpyMFAClient()
         sut = AuthAPILoginWithOTPMethodHandler(client: spy)
     }
 }
@@ -37,7 +43,7 @@ extension AuthAPILoginWithOTPMethodHandlerTests {
     func testProducesErrorWithInvalidIDToken() {
         let credentials = Credentials(idToken: "foo")
         let expectation = self.expectation(description: "ID Token cannot be decoded")
-        spy.credentialsResult = .success(credentials)
+        spy.verifyResult = .success(credentials)
         sut.handle(with: arguments()) { result in
             assert(result: result, isError: .idTokenDecodingFailed)
             expectation.fulfill()
@@ -53,19 +59,17 @@ extension AuthAPILoginWithOTPMethodHandlerTests {
     // MARK: otp
 
     func testAddsOTP() {
-        let key = Argument.otp
         let value = "foo"
-        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
-        XCTAssertEqual(spy.arguments[key] as? String, value)
+        sut.handle(with: arguments(withKey: Argument.otp, value: value)) { _ in }
+        XCTAssertEqual(spy.verifyOtpArg, value)
     }
 
     // MARK: mfaToken
 
     func testAddsMFAToken() {
-        let key = Argument.mfaToken
         let value = "foo"
-        sut.handle(with: arguments(withKey: key, value: value)) { _ in }
-        XCTAssertEqual(spy.arguments[key] as? String, value)
+        sut.handle(with: arguments(withKey: Argument.mfaToken, value: value)) { _ in }
+        XCTAssertTrue(spy.calledVerify)
     }
 }
 
@@ -74,7 +78,7 @@ extension AuthAPILoginWithOTPMethodHandlerTests {
 extension AuthAPILoginWithOTPMethodHandlerTests {
     func testCallsSDKLoginWithOTPMethod() {
         sut.handle(with: arguments()) { _ in }
-        XCTAssertTrue(spy.calledLoginWithOTP)
+        XCTAssertTrue(spy.calledVerify)
     }
 
     func testProducesCredentials() {
@@ -82,10 +86,10 @@ extension AuthAPILoginWithOTPMethodHandlerTests {
                                       tokenType: "tokenType",
                                       idToken: testIdToken,
                                       refreshToken: "refreshToken",
-                                      expiresIn: Date(),
+                                      expiresAt: Date(),
                                       scope: "foo bar")
         let expectation = self.expectation(description: "Produced credentials")
-        spy.credentialsResult = .success(credentials)
+        spy.verifyResult = .success(credentials)
         sut.handle(with: arguments()) { result in
             assert(result: result, has: CredentialsProperty.allCases)
             expectation.fulfill()
@@ -93,12 +97,15 @@ extension AuthAPILoginWithOTPMethodHandlerTests {
         wait(for: [expectation])
     }
 
-    func testProducesAuthenticationError() {
-        let error = AuthenticationError(info: [:], statusCode: 0)
-        let expectation = self.expectation(description: "Produced the AuthenticationError \(error)")
-        spy.credentialsResult = .failure(error)
+    func testProducesMFAVerifyError() {
+        let error = MFAVerifyError(info: [:], statusCode: 0)
+        let expectation = self.expectation(description: "Produced the MFAVerifyError \(error)")
+        spy.verifyResult = .failure(error)
         sut.handle(with: arguments()) { result in
-            assert(result: result, isError: error)
+            guard let flutterError = result as? FlutterError else {
+                return XCTFail("The handler did not produce a FlutterError")
+            }
+            XCTAssertEqual(flutterError.code, error.code)
             expectation.fulfill()
         }
         wait(for: [expectation])

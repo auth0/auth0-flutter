@@ -1,6 +1,12 @@
 import XCTest
 import Auth0
 
+#if os(iOS)
+import Flutter
+#else
+import FlutterMacOS
+#endif
+
 @testable import auth0_flutter
 
 fileprivate typealias Argument = SSOCredentialsMethodHandler.Argument
@@ -43,10 +49,10 @@ extension SSOCredentialsMethodHandlerTests {
                                       tokenType: "tokenType",
                                       idToken: testIdToken,
                                       refreshToken: "refreshToken",
-                                      expiresIn: Date(timeIntervalSinceNow: 3600),
+                                      expiresAt: Date(timeIntervalSinceNow: 3600),
                                       scope: "scope")
         let expectation = self.expectation(description: "SSO exchange was called")
-        _ = credentialsManager.store(credentials: credentials)
+        try? credentialsManager.store(credentials: credentials)
         sut.handle(with: arguments()) { _ in
             XCTAssertEqual(self.spyAuthentication.arguments["refreshToken"] as? String, "refreshToken")
             expectation.fulfill()
@@ -59,10 +65,10 @@ extension SSOCredentialsMethodHandlerTests {
                                       tokenType: "tokenType",
                                       idToken: testIdToken,
                                       refreshToken: "refreshToken",
-                                      expiresIn: Date(timeIntervalSinceNow: 3600),
+                                      expiresAt: Date(timeIntervalSinceNow: 3600),
                                       scope: "scope")
         let expectation = self.expectation(description: "Produced SSO credentials")
-        _ = credentialsManager.store(credentials: credentials)
+        try? credentialsManager.store(credentials: credentials)
         sut.handle(with: arguments()) { result in
             let expectedKeys: [SSOCredentialsProperty] = [
                 .sessionTransferToken, .tokenType, .expiresIn, .idToken
@@ -78,11 +84,13 @@ extension SSOCredentialsMethodHandlerTests {
 
 extension SSOCredentialsMethodHandlerTests {
     func testProducesCredentialsManagerError() {
-        let error = CredentialsManagerError.noCredentials
-        let expectation = self.expectation(description: "Produced the CredentialsManagerError \(error)")
+        let expectation = self.expectation(description: "Produced a CredentialsManagerError")
         spyStorage.getEntryReturnValue = nil
         sut.handle(with: arguments()) { result in
-            assert(result: result, isError: error)
+            guard let flutterError = result as? FlutterError else {
+                return XCTFail("The handler did not produce a FlutterError")
+            }
+            XCTAssertTrue(flutterError.message?.contains("SpyCredentialsStorageError") == true)
             expectation.fulfill()
         }
         wait(for: [expectation])

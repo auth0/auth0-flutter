@@ -55,7 +55,7 @@ extension AuthAPISSOExchangeMethodHandlerTests {
         let ssoCredentials = SSOCredentials(
             sessionTransferToken: "session-token",
             issuedTokenType: "urn:ietf:params:oauth:token-type:session_transfer",
-            expiresIn: Date(timeIntervalSinceNow: 60),
+            expiresAt: Date(timeIntervalSinceNow: 60),
             idToken: testIdToken,
             refreshToken: "new-refresh-token"
         )
