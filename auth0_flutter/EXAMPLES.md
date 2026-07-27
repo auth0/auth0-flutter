@@ -1219,10 +1219,17 @@ The SDK exposes **two** methods for passkey signup — `passkeySignupChallenge` 
 
 You can identify the new user with any combination of `email`, `phoneNumber`, `username`, `name`, `givenName`, `familyName`, `nickname`, and `picture`, depending on how your connection is configured.
 
+> ⚠️ **Only `email` is accepted by default.** A database connection accepts `email` as the signup identifier unless [Flexible Identifiers](https://auth0.com/docs/authenticate/database-connections/flexible-identifiers) is enabled for it, which additionally lets you sign up with `phoneNumber` and/or `username`. Passing an identifier your connection isn't configured for (for example, `phoneNumber` on an email-only connection) fails the signup challenge request with:
+> ```json
+> { "error": "invalid_request", "error_description": "Invalid user profile attribute: phone_number" }
+> ```
+> Enable Flexible Identifiers for the connection in the [Auth0 Dashboard](https://manage.auth0.com/#/connections/database) (**Authentication > Database > [your connection] > Settings**) if you need to sign up with `phoneNumber` or `username`.
+
 ```dart
 // 1. Request a registration challenge from Auth0. You can identify the new
 //    user with any combination of email, phoneNumber, username, name,
-//    givenName, familyName, nickname, and picture.
+//    givenName, familyName, nickname, and picture — see the note above on
+//    which of these your connection actually accepts.
 final challenge = await auth0.api.passkeySignupChallenge(
     email: 'jane.smith@example.com',
     name: 'Jane Smith',
@@ -1277,6 +1284,8 @@ Passkeys are supported on web via `Auth0Web`, backed by `@auth0/auth0-spa-js`'s 
 
 > 💡 On web, the database connection name is passed as `realm` (matching the underlying `auth0-spa-js` passkey API); on native (`auth0.api.passkeyLoginChallenge`/`passkeySignupChallenge`), the equivalent parameter is named `connection`. Both refer to the same database connection.
 
+> ⚠️ **`passkeySignupChallenge` only accepts `email` unless Flexible Identifiers is enabled.** Just like native, the identifier you pass (`email`, `phoneNumber`, `username`) must be one your connection is configured to accept — see the note in [Sign up with passkeys](#sign-up-with-passkeys) above. This is why the example app's web passkey demo only collects an email address.
+
 ```dart
 import 'package:auth0_flutter/auth0_flutter_web.dart';
 import 'package:web/web.dart' as web;
@@ -1326,6 +1335,61 @@ Future<void> logInWithPasskey() async {
 ```
 
 </details>
+
+#### Handling errors on the web
+
+`passkeySignupChallenge`, `passkeyLoginChallenge`, and `getTokenByPasskey` all throw a [`WebException`](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/WebException-class.html) on failure, decoded from whatever `auth0-spa-js` throws:
+
+| Source | `WebException.code` | Notes |
+| :--- | :--- | :--- |
+| Challenge request fails (`passkeySignupChallenge`/`passkeyLoginChallenge`) | `PASSKEY_ERROR` | `details['code']` carries the underlying `auth0-spa-js` code, e.g. `passkey_register_error`, `passkey_challenge_error`, `passkey_not_supported` (WebAuthn unavailable in this browser). |
+| `getTokenByPasskey`'s credential-shape check fails | `PASSKEY_ERROR` | `details['code'] == 'passkey_invalid_credential'` — the `authResponse` isn't a valid attestation or assertion response. |
+| `getTokenByPasskey`'s token exchange requires MFA | `MFA_REQUIRED` | Same shape as [`credentials()`/`customTokenExchange()`](#-multi-factor-authentication-mfa) — `details['mfaToken']` is ready to pass to `Auth0Web.mfa(mfaToken:)`. |
+| `getTokenByPasskey`'s token exchange fails for another reason (e.g. `invalid_grant`, `access_denied`, an expired `authSession`) | `AUTHENTICATION_ERROR` | `details['code']` carries the OAuth error code returned by `/oauth/token`. |
+
+```dart
+try {
+  final credentials = await auth0Web.getTokenByPasskey(
+      authSession: challenge.authSession,
+      authResponse: credential,
+      realm: 'Username-Password-Authentication');
+} on WebException catch (e) {
+  if (e.code == 'MFA_REQUIRED') {
+    final mfa = auth0Web.mfa(mfaToken: e.details['mfaToken'] as String);
+    // continue the MFA flow — see Multi-Factor Authentication (MFA) below
+  } else {
+    print('Passkey error: ${e.code} (${e.details['code']}) — ${e.message}');
+  }
+}
+```
+
+> ⚠️ **`navigator.credentials.create()`/`.get()` errors are not `WebException`s.** The WebAuthn ceremony (step 2) is a browser API call your app makes directly — `Auth0Web` has no visibility into it, so its failures surface as a raw [`DOMException`](https://developer.mozilla.org/en-US/docs/Web/API/DOMException), not a `WebException`. Catch it separately and branch on `DOMException.name`, for example:
+> ```dart
+> import 'package:web/web.dart' as web;
+>
+> try {
+>   final credential = await web.window.navigator.credentials.create(
+>       web.CredentialCreationOptions(publicKey: challenge.authParamsPublicKey
+>           as web.PublicKeyCredentialCreationOptions));
+> } on web.DOMException catch (e) {
+>   switch (e.name) {
+>     case 'NotAllowedError':
+>       // The user cancelled the prompt, denied permission, or the operation
+>       // timed out — by far the most common case in practice.
+>       print('Passkey creation was cancelled.');
+>     case 'InvalidStateError':
+>       // A passkey for this account/authenticator already exists.
+>       print('A passkey already exists for this account.');
+>     case 'SecurityError':
+>       // The page's origin doesn't match the relying party ID (misconfigured
+>       // custom domain, or running on an origin other than the one the
+>       // connection's passkeys are configured for).
+>       print('Passkey security error: ${e.message}');
+>     default:
+>       print('Passkey error: ${e.name} — ${e.message}');
+>   }
+> }
+> ```
 
 ### Passwordless Login
 Passwordless is a two-step authentication flow that requires the **Passwordless OTP** grant to be enabled for your Auth0 application. Check [our documentation](https://auth0.com/docs/get-started/applications/application-grant-types) for more information.

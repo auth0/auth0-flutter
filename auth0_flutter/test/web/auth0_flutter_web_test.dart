@@ -815,6 +815,53 @@ void main() {
       });
 
       test(
+          'throws WebException with code MFA_REQUIRED when the token '
+          'exchange requires MFA', () async {
+        // auth0-spa-js's internal _requestTokenForPasskey (used by
+        // passkey.getTokenWithPasskey) does not wrap the token endpoint's
+        // MfaRequiredError in a PasskeyError — it propagates the raw
+        // error/error_description/mfa_token shape.
+        final jsException = JSObject();
+        jsException.setProperty('error'.toJS, 'mfa_required'.toJS);
+        jsException.setProperty(
+            'error_description'.toJS, 'MFA is required'.toJS);
+        jsException.setProperty('mfa_token'.toJS, 'received-mfa-token'.toJS);
+        when(mockClientProxy.passkeyGetTokenWithPasskey(any))
+            .thenThrow(jsException);
+
+        expect(
+            () async => auth0.getTokenByPasskey(
+                  authSession: 'auth-session-123',
+                  authResponse: JSObject(),
+                ),
+            throwsA(predicate((final e) =>
+                e is WebException &&
+                e.code == 'MFA_REQUIRED' &&
+                e.details['mfaToken'] == 'received-mfa-token')));
+      });
+
+      test(
+          'throws WebException with the token endpoint error code when the '
+          'exchange fails with a non-passkey-shaped error', () async {
+        // e.g. invalid_grant/access_denied from the /oauth/token webauthn
+        // grant, surfaced as a GenericError (error/error_description), not a
+        // PasskeyError (code/message).
+        when(mockClientProxy.passkeyGetTokenWithPasskey(any)).thenThrow(
+            createJsException('invalid_grant', 'Auth session has expired'));
+
+        expect(
+            () async => auth0.getTokenByPasskey(
+                  authSession: 'auth-session-123',
+                  authResponse: JSObject(),
+                ),
+            throwsA(predicate((final e) =>
+                e is WebException &&
+                e.code == 'AUTHENTICATION_ERROR' &&
+                e.message == 'Auth session has expired' &&
+                e.details['code'] == 'invalid_grant')));
+      });
+
+      test(
           'throws ArgumentError for an authResponse that is neither a '
           'String nor a JS value', () async {
         expect(

@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'api_card.dart';
 import 'constants.dart';
-import 'passkey_card.dart';
-import 'passkey_web_helper.dart';
 import 'web_auth_card.dart';
 
 class ExampleApp extends StatefulWidget {
@@ -90,69 +88,6 @@ class _ExampleAppState extends State<ExampleApp> {
     // setState to update our non-existent appearance.
     if (!mounted) return;
 
-    setState(() {
-      _output = output;
-    });
-  }
-
-  Future<void> passkeySignup(final String email) async {
-    String output;
-    try {
-      final challenge = await auth0Web.passkeySignupChallenge(
-        email: email,
-        realm: 'Username-Password-Authentication',
-      );
-
-      final credential =
-          await createPasskeyCredential(challenge.authParamsPublicKey);
-
-      final credentials = await auth0Web.getTokenByPasskey(
-        authSession: challenge.authSession,
-        authResponse: credential,
-        realm: 'Username-Password-Authentication',
-      );
-
-      setState(() {
-        _isLoggedIn = true;
-      });
-      output = 'Signed up with passkey. Access token: '
-          '${credentials.accessToken.substring(0, 30)}...';
-    } catch (e) {
-      output = 'Passkey signup failed: $e';
-    }
-
-    if (!mounted) return;
-    setState(() {
-      _output = output;
-    });
-  }
-
-  Future<void> passkeyLogin() async {
-    String output;
-    try {
-      final challenge = await auth0Web.passkeyLoginChallenge(
-        realm: 'Username-Password-Authentication',
-      );
-
-      final credential =
-          await getPasskeyCredential(challenge.authParamsPublicKey);
-
-      final credentials = await auth0Web.getTokenByPasskey(
-        authSession: challenge.authSession,
-        authResponse: credential,
-        realm: 'Username-Password-Authentication',
-      );
-
-      setState(() {
-        _isLoggedIn = true;
-      });
-      output = 'Signed in with passkey. Access token: '
-          '${credentials.accessToken.substring(0, 30)}...';
-    } catch (e) {
-      output = 'Passkey login failed: $e';
-    }
-
-    if (!mounted) return;
     setState(() {
       _output = output;
     });
@@ -332,13 +267,6 @@ class _ExampleAppState extends State<ExampleApp> {
                       else
                         WebAuthCard(
                             label: 'Web Auth Login', action: webAuthLogin),
-                      if (kIsWeb) ...[
-                        const SizedBox(height: 10),
-                        PasskeyCard(
-                          onSignup: passkeySignup,
-                          onLogin: passkeyLogin,
-                        ),
-                      ],
                       const SizedBox(height: 10),
                       // DPoP button — not shown on Windows
                       // (DPoP is not yet implemented on that platform)

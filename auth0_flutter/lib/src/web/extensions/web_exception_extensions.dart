@@ -51,9 +51,29 @@ extension WebExceptionExtension on WebException {
     return WebException(error.toDart, description.toDart, details);
   }
 
-  /// Converts a `PasskeyError` thrown by `auth0-spa-js`'s passkey API
-  /// (`code`/`message`/optional `cause`) into a [WebException].
+  /// Converts a passkey-related failure from `auth0-spa-js` into a
+  /// [WebException].
+  ///
+  /// Two distinct error shapes can reach here:
+  ///
+  /// * `passkeySignupChallenge`/`passkeyLoginChallenge`, and the
+  /// `passkey_invalid_credential` check in `getTokenByPasskey`, throw a
+  /// `PasskeyError`-family object (`code`/`message`/optional `cause`).
+  /// * `getTokenByPasskey`'s actual token exchange goes through
+  /// `auth0-spa-js`'s internal `_requestTokenForPasskey`, which is not
+  /// wrapped in a `PasskeyError` — it lets the token endpoint's
+  /// `GenericError`/`MfaRequiredError`/`AuthenticationError` propagate as-is,
+  /// carrying `error`/`error_description` (and, for `mfa_required`,
+  /// `mfa_token`/`mfa_requirements`) instead of `code`/`message`. That shape
+  /// is delegated to [fromJsObject] so it maps identically to how
+  /// `credentials()`/`customTokenExchange()` already handle these same
+  /// error codes (for example, `code == 'MFA_REQUIRED'` with `mfaToken` in
+  /// `details`, usable directly with `Auth0Web.mfa(mfaToken:)`).
   static WebException fromPasskeyError(final JSObject jsException) {
+    if (jsException.has('error')) {
+      return fromJsObject(jsException);
+    }
+
     final code = jsException.getProperty<JSString?>('code'.toJS);
     final message = jsException.getProperty<JSString?>('message'.toJS);
 
