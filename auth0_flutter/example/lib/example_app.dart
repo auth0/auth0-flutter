@@ -1,15 +1,14 @@
 import 'dart:async';
 import 'dart:io' show Platform;
-import 'dart:js_interop';
 import 'package:auth0_flutter/auth0_flutter.dart';
 import 'package:auth0_flutter/auth0_flutter_web.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:web/web.dart' as web;
 import 'api_card.dart';
 import 'constants.dart';
 import 'passkey_card.dart';
+import 'passkey_web_helper.dart';
 import 'web_auth_card.dart';
 
 class ExampleApp extends StatefulWidget {
@@ -104,11 +103,8 @@ class _ExampleAppState extends State<ExampleApp> {
         realm: 'Username-Password-Authentication',
       );
 
-      final credential = await web.window.navigator.credentials
-          .create(web.CredentialCreationOptions(
-              publicKey: challenge.authParamsPublicKey
-                  as web.PublicKeyCredentialCreationOptions))
-          .toDart;
+      final credential =
+          await createPasskeyCredential(challenge.authParamsPublicKey);
 
       final credentials = await auth0Web.getTokenByPasskey(
         authSession: challenge.authSession,
@@ -138,11 +134,8 @@ class _ExampleAppState extends State<ExampleApp> {
         realm: 'Username-Password-Authentication',
       );
 
-      final credential = await web.window.navigator.credentials
-          .get(web.CredentialRequestOptions(
-              publicKey: challenge.authParamsPublicKey
-                  as web.PublicKeyCredentialRequestOptions))
-          .toDart;
+      final credential =
+          await getPasskeyCredential(challenge.authParamsPublicKey);
 
       final credentials = await auth0Web.getTokenByPasskey(
         authSession: challenge.authSession,
