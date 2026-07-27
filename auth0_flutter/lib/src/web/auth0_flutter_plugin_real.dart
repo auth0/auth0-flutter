@@ -311,8 +311,8 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
       final WebPasskeySignupChallengeOptions options) async {
     final client = _ensureClient();
     try {
-      final result =
-          await client.passkeyGetSignupChallenge(options.toInterop());
+      final result = await client.passkeyGetSignupChallenge(
+          JsInteropUtils.stripNulls(options.toInterop()));
       return result.toWebPasskeyChallenge();
     } catch (e) {
       throw WebExceptionExtension.fromPasskeyError(
@@ -338,38 +338,48 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   Future<Credentials> getTokenByPasskey(
       final WebGetTokenByPasskeyOptions options) async {
     final client = _ensureClient();
+    final authResponse = options.authResponse;
+
+    if (authResponse is! String && authResponse is! JSObject) {
+      throw ArgumentError.value(
+        authResponse,
+        'authResponse',
+        'Must be a JSON string or the raw PublicKeyCredential returned by '
+            'navigator.credentials.create()/.get()',
+      );
+    }
+
     final scopeString =
         options.scopes?.isNotEmpty == true ? options.scopes!.join(' ') : null;
 
     try {
       final interop.WebCredentials result;
-      final authResponse = options.authResponse;
 
       if (authResponse is String) {
         // Matches the mobile bridge contract: a JSON string representing the
         // PublicKeyCredential response from the platform credential manager.
         result = await client.requestTokenForPasskey(
-            interop.RequestTokenForPasskeyParams(
+            JsInteropUtils.stripNulls(interop.RequestTokenForPasskeyParams(
           authSession: options.authSession,
           credential: parseJson(authResponse),
           realm: options.realm,
           organization: options.organization,
           scope: scopeString,
           audience: options.audience,
-        ));
+        )));
       } else {
         // The raw PublicKeyCredential returned directly by
         // navigator.credentials.create()/.get(). auth0-spa-js detects
         // attestation vs assertion and serializes it internally.
         result = await client.passkeyGetTokenWithPasskey(
-            interop.PasskeyGetTokenParams(
+            JsInteropUtils.stripNulls(interop.PasskeyGetTokenParams(
           authSession: options.authSession,
           credential: authResponse as JSAny,
           realm: options.realm,
           organization: options.organization,
           scope: scopeString,
           audience: options.audience,
-        ));
+        )));
       }
 
       return CredentialsExtension.fromWeb(result);

@@ -494,7 +494,8 @@ class Auth0Web {
   /// [picture], depending on how your connection is configured.
   /// * [realm] is the name of the database connection configured with
   /// passkeys. Defaults to the application's first passkey connection when
-  /// omitted.
+  /// omitted. This is equivalent to the `connection` parameter on
+  /// `AuthenticationApi.passkeySignupChallenge` (native).
   /// * [organizationId] is the optional Auth0 organization to sign up to.
   /// * [userMetadata] is optional metadata to associate with the new user.
   Future<WebPasskeyChallenge> passkeySignupChallenge({
@@ -543,7 +544,8 @@ class Auth0Web {
   ///
   /// * [realm] is the name of the database connection configured with
   /// passkeys. Defaults to the application's first passkey connection when
-  /// omitted.
+  /// omitted. This is equivalent to the `connection` parameter on
+  /// `AuthenticationApi.passkeyLoginChallenge` (native).
   /// * [organizationId] is the optional Auth0 organization to log in to.
   Future<WebPasskeyChallenge> passkeyLoginChallenge({
     final String? realm,

@@ -813,6 +813,19 @@ void main() {
                 e.code == 'PASSKEY_ERROR' &&
                 e.details['code'] == 'passkey_invalid_credential')));
       });
+
+      test(
+          'throws ArgumentError for an authResponse that is neither a '
+          'String nor a JS value', () async {
+        expect(
+            () async => auth0.getTokenByPasskey(
+                  authSession: 'auth-session-123',
+                  authResponse: 42,
+                ),
+            throwsArgumentError);
+        verifyNever(mockClientProxy.passkeyGetTokenWithPasskey(any));
+        verifyNever(mockClientProxy.requestTokenForPasskey(any));
+      });
     });
   });
 
