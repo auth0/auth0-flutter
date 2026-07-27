@@ -44,6 +44,13 @@ void main() {
     return jsObject;
   }
 
+  Object createPasskeyJsException(final String code, final String message) {
+    final jsObject = JSObject();
+    jsObject.setProperty('code'.toJS, code.toJS);
+    jsObject.setProperty('message'.toJS, message.toJS);
+    return jsObject;
+  }
+
   test('onLoad is called without authenticated user and no callback', () async {
     when(mockClientProxy.isAuthenticated())
         .thenAnswer((final _) => Future.value(false));
@@ -665,6 +672,147 @@ void main() {
       expect(result.idToken, isNotEmpty);
       expect(result.user, isA<UserProfile>());
       expect(result.expiresAt, isA<DateTime>());
+    });
+  });
+
+  group('passkeys', () {
+    final passkeyChallengeCredentials = interop.PasskeyChallengeResponse(
+      authSession: 'auth-session-123',
+      publicKey: {'challenge': 'challenge-value'}.jsify() as JSObject,
+    );
+
+    group('passkeySignupChallenge', () {
+      test('requests a signup challenge and maps the response', () async {
+        when(mockClientProxy.passkeyGetSignupChallenge(any))
+            .thenAnswer((final _) => Future.value(passkeyChallengeCredentials));
+
+        final result = await auth0.passkeySignupChallenge(
+          email: 'user@example.com',
+          name: 'John Doe',
+          realm: 'Username-Password-Authentication',
+        );
+
+        expect(result.authSession, 'auth-session-123');
+
+        final params = verify(mockClientProxy.passkeyGetSignupChallenge(
+                captureAny))
+            .captured
+            .single as interop.PasskeySignupChallengeParams;
+        expect(params.email, 'user@example.com');
+        expect(params.name, 'John Doe');
+        expect(params.realm, 'Username-Password-Authentication');
+      });
+
+      test('throws WebException when the challenge request fails', () async {
+        when(mockClientProxy.passkeyGetSignupChallenge(any)).thenThrow(
+            createPasskeyJsException(
+                'passkey_register_error', 'Failed to request challenge'));
+
+        expect(
+            () async =>
+                auth0.passkeySignupChallenge(email: 'user@example.com'),
+            throwsA(predicate((final e) =>
+                e is WebException &&
+                e.code == 'PASSKEY_ERROR' &&
+                e.details['code'] == 'passkey_register_error')));
+      });
+    });
+
+    group('passkeyLoginChallenge', () {
+      test('requests a login challenge and maps the response', () async {
+        when(mockClientProxy.passkeyGetLoginChallenge(any))
+            .thenAnswer((final _) => Future.value(passkeyChallengeCredentials));
+
+        final result = await auth0.passkeyLoginChallenge(
+          realm: 'Username-Password-Authentication',
+        );
+
+        expect(result.authSession, 'auth-session-123');
+
+        final params = verify(
+                mockClientProxy.passkeyGetLoginChallenge(captureAny))
+            .captured
+            .single as interop.PasskeyLoginChallengeParams?;
+        expect(params?.realm, 'Username-Password-Authentication');
+      });
+
+      test('throws WebException when the challenge request fails', () async {
+        when(mockClientProxy.passkeyGetLoginChallenge(any)).thenThrow(
+            createPasskeyJsException(
+                'passkey_challenge_error', 'Failed to request challenge'));
+
+        expect(
+            () async => auth0.passkeyLoginChallenge(),
+            throwsA(predicate((final e) =>
+                e is WebException &&
+                e.code == 'PASSKEY_ERROR' &&
+                e.details['code'] == 'passkey_challenge_error')));
+      });
+    });
+
+    group('getTokenByPasskey', () {
+      test('exchanges a raw credential via passkey.getTokenWithPasskey',
+          () async {
+        final rawCredential = JSObject();
+
+        when(mockClientProxy.passkeyGetTokenWithPasskey(any))
+            .thenAnswer((final _) => Future.value(webCredentials));
+
+        final result = await auth0.getTokenByPasskey(
+          authSession: 'auth-session-123',
+          authResponse: rawCredential,
+          realm: 'Username-Password-Authentication',
+        );
+
+        expect(result.accessToken, jwt);
+        expect(result.idToken, jwt);
+
+        final params = verify(mockClientProxy.passkeyGetTokenWithPasskey(
+                captureAny))
+            .captured
+            .single as interop.PasskeyGetTokenParams;
+        expect(params.authSession, 'auth-session-123');
+        expect(params.realm, 'Username-Password-Authentication');
+        verifyNever(mockClientProxy.requestTokenForPasskey(any));
+      });
+
+      test('exchanges a JSON string credential via requestTokenForPasskey',
+          () async {
+        when(mockClientProxy.requestTokenForPasskey(any))
+            .thenAnswer((final _) => Future.value(webCredentials));
+
+        final result = await auth0.getTokenByPasskey(
+          authSession: 'auth-session-123',
+          authResponse: '{"id":"credential-id"}',
+          realm: 'Username-Password-Authentication',
+        );
+
+        expect(result.accessToken, jwt);
+        expect(result.idToken, jwt);
+
+        final params = verify(
+                mockClientProxy.requestTokenForPasskey(captureAny))
+            .captured
+            .single as interop.RequestTokenForPasskeyParams;
+        expect(params.authSession, 'auth-session-123');
+        verifyNever(mockClientProxy.passkeyGetTokenWithPasskey(any));
+      });
+
+      test('throws WebException when the exchange fails', () async {
+        when(mockClientProxy.passkeyGetTokenWithPasskey(any)).thenThrow(
+            createPasskeyJsException(
+                'passkey_invalid_credential', 'Invalid credential'));
+
+        expect(
+            () async => auth0.getTokenByPasskey(
+                  authSession: 'auth-session-123',
+                  authResponse: JSObject(),
+                ),
+            throwsA(predicate((final e) =>
+                e is WebException &&
+                e.code == 'PASSKEY_ERROR' &&
+                e.details['code'] == 'passkey_invalid_credential')));
+      });
     });
   });
 

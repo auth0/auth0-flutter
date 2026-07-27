@@ -320,6 +320,115 @@ extension type MfaApiClient._(JSObject _) implements JSObject {
 }
 
 @JS()
+@anonymous
+extension type PasskeySignupChallengeParams._(JSObject _)
+    implements JSObject {
+  external String? get email;
+  external String? get phoneNumber;
+  external String? get username;
+  external String? get name;
+  external String? get givenName;
+  external String? get familyName;
+  external String? get nickname;
+  external String? get picture;
+  external JSObject? get userMetadata;
+  external String? get realm;
+  external String? get organization;
+
+  external factory PasskeySignupChallengeParams({
+    final String? email,
+    final String? phoneNumber,
+    final String? username,
+    final String? name,
+    final String? givenName,
+    final String? familyName,
+    final String? nickname,
+    final String? picture,
+    final JSObject? userMetadata,
+    final String? realm,
+    final String? organization,
+  });
+}
+
+@JS()
+@anonymous
+extension type PasskeyLoginChallengeParams._(JSObject _) implements JSObject {
+  external String? get realm;
+  external String? get organization;
+
+  external factory PasskeyLoginChallengeParams({
+    final String? realm,
+    final String? organization,
+  });
+}
+
+@JS()
+@anonymous
+extension type PasskeyChallengeResponse._(JSObject _) implements JSObject {
+  external String get authSession;
+  external JSObject get publicKey;
+
+  external factory PasskeyChallengeResponse({
+    required final String authSession,
+    required final JSObject publicKey,
+  });
+}
+
+@JS()
+@anonymous
+extension type PasskeyGetTokenParams._(JSObject _) implements JSObject {
+  external String get authSession;
+  external JSAny get credential;
+  external String? get realm;
+  external String? get organization;
+  external String? get scope;
+  external String? get audience;
+
+  external factory PasskeyGetTokenParams({
+    required final String authSession,
+    required final JSAny credential,
+    final String? realm,
+    final String? organization,
+    final String? scope,
+    final String? audience,
+  });
+}
+
+@JS()
+@anonymous
+extension type RequestTokenForPasskeyParams._(JSObject _)
+    implements JSObject {
+  external String get authSession;
+  external JSObject get credential;
+  external String? get realm;
+  external String? get organization;
+  external String? get scope;
+  external String? get audience;
+
+  external factory RequestTokenForPasskeyParams({
+    required final String authSession,
+    required final JSObject credential,
+    final String? realm,
+    final String? organization,
+    final String? scope,
+    final String? audience,
+  });
+}
+
+@JS()
+extension type PasskeyApiClient._(JSObject _) implements JSObject {
+  external JSPromise<PasskeyChallengeResponse> getSignupChallenge(
+    final PasskeySignupChallengeParams options,
+  );
+  external JSPromise<PasskeyChallengeResponse> getLoginChallenge(
+    [final PasskeyLoginChallengeParams? options]
+  );
+  external JSPromise<WebCredentials> getTokenWithPasskey(
+    final PasskeyGetTokenParams options,
+  );
+}
+
+@JS()
 extension type Auth0Client._(JSObject _) implements JSObject {
   external Auth0Client(final Auth0ClientOptions options);
   external JSPromise<JSAny?> loginWithRedirect([
@@ -345,6 +454,17 @@ extension type Auth0Client._(JSObject _) implements JSObject {
   /// The MFA API client exposed by auth0-spa-js (v2.21.0+) for driving
   /// programmatic multi-factor authentication flows.
   external MfaApiClient get mfa;
+
+  /// The passkey API client exposed by auth0-spa-js (v2.24.0+) for driving
+  /// the granular passkey signup/login challenge and token exchange flow.
+  external PasskeyApiClient get passkey;
+
+  /// @internal auth0-spa-js method used to exchange a JSON-serialized
+  /// passkey credential (matching the mobile bridge contract) for tokens.
+  @JS('_requestTokenForPasskey')
+  external JSPromise<WebCredentials> requestTokenForPasskey(
+    final RequestTokenForPasskeyParams options,
+  );
 }
 
 // TODO: remove this extension when updating to Dart 3.6.0

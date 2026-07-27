@@ -50,4 +50,14 @@ extension WebExceptionExtension on WebException {
 
     return WebException(error.toDart, description.toDart, details);
   }
+
+  /// Converts a `PasskeyError` thrown by `auth0-spa-js`'s passkey API
+  /// (`code`/`message`/optional `cause`) into a [WebException].
+  static WebException fromPasskeyError(final JSObject jsException) {
+    final code = jsException.getProperty<JSString?>('code'.toJS);
+    final message = jsException.getProperty<JSString?>('message'.toJS);
+
+    return WebException.passkeyError(
+        code?.toDart ?? 'passkey_error', message?.toDart ?? 'Unknown error');
+  }
 }

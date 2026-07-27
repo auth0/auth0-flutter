@@ -53,4 +53,20 @@ class Auth0FlutterWebClientProxy {
 
   Future<WebCredentials> mfaVerify(final MfaVerifyParams params) =>
       JSPromiseToFuture(client.mfa.verify(params)).toDart;
+
+  Future<PasskeyChallengeResponse> passkeyGetSignupChallenge(
+          final PasskeySignupChallengeParams params) =>
+      JSPromiseToFuture(client.passkey.getSignupChallenge(params)).toDart;
+
+  Future<PasskeyChallengeResponse> passkeyGetLoginChallenge(
+          [final PasskeyLoginChallengeParams? params]) =>
+      JSPromiseToFuture(client.passkey.getLoginChallenge(params)).toDart;
+
+  Future<WebCredentials> passkeyGetTokenWithPasskey(
+          final PasskeyGetTokenParams params) =>
+      JSPromiseToFuture(client.passkey.getTokenWithPasskey(params)).toDart;
+
+  Future<WebCredentials> requestTokenForPasskey(
+          final RequestTokenForPasskeyParams params) =>
+      JSPromiseToFuture(client.requestTokenForPasskey(params)).toDart;
 }

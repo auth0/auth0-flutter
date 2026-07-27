@@ -9,9 +9,9 @@
 📚 <a href="#documentation">Documentation</a> • 🚀 <a href="#getting-started">Getting started</a> • 🌐 <a href="#api-reference">API reference</a> • 💬 <a href="#feedback">Feedback</a>
 </div>
 
-## What's New: v2.3.0
+## What's New
 
-**auth0_flutter v2.3.0** adds **Passkeys** support. You can now authenticate users with passkeys via the `webAuthentication()` flow on Android, iOS, and Web. See the [Auth0 passkeys documentation](https://auth0.com/docs/authenticate/database-connections/passkeys) for setup instructions.
+**auth0_flutter** supports **Passkeys** on Android, iOS, and Web. On mobile, use `Auth0.api.passkeyLoginChallenge`/`passkeySignupChallenge`/`passkeyCredentialExchange`; on web, use the equivalent `Auth0Web.passkeyLoginChallenge`/`passkeySignupChallenge`/`getTokenByPasskey` (requires `auth0-spa-js` v2.24.0+). See the [Auth0 passkeys documentation](https://auth0.com/docs/authenticate/database-connections/passkeys) for setup instructions.
 
 ## Documentation
 
@@ -588,8 +588,8 @@ void dispose() {
 - [Check for stored credentials](EXAMPLES.md#check-for-stored-credentials) - check if the user is already logged in when your app starts up.
 - [Retrieve stored credentials](EXAMPLES.md#retrieve-stored-credentials) - fetch the user's credentials from the storage, automatically renewing them if they have expired.
 - [Retrieve user information](EXAMPLES.md#retrieve-user-information) - fetch the latest user information from the `/userinfo` endpoint.
-- [Log in with passkeys](EXAMPLES.md#log-in-with-passkeys) - authenticate an existing user with a passkey using the platform authenticator (iOS/Android only).
-- [Sign up with passkeys](EXAMPLES.md#sign-up-with-passkeys) - register a new user with a passkey using the platform authenticator (iOS/Android only).
+- [Log in with passkeys](EXAMPLES.md#log-in-with-passkeys) - authenticate an existing user with a passkey using the platform authenticator (iOS/Android; see [Passkeys on the Web](EXAMPLES.md#passkeys-on-the-web) for the web equivalent).
+- [Sign up with passkeys](EXAMPLES.md#sign-up-with-passkeys) - register a new user with a passkey using the platform authenticator (iOS/Android; see [Passkeys on the Web](EXAMPLES.md#passkeys-on-the-web) for the web equivalent).
 - [Native to Web SSO](EXAMPLES.md#native-to-web-sso) - obtain a session transfer token to authenticate a WebView without re-prompting the user.
 - [Multi-Factor Authentication (MFA)](EXAMPLES.md#-multi-factor-authentication-mfa) - complete an MFA flow mid-login using an `mfa_token`: list, challenge, enroll, and verify factors.
 - [Handle Android process death](#android-handle-process-death-during-login) - recover credentials when the OS kills your app during login.
@@ -605,6 +605,7 @@ void dispose() {
 
 - [Handling credentials on the web](EXAMPLES.md#handling-credentials-on-the-web) - how to check and retrieve credentials on the web platform.
 - [Multi-Factor Authentication (MFA)](EXAMPLES.md#-multi-factor-authentication-mfa) - complete an MFA flow mid-login using an `mfa_token`. Backed by [auth0-spa-js](https://github.com/auth0/auth0-spa-js) and requires auth0-spa-js v2.21.0+ loaded on your page.
+- [Passkeys on the Web](EXAMPLES.md#passkeys-on-the-web) - authenticate with a passkey using the browser's WebAuthn API. Backed by [auth0-spa-js](https://github.com/auth0/auth0-spa-js) and requires auth0-spa-js v2.24.0+ loaded on your page.
 
 ## API reference
 
@@ -784,6 +785,9 @@ try {
 - [credentials](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/credentials.html)
 - [mfa](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/mfa.html) - drive a Multi-Factor Authentication flow with an `mfa_token`
 - [hasValidCredentials](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/hasValidCredentials.html)
+- [passkeySignupChallenge](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/passkeySignupChallenge.html) - request a WebAuthn registration challenge to sign up a new user with a passkey. Requires `auth0-spa-js` v2.24.0+.
+- [passkeyLoginChallenge](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/passkeyLoginChallenge.html) - request a WebAuthn assertion challenge to log in an existing user with a passkey. Requires `auth0-spa-js` v2.24.0+.
+- [getTokenByPasskey](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/getTokenByPasskey.html) - exchange a passkey credential from `navigator.credentials` for Auth0 tokens. Requires `auth0-spa-js` v2.24.0+.
 
 ## Feedback
 

@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'dart:io' show Platform;
+import 'dart:js_interop';
 import 'package:auth0_flutter/auth0_flutter.dart';
 import 'package:auth0_flutter/auth0_flutter_web.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:web/web.dart' as web;
 import 'api_card.dart';
 import 'constants.dart';
+import 'passkey_card.dart';
 import 'web_auth_card.dart';
 
 class ExampleApp extends StatefulWidget {
@@ -34,7 +37,7 @@ class _ExampleAppState extends State<ExampleApp> {
         Auth0Web(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
     webAuth =
         auth0.webAuthentication(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
-    if (Platform.isWindows) {
+    if (!kIsWeb && Platform.isWindows) {
       windowsWebAuth = auth0.windowsWebAuthentication();
     }
     if (kIsWeb) {
@@ -88,6 +91,75 @@ class _ExampleAppState extends State<ExampleApp> {
     // setState to update our non-existent appearance.
     if (!mounted) return;
 
+    setState(() {
+      _output = output;
+    });
+  }
+
+  Future<void> passkeySignup(final String email) async {
+    String output;
+    try {
+      final challenge = await auth0Web.passkeySignupChallenge(
+        email: email,
+        realm: 'Username-Password-Authentication',
+      );
+
+      final credential = await web.window.navigator.credentials
+          .create(web.CredentialCreationOptions(
+              publicKey: challenge.authParamsPublicKey
+                  as web.PublicKeyCredentialCreationOptions))
+          .toDart;
+
+      final credentials = await auth0Web.getTokenByPasskey(
+        authSession: challenge.authSession,
+        authResponse: credential,
+        realm: 'Username-Password-Authentication',
+      );
+
+      setState(() {
+        _isLoggedIn = true;
+      });
+      output = 'Signed up with passkey. Access token: '
+          '${credentials.accessToken.substring(0, 30)}...';
+    } catch (e) {
+      output = 'Passkey signup failed: $e';
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _output = output;
+    });
+  }
+
+  Future<void> passkeyLogin() async {
+    String output;
+    try {
+      final challenge = await auth0Web.passkeyLoginChallenge(
+        realm: 'Username-Password-Authentication',
+      );
+
+      final credential = await web.window.navigator.credentials
+          .get(web.CredentialRequestOptions(
+              publicKey: challenge.authParamsPublicKey
+                  as web.PublicKeyCredentialRequestOptions))
+          .toDart;
+
+      final credentials = await auth0Web.getTokenByPasskey(
+        authSession: challenge.authSession,
+        authResponse: credential,
+        realm: 'Username-Password-Authentication',
+      );
+
+      setState(() {
+        _isLoggedIn = true;
+      });
+      output = 'Signed in with passkey. Access token: '
+          '${credentials.accessToken.substring(0, 30)}...';
+    } catch (e) {
+      output = 'Passkey login failed: $e';
+    }
+
+    if (!mounted) return;
     setState(() {
       _output = output;
     });
@@ -267,10 +339,17 @@ class _ExampleAppState extends State<ExampleApp> {
                       else
                         WebAuthCard(
                             label: 'Web Auth Login', action: webAuthLogin),
+                      if (kIsWeb) ...[
+                        const SizedBox(height: 10),
+                        PasskeyCard(
+                          onSignup: passkeySignup,
+                          onLogin: passkeyLogin,
+                        ),
+                      ],
                       const SizedBox(height: 10),
                       // DPoP button — not shown on Windows
                       // (DPoP is not yet implemented on that platform)
-                      if (!Platform.isWindows)
+                      if (kIsWeb || !Platform.isWindows)
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.deepPurple,

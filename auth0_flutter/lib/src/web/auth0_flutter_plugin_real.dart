@@ -13,6 +13,7 @@ import 'extensions/credentials_options_extension.dart';
 import 'extensions/exchange_token_options_extension.dart';
 import 'extensions/logout_options.extension.dart';
 import 'extensions/mfa_extensions.dart';
+import 'extensions/passkey_extensions.dart';
 import 'extensions/web_exception_extensions.dart';
 import 'js_interop.dart' as interop;
 import 'js_interop_utils.dart';
@@ -302,6 +303,79 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
       return MfaEnrollmentChallengeWebExtension.fromWeb(result);
     } catch (e) {
       throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
+    }
+  }
+
+  @override
+  Future<WebPasskeyChallenge> passkeySignupChallenge(
+      final WebPasskeySignupChallengeOptions options) async {
+    final client = _ensureClient();
+    try {
+      final result =
+          await client.passkeyGetSignupChallenge(options.toInterop());
+      return result.toWebPasskeyChallenge();
+    } catch (e) {
+      throw WebExceptionExtension.fromPasskeyError(
+          JSObject.fromInteropObject(e));
+    }
+  }
+
+  @override
+  Future<WebPasskeyChallenge> passkeyLoginChallenge(
+      final WebPasskeyLoginChallengeOptions options) async {
+    final client = _ensureClient();
+    try {
+      final result = await client.passkeyGetLoginChallenge(
+          JsInteropUtils.stripNulls(options.toInterop()));
+      return result.toWebPasskeyChallenge();
+    } catch (e) {
+      throw WebExceptionExtension.fromPasskeyError(
+          JSObject.fromInteropObject(e));
+    }
+  }
+
+  @override
+  Future<Credentials> getTokenByPasskey(
+      final WebGetTokenByPasskeyOptions options) async {
+    final client = _ensureClient();
+    final scopeString =
+        options.scopes?.isNotEmpty == true ? options.scopes!.join(' ') : null;
+
+    try {
+      final interop.WebCredentials result;
+      final authResponse = options.authResponse;
+
+      if (authResponse is String) {
+        // Matches the mobile bridge contract: a JSON string representing the
+        // PublicKeyCredential response from the platform credential manager.
+        result = await client.requestTokenForPasskey(
+            interop.RequestTokenForPasskeyParams(
+          authSession: options.authSession,
+          credential: parseJson(authResponse),
+          realm: options.realm,
+          organization: options.organization,
+          scope: scopeString,
+          audience: options.audience,
+        ));
+      } else {
+        // The raw PublicKeyCredential returned directly by
+        // navigator.credentials.create()/.get(). auth0-spa-js detects
+        // attestation vs assertion and serializes it internally.
+        result = await client.passkeyGetTokenWithPasskey(
+            interop.PasskeyGetTokenParams(
+          authSession: options.authSession,
+          credential: authResponse as JSAny,
+          realm: options.realm,
+          organization: options.organization,
+          scope: scopeString,
+          audience: options.audience,
+        ));
+      }
+
+      return CredentialsExtension.fromWeb(result);
+    } catch (e) {
+      throw WebExceptionExtension.fromPasskeyError(
+          JSObject.fromInteropObject(e));
     }
   }
 

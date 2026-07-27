@@ -2,6 +2,9 @@ import 'package:auth0_flutter_platform_interface/src/account.dart';
 import 'package:auth0_flutter_platform_interface/src/auth0_flutter_web_platform.dart';
 import 'package:auth0_flutter_platform_interface/src/user_agent.dart';
 import 'package:auth0_flutter_platform_interface/src/web/client_options.dart';
+import 'package:auth0_flutter_platform_interface/src/web/web_get_token_by_passkey_options.dart';
+import 'package:auth0_flutter_platform_interface/src/web/web_passkey_login_challenge_options.dart';
+import 'package:auth0_flutter_platform_interface/src/web/web_passkey_signup_challenge_options.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class TestAuth0FlutterWeb extends Auth0FlutterWebPlatform {
@@ -87,4 +90,43 @@ void main() {
       throwsUnimplementedError,
     );
   });
+
+  test(
+    'Auth0FlutterWebPlatform passkeySignupChallenge throws unimplemented '
+    'error',
+    () {
+      expect(
+        () => Auth0FlutterWebPlatform.instance
+            .passkeySignupChallenge(WebPasskeySignupChallengeOptions()),
+        throwsUnimplementedError,
+      );
+    },
+  );
+
+  test(
+    'Auth0FlutterWebPlatform passkeyLoginChallenge throws unimplemented '
+    'error',
+    () {
+      expect(
+        () => Auth0FlutterWebPlatform.instance
+            .passkeyLoginChallenge(WebPasskeyLoginChallengeOptions()),
+        throwsUnimplementedError,
+      );
+    },
+  );
+
+  test(
+    'Auth0FlutterWebPlatform getTokenByPasskey throws unimplemented error',
+    () {
+      expect(
+        () => Auth0FlutterWebPlatform.instance.getTokenByPasskey(
+          WebGetTokenByPasskeyOptions(
+            authSession: 'auth-session',
+            authResponse: '{}',
+          ),
+        ),
+        throwsUnimplementedError,
+      );
+    },
+  );
 }

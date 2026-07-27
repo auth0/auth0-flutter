@@ -60,6 +60,18 @@ class _FakeRedirectLoginResult_2 extends _i1.SmartFake
         );
 }
 
+@JSExport()
+class _FakePasskeyChallengeResponse_3 extends _i1.SmartFake
+    implements PasskeyChallengeResponseImpl {
+  _FakePasskeyChallengeResponse_3(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [Auth0FlutterWebClientProxy].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -189,4 +201,78 @@ class MockAuth0FlutterWebClientProxy extends _i1.Mock
         returnValue: _i4.Future<void>.value(),
         returnValueForMissingStub: _i4.Future<void>.value(),
       ) as _i4.Future<void>);
+
+  @override
+  _i4.Future<_i2.PasskeyChallengeResponse> passkeyGetSignupChallenge(
+          _i2.PasskeySignupChallengeParams? params) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #passkeyGetSignupChallenge,
+          [params],
+        ),
+        returnValue: _i4.Future<_i2.PasskeyChallengeResponse>.value(
+            createJSInteropWrapper<_FakePasskeyChallengeResponse_3>(
+                _FakePasskeyChallengeResponse_3(
+          this,
+          Invocation.method(
+            #passkeyGetSignupChallenge,
+            [params],
+          ),
+        )) as _i2.PasskeyChallengeResponse),
+      ) as _i4.Future<_i2.PasskeyChallengeResponse>);
+
+  @override
+  _i4.Future<_i2.PasskeyChallengeResponse> passkeyGetLoginChallenge(
+          [_i2.PasskeyLoginChallengeParams? params]) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #passkeyGetLoginChallenge,
+          [params],
+        ),
+        returnValue: _i4.Future<_i2.PasskeyChallengeResponse>.value(
+            createJSInteropWrapper<_FakePasskeyChallengeResponse_3>(
+                _FakePasskeyChallengeResponse_3(
+          this,
+          Invocation.method(
+            #passkeyGetLoginChallenge,
+            [params],
+          ),
+        )) as _i2.PasskeyChallengeResponse),
+      ) as _i4.Future<_i2.PasskeyChallengeResponse>);
+
+  @override
+  _i4.Future<_i2.WebCredentials> passkeyGetTokenWithPasskey(
+          _i2.PasskeyGetTokenParams? params) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #passkeyGetTokenWithPasskey,
+          [params],
+        ),
+        returnValue: _i4.Future<_i2.WebCredentials>.value(
+            createJSInteropWrapper<_FakeWebCredentials_1>(_FakeWebCredentials_1(
+          this,
+          Invocation.method(
+            #passkeyGetTokenWithPasskey,
+            [params],
+          ),
+        )) as _i2.WebCredentials),
+      ) as _i4.Future<_i2.WebCredentials>);
+
+  @override
+  _i4.Future<_i2.WebCredentials> requestTokenForPasskey(
+          _i2.RequestTokenForPasskeyParams? params) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #requestTokenForPasskey,
+          [params],
+        ),
+        returnValue: _i4.Future<_i2.WebCredentials>.value(
+            createJSInteropWrapper<_FakeWebCredentials_1>(_FakeWebCredentials_1(
+          this,
+          Invocation.method(
+            #requestTokenForPasskey,
+            [params],
+          ),
+        )) as _i2.WebCredentials),
+      ) as _i4.Future<_i2.WebCredentials>);
 }

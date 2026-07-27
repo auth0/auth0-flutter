@@ -38,6 +38,7 @@
   - [Sign up with database connection](#sign-up-with-database-connection)
   - [Log in with passkeys](#log-in-with-passkeys)
   - [Sign up with passkeys](#sign-up-with-passkeys)
+  - [Passkeys on the Web](#passkeys-on-the-web)
   - [Passwordless Login](#passwordless-login)
   - [Retrieve user information](#retrieve-user-information)
   - [Renew credentials](#renew-credentials)
@@ -1067,6 +1068,7 @@ final credentials = await auth0Web.credentials();
 - [Sign up with database connection](#sign-up-with-database-connection)
 - [Log in with passkeys](#log-in-with-passkeys)
 - [Sign up with passkeys](#sign-up-with-passkeys)
+- [Passkeys on the Web](#passkeys-on-the-web)
 - [Passwordless Login](#passwordless-login)
 - [Passwordless OTP on database connections](#passwordless-otp-on-database-connections)
 - [Retrieve user information](#retrieve-user-information)
@@ -1139,7 +1141,7 @@ final databaseUser = await auth0.api.signup(
 
 ### Log in with passkeys
 
-> This feature is available on **iOS 16.6+** and **Android 9+ (API 28)** only.
+> This feature is available on **iOS 16.6+**, **Android 9+ (API 28)**, and **Web** (modern browsers with WebAuthn support). See [Passkeys on the Web](#passkeys-on-the-web) below for the web-specific flow.
 
 [Passkeys](https://auth0.com/docs/authenticate/database-connections/passkeys) let an existing user log in with a biometric or device PIN instead of a password, using the platform authenticator (Face ID / Touch ID on iOS, the Credential Manager on Android).
 
@@ -1200,7 +1202,7 @@ final credentials = await auth0.api.passkeyCredentialExchange(
 
 ### Sign up with passkeys
 
-> This feature is available on **iOS 16.6+** and **Android 9+ (API 28)** only.
+> This feature is available on **iOS 16.6+**, **Android 9+ (API 28)**, and **Web** (modern browsers with WebAuthn support). See [Passkeys on the Web](#passkeys-on-the-web) below for the web-specific flow.
 
 [Passkeys](https://auth0.com/docs/authenticate/database-connections/passkeys) let users register with a biometric or device PIN instead of a password, using the platform authenticator (Face ID / Touch ID on iOS, the Credential Manager on Android).
 
@@ -1261,6 +1263,64 @@ final credentials = await auth0.api.passkeyCredentialExchange(
     connection: 'Username-Password-Authentication',
     audience: 'YOUR_AUTH0_API_IDENTIFIER',
     scopes: {'profile', 'email', 'offline_access', 'read:todos'});
+```
+
+</details>
+
+### Passkeys on the Web
+
+Passkeys are supported on web via `Auth0Web`, backed by `@auth0/auth0-spa-js`'s passkey API (requires **auth0-spa-js v2.24.0 or later** loaded on your page). The flow is the same three steps as native (challenge → credential manager → exchange), but step 2 uses the browser's built-in [WebAuthn API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API) (`navigator.credentials.create()`/`.get()`) instead of a native platform authenticator.
+
+`Auth0Web.getTokenByPasskey`'s `authResponse` accepts the raw credential object returned directly by `navigator.credentials.create()`/`.get()` — no manual serialization needed (unlike native, which takes a JSON string).
+
+> ⚠️ `navigator.credentials.create()`/`.get()` require a user gesture, so call `passkeySignupChallenge`/`passkeyLoginChallenge` from within a click handler (not, for example, from `onLoad`).
+
+```dart
+import 'package:auth0_flutter/auth0_flutter_web.dart';
+import 'package:web/web.dart' as web;
+
+final auth0Web = Auth0Web('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID');
+
+Future<void> signUpWithPasskey() async {
+  // 1. Request a signup challenge from Auth0.
+  final challenge = await auth0Web.passkeySignupChallenge(
+      email: 'jane.smith@example.com',
+      name: 'Jane Smith',
+      realm: 'Username-Password-Authentication');
+
+  // 2. Present the browser's WebAuthn UI. `authParamsPublicKey` is already
+  //    decoded and ready to pass directly to navigator.credentials.create().
+  final credential = await web.window.navigator.credentials.create(
+      web.CredentialCreationOptions(
+          publicKey: challenge.authParamsPublicKey
+              as web.PublicKeyCredentialCreationOptions));
+
+  // 3. Exchange the raw credential for Auth0 tokens.
+  final credentials = await auth0Web.getTokenByPasskey(
+      authSession: challenge.authSession,
+      authResponse: credential,
+      realm: 'Username-Password-Authentication');
+}
+```
+
+<details>
+  <summary>Log in with an existing passkey on the web</summary>
+
+```dart
+Future<void> logInWithPasskey() async {
+  final challenge = await auth0Web.passkeyLoginChallenge(
+      realm: 'Username-Password-Authentication');
+
+  final credential = await web.window.navigator.credentials.get(
+      web.CredentialRequestOptions(
+          publicKey: challenge.authParamsPublicKey
+              as web.PublicKeyCredentialRequestOptions));
+
+  final credentials = await auth0Web.getTokenByPasskey(
+      authSession: challenge.authSession,
+      authResponse: credential,
+      realm: 'Username-Password-Authentication');
+}
 ```
 
 </details>

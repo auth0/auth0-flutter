@@ -13,7 +13,8 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         MfaAuthenticator,
         MfaChallenge,
         MfaEnrollmentChallenge,
-        PhoneType;
+        PhoneType,
+        WebPasskeyChallenge;
 
 export 'src/web/mfa_web.dart' show MfaWeb;
 
@@ -472,4 +473,157 @@ class Auth0Web {
   /// final credentials = await mfa.verifyOtp(otp: '123456');
   /// ```
   MfaWeb mfa({required final String mfaToken}) => MfaWeb(mfaToken);
+
+  /// Requests a WebAuthn registration challenge for signing up a new user
+  /// with a passkey.
+  ///
+  /// This is the first step of the passkey signup flow. Use the returned
+  /// [WebPasskeyChallenge.authParamsPublicKey] with the browser's
+  /// [WebAuthn API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API)
+  /// (`navigator.credentials.create()`) to create a new passkey credential,
+  /// then pass the resulting credential to [getTokenByPasskey] to exchange it
+  /// for tokens.
+  ///
+  /// **Note:** `navigator.credentials.create()` requires a user gesture, so
+  /// call this from within a click handler (not, for example, from [onLoad]).
+  ///
+  /// ## Notes
+  ///
+  /// * Identify the new user with any combination of [email], [phoneNumber],
+  /// [username], [name], [givenName], [familyName], [nickname], and
+  /// [picture], depending on how your connection is configured.
+  /// * [realm] is the name of the database connection configured with
+  /// passkeys. Defaults to the application's first passkey connection when
+  /// omitted.
+  /// * [organizationId] is the optional Auth0 organization to sign up to.
+  /// * [userMetadata] is optional metadata to associate with the new user.
+  Future<WebPasskeyChallenge> passkeySignupChallenge({
+    final String? email,
+    final String? phoneNumber,
+    final String? username,
+    final String? name,
+    final String? givenName,
+    final String? familyName,
+    final String? nickname,
+    final String? picture,
+    final String? realm,
+    final String? organizationId,
+    final Map<String, String>? userMetadata,
+  }) =>
+      Auth0FlutterWebPlatform.instance.passkeySignupChallenge(
+        WebPasskeySignupChallengeOptions(
+          email: email,
+          phoneNumber: phoneNumber,
+          username: username,
+          name: name,
+          givenName: givenName,
+          familyName: familyName,
+          nickname: nickname,
+          picture: picture,
+          realm: realm,
+          organization: organizationId,
+          userMetadata: userMetadata,
+        ),
+      );
+
+  /// Requests a WebAuthn assertion challenge for logging in with an existing
+  /// passkey.
+  ///
+  /// This is the first step of the passkey login flow. Use the returned
+  /// [WebPasskeyChallenge.authParamsPublicKey] with the browser's
+  /// [WebAuthn API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API)
+  /// (`navigator.credentials.get()`) to assert an existing passkey, then pass
+  /// the resulting credential to [getTokenByPasskey] to exchange it for
+  /// tokens.
+  ///
+  /// **Note:** `navigator.credentials.get()` requires a user gesture, so call
+  /// this from within a click handler (not, for example, from [onLoad]).
+  ///
+  /// ## Notes
+  ///
+  /// * [realm] is the name of the database connection configured with
+  /// passkeys. Defaults to the application's first passkey connection when
+  /// omitted.
+  /// * [organizationId] is the optional Auth0 organization to log in to.
+  Future<WebPasskeyChallenge> passkeyLoginChallenge({
+    final String? realm,
+    final String? organizationId,
+  }) =>
+      Auth0FlutterWebPlatform.instance.passkeyLoginChallenge(
+        WebPasskeyLoginChallengeOptions(
+          realm: realm,
+          organization: organizationId,
+        ),
+      );
+
+  /// Exchanges a passkey credential response for Auth0 tokens.
+  ///
+  /// This is the final step of both the passkey login and signup flows. Call
+  /// this after the browser's WebAuthn API
+  /// (`navigator.credentials.create()`/`.get()`) returns the credential (from
+  /// either [passkeySignupChallenge] or [passkeyLoginChallenge]).
+  ///
+  /// **Parameters:**
+  ///
+  /// * [authSession] is the auth session received from the challenge
+  /// response.
+  /// * [authResponse] is the credential returned by
+  /// `navigator.credentials.create()`/`.get()` — pass the raw
+  /// `PublicKeyCredential` object directly; it does not need to be
+  /// serialized first. A JSON [String] is also accepted, matching the native
+  /// bridge contract.
+  /// * [realm] is the name of the database connection configured with
+  /// passkeys.
+  /// * [audience] relates to the API Identifier you want to reference in your
+  /// access tokens. See [API settings](https://auth0.com/docs/get-started/apis/api-settings)
+  /// to learn more.
+  /// * [scopes] defaults to `openid profile email offline_access`. You can
+  /// override these scopes, but `openid` is always requested regardless of
+  /// this setting.
+  /// * [organizationId] is the optional Auth0 organization to authenticate
+  /// with.
+  ///
+  /// ## Usage example
+  ///
+  /// ```dart
+  /// final challenge = await auth0Web.passkeyLoginChallenge(
+  ///   realm: 'Username-Password-Authentication',
+  /// );
+  ///
+  /// final credential = await navigator.credentials.get(
+  ///   CredentialRequestOptions(
+  ///     publicKey: challenge.authParamsPublicKey
+  ///         as PublicKeyCredentialRequestOptions,
+  ///   ),
+  /// );
+  ///
+  /// final credentials = await auth0Web.getTokenByPasskey(
+  ///   authSession: challenge.authSession,
+  ///   authResponse: credential,
+  ///   realm: 'Username-Password-Authentication',
+  /// );
+  /// ```
+  Future<Credentials> getTokenByPasskey({
+    required final String authSession,
+    required final dynamic authResponse,
+    final String? realm,
+    final String? audience,
+    final Set<String> scopes = const {
+      'openid',
+      'profile',
+      'email',
+      'offline_access'
+    },
+    final String? organizationId,
+  }) =>
+      Auth0FlutterWebPlatform.instance.getTokenByPasskey(
+        WebGetTokenByPasskeyOptions(
+          authSession: authSession,
+          authResponse: authResponse,
+          realm: realm,
+          audience: audience,
+          scopes: scopes,
+          organization: organizationId,
+        ),
+      );
 }
