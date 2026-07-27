@@ -6,6 +6,12 @@
 #include "id_token_signature_validator.h"
 #include "jwt_util.h"
 
+// httplib.h must come before windows.h: it defines WIN32_LEAN_AND_MEAN and
+// pulls in winsock2.h, which conflicts with the legacy winsock.h that
+// windows.h otherwise includes.
+#include <httplib.h>
+#include <nlohmann/json.hpp>
+
 #include <windows.h>
 #include <wincrypt.h>
 #pragma comment(lib, "Crypt32.lib")
@@ -14,9 +20,6 @@
 #include <openssl/core_names.h>
 #include <openssl/evp.h>
 #include <openssl/param_build.h>
-
-#include <httplib.h>
-#include <nlohmann/json.hpp>
 
 #include <chrono>
 #include <mutex>
