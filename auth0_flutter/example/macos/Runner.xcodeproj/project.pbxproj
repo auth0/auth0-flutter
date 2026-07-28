@@ -22,11 +22,15 @@
 
 /* Begin PBXBuildFile section */
 		0103B7EA1132AC95205851B1 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 42E90A8B7E56466926079940 /* Pods_Runner.framework */; };
+		0C75953F96D8E77E4C7B7EC2 /* MfaGetAuthenticatorsMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6AB04FC0914386E5B1E000 /* MfaGetAuthenticatorsMethodHandlerTests.swift */; };
+		230B751173F29F72609AEAAF /* MfaEnrollPhoneMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8EC4581DA9CDBF5E66D649D /* MfaEnrollPhoneMethodHandlerTests.swift */; };
 		335BBD1B22A9A15E00E9071D /* GeneratedPluginRegistrant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 335BBD1A22A9A15E00E9071D /* GeneratedPluginRegistrant.swift */; };
 		33CC10F12044A3C60003C045 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC10F02044A3C60003C045 /* AppDelegate.swift */; };
 		33CC10F32044A3C60003C045 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33CC10F22044A3C60003C045 /* Assets.xcassets */; };
 		33CC10F62044A3C60003C045 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 33CC10F42044A3C60003C045 /* MainMenu.xib */; };
 		33CC11132044BFA00003C045 /* MainFlutterWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CC11122044BFA00003C045 /* MainFlutterWindow.swift */; };
+		3EFA8C500CFDF41A4421430B /* MfaChallengeMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C0DBC4235A122430FFFC3F /* MfaChallengeMethodHandlerTests.swift */; };
+		4646F940A76C9DA727A35D3D /* MfaVerifyMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0132AB790E0F7757F096E84C /* MfaVerifyMethodHandlerTests.swift */; };
 		5C1399232B0EB5F3006DCE54 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399052B0EB5F3006DCE54 /* Utilities.swift */; };
 		5C1399242B0EB5F3006DCE54 /* ExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399062B0EB5F3006DCE54 /* ExtensionsTests.swift */; };
 		5C1399252B0EB5F3006DCE54 /* ModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399072B0EB5F3006DCE54 /* ModelsTests.swift */; };
@@ -60,6 +64,7 @@
 		A09B2E3F1D4C7891BA000011 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A09B2E3F1D4C7891BA000010 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift */; };
 		A0AC1D0F2E0000000000AC12 /* CredentialsManagerApiCredentialsMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AC1D0F2E0000000000AC11 /* CredentialsManagerApiCredentialsMethodHandlerTests.swift */; };
 		A0AC1D0F2E0000000000AC14 /* CredentialsManagerClearApiCredentialsMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AC1D0F2E0000000000AC13 /* CredentialsManagerClearApiCredentialsMethodHandlerTests.swift */; };
+		A16E9B5BD4E8E3A7B92138DF /* MfaEnrollPushMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 677FE527B291A2EEE6E0F75E /* MfaEnrollPushMethodHandlerTests.swift */; };
 		B0CA00020000000000000101 /* MyAccountSpies.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA00010000000000000101 /* MyAccountSpies.swift */; };
 		B0CA00020000000000000102 /* MyAccountDeleteAuthMethodMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA00010000000000000102 /* MyAccountDeleteAuthMethodMethodHandlerTests.swift */; };
 		B0CA00020000000000000103 /* MyAccountEnrollEmailMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA00010000000000000103 /* MyAccountEnrollEmailMethodHandlerTests.swift */; };
@@ -76,6 +81,9 @@
 		B0CA0002000000000000010E /* MyAccountEnrollPasskeyChallengeMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA0001000000000000010E /* MyAccountEnrollPasskeyChallengeMethodHandlerTests.swift */; };
 		B0CA0002000000000000010F /* MyAccountEnrollPasskeyMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA0001000000000000010F /* MyAccountEnrollPasskeyMethodHandlerTests.swift */; };
 		B1C2D3E42AECB46A00862999 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = B1C2D3E32AECB46A00862999 /* FlutterGeneratedPluginSwiftPackage */; };
+		D561774718B03798052F3295 /* MfaEnrollTotpMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63BEC4ED803DD1A0DB3CF551 /* MfaEnrollTotpMethodHandlerTests.swift */; };
+		DA07934AAABB82E3583DAB40 /* MfaEnrollEmailMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6285C02FB11AC817D7543FBF /* MfaEnrollEmailMethodHandlerTests.swift */; };
+		F6BD703AC548F115602A46DF /* MfaSpies.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C41D6ADFF4B2604E459CBBC /* MfaSpies.swift */; };
 		PK00000000000000000101 /* AuthAPIPasskeyLoginChallengeMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PK00000000000000000103 /* AuthAPIPasskeyLoginChallengeMethodHandlerTests.swift */; };
 		PK00000000000000000105 /* AuthAPIPasskeyExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PK00000000000000000106 /* AuthAPIPasskeyExtensionsTests.swift */; };
 		PK10000000000000000101 /* AuthAPIPasskeySignupChallengeMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PK10000000000000000103 /* AuthAPIPasskeySignupChallengeMethodHandlerTests.swift */; };
@@ -120,6 +128,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0132AB790E0F7757F096E84C /* MfaVerifyMethodHandlerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MfaVerifyMethodHandlerTests.swift; path = ../ios/Tests/Mfa/MfaVerifyMethodHandlerTests.swift; sourceTree = "<group>"; };
+		0A6AB04FC0914386E5B1E000 /* MfaGetAuthenticatorsMethodHandlerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MfaGetAuthenticatorsMethodHandlerTests.swift; path = ../ios/Tests/Mfa/MfaGetAuthenticatorsMethodHandlerTests.swift; sourceTree = "<group>"; };
+		0C41D6ADFF4B2604E459CBBC /* MfaSpies.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MfaSpies.swift; path = ../ios/Tests/Mfa/MfaSpies.swift; sourceTree = "<group>"; };
 		0D39FAC562F0E6F84339AE58 /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
 		21DBF4BE5C5B1183C69F87D1 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		30C90C251A85CFCAF7F218D9 /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -169,6 +180,9 @@
 		5CD8A5552B1179EE00313321 /* RunnerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5CD8A5612B117A9900313321 /* SmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeTests.swift; sourceTree = "<group>"; };
 		5D0A3A77C308FD33805CA99C /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
+		6285C02FB11AC817D7543FBF /* MfaEnrollEmailMethodHandlerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MfaEnrollEmailMethodHandlerTests.swift; path = ../ios/Tests/Mfa/MfaEnrollEmailMethodHandlerTests.swift; sourceTree = "<group>"; };
+		63BEC4ED803DD1A0DB3CF551 /* MfaEnrollTotpMethodHandlerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MfaEnrollTotpMethodHandlerTests.swift; path = ../ios/Tests/Mfa/MfaEnrollTotpMethodHandlerTests.swift; sourceTree = "<group>"; };
+		677FE527B291A2EEE6E0F75E /* MfaEnrollPushMethodHandlerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MfaEnrollPushMethodHandlerTests.swift; path = ../ios/Tests/Mfa/MfaEnrollPushMethodHandlerTests.swift; sourceTree = "<group>"; };
 		6FD903E99CB6C89165AACEDF /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		784666492D4C4C64000A1A5F /* FlutterFramework */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FlutterFramework; path = ephemeral/Packages/.packages/FlutterFramework; sourceTree = "<group>"; };
 		78DABEA22ED26510000E7860 /* auth0_flutter */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = auth0_flutter; path = ../../../darwin/auth0_flutter; sourceTree = "<group>"; };
@@ -179,6 +193,7 @@
 		A09B2E3F1D4C7891BA000010 /* CredentialsManagerSSOCredentialsMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerSSOCredentialsMethodHandlerTests.swift; sourceTree = "<group>"; };
 		A0AC1D0F2E0000000000AC11 /* CredentialsManagerApiCredentialsMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerApiCredentialsMethodHandlerTests.swift; sourceTree = "<group>"; };
 		A0AC1D0F2E0000000000AC13 /* CredentialsManagerClearApiCredentialsMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CredentialsManagerClearApiCredentialsMethodHandlerTests.swift; sourceTree = "<group>"; };
+		A8EC4581DA9CDBF5E66D649D /* MfaEnrollPhoneMethodHandlerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MfaEnrollPhoneMethodHandlerTests.swift; path = ../ios/Tests/Mfa/MfaEnrollPhoneMethodHandlerTests.swift; sourceTree = "<group>"; };
 		B0CA00010000000000000101 /* MyAccountSpies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountSpies.swift; sourceTree = "<group>"; };
 		B0CA00010000000000000102 /* MyAccountDeleteAuthMethodMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountDeleteAuthMethodMethodHandlerTests.swift; sourceTree = "<group>"; };
 		B0CA00010000000000000103 /* MyAccountEnrollEmailMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountEnrollEmailMethodHandlerTests.swift; sourceTree = "<group>"; };
@@ -194,6 +209,7 @@
 		B0CA0001000000000000010D /* MyAccountUpdateAuthMethodMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountUpdateAuthMethodMethodHandlerTests.swift; sourceTree = "<group>"; };
 		B0CA0001000000000000010E /* MyAccountEnrollPasskeyChallengeMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountEnrollPasskeyChallengeMethodHandlerTests.swift; sourceTree = "<group>"; };
 		B0CA0001000000000000010F /* MyAccountEnrollPasskeyMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountEnrollPasskeyMethodHandlerTests.swift; sourceTree = "<group>"; };
+		B9C0DBC4235A122430FFFC3F /* MfaChallengeMethodHandlerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MfaChallengeMethodHandlerTests.swift; path = ../ios/Tests/Mfa/MfaChallengeMethodHandlerTests.swift; sourceTree = "<group>"; };
 		FF584AA0512B18AACE2C3C4C /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		PK00000000000000000103 /* AuthAPIPasskeyLoginChallengeMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPIPasskeyLoginChallengeMethodHandlerTests.swift; sourceTree = "<group>"; };
 		PK00000000000000000106 /* AuthAPIPasskeyExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPIPasskeyExtensionsTests.swift; sourceTree = "<group>"; };
@@ -314,6 +330,7 @@
 				5C13991A2B0EB5F3006DCE54 /* Auth0FlutterPluginTests.swift */,
 				5C13991B2B0EB5F3006DCE54 /* CredentialsManager */,
 				B0CA000300000000000001A1 /* MyAccount */,
+				8100C791C3EC5F990BD4210D /* Mfa */,
 			);
 			name = Tests;
 			path = ../ios/Tests;
@@ -375,6 +392,21 @@
 				5CD8A5612B117A9900313321 /* SmokeTests.swift */,
 			);
 			path = UITests;
+			sourceTree = "<group>";
+		};
+		8100C791C3EC5F990BD4210D /* Mfa */ = {
+			isa = PBXGroup;
+			children = (
+				0C41D6ADFF4B2604E459CBBC /* MfaSpies.swift */,
+				0A6AB04FC0914386E5B1E000 /* MfaGetAuthenticatorsMethodHandlerTests.swift */,
+				63BEC4ED803DD1A0DB3CF551 /* MfaEnrollTotpMethodHandlerTests.swift */,
+				A8EC4581DA9CDBF5E66D649D /* MfaEnrollPhoneMethodHandlerTests.swift */,
+				6285C02FB11AC817D7543FBF /* MfaEnrollEmailMethodHandlerTests.swift */,
+				677FE527B291A2EEE6E0F75E /* MfaEnrollPushMethodHandlerTests.swift */,
+				B9C0DBC4235A122430FFFC3F /* MfaChallengeMethodHandlerTests.swift */,
+				0132AB790E0F7757F096E84C /* MfaVerifyMethodHandlerTests.swift */,
+			);
+			name = Mfa;
 			sourceTree = "<group>";
 		};
 		8CE186BA3D2E1C4481596FB8 /* Frameworks */ = {
@@ -711,6 +743,14 @@
 				B0CA0002000000000000010D /* MyAccountUpdateAuthMethodMethodHandlerTests.swift in Sources */,
 				B0CA0002000000000000010E /* MyAccountEnrollPasskeyChallengeMethodHandlerTests.swift in Sources */,
 				B0CA0002000000000000010F /* MyAccountEnrollPasskeyMethodHandlerTests.swift in Sources */,
+				F6BD703AC548F115602A46DF /* MfaSpies.swift in Sources */,
+				0C75953F96D8E77E4C7B7EC2 /* MfaGetAuthenticatorsMethodHandlerTests.swift in Sources */,
+				D561774718B03798052F3295 /* MfaEnrollTotpMethodHandlerTests.swift in Sources */,
+				230B751173F29F72609AEAAF /* MfaEnrollPhoneMethodHandlerTests.swift in Sources */,
+				DA07934AAABB82E3583DAB40 /* MfaEnrollEmailMethodHandlerTests.swift in Sources */,
+				A16E9B5BD4E8E3A7B92138DF /* MfaEnrollPushMethodHandlerTests.swift in Sources */,
+				3EFA8C500CFDF41A4421430B /* MfaChallengeMethodHandlerTests.swift in Sources */,
+				4646F940A76C9DA727A35D3D /* MfaVerifyMethodHandlerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
