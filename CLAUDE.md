@@ -104,7 +104,9 @@ git push -u origin <branch-name>
 
 #### 5. Create a Pull Request
 
-Use the GitHub CLI (`gh`) to create a draft PR:
+**IMPORTANT: Always ask the user for confirmation before creating a PR.** Even for draft PRs, this action affects the shared repository and requires explicit user approval.
+
+Once confirmed by the user, use the GitHub CLI (`gh`) to create a draft PR:
 
 ```bash
 gh pr create \
@@ -266,8 +268,11 @@ git config core.hooksPath .githooks
 3. **Run tests**: Always verify tests pass before pushing
 4. **Create descriptive commit**: Use conventional commits with detailed body
 5. **Push with upstream**: Use `git push -u origin <branch>`
-6. **Create draft PR**: Use `gh pr create --draft --base <base-branch>` with detailed body
-7. **Return PR URL**: Always provide the PR URL to the user
+6. **⚠️ ASK FOR CONFIRMATION**: Present the planned PR details (title, description, base branch) and explicitly ask the user if they want to proceed with creating the PR
+7. **Create draft PR**: Only after user confirmation, use `gh pr create --draft --base <base-branch>` with detailed body
+8. **Return PR URL**: Always provide the PR URL to the user
+
+**CRITICAL**: Never create a PR (even a draft) without explicit user confirmation. Creating a PR affects the shared repository and should always be approved by the user first.
 
 ### When Making Platform-Specific Changes
 
