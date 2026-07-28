@@ -6,11 +6,10 @@ import Flutter
 import FlutterMacOS
 #endif
 
-// Includes a `session_expiry` claim (Unix seconds) so the fully-populated
-// credentials fixtures also exercise the IPSIE session-expiry serialization.
+
 let testIdToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmb28iLCJuYW1lIjoiYmFyIiwiZW1haWwiOiJmb29AZXhhbXBsZS5"
     + "jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGljdHVyZSI6Imh0dHBzOi8vZXhhbXBsZS5jb20vcGljdHVyZSIsInVwZGF0ZWRfYXQiOiIyMDI"
-    + "yLTA0LTE1VDAzOjE1OjUxLjc4N1oiLCJzZXNzaW9uX2V4cGlyeSI6MTY3MDAwMDAwMH0.sig"
+    + "yLTA0LTE1VDAzOjE1OjUxLjc4N1oiLCJzZXNzaW9uX2V4cGlyeSI6MzI1MDM2ODAwMDB9.sig"
 
 // MARK: - Foundation Mocks
 
