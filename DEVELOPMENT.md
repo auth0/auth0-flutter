@@ -10,6 +10,23 @@ The `.githooks` folder contains git hooks specific to this repository. To make s
 git config core.hooksPath .githooks
 ```
 
+## iOS/macOS dependency versions
+
+The native Auth0 dependencies (`Auth0.swift`, `JWTDecode.swift`, `SimpleKeychain`) are declared in two places for the iOS/macOS SDK:
+
+- **`auth0_flutter/darwin/auth0_flutter/Package.swift`** — the Swift Package Manager manifest. This is the **single source of truth**, and the only file [Dependabot](.github/dependabot.yml) updates (via the `swift` ecosystem). CocoaPods has no Dependabot support, so bumps land here.
+- **The three CocoaPods podspecs** (`auth0_flutter/ios`, `auth0_flutter/macos`, `auth0_flutter/darwin`) — consumed by apps that use CocoaPods rather than SPM. These must be kept in sync with `Package.swift` manually.
+
+To propagate a version change from `Package.swift` into the podspecs, run **from the repository root**:
+
+```sh
+scripts/sync-darwin-deps.sh
+```
+
+The [`Darwin dependencies` workflow](.github/workflows/check-darwin-deps.yml) enforces this on every PR: it runs the script and fails if the podspecs are out of sync, so a Dependabot bump of `Auth0.swift` will show a red check until someone runs the script and commits the result.
+
+> This whole mechanism only exists because the podspecs duplicate the SPM version pin. Once the CocoaPods podspecs are no longer needed, the script and the workflow can both be removed.
+
 ## Running package tests
 
 Run the unit tests for both packages using `flutter test` in **/auth0_flutter** and **/auth0_flutter_platform_interface** respectively.
