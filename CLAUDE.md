@@ -77,6 +77,7 @@ auth0-flutter/
 - Edit Apple native source **only** under `auth0_flutter/darwin/auth0_flutter/Sources/auth0_flutter/`, then run `scripts/generate-symlinks.sh` from the repo root — `ios/Classes`, `macos/Classes`, and `darwin/Classes` are generated symlinks (enforced by the `check-symlinks` CI workflow and a pre-commit hook after `git config core.hooksPath .githooks`).
 - When adding a request path to a new native platform call, thread the existing `UserAgent` (`auth0_flutter_platform_interface/lib/src/user_agent.dart`, `{name: 'auth0-flutter', version}`) through it rather than hand-rolling a new identifier — every `BaseRequest` subtype already carries it into the native SDK's `Auth0-Client` header.
 - Keep `auth0_flutter` and `auth0_flutter_platform_interface` versions in sync — both currently track the same version number (see each package's `pubspec.yaml`); a version bump in one is normally accompanied by a matching bump in the other.
+- When updating native Apple SDK versions (Auth0.swift, JWTDecode.swift, or SimpleKeychain), update the version in **both** `auth0_flutter/darwin/auth0_flutter.podspec` **and** `auth0_flutter/darwin/auth0_flutter/Package.swift` — they must stay in sync for CocoaPods and SPM consumers.
 
 ### ⚠️ Ask First
 
