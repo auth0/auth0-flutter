@@ -61,8 +61,9 @@ xcodebuild test -scheme Runner -workspace Runner.xcworkspace \
 cd auth0_flutter/example/android && ./gradlew koverXmlReportDebug
 
 # Windows (native C++ client, no vendor SDK — built via CMake + vcpkg)
+# Replace <VCPKG_ROOT> with your actual vcpkg installation path
 cd auth0_flutter/windows
-cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=<path-to-vcpkg>/scripts/buildsystems/vcpkg.cmake \
+cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE="<VCPKG_ROOT>/scripts/buildsystems/vcpkg.cmake" \
   -DAUTH0_FLUTTER_ENABLE_TESTS=ON -DCMAKE_BUILD_TYPE=Debug
 cmake --build build --config Debug
 ```

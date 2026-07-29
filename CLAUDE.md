@@ -100,7 +100,7 @@ auth0-flutter/
 
 ## Security Considerations
 
-- **Token storage:** Credentials are persisted via the native `CredentialsManager` — SimpleKeychain 1.3.0 on iOS/macOS (`auth0_flutter/darwin/.../CredentialsManager/CredentialsManagerHandler.swift`), `EncryptedSharedPreferences` (Android Keystore-backed) on Android (`auth0_flutter/android/.../request_handlers/credentials_manager/`), and OS-level secure storage on Windows. Never log tokens, and never bypass `CredentialsManager` to persist credentials by hand.
+- **Token storage:** Credentials are persisted via the native `CredentialsManager` — SimpleKeychain 1.3.0 on iOS/macOS (`auth0_flutter/darwin/.../CredentialsManager/CredentialsManagerHandler.swift`), the native `SecureCredentialsManager` (Android Keystore-backed encrypted storage) on Android (`auth0_flutter/android/.../request_handlers/credentials_manager/`), and OS-level secure storage on Windows. Never log tokens, and never bypass `CredentialsManager` to persist credentials by hand.
 - **PKCE:** Web Authentication flows delegate PKCE handling to the wrapped native SDKs (Auth0.swift, Auth0.Android, auth0-spa-js) and the Windows C++ client — do not implement a parallel authorization-code flow.
 - **DPoP:** `useDPoP` is a first-class option on `ApiRequest`/`CredentialsManagerRequest` (`auth0_flutter_platform_interface/lib/src/request/request.dart`) — preserve it when adding new request types that should support DPoP-bound tokens.
 - **Secrets in CI:** Tenant credentials (`AUTH0_DOMAIN`, `AUTH0_CLIENT_ID`) are injected via GitHub Actions `vars`, never hardcoded in workflows or `example/.env` (only `.env.example` is committed).
@@ -138,7 +138,7 @@ dart format .
 - **Framework:** `flutter_test` + `mockito` (Dart); JUnit/Robolectric (Android, via `./gradlew koverXmlReportDebug`); XCTest (iOS/macOS); a custom C++ test binary built via CMake (Windows)
 - **Test Location:** `auth0_flutter/test/`, `auth0_flutter_platform_interface/test/`
 - **Coverage Tool:** `flutter test --coverage` (lcov) for Dart; JaCoCo/Kover for Android; xcresultparser→Cobertura for iOS; OpenCppCoverage for Windows — all uploaded to Codecov
-- **Coverage Threshold:** project target 2%, patch target 50% (`codecov.yml`)
+- **Coverage Threshold:** patch threshold 50%, project-drop threshold 2% (`codecov.yml`)
 
 The default `flutter test` suites (Dart) run without credentials — they need only `example/.env` copied from `.env.example` for `auth0_flutter`. The native unit-test tiers (`test-ios-unit`, `test-macos-unit`, `test-android-unit` in CI) need a real Auth0 tenant (`AUTH0_DOMAIN`, `AUTH0_CLIENT_ID`) plus Xcode/Android toolchains — treat running these locally as Ask First (see Boundaries). See [references/testing.md](references/testing.md) for conventions (mocking with `mockito`, `.mocks.dart` regeneration, and the disabled Appium smoke-test tier).
 
