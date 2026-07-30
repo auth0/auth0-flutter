@@ -492,10 +492,8 @@ class Auth0Web {
   /// * Identify the new user with any combination of [email], [phoneNumber],
   /// [username], [name], [givenName], [familyName], [nickname], and
   /// [picture], depending on how your connection is configured.
-  /// * [realm] is the name of the database connection configured with
-  /// passkeys. Defaults to the application's first passkey connection when
-  /// omitted. This is equivalent to the `connection` parameter on
-  /// `AuthenticationApi.passkeySignupChallenge` (native).
+  /// * [connection] is the name of the database connection configured with
+  /// passkeys.
   /// * [organizationId] is the optional Auth0 organization to sign up to.
   /// * [userMetadata] is optional metadata to associate with the new user.
   Future<WebPasskeyChallenge> passkeySignupChallenge({
@@ -507,7 +505,7 @@ class Auth0Web {
     final String? familyName,
     final String? nickname,
     final String? picture,
-    final String? realm,
+    final String? connection,
     final String? organizationId,
     final Map<String, String>? userMetadata,
   }) =>
@@ -521,7 +519,7 @@ class Auth0Web {
           familyName: familyName,
           nickname: nickname,
           picture: picture,
-          realm: realm,
+          connection: connection,
           organization: organizationId,
           userMetadata: userMetadata,
         ),

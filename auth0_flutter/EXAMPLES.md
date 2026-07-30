@@ -1297,7 +1297,9 @@ Future<void> signUpWithPasskey() async {
   final challenge = await auth0Web.passkeySignupChallenge(
       email: 'jane.smith@example.com',
       name: 'Jane Smith',
-      realm: 'Username-Password-Authentication');
+      givenName: 'Jane',
+      familyName: 'Smith',
+      connection: 'Username-Password-Authentication');
 
   // 2. Present the browser's WebAuthn UI. `authParamsPublicKey` is already
   //    decoded and ready to pass directly to navigator.credentials.create().

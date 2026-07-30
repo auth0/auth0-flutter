@@ -17,7 +17,7 @@ extension PasskeySignupChallengeOptionsExtension
         nickname: nickname,
         picture: picture,
         userMetadata: userMetadata?.jsify() as JSObject?,
-        realm: realm,
+        realm: connection,
         organization: organization,
       );
 }

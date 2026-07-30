@@ -8,7 +8,7 @@ class WebPasskeySignupChallengeOptions {
   final String? familyName;
   final String? nickname;
   final String? picture;
-  final String? realm;
+  final String? connection;
   final String? organization;
   final Map<String, String>? userMetadata;
 
@@ -21,7 +21,7 @@ class WebPasskeySignupChallengeOptions {
     this.familyName,
     this.nickname,
     this.picture,
-    this.realm,
+    this.connection,
     this.organization,
     this.userMetadata,
   });

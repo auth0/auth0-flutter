@@ -321,8 +321,7 @@ extension type MfaApiClient._(JSObject _) implements JSObject {
 
 @JS()
 @anonymous
-extension type PasskeySignupChallengeParams._(JSObject _)
-    implements JSObject {
+extension type PasskeySignupChallengeParams._(JSObject _) implements JSObject {
   external String? get email;
   external String? get phoneNumber;
   external String? get username;
@@ -378,7 +377,7 @@ extension type PasskeyChallengeResponse._(JSObject _) implements JSObject {
 @anonymous
 extension type PasskeyGetTokenParams._(JSObject _) implements JSObject {
   external String get authSession;
-  external JSAny get credential;
+  external JSObject get credential;
   external String? get realm;
   external String? get organization;
   external String? get scope;
@@ -396,8 +395,7 @@ extension type PasskeyGetTokenParams._(JSObject _) implements JSObject {
 
 @JS()
 @anonymous
-extension type RequestTokenForPasskeyParams._(JSObject _)
-    implements JSObject {
+extension type RequestTokenForPasskeyParams._(JSObject _) implements JSObject {
   external String get authSession;
   external JSObject get credential;
   external String? get realm;
@@ -421,8 +419,7 @@ extension type PasskeyApiClient._(JSObject _) implements JSObject {
     final PasskeySignupChallengeParams options,
   );
   external JSPromise<PasskeyChallengeResponse> getLoginChallenge(
-    [final PasskeyLoginChallengeParams? options]
-  );
+      [final PasskeyLoginChallengeParams? options]);
   external JSPromise<WebCredentials> getTokenWithPasskey(
     final PasskeyGetTokenParams options,
   );
