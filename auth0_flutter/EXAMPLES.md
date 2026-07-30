@@ -707,6 +707,8 @@ final credentials = await auth0.credentialsManager.credentials();
 
 When a user authenticates through an upstream Identity Provider (for example Okta) over an enterprise connection that has **"Use ID Token for Session Expiry"** enabled (`id_token_session_expiry_supported: true`), Auth0 adds a `session_expiry` claim to the ID token. This claim is an absolute point in time (a Unix-seconds timestamp) that represents when the upstream IdP session ends, and it acts as a **hard ceiling** on the local session: the app session can never outlive the upstream IdP session.
 
+> ⚠️ **The claim must be in seconds, not milliseconds.** If the ceiling is set by a Post-Login Action, remember to divide by 1000 (e.g. `Math.floor(Date.now() / 1000)`). A milliseconds value reads as a timestamp tens of thousands of years in the future, which is treated as **no ceiling** — enforcement silently switches off rather than erroring.
+
 **Enforcement is transparent — you do not need to write any new code to have the ceiling enforced.** Once the ceiling passes, the underlying platform SDK treats the stored credentials as expired and skips refresh-token renewal, so `credentials()` raises a `CredentialsManagerException`. The ceiling has its own dedicated error, distinct from "no credentials", so branch on `isSessionExpired` to send the user through a fresh login:
 
 ```dart
@@ -737,6 +739,8 @@ if (sessionExpiry != null) {
   print('Upstream IdP session ends at: $sessionExpiry');
 }
 ```
+
+> ℹ️ Enforcement applies a small negative leeway (about 30 seconds) for clock skew, so the session is treated as expired slightly **before** this exact timestamp. Account for this if you build a countdown off `sessionExpiry`, otherwise the session may end a little earlier than the value shown.
 
 > ⚠️ **Upgrade note:** once this feature is enabled on your connection, `credentials()` can raise a session-expired error (`isSessionExpired`) for a user who was previously logged in, when the ceiling is reached. If your app assumed `credentials()` always resolves after login, make sure it handles this case (it already does if you catch `CredentialsManagerException` as shown above).
 >
