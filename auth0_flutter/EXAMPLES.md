@@ -1282,9 +1282,7 @@ Passkeys are supported on web via `Auth0Web`, backed by `@auth0/auth0-spa-js`'s 
 
 > ⚠️ `navigator.credentials.create()`/`.get()` require a user gesture, so call `passkeySignupChallenge`/`passkeyLoginChallenge` from within a click handler (not, for example, from `onLoad`).
 
-> 💡 On web, the database connection name is passed as `realm` (matching the underlying `auth0-spa-js` passkey API); on native (`auth0.api.passkeyLoginChallenge`/`passkeySignupChallenge`), the equivalent parameter is named `connection`. Both refer to the same database connection.
-
-> ⚠️ **`passkeySignupChallenge` only accepts `email` unless Flexible Identifiers is enabled.** Just like native, the identifier you pass (`email`, `phoneNumber`, `username`) must be one your connection is configured to accept — see the note in [Sign up with passkeys](#sign-up-with-passkeys) above. This is why the example app's web passkey demo only collects an email address.
+> ⚠️ **`passkeySignupChallenge` only accepts `email` unless Flexible Identifiers is enabled.** Just like native, the identifier you pass (`email`, `phoneNumber`, `username`) must be one your connection is configured to accept — see the note in [Sign up with passkeys](#sign-up-with-passkeys) above.
 
 ```dart
 import 'package:auth0_flutter/auth0_flutter_web.dart';
@@ -1312,7 +1310,7 @@ Future<void> signUpWithPasskey() async {
   final credentials = await auth0Web.getTokenByPasskey(
       authSession: challenge.authSession,
       authResponse: credential,
-      realm: 'Username-Password-Authentication');
+      connection: 'Username-Password-Authentication');
 }
 ```
 
@@ -1322,7 +1320,7 @@ Future<void> signUpWithPasskey() async {
 ```dart
 Future<void> logInWithPasskey() async {
   final challenge = await auth0Web.passkeyLoginChallenge(
-      realm: 'Username-Password-Authentication');
+      connection: 'Username-Password-Authentication');
 
   final credential = await web.window.navigator.credentials.get(
       web.CredentialRequestOptions(
@@ -1332,7 +1330,7 @@ Future<void> logInWithPasskey() async {
   final credentials = await auth0Web.getTokenByPasskey(
       authSession: challenge.authSession,
       authResponse: credential,
-      realm: 'Username-Password-Authentication');
+      connection: 'Username-Password-Authentication');
 }
 ```
 
@@ -1354,7 +1352,7 @@ try {
   final credentials = await auth0Web.getTokenByPasskey(
       authSession: challenge.authSession,
       authResponse: credential,
-      realm: 'Username-Password-Authentication');
+      connection: 'Username-Password-Authentication');
 } on WebException catch (e) {
   if (e.code == 'MFA_REQUIRED') {
     final mfa = auth0Web.mfa(mfaToken: e.details['mfaToken'] as String);

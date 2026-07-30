@@ -26,7 +26,7 @@ extension PasskeyLoginChallengeOptionsExtension
     on WebPasskeyLoginChallengeOptions {
   interop.PasskeyLoginChallengeParams toInterop() =>
       interop.PasskeyLoginChallengeParams(
-        realm: realm,
+        realm: connection,
         organization: organization,
       );
 }

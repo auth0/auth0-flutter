@@ -689,15 +689,15 @@ void main() {
         final result = await auth0.passkeySignupChallenge(
           email: 'user@example.com',
           name: 'John Doe',
-          realm: 'Username-Password-Authentication',
+          connection: 'Username-Password-Authentication',
         );
 
         expect(result.authSession, 'auth-session-123');
 
-        final params = verify(mockClientProxy.passkeyGetSignupChallenge(
-                captureAny))
-            .captured
-            .single as interop.PasskeySignupChallengeParams;
+        final params =
+            verify(mockClientProxy.passkeyGetSignupChallenge(captureAny))
+                .captured
+                .single as interop.PasskeySignupChallengeParams;
         expect(params.email, 'user@example.com');
         expect(params.name, 'John Doe');
         expect(params.realm, 'Username-Password-Authentication');
@@ -709,8 +709,7 @@ void main() {
                 'passkey_register_error', 'Failed to request challenge'));
 
         expect(
-            () async =>
-                auth0.passkeySignupChallenge(email: 'user@example.com'),
+            () async => auth0.passkeySignupChallenge(email: 'user@example.com'),
             throwsA(predicate((final e) =>
                 e is WebException &&
                 e.code == 'PASSKEY_ERROR' &&
@@ -724,15 +723,15 @@ void main() {
             .thenAnswer((final _) => Future.value(passkeyChallengeCredentials));
 
         final result = await auth0.passkeyLoginChallenge(
-          realm: 'Username-Password-Authentication',
+          connection: 'Username-Password-Authentication',
         );
 
         expect(result.authSession, 'auth-session-123');
 
-        final params = verify(
-                mockClientProxy.passkeyGetLoginChallenge(captureAny))
-            .captured
-            .single as interop.PasskeyLoginChallengeParams?;
+        final params =
+            verify(mockClientProxy.passkeyGetLoginChallenge(captureAny))
+                .captured
+                .single as interop.PasskeyLoginChallengeParams?;
         expect(params?.realm, 'Username-Password-Authentication');
       });
 
@@ -761,41 +760,19 @@ void main() {
         final result = await auth0.getTokenByPasskey(
           authSession: 'auth-session-123',
           authResponse: rawCredential,
-          realm: 'Username-Password-Authentication',
+          connection: 'Username-Password-Authentication',
         );
 
         expect(result.accessToken, jwt);
         expect(result.idToken, jwt);
 
-        final params = verify(mockClientProxy.passkeyGetTokenWithPasskey(
-                captureAny))
-            .captured
-            .single as interop.PasskeyGetTokenParams;
+        final params =
+            verify(mockClientProxy.passkeyGetTokenWithPasskey(captureAny))
+                .captured
+                .single as interop.PasskeyGetTokenParams;
         expect(params.authSession, 'auth-session-123');
         expect(params.realm, 'Username-Password-Authentication');
         verifyNever(mockClientProxy.requestTokenForPasskey(any));
-      });
-
-      test('exchanges a JSON string credential via requestTokenForPasskey',
-          () async {
-        when(mockClientProxy.requestTokenForPasskey(any))
-            .thenAnswer((final _) => Future.value(webCredentials));
-
-        final result = await auth0.getTokenByPasskey(
-          authSession: 'auth-session-123',
-          authResponse: '{"id":"credential-id"}',
-          realm: 'Username-Password-Authentication',
-        );
-
-        expect(result.accessToken, jwt);
-        expect(result.idToken, jwt);
-
-        final params = verify(
-                mockClientProxy.requestTokenForPasskey(captureAny))
-            .captured
-            .single as interop.RequestTokenForPasskeyParams;
-        expect(params.authSession, 'auth-session-123');
-        verifyNever(mockClientProxy.passkeyGetTokenWithPasskey(any));
       });
 
       test('throws WebException when the exchange fails', () async {

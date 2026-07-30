@@ -13,7 +13,7 @@ class WebGetTokenByPasskeyOptions {
   final dynamic authResponse;
 
   /// The database connection name.
-  final String? realm;
+  final String? connection;
 
   /// The target API identifier for the issued access token.
   final String? audience;
@@ -27,7 +27,7 @@ class WebGetTokenByPasskeyOptions {
   WebGetTokenByPasskeyOptions({
     required this.authSession,
     required this.authResponse,
-    this.realm,
+    this.connection,
     this.audience,
     this.scopes,
     this.organization,

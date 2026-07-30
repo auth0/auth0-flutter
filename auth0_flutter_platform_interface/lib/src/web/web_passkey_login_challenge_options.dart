@@ -1,10 +1,10 @@
 /// Options for requesting a passkey login challenge on the web platform.
 class WebPasskeyLoginChallengeOptions {
-  final String? realm;
+  final String? connection;
   final String? organization;
 
   WebPasskeyLoginChallengeOptions({
-    this.realm,
+    this.connection,
     this.organization,
   });
 }

@@ -385,7 +385,7 @@ extension type PasskeyGetTokenParams._(JSObject _) implements JSObject {
 
   external factory PasskeyGetTokenParams({
     required final String authSession,
-    required final JSAny credential,
+    required final JSObject credential,
     final String? realm,
     final String? organization,
     final String? scope,

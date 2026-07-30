@@ -201,8 +201,8 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   @override
   Future<void> clearApiCredentials(
       final ClearApiCredentialsOptions options) async {
-    console.warn(
-        "'clearApiCredentials' is not supported on the web. auth0-spa-js "
+    console
+        .warn("'clearApiCredentials' is not supported on the web. auth0-spa-js "
                 'handles credential storage automatically.'
             .toJS);
   }
@@ -216,9 +216,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     final client = _ensureClient();
     try {
       final result = await client.mfaGetAuthenticators(mfaToken);
-      return result.toDart
-          .map(MfaAuthenticatorWebExtension.fromWeb)
-          .toList();
+      return result.toDart.map(MfaAuthenticatorWebExtension.fromWeb).toList();
     } catch (e) {
       throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
     }
@@ -340,11 +338,11 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     final client = _ensureClient();
     final authResponse = options.authResponse;
 
-    if (authResponse is! String && authResponse is! JSObject) {
+    if (authResponse is! JSObject) {
       throw ArgumentError.value(
         authResponse,
         'authResponse',
-        'Must be a JSON string or the raw PublicKeyCredential returned by '
+        'Must be a raw PublicKeyCredential returned by '
             'navigator.credentials.create()/.get()',
       );
     }
@@ -354,33 +352,18 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
 
     try {
       final interop.WebCredentials result;
-
-      if (authResponse is String) {
-        // Matches the mobile bridge contract: a JSON string representing the
-        // PublicKeyCredential response from the platform credential manager.
-        result = await client.requestTokenForPasskey(
-            JsInteropUtils.stripNulls(interop.RequestTokenForPasskeyParams(
-          authSession: options.authSession,
-          credential: parseJson(authResponse),
-          realm: options.realm,
-          organization: options.organization,
-          scope: scopeString,
-          audience: options.audience,
-        )));
-      } else {
-        // The raw PublicKeyCredential returned directly by
-        // navigator.credentials.create()/.get(). auth0-spa-js detects
-        // attestation vs assertion and serializes it internally.
-        result = await client.passkeyGetTokenWithPasskey(
-            JsInteropUtils.stripNulls(interop.PasskeyGetTokenParams(
-          authSession: options.authSession,
-          credential: authResponse as JSAny,
-          realm: options.realm,
-          organization: options.organization,
-          scope: scopeString,
-          audience: options.audience,
-        )));
-      }
+      // The raw PublicKeyCredential returned directly by
+      // navigator.credentials.create()/.get(). auth0-spa-js detects
+      // attestation vs assertion and serializes it internally.
+      result = await client.passkeyGetTokenWithPasskey(
+          JsInteropUtils.stripNulls(interop.PasskeyGetTokenParams(
+        authSession: options.authSession,
+        credential: authResponse as JSObject,
+        realm: options.connection,
+        organization: options.organization,
+        scope: scopeString,
+        audience: options.audience,
+      )));
 
       return CredentialsExtension.fromWeb(result);
     } catch (e) {

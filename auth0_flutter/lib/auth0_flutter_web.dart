@@ -540,18 +540,16 @@ class Auth0Web {
   ///
   /// ## Notes
   ///
-  /// * [realm] is the name of the database connection configured with
-  /// passkeys. Defaults to the application's first passkey connection when
-  /// omitted. This is equivalent to the `connection` parameter on
-  /// `AuthenticationApi.passkeyLoginChallenge` (native).
+  /// * [connection] is the name of the database connection configured with
+  /// passkeys.
   /// * [organizationId] is the optional Auth0 organization to log in to.
   Future<WebPasskeyChallenge> passkeyLoginChallenge({
-    final String? realm,
+    final String? connection,
     final String? organizationId,
   }) =>
       Auth0FlutterWebPlatform.instance.passkeyLoginChallenge(
         WebPasskeyLoginChallengeOptions(
-          realm: realm,
+          connection: connection,
           organization: organizationId,
         ),
       );
@@ -572,7 +570,7 @@ class Auth0Web {
   /// `PublicKeyCredential` object directly; it does not need to be
   /// serialized first. A JSON [String] is also accepted, matching the native
   /// bridge contract.
-  /// * [realm] is the name of the database connection configured with
+  /// * [connection] is the name of the database connection configured with
   /// passkeys.
   /// * [audience] relates to the API Identifier you want to reference in your
   /// access tokens. See [API settings](https://auth0.com/docs/get-started/apis/api-settings)
@@ -587,7 +585,7 @@ class Auth0Web {
   ///
   /// ```dart
   /// final challenge = await auth0Web.passkeyLoginChallenge(
-  ///   realm: 'Username-Password-Authentication',
+  ///   connection: 'Username-Password-Authentication',
   /// );
   ///
   /// final credential = await navigator.credentials.get(
@@ -600,13 +598,13 @@ class Auth0Web {
   /// final credentials = await auth0Web.getTokenByPasskey(
   ///   authSession: challenge.authSession,
   ///   authResponse: credential,
-  ///   realm: 'Username-Password-Authentication',
+  ///   connection: 'Username-Password-Authentication',
   /// );
   /// ```
   Future<Credentials> getTokenByPasskey({
     required final String authSession,
     required final dynamic authResponse,
-    final String? realm,
+    final String? connection,
     final String? audience,
     final Set<String> scopes = const {
       'openid',
@@ -620,7 +618,7 @@ class Auth0Web {
         WebGetTokenByPasskeyOptions(
           authSession: authSession,
           authResponse: authResponse,
-          realm: realm,
+          connection: connection,
           audience: audience,
           scopes: scopes,
           organization: organizationId,
