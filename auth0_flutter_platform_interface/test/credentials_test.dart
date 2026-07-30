@@ -134,7 +134,7 @@ void main() {
       expect(credentials.toMap()['sessionExpiry'], '2023-11-02T10:00:00.000Z');
     });
 
-    test('sessionExpiry is null in the map when not set', () async {
+    test('sessionExpiry key is omitted from the map when not set', () async {
       final credentials = Credentials(
           accessToken: 'accessToken',
           idToken: 'idToken',
@@ -144,7 +144,28 @@ void main() {
           user: const UserProfile(sub: '123', name: 'John Doe'),
           tokenType: 'Bearer');
 
-      expect(credentials.toMap()['sessionExpiry'], isNull);
+      // The key is omitted entirely (matching the native serializers), not
+      // carried as an explicit null.
+      expect(credentials.toMap().containsKey('sessionExpiry'), false);
+    });
+  });
+
+  group('Credentials.fromMap sessionExpiry validation', () {
+    Map<String, dynamic> baseMap() => {
+          'accessToken': 'accessToken',
+          'idToken': 'idToken',
+          'refreshToken': 'refreshToken',
+          'expiresAt': '2023-11-01T22:16:35.760Z',
+          'scopes': ['a'],
+          'userProfile': {'sub': '123', 'name': 'John Doe'},
+          'tokenType': 'Bearer',
+        };
+
+    test('throws FormatException when sessionExpiry is not a String', () async {
+      expect(
+        () => Credentials.fromMap(baseMap()..['sessionExpiry'] = 42),
+        throwsA(isA<FormatException>()),
+      );
     });
   });
 }

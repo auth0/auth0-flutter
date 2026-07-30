@@ -89,5 +89,18 @@ void main() {
 
       expect(result.sessionExpiry, isNull);
     });
+
+    test('sessionExpiry is null when the claim is a millisecond value', () {
+      // 13-digit millisecond timestamp (>= 10_000_000_000) — rejected to match
+      // the native SDKs, which treat it as "no ceiling".
+      final webCredentials = WebCredentials(
+        access_token: 'foo',
+        id_token: _tokenWithClaims({'session_expiry': 1698919200000}),
+        expires_in: 3600.toJS,
+      );
+      final result = CredentialsExtension.fromWeb(webCredentials);
+
+      expect(result.sessionExpiry, isNull);
+    });
   });
 }

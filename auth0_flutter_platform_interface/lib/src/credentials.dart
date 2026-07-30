@@ -53,9 +53,14 @@ class Credentials {
   /// Expiry"** enabled (`id_token_session_expiry_supported: true`).
   ///
   /// This is derived from the `session_expiry` claim (a Unix-seconds timestamp)
-  /// in the ID token and acts as a hard ceiling on the local session: the
-  /// underlying native SDK treats the credentials as expired once this time is
-  /// reached and will not renew them past it, regardless of [expiresAt].
+  /// in the ID token and acts as a hard ceiling on the local session,
+  /// enforced by the underlying platform SDK:
+  ///
+  /// - On **iOS**, **macOS** and **Android** the native SDK's credentials
+  ///   manager treats the stored credentials as expired once this time is
+  ///   reached and will not renew them past it, regardless of [expiresAt].
+  /// - On the **web**, `auth0-spa-js` enforces the ceiling on silent renewal:
+  ///   once it is reached the SDK stops returning credentials.
   ///
   /// It is layered *on top of* the access-token [expiresAt] and any idle/
   /// absolute timeouts — not a replacement for them.
@@ -64,7 +69,7 @@ class Credentials {
   /// enabled, or the session predates the feature). A `null` value means
   /// **no ceiling** and must never be treated as an already-expired session.
   ///
-  /// [Read more about upstream IdP session expiry](https://auth0.com/docs).
+  /// [Read more about the IPSIE SL1 `session_expiry` claim](https://openid.github.io/ipsie-openid-sl1/draft-openid-ipsie-sl1-profile.html).
   final DateTime? sessionExpiry;
 
   Credentials({
@@ -88,9 +93,7 @@ class Credentials {
         user: UserProfile.fromMap(Map<String, dynamic>.from(
             result['userProfile'] as Map<dynamic, dynamic>)),
         tokenType: result['tokenType'] as String,
-        sessionExpiry: result['sessionExpiry'] == null
-            ? null
-            : DateTime.parse(result['sessionExpiry'] as String).toUtc(),
+        sessionExpiry: _parseSessionExpiry(result['sessionExpiry']),
       );
 
   Map<String, dynamic> toMap() => {
@@ -101,6 +104,25 @@ class Credentials {
         'scopes': scopes.toList(),
         'userProfile': user.toMap(),
         'tokenType': tokenType,
-        'sessionExpiry': sessionExpiry?.toUtc().toIso8601String(),
+        // Omit the key when there is no ceiling, matching the native
+        // serializers rather than carrying an explicit `null`.
+        if (sessionExpiry != null)
+          'sessionExpiry': sessionExpiry!.toUtc().toIso8601String(),
       };
+
+  /// Parses the `sessionExpiry` value coming across the platform channel.
+  ///
+  /// Returns `null` when the value is absent, parses an ISO-8601 [String] to a
+  /// UTC [DateTime], and throws a [FormatException] for any other type rather
+  /// than performing an unchecked cast at the credential boundary.
+  static DateTime? _parseSessionExpiry(final Object? value) {
+    if (value == null) {
+      return null;
+    }
+    if (value is String) {
+      return DateTime.parse(value).toUtc();
+    }
+    throw FormatException('Expected an ISO-8601 String for sessionExpiry, '
+        'got ${value.runtimeType}');
+  }
 }

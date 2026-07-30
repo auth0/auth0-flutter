@@ -703,18 +703,22 @@ final credentials = await auth0.credentialsManager.credentials();
 
 ### 🕒 Session expiry from an upstream IdP
 
+> ⚠️ **Early Access:** upstream IdP session expiry (the IPSIE [`session_expiry`](https://openid.github.io/ipsie-openid-sl1/draft-openid-ipsie-sl1-profile.html) claim) is an **Early Access** feature. The API surface described here (the `sessionExpiry` field and the `isSessionExpired` error) may change before it is generally available.
+
 When a user authenticates through an upstream Identity Provider (for example Okta) over an enterprise connection that has **"Use ID Token for Session Expiry"** enabled (`id_token_session_expiry_supported: true`), Auth0 adds a `session_expiry` claim to the ID token. This claim is an absolute point in time (a Unix-seconds timestamp) that represents when the upstream IdP session ends, and it acts as a **hard ceiling** on the local session: the app session can never outlive the upstream IdP session.
 
-**Enforcement is transparent — you do not need to write any new code.** Once the ceiling passes, the underlying native SDK treats the stored credentials as expired and skips refresh-token renewal, so `credentials()` raises a "no credentials" error exactly as it would for a logged-out user. Your existing "needs login" handling then triggers a fresh login:
+**Enforcement is transparent — you do not need to write any new code to have the ceiling enforced.** Once the ceiling passes, the underlying platform SDK treats the stored credentials as expired and skips refresh-token renewal, so `credentials()` raises a `CredentialsManagerException`. The ceiling has its own dedicated error, distinct from "no credentials", so branch on `isSessionExpired` to send the user through a fresh login:
 
 ```dart
 try {
   final credentials = await auth0.credentialsManager.credentials();
   // Use the credentials
 } on CredentialsManagerException catch (e) {
-  if (e.isNoCredentialsFound) {
-    // Session ended (this includes the upstream IdP session_expiry ceiling
-    // being reached) — send the user through the login flow again.
+  if (e.isSessionExpired) {
+    // The upstream IdP session_expiry ceiling was reached — the local session
+    // can no longer be renewed. Send the user through the login flow again.
+  } else if (e.isNoCredentialsFound) {
+    // No stored credentials (e.g. logged out) — send the user to login.
   }
 }
 ```
@@ -734,7 +738,7 @@ if (sessionExpiry != null) {
 }
 ```
 
-> ⚠️ **Upgrade note:** once this feature is enabled on your connection, `credentials()` can raise a "no credentials" error for a user who was previously logged in, when the ceiling is reached. If your app assumed `credentials()` always resolves after login, make sure it handles this case (it already does if you catch `CredentialsManagerException` as shown above).
+> ⚠️ **Upgrade note:** once this feature is enabled on your connection, `credentials()` can raise a session-expired error (`isSessionExpired`) for a user who was previously logged in, when the ceiling is reached. If your app assumed `credentials()` always resolves after login, make sure it handles this case (it already does if you catch `CredentialsManagerException` as shown above).
 >
 > On the web, enforcement is performed by [auth0-spa-js](https://github.com/auth0/auth0-spa-js) and requires **v2.22.0 or later**.
 

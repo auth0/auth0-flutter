@@ -91,13 +91,11 @@ extension Credentials {
             CredentialsProperty.tokenType.rawValue: tokenType
         ]
         data[CredentialsProperty.refreshToken] = refreshToken
-        // IPSIE session_expiry: an absolute Unix-seconds ceiling asserted by the
-        // upstream IdP. Surfaced to the Dart layer as an ISO-8601 string so app
-        // code can read `credentials.sessionExpiry`; enforcement itself is done
-        // by the native CredentialsManager. Absent claim => omit (no ceiling).
-        if let sessionExpiry = (jwt.body["session_expiry"] as? NSNumber)?.doubleValue {
-            let ceiling = Date(timeIntervalSince1970: sessionExpiry)
-            data[CredentialsProperty.sessionExpiry] = ceiling.asISO8601String
+        // IPSIE session_expiry ceiling. Use the native `sessionExpiresAt` so the
+        // surfaced value matches what the CredentialsManager enforces and picks
+        // up its range check; absent => omit.
+        if let sessionExpiresAt = sessionExpiresAt {
+            data[CredentialsProperty.sessionExpiry] = sessionExpiresAt.asISO8601String
         }
         return data
     }

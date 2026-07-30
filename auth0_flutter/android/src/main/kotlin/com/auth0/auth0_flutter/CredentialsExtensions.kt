@@ -5,12 +5,6 @@ import com.auth0.android.result.Credentials
 /**
  * Serializes [Credentials] into the map shape expected by the Dart
  * `Credentials.fromMap` factory.
- *
- * The IPSIE `session_expiry` claim is an absolute Unix-seconds ceiling asserted
- * by the upstream IdP. It is surfaced to the Dart layer as an ISO-8601 string
- * (`sessionExpiry`) so app code can read `credentials.sessionExpiry`; the
- * enforcement itself is performed by the native `SecureCredentialsManager`.
- * When the claim is absent the key is omitted (meaning "no ceiling").
  */
 fun Credentials.toMap(): Map<String, Any?> {
     val scopes = this.scope?.split(" ") ?: listOf()
@@ -24,16 +18,10 @@ fun Credentials.toMap(): Map<String, Any?> {
         put("expiresAt", formattedDate)
         put("scopes", scopes)
         put("tokenType", type)
-        sessionExpiryIso()?.let { put("sessionExpiry", it) }
+        // IPSIE session_expiry ceiling, pinned at login and enforced by the
+        // native SecureCredentialsManager; omitted when there is no ceiling.
+        sessionExpiresAt?.let {
+            put("sessionExpiry", java.util.Date(it * 1000L).toInstant().toString())
+        }
     }
-}
-
-/**
- * Reads the `session_expiry` claim from the decoded ID token (exposed via the
- * user profile's extra info) and converts the Unix-seconds value to an ISO-8601
- * UTC string. Returns `null` when the claim is absent or not numeric.
- */
-private fun Credentials.sessionExpiryIso(): String? {
-    val claim = user.getExtraInfo()["session_expiry"] as? Number ?: return null
-    return java.time.Instant.ofEpochSecond(claim.toLong()).toString()
 }

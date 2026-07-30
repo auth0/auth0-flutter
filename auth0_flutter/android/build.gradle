@@ -37,6 +37,9 @@ android {
         namespace libApplicationId
     }
     compileOptions {
+        // Backport java.time (used to format credential expiry dates) to the
+        // library's minSdk of 21; java.time is otherwise API 26+.
+        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -75,6 +78,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation 'com.auth0.android:auth0:3.21.0'
     implementation 'com.google.code.gson:gson:2.10.1'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.hamcrest:java-hamcrest:2.0.0.0'
     testImplementation "org.mockito.kotlin:mockito-kotlin:4.1.0"
