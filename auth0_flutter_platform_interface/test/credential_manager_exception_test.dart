@@ -51,5 +51,30 @@ void main() {
 
       expect(exception.isRetryable, false);
     });
+
+    test('isSessionExpired returns true for the SESSION_EXPIRED code', () {
+      final exception = CredentialsManagerException.fromPlatformException(
+          PlatformException(code: 'SESSION_EXPIRED'));
+
+      expect(exception.isSessionExpired, true);
+    });
+
+    test('isSessionExpired returns true for the session_expiry message', () {
+      final exception = CredentialsManagerException.fromPlatformException(
+          PlatformException(
+              code: 'The session has reached the session_expiry ceiling set '
+                  'by the identity provider and is no longer valid. The user '
+                  'must re-authenticate.'));
+
+      expect(exception.isSessionExpired, true);
+    });
+
+    test('isSessionExpired returns false for a non-matching error', () {
+      final exception = CredentialsManagerException.fromPlatformException(
+          PlatformException(code: 'NO_CREDENTIALS'));
+
+      expect(exception.isSessionExpired, false);
+      expect(exception.isNoCredentialsFound, true);
+    });
   });
 }

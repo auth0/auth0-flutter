@@ -102,5 +102,49 @@ void main() {
 
       expect(result.sessionExpiry, isNull);
     });
+
+    test('sessionExpiry is null when the claim is zero', () {
+      final webCredentials = WebCredentials(
+        access_token: 'foo',
+        id_token: _tokenWithClaims({'session_expiry': 0}),
+        expires_in: 3600.toJS,
+      );
+      final result = CredentialsExtension.fromWeb(webCredentials);
+
+      expect(result.sessionExpiry, isNull);
+    });
+
+    test('sessionExpiry is null when the claim is negative', () {
+      final webCredentials = WebCredentials(
+        access_token: 'foo',
+        id_token: _tokenWithClaims({'session_expiry': -1698919200}),
+        expires_in: 3600.toJS,
+      );
+      final result = CredentialsExtension.fromWeb(webCredentials);
+
+      expect(result.sessionExpiry, isNull);
+    });
+
+    test('sessionExpiry is null when the claim is non-numeric', () {
+      final webCredentials = WebCredentials(
+        access_token: 'foo',
+        id_token: _tokenWithClaims({'session_expiry': 'not-a-number'}),
+        expires_in: 3600.toJS,
+      );
+      final result = CredentialsExtension.fromWeb(webCredentials);
+
+      expect(result.sessionExpiry, isNull);
+    });
+
+    test('sessionExpiry is null at the upper bound (10_000_000_000)', () {
+      final webCredentials = WebCredentials(
+        access_token: 'foo',
+        id_token: _tokenWithClaims({'session_expiry': 10000000000}),
+        expires_in: 3600.toJS,
+      );
+      final result = CredentialsExtension.fromWeb(webCredentials);
+
+      expect(result.sessionExpiry, isNull);
+    });
   });
 }
