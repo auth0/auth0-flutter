@@ -39,13 +39,14 @@
   <!-- This script adds the flutter initialization JS code -->
   <script src="flutter_bootstrap.js" async></script>
   
-  <!-- Load Auth0 SPA JS SDK v2.21.2 from unpkg CDN -->
+  <!-- Load Auth0 SPA JS SDK v2.22.0 from unpkg CDN -->
   <!-- v2.21.0+ is required for the programmatic MFA API (Auth0Client.mfa) -->
+  <!-- v2.22.0+ is required for IPSIE session_expiry enforcement -->
   <script>
     // Create promise that resolves when Auth0 SDK is loaded
     window.auth0SdkReady = new Promise((resolve, reject) => {
       const script = document.createElement('script');
-      script.src = 'https://unpkg.com/@auth0/auth0-spa-js@2.21.2/dist/auth0-spa-js.production.js';
+      script.src = 'https://unpkg.com/@auth0/auth0-spa-js@2.22.0/dist/auth0-spa-js.production.js';
       
       script.onload = () => {
         if (window.auth0 && window.auth0.Auth0Client) {

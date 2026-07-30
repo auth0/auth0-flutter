@@ -8,12 +8,14 @@ class JwtTestUtils {
         fun createJwt(
             subject: String = "test-subject",
             issuer: String = "test-issuer",
-            claims: Map<String, String> = mapOf()
+            claims: Map<String, String> = mapOf(),
+            numberClaims: Map<String, Long> = mapOf()
         ): String {
             val alg = Algorithm.HMAC256("test")
             val jwt = JWT.create().withIssuer(issuer).withSubject(subject)
 
             claims.entries.forEach { jwt.withClaim(it.key, it.value) }
+            numberClaims.entries.forEach { jwt.withClaim(it.key, it.value) }
 
             return jwt.sign(alg)
         }

@@ -17,6 +17,7 @@ extension FlutterError {
         case .biometricsFailed: code = "BIOMETRICS_FAILED"
         case .revokeFailed: code = "REVOKE_FAILED"
         case .largeMinTTL: code = "LARGE_MIN_TTL"
+        case .sessionExpired: code = "SESSION_EXPIRED"
         default: code = "UNKNOWN"
         }
 

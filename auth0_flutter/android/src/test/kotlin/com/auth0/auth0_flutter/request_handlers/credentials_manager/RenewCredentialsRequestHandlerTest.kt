@@ -196,4 +196,38 @@ class RenewCredentialsRequestHandlerTest {
             CoreMatchers.equalTo("John Doe")
         )
     }
+
+    @Test
+    fun `should preserve sessionExpiry across a renew`() {
+        val options = hashMapOf<String, Any>()
+        val handler = RenewCredentialsRequestHandler()
+        val mockResult = mock<Result>()
+        val mockAccount = mock<Auth0>()
+        val mockCredentialsManager = mock<SecureCredentialsManager>()
+        val request = MethodCallRequest(account = mockAccount, options)
+        // 2023-11-02T10:00:00Z == 1698919200 Unix seconds.
+        val sessionExpirySeconds = 1698919200L
+        val idToken = JwtTestUtils.createJwt(
+            claims = mapOf("name" to "John Doe"),
+            numberClaims = mapOf("session_expiry" to sessionExpirySeconds)
+        )
+        val credentials = Credentials(idToken, "accessToken", "Bearer", null, Date(), "scope1")
+
+        whenever(mockCredentialsManager.getCredentials(isNull(), anyInt(), anyMap(), eq(true), any())).thenAnswer {
+            val callback = it.getArgument<Callback<Credentials, CredentialsManagerException>>(4)
+            callback.onSuccess(credentials)
+        }
+
+        handler.handle(mockCredentialsManager, mock(), request, mockResult)
+
+        val captor = argumentCaptor<Map<String, *>>()
+        verify(mockResult).success(captor.capture())
+
+        MatcherAssert.assertThat(
+            captor.firstValue["sessionExpiry"] as String,
+            CoreMatchers.equalTo(
+                java.time.Instant.ofEpochSecond(sessionExpirySeconds).toString()
+            )
+        )
+    }
 }
