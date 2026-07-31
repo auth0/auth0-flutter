@@ -13,6 +13,7 @@ import 'extensions/credentials_options_extension.dart';
 import 'extensions/exchange_token_options_extension.dart';
 import 'extensions/logout_options.extension.dart';
 import 'extensions/mfa_extensions.dart';
+import 'extensions/passkey_extensions.dart';
 import 'extensions/web_exception_extensions.dart';
 import 'js_interop.dart' as interop;
 import 'js_interop_utils.dart';
@@ -200,8 +201,8 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   @override
   Future<void> clearApiCredentials(
       final ClearApiCredentialsOptions options) async {
-    console.warn(
-        "'clearApiCredentials' is not supported on the web. auth0-spa-js "
+    console
+        .warn("'clearApiCredentials' is not supported on the web. auth0-spa-js "
                 'handles credential storage automatically.'
             .toJS);
   }
@@ -215,9 +216,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
     final client = _ensureClient();
     try {
       final result = await client.mfaGetAuthenticators(mfaToken);
-      return result.toDart
-          .map(MfaAuthenticatorWebExtension.fromWeb)
-          .toList();
+      return result.toDart.map(MfaAuthenticatorWebExtension.fromWeb).toList();
     } catch (e) {
       throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
     }
@@ -302,6 +301,74 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
       return MfaEnrollmentChallengeWebExtension.fromWeb(result);
     } catch (e) {
       throw WebExceptionExtension.fromJsObject(JSObject.fromInteropObject(e));
+    }
+  }
+
+  @override
+  Future<WebPasskeyChallenge> passkeySignupChallenge(
+      final WebPasskeySignupChallengeOptions options) async {
+    final client = _ensureClient();
+    try {
+      final result = await client.passkeyGetSignupChallenge(
+          JsInteropUtils.stripNulls(options.toInterop()));
+      return result.toWebPasskeyChallenge();
+    } catch (e) {
+      throw WebExceptionExtension.fromPasskeyError(
+          JSObject.fromInteropObject(e));
+    }
+  }
+
+  @override
+  Future<WebPasskeyChallenge> passkeyLoginChallenge(
+      final WebPasskeyLoginChallengeOptions options) async {
+    final client = _ensureClient();
+    try {
+      final result = await client.passkeyGetLoginChallenge(
+          JsInteropUtils.stripNulls(options.toInterop()));
+      return result.toWebPasskeyChallenge();
+    } catch (e) {
+      throw WebExceptionExtension.fromPasskeyError(
+          JSObject.fromInteropObject(e));
+    }
+  }
+
+  @override
+  Future<Credentials> getTokenByPasskey(
+      final WebGetTokenByPasskeyOptions options) async {
+    final client = _ensureClient();
+    final authResponse = options.authResponse;
+
+    if (authResponse is! JSObject) {
+      throw ArgumentError.value(
+        authResponse,
+        'authResponse',
+        'Must be a raw PublicKeyCredential returned by '
+            'navigator.credentials.create()/.get()',
+      );
+    }
+
+    final scopeString =
+        options.scopes?.isNotEmpty == true ? options.scopes!.join(' ') : null;
+
+    try {
+      final interop.WebCredentials result;
+      // The raw PublicKeyCredential returned directly by
+      // navigator.credentials.create()/.get(). auth0-spa-js detects
+      // attestation vs assertion and serializes it internally.
+      result = await client.passkeyGetTokenWithPasskey(
+          JsInteropUtils.stripNulls(interop.PasskeyGetTokenParams(
+        authSession: options.authSession,
+        credential: authResponse as JSObject,
+        realm: options.connection,
+        organization: options.organization,
+        scope: scopeString,
+        audience: options.audience,
+      )));
+
+      return CredentialsExtension.fromWeb(result);
+    } catch (e) {
+      throw WebExceptionExtension.fromPasskeyError(
+          JSObject.fromInteropObject(e));
     }
   }
 
