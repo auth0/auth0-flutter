@@ -394,26 +394,6 @@ extension type PasskeyGetTokenParams._(JSObject _) implements JSObject {
 }
 
 @JS()
-@anonymous
-extension type RequestTokenForPasskeyParams._(JSObject _) implements JSObject {
-  external String get authSession;
-  external JSObject get credential;
-  external String? get realm;
-  external String? get organization;
-  external String? get scope;
-  external String? get audience;
-
-  external factory RequestTokenForPasskeyParams({
-    required final String authSession,
-    required final JSObject credential,
-    final String? realm,
-    final String? organization,
-    final String? scope,
-    final String? audience,
-  });
-}
-
-@JS()
 extension type PasskeyApiClient._(JSObject _) implements JSObject {
   external JSPromise<PasskeyChallengeResponse> getSignupChallenge(
     final PasskeySignupChallengeParams options,
@@ -455,13 +435,6 @@ extension type Auth0Client._(JSObject _) implements JSObject {
   /// The passkey API client exposed by auth0-spa-js (v2.24.0+) for driving
   /// the granular passkey signup/login challenge and token exchange flow.
   external PasskeyApiClient get passkey;
-
-  /// @internal auth0-spa-js method used to exchange a JSON-serialized
-  /// passkey credential (matching the mobile bridge contract) for tokens.
-  @JS('_requestTokenForPasskey')
-  external JSPromise<WebCredentials> requestTokenForPasskey(
-    final RequestTokenForPasskeyParams options,
-  );
 }
 
 // TODO: remove this extension when updating to Dart 3.6.0

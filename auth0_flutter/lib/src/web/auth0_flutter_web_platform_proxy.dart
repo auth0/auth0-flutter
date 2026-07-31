@@ -65,8 +65,4 @@ class Auth0FlutterWebClientProxy {
   Future<WebCredentials> passkeyGetTokenWithPasskey(
           final PasskeyGetTokenParams params) =>
       JSPromiseToFuture(client.passkey.getTokenWithPasskey(params)).toDart;
-
-  Future<WebCredentials> requestTokenForPasskey(
-          final RequestTokenForPasskeyParams params) =>
-      JSPromiseToFuture(client.requestTokenForPasskey(params)).toDart;
 }

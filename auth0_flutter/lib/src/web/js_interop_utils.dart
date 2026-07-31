@@ -6,9 +6,6 @@ import 'js_interop.dart';
 @JS('Object.keys')
 external JSArray<JSString> keys(final JSObject o);
 
-@JS('JSON.parse')
-external JSObject parseJson(final String json);
-
 class JsInteropUtils {
   /// Rebuilds the input object, omitting values that are null
   static T stripNulls<T extends JSObject>(final T obj) {

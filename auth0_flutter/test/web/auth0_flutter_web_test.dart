@@ -750,6 +750,46 @@ void main() {
     });
 
     group('getTokenByPasskey', () {
+      test('throws ArgumentError when authResponse is not a JSObject',
+          () async {
+        expect(
+            () async => auth0.getTokenByPasskey(
+                  authSession: 'auth-session-123',
+                  authResponse: {'id': 'not-a-real-credential'},
+                ),
+            throwsA(isA<ArgumentError>()
+                .having((final e) => e.name, 'name', 'authResponse')
+                .having((final e) => e.message, 'message',
+                    contains('navigator.credentials.create()'))));
+
+        verifyNever(mockClientProxy.passkeyGetTokenWithPasskey(any));
+      });
+
+      test('throws ArgumentError when authResponse is null', () async {
+        expect(
+            () async => auth0.getTokenByPasskey(
+                  authSession: 'auth-session-123',
+                  authResponse: null,
+                ),
+            throwsA(isA<ArgumentError>()
+                .having((final e) => e.name, 'name', 'authResponse')));
+
+        verifyNever(mockClientProxy.passkeyGetTokenWithPasskey(any));
+      });
+
+      test('throws ArgumentError when authResponse is a plain String',
+          () async {
+        expect(
+            () async => auth0.getTokenByPasskey(
+                  authSession: 'auth-session-123',
+                  authResponse: 'not-a-credential',
+                ),
+            throwsA(isA<ArgumentError>()
+                .having((final e) => e.name, 'name', 'authResponse')));
+
+        verifyNever(mockClientProxy.passkeyGetTokenWithPasskey(any));
+      });
+
       test('exchanges a raw credential via passkey.getTokenWithPasskey',
           () async {
         final rawCredential = JSObject();
@@ -772,7 +812,6 @@ void main() {
                 .single as interop.PasskeyGetTokenParams;
         expect(params.authSession, 'auth-session-123');
         expect(params.realm, 'Username-Password-Authentication');
-        verifyNever(mockClientProxy.requestTokenForPasskey(any));
       });
 
       test('throws WebException when the exchange fails', () async {
@@ -836,19 +875,6 @@ void main() {
                 e.code == 'AUTHENTICATION_ERROR' &&
                 e.message == 'Auth session has expired' &&
                 e.details['code'] == 'invalid_grant')));
-      });
-
-      test(
-          'throws ArgumentError for an authResponse that is neither a '
-          'String nor a JS value', () async {
-        expect(
-            () async => auth0.getTokenByPasskey(
-                  authSession: 'auth-session-123',
-                  authResponse: 42,
-                ),
-            throwsArgumentError);
-        verifyNever(mockClientProxy.passkeyGetTokenWithPasskey(any));
-        verifyNever(mockClientProxy.requestTokenForPasskey(any));
       });
     });
   });

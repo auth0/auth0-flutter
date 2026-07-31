@@ -22,10 +22,13 @@ class WebException extends Auth0Exception {
   /// A passkey-related operation (challenge request or credential exchange)
   /// failed. [error] carries the underlying `auth0-spa-js` passkey error
   /// code (for example `passkey_register_error`, `passkey_not_supported`).
+  ///
+  /// [details] is merged first so that [error] stays authoritative even when
+  /// the map carries its own `code` entry.
   WebException.passkeyError(final String error, final String message,
       [final Map<String, dynamic>? details])
       : this(WebException._passkeyError, message,
-            {'code': error, ...details ?? {}});
+            {...details ?? {}, 'code': error});
 
   WebException.mfaError(final String message, final String mfaToken)
       : this(WebException._mfaRequired, message, {'mfaToken': mfaToken});

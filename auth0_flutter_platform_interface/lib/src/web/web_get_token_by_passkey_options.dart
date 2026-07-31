@@ -8,8 +8,7 @@ class WebGetTokenByPasskeyOptions {
   ///
   /// Pass the raw `PublicKeyCredential` object returned directly by
   /// `navigator.credentials.create()`/`.get()` — it does not need to be
-  /// serialized first. A JSON [String] (matching the mobile `authResponse`
-  /// contract) is also accepted for parity.
+  /// serialized first.
   final dynamic authResponse;
 
   /// The database connection name.

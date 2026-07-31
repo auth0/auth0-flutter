@@ -566,10 +566,7 @@ class Auth0Web {
   /// * [authSession] is the auth session received from the challenge
   /// response.
   /// * [authResponse] is the credential returned by
-  /// `navigator.credentials.create()`/`.get()` — pass the raw
-  /// `PublicKeyCredential` object directly; it does not need to be
-  /// serialized first. A JSON [String] is also accepted, matching the native
-  /// bridge contract.
+  /// `navigator.credentials.create()`/`.get()`
   /// * [connection] is the name of the database connection configured with
   /// passkeys.
   /// * [audience] relates to the API Identifier you want to reference in your

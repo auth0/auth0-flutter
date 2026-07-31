@@ -257,22 +257,4 @@ class MockAuth0FlutterWebClientProxy extends _i1.Mock
           ),
         )) as _i2.WebCredentials),
       ) as _i4.Future<_i2.WebCredentials>);
-
-  @override
-  _i4.Future<_i2.WebCredentials> requestTokenForPasskey(
-          _i2.RequestTokenForPasskeyParams? params) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #requestTokenForPasskey,
-          [params],
-        ),
-        returnValue: _i4.Future<_i2.WebCredentials>.value(
-            createJSInteropWrapper<_FakeWebCredentials_1>(_FakeWebCredentials_1(
-          this,
-          Invocation.method(
-            #requestTokenForPasskey,
-            [params],
-          ),
-        )) as _i2.WebCredentials),
-      ) as _i4.Future<_i2.WebCredentials>);
 }
