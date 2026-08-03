@@ -3,14 +3,14 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i5;
+import 'dart:async' as _i4;
 
 import 'package:auth0_flutter/auth0_flutter.dart' as _i2;
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
-    as _i3;
+    as _i5;
 import 'package:mockito/mockito.dart' as _i1;
 
-import 'web_authentication_test.dart' as _i4;
+import 'web_authentication_test.dart' as _i3;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -38,8 +38,19 @@ class _FakeCredentials_0 extends _i1.SmartFake implements _i2.Credentials {
 }
 
 class _FakeSSOCredentials_1 extends _i1.SmartFake
-    implements _i3.SSOCredentials {
+    implements _i2.SSOCredentials {
   _FakeSSOCredentials_1(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeApiCredentials_2 extends _i1.SmartFake
+    implements _i2.ApiCredentials {
+  _FakeApiCredentials_2(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -51,39 +62,45 @@ class _FakeSSOCredentials_1 extends _i1.SmartFake
 /// A class which mocks [TestPlatform].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockTestPlatform extends _i1.Mock implements _i4.TestPlatform {
+class MockTestPlatform extends _i1.Mock implements _i3.TestPlatform {
   MockTestPlatform() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i5.Future<_i2.Credentials> login(
-          _i3.WebAuthRequest<_i3.WebAuthLoginOptions>? request) =>
+  _i4.Stream<_i2.Credentials> get onCredentialsRecovered => (super.noSuchMethod(
+        Invocation.getter(#onCredentialsRecovered),
+        returnValue: _i4.Stream<_i2.Credentials>.empty(),
+      ) as _i4.Stream<_i2.Credentials>);
+
+  @override
+  _i4.Future<_i2.Credentials> login(
+          _i5.WebAuthRequest<_i5.WebAuthLoginOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #login,
           [request],
         ),
-        returnValue: _i5.Future<_i2.Credentials>.value(_FakeCredentials_0(
+        returnValue: _i4.Future<_i2.Credentials>.value(_FakeCredentials_0(
           this,
           Invocation.method(
             #login,
             [request],
           ),
         )),
-      ) as _i5.Future<_i2.Credentials>);
+      ) as _i4.Future<_i2.Credentials>);
 
   @override
-  _i5.Future<void> logout(
-          _i3.WebAuthRequest<_i3.WebAuthLogoutOptions>? request) =>
+  _i4.Future<void> logout(
+          _i5.WebAuthRequest<_i5.WebAuthLogoutOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #logout,
           [request],
         ),
-        returnValue: _i5.Future<void>.value(),
-        returnValueForMissingStub: _i5.Future<void>.value(),
-      ) as _i5.Future<void>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
   void cancel() => super.noSuchMethod(
@@ -98,108 +115,139 @@ class MockTestPlatform extends _i1.Mock implements _i4.TestPlatform {
 /// A class which mocks [TestCMPlatform].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockTestCMPlatform extends _i1.Mock implements _i4.TestCMPlatform {
+class MockTestCMPlatform extends _i1.Mock implements _i3.TestCMPlatform {
   MockTestCMPlatform() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i5.Future<_i2.Credentials> getCredentials(
-          _i3.CredentialsManagerRequest<_i3.GetCredentialsOptions>? request) =>
+  _i4.Future<_i2.Credentials> getCredentials(
+          _i5.CredentialsManagerRequest<_i5.GetCredentialsOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #getCredentials,
           [request],
         ),
-        returnValue: _i5.Future<_i2.Credentials>.value(_FakeCredentials_0(
+        returnValue: _i4.Future<_i2.Credentials>.value(_FakeCredentials_0(
           this,
           Invocation.method(
             #getCredentials,
             [request],
           ),
         )),
-      ) as _i5.Future<_i2.Credentials>);
+      ) as _i4.Future<_i2.Credentials>);
 
   @override
-  _i5.Future<_i2.Credentials> renewCredentials(
-          _i3.CredentialsManagerRequest<_i3.RenewCredentialsOptions>?
+  _i4.Future<_i2.Credentials> renewCredentials(
+          _i5.CredentialsManagerRequest<_i5.RenewCredentialsOptions>?
               request) =>
       (super.noSuchMethod(
         Invocation.method(
           #renewCredentials,
           [request],
         ),
-        returnValue: _i5.Future<_i2.Credentials>.value(_FakeCredentials_0(
+        returnValue: _i4.Future<_i2.Credentials>.value(_FakeCredentials_0(
           this,
           Invocation.method(
             #renewCredentials,
             [request],
           ),
         )),
-      ) as _i5.Future<_i2.Credentials>);
+      ) as _i4.Future<_i2.Credentials>);
 
   @override
-  _i5.Future<_i2.UserProfile?> user(
-          _i3.CredentialsManagerRequest<_i3.RequestOptions?>? request) =>
+  _i4.Future<_i2.UserProfile?> user(
+          _i5.CredentialsManagerRequest<_i5.RequestOptions?>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #user,
           [request],
         ),
-        returnValue: _i5.Future<_i2.UserProfile?>.value(),
-      ) as _i5.Future<_i2.UserProfile?>);
+        returnValue: _i4.Future<_i2.UserProfile?>.value(),
+      ) as _i4.Future<_i2.UserProfile?>);
 
   @override
-  _i5.Future<bool> clearCredentials(
-          _i3.CredentialsManagerRequest<_i3.RequestOptions?>? request) =>
+  _i4.Future<bool> clearCredentials(
+          _i5.CredentialsManagerRequest<_i5.RequestOptions?>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #clearCredentials,
           [request],
         ),
-        returnValue: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValue: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
 
   @override
-  _i5.Future<bool> saveCredentials(
-          _i3.CredentialsManagerRequest<_i3.SaveCredentialsOptions>? request) =>
+  _i4.Future<bool> saveCredentials(
+          _i5.CredentialsManagerRequest<_i5.SaveCredentialsOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #saveCredentials,
           [request],
         ),
-        returnValue: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValue: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
 
   @override
-  _i5.Future<bool> hasValidCredentials(
-          _i3.CredentialsManagerRequest<_i3.HasValidCredentialsOptions>?
+  _i4.Future<bool> hasValidCredentials(
+          _i5.CredentialsManagerRequest<_i5.HasValidCredentialsOptions>?
               request) =>
       (super.noSuchMethod(
         Invocation.method(
           #hasValidCredentials,
           [request],
         ),
-        returnValue: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValue: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
 
   @override
-  _i5.Future<_i3.SSOCredentials> getSSOCredentials(
-          _i3.CredentialsManagerRequest<_i3.GetSSOCredentialsOptions>?
+  _i4.Future<_i2.SSOCredentials> getSSOCredentials(
+          _i5.CredentialsManagerRequest<_i5.GetSSOCredentialsOptions>?
               request) =>
       (super.noSuchMethod(
         Invocation.method(
           #getSSOCredentials,
           [request],
         ),
-        returnValue: _i5.Future<_i3.SSOCredentials>.value(_FakeSSOCredentials_1(
+        returnValue: _i4.Future<_i2.SSOCredentials>.value(_FakeSSOCredentials_1(
           this,
           Invocation.method(
             #getSSOCredentials,
             [request],
           ),
         )),
-      ) as _i5.Future<_i3.SSOCredentials>);
+      ) as _i4.Future<_i2.SSOCredentials>);
+
+  @override
+  _i4.Future<_i2.ApiCredentials> getApiCredentials(
+          _i5.CredentialsManagerRequest<_i5.GetApiCredentialsOptions>?
+              request) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getApiCredentials,
+          [request],
+        ),
+        returnValue: _i4.Future<_i2.ApiCredentials>.value(_FakeApiCredentials_2(
+          this,
+          Invocation.method(
+            #getApiCredentials,
+            [request],
+          ),
+        )),
+      ) as _i4.Future<_i2.ApiCredentials>);
+
+  @override
+  _i4.Future<void> clearApiCredentials(
+          _i5.CredentialsManagerRequest<_i5.ClearApiCredentialsOptions>?
+              request) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #clearApiCredentials,
+          [request],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 }
 
 /// A class which mocks [CredentialsManager].
@@ -212,7 +260,7 @@ class MockCredentialsManager extends _i1.Mock
   }
 
   @override
-  _i5.Future<_i2.Credentials> credentials({
+  _i4.Future<_i2.Credentials> credentials({
     int? minTtl = 0,
     Set<String>? scopes = const {},
     Map<String, String>? parameters = const {},
@@ -227,7 +275,7 @@ class MockCredentialsManager extends _i1.Mock
             #parameters: parameters,
           },
         ),
-        returnValue: _i5.Future<_i2.Credentials>.value(_FakeCredentials_0(
+        returnValue: _i4.Future<_i2.Credentials>.value(_FakeCredentials_0(
           this,
           Invocation.method(
             #credentials,
@@ -239,10 +287,10 @@ class MockCredentialsManager extends _i1.Mock
             },
           ),
         )),
-      ) as _i5.Future<_i2.Credentials>);
+      ) as _i4.Future<_i2.Credentials>);
 
   @override
-  _i5.Future<_i2.Credentials> renewCredentials(
+  _i4.Future<_i2.Credentials> renewCredentials(
           {Map<String, String>? parameters = const {}}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -250,7 +298,7 @@ class MockCredentialsManager extends _i1.Mock
           [],
           {#parameters: parameters},
         ),
-        returnValue: _i5.Future<_i2.Credentials>.value(_FakeCredentials_0(
+        returnValue: _i4.Future<_i2.Credentials>.value(_FakeCredentials_0(
           this,
           Invocation.method(
             #renewCredentials,
@@ -258,49 +306,49 @@ class MockCredentialsManager extends _i1.Mock
             {#parameters: parameters},
           ),
         )),
-      ) as _i5.Future<_i2.Credentials>);
+      ) as _i4.Future<_i2.Credentials>);
 
   @override
-  _i5.Future<_i2.UserProfile?> user() => (super.noSuchMethod(
+  _i4.Future<_i2.UserProfile?> user() => (super.noSuchMethod(
         Invocation.method(
           #user,
           [],
         ),
-        returnValue: _i5.Future<_i2.UserProfile?>.value(),
-      ) as _i5.Future<_i2.UserProfile?>);
+        returnValue: _i4.Future<_i2.UserProfile?>.value(),
+      ) as _i4.Future<_i2.UserProfile?>);
 
   @override
-  _i5.Future<bool> storeCredentials(_i2.Credentials? credentials) =>
+  _i4.Future<bool> storeCredentials(_i2.Credentials? credentials) =>
       (super.noSuchMethod(
         Invocation.method(
           #storeCredentials,
           [credentials],
         ),
-        returnValue: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValue: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
 
   @override
-  _i5.Future<bool> hasValidCredentials({int? minTtl = 0}) =>
+  _i4.Future<bool> hasValidCredentials({int? minTtl = 0}) =>
       (super.noSuchMethod(
         Invocation.method(
           #hasValidCredentials,
           [],
           {#minTtl: minTtl},
         ),
-        returnValue: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValue: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
 
   @override
-  _i5.Future<bool> clearCredentials() => (super.noSuchMethod(
+  _i4.Future<bool> clearCredentials() => (super.noSuchMethod(
         Invocation.method(
           #clearCredentials,
           [],
         ),
-        returnValue: _i5.Future<bool>.value(false),
-      ) as _i5.Future<bool>);
+        returnValue: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
 
   @override
-  _i5.Future<_i3.SSOCredentials> ssoCredentials({
+  _i4.Future<_i2.SSOCredentials> ssoCredentials({
     Map<String, String>? parameters = const {},
     Map<String, String>? headers = const {},
   }) =>
@@ -313,7 +361,7 @@ class MockCredentialsManager extends _i1.Mock
             #headers: headers,
           },
         ),
-        returnValue: _i5.Future<_i3.SSOCredentials>.value(_FakeSSOCredentials_1(
+        returnValue: _i4.Future<_i2.SSOCredentials>.value(_FakeSSOCredentials_1(
           this,
           Invocation.method(
             #ssoCredentials,
@@ -324,5 +372,59 @@ class MockCredentialsManager extends _i1.Mock
             },
           ),
         )),
-      ) as _i5.Future<_i3.SSOCredentials>);
+      ) as _i4.Future<_i2.SSOCredentials>);
+
+  @override
+  _i4.Future<_i2.ApiCredentials> getApiCredentials({
+    required String? audience,
+    Set<String>? scope = const {},
+    int? minTtl = 0,
+    Map<String, String>? parameters = const {},
+    Map<String, String>? headers = const {},
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getApiCredentials,
+          [],
+          {
+            #audience: audience,
+            #scope: scope,
+            #minTtl: minTtl,
+            #parameters: parameters,
+            #headers: headers,
+          },
+        ),
+        returnValue: _i4.Future<_i2.ApiCredentials>.value(_FakeApiCredentials_2(
+          this,
+          Invocation.method(
+            #getApiCredentials,
+            [],
+            {
+              #audience: audience,
+              #scope: scope,
+              #minTtl: minTtl,
+              #parameters: parameters,
+              #headers: headers,
+            },
+          ),
+        )),
+      ) as _i4.Future<_i2.ApiCredentials>);
+
+  @override
+  _i4.Future<void> clearApiCredentials({
+    required String? audience,
+    String? scope,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #clearApiCredentials,
+          [],
+          {
+            #audience: audience,
+            #scope: scope,
+          },
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 }

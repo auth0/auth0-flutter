@@ -135,6 +135,7 @@ class _ExampleAppState extends State<ExampleApp> {
   Future<void> apiLogin(
       final String usernameOrEmail, final String password) async {
     String output;
+    bool loggedIn = _isLoggedIn;
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
@@ -143,6 +144,7 @@ class _ExampleAppState extends State<ExampleApp> {
           password: password,
           connectionOrRealm: 'Username-Password-Authentication');
       output = result.accessToken;
+      loggedIn = true;
     } on ApiException catch (e) {
       output = e.toString();
     }
@@ -153,7 +155,7 @@ class _ExampleAppState extends State<ExampleApp> {
     if (!mounted) return;
 
     setState(() {
-      _isLoggedIn = true;
+      _isLoggedIn = loggedIn;
       _output = output;
     });
   }

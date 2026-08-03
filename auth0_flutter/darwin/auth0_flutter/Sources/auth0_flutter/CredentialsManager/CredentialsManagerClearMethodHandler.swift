@@ -14,7 +14,7 @@ struct CredentialsManagerClearMethodHandler: MethodHandler {
             try self.credentialsManager.clear()
             callback(true)
         } catch {
-            callback(false)
+            callback(FlutterError(from: (error as? CredentialsManagerError) ?? .unknown))
         }
     }
 }

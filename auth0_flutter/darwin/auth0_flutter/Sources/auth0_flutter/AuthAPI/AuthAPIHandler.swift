@@ -16,8 +16,6 @@ typealias AuthAPIMethodHandlerProvider = (_ method: AuthAPIHandler.Method, _ cli
 public class AuthAPIHandler: NSObject, FlutterPlugin {
     enum Method: String, CaseIterable {
         case loginWithUsernameOrEmail = "auth#login"
-        case loginWithOTP = "auth#loginOtp"
-        case multifactorChallenge = "auth#multifactorChallenge"
         case signup = "auth#signUp"
         case userInfo = "auth#userInfo"
         case renew = "auth#renew"
@@ -64,20 +62,8 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
         return client
     }
 
-    // `Authentication.login(withOTP:mfaToken:)` and `Authentication.multifactorChallenge(...)`
-    // were removed in Auth0.swift v3. These two method handlers use the dedicated `MFAClient`
-    // instead (see Auth0.swift's V3_MIGRATION_GUIDE.md), so they need an `MFAClient` rather than
-    // the `Authentication` client passed to every other handler here.
-    var mfaClientProvider: (_ account: Account) -> MFAClient = { account in
-        return Auth0.mfa(clientId: account.clientId, domain: account.domain)
-    }
-
     var methodHandlerProvider: AuthAPIMethodHandlerProvider = { method, client in
         switch method {
-        // `.loginWithOTP` and `.multifactorChallenge` are routed directly to an `MFAClient`-backed
-        // handler in `handle(_:result:)` below and never reach this provider; they're only listed
-        // here so the switch stays exhaustive over `Method`.
-        case .loginWithOTP, .multifactorChallenge: return UnsupportedMethodHandler()
         case .loginWithUsernameOrEmail: return AuthAPILoginUsernameOrEmailMethodHandler(client: client)
         case .signup: return AuthAPISignupMethodHandler(client: client)
         case .userInfo: return AuthAPIUserInfoMethodHandler(client: client)
@@ -131,16 +117,8 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
             return result(FlutterMethodNotImplemented)
         }
 
-        let methodHandler: MethodHandler
-        switch method {
-        case .loginWithOTP:
-            methodHandler = AuthAPILoginWithOTPMethodHandler(client: mfaClientProvider(account))
-        case .multifactorChallenge:
-            methodHandler = AuthAPIMultifactorChallengeMethodHandler(client: mfaClientProvider(account))
-        default:
-            let client = clientProvider(account, userAgent, arguments)
-            methodHandler = methodHandlerProvider(method, client)
-        }
+        let client = clientProvider(account, userAgent, arguments)
+        let methodHandler = methodHandlerProvider(method, client)
 
         methodHandler.handle(with: arguments, callback: result)
     }

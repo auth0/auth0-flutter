@@ -23,7 +23,7 @@ struct CredentialsManagerSaveMethodHandler: MethodHandler {
             try self.credentialsManager.store(credentials: credentials)
             callback(true)
         } catch {
-            callback(false)
+            callback(FlutterError(from: (error as? CredentialsManagerError) ?? .unknown))
         }
     }
 }

@@ -10,7 +10,6 @@
 		06FCF69BF7F84D607295C71B /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3C5483C34779CA72998DEA52 /* Pods_RunnerTests.framework */; };
 		0AA9CE2720467CE301D1C118 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDC7BE2C01B563724E04C1E9 /* SceneDelegate.swift */; };
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
-		2D82163828F9A89300467FD1 /* AuthAPILoginWithOTPMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D82163728F9A89300467FD1 /* AuthAPILoginWithOTPMethodHandlerTests.swift */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		5C08DBC8288A7646000D2F37 /* CredentialsManagerExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C08DBC7288A7646000D2F37 /* CredentialsManagerExtensionsTests.swift */; };
 		5C328B4827F7822600451E70 /* WebAuthHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C328B4727F7822600451E70 /* WebAuthHandlerTests.swift */; };
@@ -37,7 +36,6 @@
 		5C59DA8B2809386B00365CDB /* AuthAPIExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C59DA8A2809386B00365CDB /* AuthAPIExtensionsTests.swift */; };
 		5C59DA8D280938BE00365CDB /* WebAuthExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C59DA8C280938BE00365CDB /* WebAuthExtensionsTests.swift */; };
 		5C59DA97280958FB00365CDB /* SmokeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C59DA96280958FB00365CDB /* SmokeTests.swift */; };
-		5CA2853A29C14EBA008A06B8 /* AuthAPIMultifactorChallengeMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CA2853929C14EBA008A06B8 /* AuthAPIMultifactorChallengeMethodHandlerTests.swift */; };
 		5CAAA4A2281A0C7D007666F1 /* ModelsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CAAA4A1281A0C7D007666F1 /* ModelsTests.swift */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */; };
@@ -113,7 +111,6 @@
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		22621E40BED0AB508F0967BC /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		2D82163728F9A89300467FD1 /* AuthAPILoginWithOTPMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPILoginWithOTPMethodHandlerTests.swift; sourceTree = "<group>"; };
 		30E92729F56505552C6FEAB6 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		3C5483C34779CA72998DEA52 /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -146,7 +143,6 @@
 		5C59DA94280958FA00365CDB /* RunnerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5C59DA96280958FB00365CDB /* SmokeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmokeTests.swift; sourceTree = "<group>"; };
 		5C5BFA8C2B96422A0078D945 /* RunnerDebug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RunnerDebug.entitlements; sourceTree = "<group>"; };
-		5CA2853929C14EBA008A06B8 /* AuthAPIMultifactorChallengeMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthAPIMultifactorChallengeMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5CAAA4A1281A0C7D007666F1 /* ModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelsTests.swift; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -267,7 +263,6 @@
 		5C335E4627FE68A500EDDE3A /* AuthAPI */ = {
 			isa = PBXGroup;
 			children = (
-				2D82163728F9A89300467FD1 /* AuthAPILoginWithOTPMethodHandlerTests.swift */,
 				5C335E4727FE68BC00EDDE3A /* AuthAPISpies.swift */,
 				5C59DA6427FFCF0600365CDB /* AuthAPIHandlerTests.swift */,
 				5C59DA6627FFE75600365CDB /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift */,
@@ -280,7 +275,6 @@
 				PK10000000000000000003 /* AuthAPIPasskeySignupChallengeMethodHandlerTests.swift */,
 				PK20000000000000000002 /* AuthAPIPasskeyCredentialExchangeMethodHandlerTests.swift */,
 				5C59DA8A2809386B00365CDB /* AuthAPIExtensionsTests.swift */,
-				5CA2853929C14EBA008A06B8 /* AuthAPIMultifactorChallengeMethodHandlerTests.swift */,
 			);
 			path = AuthAPI;
 			sourceTree = "<group>";
@@ -646,8 +640,6 @@
 				5C59DA8B2809386B00365CDB /* AuthAPIExtensionsTests.swift in Sources */,
 				5C59DA8D280938BE00365CDB /* WebAuthExtensionsTests.swift in Sources */,
 				5C335E3F27FBCD1D00EDDE3A /* Auth0FlutterPluginTests.swift in Sources */,
-				5CA2853A29C14EBA008A06B8 /* AuthAPIMultifactorChallengeMethodHandlerTests.swift in Sources */,
-				2D82163828F9A89300467FD1 /* AuthAPILoginWithOTPMethodHandlerTests.swift in Sources */,
 				5C4E65C5286D1CFB00141449 /* CredentialsManagerHasValidMethodHandlerTests.swift in Sources */,
 				5C328B4827F7822600451E70 /* WebAuthHandlerTests.swift in Sources */,
 				5C328B5327F7B12F00451E70 /* WebAuthSpies.swift in Sources */,

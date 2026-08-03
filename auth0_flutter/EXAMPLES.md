@@ -1333,7 +1333,7 @@ final credentials = await auth0.passwordless.loginWithOtp(
 </details>
 
 > [!NOTE]
-> If the user has MFA configured, `loginWithOtp` fails with an [`ApiException`](#errors-2) whose `isMultifactorRequired` is `true`. Continue the flow using the existing MFA APIs (`auth0.api.multifactorChallenge` / `auth0.api.loginWithOtp`).
+> If the user has MFA configured, `loginWithOtp` fails with an [`ApiException`](#errors-2) whose `isMultifactorRequired` is `true`. Continue the flow using the `mfa_token` from that error — see [Multi-Factor Authentication (MFA)](#-multi-factor-authentication-mfa).
 
 To receive DPoP-bound tokens from the token exchange when DPoP is enabled for your client, construct your `Auth0` instance with `useDPoP: true`:
 

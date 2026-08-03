@@ -25,6 +25,7 @@ import 'windows_web_authentication_test.dart' as _i3;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
+// ignore_for_file: invalid_use_of_internal_member
 
 class _FakeCredentials_0 extends _i1.SmartFake implements _i2.Credentials {
   _FakeCredentials_0(
@@ -43,6 +44,12 @@ class MockTestPlatform extends _i1.Mock implements _i3.TestPlatform {
   MockTestPlatform() {
     _i1.throwOnMissingStub(this);
   }
+
+  @override
+  _i4.Stream<_i2.Credentials> get onCredentialsRecovered => (super.noSuchMethod(
+        Invocation.getter(#onCredentialsRecovered),
+        returnValue: _i4.Stream<_i2.Credentials>.empty(),
+      ) as _i4.Stream<_i2.Credentials>);
 
   @override
   _i4.Future<_i2.Credentials> login(
