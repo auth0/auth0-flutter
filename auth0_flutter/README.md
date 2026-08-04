@@ -619,6 +619,8 @@ void dispose() {
 #### API
 
 - [login](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/login.html)
+- [loginWithOtp](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/loginWithOtp.html)
+- [multifactorChallenge](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/multifactorChallenge.html)
 - [renewCredentials](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/renewCredentials.html)
 - [resetPassword](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/resetPassword.html)
 - [signup](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/signup.html)

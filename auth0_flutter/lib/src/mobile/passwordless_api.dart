@@ -118,7 +118,8 @@ class Passwordless {
   ///
   /// If the user has MFA configured, this call fails with an [ApiException] for
   /// which [ApiException.isMultifactorRequired] is `true`; continue the flow
-  /// using [ApiException.mfaToken] and `Auth0.mfa(mfaToken:)` (see `MfaApi`).
+  /// using the existing MFA APIs (`auth0.api.multifactorChallenge` /
+  /// `auth0.api.loginWithOtp`).
   ///
   /// * [scopes] the scopes to request. When left empty, the native SDK's
   /// default scope is applied. When you provide scopes, include `openid` if you

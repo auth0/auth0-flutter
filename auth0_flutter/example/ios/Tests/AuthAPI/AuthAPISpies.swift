@@ -2,6 +2,7 @@ import Foundation
 @testable import Auth0
 
 fileprivate let mockCredentials = Credentials()
+fileprivate let mockChallenge = Challenge(challengeType: "", oobCode: nil, bindingMethod: nil)
 fileprivate let mockDatabaseUser: DatabaseUser = (email: "", username: nil, verified: true)
 fileprivate let mockUserInfo = UserProfile(json: ["sub": ""])!
 fileprivate let mockSSOCredentials = SSOCredentials(
@@ -22,6 +23,7 @@ class SpyAuthentication: Authentication, @unchecked Sendable {
 
     var credentialsResult: AuthenticationResult<Credentials> = .success(mockCredentials)
     var ssoCredentialsResult: AuthenticationResult<SSOCredentials> = .success(mockSSOCredentials)
+    var challengeResult: AuthenticationResult<Challenge> = .success(mockChallenge)
     var databaseUserResult: AuthenticationResult<DatabaseUser> = .success(mockDatabaseUser)
     var userInfoResult: AuthenticationResult<UserProfile> = .success(mockUserInfo)
     var voidResult: AuthenticationResult<Void> = .success(())

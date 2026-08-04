@@ -4,6 +4,8 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'auth/auth_custom_token_exchange_options.dart';
 import 'auth/auth_login_code_options.dart';
 import 'auth/auth_login_options.dart';
+import 'auth/auth_login_with_otp_options.dart';
+import 'auth/auth_multifactor_challenge_options.dart';
 import 'auth/auth_passkey_exchange_options.dart';
 import 'auth/auth_passkey_login_challenge_options.dart';
 import 'auth/auth_passkey_signup_challenge_options.dart';
@@ -16,6 +18,7 @@ import 'auth/auth_reset_password_options.dart';
 import 'auth/auth_signup_options.dart';
 import 'auth/auth_sso_exchange_options.dart';
 import 'auth/auth_user_info_options.dart';
+import 'auth/challenge.dart';
 import 'auth/passkey_challenge.dart';
 import 'auth/passwordless_challenge.dart';
 import 'credentials.dart';
@@ -38,6 +41,16 @@ abstract class Auth0FlutterAuthPlatform extends PlatformInterface {
 
   Future<Credentials> login(final ApiRequest<AuthLoginOptions> request) {
     throw UnimplementedError('authLogin() has not been implemented');
+  }
+
+  Future<Credentials> loginWithOtp(
+      final ApiRequest<AuthLoginWithOtpOptions> request) {
+    throw UnimplementedError('authLoginWithOtp() has not been implemented');
+  }
+
+  Future<Challenge> multifactorChallenge(
+      final ApiRequest<AuthMultifactorChallengeOptions> request) {
+    throw UnimplementedError('multifactorChallenge() has not been implemented');
   }
 
   Future<void> startPasswordlessWithEmail(

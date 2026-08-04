@@ -3,14 +3,14 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i4;
+import 'dart:async' as _i5;
 
 import 'package:auth0_flutter/auth0_flutter.dart' as _i2;
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
-    as _i5;
+    as _i3;
 import 'package:mockito/mockito.dart' as _i1;
 
-import 'authentication_api_test.dart' as _i3;
+import 'authentication_api_test.dart' as _i4;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -37,8 +37,8 @@ class _FakeCredentials_0 extends _i1.SmartFake implements _i2.Credentials {
         );
 }
 
-class _FakeUserProfile_1 extends _i1.SmartFake implements _i2.UserProfile {
-  _FakeUserProfile_1(
+class _FakeChallenge_1 extends _i1.SmartFake implements _i3.Challenge {
+  _FakeChallenge_1(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -47,8 +47,8 @@ class _FakeUserProfile_1 extends _i1.SmartFake implements _i2.UserProfile {
         );
 }
 
-class _FakeDatabaseUser_2 extends _i1.SmartFake implements _i2.DatabaseUser {
-  _FakeDatabaseUser_2(
+class _FakeUserProfile_2 extends _i1.SmartFake implements _i2.UserProfile {
+  _FakeUserProfile_2(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -57,9 +57,19 @@ class _FakeDatabaseUser_2 extends _i1.SmartFake implements _i2.DatabaseUser {
         );
 }
 
-class _FakeSSOCredentials_3 extends _i1.SmartFake
+class _FakeDatabaseUser_3 extends _i1.SmartFake implements _i2.DatabaseUser {
+  _FakeDatabaseUser_3(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeSSOCredentials_4 extends _i1.SmartFake
     implements _i2.SSOCredentials {
-  _FakeSSOCredentials_3(
+  _FakeSSOCredentials_4(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -68,9 +78,9 @@ class _FakeSSOCredentials_3 extends _i1.SmartFake
         );
 }
 
-class _FakePasskeyChallenge_4 extends _i1.SmartFake
+class _FakePasskeyChallenge_5 extends _i1.SmartFake
     implements _i2.PasskeyChallenge {
-  _FakePasskeyChallenge_4(
+  _FakePasskeyChallenge_5(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -79,9 +89,9 @@ class _FakePasskeyChallenge_4 extends _i1.SmartFake
         );
 }
 
-class _FakePasswordlessChallenge_5 extends _i1.SmartFake
+class _FakePasswordlessChallenge_6 extends _i1.SmartFake
     implements _i2.PasswordlessChallenge {
-  _FakePasswordlessChallenge_5(
+  _FakePasswordlessChallenge_6(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -93,286 +103,320 @@ class _FakePasswordlessChallenge_5 extends _i1.SmartFake
 /// A class which mocks [TestPlatform].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockTestPlatform extends _i1.Mock implements _i3.TestPlatform {
+class MockTestPlatform extends _i1.Mock implements _i4.TestPlatform {
   MockTestPlatform() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.Future<_i2.Credentials> login(
-          _i5.ApiRequest<_i5.AuthLoginOptions>? request) =>
+  _i5.Future<_i2.Credentials> login(
+          _i3.ApiRequest<_i3.AuthLoginOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #login,
           [request],
         ),
-        returnValue: _i4.Future<_i2.Credentials>.value(_FakeCredentials_0(
+        returnValue: _i5.Future<_i2.Credentials>.value(_FakeCredentials_0(
           this,
           Invocation.method(
             #login,
             [request],
           ),
         )),
-      ) as _i4.Future<_i2.Credentials>);
+      ) as _i5.Future<_i2.Credentials>);
 
   @override
-  _i4.Future<void> startPasswordlessWithEmail(
-          _i5.ApiRequest<_i5.AuthPasswordlessLoginOptions>? request) =>
+  _i5.Future<_i2.Credentials> loginWithOtp(
+          _i3.ApiRequest<_i3.AuthLoginWithOtpOptions>? request) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #loginWithOtp,
+          [request],
+        ),
+        returnValue: _i5.Future<_i2.Credentials>.value(_FakeCredentials_0(
+          this,
+          Invocation.method(
+            #loginWithOtp,
+            [request],
+          ),
+        )),
+      ) as _i5.Future<_i2.Credentials>);
+
+  @override
+  _i5.Future<_i3.Challenge> multifactorChallenge(
+          _i3.ApiRequest<_i3.AuthMultifactorChallengeOptions>? request) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #multifactorChallenge,
+          [request],
+        ),
+        returnValue: _i5.Future<_i3.Challenge>.value(_FakeChallenge_1(
+          this,
+          Invocation.method(
+            #multifactorChallenge,
+            [request],
+          ),
+        )),
+      ) as _i5.Future<_i3.Challenge>);
+
+  @override
+  _i5.Future<void> startPasswordlessWithEmail(
+          _i3.ApiRequest<_i3.AuthPasswordlessLoginOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #startPasswordlessWithEmail,
           [request],
         ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
 
   @override
-  _i4.Future<_i2.Credentials> loginWithEmailCode(
-          _i5.ApiRequest<_i5.AuthLoginWithCodeOptions>? request) =>
+  _i5.Future<_i2.Credentials> loginWithEmailCode(
+          _i3.ApiRequest<_i3.AuthLoginWithCodeOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #loginWithEmailCode,
           [request],
         ),
-        returnValue: _i4.Future<_i2.Credentials>.value(_FakeCredentials_0(
+        returnValue: _i5.Future<_i2.Credentials>.value(_FakeCredentials_0(
           this,
           Invocation.method(
             #loginWithEmailCode,
             [request],
           ),
         )),
-      ) as _i4.Future<_i2.Credentials>);
+      ) as _i5.Future<_i2.Credentials>);
 
   @override
-  _i4.Future<void> startPasswordlessWithPhoneNumber(
-          _i5.ApiRequest<_i5.AuthPasswordlessLoginOptions>? request) =>
+  _i5.Future<void> startPasswordlessWithPhoneNumber(
+          _i3.ApiRequest<_i3.AuthPasswordlessLoginOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #startPasswordlessWithPhoneNumber,
           [request],
         ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
 
   @override
-  _i4.Future<_i2.Credentials> loginWithSmsCode(
-          _i5.ApiRequest<_i5.AuthLoginWithCodeOptions>? request) =>
+  _i5.Future<_i2.Credentials> loginWithSmsCode(
+          _i3.ApiRequest<_i3.AuthLoginWithCodeOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #loginWithSmsCode,
           [request],
         ),
-        returnValue: _i4.Future<_i2.Credentials>.value(_FakeCredentials_0(
+        returnValue: _i5.Future<_i2.Credentials>.value(_FakeCredentials_0(
           this,
           Invocation.method(
             #loginWithSmsCode,
             [request],
           ),
         )),
-      ) as _i4.Future<_i2.Credentials>);
+      ) as _i5.Future<_i2.Credentials>);
 
   @override
-  _i4.Future<_i2.UserProfile> userInfo(
-          _i5.ApiRequest<_i5.AuthUserInfoOptions>? request) =>
+  _i5.Future<_i2.UserProfile> userInfo(
+          _i3.ApiRequest<_i3.AuthUserInfoOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #userInfo,
           [request],
         ),
-        returnValue: _i4.Future<_i2.UserProfile>.value(_FakeUserProfile_1(
+        returnValue: _i5.Future<_i2.UserProfile>.value(_FakeUserProfile_2(
           this,
           Invocation.method(
             #userInfo,
             [request],
           ),
         )),
-      ) as _i4.Future<_i2.UserProfile>);
+      ) as _i5.Future<_i2.UserProfile>);
 
   @override
-  _i4.Future<_i2.DatabaseUser> signup(
-          _i5.ApiRequest<_i5.AuthSignupOptions>? request) =>
+  _i5.Future<_i2.DatabaseUser> signup(
+          _i3.ApiRequest<_i3.AuthSignupOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #signup,
           [request],
         ),
-        returnValue: _i4.Future<_i2.DatabaseUser>.value(_FakeDatabaseUser_2(
+        returnValue: _i5.Future<_i2.DatabaseUser>.value(_FakeDatabaseUser_3(
           this,
           Invocation.method(
             #signup,
             [request],
           ),
         )),
-      ) as _i4.Future<_i2.DatabaseUser>);
+      ) as _i5.Future<_i2.DatabaseUser>);
 
   @override
-  _i4.Future<_i2.Credentials> renew(
-          _i5.ApiRequest<_i5.AuthRenewOptions>? request) =>
+  _i5.Future<_i2.Credentials> renew(
+          _i3.ApiRequest<_i3.AuthRenewOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #renew,
           [request],
         ),
-        returnValue: _i4.Future<_i2.Credentials>.value(_FakeCredentials_0(
+        returnValue: _i5.Future<_i2.Credentials>.value(_FakeCredentials_0(
           this,
           Invocation.method(
             #renew,
             [request],
           ),
         )),
-      ) as _i4.Future<_i2.Credentials>);
+      ) as _i5.Future<_i2.Credentials>);
 
   @override
-  _i4.Future<_i2.Credentials> customTokenExchange(
-          _i5.ApiRequest<_i5.AuthCustomTokenExchangeOptions>? request) =>
+  _i5.Future<_i2.Credentials> customTokenExchange(
+          _i3.ApiRequest<_i3.AuthCustomTokenExchangeOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #customTokenExchange,
           [request],
         ),
-        returnValue: _i4.Future<_i2.Credentials>.value(_FakeCredentials_0(
+        returnValue: _i5.Future<_i2.Credentials>.value(_FakeCredentials_0(
           this,
           Invocation.method(
             #customTokenExchange,
             [request],
           ),
         )),
-      ) as _i4.Future<_i2.Credentials>);
+      ) as _i5.Future<_i2.Credentials>);
 
   @override
-  _i4.Future<_i2.SSOCredentials> ssoExchange(
-          _i5.ApiRequest<_i5.AuthSSOExchangeOptions>? request) =>
+  _i5.Future<_i2.SSOCredentials> ssoExchange(
+          _i3.ApiRequest<_i3.AuthSSOExchangeOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #ssoExchange,
           [request],
         ),
-        returnValue: _i4.Future<_i2.SSOCredentials>.value(_FakeSSOCredentials_3(
+        returnValue: _i5.Future<_i2.SSOCredentials>.value(_FakeSSOCredentials_4(
           this,
           Invocation.method(
             #ssoExchange,
             [request],
           ),
         )),
-      ) as _i4.Future<_i2.SSOCredentials>);
+      ) as _i5.Future<_i2.SSOCredentials>);
 
   @override
-  _i4.Future<void> resetPassword(
-          _i5.ApiRequest<_i5.AuthResetPasswordOptions>? request) =>
+  _i5.Future<void> resetPassword(
+          _i3.ApiRequest<_i3.AuthResetPasswordOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #resetPassword,
           [request],
         ),
-        returnValue: _i4.Future<void>.value(),
-        returnValueForMissingStub: _i4.Future<void>.value(),
-      ) as _i4.Future<void>);
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
 
   @override
-  _i4.Future<_i2.PasskeyChallenge> passkeyLoginChallenge(
-          _i5.ApiRequest<_i5.AuthPasskeyLoginChallengeOptions>? request) =>
+  _i5.Future<_i2.PasskeyChallenge> passkeyLoginChallenge(
+          _i3.ApiRequest<_i3.AuthPasskeyLoginChallengeOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #passkeyLoginChallenge,
           [request],
         ),
         returnValue:
-            _i4.Future<_i2.PasskeyChallenge>.value(_FakePasskeyChallenge_4(
+            _i5.Future<_i2.PasskeyChallenge>.value(_FakePasskeyChallenge_5(
           this,
           Invocation.method(
             #passkeyLoginChallenge,
             [request],
           ),
         )),
-      ) as _i4.Future<_i2.PasskeyChallenge>);
+      ) as _i5.Future<_i2.PasskeyChallenge>);
 
   @override
-  _i4.Future<_i2.PasskeyChallenge> passkeySignupChallenge(
-          _i5.ApiRequest<_i5.AuthPasskeySignupChallengeOptions>? request) =>
+  _i5.Future<_i2.PasskeyChallenge> passkeySignupChallenge(
+          _i3.ApiRequest<_i3.AuthPasskeySignupChallengeOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #passkeySignupChallenge,
           [request],
         ),
         returnValue:
-            _i4.Future<_i2.PasskeyChallenge>.value(_FakePasskeyChallenge_4(
+            _i5.Future<_i2.PasskeyChallenge>.value(_FakePasskeyChallenge_5(
           this,
           Invocation.method(
             #passkeySignupChallenge,
             [request],
           ),
         )),
-      ) as _i4.Future<_i2.PasskeyChallenge>);
+      ) as _i5.Future<_i2.PasskeyChallenge>);
 
   @override
-  _i4.Future<_i2.Credentials> passkeyCredentialExchange(
-          _i5.ApiRequest<_i5.AuthPasskeyExchangeOptions>? request) =>
+  _i5.Future<_i2.Credentials> passkeyCredentialExchange(
+          _i3.ApiRequest<_i3.AuthPasskeyExchangeOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #passkeyCredentialExchange,
           [request],
         ),
-        returnValue: _i4.Future<_i2.Credentials>.value(_FakeCredentials_0(
+        returnValue: _i5.Future<_i2.Credentials>.value(_FakeCredentials_0(
           this,
           Invocation.method(
             #passkeyCredentialExchange,
             [request],
           ),
         )),
-      ) as _i4.Future<_i2.Credentials>);
+      ) as _i5.Future<_i2.Credentials>);
 
   @override
-  _i4.Future<_i2.PasswordlessChallenge> passwordlessChallengeWithEmail(
-          _i5.ApiRequest<_i5.AuthPasswordlessChallengeEmailOptions>? request) =>
+  _i5.Future<_i2.PasswordlessChallenge> passwordlessChallengeWithEmail(
+          _i3.ApiRequest<_i3.AuthPasswordlessChallengeEmailOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #passwordlessChallengeWithEmail,
           [request],
         ),
-        returnValue: _i4.Future<_i2.PasswordlessChallenge>.value(
-            _FakePasswordlessChallenge_5(
+        returnValue: _i5.Future<_i2.PasswordlessChallenge>.value(
+            _FakePasswordlessChallenge_6(
           this,
           Invocation.method(
             #passwordlessChallengeWithEmail,
             [request],
           ),
         )),
-      ) as _i4.Future<_i2.PasswordlessChallenge>);
+      ) as _i5.Future<_i2.PasswordlessChallenge>);
 
   @override
-  _i4.Future<_i2.PasswordlessChallenge> passwordlessChallengeWithPhoneNumber(
-          _i5.ApiRequest<_i5.AuthPasswordlessChallengePhoneOptions>? request) =>
+  _i5.Future<_i2.PasswordlessChallenge> passwordlessChallengeWithPhoneNumber(
+          _i3.ApiRequest<_i3.AuthPasswordlessChallengePhoneOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #passwordlessChallengeWithPhoneNumber,
           [request],
         ),
-        returnValue: _i4.Future<_i2.PasswordlessChallenge>.value(
-            _FakePasswordlessChallenge_5(
+        returnValue: _i5.Future<_i2.PasswordlessChallenge>.value(
+            _FakePasswordlessChallenge_6(
           this,
           Invocation.method(
             #passwordlessChallengeWithPhoneNumber,
             [request],
           ),
         )),
-      ) as _i4.Future<_i2.PasswordlessChallenge>);
+      ) as _i5.Future<_i2.PasswordlessChallenge>);
 
   @override
-  _i4.Future<_i2.Credentials> passwordlessLoginWithOtp(
-          _i5.ApiRequest<_i5.AuthPasswordlessLoginWithOtpOptions>? request) =>
+  _i5.Future<_i2.Credentials> passwordlessLoginWithOtp(
+          _i3.ApiRequest<_i3.AuthPasswordlessLoginWithOtpOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #passwordlessLoginWithOtp,
           [request],
         ),
-        returnValue: _i4.Future<_i2.Credentials>.value(_FakeCredentials_0(
+        returnValue: _i5.Future<_i2.Credentials>.value(_FakeCredentials_0(
           this,
           Invocation.method(
             #passwordlessLoginWithOtp,
             [request],
           ),
         )),
-      ) as _i4.Future<_i2.Credentials>);
+      ) as _i5.Future<_i2.Credentials>);
 }

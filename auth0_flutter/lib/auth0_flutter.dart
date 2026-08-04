@@ -15,6 +15,7 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         AuthenticationMethod,
         AuthenticationMethodType,
         ApiException,
+        ChallengeType,
         Credentials,
         CredentialsManagerException,
         DatabaseUser,
