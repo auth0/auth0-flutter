@@ -1,12 +1,12 @@
 buildscript {
-    ext.kotlin_version = '1.9.0'
+    ext.kotlin_version = '2.0.21'
     repositories {
         google()
         mavenCentral()
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:8.4.0"
+        classpath "com.android.tools.build:gradle:8.10.1"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -31,18 +31,18 @@ rootProject.allprojects {
 }
 
 android {
-    compileSdk 34
+    compileSdk 36
 
     if (project.android.hasProperty("namespace")) {
         namespace libApplicationId
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
 
     sourceSets {
@@ -52,7 +52,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 26
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [auth0Domain: "test-domain", auth0Scheme: "test"]
     }
@@ -73,8 +73,8 @@ android {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    implementation 'com.auth0.android:auth0:3.21.0'
-    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.auth0.android:auth0:4.0.0'
+    implementation 'com.google.code.gson:gson:2.11.0'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.hamcrest:java-hamcrest:2.0.0.0'
     testImplementation "org.mockito.kotlin:mockito-kotlin:4.1.0"
