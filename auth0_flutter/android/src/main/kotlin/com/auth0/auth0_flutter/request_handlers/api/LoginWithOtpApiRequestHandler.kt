@@ -1,11 +1,13 @@
 package com.auth0.auth0_flutter.request_handlers.api
 
 import com.auth0.android.authentication.AuthenticationAPIClient
-import com.auth0.android.authentication.AuthenticationException
+import com.auth0.android.authentication.mfa.MfaException.MfaVerifyException
+import com.auth0.android.authentication.mfa.MfaVerificationType
 import com.auth0.android.callback.Callback
 import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.toMap
+import com.auth0.auth0_flutter.toMfaMap
 import com.auth0.auth0_flutter.utils.assertHasProperties
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
@@ -24,18 +26,18 @@ class LoginWithOtpApiRequestHandler: ApiRequestHandler {
 
         assertHasProperties(listOf("mfaToken", "otp"), args)
 
+        // v4 removed AuthenticationAPIClient.loginWithOTP; the inline MFA OTP
+        // flow now goes through the dedicated MfaApiClient.
         val loginBuilder = api
-            .loginWithOTP(
-                args["mfaToken"] as String,
-                args["otp"] as String,
-            )
+            .mfaClient(args["mfaToken"] as String)
+            .verify(MfaVerificationType.Otp(args["otp"] as String))
 
-        loginBuilder.start(object : Callback<Credentials, AuthenticationException> {
-            override fun onFailure(exception: AuthenticationException) {
+        loginBuilder.start(object : Callback<Credentials, MfaVerifyException> {
+            override fun onFailure(exception: MfaVerifyException) {
                 result.error(
                     exception.getCode(),
                     exception.getDescription(),
-                    exception.toMap()
+                    exception.toMfaMap()
                 )
             }
 

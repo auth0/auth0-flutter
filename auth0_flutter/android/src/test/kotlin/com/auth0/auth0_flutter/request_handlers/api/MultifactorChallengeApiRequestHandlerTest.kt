@@ -2,7 +2,8 @@ package com.auth0.auth0_flutter.request_handlers.api
 
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationAPIClient
-import com.auth0.android.authentication.AuthenticationException
+import com.auth0.android.authentication.mfa.MfaApiClient
+import com.auth0.android.authentication.mfa.MfaException.MfaChallengeException
 import com.auth0.android.callback.Callback
 import com.auth0.android.request.Request
 import com.auth0.android.result.Challenge
@@ -21,7 +22,7 @@ import org.robolectric.RobolectricTestRunner
 class MultifactorChallengeApiRequestHandlerTest {
     @Test
     fun `should throw when missing mfaToken`() {
-        val options = hashMapOf<String, Any>()
+        val options = hashMapOf<String, Any>("authenticatorId" to "test-authenticatorId")
         val handler = MultifactorChallengeApiRequestHandler()
         val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
@@ -39,42 +40,69 @@ class MultifactorChallengeApiRequestHandlerTest {
     }
 
     @Test
-    fun `should call multifactorChallenge with the correct parameters`() {
-        val options = hashMapOf(
-                "mfaToken" to "test-mfaToken",
-                "types" to arrayListOf("type-1", "type-2"),
-                "authenticatorId" to "test-authenticatorId"
-        )
+    fun `should throw when missing authenticatorId`() {
+        val options = hashMapOf<String, Any>("mfaToken" to "test-mfaToken")
         val handler = MultifactorChallengeApiRequestHandler()
-        val mockBuilder = mock<Request<Challenge, AuthenticationException>>()
         val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        doReturn(mockBuilder).`when`(mockApi).multifactorChallenge(any(), any(), any())
+        val exception = Assert.assertThrows(IllegalArgumentException::class.java) {
+            handler.handle(mockApi, request, mockResult)
+        }
+
+        assertThat(
+                exception.message,
+                equalTo("Required property 'authenticatorId' is not provided.")
+        )
+    }
+
+    @Test
+    fun `should call mfaClient challenge with the correct parameters`() {
+        val options = hashMapOf(
+                "mfaToken" to "test-mfaToken",
+                "authenticatorId" to "test-authenticatorId"
+        )
+        val handler = MultifactorChallengeApiRequestHandler()
+        val mockBuilder = mock<Request<Challenge, MfaChallengeException>>()
+        val mockMfaClient = mock<MfaApiClient>()
+        val mockApi = mock<AuthenticationAPIClient>()
+        val mockAccount = mock<Auth0>()
+        val mockResult = mock<Result>()
+        val request = MethodCallRequest(account = mockAccount, options)
+
+        doReturn(mockMfaClient).`when`(mockApi).mfaClient(any())
+        doReturn(mockBuilder).`when`(mockMfaClient).challenge(any())
 
         handler.handle(mockApi, request, mockResult)
 
-        verify(mockApi).multifactorChallenge("test-mfaToken", "type-1 type-2", "test-authenticatorId")
+        verify(mockApi).mfaClient("test-mfaToken")
+        verify(mockMfaClient).challenge("test-authenticatorId")
         verify(mockBuilder).start(any())
     }
 
     @Test
     fun `should call result error on failure`() {
-        val options = hashMapOf("mfaToken" to "test-mfaToken")
+        val options = hashMapOf(
+                "mfaToken" to "test-mfaToken",
+                "authenticatorId" to "test-authenticatorId"
+        )
         val handler = MultifactorChallengeApiRequestHandler()
-        val mockBuilder = mock<Request<Challenge, AuthenticationException>>()
+        val mockBuilder = mock<Request<Challenge, MfaChallengeException>>()
+        val mockMfaClient = mock<MfaApiClient>()
         val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
-        val exception =
-                AuthenticationException(code = "test-code", description = "test-description")
+        val exception = mock<MfaChallengeException>()
+        whenever(exception.getCode()).thenReturn("test-code")
+        whenever(exception.getDescription()).thenReturn("test-description")
 
-        doReturn(mockBuilder).`when`(mockApi).multifactorChallenge(any(), anyOrNull(), anyOrNull())
+        doReturn(mockMfaClient).`when`(mockApi).mfaClient(any())
+        doReturn(mockBuilder).`when`(mockMfaClient).challenge(any())
         doAnswer {
-            val ob = it.getArgument<Callback<Challenge, AuthenticationException>>(0)
+            val ob = it.getArgument<Callback<Challenge, MfaChallengeException>>(0)
             ob.onFailure(exception)
         }.`when`(mockBuilder).start(any())
 
@@ -85,18 +113,23 @@ class MultifactorChallengeApiRequestHandlerTest {
 
     @Test
     fun `should call result success on success`() {
-        val options = hashMapOf("mfaToken" to "test-mfaToken")
+        val options = hashMapOf(
+                "mfaToken" to "test-mfaToken",
+                "authenticatorId" to "test-authenticatorId"
+        )
         val handler = MultifactorChallengeApiRequestHandler()
-        val mockBuilder = mock<Request<Challenge, AuthenticationException>>()
+        val mockBuilder = mock<Request<Challenge, MfaChallengeException>>()
+        val mockMfaClient = mock<MfaApiClient>()
         val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
         val challenge = Challenge("challengeType", "oobCode", "bindingMethod")
 
-        doReturn(mockBuilder).`when`(mockApi).multifactorChallenge(any(), anyOrNull(), anyOrNull())
+        doReturn(mockMfaClient).`when`(mockApi).mfaClient(any())
+        doReturn(mockBuilder).`when`(mockMfaClient).challenge(any())
         doAnswer {
-            val ob = it.getArgument<Callback<Challenge, AuthenticationException>>(0)
+            val ob = it.getArgument<Callback<Challenge, MfaChallengeException>>(0)
             ob.onSuccess(challenge)
         }.`when`(mockBuilder).start(any())
 

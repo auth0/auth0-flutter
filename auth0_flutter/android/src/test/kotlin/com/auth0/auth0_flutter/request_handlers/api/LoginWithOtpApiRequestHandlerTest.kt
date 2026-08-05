@@ -2,10 +2,13 @@ package com.auth0.auth0_flutter.request_handlers.api
 
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationAPIClient
-import com.auth0.android.authentication.AuthenticationException
+import com.auth0.android.authentication.mfa.MfaApiClient
+import com.auth0.android.authentication.mfa.MfaException.MfaVerifyException
+import com.auth0.android.authentication.mfa.MfaVerificationType
 import com.auth0.android.callback.Callback
-import com.auth0.android.request.AuthenticationRequest
+import com.auth0.android.request.Request
 import com.auth0.android.result.Credentials
+
 import com.auth0.auth0_flutter.JwtTestUtils
 
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
@@ -69,19 +72,21 @@ class LoginWithOtpApiRequestHandlerTest {
     }
 
     @Test
-    fun `should call loginWithOTp with the correct parameters`() {
+    fun `should call mfaClient verify with the correct parameters`() {
         val options = hashMapOf(
             "otp" to "test-otp",
             "mfaToken" to "test-mfaToken"
         )
         val handler = LoginWithOtpApiRequestHandler()
-        val mockLoginBuilder = mock<AuthenticationRequest>()
+        val mockLoginBuilder = mock<Request<Credentials, MfaVerifyException>>()
+        val mockMfaClient = mock<MfaApiClient>()
         val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        doReturn(mockLoginBuilder).`when`(mockApi).loginWithOTP(any(), any())
+        doReturn(mockMfaClient).`when`(mockApi).mfaClient(any())
+        doReturn(mockLoginBuilder).`when`(mockMfaClient).verify(any())
 
         handler.handle(
             mockApi,
@@ -89,7 +94,8 @@ class LoginWithOtpApiRequestHandlerTest {
             mockResult
         )
 
-        verify(mockApi).loginWithOTP("test-mfaToken", "test-otp")
+        verify(mockApi).mfaClient("test-mfaToken")
+        verify(mockMfaClient).verify(eq(MfaVerificationType.Otp("test-otp")))
         verify(mockLoginBuilder).start(any())
     }
 
@@ -100,17 +106,20 @@ class LoginWithOtpApiRequestHandlerTest {
             "mfaToken" to "test-mfaToken"
         )
         val handler = LoginWithOtpApiRequestHandler()
-        val mockLoginBuilder = mock<AuthenticationRequest>()
+        val mockLoginBuilder = mock<Request<Credentials, MfaVerifyException>>()
+        val mockMfaClient = mock<MfaApiClient>()
         val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
-        val exception =
-            AuthenticationException(code = "test-code", description = "test-description")
+        val exception = mock<MfaVerifyException>()
+        whenever(exception.getCode()).thenReturn("test-code")
+        whenever(exception.getDescription()).thenReturn("test-description")
 
-        doReturn(mockLoginBuilder).`when`(mockApi).loginWithOTP(any(), any())
+        doReturn(mockMfaClient).`when`(mockApi).mfaClient(any())
+        doReturn(mockLoginBuilder).`when`(mockMfaClient).verify(any())
         doAnswer {
-            val ob = it.getArgument<Callback<Credentials, AuthenticationException>>(0)
+            val ob = it.getArgument<Callback<Credentials, MfaVerifyException>>(0)
             ob.onFailure(exception)
         }.`when`(mockLoginBuilder).start(any())
 
@@ -130,7 +139,8 @@ class LoginWithOtpApiRequestHandlerTest {
             "mfaToken" to "test-mfaToken"
         )
         val handler = LoginWithOtpApiRequestHandler()
-        val mockLoginBuilder = mock<AuthenticationRequest>()
+        val mockLoginBuilder = mock<Request<Credentials, MfaVerifyException>>()
+        val mockMfaClient = mock<MfaApiClient>()
         val mockApi = mock<AuthenticationAPIClient>()
         val mockAccount = mock<Auth0>()
         val mockResult = mock<Result>()
@@ -138,9 +148,10 @@ class LoginWithOtpApiRequestHandlerTest {
         val idToken = JwtTestUtils.createJwt(claims = mapOf("name" to "John Doe"))
         val credentials = Credentials(idToken, "test", "", null, Date(), "scope1 scope2")
 
-        whenever(mockApi.loginWithOTP(any(), any())).thenReturn(mockLoginBuilder)
+        whenever(mockApi.mfaClient(any())).thenReturn(mockMfaClient)
+        whenever(mockMfaClient.verify(any())).thenReturn(mockLoginBuilder)
         whenever(mockLoginBuilder.start(any())).thenAnswer {
-            val callback = it.getArgument<Callback<Credentials, AuthenticationException>>(0)
+            val callback = it.getArgument<Callback<Credentials, MfaVerifyException>>(0)
             callback.onSuccess(credentials)
         }
 

@@ -1,11 +1,11 @@
 package com.auth0.auth0_flutter.request_handlers.api
 
 import com.auth0.android.authentication.AuthenticationAPIClient
-import com.auth0.android.authentication.AuthenticationException
+import com.auth0.android.authentication.mfa.MfaException.MfaChallengeException
 import com.auth0.android.callback.Callback
 import com.auth0.android.result.Challenge
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
-import com.auth0.auth0_flutter.toMap
+import com.auth0.auth0_flutter.toMfaMap
 import com.auth0.auth0_flutter.utils.assertHasProperties
 import io.flutter.plugin.common.MethodChannel
 
@@ -19,22 +19,23 @@ class MultifactorChallengeApiRequestHandler : ApiRequestHandler {
             request: MethodCallRequest,
             result: MethodChannel.Result
     ) {
-        assertHasProperties(listOf("mfaToken"), request.data)
+        // v4 removed AuthenticationAPIClient.multifactorChallenge; the challenge
+        // now goes through MfaApiClient, whose challenge() takes only an
+        // authenticatorId (no challenge-type filtering). `authenticatorId` is
+        // therefore now required and any `types` value is ignored; the shared
+        // Dart surface is realigned separately in the integration PR (S-A).
+        assertHasProperties(listOf("mfaToken", "authenticatorId"), request.data)
 
-        val challengeTypes = request.data["types"] as ArrayList<*>?
+        val builder = api
+                .mfaClient(request.data["mfaToken"] as String)
+                .challenge(request.data["authenticatorId"] as String)
 
-        val builder = api.multifactorChallenge(
-                mfaToken = request.data["mfaToken"] as String,
-                challengeType = challengeTypes?.joinToString(separator = " "),
-                authenticatorId = request.data["authenticatorId"] as String?
-        )
-
-        builder.start(object : Callback<Challenge, AuthenticationException> {
-            override fun onFailure(exception: AuthenticationException) {
+        builder.start(object : Callback<Challenge, MfaChallengeException> {
+            override fun onFailure(exception: MfaChallengeException) {
                 result.error(
                         exception.getCode(),
                         exception.getDescription(),
-                        exception.toMap()
+                        exception.toMfaMap()
                 )
             }
 
