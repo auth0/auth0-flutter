@@ -13,7 +13,7 @@ enum ChallengeProperty: String {
 }
 
 fileprivate extension MethodHandler {
-    func result(from challenge: Challenge) -> Any? {
+    func result(from challenge: MFAChallenge) -> Any? {
         var data: [String: Any] = [ChallengeProperty.challengeType.rawValue: challenge.challengeType]
         data[ChallengeProperty.oobCode] = challenge.oobCode
         data[ChallengeProperty.bindingMethod] = challenge.bindingMethod
@@ -28,18 +28,18 @@ struct AuthAPIMultifactorChallengeMethodHandler: MethodHandler {
         case authenticatorId
     }
 
-    let client: Authentication
+    let client: MFAClient
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
         guard let mfaToken = arguments[Argument.mfaToken] as? String else {
             return callback(FlutterError(from: .requiredArgumentMissing(Argument.mfaToken.rawValue)))
         }
-
-        let types = arguments[Argument.types] as? [String]
-        let authenticatorId = arguments[Argument.authenticatorId] as? String
+        guard let authenticatorId = arguments[Argument.authenticatorId] as? String else {
+            return callback(FlutterError(from: .requiredArgumentMissing(Argument.authenticatorId.rawValue)))
+        }
 
         client
-            .multifactorChallenge(mfaToken: mfaToken, types: types, authenticatorId: authenticatorId)
+            .challenge(with: authenticatorId, mfaToken: mfaToken)
             .start {
                 switch $0 {
                 case let .success(challenge): callback(result(from: challenge))

@@ -40,6 +40,37 @@ class MockURLProtocol: URLProtocol {
 
 // MARK: - Auth0.swift Mocks
 
+struct MockRequest<T: Sendable, E: Auth0APIError>: Requestable {
+    let result: Result<T, E>
+
+    func parameters(_ extraParameters: [String: Any]) -> any Requestable<T, E> { self }
+    func headers(_ extraHeaders: [String: String]) -> any Requestable<T, E> { self }
+    func requestValidators(_ extraValidators: [RequestValidator]) -> any Requestable<T, E> { self }
+
+    func start(_ callback: @escaping @MainActor (Result<T, E>) -> Void) {
+        Task { @MainActor in callback(result) }
+    }
+}
+
+struct MockTokenRequest<T: Sendable, E: Auth0APIError>: TokenRequestable {
+    let result: Result<T, E>
+
+    func validateClaims() -> any TokenRequestable<T, E> { self }
+    func withLeeway(_ leeway: Int) -> any TokenRequestable<T, E> { self }
+    func withIssuer(_ issuer: String) -> any TokenRequestable<T, E> { self }
+    func withNonce(_ nonce: String?) -> any TokenRequestable<T, E> { self }
+    func withMaxAge(_ maxAge: Int?) -> any TokenRequestable<T, E> { self }
+    func withOrganization(_ organization: String?) -> any TokenRequestable<T, E> { self }
+
+    func parameters(_ extraParameters: [String: Any]) -> any Requestable<T, E> { self }
+    func headers(_ extraHeaders: [String: String]) -> any Requestable<T, E> { self }
+    func requestValidators(_ extraValidators: [RequestValidator]) -> any Requestable<T, E> { self }
+
+    func start(_ callback: @escaping @MainActor (Result<T, E>) -> Void) {
+        Task { @MainActor in callback(result) }
+    }
+}
+
 struct MockError: Error {}
 
 struct MockAuth0Error: Auth0Error {

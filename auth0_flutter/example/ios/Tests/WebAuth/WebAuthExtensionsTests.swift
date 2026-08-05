@@ -14,10 +14,9 @@ class WebAuthExtensionsTests: XCTestCase {
         let errors: [String: WebAuthError] = [
             "USER_CANCELLED": .userCancelled,
             "ID_TOKEN_VALIDATION_FAILED": .idTokenValidationFailed,
-            "INVALID_INVITATION_URL": .invalidInvitationURL,
-            "NO_AUTHORIZATION_CODE": .noAuthorizationCode,
-            "NO_BUNDLE_IDENTIFIER": .noBundleIdentifier,
-            "PKCE_NOT_ALLOWED": .pkceNotAllowed,
+            "AUTHENTICATION_FAILED": .authenticationFailed,
+            "CODE_EXCHANGE_FAILED": .codeExchangeFailed,
+            "CREDENTIALS_MANAGER_ERROR": .credentialsManagerError,
             "OTHER": .other,
             "UNKNOWN": .unknown,
             "TRANSACTION_ACTIVE_ALREADY": .transactionActiveAlready
@@ -31,10 +30,9 @@ class WebAuthExtensionsTests: XCTestCase {
     func testIsRetryableIsFalseForNonNetworkErrors() {
         let nonRetryableErrors: [WebAuthError] = [
             .userCancelled,
-            .noBundleIdentifier,
-            .invalidInvitationURL,
-            .noAuthorizationCode,
-            .pkceNotAllowed,
+            .authenticationFailed,
+            .codeExchangeFailed,
+            .credentialsManagerError,
             .idTokenValidationFailed,
             .transactionActiveAlready,
             .other

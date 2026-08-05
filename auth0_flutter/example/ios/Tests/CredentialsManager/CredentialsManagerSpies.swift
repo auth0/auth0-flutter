@@ -3,6 +3,8 @@ import Auth0
 
 // MARK: - Auth0.swift Spies
 
+struct SpyCredentialsStorageError: Error {}
+
 class SpyCredentialsStorage: CredentialsStorage {
     var getEntryReturnValue: Data?
     var setEntryReturnValue = true
@@ -12,19 +14,20 @@ class SpyCredentialsStorage: CredentialsStorage {
     var calledSetEntry = false
     var calledDeleteEntry = false
 
-    func getEntry(forKey key: String) -> Data? {
+    func getEntry(forKey key: String) throws -> Data {
         self.calledGetEntry = true
-        return self.getEntryReturnValue
+        guard let value = self.getEntryReturnValue else { throw SpyCredentialsStorageError() }
+        return value
     }
 
-    func setEntry(_ data: Data, forKey key: String) -> Bool {
+    func setEntry(_ data: Data, forKey key: String) throws {
         self.calledSetEntry = true
         self.getEntryReturnValue = data
-        return self.setEntryReturnValue
+        if !self.setEntryReturnValue { throw SpyCredentialsStorageError() }
     }
 
-    func deleteEntry(forKey key: String) -> Bool {
+    func deleteEntry(forKey key: String) throws {
         self.calledDeleteEntry = true
-        return self.deleteEntryReturnValue
+        if !self.deleteEntryReturnValue { throw SpyCredentialsStorageError() }
     }
 }

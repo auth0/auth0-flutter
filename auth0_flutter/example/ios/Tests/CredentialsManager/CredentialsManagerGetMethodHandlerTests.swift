@@ -1,6 +1,12 @@
 import XCTest
 import Auth0
 
+#if os(iOS)
+import Flutter
+#else
+import FlutterMacOS
+#endif
+
 @testable import auth0_flutter
 
 fileprivate typealias Argument = CredentialsManagerGetMethodHandler.Argument
@@ -47,10 +53,10 @@ extension CredentialsManagerGetMethodHandlerTests {
                                       tokenType: "tokenType",
                                       idToken: testIdToken,
                                       refreshToken: "refreshToken",
-                                      expiresIn: Date(timeIntervalSinceNow: -3600),
+                                      expiresAt: Date(timeIntervalSinceNow: -3600),
                                       scope: "foo bar")
         let expectation = self.expectation(description: "Produced credentials")
-        _ = credentialsManager.store(credentials: credentials)
+        try? credentialsManager.store(credentials: credentials)
         sut.handle(with: arguments(withKey: Argument.scopes, value: value)) { _ in
             XCTAssertEqual(self.spyAuthentication.arguments["scope"] as? String, value.asSpaceSeparatedString)
             expectation.fulfill()
@@ -63,10 +69,10 @@ extension CredentialsManagerGetMethodHandlerTests {
                                       tokenType: "tokenType",
                                       idToken: testIdToken,
                                       refreshToken: "refreshToken",
-                                      expiresIn: Date(timeIntervalSinceNow: -3600),
+                                      expiresAt: Date(timeIntervalSinceNow: -3600),
                                       scope: "foo bar")
         let expectation = self.expectation(description: "Produced credentials")
-        _ = credentialsManager.store(credentials: credentials)
+        try? credentialsManager.store(credentials: credentials)
         sut.handle(with: arguments(withKey: Argument.scopes, value: [])) { _ in
             XCTAssertNil(self.spyAuthentication.arguments["scope"] as? String)
             expectation.fulfill()
@@ -92,10 +98,10 @@ extension CredentialsManagerGetMethodHandlerTests {
                                       tokenType: "tokenType",
                                       idToken: testIdToken,
                                       refreshToken: "refreshToken",
-                                      expiresIn: Date(timeIntervalSinceNow: 3600),
+                                      expiresAt: Date(timeIntervalSinceNow: 3600),
                                       scope: "foo bar")
         let expectation = self.expectation(description: "Produced credentials")
-        _ = credentialsManager.store(credentials: credentials)
+        try? credentialsManager.store(credentials: credentials)
         sut.handle(with: arguments()) { result in
             assert(result: result, has: CredentialsProperty.allCases)
             expectation.fulfill()
@@ -104,11 +110,13 @@ extension CredentialsManagerGetMethodHandlerTests {
     }
 
     func testProducesCredentialsManagerError() {
-        let error = CredentialsManagerError.noCredentials
-        let expectation = self.expectation(description: "Produced the CredentialsManagerError \(error)")
+        let expectation = self.expectation(description: "Produced a CredentialsManagerError")
         spyStorage.getEntryReturnValue = nil
         sut.handle(with: arguments()) { result in
-            assert(result: result, isError: error)
+            guard let flutterError = result as? FlutterError else {
+                return XCTFail("The handler did not produce a FlutterError")
+            }
+            XCTAssertTrue(flutterError.message?.contains("SpyCredentialsStorageError") == true)
             expectation.fulfill()
         }
         wait(for: [expectation], timeout: 5.0)

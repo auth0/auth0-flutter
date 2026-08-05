@@ -623,7 +623,8 @@ void main() {
           ApiRequest<AuthMultifactorChallengeOptions>(
               account: const Account('', ''),
               userAgent: UserAgent(name: '', version: ''),
-              options: AuthMultifactorChallengeOptions(mfaToken: '')));
+              options: AuthMultifactorChallengeOptions(
+                  mfaToken: '', authenticatorId: '')));
 
       expect(
           verify(mocked.methodCallHandler(captureAny)).captured.single.method,
@@ -640,7 +641,6 @@ void main() {
               userAgent: UserAgent(name: 'test-name', version: 'test-version'),
               options: AuthMultifactorChallengeOptions(
                   mfaToken: 'test-mfa-token',
-                  types: [ChallengeType.otp, ChallengeType.oob],
                   authenticatorId: 'test-authenticatorId')));
 
       final verificationResult =
@@ -652,29 +652,8 @@ void main() {
       expect(verificationResult.arguments['_userAgent']['version'],
           'test-version');
       expect(verificationResult.arguments['mfaToken'], 'test-mfa-token');
-      expect(verificationResult.arguments['types'],
-          [ChallengeType.otp.value, ChallengeType.oob.value]);
       expect(verificationResult.arguments['authenticatorId'],
           'test-authenticatorId');
-    });
-
-    test(
-        'correctly assigns default values to all non-required properties when missing',
-        () async {
-      when(mocked.methodCallHandler(any)).thenAnswer((final _) async =>
-          MethodCallHandler.multifactorChallengeResultRequired);
-
-      await MethodChannelAuth0FlutterAuth().multifactorChallenge(
-          ApiRequest<AuthMultifactorChallengeOptions>(
-              account: const Account('', ''),
-              userAgent: UserAgent(name: '', version: ''),
-              options:
-                  AuthMultifactorChallengeOptions(mfaToken: 'test-mfa-token')));
-
-      final verificationResult =
-          verify(mocked.methodCallHandler(captureAny)).captured.single;
-      expect(verificationResult.arguments['types'], isNull);
-      expect(verificationResult.arguments['authenticatorId'], isNull);
     });
 
     test('correctly returns the response from the Method Channel', () async {
@@ -685,7 +664,8 @@ void main() {
           ApiRequest<AuthMultifactorChallengeOptions>(
               account: const Account('', ''),
               userAgent: UserAgent(name: '', version: ''),
-              options: AuthMultifactorChallengeOptions(mfaToken: '')));
+              options: AuthMultifactorChallengeOptions(
+                  mfaToken: '', authenticatorId: '')));
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -704,7 +684,8 @@ void main() {
           ApiRequest<AuthMultifactorChallengeOptions>(
               account: const Account('', ''),
               userAgent: UserAgent(name: '', version: ''),
-              options: AuthMultifactorChallengeOptions(mfaToken: '')));
+              options: AuthMultifactorChallengeOptions(
+                  mfaToken: '', authenticatorId: '')));
 
       verify(mocked.methodCallHandler(captureAny));
 
@@ -721,7 +702,8 @@ void main() {
             .multifactorChallenge(ApiRequest<AuthMultifactorChallengeOptions>(
                 account: const Account('', ''),
                 userAgent: UserAgent(name: '', version: ''),
-                options: AuthMultifactorChallengeOptions(mfaToken: '')));
+                options: AuthMultifactorChallengeOptions(
+                    mfaToken: '', authenticatorId: '')));
 
         return result;
       }
@@ -743,7 +725,8 @@ void main() {
             .multifactorChallenge(ApiRequest<AuthMultifactorChallengeOptions>(
                 account: const Account('', ''),
                 userAgent: UserAgent(name: '', version: ''),
-                options: AuthMultifactorChallengeOptions(mfaToken: '')));
+                options: AuthMultifactorChallengeOptions(
+                    mfaToken: '', authenticatorId: '')));
 
         return result;
       }

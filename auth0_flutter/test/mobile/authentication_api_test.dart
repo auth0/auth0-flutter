@@ -234,7 +234,6 @@ void main() {
           .api
           .multifactorChallenge(
               mfaToken: 'test-mfa-token',
-              types: [ChallengeType.otp, ChallengeType.oob],
               authenticatorId: 'test-authenticatorId');
 
       final verificationResult =
@@ -244,25 +243,9 @@ void main() {
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
       expect(verificationResult.options.mfaToken, 'test-mfa-token');
-      expect(verificationResult.options.types,
-          [ChallengeType.otp, ChallengeType.oob]);
       expect(
           verificationResult.options.authenticatorId, 'test-authenticatorId');
       expect(result, TestPlatform.multifactorChallengeResult);
-    });
-
-    test('set parameters to default value when omitted', () async {
-      when(mockedPlatform.multifactorChallenge(any)).thenAnswer(
-          (final _) async => TestPlatform.multifactorChallengeResult);
-
-      await Auth0('', '').api.multifactorChallenge(mfaToken: '');
-
-      final verificationResult =
-          verify(mockedPlatform.multifactorChallenge(captureAny))
-              .captured
-              .single as ApiRequest<AuthMultifactorChallengeOptions>;
-      expect(verificationResult.options.types, isNull);
-      expect(verificationResult.options.authenticatorId, isNull);
     });
   });
 

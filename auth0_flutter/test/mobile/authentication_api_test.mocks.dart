@@ -68,7 +68,7 @@ class _FakeDatabaseUser_3 extends _i1.SmartFake implements _i2.DatabaseUser {
 }
 
 class _FakeSSOCredentials_4 extends _i1.SmartFake
-    implements _i3.SSOCredentials {
+    implements _i2.SSOCredentials {
   _FakeSSOCredentials_4(
     Object parent,
     Invocation parentInvocation,
@@ -79,8 +79,19 @@ class _FakeSSOCredentials_4 extends _i1.SmartFake
 }
 
 class _FakePasskeyChallenge_5 extends _i1.SmartFake
-    implements _i3.PasskeyChallenge {
+    implements _i2.PasskeyChallenge {
   _FakePasskeyChallenge_5(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakePasswordlessChallenge_6 extends _i1.SmartFake
+    implements _i2.PasswordlessChallenge {
+  _FakePasswordlessChallenge_6(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -275,21 +286,21 @@ class MockTestPlatform extends _i1.Mock implements _i4.TestPlatform {
       ) as _i5.Future<_i2.Credentials>);
 
   @override
-  _i5.Future<_i3.SSOCredentials> ssoExchange(
+  _i5.Future<_i2.SSOCredentials> ssoExchange(
           _i3.ApiRequest<_i3.AuthSSOExchangeOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
           #ssoExchange,
           [request],
         ),
-        returnValue: _i5.Future<_i3.SSOCredentials>.value(_FakeSSOCredentials_4(
+        returnValue: _i5.Future<_i2.SSOCredentials>.value(_FakeSSOCredentials_4(
           this,
           Invocation.method(
             #ssoExchange,
             [request],
           ),
         )),
-      ) as _i5.Future<_i3.SSOCredentials>);
+      ) as _i5.Future<_i2.SSOCredentials>);
 
   @override
   _i5.Future<void> resetPassword(
@@ -304,7 +315,7 @@ class MockTestPlatform extends _i1.Mock implements _i4.TestPlatform {
       ) as _i5.Future<void>);
 
   @override
-  _i5.Future<_i3.PasskeyChallenge> passkeyLoginChallenge(
+  _i5.Future<_i2.PasskeyChallenge> passkeyLoginChallenge(
           _i3.ApiRequest<_i3.AuthPasskeyLoginChallengeOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -312,17 +323,17 @@ class MockTestPlatform extends _i1.Mock implements _i4.TestPlatform {
           [request],
         ),
         returnValue:
-            _i5.Future<_i3.PasskeyChallenge>.value(_FakePasskeyChallenge_5(
+            _i5.Future<_i2.PasskeyChallenge>.value(_FakePasskeyChallenge_5(
           this,
           Invocation.method(
             #passkeyLoginChallenge,
             [request],
           ),
         )),
-      ) as _i5.Future<_i3.PasskeyChallenge>);
+      ) as _i5.Future<_i2.PasskeyChallenge>);
 
   @override
-  _i5.Future<_i3.PasskeyChallenge> passkeySignupChallenge(
+  _i5.Future<_i2.PasskeyChallenge> passkeySignupChallenge(
           _i3.ApiRequest<_i3.AuthPasskeySignupChallengeOptions>? request) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -330,14 +341,14 @@ class MockTestPlatform extends _i1.Mock implements _i4.TestPlatform {
           [request],
         ),
         returnValue:
-            _i5.Future<_i3.PasskeyChallenge>.value(_FakePasskeyChallenge_5(
+            _i5.Future<_i2.PasskeyChallenge>.value(_FakePasskeyChallenge_5(
           this,
           Invocation.method(
             #passkeySignupChallenge,
             [request],
           ),
         )),
-      ) as _i5.Future<_i3.PasskeyChallenge>);
+      ) as _i5.Future<_i2.PasskeyChallenge>);
 
   @override
   _i5.Future<_i2.Credentials> passkeyCredentialExchange(
@@ -351,6 +362,59 @@ class MockTestPlatform extends _i1.Mock implements _i4.TestPlatform {
           this,
           Invocation.method(
             #passkeyCredentialExchange,
+            [request],
+          ),
+        )),
+      ) as _i5.Future<_i2.Credentials>);
+
+  @override
+  _i5.Future<_i2.PasswordlessChallenge> passwordlessChallengeWithEmail(
+          _i3.ApiRequest<_i3.AuthPasswordlessChallengeEmailOptions>? request) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #passwordlessChallengeWithEmail,
+          [request],
+        ),
+        returnValue: _i5.Future<_i2.PasswordlessChallenge>.value(
+            _FakePasswordlessChallenge_6(
+          this,
+          Invocation.method(
+            #passwordlessChallengeWithEmail,
+            [request],
+          ),
+        )),
+      ) as _i5.Future<_i2.PasswordlessChallenge>);
+
+  @override
+  _i5.Future<_i2.PasswordlessChallenge> passwordlessChallengeWithPhoneNumber(
+          _i3.ApiRequest<_i3.AuthPasswordlessChallengePhoneOptions>? request) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #passwordlessChallengeWithPhoneNumber,
+          [request],
+        ),
+        returnValue: _i5.Future<_i2.PasswordlessChallenge>.value(
+            _FakePasswordlessChallenge_6(
+          this,
+          Invocation.method(
+            #passwordlessChallengeWithPhoneNumber,
+            [request],
+          ),
+        )),
+      ) as _i5.Future<_i2.PasswordlessChallenge>);
+
+  @override
+  _i5.Future<_i2.Credentials> passwordlessLoginWithOtp(
+          _i3.ApiRequest<_i3.AuthPasswordlessLoginWithOtpOptions>? request) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #passwordlessLoginWithOtp,
+          [request],
+        ),
+        returnValue: _i5.Future<_i2.Credentials>.value(_FakeCredentials_0(
+          this,
+          Invocation.method(
+            #passwordlessLoginWithOtp,
             [request],
           ),
         )),

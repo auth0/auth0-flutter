@@ -9,6 +9,7 @@ import FlutterMacOS
 // MARK: - Providers
 
 typealias AuthAPIClientProvider = (_ account: Account, _ userAgent: UserAgent, _ arguments: [String: Any]) -> Authentication
+typealias AuthAPIMFAClientProvider = (_ account: Account, _ userAgent: UserAgent, _ arguments: [String: Any]) -> MFAClient
 typealias AuthAPIMethodHandlerProvider = (_ method: AuthAPIHandler.Method, _ client: Authentication) -> MethodHandler
 
 // MARK: - Auth Auth Handler
@@ -64,11 +65,21 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
         return client
     }
 
+    var mfaClientProvider: AuthAPIMFAClientProvider = { account, userAgent, arguments in
+        var client = Auth0.mfa(clientId: account.clientId, domain: account.domain)
+        client.using(inLibrary: userAgent.name, version: userAgent.version)
+
+        let useDPoP = arguments["useDPoP"] as? Bool ?? false
+        if useDPoP {
+            client = client.useDPoP()
+        }
+
+        return client
+    }
+
     var methodHandlerProvider: AuthAPIMethodHandlerProvider = { method, client in
         switch method {
         case .loginWithUsernameOrEmail: return AuthAPILoginUsernameOrEmailMethodHandler(client: client)
-        case .loginWithOTP: return AuthAPILoginWithOTPMethodHandler(client: client)
-        case .multifactorChallenge: return AuthAPIMultifactorChallengeMethodHandler(client: client)
         case .signup: return AuthAPISignupMethodHandler(client: client)
         case .userInfo: return AuthAPIUserInfoMethodHandler(client: client)
         case .renew: return AuthAPIRenewMethodHandler(client: client)
@@ -102,6 +113,7 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
         case .passkeyLoginChallenge, .passkeySignupChallenge, .passkeyCredentialExchange:
             return UnsupportedMethodHandler()
         #endif
+        case .loginWithOTP, .multifactorChallenge: return UnsupportedMethodHandler()
         }
     }
 
@@ -121,8 +133,16 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
             return result(FlutterMethodNotImplemented)
         }
 
-        let client = clientProvider(account, userAgent, arguments)
-        let methodHandler = methodHandlerProvider(method, client)
+        let methodHandler: MethodHandler
+        switch method {
+        case .loginWithOTP:
+            methodHandler = AuthAPILoginWithOTPMethodHandler(client: mfaClientProvider(account, userAgent, arguments))
+        case .multifactorChallenge:
+            methodHandler = AuthAPIMultifactorChallengeMethodHandler(client: mfaClientProvider(account, userAgent, arguments))
+        default:
+            let client = clientProvider(account, userAgent, arguments)
+            methodHandler = methodHandlerProvider(method, client)
+        }
 
         methodHandler.handle(with: arguments, callback: result)
     }

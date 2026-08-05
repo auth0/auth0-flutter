@@ -75,7 +75,7 @@ extension Credentials {
                   tokenType: tokenType,
                   idToken: idToken,
                   refreshToken: dictionary[CredentialsProperty.refreshToken] as? String,
-                  expiresIn: expiresIn,
+                  expiresAt: expiresIn,
                   scope: scopes.isEmpty ? nil : scopes.asSpaceSeparatedString,
                   recoveryCode: nil)
     }
@@ -85,9 +85,9 @@ extension Credentials {
         var data: [String: Any] = [
             CredentialsProperty.accessToken.rawValue: accessToken,
             CredentialsProperty.idToken.rawValue: idToken,
-            CredentialsProperty.expiresAt.rawValue: expiresIn.asISO8601String,
+            CredentialsProperty.expiresAt.rawValue: expiresAt.asISO8601String,
             CredentialsProperty.scopes.rawValue: scope?.split(separator: " ").map(String.init) ?? [],
-            CredentialsProperty.userProfile.rawValue: UserInfo(json: jwt.body)?.asDictionary() ?? [:],
+            CredentialsProperty.userProfile.rawValue: UserProfile(json: jwt.body)?.asDictionary() ?? [:],
             CredentialsProperty.tokenType.rawValue: tokenType
         ]
         data[CredentialsProperty.refreshToken] = refreshToken
@@ -100,13 +100,13 @@ extension APICredentials {
         return [
             "accessToken": accessToken,
             "tokenType": tokenType,
-            "expiresAt": expiresIn.asISO8601String,
+            "expiresAt": expiresAt.asISO8601String,
             "scopes": scope.split(separator: " ").map(String.init)
         ]
     }
 }
 
-extension UserInfo {
+extension UserProfile {
     func asDictionary() -> [String: Any] {
         let claimsToFilter = ["aud",
                               "iss",

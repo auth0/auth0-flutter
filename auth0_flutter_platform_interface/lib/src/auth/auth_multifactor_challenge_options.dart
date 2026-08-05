@@ -7,9 +7,7 @@ class AuthMultifactorChallengeOptions implements RequestOptions {
   final String? authenticatorId;
 
   AuthMultifactorChallengeOptions(
-      {required this.mfaToken,
-      this.types,
-      this.authenticatorId});
+      {required this.mfaToken, this.types, this.authenticatorId});
 
   @override
   Map<String, dynamic> toMap() => {

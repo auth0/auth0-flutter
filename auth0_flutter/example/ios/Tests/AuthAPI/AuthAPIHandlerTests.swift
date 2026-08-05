@@ -82,6 +82,54 @@ extension AuthAPIHandlerTests {
         wait(for: [expectation])
     }
 
+    // MARK: AuthAPIMFAClientProvider
+
+    func testCallsMFAClientProviderForLoginWithOTP() {
+        let methodName = AuthAPIHandler.Method.loginWithOTP.rawValue
+        let accountDictionary = [AccountProperty.clientId.rawValue: "foo", AccountProperty.domain.rawValue: "bar"]
+        let userAgentDictionary = [UserAgentProperty.name.rawValue: "baz", UserAgentProperty.version.rawValue: "qux"]
+        let argumentsDictionary: [String: Any] = [
+            Account.key: accountDictionary,
+            UserAgent.key: userAgentDictionary,
+            AuthAPILoginWithOTPMethodHandler.Argument.otp.rawValue: "",
+            AuthAPILoginWithOTPMethodHandler.Argument.mfaToken.rawValue: ""
+        ]
+        let expectation = self.expectation(description: "Called MFA client provider")
+        sut.mfaClientProvider = { (account: Account, userAgent: UserAgent, arguments: [String: Any]) -> MFAClient in
+            XCTAssertEqual(account.clientId, accountDictionary[AccountProperty.clientId])
+            XCTAssertEqual(account.domain, accountDictionary[AccountProperty.domain])
+            XCTAssertEqual(userAgent.name, userAgentDictionary[UserAgentProperty.name])
+            XCTAssertEqual(userAgent.version, userAgentDictionary[UserAgentProperty.version])
+            expectation.fulfill()
+            return SpyMFAClient()
+        }
+        sut.handle(FlutterMethodCall(methodName: methodName, arguments: argumentsDictionary)) { _ in }
+        wait(for: [expectation])
+    }
+
+    func testCallsMFAClientProviderForMultifactorChallenge() {
+        let methodName = AuthAPIHandler.Method.multifactorChallenge.rawValue
+        let accountDictionary = [AccountProperty.clientId.rawValue: "foo", AccountProperty.domain.rawValue: "bar"]
+        let userAgentDictionary = [UserAgentProperty.name.rawValue: "baz", UserAgentProperty.version.rawValue: "qux"]
+        let argumentsDictionary: [String: Any] = [
+            Account.key: accountDictionary,
+            UserAgent.key: userAgentDictionary,
+            AuthAPIMultifactorChallengeMethodHandler.Argument.mfaToken.rawValue: "",
+            AuthAPIMultifactorChallengeMethodHandler.Argument.authenticatorId.rawValue: ""
+        ]
+        let expectation = self.expectation(description: "Called MFA client provider")
+        sut.mfaClientProvider = { (account: Account, userAgent: UserAgent, arguments: [String: Any]) -> MFAClient in
+            XCTAssertEqual(account.clientId, accountDictionary[AccountProperty.clientId])
+            XCTAssertEqual(account.domain, accountDictionary[AccountProperty.domain])
+            XCTAssertEqual(userAgent.name, userAgentDictionary[UserAgentProperty.name])
+            XCTAssertEqual(userAgent.version, userAgentDictionary[UserAgentProperty.version])
+            expectation.fulfill()
+            return SpyMFAClient()
+        }
+        sut.handle(FlutterMethodCall(methodName: methodName, arguments: argumentsDictionary)) { _ in }
+        wait(for: [expectation])
+    }
+
     // MARK: AuthAPIMethodHandlerProvider
 
     func testCallsMethodHandlerProvider() {
@@ -115,9 +163,11 @@ extension AuthAPIHandlerTests {
 extension AuthAPIHandlerTests {
     func testReturnsMethodHandlers() {
         var expectations: [XCTestExpectation] = []
+        // `.loginWithOTP` and `.multifactorChallenge` are routed directly to an
+        // `MFAClient`-backed handler in `handle(_:result:)` and never reach
+        // `methodHandlerProvider`, so they are intentionally excluded here.
         var methodHandlers: [AuthAPIHandler.Method: MethodHandler.Type] = [
             .loginWithUsernameOrEmail: AuthAPILoginUsernameOrEmailMethodHandler.self,
-            .loginWithOTP: AuthAPILoginWithOTPMethodHandler.self,
             .signup: AuthAPISignupMethodHandler.self,
             .userInfo: AuthAPIUserInfoMethodHandler.self,
             .renew: AuthAPIRenewMethodHandler.self,
@@ -149,7 +199,13 @@ extension AuthAPIHandlerTests {
 
     func testCallsMethodHandlers() {
         var expectations: [XCTestExpectation] = []
-        AuthAPIHandler.Method.allCases.forEach { method in
+        // `.loginWithOTP` and `.multifactorChallenge` are routed directly to an
+        // `MFAClient`-backed handler in `handle(_:result:)` and never reach
+        // `methodHandlerProvider`, so they are intentionally excluded here.
+        let methods = AuthAPIHandler.Method.allCases.filter {
+            $0 != .loginWithOTP && $0 != .multifactorChallenge
+        }
+        methods.forEach { method in
             let arguments: [String: Any] = arguments()
             let expectation = self.expectation(description: "\(method.rawValue) handler call")
             expectations.append(expectation)

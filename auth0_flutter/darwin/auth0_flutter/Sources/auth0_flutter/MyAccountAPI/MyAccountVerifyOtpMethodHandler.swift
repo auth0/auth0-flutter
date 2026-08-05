@@ -24,7 +24,7 @@ struct MyAccountVerifyOtpMethodHandler: MethodHandler {
             return callback(FlutterError(from: .requiredArgumentMissing("factorType")))
         }
 
-        let request: Request<AuthenticationMethod, MyAccountError>
+        let request: any Requestable<AuthenticationMethod, MyAccountError>
         switch factorType {
         case "email":
             request = client.authenticationMethods.confirmEmailEnrollment(id: id, authSession: authSession, otpCode: otp)

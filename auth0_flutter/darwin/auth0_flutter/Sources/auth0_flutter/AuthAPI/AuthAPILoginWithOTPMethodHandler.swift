@@ -12,7 +12,7 @@ struct AuthAPILoginWithOTPMethodHandler: MethodHandler {
         case mfaToken
     }
 
-    let client: Authentication
+    let client: MFAClient
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
         guard let otp = arguments[Argument.otp] as? String else {
@@ -23,7 +23,7 @@ struct AuthAPILoginWithOTPMethodHandler: MethodHandler {
         }
 
         client
-            .login(withOTP: otp, mfaToken: mfaToken)
+            .verify(otp: otp, mfaToken: mfaToken)
             .start {
                 switch $0 {
                 case let .success(credentials): callback(result(from: credentials))
