@@ -15,6 +15,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
+import java.util.Date
 
 @RunWith(RobolectricTestRunner::class)
 class SSOExchangeApiRequestHandlerTest {
@@ -181,7 +182,9 @@ class SSOExchangeApiRequestHandlerTest {
         val mockSSOCredentials = mock<SSOCredentials>()
         whenever(mockSSOCredentials.sessionTransferToken).thenReturn("sso-token")
         whenever(mockSSOCredentials.issuedTokenType).thenReturn("session_transfer")
-        whenever(mockSSOCredentials.expiresIn).thenReturn(60)
+        // v4 exposes expiresAt (absolute Date); the handler converts it back to
+        // seconds-until-expiry for the "expiresIn" key the Dart model expects.
+        whenever(mockSSOCredentials.expiresAt).thenReturn(Date(System.currentTimeMillis() + 60_000))
         whenever(mockSSOCredentials.idToken).thenReturn("id-token")
         whenever(mockSSOCredentials.refreshToken).thenReturn("new-refresh-token")
 
@@ -199,7 +202,8 @@ class SSOExchangeApiRequestHandlerTest {
         val resultMap = captor.firstValue
         assertThat(resultMap["sessionTransferToken"], equalTo("sso-token"))
         assertThat(resultMap["tokenType"], equalTo("session_transfer"))
-        assertThat(resultMap["expiresIn"], equalTo(60))
+        // Converted from an absolute Date, so allow a small execution-time delta.
+        assertThat((resultMap["expiresIn"] as Long) in 58L..60L, equalTo(true))
         assertThat(resultMap["idToken"], equalTo("id-token"))
         assertThat(resultMap["refreshToken"], equalTo("new-refresh-token"))
     }
@@ -219,7 +223,7 @@ class SSOExchangeApiRequestHandlerTest {
         val mockSSOCredentials = mock<SSOCredentials>()
         whenever(mockSSOCredentials.sessionTransferToken).thenReturn("sso-token")
         whenever(mockSSOCredentials.issuedTokenType).thenReturn("session_transfer")
-        whenever(mockSSOCredentials.expiresIn).thenReturn(60)
+        whenever(mockSSOCredentials.expiresAt).thenReturn(Date(System.currentTimeMillis() + 60_000))
         whenever(mockSSOCredentials.idToken).thenReturn("id-token")
         whenever(mockSSOCredentials.refreshToken).thenReturn(null)
 

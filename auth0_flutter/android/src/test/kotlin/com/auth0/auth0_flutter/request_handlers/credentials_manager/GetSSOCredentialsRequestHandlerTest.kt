@@ -15,6 +15,7 @@ import org.mockito.ArgumentMatchers.anyMap
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
+import java.util.Date
 
 @RunWith(RobolectricTestRunner::class)
 class GetSSOCredentialsRequestHandlerTest {
@@ -108,7 +109,9 @@ class GetSSOCredentialsRequestHandlerTest {
         val mockSSOCredentials = mock<SSOCredentials>()
         `when`(mockSSOCredentials.sessionTransferToken).thenReturn("sso-token")
         `when`(mockSSOCredentials.issuedTokenType).thenReturn("session_transfer")
-        `when`(mockSSOCredentials.expiresIn).thenReturn(3600)
+        // v4 exposes expiresAt (absolute Date); the handler converts it back to
+        // seconds-until-expiry for the "expiresIn" key the Dart model expects.
+        `when`(mockSSOCredentials.expiresAt).thenReturn(Date(System.currentTimeMillis() + 3_600_000))
         `when`(mockSSOCredentials.idToken).thenReturn("id-token")
         `when`(mockSSOCredentials.refreshToken).thenReturn(null)
 
@@ -132,9 +135,10 @@ class GetSSOCredentialsRequestHandlerTest {
             resultMap["tokenType"],
             CoreMatchers.equalTo("session_transfer")
         )
+        // Converted from an absolute Date, so allow a small execution-time delta.
         MatcherAssert.assertThat(
-            resultMap["expiresIn"],
-            CoreMatchers.equalTo(3600)
+            (resultMap["expiresIn"] as Long) in 3598L..3600L,
+            CoreMatchers.equalTo(true)
         )
         MatcherAssert.assertThat(
             resultMap["idToken"],
