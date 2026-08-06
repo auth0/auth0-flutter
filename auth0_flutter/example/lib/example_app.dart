@@ -34,7 +34,7 @@ class _ExampleAppState extends State<ExampleApp> {
         Auth0Web(dotenv.env['AUTH0_DOMAIN']!, dotenv.env['AUTH0_CLIENT_ID']!);
     webAuth =
         auth0.webAuthentication(scheme: dotenv.env['AUTH0_CUSTOM_SCHEME']);
-    if (Platform.isWindows) {
+    if (!kIsWeb && Platform.isWindows) {
       windowsWebAuth = auth0.windowsWebAuthentication();
     }
     if (kIsWeb) {
@@ -270,7 +270,7 @@ class _ExampleAppState extends State<ExampleApp> {
                       const SizedBox(height: 10),
                       // DPoP button — not shown on Windows
                       // (DPoP is not yet implemented on that platform)
-                      if (!Platform.isWindows)
+                      if (kIsWeb || !Platform.isWindows)
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.deepPurple,

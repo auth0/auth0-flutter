@@ -107,4 +107,24 @@ abstract class Auth0FlutterWebPlatform extends PlatformInterface {
   ) {
     throw UnimplementedError('web.mfaVerify has not been implemented');
   }
+
+  Future<WebPasskeyChallenge> passkeySignupChallenge(
+    final WebPasskeySignupChallengeOptions options,
+  ) {
+    throw UnimplementedError(
+        'web.passkeySignupChallenge has not been implemented');
+  }
+
+  Future<WebPasskeyChallenge> passkeyLoginChallenge(
+    final WebPasskeyLoginChallengeOptions options,
+  ) {
+    throw UnimplementedError(
+        'web.passkeyLoginChallenge has not been implemented');
+  }
+
+  Future<Credentials> getTokenByPasskey(
+    final WebGetTokenByPasskeyOptions options,
+  ) {
+    throw UnimplementedError('web.getTokenByPasskey has not been implemented');
+  }
 }
