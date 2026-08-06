@@ -6,6 +6,7 @@ import com.auth0.android.myaccount.MyAccountAPIClient
 import com.auth0.android.myaccount.MyAccountException
 import com.auth0.android.request.Request
 import com.auth0.android.result.AuthenticationMethod
+import com.auth0.android.result.PushNotificationAuthenticationMethod
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodChannel.Result
 import org.hamcrest.CoreMatchers.equalTo
@@ -51,10 +52,16 @@ class ConfirmEnrollmentRequestHandlerTest {
         )
         val request = MethodCallRequest(account = mockAccount, options)
 
-        val mockMethod = mock<AuthenticationMethod>()
-        whenever(mockMethod.id).thenReturn("push|test123")
-        whenever(mockMethod.type).thenReturn("push")
-        whenever(mockMethod.createdAt).thenReturn("2026-01-01")
+        // AuthenticationMethod is a sealed class in Auth0.Android v4 and cannot
+        // be mocked; use a concrete subclass instead.
+        val mockMethod = PushNotificationAuthenticationMethod(
+            id = "push|test123",
+            type = "push",
+            createdAt = "2026-01-01",
+            usage = emptyList(),
+            confirmed = true,
+            name = null
+        )
 
         whenever(mockClient.verify(any(), any())).thenReturn(mockRequest)
         doAnswer {

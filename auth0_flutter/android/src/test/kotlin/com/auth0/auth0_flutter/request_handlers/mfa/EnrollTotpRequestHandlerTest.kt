@@ -7,6 +7,7 @@ import com.auth0.android.authentication.mfa.MfaException.MfaEnrollmentException
 import com.auth0.android.callback.Callback
 import com.auth0.android.request.Request
 import com.auth0.android.result.EnrollmentChallenge
+import com.auth0.android.result.TotpEnrollmentChallenge
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodChannel.Result
 import org.junit.Test
@@ -52,7 +53,15 @@ class EnrollTotpRequestHandlerTest {
         doAnswer {
             val callback =
                 it.getArgument<Callback<EnrollmentChallenge, MfaEnrollmentException>>(0)
-            callback.onSuccess(mock<EnrollmentChallenge>())
+            // EnrollmentChallenge is a sealed class in Auth0.Android v4 and
+            // cannot be mocked; use a concrete subclass instead.
+            callback.onSuccess(
+                TotpEnrollmentChallenge(
+                    id = "totp|test123",
+                    authSession = "session123",
+                    barcodeUri = "otpauth://totp/test"
+                )
+            )
         }.whenever(mockRequest).start(any())
 
         handler.handle(mockClient, request, mockResult)

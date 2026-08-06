@@ -6,6 +6,7 @@ import com.auth0.android.myaccount.MyAccountAPIClient
 import com.auth0.android.myaccount.MyAccountException
 import com.auth0.android.request.Request
 import com.auth0.android.result.AuthenticationMethod
+import com.auth0.android.result.PhoneAuthenticationMethod
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodChannel.Result
 import org.junit.Test
@@ -43,10 +44,18 @@ class GetAuthenticationMethodRequestHandlerTest {
         val options = hashMapOf<String, Any>("id" to "phone|test123")
         val request = MethodCallRequest(account = mockAccount, options)
 
-        val mockMethod = mock<AuthenticationMethod>()
-        whenever(mockMethod.id).thenReturn("phone|test123")
-        whenever(mockMethod.type).thenReturn("phone")
-        whenever(mockMethod.createdAt).thenReturn("2026-01-01T00:00:00.000Z")
+        // AuthenticationMethod is a sealed class in Auth0.Android v4 and cannot
+        // be mocked; use a concrete subclass instead.
+        val mockMethod = PhoneAuthenticationMethod(
+            id = "phone|test123",
+            type = "phone",
+            createdAt = "2026-01-01T00:00:00.000Z",
+            usage = emptyList(),
+            confirmed = true,
+            name = null,
+            phoneNumber = null,
+            preferredAuthenticationMethod = null
+        )
 
         whenever(mockClient.getAuthenticationMethodById(any())).thenReturn(mockRequest)
         doAnswer {
