@@ -41,8 +41,10 @@ jobs:
 
       - name: Build package
         shell: bash
+        env:
+          ARTIFACT_NAME: ${{ inputs.artifact-name }}
         run: |
-          zip -r ${{ inputs.artifact-name }}.zip ./*
+          zip -r "$ARTIFACT_NAME.zip" ./*
 
       - name: Get version
         id: get_version

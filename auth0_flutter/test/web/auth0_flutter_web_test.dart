@@ -44,6 +44,13 @@ void main() {
     return jsObject;
   }
 
+  Object createPasskeyJsException(final String code, final String message) {
+    final jsObject = JSObject();
+    jsObject.setProperty('code'.toJS, code.toJS);
+    jsObject.setProperty('message'.toJS, message.toJS);
+    return jsObject;
+  }
+
   test('onLoad is called without authenticated user and no callback', () async {
     when(mockClientProxy.isAuthenticated())
         .thenAnswer((final _) => Future.value(false));
@@ -665,6 +672,210 @@ void main() {
       expect(result.idToken, isNotEmpty);
       expect(result.user, isA<UserProfile>());
       expect(result.expiresAt, isA<DateTime>());
+    });
+  });
+
+  group('passkeys', () {
+    final passkeyChallengeCredentials = interop.PasskeyChallengeResponse(
+      authSession: 'auth-session-123',
+      publicKey: {'challenge': 'challenge-value'}.jsify() as JSObject,
+    );
+
+    group('passkeySignupChallenge', () {
+      test('requests a signup challenge and maps the response', () async {
+        when(mockClientProxy.passkeyGetSignupChallenge(any))
+            .thenAnswer((final _) => Future.value(passkeyChallengeCredentials));
+
+        final result = await auth0.passkeySignupChallenge(
+          email: 'user@example.com',
+          name: 'John Doe',
+          connection: 'Username-Password-Authentication',
+        );
+
+        expect(result.authSession, 'auth-session-123');
+
+        final params =
+            verify(mockClientProxy.passkeyGetSignupChallenge(captureAny))
+                .captured
+                .single as interop.PasskeySignupChallengeParams;
+        expect(params.email, 'user@example.com');
+        expect(params.name, 'John Doe');
+        expect(params.realm, 'Username-Password-Authentication');
+      });
+
+      test('throws WebException when the challenge request fails', () async {
+        when(mockClientProxy.passkeyGetSignupChallenge(any)).thenThrow(
+            createPasskeyJsException(
+                'passkey_register_error', 'Failed to request challenge'));
+
+        expect(
+            () async => auth0.passkeySignupChallenge(email: 'user@example.com'),
+            throwsA(predicate((final e) =>
+                e is WebException &&
+                e.code == 'PASSKEY_ERROR' &&
+                e.details['code'] == 'passkey_register_error')));
+      });
+    });
+
+    group('passkeyLoginChallenge', () {
+      test('requests a login challenge and maps the response', () async {
+        when(mockClientProxy.passkeyGetLoginChallenge(any))
+            .thenAnswer((final _) => Future.value(passkeyChallengeCredentials));
+
+        final result = await auth0.passkeyLoginChallenge(
+          connection: 'Username-Password-Authentication',
+        );
+
+        expect(result.authSession, 'auth-session-123');
+
+        final params =
+            verify(mockClientProxy.passkeyGetLoginChallenge(captureAny))
+                .captured
+                .single as interop.PasskeyLoginChallengeParams?;
+        expect(params?.realm, 'Username-Password-Authentication');
+      });
+
+      test('throws WebException when the challenge request fails', () async {
+        when(mockClientProxy.passkeyGetLoginChallenge(any)).thenThrow(
+            createPasskeyJsException(
+                'passkey_challenge_error', 'Failed to request challenge'));
+
+        expect(
+            () async => auth0.passkeyLoginChallenge(),
+            throwsA(predicate((final e) =>
+                e is WebException &&
+                e.code == 'PASSKEY_ERROR' &&
+                e.details['code'] == 'passkey_challenge_error')));
+      });
+    });
+
+    group('getTokenByPasskey', () {
+      test('throws ArgumentError when authResponse is not a JSObject',
+          () async {
+        expect(
+            () async => auth0.getTokenByPasskey(
+                  authSession: 'auth-session-123',
+                  authResponse: {'id': 'not-a-real-credential'},
+                ),
+            throwsA(isA<ArgumentError>()
+                .having((final e) => e.name, 'name', 'authResponse')
+                .having((final e) => e.message, 'message',
+                    contains('navigator.credentials.create()'))));
+
+        verifyNever(mockClientProxy.passkeyGetTokenWithPasskey(any));
+      });
+
+      test('throws ArgumentError when authResponse is null', () async {
+        expect(
+            () async => auth0.getTokenByPasskey(
+                  authSession: 'auth-session-123',
+                  authResponse: null,
+                ),
+            throwsA(isA<ArgumentError>()
+                .having((final e) => e.name, 'name', 'authResponse')));
+
+        verifyNever(mockClientProxy.passkeyGetTokenWithPasskey(any));
+      });
+
+      test('throws ArgumentError when authResponse is a plain String',
+          () async {
+        expect(
+            () async => auth0.getTokenByPasskey(
+                  authSession: 'auth-session-123',
+                  authResponse: 'not-a-credential',
+                ),
+            throwsA(isA<ArgumentError>()
+                .having((final e) => e.name, 'name', 'authResponse')));
+
+        verifyNever(mockClientProxy.passkeyGetTokenWithPasskey(any));
+      });
+
+      test('exchanges a raw credential via passkey.getTokenWithPasskey',
+          () async {
+        final rawCredential = JSObject();
+
+        when(mockClientProxy.passkeyGetTokenWithPasskey(any))
+            .thenAnswer((final _) => Future.value(webCredentials));
+
+        final result = await auth0.getTokenByPasskey(
+          authSession: 'auth-session-123',
+          authResponse: rawCredential,
+          connection: 'Username-Password-Authentication',
+        );
+
+        expect(result.accessToken, jwt);
+        expect(result.idToken, jwt);
+
+        final params =
+            verify(mockClientProxy.passkeyGetTokenWithPasskey(captureAny))
+                .captured
+                .single as interop.PasskeyGetTokenParams;
+        expect(params.authSession, 'auth-session-123');
+        expect(params.realm, 'Username-Password-Authentication');
+      });
+
+      test('throws WebException when the exchange fails', () async {
+        when(mockClientProxy.passkeyGetTokenWithPasskey(any)).thenThrow(
+            createPasskeyJsException(
+                'passkey_invalid_credential', 'Invalid credential'));
+
+        expect(
+            () async => auth0.getTokenByPasskey(
+                  authSession: 'auth-session-123',
+                  authResponse: JSObject(),
+                ),
+            throwsA(predicate((final e) =>
+                e is WebException &&
+                e.code == 'PASSKEY_ERROR' &&
+                e.details['code'] == 'passkey_invalid_credential')));
+      });
+
+      test(
+          'throws WebException with code MFA_REQUIRED when the token '
+          'exchange requires MFA', () async {
+        // auth0-spa-js's internal _requestTokenForPasskey (used by
+        // passkey.getTokenWithPasskey) does not wrap the token endpoint's
+        // MfaRequiredError in a PasskeyError — it propagates the raw
+        // error/error_description/mfa_token shape.
+        final jsException = JSObject();
+        jsException.setProperty('error'.toJS, 'mfa_required'.toJS);
+        jsException.setProperty(
+            'error_description'.toJS, 'MFA is required'.toJS);
+        jsException.setProperty('mfa_token'.toJS, 'received-mfa-token'.toJS);
+        when(mockClientProxy.passkeyGetTokenWithPasskey(any))
+            .thenThrow(jsException);
+
+        expect(
+            () async => auth0.getTokenByPasskey(
+                  authSession: 'auth-session-123',
+                  authResponse: JSObject(),
+                ),
+            throwsA(predicate((final e) =>
+                e is WebException &&
+                e.code == 'MFA_REQUIRED' &&
+                e.details['mfaToken'] == 'received-mfa-token')));
+      });
+
+      test(
+          'throws WebException with the token endpoint error code when the '
+          'exchange fails with a non-passkey-shaped error', () async {
+        // e.g. invalid_grant/access_denied from the /oauth/token webauthn
+        // grant, surfaced as a GenericError (error/error_description), not a
+        // PasskeyError (code/message).
+        when(mockClientProxy.passkeyGetTokenWithPasskey(any)).thenThrow(
+            createJsException('invalid_grant', 'Auth session has expired'));
+
+        expect(
+            () async => auth0.getTokenByPasskey(
+                  authSession: 'auth-session-123',
+                  authResponse: JSObject(),
+                ),
+            throwsA(predicate((final e) =>
+                e is WebException &&
+                e.code == 'AUTHENTICATION_ERROR' &&
+                e.message == 'Auth session has expired' &&
+                e.details['code'] == 'invalid_grant')));
+      });
     });
   });
 

@@ -41,4 +41,25 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   Future<void> logout(final LogoutOptions? options) {
     throw UnsupportedError('logout is only supported on the web platform');
   }
+
+  @override
+  Future<WebPasskeyChallenge> passkeySignupChallenge(
+      final WebPasskeySignupChallengeOptions options) {
+    throw UnsupportedError(
+        'passkeySignupChallenge is only supported on the web platform');
+  }
+
+  @override
+  Future<WebPasskeyChallenge> passkeyLoginChallenge(
+      final WebPasskeyLoginChallengeOptions options) {
+    throw UnsupportedError(
+        'passkeyLoginChallenge is only supported on the web platform');
+  }
+
+  @override
+  Future<Credentials> getTokenByPasskey(
+      final WebGetTokenByPasskeyOptions options) {
+    throw UnsupportedError(
+        'getTokenByPasskey is only supported on the web platform');
+  }
 }

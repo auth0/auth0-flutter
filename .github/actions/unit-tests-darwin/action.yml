@@ -16,12 +16,16 @@ runs:
   steps:
     - name: Lowercase platform value
       id: lowercase-platform
-      run: echo "platform=$(echo ${{ inputs.platform }} | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+      env:
+        PLATFORM: ${{ inputs.platform }}
+      run: echo "platform=$(echo "$PLATFORM" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
       shell: bash
 
     - name: Run ${{ inputs.platform }} unit tests
       working-directory: auth0_flutter/example/${{ steps.lowercase-platform.outputs.platform }}
-      run: xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination '${{ inputs.destination }}' -resultBundlePath unit-tests.xcresult -skip-testing:RunnerUITests
+      env:
+        DESTINATION: ${{ inputs.destination }}
+      run: xcodebuild test -scheme Runner -workspace Runner.xcworkspace -destination "$DESTINATION" -resultBundlePath unit-tests.xcresult -skip-testing:RunnerUITests
       shell: bash
 
     - name: Upload xcresult bundles

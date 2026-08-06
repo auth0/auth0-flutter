@@ -23,3 +23,8 @@ class WebCredentialsImpl {
   @JSExport('access_token')
   String accessToken = throw Exception('');
 }
+
+@JSExport()
+class PasskeyChallengeResponseImpl {
+  String authSession = throw Exception('');
+}

@@ -39,6 +39,15 @@ An error occurred while trying to use the Refresh Token to renew the Credentials
           '''
 Credentials need to be renewed but no Refresh Token is available to renew them.''';
 
+  /// Whether the upstream IdP session ceiling (IPSIE `session_expiry`) was
+  /// reached. When `true`, the stored credentials can no longer be renewed and
+  /// the user must re-authenticate. Distinct from [isNoCredentialsFound].
+  bool get isSessionExpired =>
+      code == 'SESSION_EXPIRED' ||
+      code ==
+          '''
+The session has reached the session_expiry ceiling set by the identity provider and is no longer valid. The user must re-authenticate.''';
+
   /// Whether the error is transient and the operation can be retried.
   /// When `true`, the failure is likely due to a temporary condition such as
   /// a network outage. When `false`, the failure is permanent (e.g. an
