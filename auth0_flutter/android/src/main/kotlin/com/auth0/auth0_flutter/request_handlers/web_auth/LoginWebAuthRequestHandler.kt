@@ -66,7 +66,7 @@ class LoginWebAuthRequestHandler(
         }
 
         if (args["useDPoP"] == true) {
-            WebAuthProvider.useDPoP(context)
+            builder.useDPoP(context)
         }
 
         builder.start(context, object : Callback<Credentials, AuthenticationException> {
