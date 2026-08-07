@@ -52,8 +52,6 @@ class ConfirmEnrollmentRequestHandlerTest {
         )
         val request = MethodCallRequest(account = mockAccount, options)
 
-        // AuthenticationMethod is a sealed class in Auth0.Android v4 and cannot
-        // be mocked; use a concrete subclass instead.
         val mockMethod = PushNotificationAuthenticationMethod(
             id = "push|test123",
             type = "push",

@@ -26,8 +26,6 @@ class LoginWithOtpApiRequestHandler: ApiRequestHandler {
 
         assertHasProperties(listOf("mfaToken", "otp"), args)
 
-        // v4 removed AuthenticationAPIClient.loginWithOTP; the inline MFA OTP
-        // flow now goes through the dedicated MfaApiClient.
         val loginBuilder = api
             .mfaClient(args["mfaToken"] as String)
             .verify(MfaVerificationType.Otp(args["otp"] as String))

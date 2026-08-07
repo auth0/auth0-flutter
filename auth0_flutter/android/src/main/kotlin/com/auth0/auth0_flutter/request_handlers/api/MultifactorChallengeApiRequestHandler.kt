@@ -19,11 +19,6 @@ class MultifactorChallengeApiRequestHandler : ApiRequestHandler {
             request: MethodCallRequest,
             result: MethodChannel.Result
     ) {
-        // v4 removed AuthenticationAPIClient.multifactorChallenge; the challenge
-        // now goes through MfaApiClient, whose challenge() takes only an
-        // authenticatorId (no challenge-type filtering). `authenticatorId` is
-        // therefore now required and any `types` value is ignored; the shared
-        // Dart surface is realigned separately in the integration PR (S-A).
         assertHasProperties(listOf("mfaToken", "authenticatorId"), request.data)
 
         val builder = api

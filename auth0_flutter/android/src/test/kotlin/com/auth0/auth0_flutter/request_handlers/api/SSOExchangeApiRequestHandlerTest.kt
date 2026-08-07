@@ -182,8 +182,6 @@ class SSOExchangeApiRequestHandlerTest {
         val mockSSOCredentials = mock<SSOCredentials>()
         whenever(mockSSOCredentials.sessionTransferToken).thenReturn("sso-token")
         whenever(mockSSOCredentials.issuedTokenType).thenReturn("session_transfer")
-        // v4 exposes expiresAt (absolute Date); the handler converts it back to
-        // seconds-until-expiry for the "expiresIn" key the Dart model expects.
         whenever(mockSSOCredentials.expiresAt).thenReturn(Date(System.currentTimeMillis() + 60_000))
         whenever(mockSSOCredentials.idToken).thenReturn("id-token")
         whenever(mockSSOCredentials.refreshToken).thenReturn("new-refresh-token")
@@ -202,7 +200,6 @@ class SSOExchangeApiRequestHandlerTest {
         val resultMap = captor.firstValue
         assertThat(resultMap["sessionTransferToken"], equalTo("sso-token"))
         assertThat(resultMap["tokenType"], equalTo("session_transfer"))
-        // Converted from an absolute Date, so allow a small execution-time delta.
         assertThat((resultMap["expiresIn"] as Long) in 58L..60L, equalTo(true))
         assertThat(resultMap["idToken"], equalTo("id-token"))
         assertThat(resultMap["refreshToken"], equalTo("new-refresh-token"))

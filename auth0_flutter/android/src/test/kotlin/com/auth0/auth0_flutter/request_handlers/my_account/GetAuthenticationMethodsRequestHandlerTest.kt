@@ -62,8 +62,6 @@ class GetAuthenticationMethodsRequestHandlerTest {
         val mockRequest = mock<Request<List<AuthenticationMethod>, MyAccountException>>()
         val request = MethodCallRequest(account = mockAccount, hashMapOf<String, Any>())
 
-        // AuthenticationMethod is a sealed class in Auth0.Android v4 and cannot
-        // be mocked; use a concrete subclass instead.
         val mockMethod = PhoneAuthenticationMethod(
             id = "test-id",
             type = "phone",

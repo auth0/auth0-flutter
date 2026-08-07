@@ -53,8 +53,6 @@ class EnrollTotpRequestHandlerTest {
         doAnswer {
             val callback =
                 it.getArgument<Callback<EnrollmentChallenge, MfaEnrollmentException>>(0)
-            // EnrollmentChallenge is a sealed class in Auth0.Android v4 and
-            // cannot be mocked; use a concrete subclass instead.
             callback.onSuccess(
                 TotpEnrollmentChallenge(
                     id = "totp|test123",

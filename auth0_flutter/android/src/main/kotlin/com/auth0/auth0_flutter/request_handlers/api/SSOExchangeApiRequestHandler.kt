@@ -43,10 +43,6 @@ class SSOExchangeApiRequestHandler : ApiRequestHandler {
             }
 
             override fun onSuccess(credentials: SSOCredentials) {
-                // v4 renamed SSOCredentials.expiresIn (seconds) to expiresAt
-                // (absolute Date). The shared Dart model still expects seconds
-                // under "expiresIn" until the S-A rename, so convert back to
-                // seconds-until-expiry here (mirrors the iOS handler).
                 val expiresIn =
                     (credentials.expiresAt.time - System.currentTimeMillis()) / 1000
                 val map = mutableMapOf<String, Any?>(

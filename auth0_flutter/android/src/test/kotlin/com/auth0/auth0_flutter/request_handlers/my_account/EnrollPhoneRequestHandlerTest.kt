@@ -71,8 +71,6 @@ class EnrollPhoneRequestHandlerTest {
         )
         val request = MethodCallRequest(account = mockAccount, options)
 
-        // EnrollmentChallenge is a sealed class in Auth0.Android v4 and cannot
-        // be mocked; use a concrete subclass instead.
         val mockChallenge = MfaEnrollmentChallenge(
             id = "phone|test123",
             authSession = "session123"
