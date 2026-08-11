@@ -335,15 +335,26 @@ jobs:
                 vcpkgDirectory: '${{ github.workspace }}/vcpkg'
                 vcpkgGitCommitId: '66c0373dc7fca549e5803087b9487edfe3aca0a1'
 
-            - name: Cache vcpkg packages and binaries
+            - name: Cache vcpkg installed tree
               uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
               with:
-                path: |
-                  ${{ github.workspace }}/vcpkg/installed
-                  ${{ github.workspace }}/vcpkg-binary-cache
-                key: vcpkg-${{ runner.os }}-${{ hashFiles('auth0_flutter/windows/vcpkg.json') }}
+                path: ${{ github.workspace }}/vcpkg/installed
+                key: vcpkg-installed-${{ runner.os }}-${{ hashFiles('auth0_flutter/windows/vcpkg.json') }}
                 restore-keys: |
-                  vcpkg-${{ runner.os }}-
+                  vcpkg-installed-${{ runner.os }}-
+
+            # Keyed by run ID (always a fresh save) with a stable restore-keys
+            # prefix, so this cache keeps accumulating per-port binaries across
+            # runs instead of being fully invalidated whenever vcpkg.json
+            # changes — unrelated ports (e.g. openssl) stay cached even when a
+            # dependency is added/removed elsewhere in the manifest.
+            - name: Cache vcpkg binary cache
+              uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
+              with:
+                path: ${{ github.workspace }}/vcpkg-binary-cache
+                key: vcpkg-binary-cache-${{ runner.os }}-${{ github.run_id }}
+                restore-keys: |
+                  vcpkg-binary-cache-${{ runner.os }}-
 
             - name: Install vcpkg dependencies
               run: |
@@ -385,7 +396,7 @@ jobs:
               working-directory: auth0_flutter/windows
               run: |
                 cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake -DAUTH0_FLUTTER_ENABLE_TESTS=ON -DCMAKE_BUILD_TYPE=Debug
-                cmake --build build --config Debug
+                cmake --build build --config Debug --parallel
               shell: cmd
 
             - name: Run Windows unit tests with coverage

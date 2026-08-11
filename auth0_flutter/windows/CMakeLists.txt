@@ -102,8 +102,12 @@ if(TARGET flutter)
   )
 
   # List of absolute paths to libraries that should be bundled with the plugin.
+  # OpenSSL is built as a shared library by the default x64-windows vcpkg
+  # triplet, so its DLLs must be copied next to the app executable or the
+  # process fails to launch.
   set(auth0_flutter_bundled_libraries
-    ""
+    "$<TARGET_FILE:OpenSSL::SSL>"
+    "$<TARGET_FILE:OpenSSL::Crypto>"
     PARENT_SCOPE
   )
 endif()
