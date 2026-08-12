@@ -39,6 +39,13 @@ find_package(httplib CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED)
 
+# FindOpenSSL.cmake scopes OpenSSL::SSL/OpenSSL::Crypto to this directory by
+# default. auth0_flutter_bundled_libraries (below) is propagated via
+# PARENT_SCOPE and its $<TARGET_FILE:...> expressions are evaluated in the
+# top-level app's CMakeLists.txt, so these targets must be made global to
+# resolve there.
+set_target_properties(OpenSSL::SSL OpenSSL::Crypto PROPERTIES IMPORTED_GLOBAL TRUE)
+
 # Define the plugin library target only if flutter targets are available
 if(TARGET flutter)
   # Define the plugin library target. Its name must not be changed (see comment
