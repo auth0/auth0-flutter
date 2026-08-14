@@ -37,6 +37,7 @@ linter:
     avoid_double_and_int_checks: true
     avoid_equals_and_hash_code_on_mutable_classes: true
     avoid_escaping_inner_quotes: true
+    avoid_final_parameters: true
     avoid_implementing_value_types: true
     avoid_js_rounded_ints: true
     avoid_positional_boolean_parameters: true
@@ -63,7 +64,6 @@ linter:
     prefer_expression_function_bodies: true
     prefer_final_in_for_each: true
     prefer_final_locals: true
-    prefer_final_parameters: true
     prefer_if_elements_to_conditional_expressions: true
     prefer_interpolation_to_compose_strings: true
     prefer_mixin: true

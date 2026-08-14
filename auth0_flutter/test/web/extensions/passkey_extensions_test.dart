@@ -7,7 +7,7 @@ import 'package:auth0_flutter/src/web/extensions/passkey_extensions.dart';
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-String? _readString(final JSObject object, final String key) =>
+String? _readString(JSObject object, String key) =>
     (object.getProperty(key.toJS) as JSString?)?.toDart;
 
 void main() {

@@ -359,7 +359,7 @@ jobs:
 
             - name: Install vcpkg dependencies
               run: |
-                ${{ github.workspace }}\vcpkg\vcpkg install "cpp-httplib[core,openssl]:x64-windows" nlohmann-json:x64-windows openssl:x64-windows
+                ${{ github.workspace }}\vcpkg\vcpkg install --recurse "cpp-httplib[core,openssl]:x64-windows" nlohmann-json:x64-windows openssl:x64-windows
               shell: cmd
               env:
                 VCPKG_BINARY_SOURCES: 'clear;files,${{ github.workspace }}/vcpkg-binary-cache,readwrite'
