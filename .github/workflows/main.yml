@@ -16,6 +16,7 @@ env:
     flutter: '3.x'
     ios-simulator: iPhone 17
     java: 17
+    vcpkg-commit: 66c0373dc7fca549e5803087b9487edfe3aca0a1
 
 jobs:
 
@@ -333,7 +334,7 @@ jobs:
               uses: lukka/run-vcpkg@b1a0dd252f06b9e25b3c022a9a03bd7a427fb6a2 # pin@v11.6
               with:
                 vcpkgDirectory: '${{ github.workspace }}/vcpkg'
-                vcpkgGitCommitId: '66c0373dc7fca549e5803087b9487edfe3aca0a1'
+                vcpkgGitCommitId: '${{ env.vcpkg-commit }}'
 
             - name: Cache vcpkg installed tree
               uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
@@ -343,22 +344,22 @@ jobs:
                 restore-keys: |
                   vcpkg-installed-${{ runner.os }}-
 
-            # Keyed by run ID (always a fresh save) with a stable restore-keys
-            # prefix, so this cache keeps accumulating per-port binaries across
-            # runs instead of being fully invalidated whenever vcpkg.json
-            # changes — unrelated ports (e.g. openssl) stay cached even when a
-            # dependency is added/removed elsewhere in the manifest.
+            # Keyed by the pinned vcpkg commit (stable across runs) rather
+            # than github.run_id, so this cache keeps accumulating per-port
+            # binaries across runs instead of saving a fresh, ever-growing
+            # entry every run that evicts other jobs' caches once the repo
+            # is near the per-repo cache limit.
             - name: Cache vcpkg binary cache
               uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
               with:
                 path: ${{ github.workspace }}/vcpkg-binary-cache
-                key: vcpkg-binary-cache-${{ runner.os }}-${{ github.run_id }}
+                key: vcpkg-binary-cache-${{ runner.os }}-${{ env.vcpkg-commit }}
                 restore-keys: |
                   vcpkg-binary-cache-${{ runner.os }}-
 
             - name: Install vcpkg dependencies
               run: |
-                ${{ github.workspace }}\vcpkg\vcpkg install cpp-httplib:x64-windows nlohmann-json:x64-windows openssl:x64-windows
+                ${{ github.workspace }}\vcpkg\vcpkg install "cpp-httplib[core,openssl]:x64-windows" nlohmann-json:x64-windows openssl:x64-windows
               shell: cmd
               env:
                 VCPKG_BINARY_SOURCES: 'clear;files,${{ github.workspace }}/vcpkg-binary-cache,readwrite'

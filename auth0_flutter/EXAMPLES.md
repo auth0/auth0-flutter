@@ -507,7 +507,7 @@ setx VCPKG_ROOT "C:\vcpkg"
 The plugin's `vcpkg.json` manifest (`auth0_flutter/windows/vcpkg.json`) lists the required packages (`cpp-httplib`, `nlohmann-json`, `openssl`), but because it lives in the plugin's own directory rather than your app's `windows/` root, vcpkg's manifest mode won't auto-install them. Install them explicitly into your vcpkg instance:
 
 ```powershell
-C:\vcpkg\vcpkg install cpp-httplib:x64-windows nlohmann-json:x64-windows openssl:x64-windows
+C:\vcpkg\vcpkg install "cpp-httplib[core,openssl]:x64-windows" nlohmann-json:x64-windows openssl:x64-windows
 ```
 
 > 💡 **Upgrading from an older auth0_flutter version?** Previous versions depended on `cpprestsdk` and `boost-system`/`boost-date-time`/`boost-regex`. If your vcpkg instance was already set up for those, run the command above to install the new packages (the old ones can be left installed or removed with `vcpkg remove cpprestsdk boost-system boost-date-time boost-regex`).

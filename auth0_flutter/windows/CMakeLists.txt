@@ -108,13 +108,32 @@ if(TARGET flutter)
     OpenSSL::Crypto
   )
 
+  # find_package(OpenSSL) creates UNKNOWN IMPORTED targets whose
+  # IMPORTED_LOCATION points at the .lib import library, not the runtime
+  # DLL, so $<TARGET_FILE:...> would bundle the wrong file. Resolve the
+  # actual DLLs from the vcpkg triplet's bin/ directory instead.
+  get_filename_component(_openssl_triplet_root "${OPENSSL_INCLUDE_DIR}" DIRECTORY)
+  find_file(OPENSSL_SSL_DLL
+    NAMES libssl-3-x64.dll libssl-3.dll
+    PATHS "${_openssl_triplet_root}/bin"
+    NO_DEFAULT_PATH
+  )
+  find_file(OPENSSL_CRYPTO_DLL
+    NAMES libcrypto-3-x64.dll libcrypto-3.dll
+    PATHS "${_openssl_triplet_root}/bin"
+    NO_DEFAULT_PATH
+  )
+  if(NOT OPENSSL_SSL_DLL OR NOT OPENSSL_CRYPTO_DLL)
+    message(FATAL_ERROR "Could not locate OpenSSL runtime DLLs under ${_openssl_triplet_root}/bin")
+  endif()
+
   # List of absolute paths to libraries that should be bundled with the plugin.
   # OpenSSL is built as a shared library by the default x64-windows vcpkg
   # triplet, so its DLLs must be copied next to the app executable or the
   # process fails to launch.
   set(auth0_flutter_bundled_libraries
-    "$<TARGET_FILE:OpenSSL::SSL>"
-    "$<TARGET_FILE:OpenSSL::Crypto>"
+    "${OPENSSL_SSL_DLL}"
+    "${OPENSSL_CRYPTO_DLL}"
     PARENT_SCOPE
   )
 endif()

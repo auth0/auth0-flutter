@@ -3,7 +3,11 @@
   "version-string": "0.1.0",
   "description": "Auth0 Flutter plugin native C++ dependencies",
   "dependencies": [
-    "cpp-httplib",
+    {
+      "name": "cpp-httplib",
+      "default-features": false,
+      "features": ["openssl"]
+    },
     "nlohmann-json",
     "openssl"
   ]
