@@ -334,7 +334,8 @@ namespace auth0_flutter
     {
         if (alg == "RS256")
         {
-            if (!jwk.contains("n") || !jwk.contains("e"))
+            if (!jwk.contains("n") || !jwk.at("n").is_string() ||
+                !jwk.contains("e") || !jwk.at("e").is_string())
             {
                 throw IdTokenValidationException(
                     "JWK is missing required RSA key material (n, e)");

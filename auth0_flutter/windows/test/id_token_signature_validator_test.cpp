@@ -26,6 +26,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <stdexcept>
 #include <string>
 #include <thread>
 
@@ -702,9 +703,22 @@ public:
 
         // listen() runs the accept loop on the background thread above and
         // only starts accepting once bound — wait for that so the test's
-        // immediate follow-up request doesn't race the bind.
+        // immediate follow-up request doesn't race the bind. Bound the wait:
+        // if the port is already in use, is_running() never becomes true and
+        // the constructor would otherwise spin forever.
+        const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
         while (!server_.is_running())
         {
+            if (std::chrono::steady_clock::now() >= deadline)
+            {
+                server_.stop();
+                if (serverThread_.joinable())
+                {
+                    serverThread_.join();
+                }
+                throw std::runtime_error(
+                    "TestJwksServer failed to start listening on port " + std::to_string(port));
+            }
             std::this_thread::sleep_for(std::chrono::milliseconds(5));
         }
     }

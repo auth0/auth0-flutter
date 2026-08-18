@@ -340,9 +340,9 @@ jobs:
               uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
               with:
                 path: ${{ github.workspace }}/vcpkg/installed
-                key: vcpkg-installed-${{ runner.os }}-${{ hashFiles('auth0_flutter/windows/vcpkg.json') }}
+                key: vcpkg-installed-${{ runner.os }}-${{ env.vcpkg-commit }}-${{ hashFiles('auth0_flutter/windows/vcpkg.json') }}
                 restore-keys: |
-                  vcpkg-installed-${{ runner.os }}-
+                  vcpkg-installed-${{ runner.os }}-${{ env.vcpkg-commit }}-
 
             # Keyed by the pinned vcpkg commit (stable across runs) rather
             # than github.run_id, so this cache keeps accumulating per-port
@@ -368,10 +368,10 @@ jobs:
               uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
               with:
                 path: auth0_flutter/example/build/windows
-                key: win-example-build-${{ runner.os }}-${{ hashFiles('auth0_flutter/windows/**/*.cpp', 'auth0_flutter/windows/**/*.h', 'auth0_flutter/windows/CMakeLists.txt', 'auth0_flutter/windows/vcpkg.json') }}-${{ hashFiles('auth0_flutter/example/lib/**/*.dart') }}
+                key: win-example-build-${{ runner.os }}-${{ env.vcpkg-commit }}-${{ hashFiles('auth0_flutter/windows/**/*.cpp', 'auth0_flutter/windows/**/*.h', 'auth0_flutter/windows/CMakeLists.txt', 'auth0_flutter/windows/vcpkg.json') }}-${{ hashFiles('auth0_flutter/example/lib/**/*.dart') }}
                 restore-keys: |
-                  win-example-build-${{ runner.os }}-${{ hashFiles('auth0_flutter/windows/**/*.cpp', 'auth0_flutter/windows/**/*.h', 'auth0_flutter/windows/CMakeLists.txt', 'auth0_flutter/windows/vcpkg.json') }}-
-                  win-example-build-${{ runner.os }}-
+                  win-example-build-${{ runner.os }}-${{ env.vcpkg-commit }}-${{ hashFiles('auth0_flutter/windows/**/*.cpp', 'auth0_flutter/windows/**/*.h', 'auth0_flutter/windows/CMakeLists.txt', 'auth0_flutter/windows/vcpkg.json') }}-
+                  win-example-build-${{ runner.os }}-${{ env.vcpkg-commit }}-
 
             - name: Build Windows example app
               working-directory: auth0_flutter/example
@@ -389,9 +389,9 @@ jobs:
               uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
               with:
                 path: auth0_flutter/windows/build
-                key: win-test-build-${{ runner.os }}-${{ hashFiles('auth0_flutter/windows/**/*.cpp', 'auth0_flutter/windows/**/*.h', 'auth0_flutter/windows/CMakeLists.txt', 'auth0_flutter/windows/test/**', 'auth0_flutter/windows/vcpkg.json') }}
+                key: win-test-build-${{ runner.os }}-${{ env.vcpkg-commit }}-${{ hashFiles('auth0_flutter/windows/**/*.cpp', 'auth0_flutter/windows/**/*.h', 'auth0_flutter/windows/CMakeLists.txt', 'auth0_flutter/windows/test/**', 'auth0_flutter/windows/vcpkg.json') }}
                 restore-keys: |
-                  win-test-build-${{ runner.os }}-
+                  win-test-build-${{ runner.os }}-${{ env.vcpkg-commit }}-
 
             - name: Build Windows unit tests
               working-directory: auth0_flutter/windows
