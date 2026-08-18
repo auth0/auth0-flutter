@@ -1,7 +1,5 @@
 #include "token_decoder.h"
 #include <chrono>
-#include <cmath>
-#include <limits>
 #include <sstream>
 #include "time_util.h"
 Credentials DecodeTokenResponse(
@@ -34,26 +32,11 @@ Credentials DecodeTokenResponse(
     creds.refreshToken = json.at("refresh_token").get<std::string>();
   }
 
-  // Use is_number() rather than a strict integer-only check: a server may
-  // legitimately emit "expires_in" as a float (e.g. 86400.0), which nlohmann
-  // would not consider is_number_integer() even though it is a whole number.
-  // get<int64_t>() truncates fractional values and is undefined behavior
-  // outside int64_t's range, so validate the raw value before converting;
-  // leave expiresIn unset for fractional, negative, or oversized values
-  // rather than truncating or converting a value that doesn't fit.
+  // expires_in
   if (json.contains("expires_in") &&
       json.at("expires_in").is_number())
   {
-    double expiresInRaw = json.at("expires_in").get<double>();
-    constexpr double kMaxExpiresIn =
-        static_cast<double>(std::numeric_limits<int64_t>::max());
-    if (std::isfinite(expiresInRaw) &&
-        expiresInRaw >= 0 &&
-        expiresInRaw <= kMaxExpiresIn &&
-        std::trunc(expiresInRaw) == expiresInRaw)
-    {
-      creds.expiresIn = static_cast<int64_t>(expiresInRaw);
-    }
+    creds.expiresIn = json.at("expires_in").get<int64_t>();
   }
 
   // Try expires_at from JSON

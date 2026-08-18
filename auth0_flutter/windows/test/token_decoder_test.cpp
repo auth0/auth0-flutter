@@ -191,18 +191,6 @@ TEST(DecodeTokenResponseTest, HandlesNonIntegerExpiresIn) {
   EXPECT_FALSE(creds.expiresAt.has_value());
 }
 
-TEST(DecodeTokenResponseTest, FractionalExpiresInIsSkipped) {
-  nlohmann::json json;
-  json["access_token"] = "test_access_token";
-  json["token_type"] = "Bearer";
-  json["expires_in"] = 3600.5;
-
-  Credentials creds = DecodeTokenResponse(json);
-
-  EXPECT_FALSE(creds.expiresIn.has_value());
-  EXPECT_FALSE(creds.expiresAt.has_value());
-}
-
 TEST(DecodeTokenResponseTest, WholeNumberFloatExpiresInIsAccepted) {
   nlohmann::json json;
   json["access_token"] = "test_access_token";
@@ -213,31 +201,6 @@ TEST(DecodeTokenResponseTest, WholeNumberFloatExpiresInIsAccepted) {
 
   ASSERT_TRUE(creds.expiresIn.has_value());
   EXPECT_EQ(creds.expiresIn.value(), 3600);
-}
-
-TEST(DecodeTokenResponseTest, NegativeExpiresInIsSkipped) {
-  nlohmann::json json;
-  json["access_token"] = "test_access_token";
-  json["token_type"] = "Bearer";
-  json["expires_in"] = -1;
-
-  Credentials creds = DecodeTokenResponse(json);
-
-  EXPECT_FALSE(creds.expiresIn.has_value());
-  EXPECT_FALSE(creds.expiresAt.has_value());
-}
-
-TEST(DecodeTokenResponseTest, OversizedExpiresInIsSkipped) {
-  nlohmann::json json;
-  json["access_token"] = "test_access_token";
-  json["token_type"] = "Bearer";
-  // Larger than int64_t::max() — only representable as a double literal.
-  json["expires_in"] = 1e300;
-
-  Credentials creds = DecodeTokenResponse(json);
-
-  EXPECT_FALSE(creds.expiresIn.has_value());
-  EXPECT_FALSE(creds.expiresAt.has_value());
 }
 
 TEST(DecodeTokenResponseTest, HandlesInvalidExpiresAtFormat) {
