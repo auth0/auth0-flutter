@@ -13,7 +13,7 @@ const idToken =
     'OiJhdXRoMCIsInVzZXJfcm9sZSI6ImFkbWluIn0.SIGNATURE';
 
 /// Builds a JWT-shaped string whose payload contains the given [claims].
-String _tokenWithClaims(final Map<String, dynamic> claims) {
+String _tokenWithClaims(Map<String, dynamic> claims) {
   final body = <String, dynamic>{'sub': '123', ...claims};
   final payload =
       base64Url.encode(utf8.encode(jsonEncode(body))).replaceAll('=', '');

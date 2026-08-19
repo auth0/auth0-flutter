@@ -60,7 +60,7 @@ void main() {
   group('getAuthenticators', () {
     test('forwards mfaToken and factors to the platform', () async {
       when(mockedPlatform.getAuthenticators(any))
-          .thenAnswer((final _) async => [TestPlatform.authenticator]);
+          .thenAnswer((_) async => [TestPlatform.authenticator]);
 
       final result = await mfa().getAuthenticators(factorsAllowed: ['phone']);
 
@@ -85,7 +85,7 @@ void main() {
   group('enroll', () {
     test('enrollTotp delegates to the platform', () async {
       when(mockedPlatform.enrollTotp(any))
-          .thenAnswer((final _) async => TestPlatform.enrollmentChallenge);
+          .thenAnswer((_) async => TestPlatform.enrollmentChallenge);
 
       final result = await mfa().enrollTotp();
 
@@ -98,7 +98,7 @@ void main() {
 
     test('enrollPhone forwards phoneNumber', () async {
       when(mockedPlatform.enrollPhone(any))
-          .thenAnswer((final _) async => TestPlatform.enrollmentChallenge);
+          .thenAnswer((_) async => TestPlatform.enrollmentChallenge);
 
       await mfa().enrollPhone(phoneNumber: '+1234567890');
 
@@ -110,7 +110,7 @@ void main() {
 
     test('enrollEmail forwards the email', () async {
       when(mockedPlatform.enrollEmail(any))
-          .thenAnswer((final _) async => TestPlatform.enrollmentChallenge);
+          .thenAnswer((_) async => TestPlatform.enrollmentChallenge);
 
       await mfa().enrollEmail(email: 'user@example.com');
 
@@ -122,7 +122,7 @@ void main() {
 
     test('enrollPush delegates to the platform', () async {
       when(mockedPlatform.enrollPush(any))
-          .thenAnswer((final _) async => TestPlatform.enrollmentChallenge);
+          .thenAnswer((_) async => TestPlatform.enrollmentChallenge);
 
       await mfa().enrollPush();
 
@@ -133,7 +133,7 @@ void main() {
   group('challenge', () {
     test('forwards authenticatorId', () async {
       when(mockedPlatform.challenge(any))
-          .thenAnswer((final _) async => TestPlatform.challengeResult);
+          .thenAnswer((_) async => TestPlatform.challengeResult);
 
       final result = await mfa().challenge(authenticatorId: 'sms|dev_1');
 
@@ -148,7 +148,7 @@ void main() {
   group('verify', () {
     test('verifyOtp uses the otp grant type', () async {
       when(mockedPlatform.verify(any))
-          .thenAnswer((final _) async => TestPlatform.credentials);
+          .thenAnswer((_) async => TestPlatform.credentials);
 
       final result = await mfa().verifyOtp(otp: '123456');
 
@@ -164,7 +164,7 @@ void main() {
 
     test('verifyOtp forwards scopes and audience', () async {
       when(mockedPlatform.verify(any))
-          .thenAnswer((final _) async => TestPlatform.credentials);
+          .thenAnswer((_) async => TestPlatform.credentials);
 
       await mfa().verifyOtp(
         otp: '123456',
@@ -181,7 +181,7 @@ void main() {
 
     test('verifyOob uses the oob grant type with binding code', () async {
       when(mockedPlatform.verify(any))
-          .thenAnswer((final _) async => TestPlatform.credentials);
+          .thenAnswer((_) async => TestPlatform.credentials);
 
       await mfa().verifyOob(oobCode: 'oob-code', bindingCode: '000111');
 
@@ -195,7 +195,7 @@ void main() {
 
     test('verifyRecoveryCode uses the recovery_code grant type', () async {
       when(mockedPlatform.verify(any))
-          .thenAnswer((final _) async => TestPlatform.credentials);
+          .thenAnswer((_) async => TestPlatform.credentials);
 
       await mfa().verifyRecoveryCode(recoveryCode: 'ABCD');
 

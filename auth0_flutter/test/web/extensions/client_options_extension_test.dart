@@ -7,7 +7,7 @@ import 'package:auth0_flutter/src/web/extensions/client_options_extensions.dart'
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-bool? _readBool(final JSObject object, final String key) =>
+bool? _readBool(JSObject object, String key) =>
     (object.getProperty(key.toJS) as JSBoolean?)?.toDart;
 
 void main() {

@@ -2,7 +2,7 @@
  * @file login_web_auth_request_handler_test.cpp
  * @brief Tests for LoginWebAuthRequestHandler synchronous argument validation
  *
- * Covers only the synchronous validation paths that execute before the pplx
+ * Covers only the synchronous validation paths that execute before the PPL
  * background task is launched.  Network, browser, and token exchange paths
  * require integration test infrastructure and are not covered here.
  *
