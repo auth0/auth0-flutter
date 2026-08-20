@@ -85,7 +85,7 @@ struct MockAuth0Error: Auth0Error {
     var cause: Error?
 }
 
-struct MockAuth0APIError: Auth0APIError {
+struct MockAuth0APIError: Auth0APIError, @unchecked Sendable {
     var info: [String: Any]
     var code: String
     var statusCode: Int
