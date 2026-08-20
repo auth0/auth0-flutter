@@ -13,14 +13,8 @@ class SpyCredentialsStorage: CredentialsStorage {
     var calledSetEntry = false
     var calledDeleteEntry = false
 
-    // Backing store keyed by entry name so the credentials blob and the pinned
-    // `session_expiry` value (which the manager stores under separate keys) can
-    // coexist. A single-slot spy would let the second write clobber the first.
     private var storage: [String: Data] = [:]
 
-    /// Convenience for tests that set/read the credentials blob without caring
-    /// about the key, preserving the previous single-value spy API. Setting
-    /// `nil` clears all entries (used to simulate "no credentials stored").
     var getEntryReturnValue: Data? {
         get { self.storage["_default"] ?? self.storage.values.first }
         set {
@@ -34,8 +28,6 @@ class SpyCredentialsStorage: CredentialsStorage {
 
     func getEntry(forKey key: String) throws -> Data {
         self.calledGetEntry = true
-        // Fall back to the `_default` slot for tests that seed a value via
-        // `getEntryReturnValue` without going through `setEntry`.
         guard let value = self.storage[key] ?? self.storage["_default"] else {
             throw SpyCredentialsStorageError()
         }
