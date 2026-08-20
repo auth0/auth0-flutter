@@ -14,7 +14,7 @@ import com.auth0.auth0_flutter.request_handlers.my_account.*
 import com.auth0.auth0_flutter.request_handlers.web_auth.LoginWebAuthRequestHandler
 import com.auth0.auth0_flutter.request_handlers.web_auth.LogoutWebAuthRequestHandler
 import io.flutter.embedding.engine.plugins.FlutterPlugin
-import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter
+import io.flutter.embedding.engine.plugins.lifecycle.HiddenLifecycleReference
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
@@ -224,7 +224,7 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   }
 
   private fun registerWebAuthCallbacks(binding: ActivityPluginBinding) {
-    val activityLifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding)
+    val activityLifecycle = (binding.lifecycle as HiddenLifecycleReference).lifecycle
     val lifecycleOwner = object : LifecycleOwner {
       override val lifecycle: Lifecycle = activityLifecycle
     }

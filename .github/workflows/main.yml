@@ -13,7 +13,10 @@ concurrency:
     cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 env:
-    flutter: '3.x'
+    # TODO: temporarily pinned from '3.x' — a newer 3.x stable rejects `final` on
+    # parameters and breaks the Dart tests. Restore floating '3.x' (or bump) once
+    # the test sources are updated for the newer Dart.
+    flutter: '3.44.9'
     ios-simulator: iPhone 17
     java: 17
 
