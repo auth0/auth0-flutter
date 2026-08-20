@@ -13,10 +13,7 @@ concurrency:
     cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 env:
-    # TODO: temporarily pinned from '3.x' — a newer 3.x stable rejects `final` on
-    # parameters and breaks the Dart tests. Restore floating '3.x' (or bump) once
-    # the test sources are updated for the newer Dart.
-    flutter: '3.44.9'
+    flutter: '3.x'
     ios-simulator: iPhone 17
     java: 17
 
@@ -56,7 +53,10 @@ jobs:
             - name: Install Flutter
               uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
               with:
-                  flutter-version: ${{ env.flutter }}
+                  # TODO: pinned instead of env.flutter ('3.x') because a newer 3.x
+                  # stable rejects `final` on parameters and breaks these tests.
+                  # Restore ${{ env.flutter }} once the test sources are updated.
+                  flutter-version: '3.44.9'
                   channel: stable
                   cache: true
 
