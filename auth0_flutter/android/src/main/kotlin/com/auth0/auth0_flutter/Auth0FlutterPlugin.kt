@@ -1,6 +1,8 @@
 package com.auth0.auth0_flutter
 
 import androidx.annotation.NonNull
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
 import com.auth0.android.provider.WebAuthProvider
@@ -12,6 +14,7 @@ import com.auth0.auth0_flutter.request_handlers.my_account.*
 import com.auth0.auth0_flutter.request_handlers.web_auth.LoginWebAuthRequestHandler
 import com.auth0.auth0_flutter.request_handlers.web_auth.LogoutWebAuthRequestHandler
 import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
@@ -119,6 +122,11 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     }
   }
 
+  private val processDeathLogoutCallback = object : Callback<Void?, AuthenticationException> {
+    override fun onSuccess(result: Void?) {}
+    override fun onFailure(exception: AuthenticationException) {}
+  }
+
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     binding = flutterPluginBinding
     val messenger = binding.binaryMessenger
@@ -200,20 +208,30 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     webAuthCallHandler.activity = binding.activity
     credentialsManagerCallHandler.activity = binding.activity
-    WebAuthProvider.addCallback(processDeathCallback)
+    registerWebAuthCallbacks(binding)
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
-    WebAuthProvider.removeCallback(processDeathCallback)
   }
 
   override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
     webAuthCallHandler.activity = binding.activity
     credentialsManagerCallHandler.activity = binding.activity
-    WebAuthProvider.addCallback(processDeathCallback)
+    registerWebAuthCallbacks(binding)
   }
 
   override fun onDetachedFromActivity() {
-    WebAuthProvider.removeCallback(processDeathCallback)
+  }
+
+  private fun registerWebAuthCallbacks(binding: ActivityPluginBinding) {
+    val activityLifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding)
+    val lifecycleOwner = object : LifecycleOwner {
+      override val lifecycle: Lifecycle = activityLifecycle
+    }
+    WebAuthProvider.registerCallbacks(
+      lifecycleOwner,
+      loginCallback = processDeathCallback,
+      logoutCallback = processDeathLogoutCallback
+    )
   }
 }

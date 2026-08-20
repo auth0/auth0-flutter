@@ -288,6 +288,28 @@ class LoginWebAuthRequestHandlerTest {
     }
 
     @Test
+    fun `handler should enable ephemeral browsing when useEphemeralSession is true`() {
+        val args = hashMapOf<String, Any?>(
+            "useEphemeralSession" to true
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withEphemeralBrowsing()
+        }
+    }
+
+    @Test
+    fun `handler should not enable ephemeral browsing when useEphemeralSession is false or absent`() {
+        runRequestHandler(hashMapOf<String, Any?>("useEphemeralSession" to false)) { _, builder ->
+            verify(builder, never()).withEphemeralBrowsing()
+        }
+
+        runRequestHandler(hashMapOf<String, Any?>()) { _, builder ->
+            verify(builder, never()).withEphemeralBrowsing()
+        }
+    }
+
+    @Test
     fun `returns the error when the builder fails`() {
         val builder = mock<WebAuthProvider.Builder>()
         val mockResult = mock<Result>()
