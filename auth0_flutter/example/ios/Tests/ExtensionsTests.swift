@@ -162,6 +162,22 @@ extension ExtensionsTests {
         let credentials = Credentials(accessToken: "", tokenType: "", idToken: idToken, expiresAt: Date())
         XCTAssertThrowsError(try credentials.asDictionary(), HandlerError.idTokenDecodingFailed.message)
     }
+
+    func testMapsSessionExpiryIntoDictionaryWhenClaimPresent() throws {
+        // `testIdToken` carries a `session_expiry` claim of 4102444800 (2100-01-01).
+        let credentials = Credentials(accessToken: "", tokenType: "", idToken: testIdToken, expiresIn: Date())
+        let values = try credentials.asDictionary()
+        let expected = Date(timeIntervalSince1970: 4102444800).asISO8601String
+        XCTAssertEqual(values[CredentialsProperty.sessionExpiry] as? String, expected)
+    }
+
+    func testOmitsSessionExpiryFromDictionaryWhenClaimAbsent() throws {
+        // `{}` payload — no `session_expiry` claim.
+        let idToken = "eyJhbGciOiJIUzI1NiJ9.e30.ZRrHA1JJJW8opsbCGfG_HACGpVUMN_a9IV7pAx_Zmeo"
+        let credentials = Credentials(accessToken: "", tokenType: "", idToken: idToken, expiresIn: Date())
+        let values = try credentials.asDictionary()
+        XCTAssertNil(values[CredentialsProperty.sessionExpiry])
+    }
 }
 
 // MARK: - UserInfo+asDictionary

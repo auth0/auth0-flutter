@@ -75,6 +75,36 @@ class LoginWebAuthRequestHandlerTest {
     }
 
     @Test
+    fun `handler should include sessionExpiry when the session_expiry claim is present`() {
+        // 2023-11-02T10:00:00Z == 1698919200 Unix seconds.
+        val sessionExpirySeconds = 1698919200L
+        val idToken = JwtTestUtils.createJwt(
+            numberClaims = mapOf("session_expiry" to sessionExpirySeconds)
+        )
+        val credentials = Credentials(idToken, "test", "", null, Date(), "openid")
+
+        runRequestHandler(credentials = credentials) { result, _ ->
+            verify(result).success(check {
+                val map = it as Map<*, *>
+                assertThat(
+                    map["sessionExpiry"],
+                    equalTo(java.time.Instant.ofEpochSecond(sessionExpirySeconds).toString())
+                )
+            })
+        }
+    }
+
+    @Test
+    fun `handler should omit sessionExpiry when the session_expiry claim is absent`() {
+        runRequestHandler { result, _ ->
+            verify(result).success(check {
+                val map = it as Map<*, *>
+                assertThat(map.containsKey("sessionExpiry"), equalTo(false))
+            })
+        }
+    }
+
+    @Test
     fun `handler should request scopes from the SDK when specified`() {
         val args = hashMapOf<String, Any?>(
             "scopes" to arrayListOf("openid", "profile", "email", "offline_access")

@@ -1,11 +1,9 @@
 #include "authentication_api_client.h"
 
-#include <cpprest/json.h>
+#include <nlohmann/json.hpp>
 
 #include "token_decoder.h"
 #include "authentication_error.h"
-
-using namespace web;
 
 namespace auth0_flutter
 {
@@ -15,12 +13,12 @@ Credentials AuthenticationApiClient::ExchangeCodeForTokens(
     const std::string &code,
     const std::string &codeVerifier)
 {
-    json::value body;
-    body[U("grant_type")] = json::value::string(U("authorization_code"));
-    body[U("client_id")] = json::value::string(utility::conversions::to_string_t(clientId()));
-    body[U("code")] = json::value::string(utility::conversions::to_string_t(code));
-    body[U("redirect_uri")] = json::value::string(utility::conversions::to_string_t(redirectUri));
-    body[U("code_verifier")] = json::value::string(utility::conversions::to_string_t(codeVerifier));
+    nlohmann::json body;
+    body["grant_type"] = "authorization_code";
+    body["client_id"] = clientId();
+    body["code"] = code;
+    body["redirect_uri"] = redirectUri;
+    body["code_verifier"] = codeVerifier;
 
     try
     {

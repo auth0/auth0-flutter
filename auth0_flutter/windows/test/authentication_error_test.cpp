@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "authentication_error.h"
-#include <cpprest/json.h>
+#include <nlohmann/json.hpp>
 
 using namespace auth0_flutter;
 
@@ -162,9 +162,9 @@ TEST(AuthenticationErrorClassificationTest, IsRuleError) {
 /* ------------------------------------------------------------------ */
 
 TEST(AuthenticationErrorJsonTest, ParsesModernFormat) {
-  web::json::value json;
-  json[U("error")]             = web::json::value::string(U("invalid_grant"));
-  json[U("error_description")] = web::json::value::string(U("Wrong email or password."));
+  nlohmann::json json;
+  json["error"]             = "invalid_grant";
+  json["error_description"] = "Wrong email or password.";
 
   AuthenticationError err(json, 400);
   EXPECT_EQ(err.GetCode(),        "invalid_grant");
@@ -177,9 +177,9 @@ TEST(AuthenticationErrorJsonTest, ParsesModernFormat) {
 /* ------------------------------------------------------------------ */
 
 TEST(AuthenticationErrorJsonTest, ParsesLegacyFormat) {
-  web::json::value json;
-  json[U("code")]        = web::json::value::string(U("some_legacy_error"));
-  json[U("description")] = web::json::value::string(U("Legacy description."));
+  nlohmann::json json;
+  json["code"]        = "some_legacy_error";
+  json["description"] = "Legacy description.";
 
   AuthenticationError err(json, 400);
   EXPECT_EQ(err.GetCode(),        "some_legacy_error");
@@ -191,7 +191,7 @@ TEST(AuthenticationErrorJsonTest, ParsesLegacyFormat) {
 /* ------------------------------------------------------------------ */
 
 TEST(AuthenticationErrorJsonTest, FallsBackToUnknownError) {
-  web::json::value json = web::json::value::object();
+  nlohmann::json json = nlohmann::json::object();
 
   AuthenticationError err(json, 500);
   EXPECT_EQ(err.GetCode(),       "UNKNOWN_ERROR");
@@ -205,10 +205,10 @@ TEST(AuthenticationErrorJsonTest, FallsBackToUnknownError) {
 /* ------------------------------------------------------------------ */
 
 TEST(AuthenticationErrorJsonTest, GetValueReturnsExtraField) {
-  web::json::value json;
-  json[U("error")]             = web::json::value::string(U("mfa_required"));
-  json[U("error_description")] = web::json::value::string(U("MFA required."));
-  json[U("mfa_token")]         = web::json::value::string(U("tok_abc123"));
+  nlohmann::json json;
+  json["error"]             = "mfa_required";
+  json["error_description"] = "MFA required.";
+  json["mfa_token"]         = "tok_abc123";
 
   AuthenticationError err(json, 403);
   EXPECT_EQ(err.GetValue("mfa_token"),   "tok_abc123");
@@ -234,28 +234,28 @@ TEST(AuthenticationErrorTest, GetStatusCodeReturnsCorrectValue) {
 // extra fields, so the string constructor can never return true.
 
 TEST(AuthenticationErrorClassificationTest, IsPasswordNotStrongEnough_True) {
-  web::json::value json;
-  json[U("error")]             = web::json::value::string(U("invalid_password"));
-  json[U("error_description")] = web::json::value::string(U("Password is too weak."));
-  json[U("name")]              = web::json::value::string(U("PasswordStrengthError"));
+  nlohmann::json json;
+  json["error"]             = "invalid_password";
+  json["error_description"] = "Password is too weak.";
+  json["name"]              = "PasswordStrengthError";
 
   AuthenticationError err(json, 400);
   EXPECT_TRUE(err.IsPasswordNotStrongEnough());
 }
 
 TEST(AuthenticationErrorClassificationTest, IsPasswordNotStrongEnough_WrongCode) {
-  web::json::value json;
-  json[U("error")] = web::json::value::string(U("access_denied"));
-  json[U("name")]  = web::json::value::string(U("PasswordStrengthError"));
+  nlohmann::json json;
+  json["error"] = "access_denied";
+  json["name"]  = "PasswordStrengthError";
 
   AuthenticationError err(json, 403);
   EXPECT_FALSE(err.IsPasswordNotStrongEnough());
 }
 
 TEST(AuthenticationErrorClassificationTest, IsPasswordNotStrongEnough_WrongName) {
-  web::json::value json;
-  json[U("error")] = web::json::value::string(U("invalid_password"));
-  json[U("name")]  = web::json::value::string(U("SomeOtherError"));
+  nlohmann::json json;
+  json["error"] = "invalid_password";
+  json["name"]  = "SomeOtherError";
 
   AuthenticationError err(json, 400);
   EXPECT_FALSE(err.IsPasswordNotStrongEnough());
@@ -272,28 +272,28 @@ TEST(AuthenticationErrorClassificationTest, IsPasswordNotStrongEnough_NoNameFiel
 /* ------------------------------------------------------------------ */
 
 TEST(AuthenticationErrorClassificationTest, IsPasswordAlreadyUsed_True) {
-  web::json::value json;
-  json[U("error")]             = web::json::value::string(U("invalid_password"));
-  json[U("error_description")] = web::json::value::string(U("Password was already used."));
-  json[U("name")]              = web::json::value::string(U("PasswordHistoryError"));
+  nlohmann::json json;
+  json["error"]             = "invalid_password";
+  json["error_description"] = "Password was already used.";
+  json["name"]              = "PasswordHistoryError";
 
   AuthenticationError err(json, 400);
   EXPECT_TRUE(err.IsPasswordAlreadyUsed());
 }
 
 TEST(AuthenticationErrorClassificationTest, IsPasswordAlreadyUsed_WrongName) {
-  web::json::value json;
-  json[U("error")] = web::json::value::string(U("invalid_password"));
-  json[U("name")]  = web::json::value::string(U("PasswordStrengthError"));
+  nlohmann::json json;
+  json["error"] = "invalid_password";
+  json["name"]  = "PasswordStrengthError";
 
   AuthenticationError err(json, 400);
   EXPECT_FALSE(err.IsPasswordAlreadyUsed());
 }
 
 TEST(AuthenticationErrorClassificationTest, IsPasswordAlreadyUsed_WrongCode) {
-  web::json::value json;
-  json[U("error")] = web::json::value::string(U("other_error"));
-  json[U("name")]  = web::json::value::string(U("PasswordHistoryError"));
+  nlohmann::json json;
+  json["error"] = "other_error";
+  json["name"]  = "PasswordHistoryError";
 
   AuthenticationError err(json, 400);
   EXPECT_FALSE(err.IsPasswordAlreadyUsed());
@@ -357,16 +357,16 @@ TEST(AuthenticationErrorClassificationTest, RefreshTokenDeletedAndInvalidAreExcl
 }
 
 TEST(AuthenticationErrorClassificationTest, PasswordStrengthAndHistoryAreExclusive) {
-  web::json::value strengthJson;
-  strengthJson[U("error")] = web::json::value::string(U("invalid_password"));
-  strengthJson[U("name")]  = web::json::value::string(U("PasswordStrengthError"));
+  nlohmann::json strengthJson;
+  strengthJson["error"] = "invalid_password";
+  strengthJson["name"]  = "PasswordStrengthError";
   AuthenticationError strength(strengthJson, 400);
   EXPECT_TRUE(strength.IsPasswordNotStrongEnough());
   EXPECT_FALSE(strength.IsPasswordAlreadyUsed());
 
-  web::json::value historyJson;
-  historyJson[U("error")] = web::json::value::string(U("invalid_password"));
-  historyJson[U("name")]  = web::json::value::string(U("PasswordHistoryError"));
+  nlohmann::json historyJson;
+  historyJson["error"] = "invalid_password";
+  historyJson["name"]  = "PasswordHistoryError";
   AuthenticationError history(historyJson, 400);
   EXPECT_TRUE(history.IsPasswordAlreadyUsed());
   EXPECT_FALSE(history.IsPasswordNotStrongEnough());
@@ -378,9 +378,9 @@ TEST(AuthenticationErrorClassificationTest, PasswordStrengthAndHistoryAreExclusi
 
 TEST(AuthenticationErrorJsonTest, ModernErrorWithLegacyDescriptionField) {
   // "error" present (modern) but "description" instead of "error_description"
-  web::json::value json;
-  json[U("error")]       = web::json::value::string(U("invalid_grant"));
-  json[U("description")] = web::json::value::string(U("Legacy description field."));
+  nlohmann::json json;
+  json["error"]       = "invalid_grant";
+  json["description"] = "Legacy description field.";
 
   AuthenticationError err(json, 400);
   EXPECT_EQ(err.GetCode(), "invalid_grant");
@@ -390,10 +390,10 @@ TEST(AuthenticationErrorJsonTest, ModernErrorWithLegacyDescriptionField) {
 
 TEST(AuthenticationErrorJsonTest, BothModernAndLegacyDescriptionPrefersModern) {
   // When both fields are present, "error_description" takes priority.
-  web::json::value json;
-  json[U("error")]             = web::json::value::string(U("invalid_grant"));
-  json[U("error_description")] = web::json::value::string(U("Modern description."));
-  json[U("description")]       = web::json::value::string(U("Legacy description."));
+  nlohmann::json json;
+  json["error"]             = "invalid_grant";
+  json["error_description"] = "Modern description.";
+  json["description"]       = "Legacy description.";
 
   AuthenticationError err(json, 400);
   EXPECT_EQ(err.GetDescription(), "Modern description.");
@@ -401,8 +401,8 @@ TEST(AuthenticationErrorJsonTest, BothModernAndLegacyDescriptionPrefersModern) {
 
 TEST(AuthenticationErrorJsonTest, FallbackDescriptionContainsCode) {
   // When neither description field is present the fallback embeds the code.
-  web::json::value json;
-  json[U("error")] = web::json::value::string(U("my_error_code"));
+  nlohmann::json json;
+  json["error"] = "my_error_code";
 
   AuthenticationError err(json, 400);
   EXPECT_NE(err.GetDescription().find("my_error_code"), std::string::npos);

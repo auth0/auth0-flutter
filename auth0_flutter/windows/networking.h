@@ -3,7 +3,7 @@
 #include <string>
 #include <map>
 #include <memory>
-#include <cpprest/json.h>
+#include <nlohmann/json.hpp>
 
 namespace auth0_flutter
 {
@@ -11,7 +11,7 @@ namespace auth0_flutter
 struct NetworkResponse
 {
     int statusCode;
-    web::json::value body;
+    nlohmann::json body;
 };
 
 class Networking
@@ -21,7 +21,7 @@ public:
 
     virtual NetworkResponse post(
         const std::string &path,
-        const web::json::value &body,
+        const nlohmann::json &body,
         const std::map<std::string, std::string> &headers = {}) = 0;
 };
 
@@ -32,7 +32,7 @@ public:
 
     NetworkResponse post(
         const std::string &path,
-        const web::json::value &body,
+        const nlohmann::json &body,
         const std::map<std::string, std::string> &headers = {}) override;
 
 private:

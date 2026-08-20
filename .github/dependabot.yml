@@ -47,6 +47,19 @@ updates:
       - ignore title check
       - dependencies
 
+  - package-ecosystem: swift
+    directory: auth0_flutter/darwin/auth0_flutter
+    schedule:
+      interval: daily
+    allow:
+      - dependency-name: 'https://github.com/auth0/Auth0.swift'
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+    labels:
+      - ignore title check
+      - dependencies
+
   - package-ecosystem: github-actions
     directory: /
     schedule:
