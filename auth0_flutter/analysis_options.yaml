@@ -63,7 +63,7 @@ linter:
     prefer_expression_function_bodies: true
     prefer_final_in_for_each: true
     prefer_final_locals: true
-    prefer_final_parameters: true
+    prefer_final_parameters: false
     prefer_if_elements_to_conditional_expressions: true
     prefer_interpolation_to_compose_strings: true
     prefer_mixin: true
