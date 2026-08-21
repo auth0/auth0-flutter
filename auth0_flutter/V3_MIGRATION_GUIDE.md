@@ -17,6 +17,7 @@ behavior that surfaces through the Dart API.
 - [Behavior Changes](#behavior-changes)
   - [`credentialsManager.clearCredentials` now clears all stored data (Android)](#credentialsmanagerclearcredentials-now-clears-all-stored-data-android)
   - [`api.multifactorChallenge` requires `authenticatorId` (Android)](#apimultifactorchallenge-requires-authenticatorid-android)
+  - [Android Web Auth recovers login results across process death](#android-web-auth-recovers-login-results-across-process-death)
 - [Getting Help](#getting-help)
 
 ## Requirements Changes
@@ -105,6 +106,17 @@ final challenge = await auth0.api.multifactorChallenge(
 
 If you support one-time passwords and don't need to select a specific factor,
 you can skip the challenge request and call `api.loginWithOtp` directly.
+
+### Android Web Auth recovers login results across process death
+
+**Change:** Android Web Auth now registers its login callback against the
+activity lifecycle (via Auth0.Android v4's `WebAuthProvider.registerCallbacks`)
+instead of the deprecated global callback. As a result, a login result is
+delivered even if the activity is recreated across a configuration change or the
+process is killed and restarted while the browser is in the foreground.
+
+**Impact:** This is an internal improvement. The Dart API is unchanged and no
+code change is required.
 
 ## Getting Help
 
