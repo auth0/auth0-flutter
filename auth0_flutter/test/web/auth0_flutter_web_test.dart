@@ -37,16 +37,23 @@ void main() {
     reset(mockClientProxy);
   });
 
-  Object createJsException(final String error, final String description) {
+  Object createJsException(String error, String description) {
     final jsObject = JSObject();
     jsObject.setProperty('error'.toJS, error.toJS);
     jsObject.setProperty('error_description'.toJS, description.toJS);
     return jsObject;
   }
 
+  Object createPasskeyJsException(String code, String message) {
+    final jsObject = JSObject();
+    jsObject.setProperty('code'.toJS, code.toJS);
+    jsObject.setProperty('message'.toJS, message.toJS);
+    return jsObject;
+  }
+
   test('onLoad is called without authenticated user and no callback', () async {
     when(mockClientProxy.isAuthenticated())
-        .thenAnswer((final _) => Future.value(false));
+        .thenAnswer((_) => Future.value(false));
 
     final result = await auth0.onLoad();
 
@@ -55,10 +62,10 @@ void main() {
   });
 
   test('onLoad is called with an authenticated user and no callback', () async {
-    when(mockClientProxy.isAuthenticated()).thenAnswer((final _) async => true);
+    when(mockClientProxy.isAuthenticated()).thenAnswer((_) async => true);
 
     when(mockClientProxy.getTokenSilently(any))
-        .thenAnswer((final _) => Future.value(webCredentials));
+        .thenAnswer((_) => Future.value(webCredentials));
 
     final result = await auth0.onLoad();
 
@@ -77,9 +84,9 @@ void main() {
         interop.RedirectLoginResult();
 
     when(mockClientProxy.isAuthenticated())
-        .thenAnswer((final _) => Future.value(false));
+        .thenAnswer((_) => Future.value(false));
     when(mockClientProxy.handleRedirectCallback())
-        .thenAnswer((final _) => Future.value(mockRedirectResult));
+        .thenAnswer((_) => Future.value(mockRedirectResult));
 
     plugin.urlSearchProvider = () => '?code=abc&state=123';
     await auth0.onLoad();
@@ -98,9 +105,9 @@ void main() {
     );
 
     when(mockClientProxy.isAuthenticated())
-        .thenAnswer((final _) => Future.value(false));
+        .thenAnswer((_) => Future.value(false));
     when(mockClientProxy.handleRedirectCallback(any))
-        .thenAnswer((final _) => Future.value(mockRedirectResult));
+        .thenAnswer((_) => Future.value(mockRedirectResult));
 
     plugin.urlSearchProvider = () => '?code=abc&state=123';
     await auth0.onLoad();
@@ -128,9 +135,9 @@ void main() {
     );
 
     when(mockClientProxy.isAuthenticated())
-        .thenAnswer((final _) => Future.value(false));
+        .thenAnswer((_) => Future.value(false));
     when(mockClientProxy.handleRedirectCallback(any))
-        .thenAnswer((final _) => Future.value(mockRedirectResult));
+        .thenAnswer((_) => Future.value(mockRedirectResult));
 
     plugin.urlSearchProvider = () => '?code=abc&state=123';
     await auth0.onLoad();
@@ -147,7 +154,7 @@ void main() {
   test('onLoad throws the correct exception from handleRedirectCallback',
       () async {
     when(mockClientProxy.isAuthenticated())
-        .thenAnswer((final _) => Future.value(false));
+        .thenAnswer((_) => Future.value(false));
 
     when(mockClientProxy.handleRedirectCallback())
         .thenThrow(createJsException('test', 'test exception'));
@@ -156,7 +163,7 @@ void main() {
 
     expect(
         () async => auth0.onLoad(),
-        throwsA(predicate((final e) =>
+        throwsA(predicate((e) =>
             e is WebException &&
             e.code == 'test' &&
             e.message == 'test exception')));
@@ -164,7 +171,7 @@ void main() {
 
   test('loginWithRedirect supports appState parameter', () async {
     when(mockClientProxy.isAuthenticated())
-        .thenAnswer((final _) => Future.value(false));
+        .thenAnswer((_) => Future.value(false));
 
     final Map<String, Object?> appState = <String, Object?>{
       'someFancyState': 'value',
@@ -191,7 +198,7 @@ void main() {
 
   test('loginWithRedirect with all options', () async {
     when(mockClientProxy.isAuthenticated())
-        .thenAnswer((final _) => Future.value(false));
+        .thenAnswer((_) => Future.value(false));
 
     await auth0.loginWithRedirect(
         audience: 'http://localhost',
@@ -218,7 +225,7 @@ void main() {
 
   test('loginWithRedirect supports custom parameters', () async {
     when(mockClientProxy.isAuthenticated())
-        .thenAnswer((final _) => Future.value(false));
+        .thenAnswer((_) => Future.value(false));
 
     await auth0.loginWithRedirect(parameters: {'screen_hint': 'signup'});
 
@@ -233,7 +240,7 @@ void main() {
 
   test('loginWithRedirect strips options that are null', () async {
     when(mockClientProxy.isAuthenticated())
-        .thenAnswer((final _) => Future.value(false));
+        .thenAnswer((_) => Future.value(false));
 
     await auth0.loginWithRedirect();
 
@@ -253,7 +260,7 @@ void main() {
 
   test('hasValidCredentials is called without authenticated user', () async {
     when(mockClientProxy.isAuthenticated())
-        .thenAnswer((final _) => Future.value(false));
+        .thenAnswer((_) => Future.value(false));
 
     final result = await auth0.hasValidCredentials();
 
@@ -262,7 +269,7 @@ void main() {
 
   test('hasValidCredentials is called with an authenticated user', () async {
     when(mockClientProxy.isAuthenticated())
-        .thenAnswer((final _) => Future.value(true));
+        .thenAnswer((_) => Future.value(true));
 
     final result = await auth0.hasValidCredentials();
 
@@ -271,7 +278,7 @@ void main() {
 
   test('credentials is called and succeeds', () async {
     when(mockClientProxy.getTokenSilently(any))
-        .thenAnswer((final _) => Future.value(webCredentials));
+        .thenAnswer((_) => Future.value(webCredentials));
 
     final result = await auth0.credentials();
 
@@ -284,7 +291,7 @@ void main() {
 
   test('credentials is called with options and succeeds', () async {
     when(mockClientProxy.getTokenSilently(any))
-        .thenAnswer((final _) => Future.value(webCredentials));
+        .thenAnswer((_) => Future.value(webCredentials));
 
     await auth0.credentials(
         scopes: {'openid', 'profile'},
@@ -310,7 +317,7 @@ void main() {
 
     expect(
         () async => auth0.credentials(),
-        throwsA(predicate((final e) =>
+        throwsA(predicate((e) =>
             e is WebException &&
             e.code == 'test' &&
             e.message == 'test exception')));
@@ -319,7 +326,7 @@ void main() {
   test('getApiCredentials exchanges the refresh token for an audience',
       () async {
     when(mockClientProxy.getTokenSilently(any))
-        .thenAnswer((final _) => Future.value(webCredentials));
+        .thenAnswer((_) => Future.value(webCredentials));
 
     final result = await auth0.getApiCredentials(
         audience: 'http://my.api',
@@ -345,7 +352,7 @@ void main() {
 
     expect(
         () async => auth0.getApiCredentials(audience: 'http://my.api'),
-        throwsA(predicate((final e) =>
+        throwsA(predicate((e) =>
             e is WebException &&
             e.code == 'test' &&
             e.message == 'test exception')));
@@ -360,7 +367,7 @@ void main() {
   });
 
   test('logout is called and succeeds', () async {
-    when(mockClientProxy.logout(any)).thenAnswer((final _) => Future.value());
+    when(mockClientProxy.logout(any)).thenAnswer((_) => Future.value());
     await auth0.logout(federated: true, returnToUrl: 'http://returnto.url');
 
     final params =
@@ -372,10 +379,10 @@ void main() {
 
   test('loginWithPopup is called and succeeds', () async {
     when(mockClientProxy.loginWithPopup(any, any))
-        .thenAnswer((final _) => Future.value());
+        .thenAnswer((_) => Future.value());
 
     when(mockClientProxy.getTokenSilently(any))
-        .thenAnswer((final _) => Future.value(webCredentials));
+        .thenAnswer((_) => Future.value(webCredentials));
 
     final window = Object();
 
@@ -411,10 +418,10 @@ void main() {
 
   test('loginWithPopup supports sending custom parameters', () async {
     when(mockClientProxy.loginWithPopup(any, any))
-        .thenAnswer((final _) => Future.value());
+        .thenAnswer((_) => Future.value());
 
     when(mockClientProxy.getTokenSilently(any))
-        .thenAnswer((final _) => Future.value(webCredentials));
+        .thenAnswer((_) => Future.value(webCredentials));
 
     final credentials =
         await auth0.loginWithPopup(parameters: {'screen_hint': 'signup'});
@@ -434,7 +441,7 @@ void main() {
 
     expect(
         () async => auth0.loginWithPopup(),
-        throwsA(predicate((final e) =>
+        throwsA(predicate((e) =>
             e is WebException &&
             e.code == 'test' &&
             e.message == 'test exception')));
@@ -443,14 +450,14 @@ void main() {
   test('loginWithPopup throws the correct exception from getTokenSilently',
       () async {
     when(mockClientProxy.loginWithPopup(any, any))
-        .thenAnswer((final _) => Future.value());
+        .thenAnswer((_) => Future.value());
 
     when(mockClientProxy.getTokenSilently(any))
         .thenThrow(createJsException('test', 'test exception'));
 
     expect(
         () async => auth0.loginWithPopup(),
-        throwsA(predicate((final e) =>
+        throwsA(predicate((e) =>
             e is WebException &&
             e.code == 'test' &&
             e.message == 'test exception')));
@@ -460,7 +467,7 @@ void main() {
     test('customTokenExchange is called with required parameters and succeeds',
         () async {
       when(mockClientProxy.exchangeToken(any))
-          .thenAnswer((final _) => Future.value(webCredentials));
+          .thenAnswer((_) => Future.value(webCredentials));
 
       final result = await auth0.customTokenExchange(
           subjectToken: 'external-token-123',
@@ -484,7 +491,7 @@ void main() {
     test('customTokenExchange is called with all optional parameters',
         () async {
       when(mockClientProxy.exchangeToken(argThat(anything)))
-          .thenAnswer((final _) => Future.value(webCredentials));
+          .thenAnswer((_) => Future.value(webCredentials));
 
       await auth0.customTokenExchange(
           subjectToken: 'external-token-456',
@@ -505,7 +512,7 @@ void main() {
     test('customTokenExchange passes actor token and type when provided',
         () async {
       when(mockClientProxy.exchangeToken(argThat(anything)))
-          .thenAnswer((final _) => Future.value(webCredentials));
+          .thenAnswer((_) => Future.value(webCredentials));
 
       await auth0.customTokenExchange(
           subjectToken: 'external-token-456',
@@ -543,7 +550,7 @@ void main() {
           scope: 'openid',
           expires_in: 0.toJS);
       when(mockClientProxy.exchangeToken(argThat(anything)))
-          .thenAnswer((final _) => Future.value(actCredentials));
+          .thenAnswer((_) => Future.value(actCredentials));
 
       final result = await auth0.customTokenExchange(
           subjectToken: 'external-token-456',
@@ -563,7 +570,7 @@ void main() {
 
     test('customTokenExchange handles empty scopes correctly', () async {
       when(mockClientProxy.exchangeToken(any))
-          .thenAnswer((final _) => Future.value(webCredentials));
+          .thenAnswer((_) => Future.value(webCredentials));
 
       await auth0.customTokenExchange(
           subjectToken: 'token',
@@ -583,7 +590,7 @@ void main() {
           () async => auth0.customTokenExchange(
               subjectToken: 'invalid-token',
               subjectTokenType: 'urn:example:token'),
-          throwsA(predicate((final e) =>
+          throwsA(predicate((e) =>
               e is WebException &&
               e.code == 'invalid_token' &&
               e.message == 'Token is invalid')));
@@ -604,7 +611,7 @@ void main() {
         await expectLater(
             auth0.customTokenExchange(
                 subjectToken: 'token', subjectTokenType: 'urn:example:token'),
-            throwsA(predicate((final e) =>
+            throwsA(predicate((e) =>
                 e is WebException &&
                 e.code == 'AUTHENTICATION_ERROR' &&
                 e.message == errorCase['message'])));
@@ -623,7 +630,7 @@ void main() {
           expires_in: 0.toJS);
 
       when(mockClientProxy.exchangeToken(any))
-          .thenAnswer((final _) => Future.value(customScopeCredentials));
+          .thenAnswer((_) => Future.value(customScopeCredentials));
 
       final result = await auth0.customTokenExchange(
           subjectToken: 'token',
@@ -642,7 +649,7 @@ void main() {
           expires_in: 0.toJS);
 
       when(mockClientProxy.exchangeToken(any))
-          .thenAnswer((final _) => Future.value(credentialsNoRefresh));
+          .thenAnswer((_) => Future.value(credentialsNoRefresh));
 
       final result = await auth0.customTokenExchange(
           subjectToken: 'token', subjectTokenType: 'urn:example:token');
@@ -655,7 +662,7 @@ void main() {
     test('customTokenExchange converts JS credentials to Dart Credentials',
         () async {
       when(mockClientProxy.exchangeToken(any))
-          .thenAnswer((final _) => Future.value(webCredentials));
+          .thenAnswer((_) => Future.value(webCredentials));
 
       final result = await auth0.customTokenExchange(
           subjectToken: 'token', subjectTokenType: 'urn:example:token');
@@ -665,6 +672,210 @@ void main() {
       expect(result.idToken, isNotEmpty);
       expect(result.user, isA<UserProfile>());
       expect(result.expiresAt, isA<DateTime>());
+    });
+  });
+
+  group('passkeys', () {
+    final passkeyChallengeCredentials = interop.PasskeyChallengeResponse(
+      authSession: 'auth-session-123',
+      publicKey: {'challenge': 'challenge-value'}.jsify() as JSObject,
+    );
+
+    group('passkeySignupChallenge', () {
+      test('requests a signup challenge and maps the response', () async {
+        when(mockClientProxy.passkeyGetSignupChallenge(any))
+            .thenAnswer((_) => Future.value(passkeyChallengeCredentials));
+
+        final result = await auth0.passkeySignupChallenge(
+          email: 'user@example.com',
+          name: 'John Doe',
+          connection: 'Username-Password-Authentication',
+        );
+
+        expect(result.authSession, 'auth-session-123');
+
+        final params =
+            verify(mockClientProxy.passkeyGetSignupChallenge(captureAny))
+                .captured
+                .single as interop.PasskeySignupChallengeParams;
+        expect(params.email, 'user@example.com');
+        expect(params.name, 'John Doe');
+        expect(params.realm, 'Username-Password-Authentication');
+      });
+
+      test('throws WebException when the challenge request fails', () async {
+        when(mockClientProxy.passkeyGetSignupChallenge(any)).thenThrow(
+            createPasskeyJsException(
+                'passkey_register_error', 'Failed to request challenge'));
+
+        expect(
+            () async => auth0.passkeySignupChallenge(email: 'user@example.com'),
+            throwsA(predicate((e) =>
+                e is WebException &&
+                e.code == 'PASSKEY_ERROR' &&
+                e.details['code'] == 'passkey_register_error')));
+      });
+    });
+
+    group('passkeyLoginChallenge', () {
+      test('requests a login challenge and maps the response', () async {
+        when(mockClientProxy.passkeyGetLoginChallenge(any))
+            .thenAnswer((_) => Future.value(passkeyChallengeCredentials));
+
+        final result = await auth0.passkeyLoginChallenge(
+          connection: 'Username-Password-Authentication',
+        );
+
+        expect(result.authSession, 'auth-session-123');
+
+        final params =
+            verify(mockClientProxy.passkeyGetLoginChallenge(captureAny))
+                .captured
+                .single as interop.PasskeyLoginChallengeParams?;
+        expect(params?.realm, 'Username-Password-Authentication');
+      });
+
+      test('throws WebException when the challenge request fails', () async {
+        when(mockClientProxy.passkeyGetLoginChallenge(any)).thenThrow(
+            createPasskeyJsException(
+                'passkey_challenge_error', 'Failed to request challenge'));
+
+        expect(
+            () async => auth0.passkeyLoginChallenge(),
+            throwsA(predicate((e) =>
+                e is WebException &&
+                e.code == 'PASSKEY_ERROR' &&
+                e.details['code'] == 'passkey_challenge_error')));
+      });
+    });
+
+    group('getTokenByPasskey', () {
+      test('throws ArgumentError when authResponse is not a JSObject',
+          () async {
+        expect(
+            () async => auth0.getTokenByPasskey(
+                  authSession: 'auth-session-123',
+                  authResponse: {'id': 'not-a-real-credential'},
+                ),
+            throwsA(isA<ArgumentError>()
+                .having((e) => e.name, 'name', 'authResponse')
+                .having((e) => e.message, 'message',
+                    contains('navigator.credentials.create()'))));
+
+        verifyNever(mockClientProxy.passkeyGetTokenWithPasskey(any));
+      });
+
+      test('throws ArgumentError when authResponse is null', () async {
+        expect(
+            () async => auth0.getTokenByPasskey(
+                  authSession: 'auth-session-123',
+                  authResponse: null,
+                ),
+            throwsA(isA<ArgumentError>()
+                .having((e) => e.name, 'name', 'authResponse')));
+
+        verifyNever(mockClientProxy.passkeyGetTokenWithPasskey(any));
+      });
+
+      test('throws ArgumentError when authResponse is a plain String',
+          () async {
+        expect(
+            () async => auth0.getTokenByPasskey(
+                  authSession: 'auth-session-123',
+                  authResponse: 'not-a-credential',
+                ),
+            throwsA(isA<ArgumentError>()
+                .having((e) => e.name, 'name', 'authResponse')));
+
+        verifyNever(mockClientProxy.passkeyGetTokenWithPasskey(any));
+      });
+
+      test('exchanges a raw credential via passkey.getTokenWithPasskey',
+          () async {
+        final rawCredential = JSObject();
+
+        when(mockClientProxy.passkeyGetTokenWithPasskey(any))
+            .thenAnswer((_) => Future.value(webCredentials));
+
+        final result = await auth0.getTokenByPasskey(
+          authSession: 'auth-session-123',
+          authResponse: rawCredential,
+          connection: 'Username-Password-Authentication',
+        );
+
+        expect(result.accessToken, jwt);
+        expect(result.idToken, jwt);
+
+        final params =
+            verify(mockClientProxy.passkeyGetTokenWithPasskey(captureAny))
+                .captured
+                .single as interop.PasskeyGetTokenParams;
+        expect(params.authSession, 'auth-session-123');
+        expect(params.realm, 'Username-Password-Authentication');
+      });
+
+      test('throws WebException when the exchange fails', () async {
+        when(mockClientProxy.passkeyGetTokenWithPasskey(any)).thenThrow(
+            createPasskeyJsException(
+                'passkey_invalid_credential', 'Invalid credential'));
+
+        expect(
+            () async => auth0.getTokenByPasskey(
+                  authSession: 'auth-session-123',
+                  authResponse: JSObject(),
+                ),
+            throwsA(predicate((e) =>
+                e is WebException &&
+                e.code == 'PASSKEY_ERROR' &&
+                e.details['code'] == 'passkey_invalid_credential')));
+      });
+
+      test(
+          'throws WebException with code MFA_REQUIRED when the token '
+          'exchange requires MFA', () async {
+        // auth0-spa-js's internal _requestTokenForPasskey (used by
+        // passkey.getTokenWithPasskey) does not wrap the token endpoint's
+        // MfaRequiredError in a PasskeyError — it propagates the raw
+        // error/error_description/mfa_token shape.
+        final jsException = JSObject();
+        jsException.setProperty('error'.toJS, 'mfa_required'.toJS);
+        jsException.setProperty(
+            'error_description'.toJS, 'MFA is required'.toJS);
+        jsException.setProperty('mfa_token'.toJS, 'received-mfa-token'.toJS);
+        when(mockClientProxy.passkeyGetTokenWithPasskey(any))
+            .thenThrow(jsException);
+
+        expect(
+            () async => auth0.getTokenByPasskey(
+                  authSession: 'auth-session-123',
+                  authResponse: JSObject(),
+                ),
+            throwsA(predicate((e) =>
+                e is WebException &&
+                e.code == 'MFA_REQUIRED' &&
+                e.details['mfaToken'] == 'received-mfa-token')));
+      });
+
+      test(
+          'throws WebException with the token endpoint error code when the '
+          'exchange fails with a non-passkey-shaped error', () async {
+        // e.g. invalid_grant/access_denied from the /oauth/token webauthn
+        // grant, surfaced as a GenericError (error/error_description), not a
+        // PasskeyError (code/message).
+        when(mockClientProxy.passkeyGetTokenWithPasskey(any)).thenThrow(
+            createJsException('invalid_grant', 'Auth session has expired'));
+
+        expect(
+            () async => auth0.getTokenByPasskey(
+                  authSession: 'auth-session-123',
+                  authResponse: JSObject(),
+                ),
+            throwsA(predicate((e) =>
+                e is WebException &&
+                e.code == 'AUTHENTICATION_ERROR' &&
+                e.message == 'Auth session has expired' &&
+                e.details['code'] == 'invalid_grant')));
+      });
     });
   });
 
@@ -678,7 +889,7 @@ void main() {
     group('loginWithRedirect', () {
       setUp(() {
         when(mockClientProxy.loginWithRedirect(any))
-            .thenAnswer((final _) => Future.value());
+            .thenAnswer((_) => Future.value());
       });
 
       test('correctly parses the ticket ID from a full invitation URL',
@@ -732,9 +943,9 @@ void main() {
     group('loginWithPopup', () {
       setUp(() {
         when(mockClientProxy.loginWithPopup(any, any))
-            .thenAnswer((final _) => Future.value());
+            .thenAnswer((_) => Future.value());
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((final _) => Future.value(webCredentials));
+            .thenAnswer((_) => Future.value(webCredentials));
       });
 
       test('correctly parses the ticket ID from a full invitation URL',
@@ -800,9 +1011,9 @@ void main() {
     group('onLoad with DPoP', () {
       test('onLoad is called with DPoP and authenticated user', () async {
         when(mockClientProxy.isAuthenticated())
-            .thenAnswer((final _) async => true);
+            .thenAnswer((_) async => true);
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((final _) => Future.value(webCredentials));
+            .thenAnswer((_) => Future.value(webCredentials));
 
         final result = await auth0WithDPoP.onLoad();
 
@@ -816,7 +1027,7 @@ void main() {
 
       test('onLoad is called with DPoP without authenticated user', () async {
         when(mockClientProxy.isAuthenticated())
-            .thenAnswer((final _) => Future.value(false));
+            .thenAnswer((_) => Future.value(false));
 
         final result = await auth0WithDPoP.onLoad();
 
@@ -826,9 +1037,9 @@ void main() {
 
       test('onLoad with DPoP handles audience parameter', () async {
         when(mockClientProxy.isAuthenticated())
-            .thenAnswer((final _) async => true);
+            .thenAnswer((_) async => true);
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((final _) => Future.value(webCredentials));
+            .thenAnswer((_) => Future.value(webCredentials));
 
         final result =
             await auth0WithDPoP.onLoad(audience: 'https://test-api.com');
@@ -841,9 +1052,9 @@ void main() {
     group('loginWithPopup with DPoP', () {
       setUp(() {
         when(mockClientProxy.loginWithPopup(any, any))
-            .thenAnswer((final _) => Future.value());
+            .thenAnswer((_) => Future.value());
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((final _) => Future.value(webCredentials));
+            .thenAnswer((_) => Future.value(webCredentials));
       });
 
       test('loginWithPopup with DPoP returns valid credentials', () async {
@@ -909,7 +1120,7 @@ void main() {
         expect(
           auth0WithDPoP.loginWithPopup,
           throwsA(predicate(
-              (final e) => e is WebException && e.code == 'login_required')),
+              (e) => e is WebException && e.code == 'login_required')),
         );
       });
     });
@@ -917,7 +1128,7 @@ void main() {
     group('loginWithRedirect with DPoP', () {
       setUp(() {
         when(mockClientProxy.loginWithRedirect(any))
-            .thenAnswer((final _) => Future.value());
+            .thenAnswer((_) => Future.value());
       });
 
       test('loginWithRedirect with DPoP is called successfully', () async {
@@ -959,7 +1170,7 @@ void main() {
     group('logout with DPoP', () {
       setUp(() {
         when(mockClientProxy.logout(any))
-            .thenAnswer((final _) => Future.value());
+            .thenAnswer((_) => Future.value());
       });
 
       test('logout with DPoP is called successfully', () async {
@@ -989,7 +1200,7 @@ void main() {
     group('getTokenSilently with DPoP', () {
       setUp(() {
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((final _) => Future.value(webCredentials));
+            .thenAnswer((_) => Future.value(webCredentials));
       });
 
       test('getTokenSilently with DPoP returns valid credentials', () async {
@@ -1019,7 +1230,7 @@ void main() {
         expect(
           auth0WithDPoP.credentials,
           throwsA(predicate(
-              (final e) => e is WebException && e.code == 'consent_required')),
+              (e) => e is WebException && e.code == 'consent_required')),
         );
       });
     });
@@ -1027,9 +1238,9 @@ void main() {
     group('DPoP Token Verification', () {
       test('verifies DPoP token type is included in response', () async {
         when(mockClientProxy.loginWithPopup(any, any))
-            .thenAnswer((final _) => Future.value());
+            .thenAnswer((_) => Future.value());
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((final _) => Future.value(webCredentials));
+            .thenAnswer((_) => Future.value(webCredentials));
 
         final result = await auth0WithDPoP.loginWithPopup(
           audience: 'https://DpopFlutterTest/',
@@ -1043,7 +1254,7 @@ void main() {
       test('verifies credentials contain all required fields with DPoP',
           () async {
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((final _) => Future.value(webCredentials));
+            .thenAnswer((_) => Future.value(webCredentials));
 
         final result = await auth0WithDPoP.credentials();
 
@@ -1064,7 +1275,7 @@ void main() {
 
         expect(
           auth0WithDPoP.loginWithPopup,
-          throwsA(predicate((final e) =>
+          throwsA(predicate((e) =>
               e is WebException && e.code == 'AUTHENTICATION_ERROR')),
         );
       });
@@ -1076,7 +1287,7 @@ void main() {
 
         expect(
           auth0WithDPoP.credentials,
-          throwsA(predicate((final e) =>
+          throwsA(predicate((e) =>
               e is WebException && e.code == 'invalid_dpop_proof')),
         );
       });
@@ -1089,7 +1300,7 @@ void main() {
         expect(
           auth0WithDPoP.loginWithPopup,
           throwsA(predicate(
-              (final e) => e is WebException && e.code == 'network_error')),
+              (e) => e is WebException && e.code == 'network_error')),
         );
       });
 
@@ -1101,7 +1312,7 @@ void main() {
         expect(
           auth0WithDPoP.credentials,
           throwsA(predicate(
-              (final e) => e is WebException && e.code == 'use_dpop_nonce')),
+              (e) => e is WebException && e.code == 'use_dpop_nonce')),
         );
       });
 
@@ -1112,7 +1323,7 @@ void main() {
 
         expect(
           auth0WithDPoP.loginWithPopup,
-          throwsA(predicate((final e) =>
+          throwsA(predicate((e) =>
               e is WebException && e.code == 'invalid_dpop_proof')),
         );
       });
@@ -1133,9 +1344,9 @@ void main() {
       test('DPoP loginWithPopup with custom audience', () async {
         const customAudience = 'https://custom-api.example.com/';
         when(mockClientProxy.loginWithPopup(any, any))
-            .thenAnswer((final _) => Future.value());
+            .thenAnswer((_) => Future.value());
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((final _) => Future.value(webCredentials));
+            .thenAnswer((_) => Future.value(webCredentials));
 
         await auth0WithDPoP.loginWithPopup(audience: customAudience);
 
@@ -1148,7 +1359,7 @@ void main() {
       test('DPoP loginWithRedirect with custom audience', () async {
         const customAudience = 'https://custom-api.example.com/';
         when(mockClientProxy.loginWithRedirect(any))
-            .thenAnswer((final _) => Future.value());
+            .thenAnswer((_) => Future.value());
 
         await auth0WithDPoP.loginWithRedirect(audience: customAudience);
 
@@ -1160,7 +1371,7 @@ void main() {
 
       test('DPoP credentials with cacheMode parameter', () async {
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((final _) => Future.value(webCredentials));
+            .thenAnswer((_) => Future.value(webCredentials));
 
         await auth0WithDPoP.credentials(cacheMode: CacheMode.on);
 
@@ -1172,9 +1383,9 @@ void main() {
 
       test('DPoP onLoad initializes correctly', () async {
         when(mockClientProxy.isAuthenticated())
-            .thenAnswer((final _) => Future.value(false));
+            .thenAnswer((_) => Future.value(false));
         when(mockClientProxy.checkSession())
-            .thenAnswer((final _) => Future.value());
+            .thenAnswer((_) => Future.value());
 
         final result = await auth0WithDPoP.onLoad();
 
@@ -1184,9 +1395,9 @@ void main() {
 
       test('DPoP onLoad returns credentials when authenticated', () async {
         when(mockClientProxy.isAuthenticated())
-            .thenAnswer((final _) => Future.value(true));
+            .thenAnswer((_) => Future.value(true));
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((final _) => Future.value(webCredentials));
+            .thenAnswer((_) => Future.value(webCredentials));
 
         final result = await auth0WithDPoP.onLoad();
 
@@ -1199,7 +1410,7 @@ void main() {
     group('DPoP Token Management', () {
       test('DPoP credentials refresh with cacheMode off', () async {
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((final _) => Future.value(webCredentials));
+            .thenAnswer((_) => Future.value(webCredentials));
 
         final result = await auth0WithDPoP.credentials(
           cacheMode: CacheMode.off,
@@ -1222,7 +1433,7 @@ void main() {
         );
 
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((final _) => Future.value(expiredCredentials));
+            .thenAnswer((_) => Future.value(expiredCredentials));
 
         final result = await auth0WithDPoP.credentials();
 
@@ -1240,7 +1451,7 @@ void main() {
         );
 
         when(mockClientProxy.getTokenSilently(any))
-            .thenAnswer((final _) => Future.value(multiScopeCredentials));
+            .thenAnswer((_) => Future.value(multiScopeCredentials));
 
         final result = await auth0WithDPoP.credentials();
 

@@ -41,7 +41,7 @@ void main() {
   group('challengeWithEmail', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.passwordlessChallengeWithEmail(any))
-          .thenAnswer((final _) async => TestPlatform.challengeResult);
+          .thenAnswer((_) async => TestPlatform.challengeResult);
 
       final result = await Auth0('test-domain', 'test-clientId')
           .passwordless
@@ -66,7 +66,7 @@ void main() {
 
     test('defaults allowSignup to false when omitted', () async {
       when(mockedPlatform.passwordlessChallengeWithEmail(any))
-          .thenAnswer((final _) async => TestPlatform.challengeResult);
+          .thenAnswer((_) async => TestPlatform.challengeResult);
 
       await Auth0('test-domain', 'test-clientId')
           .passwordless
@@ -87,7 +87,7 @@ void main() {
   group('challengeWithPhoneNumber', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.passwordlessChallengeWithPhoneNumber(any))
-          .thenAnswer((final _) async => TestPlatform.challengeResult);
+          .thenAnswer((_) async => TestPlatform.challengeResult);
 
       final result = await Auth0('test-domain', 'test-clientId')
           .passwordless
@@ -111,7 +111,7 @@ void main() {
 
     test('defaults deliveryMethod to text and allowSignup to false', () async {
       when(mockedPlatform.passwordlessChallengeWithPhoneNumber(any))
-          .thenAnswer((final _) async => TestPlatform.challengeResult);
+          .thenAnswer((_) async => TestPlatform.challengeResult);
 
       await Auth0('test-domain', 'test-clientId')
           .passwordless
@@ -132,7 +132,7 @@ void main() {
   group('loginWithOtp', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.passwordlessLoginWithOtp(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
 
       final result = await Auth0('test-domain', 'test-clientId')
           .passwordless
@@ -157,7 +157,7 @@ void main() {
     test('defaults scopes to empty and audience to null when omitted',
         () async {
       when(mockedPlatform.passwordlessLoginWithOtp(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
 
       await Auth0('test-domain', 'test-clientId').passwordless.loginWithOtp(
             authSession: 'test-auth-session',
@@ -177,7 +177,7 @@ void main() {
     test('threads useDPoP from the Auth0 constructor into the request',
         () async {
       when(mockedPlatform.passwordlessChallengeWithEmail(any))
-          .thenAnswer((final _) async => TestPlatform.challengeResult);
+          .thenAnswer((_) async => TestPlatform.challengeResult);
 
       await Auth0('test-domain', 'test-clientId', useDPoP: true)
           .passwordless

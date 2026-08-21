@@ -3,7 +3,7 @@
 #include <optional>
 #include <string>
 #include <flutter/encodable_value.h>
-#include <cpprest/json.h>
+#include <nlohmann/json.hpp>
 
 class UserIdentity {
  public:
@@ -15,7 +15,7 @@ class UserIdentity {
   std::optional<std::string> accessTokenSecret;
   flutter::EncodableMap profileInfo;
 
-  static UserIdentity FromJson(const web::json::value& json);
+  static UserIdentity FromJson(const nlohmann::json& json);
     static UserIdentity FromEncodable(const flutter::EncodableMap& map);
 
   flutter::EncodableMap ToEncodableMap() const;

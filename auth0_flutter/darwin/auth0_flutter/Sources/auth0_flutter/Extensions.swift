@@ -91,6 +91,12 @@ extension Credentials {
             CredentialsProperty.tokenType.rawValue: tokenType
         ]
         data[CredentialsProperty.refreshToken] = refreshToken
+        // IPSIE session_expiry ceiling. Use the native `sessionExpiresAt` so the
+        // surfaced value matches what the CredentialsManager enforces and picks
+        // up its range check; absent => omit.
+        if let sessionExpiresAt = sessionExpiresAt {
+            data[CredentialsProperty.sessionExpiry] = sessionExpiresAt.asISO8601String
+        }
         return data
     }
 }

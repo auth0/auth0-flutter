@@ -1,0 +1,37 @@
+## This workflow can be removed once we removed podspec from flutter for Auth0.Seift dependency
+
+name: Darwin dependencies
+
+on:
+    pull_request:
+      types:
+        - opened
+        - synchronize
+
+permissions: {}
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  check-darwin-deps:
+    name: Check iOS/macOS podspec dependency versions
+    runs-on: ubuntu-latest
+
+    steps:
+        - name: Checkout
+          uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+        - name: Run check
+          run: |
+            scripts/sync-darwin-deps.sh
+
+            if git diff HEAD --quiet --diff-filter=ACDMRT; then
+                echo $'\nPodspec dependency versions are in sync with Package.swift.'
+                echo 'All good.'
+            else
+                echo $'\nThe podspec dependency versions are out of sync with Package.swift.'
+                echo "Please run 'scripts/sync-darwin-deps.sh' from the repository root and commit the changes."
+                exit 1
+            fi

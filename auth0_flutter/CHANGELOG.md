@@ -1,5 +1,15 @@
 # Change Log
 
+## [af-v2.6.0](https://github.com/auth0/auth0-flutter/tree/af-v2.6.0) (2026-07-31)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.5.0...af-v2.6.0)
+
+**Added**
+- feat: add passkeys support for web [\#907](https://github.com/auth0/auth0-flutter/pull/907) ([NandanPrabhu](https://github.com/NandanPrabhu))
+- feat: surface IPSIE session_expiry claim across Android, iOS and web [\#904](https://github.com/auth0/auth0-flutter/pull/904) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
+**Fixed**
+- fix: Prevent named-pipe squatting in Windows example app via FILE_FLAG_FIRST_PIPE_INSTANCE [\#905](https://github.com/auth0/auth0-flutter/pull/905) ([NandanPrabhu](https://github.com/NandanPrabhu))
+
 ## [af-v2.5.0](https://github.com/auth0/auth0-flutter/tree/af-v2.5.0) (2026-07-17)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.4.0...af-v2.5.0)
 

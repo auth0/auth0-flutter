@@ -1,11 +1,9 @@
 #include "auth0_api_client.h"
 
-#include <cpprest/json.h>
+#include <nlohmann/json.hpp>
 #include <windows.h>
 
 #include <sstream>
-
-using namespace web;
 
 namespace auth0_flutter
 {
@@ -65,15 +63,15 @@ static std::string GetWindowsVersion()
 
 std::string BuildAuth0ClientHeader(const std::string &name, const std::string &version)
 {
-    json::value env;
-    env[U("Windows")] = json::value::string(utility::conversions::to_string_t(GetWindowsVersion()));
+    nlohmann::json env;
+    env["Windows"] = GetWindowsVersion();
 
-    json::value payload;
-    payload[U("name")] = json::value::string(utility::conversions::to_string_t(name));
-    payload[U("version")] = json::value::string(utility::conversions::to_string_t(version));
-    payload[U("env")] = env;
+    nlohmann::json payload;
+    payload["name"] = name;
+    payload["version"] = version;
+    payload["env"] = env;
 
-    return Base64UrlEncode(utility::conversions::to_utf8string(payload.serialize()));
+    return Base64UrlEncode(payload.dump());
 }
 
 // ---------------------------------------------------------------------------

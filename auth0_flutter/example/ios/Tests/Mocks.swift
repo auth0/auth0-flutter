@@ -6,9 +6,16 @@ import Flutter
 import FlutterMacOS
 #endif
 
+// Includes a future `session_expiry` claim (Unix seconds; 4102444800 =
+// 2100-01-01) so the fully-populated credentials fixtures exercise the IPSIE
+// session-expiry serialization while keeping the ceiling valid: the native
+// CredentialsManager enforces this claim, so a past value would make it treat
+// the stored credentials as expired and skip renewal. The value stays below
+// the native `(0, 10_000_000_000)` bound, so it is read as a valid seconds
+// ceiling rather than rejected as a millisecond value.
 let testIdToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmb28iLCJuYW1lIjoiYmFyIiwiZW1haWwiOiJmb29AZXhhbXBsZS5"
     + "jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGljdHVyZSI6Imh0dHBzOi8vZXhhbXBsZS5jb20vcGljdHVyZSIsInVwZGF0ZWRfYXQiOiIyMDI"
-    + "yLTA0LTE1VDAzOjE1OjUxLjc4N1oifQ.mFq-johzLTFQUAl9pjgQraTM6I8AGfcEcWBg0Ah2vss"
+    + "yLTA0LTE1VDAzOjE1OjUxLjc4N1oiLCJzZXNzaW9uX2V4cGlyeSI6NDEwMjQ0NDgwMH0.sig"
 
 // MARK: - Foundation Mocks
 
@@ -78,7 +85,7 @@ struct MockAuth0Error: Auth0Error {
     var cause: Error?
 }
 
-struct MockAuth0APIError: Auth0APIError {
+struct MockAuth0APIError: Auth0APIError, @unchecked Sendable {
     var info: [String: Any]
     var code: String
     var statusCode: Int
