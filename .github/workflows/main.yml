@@ -54,10 +54,7 @@ jobs:
             - name: Install Flutter
               uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
               with:
-                  # TODO: pinned instead of env.flutter ('3.x') because a newer 3.x
-                  # stable rejects `final` on parameters and breaks these tests.
-                  # Restore ${{ env.flutter }} once the test sources are updated.
-                  flutter-version: '3.44.9'
+                  flutter-version: ${{ env.flutter }}
                   channel: stable
                   cache: true
 
