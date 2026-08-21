@@ -38,7 +38,7 @@ void main() {
   group('login', () {
     test('calls the platform to login and returns credentials', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
 
       final result = await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
@@ -50,7 +50,7 @@ void main() {
 
     test('passes account domain and clientId to the platform', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
@@ -65,7 +65,7 @@ void main() {
 
     test('passes appCustomURL to the platform', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
@@ -80,7 +80,7 @@ void main() {
 
     test('passes redirectUrl separately from appCustomURL', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
@@ -99,7 +99,7 @@ void main() {
 
     test('uses default scopes when not specified', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
@@ -114,7 +114,7 @@ void main() {
 
     test('uses default authTimeout of 3 minutes when not specified', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
@@ -129,7 +129,7 @@ void main() {
 
     test('passes audience to the platform', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
@@ -146,7 +146,7 @@ void main() {
 
     test('passes custom scopes to the platform', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
@@ -163,7 +163,7 @@ void main() {
 
     test('passes organizationId and invitationUrl to the platform', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
@@ -183,7 +183,7 @@ void main() {
 
     test('passes custom authTimeout to the platform', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
@@ -201,7 +201,7 @@ void main() {
 
     test('passes idTokenValidationConfig to the platform', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
 
       const config = IdTokenValidationConfig(
           leeway: 10, maxAge: 3600, issuer: 'https://my-issuer.com');
@@ -222,7 +222,7 @@ void main() {
 
   group('logout', () {
     test('calls the platform to logout', () async {
-      when(mockedPlatform.logout(any)).thenAnswer((final _) async {});
+      when(mockedPlatform.logout(any)).thenAnswer((_) async {});
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
@@ -232,7 +232,7 @@ void main() {
     });
 
     test('passes account domain and clientId to the platform', () async {
-      when(mockedPlatform.logout(any)).thenAnswer((final _) async {});
+      when(mockedPlatform.logout(any)).thenAnswer((_) async {});
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
@@ -246,7 +246,7 @@ void main() {
     });
 
     test('sets federated to false by default', () async {
-      when(mockedPlatform.logout(any)).thenAnswer((final _) async {});
+      when(mockedPlatform.logout(any)).thenAnswer((_) async {});
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
@@ -259,7 +259,7 @@ void main() {
     });
 
     test('passes federated flag to the platform', () async {
-      when(mockedPlatform.logout(any)).thenAnswer((final _) async {});
+      when(mockedPlatform.logout(any)).thenAnswer((_) async {});
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
@@ -275,7 +275,7 @@ void main() {
     });
 
     test('passes appCustomURL to the platform', () async {
-      when(mockedPlatform.logout(any)).thenAnswer((final _) async {});
+      when(mockedPlatform.logout(any)).thenAnswer((_) async {});
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()
@@ -289,7 +289,7 @@ void main() {
     });
 
     test('passes returnTo separately from appCustomURL', () async {
-      when(mockedPlatform.logout(any)).thenAnswer((final _) async {});
+      when(mockedPlatform.logout(any)).thenAnswer((_) async {});
 
       await Auth0('test-domain', 'test-clientId')
           .windowsWebAuthentication()

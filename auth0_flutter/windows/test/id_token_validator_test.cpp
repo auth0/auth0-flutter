@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "../id_token_validator.h"
 #include <chrono>
-#include <cpprest/json.h>
+#include <nlohmann/json.hpp>
 
 using namespace auth0_flutter;
 
@@ -51,15 +51,15 @@ static std::string SimpleBase64UrlEncode(const std::string &input)
  * @brief Helper to create a simple unsigned JWT for testing
  * Note: These are NOT cryptographically secure - only for validation testing
  */
-static std::string CreateTestJWT(const web::json::value &payload)
+static std::string CreateTestJWT(const nlohmann::json &payload)
 {
     // Create a simple JWT header
-    web::json::value header;
-    header[U("alg")] = web::json::value::string(U("HS256"));
-    header[U("typ")] = web::json::value::string(U("JWT"));
+    nlohmann::json header;
+    header["alg"] = "HS256";
+    header["typ"] = "JWT";
 
-    std::string headerStr = utility::conversions::to_utf8string(header.serialize());
-    std::string payloadStr = utility::conversions::to_utf8string(payload.serialize());
+    std::string headerStr = header.dump();
+    std::string payloadStr = payload.dump();
 
     std::string encodedHeader = SimpleBase64UrlEncode(headerStr);
     std::string encodedPayload = SimpleBase64UrlEncode(payloadStr);
@@ -83,12 +83,12 @@ TEST(IdTokenValidatorTest, ValidatesValidToken)
 {
     int64_t now = GetNow();
 
-    web::json::value payload;
-    payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
-    payload[U("aud")] = web::json::value::string(U("test_client_id"));
-    payload[U("exp")] = web::json::value::number(now + 3600); // Valid for 1 hour
-    payload[U("iat")] = web::json::value::number(now - 10);   // Issued 10 seconds ago
-    payload[U("sub")] = web::json::value::string(U("auth0|123"));
+    nlohmann::json payload;
+    payload["iss"] = "https://test.auth0.com/";
+    payload["aud"] = "test_client_id";
+    payload["exp"] = now + 3600; // Valid for 1 hour
+    payload["iat"] = now - 10;   // Issued 10 seconds ago
+    payload["sub"] = "auth0|123";
 
     std::string jwt = CreateTestJWT(payload);
 
@@ -105,19 +105,19 @@ TEST(IdTokenValidatorTest, ValidatesTokenWithArrayAudience)
 {
     int64_t now = GetNow();
 
-    web::json::value payload;
-    payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
-    payload[U("sub")] = web::json::value::string(U("auth0|123"));
+    nlohmann::json payload;
+    payload["iss"] = "https://test.auth0.com/";
+    payload["sub"] = "auth0|123";
 
     // Audience as array — azp is required when there are multiple entries (step 7)
-    web::json::value audArray = web::json::value::array();
-    audArray[0] = web::json::value::string(U("test_client_id"));
-    audArray[1] = web::json::value::string(U("other_audience"));
-    payload[U("aud")] = audArray;
-    payload[U("azp")] = web::json::value::string(U("test_client_id"));
+    nlohmann::json audArray = nlohmann::json::array();
+    audArray[0] = "test_client_id";
+    audArray[1] = "other_audience";
+    payload["aud"] = audArray;
+    payload["azp"] = "test_client_id";
 
-    payload[U("exp")] = web::json::value::number(now + 3600);
-    payload[U("iat")] = web::json::value::number(now - 10);
+    payload["exp"] = now + 3600;
+    payload["iat"] = now - 10;
 
     std::string jwt = CreateTestJWT(payload);
 
@@ -133,12 +133,12 @@ TEST(IdTokenValidatorTest, ValidatesTokenWithLeeway)
 {
     int64_t now = GetNow();
 
-    web::json::value payload;
-    payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
-    payload[U("sub")] = web::json::value::string(U("auth0|123"));
-    payload[U("aud")] = web::json::value::string(U("test_client_id"));
-    payload[U("exp")] = web::json::value::number(now - 30); // Expired 30 seconds ago
-    payload[U("iat")] = web::json::value::number(now - 3630);
+    nlohmann::json payload;
+    payload["iss"] = "https://test.auth0.com/";
+    payload["sub"] = "auth0|123";
+    payload["aud"] = "test_client_id";
+    payload["exp"] = now - 30; // Expired 30 seconds ago
+    payload["iat"] = now - 3630;
 
     std::string jwt = CreateTestJWT(payload);
 
@@ -156,12 +156,12 @@ TEST(IdTokenValidatorTest, RejectsInvalidIssuer)
 {
     int64_t now = GetNow();
 
-    web::json::value payload;
-    payload[U("iss")] = web::json::value::string(U("https://evil.com/"));
-    payload[U("sub")] = web::json::value::string(U("auth0|123"));
-    payload[U("aud")] = web::json::value::string(U("test_client_id"));
-    payload[U("exp")] = web::json::value::number(now + 3600);
-    payload[U("iat")] = web::json::value::number(now - 10);
+    nlohmann::json payload;
+    payload["iss"] = "https://evil.com/";
+    payload["sub"] = "auth0|123";
+    payload["aud"] = "test_client_id";
+    payload["exp"] = now + 3600;
+    payload["iat"] = now - 10;
 
     std::string jwt = CreateTestJWT(payload);
 
@@ -178,12 +178,12 @@ TEST(IdTokenValidatorTest, RejectsMissingIssuer)
 {
     int64_t now = GetNow();
 
-    web::json::value payload;
+    nlohmann::json payload;
     // Missing iss claim
-    payload[U("sub")] = web::json::value::string(U("auth0|123"));
-    payload[U("aud")] = web::json::value::string(U("test_client_id"));
-    payload[U("exp")] = web::json::value::number(now + 3600);
-    payload[U("iat")] = web::json::value::number(now - 10);
+    payload["sub"] = "auth0|123";
+    payload["aud"] = "test_client_id";
+    payload["exp"] = now + 3600;
+    payload["iat"] = now - 10;
 
     std::string jwt = CreateTestJWT(payload);
 
@@ -202,12 +202,12 @@ TEST(IdTokenValidatorTest, RejectsInvalidAudience)
 {
     int64_t now = GetNow();
 
-    web::json::value payload;
-    payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
-    payload[U("sub")] = web::json::value::string(U("auth0|123"));
-    payload[U("aud")] = web::json::value::string(U("wrong_client_id"));
-    payload[U("exp")] = web::json::value::number(now + 3600);
-    payload[U("iat")] = web::json::value::number(now - 10);
+    nlohmann::json payload;
+    payload["iss"] = "https://test.auth0.com/";
+    payload["sub"] = "auth0|123";
+    payload["aud"] = "wrong_client_id";
+    payload["exp"] = now + 3600;
+    payload["iat"] = now - 10;
 
     std::string jwt = CreateTestJWT(payload);
 
@@ -224,12 +224,12 @@ TEST(IdTokenValidatorTest, RejectsMissingAudience)
 {
     int64_t now = GetNow();
 
-    web::json::value payload;
-    payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
-    payload[U("sub")] = web::json::value::string(U("auth0|123"));
+    nlohmann::json payload;
+    payload["iss"] = "https://test.auth0.com/";
+    payload["sub"] = "auth0|123";
     // Missing aud claim
-    payload[U("exp")] = web::json::value::number(now + 3600);
-    payload[U("iat")] = web::json::value::number(now - 10);
+    payload["exp"] = now + 3600;
+    payload["iat"] = now - 10;
 
     std::string jwt = CreateTestJWT(payload);
 
@@ -246,17 +246,17 @@ TEST(IdTokenValidatorTest, RejectsArrayAudienceWithoutMatch)
 {
     int64_t now = GetNow();
 
-    web::json::value payload;
-    payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
-    payload[U("sub")] = web::json::value::string(U("auth0|123"));
+    nlohmann::json payload;
+    payload["iss"] = "https://test.auth0.com/";
+    payload["sub"] = "auth0|123";
 
-    web::json::value audArray = web::json::value::array();
-    audArray[0] = web::json::value::string(U("other_client"));
-    audArray[1] = web::json::value::string(U("another_client"));
-    payload[U("aud")] = audArray;
+    nlohmann::json audArray = nlohmann::json::array();
+    audArray[0] = "other_client";
+    audArray[1] = "another_client";
+    payload["aud"] = audArray;
 
-    payload[U("exp")] = web::json::value::number(now + 3600);
-    payload[U("iat")] = web::json::value::number(now - 10);
+    payload["exp"] = now + 3600;
+    payload["iat"] = now - 10;
 
     std::string jwt = CreateTestJWT(payload);
 
@@ -275,12 +275,12 @@ TEST(IdTokenValidatorTest, RejectsExpiredToken)
 {
     int64_t now = GetNow();
 
-    web::json::value payload;
-    payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
-    payload[U("sub")] = web::json::value::string(U("auth0|123"));
-    payload[U("aud")] = web::json::value::string(U("test_client_id"));
-    payload[U("exp")] = web::json::value::number(now - 120); // Expired 2 minutes ago
-    payload[U("iat")] = web::json::value::number(now - 3720);
+    nlohmann::json payload;
+    payload["iss"] = "https://test.auth0.com/";
+    payload["sub"] = "auth0|123";
+    payload["aud"] = "test_client_id";
+    payload["exp"] = now - 120; // Expired 2 minutes ago
+    payload["iat"] = now - 3720;
 
     std::string jwt = CreateTestJWT(payload);
 
@@ -298,12 +298,12 @@ TEST(IdTokenValidatorTest, RejectsMissingExpiration)
 {
     int64_t now = GetNow();
 
-    web::json::value payload;
-    payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
-    payload[U("sub")] = web::json::value::string(U("auth0|123"));
-    payload[U("aud")] = web::json::value::string(U("test_client_id"));
+    nlohmann::json payload;
+    payload["iss"] = "https://test.auth0.com/";
+    payload["sub"] = "auth0|123";
+    payload["aud"] = "test_client_id";
     // Missing exp claim
-    payload[U("iat")] = web::json::value::number(now - 10);
+    payload["iat"] = now - 10;
 
     std::string jwt = CreateTestJWT(payload);
 
@@ -322,12 +322,12 @@ TEST(IdTokenValidatorTest, RejectsTokenIssuedInFuture)
 {
     int64_t now = GetNow();
 
-    web::json::value payload;
-    payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
-    payload[U("sub")] = web::json::value::string(U("auth0|123"));
-    payload[U("aud")] = web::json::value::string(U("test_client_id"));
-    payload[U("exp")] = web::json::value::number(now + 3600);
-    payload[U("iat")] = web::json::value::number(now + 120); // Issued 2 minutes in future
+    nlohmann::json payload;
+    payload["iss"] = "https://test.auth0.com/";
+    payload["sub"] = "auth0|123";
+    payload["aud"] = "test_client_id";
+    payload["exp"] = now + 3600;
+    payload["iat"] = now + 120; // Issued 2 minutes in future
 
     std::string jwt = CreateTestJWT(payload);
 
@@ -345,11 +345,11 @@ TEST(IdTokenValidatorTest, RejectsMissingIssuedAt)
 {
     int64_t now = GetNow();
 
-    web::json::value payload;
-    payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
-    payload[U("sub")] = web::json::value::string(U("auth0|123"));
-    payload[U("aud")] = web::json::value::string(U("test_client_id"));
-    payload[U("exp")] = web::json::value::number(now + 3600);
+    nlohmann::json payload;
+    payload["iss"] = "https://test.auth0.com/";
+    payload["sub"] = "auth0|123";
+    payload["aud"] = "test_client_id";
+    payload["exp"] = now + 3600;
     // Missing iat claim
 
     std::string jwt = CreateTestJWT(payload);
@@ -369,13 +369,13 @@ TEST(IdTokenValidatorTest, ValidatesAuthTimeWithMaxAge)
 {
     int64_t now = GetNow();
 
-    web::json::value payload;
-    payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
-    payload[U("sub")] = web::json::value::string(U("auth0|123"));
-    payload[U("aud")] = web::json::value::string(U("test_client_id"));
-    payload[U("exp")] = web::json::value::number(now + 3600);
-    payload[U("iat")] = web::json::value::number(now - 10);
-    payload[U("auth_time")] = web::json::value::number(now - 300); // Authenticated 5 minutes ago
+    nlohmann::json payload;
+    payload["iss"] = "https://test.auth0.com/";
+    payload["sub"] = "auth0|123";
+    payload["aud"] = "test_client_id";
+    payload["exp"] = now + 3600;
+    payload["iat"] = now - 10;
+    payload["auth_time"] = now - 300; // Authenticated 5 minutes ago
 
     std::string jwt = CreateTestJWT(payload);
 
@@ -391,13 +391,13 @@ TEST(IdTokenValidatorTest, RejectsOldAuthenticationWithMaxAge)
 {
     int64_t now = GetNow();
 
-    web::json::value payload;
-    payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
-    payload[U("sub")] = web::json::value::string(U("auth0|123"));
-    payload[U("aud")] = web::json::value::string(U("test_client_id"));
-    payload[U("exp")] = web::json::value::number(now + 3600);
-    payload[U("iat")] = web::json::value::number(now - 10);
-    payload[U("auth_time")] = web::json::value::number(now - 700); // Authenticated 11.7 minutes ago
+    nlohmann::json payload;
+    payload["iss"] = "https://test.auth0.com/";
+    payload["sub"] = "auth0|123";
+    payload["aud"] = "test_client_id";
+    payload["exp"] = now + 3600;
+    payload["iat"] = now - 10;
+    payload["auth_time"] = now - 700; // Authenticated 11.7 minutes ago
 
     std::string jwt = CreateTestJWT(payload);
 
@@ -416,12 +416,12 @@ TEST(IdTokenValidatorTest, RejectsMissingAuthTimeWhenMaxAgeSpecified)
 {
     int64_t now = GetNow();
 
-    web::json::value payload;
-    payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
-    payload[U("sub")] = web::json::value::string(U("auth0|123"));
-    payload[U("aud")] = web::json::value::string(U("test_client_id"));
-    payload[U("exp")] = web::json::value::number(now + 3600);
-    payload[U("iat")] = web::json::value::number(now - 10);
+    nlohmann::json payload;
+    payload["iss"] = "https://test.auth0.com/";
+    payload["sub"] = "auth0|123";
+    payload["aud"] = "test_client_id";
+    payload["exp"] = now + 3600;
+    payload["iat"] = now - 10;
     // Missing auth_time
 
     std::string jwt = CreateTestJWT(payload);
@@ -442,13 +442,13 @@ TEST(IdTokenValidatorTest, ValidatesMatchingNonce)
 {
     int64_t now = GetNow();
 
-    web::json::value payload;
-    payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
-    payload[U("sub")] = web::json::value::string(U("auth0|123"));
-    payload[U("aud")] = web::json::value::string(U("test_client_id"));
-    payload[U("exp")] = web::json::value::number(now + 3600);
-    payload[U("iat")] = web::json::value::number(now - 10);
-    payload[U("nonce")] = web::json::value::string(U("test_nonce_123"));
+    nlohmann::json payload;
+    payload["iss"] = "https://test.auth0.com/";
+    payload["sub"] = "auth0|123";
+    payload["aud"] = "test_client_id";
+    payload["exp"] = now + 3600;
+    payload["iat"] = now - 10;
+    payload["nonce"] = "test_nonce_123";
 
     std::string jwt = CreateTestJWT(payload);
 
@@ -464,13 +464,13 @@ TEST(IdTokenValidatorTest, RejectsMismatchedNonce)
 {
     int64_t now = GetNow();
 
-    web::json::value payload;
-    payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
-    payload[U("sub")] = web::json::value::string(U("auth0|123"));
-    payload[U("aud")] = web::json::value::string(U("test_client_id"));
-    payload[U("exp")] = web::json::value::number(now + 3600);
-    payload[U("iat")] = web::json::value::number(now - 10);
-    payload[U("nonce")] = web::json::value::string(U("wrong_nonce"));
+    nlohmann::json payload;
+    payload["iss"] = "https://test.auth0.com/";
+    payload["sub"] = "auth0|123";
+    payload["aud"] = "test_client_id";
+    payload["exp"] = now + 3600;
+    payload["iat"] = now - 10;
+    payload["nonce"] = "wrong_nonce";
 
     std::string jwt = CreateTestJWT(payload);
 
@@ -488,12 +488,12 @@ TEST(IdTokenValidatorTest, RejectsMissingNonceWhenExpected)
 {
     int64_t now = GetNow();
 
-    web::json::value payload;
-    payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
-    payload[U("sub")] = web::json::value::string(U("auth0|123"));
-    payload[U("aud")] = web::json::value::string(U("test_client_id"));
-    payload[U("exp")] = web::json::value::number(now + 3600);
-    payload[U("iat")] = web::json::value::number(now - 10);
+    nlohmann::json payload;
+    payload["iss"] = "https://test.auth0.com/";
+    payload["sub"] = "auth0|123";
+    payload["aud"] = "test_client_id";
+    payload["exp"] = now + 3600;
+    payload["iat"] = now - 10;
     // Missing nonce
 
     std::string jwt = CreateTestJWT(payload);
@@ -539,11 +539,11 @@ TEST(IdTokenValidatorTest, RejectsMalformedToken)
  * The signature is a dummy value (not cryptographically valid).
  */
 static std::string CreateTestJWTWithCustomHeader(
-    const web::json::value &header,
-    const web::json::value &payload)
+    const nlohmann::json &header,
+    const nlohmann::json &payload)
 {
-    std::string headerStr  = utility::conversions::to_utf8string(header.serialize());
-    std::string payloadStr = utility::conversions::to_utf8string(payload.serialize());
+    std::string headerStr  = header.dump();
+    std::string payloadStr = payload.dump();
 
     return SimpleBase64UrlEncode(headerStr) + "." + SimpleBase64UrlEncode(payloadStr) + ".dummy_signature";
 }
@@ -557,16 +557,16 @@ TEST(IdTokenValidatorTest, RejectsUnsupportedAlgorithmWhenJwksUriSet)
     int64_t now = GetNow();
 
     // Header declares HS256 – only RS256 is accepted
-    web::json::value header;
-    header[U("alg")] = web::json::value::string(U("HS256"));
-    header[U("typ")] = web::json::value::string(U("JWT"));
-    header[U("kid")] = web::json::value::string(U("key-1"));
+    nlohmann::json header;
+    header["alg"] = "HS256";
+    header["typ"] = "JWT";
+    header["kid"] = "key-1";
 
-    web::json::value payload;
-    payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
-    payload[U("aud")] = web::json::value::string(U("test_client_id"));
-    payload[U("exp")] = web::json::value::number(now + 3600);
-    payload[U("iat")] = web::json::value::number(now - 10);
+    nlohmann::json payload;
+    payload["iss"] = "https://test.auth0.com/";
+    payload["aud"] = "test_client_id";
+    payload["exp"] = now + 3600;
+    payload["iat"] = now - 10;
 
     std::string jwt = CreateTestJWTWithCustomHeader(header, payload);
 
@@ -584,15 +584,15 @@ TEST(IdTokenValidatorTest, RejectsMissingAlgorithmWhenJwksUriSet)
     int64_t now = GetNow();
 
     // Header has no "alg" field at all
-    web::json::value header;
-    header[U("typ")] = web::json::value::string(U("JWT"));
-    header[U("kid")] = web::json::value::string(U("key-1"));
+    nlohmann::json header;
+    header["typ"] = "JWT";
+    header["kid"] = "key-1";
 
-    web::json::value payload;
-    payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
-    payload[U("aud")] = web::json::value::string(U("test_client_id"));
-    payload[U("exp")] = web::json::value::number(now + 3600);
-    payload[U("iat")] = web::json::value::number(now - 10);
+    nlohmann::json payload;
+    payload["iss"] = "https://test.auth0.com/";
+    payload["aud"] = "test_client_id";
+    payload["exp"] = now + 3600;
+    payload["iat"] = now - 10;
 
     std::string jwt = CreateTestJWTWithCustomHeader(header, payload);
 
@@ -609,15 +609,15 @@ TEST(IdTokenValidatorTest, RejectsMissingKidWhenJwksUriSet)
     int64_t now = GetNow();
 
     // Header declares RS256 but omits the kid field
-    web::json::value header;
-    header[U("alg")] = web::json::value::string(U("RS256"));
-    header[U("typ")] = web::json::value::string(U("JWT"));
+    nlohmann::json header;
+    header["alg"] = "RS256";
+    header["typ"] = "JWT";
 
-    web::json::value payload;
-    payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
-    payload[U("aud")] = web::json::value::string(U("test_client_id"));
-    payload[U("exp")] = web::json::value::number(now + 3600);
-    payload[U("iat")] = web::json::value::number(now - 10);
+    nlohmann::json payload;
+    payload["iss"] = "https://test.auth0.com/";
+    payload["aud"] = "test_client_id";
+    payload["exp"] = now + 3600;
+    payload["iat"] = now - 10;
 
     std::string jwt = CreateTestJWTWithCustomHeader(header, payload);
 
@@ -636,13 +636,13 @@ TEST(IdTokenValidatorTest, ReturnsDecodedPayload)
 {
     int64_t now = GetNow();
 
-    web::json::value payload;
-    payload[U("iss")] = web::json::value::string(U("https://test.auth0.com/"));
-    payload[U("aud")] = web::json::value::string(U("test_client_id"));
-    payload[U("exp")] = web::json::value::number(now + 3600);
-    payload[U("iat")] = web::json::value::number(now - 10);
-    payload[U("sub")] = web::json::value::string(U("auth0|123"));
-    payload[U("custom_claim")] = web::json::value::string(U("custom_value"));
+    nlohmann::json payload;
+    payload["iss"] = "https://test.auth0.com/";
+    payload["aud"] = "test_client_id";
+    payload["exp"] = now + 3600;
+    payload["iat"] = now - 10;
+    payload["sub"] = "auth0|123";
+    payload["custom_claim"] = "custom_value";
 
     std::string jwt = CreateTestJWT(payload);
 
@@ -650,16 +650,16 @@ TEST(IdTokenValidatorTest, ReturnsDecodedPayload)
     config.issuer = "https://test.auth0.com/";
     config.audience = "test_client_id";
 
-    web::json::value outPayload;
+    nlohmann::json outPayload;
     EXPECT_NO_THROW(ValidateIdToken(jwt, config, &outPayload));
 
-    EXPECT_TRUE(outPayload.has_field(U("sub")));
+    EXPECT_TRUE(outPayload.contains("sub"));
     EXPECT_EQ(
-        utility::conversions::to_utf8string(outPayload.at(U("sub")).as_string()),
+        outPayload.at("sub").get<std::string>(),
         "auth0|123");
 
-    EXPECT_TRUE(outPayload.has_field(U("custom_claim")));
+    EXPECT_TRUE(outPayload.contains("custom_claim"));
     EXPECT_EQ(
-        utility::conversions::to_utf8string(outPayload.at(U("custom_claim")).as_string()),
+        outPayload.at("custom_claim").get<std::string>(),
         "custom_value");
 }

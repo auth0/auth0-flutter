@@ -9,7 +9,7 @@ import 'dart:js_interop';
 
 @JSExport()
 class Auth0ClientImpl {
-  Future<void> handleRedirectCallback([final String? url]) =>
+  Future<void> handleRedirectCallback([String? url]) =>
       throw Exception('');
 }
 
@@ -22,4 +22,9 @@ class RedirectLoginResultImpl {
 class WebCredentialsImpl {
   @JSExport('access_token')
   String accessToken = throw Exception('');
+}
+
+@JSExport()
+class PasskeyChallengeResponseImpl {
+  String authSession = throw Exception('');
 }

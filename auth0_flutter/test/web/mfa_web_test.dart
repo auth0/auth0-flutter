@@ -20,22 +20,22 @@ class _RecordingWebPlatform extends Auth0FlutterWebPlatform {
   );
 
   @override
-  Future<List<MfaAuthenticator>> mfaGetAuthenticators(final String mfaToken) {
+  Future<List<MfaAuthenticator>> mfaGetAuthenticators(String mfaToken) {
     calls.add(['getAuthenticators', mfaToken]);
     return Future.value(authenticatorsResult);
   }
 
   @override
-  Future<MfaEnrollmentChallenge> mfaEnrollTotp(final String mfaToken) {
+  Future<MfaEnrollmentChallenge> mfaEnrollTotp(String mfaToken) {
     calls.add(['enrollTotp', mfaToken]);
     return Future.value(enrollmentResult);
   }
 
   @override
   Future<MfaEnrollmentChallenge> mfaEnrollPhone(
-    final String mfaToken,
-    final String phoneNumber,
-    final PhoneType type,
+    String mfaToken,
+    String phoneNumber,
+    PhoneType type,
   ) {
     calls.add(['enrollPhone', mfaToken, phoneNumber, type]);
     return Future.value(enrollmentResult);
@@ -43,23 +43,23 @@ class _RecordingWebPlatform extends Auth0FlutterWebPlatform {
 
   @override
   Future<MfaEnrollmentChallenge> mfaEnrollEmail(
-    final String mfaToken,
-    final String email,
+    String mfaToken,
+    String email,
   ) {
     calls.add(['enrollEmail', mfaToken, email]);
     return Future.value(enrollmentResult);
   }
 
   @override
-  Future<MfaEnrollmentChallenge> mfaEnrollPush(final String mfaToken) {
+  Future<MfaEnrollmentChallenge> mfaEnrollPush(String mfaToken) {
     calls.add(['enrollPush', mfaToken]);
     return Future.value(enrollmentResult);
   }
 
   @override
   Future<MfaChallenge> mfaChallenge(
-    final String mfaToken,
-    final String authenticatorId,
+    String mfaToken,
+    String authenticatorId,
   ) {
     calls.add(['challenge', mfaToken, authenticatorId]);
     return Future.value(challengeResult);
@@ -67,8 +67,8 @@ class _RecordingWebPlatform extends Auth0FlutterWebPlatform {
 
   @override
   Future<Credentials> mfaVerify(
-    final String mfaToken,
-    final MfaVerifyOptions options,
+    String mfaToken,
+    MfaVerifyOptions options,
   ) {
     calls.add(['verify', mfaToken, options]);
     return Future.value(verifyResult);

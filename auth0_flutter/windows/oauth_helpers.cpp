@@ -16,21 +16,11 @@
 #include <vector>
 #include <sstream>
 #include <iomanip>
-#include <pplx/pplxtasks.h>
+#include <ppltasks.h>
 
 // OpenSSL for PKCE
 #include <openssl/sha.h>
 #include <openssl/rand.h>
-
-// cpprestsdk for HTTP listener and client
-#include <cpprest/http_listener.h>
-#include <cpprest/http_client.h>
-#include <cpprest/uri.h>
-
-using namespace web;
-using namespace web::http;
-using namespace web::http::client;
-using namespace web::http::experimental::listener;
 
 namespace auth0_flutter
 {
@@ -159,7 +149,7 @@ namespace auth0_flutter
     OAuthCallbackResult waitForAuthCode_CustomScheme(
         int timeoutSeconds,
         const std::string &expectedState,
-        pplx::cancellation_token ct,
+        concurrency::cancellation_token ct,
         const std::string &appCustomUrl)
     {
         static constexpr DWORD kStackBufChars = 2048;
@@ -214,7 +204,7 @@ namespace auth0_flutter
         {
             if (ct.is_canceled())
             {
-                throw pplx::task_canceled();
+                throw concurrency::task_canceled();
             }
 
             std::string uri = readAndClearEnv();
@@ -285,7 +275,7 @@ namespace auth0_flutter
     bool waitForLogoutCallback(
         const std::string &returnToUri,
         int timeoutSeconds,
-        pplx::cancellation_token ct)
+        concurrency::cancellation_token ct)
     {
         static constexpr DWORD kStackBufChars = 2048;
 
@@ -339,7 +329,7 @@ namespace auth0_flutter
         {
             if (ct.is_canceled())
             {
-                throw pplx::task_canceled();
+                throw concurrency::task_canceled();
             }
 
             std::string uri = readAndClearEnv();

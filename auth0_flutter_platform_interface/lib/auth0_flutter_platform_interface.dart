@@ -113,3 +113,7 @@ export 'src/web/exchange_token_options.dart';
 export 'src/web/logout_options.dart';
 export 'src/web/popup_login_options.dart';
 export 'src/web/web_exception.dart';
+export 'src/web/web_get_token_by_passkey_options.dart';
+export 'src/web/web_passkey_challenge.dart';
+export 'src/web/web_passkey_login_challenge_options.dart';
+export 'src/web/web_passkey_signup_challenge_options.dart';

@@ -16,6 +16,7 @@ env:
     flutter: '3.x'
     ios-simulator: iPhone 17
     java: 17
+    vcpkg-commit: 66c0373dc7fca549e5803087b9487edfe3aca0a1
 
 jobs:
 
@@ -25,7 +26,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
             - name: Install Flutter
               uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
@@ -48,7 +49,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
             - name: Install Flutter
               uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
@@ -82,7 +83,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
             - name: Install Flutter
               uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
@@ -101,7 +102,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
             - name: Install Flutter
               uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
@@ -135,7 +136,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
             - name: Set up environment
               uses: ./.github/actions/setup-darwin
@@ -185,7 +186,7 @@ jobs:
 
     #     steps:
     #         - name: Checkout
-    #           uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+    #           uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
     #         - name: Set up environment
     #           uses: ./.github/actions/setup-darwin
@@ -217,7 +218,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
             - name: Set up environment
               uses: ./.github/actions/setup-darwin
@@ -256,7 +257,7 @@ jobs:
 
     #     steps:
     #         - name: Checkout
-    #           uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+    #           uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
     #         - name: Set up environment
     #           uses: ./.github/actions/setup-darwin
@@ -280,7 +281,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
             - name: Set up environment
               uses: ./.github/actions/setup-android
@@ -318,7 +319,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
             - name: Install Flutter
               uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # pin@v2.23.0
@@ -336,21 +337,32 @@ jobs:
               uses: lukka/run-vcpkg@b1a0dd252f06b9e25b3c022a9a03bd7a427fb6a2 # pin@v11.6
               with:
                 vcpkgDirectory: '${{ github.workspace }}/vcpkg'
-                vcpkgGitCommitId: '66c0373dc7fca549e5803087b9487edfe3aca0a1'
+                vcpkgGitCommitId: '${{ env.vcpkg-commit }}'
 
-            - name: Cache vcpkg packages and binaries
+            - name: Cache vcpkg installed tree
               uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
               with:
-                path: |
-                  ${{ github.workspace }}/vcpkg/installed
-                  ${{ github.workspace }}/vcpkg-binary-cache
-                key: vcpkg-${{ runner.os }}-${{ hashFiles('auth0_flutter/windows/vcpkg.json') }}
+                path: ${{ github.workspace }}/vcpkg/installed
+                key: vcpkg-installed-${{ runner.os }}-${{ env.vcpkg-commit }}-${{ hashFiles('auth0_flutter/windows/vcpkg.json') }}
                 restore-keys: |
-                  vcpkg-${{ runner.os }}-
+                  vcpkg-installed-${{ runner.os }}-${{ env.vcpkg-commit }}-
+
+            # Keyed by the pinned vcpkg commit (stable across runs) rather
+            # than github.run_id, so this cache keeps accumulating per-port
+            # binaries across runs instead of saving a fresh, ever-growing
+            # entry every run that evicts other jobs' caches once the repo
+            # is near the per-repo cache limit.
+            - name: Cache vcpkg binary cache
+              uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
+              with:
+                path: ${{ github.workspace }}/vcpkg-binary-cache
+                key: vcpkg-binary-cache-${{ runner.os }}-${{ env.vcpkg-commit }}
+                restore-keys: |
+                  vcpkg-binary-cache-${{ runner.os }}-
 
             - name: Install vcpkg dependencies
               run: |
-                ${{ github.workspace }}\vcpkg\vcpkg install cpprestsdk:x64-windows openssl:x64-windows boost-system:x64-windows boost-date-time:x64-windows boost-regex:x64-windows
+                ${{ github.workspace }}\vcpkg\vcpkg install --recurse "cpp-httplib[core,openssl]:x64-windows" nlohmann-json:x64-windows openssl:x64-windows
               shell: cmd
               env:
                 VCPKG_BINARY_SOURCES: 'clear;files,${{ github.workspace }}/vcpkg-binary-cache,readwrite'
@@ -359,10 +371,10 @@ jobs:
               uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
               with:
                 path: auth0_flutter/example/build/windows
-                key: win-example-build-${{ runner.os }}-${{ hashFiles('auth0_flutter/windows/**/*.cpp', 'auth0_flutter/windows/**/*.h', 'auth0_flutter/windows/CMakeLists.txt', 'auth0_flutter/windows/vcpkg.json') }}-${{ hashFiles('auth0_flutter/example/lib/**/*.dart') }}
+                key: win-example-build-${{ runner.os }}-${{ env.vcpkg-commit }}-${{ hashFiles('auth0_flutter/windows/**/*.cpp', 'auth0_flutter/windows/**/*.h', 'auth0_flutter/windows/CMakeLists.txt', 'auth0_flutter/windows/vcpkg.json') }}-${{ hashFiles('auth0_flutter/example/lib/**/*.dart') }}
                 restore-keys: |
-                  win-example-build-${{ runner.os }}-${{ hashFiles('auth0_flutter/windows/**/*.cpp', 'auth0_flutter/windows/**/*.h', 'auth0_flutter/windows/CMakeLists.txt', 'auth0_flutter/windows/vcpkg.json') }}-
-                  win-example-build-${{ runner.os }}-
+                  win-example-build-${{ runner.os }}-${{ env.vcpkg-commit }}-${{ hashFiles('auth0_flutter/windows/**/*.cpp', 'auth0_flutter/windows/**/*.h', 'auth0_flutter/windows/CMakeLists.txt', 'auth0_flutter/windows/vcpkg.json') }}-
+                  win-example-build-${{ runner.os }}-${{ env.vcpkg-commit }}-
 
             - name: Build Windows example app
               working-directory: auth0_flutter/example
@@ -380,15 +392,15 @@ jobs:
               uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # pin@v6.1.0
               with:
                 path: auth0_flutter/windows/build
-                key: win-test-build-${{ runner.os }}-${{ hashFiles('auth0_flutter/windows/**/*.cpp', 'auth0_flutter/windows/**/*.h', 'auth0_flutter/windows/CMakeLists.txt', 'auth0_flutter/windows/test/**', 'auth0_flutter/windows/vcpkg.json') }}
+                key: win-test-build-${{ runner.os }}-${{ env.vcpkg-commit }}-${{ hashFiles('auth0_flutter/windows/**/*.cpp', 'auth0_flutter/windows/**/*.h', 'auth0_flutter/windows/CMakeLists.txt', 'auth0_flutter/windows/test/**', 'auth0_flutter/windows/vcpkg.json') }}
                 restore-keys: |
-                  win-test-build-${{ runner.os }}-
+                  win-test-build-${{ runner.os }}-${{ env.vcpkg-commit }}-
 
             - name: Build Windows unit tests
               working-directory: auth0_flutter/windows
               run: |
                 cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake -DAUTH0_FLUTTER_ENABLE_TESTS=ON -DCMAKE_BUILD_TYPE=Debug
-                cmake --build build --config Debug
+                cmake --build build --config Debug --parallel
               shell: cmd
 
             - name: Run Windows unit tests with coverage
@@ -424,7 +436,7 @@ jobs:
 
     #     steps:
     #         - name: Checkout
-    #           uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+    #           uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
     #         - name: Gradle cache
     #           uses: gradle/gradle-build-action@ef76a971e2fa3f867b617efd72f2fbd72cf6f8bc
@@ -527,7 +539,7 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+              uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
             - name: Download coverage report for auth0_flutter
               uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c

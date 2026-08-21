@@ -38,6 +38,7 @@
   - [Sign up with database connection](#sign-up-with-database-connection)
   - [Log in with passkeys](#log-in-with-passkeys)
   - [Sign up with passkeys](#sign-up-with-passkeys)
+  - [Passkeys on the Web](#passkeys-on-the-web)
   - [Passwordless Login](#passwordless-login)
   - [Retrieve user information](#retrieve-user-information)
   - [Renew credentials](#renew-credentials)
@@ -503,7 +504,13 @@ cd C:\vcpkg
 setx VCPKG_ROOT "C:\vcpkg"
 ```
 
-The plugin's `vcpkg.json` manifest automatically pulls the required packages (`cpprestsdk`, `openssl`, `boost-system`, `boost-date-time`, `boost-regex`) at build time — no manual `vcpkg install` is needed.
+The plugin's `vcpkg.json` manifest (`auth0_flutter/windows/vcpkg.json`) lists the required packages (`cpp-httplib`, `nlohmann-json`, `openssl`), but because it lives in the plugin's own directory rather than your app's `windows/` root, vcpkg's manifest mode won't auto-install them. Install them explicitly into your vcpkg instance:
+
+```powershell
+C:\vcpkg\vcpkg install --recurse "cpp-httplib[core,openssl]:x64-windows" nlohmann-json:x64-windows openssl:x64-windows
+```
+
+> 💡 **Upgrading from an older auth0_flutter version?** Previous versions depended on `cpprestsdk` and `boost-system`/`boost-date-time`/`boost-regex`. If your vcpkg instance was already set up for those, run the command above to install the new packages (the old ones can be left installed or removed with `vcpkg remove cpprestsdk boost-system boost-date-time boost-regex`).
 
 #### 2. Configure your app's CMakeLists.txt
 
@@ -525,7 +532,7 @@ project(your_app LANGUAGES CXX)
 # ... rest of your CMakeLists.txt ...
 ```
 
-> ⚠️ The `CMAKE_TOOLCHAIN_FILE` line **must** appear before `project()`. If it appears after, CMake will have already configured the compiler and vcpkg packages will not be found, resulting in build errors like `Could not find a package configuration file provided by "cpprestsdk"`.
+> ⚠️ The `CMAKE_TOOLCHAIN_FILE` line **must** appear before `project()`. If it appears after, CMake will have already configured the compiler and vcpkg packages will not be found, resulting in build errors like `Could not find a package configuration file provided by "httplib"`.
 
 #### 3. Register the custom URL scheme (protocol handler)
 
@@ -664,6 +671,7 @@ await auth0.windowsWebAuthentication().logout(
 
 - [Check for stored credentials](#check-for-stored-credentials)
 - [Retrieve stored credentials](#retrieve-stored-credentials)
+- [Session expiry from an upstream IdP](#-session-expiry-from-an-upstream-idp)
 - [Retrieve API credentials for a specific audience (MRRT)](#retrieve-api-credentials-for-a-specific-audience-mrrt)
 - [Retrieve user profile](#retrieve-user-profile)
 - [Custom implementations](#custom-implementations)
@@ -699,6 +707,51 @@ final credentials = await auth0.credentialsManager.credentials();
 ```
 
 > 💡 You do not need to call `credentialsManager.storeCredentials()` afterward. The Credentials Manager automatically persists the renewed credentials.
+
+### 🕒 Session expiry from an upstream IdP
+
+> ⚠️ **Early Access:** upstream IdP session expiry (the IPSIE [`session_expiry`](https://openid.github.io/ipsie-openid-sl1/draft-openid-ipsie-sl1-profile.html) claim) is an **Early Access** feature. The API surface described here (the `sessionExpiry` field and the `isSessionExpired` error) may change before it is generally available.
+
+When a user authenticates through an upstream Identity Provider (for example Okta) over an enterprise connection that has **"Use ID Token for Session Expiry"** enabled (`id_token_session_expiry_supported: true`), Auth0 adds a `session_expiry` claim to the ID token. This claim is an absolute point in time (a Unix-seconds timestamp) that represents when the upstream IdP session ends, and it acts as a **hard ceiling** on the local session: the app session can never outlive the upstream IdP session.
+
+> ⚠️ **The claim must be in seconds, not milliseconds.** If the ceiling is set by a Post-Login Action, remember to divide by 1000 (e.g. `Math.floor(Date.now() / 1000)`). A milliseconds value reads as a timestamp tens of thousands of years in the future, which is treated as **no ceiling** — enforcement silently switches off rather than erroring.
+
+**Enforcement is transparent — you do not need to write any new code to have the ceiling enforced.** Once the ceiling passes, the underlying platform SDK treats the stored credentials as expired and skips refresh-token renewal, so `credentials()` raises a `CredentialsManagerException`. The ceiling has its own dedicated error, distinct from "no credentials", so branch on `isSessionExpired` to send the user through a fresh login:
+
+```dart
+try {
+  final credentials = await auth0.credentialsManager.credentials();
+  // Use the credentials
+} on CredentialsManagerException catch (e) {
+  if (e.isSessionExpired) {
+    // The upstream IdP session_expiry ceiling was reached — the local session
+    // can no longer be renewed. Send the user through the login flow again.
+  } else if (e.isNoCredentialsFound) {
+    // No stored credentials (e.g. logged out) — send the user to login.
+  }
+}
+```
+
+The ceiling is **layered on top of** the access-token expiry and any idle/absolute timeouts — it does not replace them. The session ends at whichever limit is reached first.
+
+You can also read the value for your own app logic (for example, to show a session countdown) via the new `sessionExpiry` field on `Credentials`:
+
+```dart
+final credentials = await auth0.credentialsManager.credentials();
+
+// null when the connection option is not enabled, or the session predates the
+// feature. A null value means "no upstream ceiling".
+final sessionExpiry = credentials.sessionExpiry;
+if (sessionExpiry != null) {
+  print('Upstream IdP session ends at: $sessionExpiry');
+}
+```
+
+> ℹ️ Enforcement applies a small negative leeway (about 30 seconds) for clock skew, so the session is treated as expired slightly **before** this exact timestamp. Account for this if you build a countdown off `sessionExpiry`, otherwise the session may end a little earlier than the value shown.
+
+> ⚠️ **Upgrade note:** once this feature is enabled on your connection, `credentials()` can raise a session-expired error (`isSessionExpired`) for a user who was previously logged in, when the ceiling is reached. If your app assumed `credentials()` always resolves after login, make sure it handles this case (it already does if you catch `CredentialsManagerException` as shown above).
+>
+> On the web, enforcement is performed by [auth0-spa-js](https://github.com/auth0/auth0-spa-js) and requires **v2.22.0 or later**.
 
 ### Retrieve API credentials for a specific audience (MRRT)
 
@@ -1021,6 +1074,7 @@ final credentials = await auth0Web.credentials();
 - [Sign up with database connection](#sign-up-with-database-connection)
 - [Log in with passkeys](#log-in-with-passkeys)
 - [Sign up with passkeys](#sign-up-with-passkeys)
+- [Passkeys on the Web](#passkeys-on-the-web)
 - [Passwordless Login](#passwordless-login)
 - [Passwordless OTP on database connections](#passwordless-otp-on-database-connections)
 - [Retrieve user information](#retrieve-user-information)
@@ -1093,7 +1147,7 @@ final databaseUser = await auth0.api.signup(
 
 ### Log in with passkeys
 
-> This feature is available on **iOS 16.6+** and **Android 9+ (API 28)** only.
+> This feature is available on **iOS 16.6+**, **Android 9+ (API 28)**, and **Web** (modern browsers with WebAuthn support). See [Passkeys on the Web](#passkeys-on-the-web) below for the web-specific flow.
 
 [Passkeys](https://auth0.com/docs/authenticate/database-connections/passkeys) let an existing user log in with a biometric or device PIN instead of a password, using the platform authenticator (Face ID / Touch ID on iOS, the Credential Manager on Android).
 
@@ -1154,7 +1208,7 @@ final credentials = await auth0.api.passkeyCredentialExchange(
 
 ### Sign up with passkeys
 
-> This feature is available on **iOS 16.6+** and **Android 9+ (API 28)** only.
+> This feature is available on **iOS 16.6+**, **Android 9+ (API 28)**, and **Web** (modern browsers with WebAuthn support). See [Passkeys on the Web](#passkeys-on-the-web) below for the web-specific flow.
 
 [Passkeys](https://auth0.com/docs/authenticate/database-connections/passkeys) let users register with a biometric or device PIN instead of a password, using the platform authenticator (Face ID / Touch ID on iOS, the Credential Manager on Android).
 
@@ -1171,10 +1225,17 @@ The SDK exposes **two** methods for passkey signup — `passkeySignupChallenge` 
 
 You can identify the new user with any combination of `email`, `phoneNumber`, `username`, `name`, `givenName`, `familyName`, `nickname`, and `picture`, depending on how your connection is configured.
 
+> ⚠️ **Only `email` is accepted by default.** A database connection accepts `email` as the signup identifier unless [Flexible Identifiers](https://auth0.com/docs/authenticate/database-connections/flexible-identifiers) is enabled for it, which additionally lets you sign up with `phoneNumber` and/or `username`. Passing an identifier your connection isn't configured for (for example, `phoneNumber` on an email-only connection) fails the signup challenge request with:
+> ```json
+> { "error": "invalid_request", "error_description": "Invalid user profile attribute: phone_number" }
+> ```
+> Enable Flexible Identifiers for the connection in the [Auth0 Dashboard](https://manage.auth0.com/#/connections/database) (**Authentication > Database > [your connection] > Settings**) if you need to sign up with `phoneNumber` or `username`.
+
 ```dart
 // 1. Request a registration challenge from Auth0. You can identify the new
 //    user with any combination of email, phoneNumber, username, name,
-//    givenName, familyName, nickname, and picture.
+//    givenName, familyName, nickname, and picture — see the note above on
+//    which of these your connection actually accepts.
 final challenge = await auth0.api.passkeySignupChallenge(
     email: 'jane.smith@example.com',
     name: 'Jane Smith',
@@ -1218,6 +1279,123 @@ final credentials = await auth0.api.passkeyCredentialExchange(
 ```
 
 </details>
+
+### Passkeys on the Web
+
+Passkeys are supported on web via `Auth0Web`, backed by `@auth0/auth0-spa-js`'s passkey API (requires **auth0-spa-js v2.24.0 or later** loaded on your page). The flow is the same three steps as native (challenge → credential manager → exchange), but step 2 uses the browser's built-in [WebAuthn API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API) (`navigator.credentials.create()`/`.get()`) instead of a native platform authenticator.
+
+`Auth0Web.getTokenByPasskey`'s `authResponse` accepts the raw credential object returned directly by `navigator.credentials.create()`/`.get()` — no manual serialization needed (unlike native, which takes a JSON string).
+
+> ⚠️ `navigator.credentials.create()`/`.get()` require a user gesture, so call `passkeySignupChallenge`/`passkeyLoginChallenge` from within a click handler (not, for example, from `onLoad`).
+
+> ⚠️ **`passkeySignupChallenge` only accepts `email` unless Flexible Identifiers is enabled.** Just like native, the identifier you pass (`email`, `phoneNumber`, `username`) must be one your connection is configured to accept — see the note in [Sign up with passkeys](#sign-up-with-passkeys) above.
+
+```dart
+import 'package:auth0_flutter/auth0_flutter_web.dart';
+import 'package:web/web.dart' as web;
+
+final auth0Web = Auth0Web('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID');
+
+Future<void> signUpWithPasskey() async {
+  // 1. Request a signup challenge from Auth0.
+  final challenge = await auth0Web.passkeySignupChallenge(
+      email: 'jane.smith@example.com',
+      name: 'Jane Smith',
+      givenName: 'Jane',
+      familyName: 'Smith',
+      connection: 'Username-Password-Authentication');
+
+  // 2. Present the browser's WebAuthn UI. `authParamsPublicKey` is already
+  //    decoded and ready to pass directly to navigator.credentials.create().
+  final credential = await web.window.navigator.credentials.create(
+      web.CredentialCreationOptions(
+          publicKey: challenge.authParamsPublicKey
+              as web.PublicKeyCredentialCreationOptions));
+
+  // 3. Exchange the raw credential for Auth0 tokens.
+  final credentials = await auth0Web.getTokenByPasskey(
+      authSession: challenge.authSession,
+      authResponse: credential,
+      connection: 'Username-Password-Authentication');
+}
+```
+
+<details>
+  <summary>Log in with an existing passkey on the web</summary>
+
+```dart
+Future<void> logInWithPasskey() async {
+  final challenge = await auth0Web.passkeyLoginChallenge(
+      connection: 'Username-Password-Authentication');
+
+  final credential = await web.window.navigator.credentials.get(
+      web.CredentialRequestOptions(
+          publicKey: challenge.authParamsPublicKey
+              as web.PublicKeyCredentialRequestOptions));
+
+  final credentials = await auth0Web.getTokenByPasskey(
+      authSession: challenge.authSession,
+      authResponse: credential,
+      connection: 'Username-Password-Authentication');
+}
+```
+
+</details>
+
+#### Handling errors on the web
+
+`passkeySignupChallenge`, `passkeyLoginChallenge`, and `getTokenByPasskey` all throw a [`WebException`](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/WebException-class.html) on failure, decoded from whatever `auth0-spa-js` throws:
+
+| Source | `WebException.code` | Notes |
+| :--- | :--- | :--- |
+| Challenge request fails (`passkeySignupChallenge`/`passkeyLoginChallenge`) | `PASSKEY_ERROR` | `details['code']` carries the underlying `auth0-spa-js` code, e.g. `passkey_register_error`, `passkey_challenge_error`, `passkey_not_supported` (WebAuthn unavailable in this browser). |
+| `getTokenByPasskey`'s credential-shape check fails | `PASSKEY_ERROR` | `details['code'] == 'passkey_invalid_credential'` — the `authResponse` isn't a valid attestation or assertion response. |
+| `getTokenByPasskey`'s token exchange requires MFA | `MFA_REQUIRED` | Same shape as [`credentials()`/`customTokenExchange()`](#-multi-factor-authentication-mfa) — `details['mfaToken']` is ready to pass to `Auth0Web.mfa(mfaToken:)`. |
+| `getTokenByPasskey`'s token exchange fails for another reason (e.g. `invalid_grant`, `access_denied`, an expired `authSession`) | `AUTHENTICATION_ERROR` | `details['code']` carries the OAuth error code returned by `/oauth/token`. |
+
+```dart
+try {
+  final credentials = await auth0Web.getTokenByPasskey(
+      authSession: challenge.authSession,
+      authResponse: credential,
+      connection: 'Username-Password-Authentication');
+} on WebException catch (e) {
+  if (e.code == 'MFA_REQUIRED') {
+    final mfa = auth0Web.mfa(mfaToken: e.details['mfaToken'] as String);
+    // continue the MFA flow — see Multi-Factor Authentication (MFA) below
+  } else {
+    print('Passkey error: ${e.code} (${e.details['code']}) — ${e.message}');
+  }
+}
+```
+
+> ⚠️ **`navigator.credentials.create()`/`.get()` errors are not `WebException`s.** The WebAuthn ceremony (step 2) is a browser API call your app makes directly — `Auth0Web` has no visibility into it, so its failures surface as a raw [`DOMException`](https://developer.mozilla.org/en-US/docs/Web/API/DOMException), not a `WebException`. Catch it separately and branch on `DOMException.name`, for example:
+> ```dart
+> import 'package:web/web.dart' as web;
+>
+> try {
+>   final credential = await web.window.navigator.credentials.create(
+>       web.CredentialCreationOptions(publicKey: challenge.authParamsPublicKey
+>           as web.PublicKeyCredentialCreationOptions));
+> } on web.DOMException catch (e) {
+>   switch (e.name) {
+>     case 'NotAllowedError':
+>       // The user cancelled the prompt, denied permission, or the operation
+>       // timed out — by far the most common case in practice.
+>       print('Passkey creation was cancelled.');
+>     case 'InvalidStateError':
+>       // A passkey for this account/authenticator already exists.
+>       print('A passkey already exists for this account.');
+>     case 'SecurityError':
+>       // The page's origin doesn't match the relying party ID (misconfigured
+>       // custom domain, or running on an origin other than the one the
+>       // connection's passkeys are configured for).
+>       print('Passkey security error: ${e.message}');
+>     default:
+>       print('Passkey error: ${e.name} — ${e.message}');
+>   }
+> }
+> ```
 
 ### Passwordless Login
 Passwordless is a two-step authentication flow that requires the **Passwordless OTP** grant to be enabled for your Auth0 application. Check [our documentation](https://auth0.com/docs/get-started/applications/application-grant-types) for more information.

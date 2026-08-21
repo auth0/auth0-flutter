@@ -25,7 +25,7 @@ namespace auth0_flutter
     void BringFlutterWindowToFront()
     {
         // GetActiveWindow() only returns windows on the calling thread's message
-        // queue. Since this runs on a background pplx worker thread it always
+        // queue. Since this runs on a background PPL worker thread it always
         // returns NULL. Instead, enumerate all top-level windows that belong to
         // this process to find the Flutter window.
         struct FindData
