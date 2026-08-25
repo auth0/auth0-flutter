@@ -4,7 +4,7 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 /// CredentialManager.
 abstract class CredentialsManager {
   Future<Credentials> credentials({
-    final int minTtl = 0,
+    final int minTtl = 60,
     final Set<String> scopes = const {},
     final Map<String, String> parameters = const {},
   });
@@ -68,7 +68,7 @@ abstract class CredentialsManager {
   Future<ApiCredentials> getApiCredentials({
     required final String audience,
     final Set<String> scope = const {},
-    final int minTtl = 0,
+    final int minTtl = 60,
     final Map<String, String> parameters = const {},
     final Map<String, String> headers = const {},
   });
@@ -115,7 +115,7 @@ class DefaultCredentialsManager extends CredentialsManager {
   /// request to refresh expired credentials.
   @override
   Future<Credentials> credentials({
-    final int minTtl = 0,
+    final int minTtl = 60,
     final Set<String> scopes = const {},
     final Map<String, String> parameters = const {},
   }) =>
@@ -197,7 +197,7 @@ class DefaultCredentialsManager extends CredentialsManager {
   Future<ApiCredentials> getApiCredentials({
     required final String audience,
     final Set<String> scope = const {},
-    final int minTtl = 0,
+    final int minTtl = 60,
     final Map<String, String> parameters = const {},
     final Map<String, String> headers = const {},
   }) =>

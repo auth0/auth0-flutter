@@ -114,7 +114,7 @@ void main() {
 
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
-      expect(verificationResult.arguments['minTtl'], 0);
+      expect(verificationResult.arguments['minTtl'], 60);
       expect(verificationResult.arguments['scopes'], isEmpty);
       expect(verificationResult.arguments['parameters'], isEmpty);
     });
@@ -1090,7 +1090,7 @@ void main() {
       final verificationResult =
           verify(mocked.methodCallHandler(captureAny)).captured.single;
       expect(verificationResult.arguments['scopes'], isEmpty);
-      expect(verificationResult.arguments['minTtl'], 0);
+      expect(verificationResult.arguments['minTtl'], 60);
       expect(verificationResult.arguments['parameters'], isEmpty);
       expect(verificationResult.arguments['headers'], isEmpty);
     });
