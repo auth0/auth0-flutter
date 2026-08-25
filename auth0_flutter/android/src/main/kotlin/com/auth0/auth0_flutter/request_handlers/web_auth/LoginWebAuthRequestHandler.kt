@@ -65,6 +65,10 @@ class LoginWebAuthRequestHandler(
             builder.withParameters(args["parameters"] as Map<String, *>)
         }
 
+        if (args["useEphemeralSession"] == true) {
+            builder.withEphemeralBrowsing()
+        }
+
         if (args["useDPoP"] == true) {
             builder.useDPoP(context)
         }

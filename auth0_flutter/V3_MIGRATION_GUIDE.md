@@ -17,6 +17,7 @@ behavior that surfaces through the Dart API.
 - [Behavior Changes](#behavior-changes)
   - [`credentialsManager.clearCredentials` now clears all stored data (Android)](#credentialsmanagerclearcredentials-now-clears-all-stored-data-android)
   - [`api.multifactorChallenge` requires `authenticatorId` (Android)](#apimultifactorchallenge-requires-authenticatorid-android)
+  - [Web Auth `useEphemeralSession` is now honored on Android](#web-auth-useephemeralsession-is-now-honored-on-android)
 - [Getting Help](#getting-help)
 
 ## Requirements Changes
@@ -105,6 +106,31 @@ final challenge = await auth0.api.multifactorChallenge(
 
 If you support one-time passwords and don't need to select a specific factor,
 you can skip the challenge request and call `api.loginWithOtp` directly.
+
+### Web Auth `useEphemeralSession` is now honored on Android
+
+**Change:** In v2 the Web Auth `useEphemeralSession` login option had no effect
+on Android (it was accepted but ignored, and documented as iOS/macOS only). In
+v3, Android honors it via Auth0.Android v4's ephemeral browsing, matching
+iOS/macOS.
+
+**Impact:** If your Android app already passed `useEphemeralSession: true`
+expecting it to be ignored, the login now runs in a private/ephemeral browser
+session: no session is shared with or persisted in the system browser, so the
+user is not silently signed in from an existing browser session.
+
+**Migration:** No code change is required. Review your use of
+`useEphemeralSession` on Android if you relied on the previous no-op behavior:
+
+```dart
+// v3: on Android this now starts an ephemeral browser session (as on iOS/macOS).
+await auth0.webAuthentication().login(useEphemeralSession: true);
+```
+
+> **Note**
+> Ephemeral sessions depend on the device browser supporting them. If the
+> browser that handles the login does not support ephemeral browsing, Android
+> falls back to a normal Custom Tabs login and the session is not ephemeral.
 
 ## Getting Help
 
