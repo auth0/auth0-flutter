@@ -708,6 +708,13 @@ final credentials = await auth0.credentialsManager.credentials();
 
 > 💡 You do not need to call `credentialsManager.storeCredentials()` afterward. The Credentials Manager automatically persists the renewed credentials.
 
+> 💡 By default, `credentials()` (and `getApiCredentials()`) requires the access token to have at least **60 seconds** of remaining lifetime, matching Auth0.Android v4 and Auth0.swift v3. If the token would expire sooner, it is refreshed using the refresh token. Pass `minTtl: 0` to return the stored token regardless of how soon it expires, or a larger value to require more headroom:
+>
+> ```dart
+> // Return the stored token even if it is about to expire.
+> final credentials = await auth0.credentialsManager.credentials(minTtl: 0);
+> ```
+
 ### 🕒 Session expiry from an upstream IdP
 
 > ⚠️ **Early Access:** upstream IdP session expiry (the IPSIE [`session_expiry`](https://openid.github.io/ipsie-openid-sl1/draft-openid-ipsie-sl1-profile.html) claim) is an **Early Access** feature. The API surface described here (the `sessionExpiry` field and the `isSessionExpired` error) may change before it is generally available.
