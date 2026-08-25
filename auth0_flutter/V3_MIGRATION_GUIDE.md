@@ -16,7 +16,11 @@ behavior that surfaces through the Dart API.
 - [Requirements Changes](#requirements-changes)
 - [Behavior Changes](#behavior-changes)
   - [`credentialsManager.clearCredentials` now clears all stored data (Android)](#credentialsmanagerclearcredentials-now-clears-all-stored-data-android)
+  - [New `credentialsManager.clearAll()` for a full wipe](#new-credentialsmanagerclearall-for-a-full-wipe)
   - [`api.multifactorChallenge` requires `authenticatorId` (Android)](#apimultifactorchallenge-requires-authenticatorid-android)
+  - [Web Auth `useEphemeralSession` is now honored on Android](#web-auth-useephemeralsession-is-now-honored-on-android)
+  - [Android Web Auth recovers login results across process death](#android-web-auth-recovers-login-results-across-process-death)
+  - [Credentials manager `minTtl` now defaults to 60 seconds](#credentials-manager-minttl-now-defaults-to-60-seconds)
   - [`SSOCredentials.expiresIn` is now `expiresAt` (`DateTime`)](#ssocredentialsexpiresin-is-now-expiresat-datetime)
 - [Getting Help](#getting-help)
 
@@ -68,6 +72,27 @@ await credentialsManager.clearCredentials();
 
 This affects Android only. iOS/macOS behavior is unchanged.
 
+### New `credentialsManager.clearAll()` for a full wipe
+
+**Change (additive):** v3 adds `credentialsManager.clearAll()`, which removes all
+stored credentials and cached API credentials **and** the underlying encryption
+keys — on Android the crypto key pair and the DPoP key, on iOS/macOS every entry
+in the credentials store plus the DPoP key pair. It maps to Auth0.Android v4's
+`clearAll()` and Auth0.swift v3's `clearAll()`.
+
+**Impact:** This is a new, optional method, so existing code is unaffected. Use
+`clearCredentials()` to remove only the stored credential entries, or
+`clearAll()` when you also want to drop the encryption keys (for example a full
+sign-out/reset):
+
+```dart
+await auth0.credentialsManager.clearAll();
+```
+
+Because `clearAll()` deletes every entry in the underlying store, avoid sharing
+that store (a custom `sharedPreferencesName` on Android, or `storeKey` /
+`accessGroup` on iOS/macOS) with unrelated app data.
+
 ### `api.multifactorChallenge` requires `authenticatorId` (Android)
 
 **Change:** Auth0.Android v4 removed the inline MFA methods from the
@@ -106,6 +131,69 @@ final challenge = await auth0.api.multifactorChallenge(
 
 If you support one-time passwords and don't need to select a specific factor,
 you can skip the challenge request and call `api.loginWithOtp` directly.
+
+### Web Auth `useEphemeralSession` is now honored on Android
+
+**Change:** In v2 the Web Auth `useEphemeralSession` login option had no effect
+on Android (it was accepted but ignored, and documented as iOS/macOS only). In
+v3, Android honors it via Auth0.Android v4's ephemeral browsing, matching
+iOS/macOS.
+
+**Impact:** If your Android app already passed `useEphemeralSession: true`
+expecting it to be ignored, the login now runs in a private/ephemeral browser
+session: no session is shared with or persisted in the system browser, so the
+user is not silently signed in from an existing browser session.
+
+**Migration:** No code change is required. Review your use of
+`useEphemeralSession` on Android if you relied on the previous no-op behavior:
+
+```dart
+// v3: on Android this now starts an ephemeral browser session (as on iOS/macOS).
+await auth0.webAuthentication().login(useEphemeralSession: true);
+```
+
+> **Note**
+> Ephemeral sessions depend on the device browser supporting them. If the
+> browser that handles the login does not support ephemeral browsing, Android
+> falls back to a normal Custom Tabs login and the session is not ephemeral.
+
+### Android Web Auth recovers login results across process death
+
+**Change:** Android Web Auth now registers its login callback against the
+activity lifecycle (via Auth0.Android v4's `WebAuthProvider.registerCallbacks`)
+instead of the deprecated global callback. As a result, a login result is
+delivered even if the activity is recreated across a configuration change or the
+process is killed and restarted while the browser is in the foreground.
+
+**Impact:** This is an internal improvement. The Dart API is unchanged and no
+code change is required.
+
+### Credentials manager `minTtl` now defaults to 60 seconds
+
+**Change:** To match Auth0.Android v4 and Auth0.swift v3, the credential
+retrieval APIs now default `minTtl` to **60** seconds instead of `0`. This
+applies to `credentialsManager.credentials()` and
+`credentialsManager.getApiCredentials()` on both Android and iOS/macOS. A
+returned access token must have at least 60 seconds of remaining lifetime; if it
+would expire sooner, it is refreshed (when a refresh token is available) instead
+of being returned as-is.
+
+**Impact:** Calling these methods without an explicit `minTtl` now applies a
+60-second floor. Tokens within 60 seconds of expiration trigger a refresh, and
+if no refresh token is available the call fails instead of returning the
+near-expired token.
+
+**Migration:** No code change is required to adopt the new default. To keep the
+previous behavior, pass `minTtl: 0` explicitly:
+
+```dart
+await auth0.credentialsManager.credentials(minTtl: 0);
+await auth0.credentialsManager.getApiCredentials(audience: '...', minTtl: 0);
+```
+
+`hasValidCredentials` is intentionally left at `minTtl: 0`, matching the native
+`hasValid` behavior — it reports whether a credential is currently valid without
+applying the 60-second floor.
 
 ### `SSOCredentials.expiresIn` is now `expiresAt` (`DateTime`)
 

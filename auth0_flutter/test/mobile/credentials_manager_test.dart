@@ -90,7 +90,7 @@ void main() {
       final verificationResult =
           verify(mockedPlatform.getCredentials(captureAny)).captured.single
               as CredentialsManagerRequest<GetCredentialsOptions>;
-      expect(verificationResult.options?.minTtl, 0);
+      expect(verificationResult.options?.minTtl, 60);
       // ignore: inference_failure_on_collection_literal
       expect(verificationResult.options?.scopes, isEmpty);
       expect(verificationResult.options?.parameters, isEmpty);
@@ -185,6 +185,20 @@ void main() {
 
       final verificationResult =
           verify(mockedPlatform.clearCredentials(captureAny)).captured.single
+              as CredentialsManagerRequest;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.account.clientId, 'test-clientId');
+    });
+  });
+
+  group('clearAll', () {
+    test('calls the platform', () async {
+      when(mockedPlatform.clearAll(any)).thenAnswer((_) async {});
+
+      await DefaultCredentialsManager(account, userAgent).clearAll();
+
+      final verificationResult =
+          verify(mockedPlatform.clearAll(captureAny)).captured.single
               as CredentialsManagerRequest;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
@@ -385,7 +399,7 @@ void main() {
       expect(verificationResult.options?.audience, 'test-audience');
       // ignore: inference_failure_on_collection_literal
       expect(verificationResult.options?.scopes, isEmpty);
-      expect(verificationResult.options?.minTtl, 0);
+      expect(verificationResult.options?.minTtl, 60);
       // ignore: inference_failure_on_collection_literal
       expect(verificationResult.options?.parameters, isEmpty);
       // ignore: inference_failure_on_collection_literal
