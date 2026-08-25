@@ -127,6 +127,11 @@ user is not silently signed in from an existing browser session.
 await auth0.webAuthentication().login(useEphemeralSession: true);
 ```
 
+> **Note**
+> Ephemeral sessions depend on the device browser supporting them. If the
+> browser that handles the login does not support ephemeral browsing, Android
+> falls back to a normal Custom Tabs login and the session is not ephemeral.
+
 ## Getting Help
 
 If you encounter issues migrating, please open an issue on the
