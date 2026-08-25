@@ -18,6 +18,7 @@ behavior that surfaces through the Dart API.
   - [`credentialsManager.clearCredentials` now clears all stored data (Android)](#credentialsmanagerclearcredentials-now-clears-all-stored-data-android)
   - [`api.multifactorChallenge` requires `authenticatorId` (Android)](#apimultifactorchallenge-requires-authenticatorid-android)
   - [Web Auth `useEphemeralSession` is now honored on Android](#web-auth-useephemeralsession-is-now-honored-on-android)
+  - [Android Web Auth recovers login results across process death](#android-web-auth-recovers-login-results-across-process-death)
 - [Getting Help](#getting-help)
 
 ## Requirements Changes
@@ -131,6 +132,17 @@ await auth0.webAuthentication().login(useEphemeralSession: true);
 > Ephemeral sessions depend on the device browser supporting them. If the
 > browser that handles the login does not support ephemeral browsing, Android
 > falls back to a normal Custom Tabs login and the session is not ephemeral.
+
+### Android Web Auth recovers login results across process death
+
+**Change:** Android Web Auth now registers its login callback against the
+activity lifecycle (via Auth0.Android v4's `WebAuthProvider.registerCallbacks`)
+instead of the deprecated global callback. As a result, a login result is
+delivered even if the activity is recreated across a configuration change or the
+process is killed and restarted while the browser is in the foreground.
+
+**Impact:** This is an internal improvement. The Dart API is unchanged and no
+code change is required.
 
 ## Getting Help
 
