@@ -17,6 +17,7 @@ behavior that surfaces through the Dart API.
 - [Behavior Changes](#behavior-changes)
   - [`credentialsManager.clearCredentials` now clears all stored data (Android)](#credentialsmanagerclearcredentials-now-clears-all-stored-data-android)
   - [`api.multifactorChallenge` requires `authenticatorId` (Android)](#apimultifactorchallenge-requires-authenticatorid-android)
+  - [`SSOCredentials.expiresIn` is now `expiresAt` (`DateTime`)](#ssocredentialsexpiresin-is-now-expiresat-datetime)
 - [Getting Help](#getting-help)
 
 ## Requirements Changes
@@ -105,6 +106,31 @@ final challenge = await auth0.api.multifactorChallenge(
 
 If you support one-time passwords and don't need to select a specific factor,
 you can skip the challenge request and call `api.loginWithOtp` directly.
+
+### `SSOCredentials.expiresIn` is now `expiresAt` (`DateTime`)
+
+**Change:** Auth0.Android v4 and Auth0.swift v3 changed the Native to Web SSO
+credential expiry from a relative `expiresIn` (seconds) to an absolute
+`expiresAt` (date). `SSOCredentials` now exposes `expiresAt` as a UTC `DateTime`
+instead of `expiresIn` as an `int`, matching `Credentials.expiresAt`. This
+affects both `credentialsManager.ssoCredentials()` and `api.ssoExchange()` on
+Android and iOS/macOS.
+
+**Impact:** Code that reads `ssoCredentials.expiresIn` no longer compiles.
+
+**Migration:** Read `expiresAt`, and derive the remaining lifetime yourself if
+you still need a relative value:
+
+```dart
+final sso = await auth0.credentialsManager.ssoCredentials();
+
+// ❌ v2 — relative seconds
+// final secondsLeft = sso.expiresIn;
+
+// ✅ v3 — absolute UTC timestamp
+final DateTime expiresAt = sso.expiresAt;
+final secondsLeft = expiresAt.difference(DateTime.now().toUtc()).inSeconds;
+```
 
 ## Getting Help
 

@@ -182,7 +182,8 @@ class SSOExchangeApiRequestHandlerTest {
         val mockSSOCredentials = mock<SSOCredentials>()
         whenever(mockSSOCredentials.sessionTransferToken).thenReturn("sso-token")
         whenever(mockSSOCredentials.issuedTokenType).thenReturn("session_transfer")
-        whenever(mockSSOCredentials.expiresAt).thenReturn(Date(System.currentTimeMillis() + 60_000))
+        val expiresAt = Date(1730499395000L)
+        whenever(mockSSOCredentials.expiresAt).thenReturn(expiresAt)
         whenever(mockSSOCredentials.idToken).thenReturn("id-token")
         whenever(mockSSOCredentials.refreshToken).thenReturn("new-refresh-token")
 
@@ -200,7 +201,7 @@ class SSOExchangeApiRequestHandlerTest {
         val resultMap = captor.firstValue
         assertThat(resultMap["sessionTransferToken"], equalTo("sso-token"))
         assertThat(resultMap["tokenType"], equalTo("session_transfer"))
-        assertThat((resultMap["expiresIn"] as Long) in 58L..60L, equalTo(true))
+        assertThat(resultMap["expiresAt"], equalTo(expiresAt.toInstant().toString()))
         assertThat(resultMap["idToken"], equalTo("id-token"))
         assertThat(resultMap["refreshToken"], equalTo("new-refresh-token"))
     }

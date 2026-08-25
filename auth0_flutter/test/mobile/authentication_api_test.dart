@@ -40,10 +40,10 @@ class TestPlatform extends Mock
     'tokenType': 'Bearer'
   });
 
-  static const SSOCredentials ssoExchangeResult = SSOCredentials(
+  static final SSOCredentials ssoExchangeResult = SSOCredentials(
     sessionTransferToken: 'sso-token',
     tokenType: 'session_transfer',
-    expiresIn: 60,
+    expiresAt: DateTime.utc(2024, 11, 1, 22, 16, 35),
     idToken: 'id-token',
     refreshToken: 'new-refresh-token',
   );

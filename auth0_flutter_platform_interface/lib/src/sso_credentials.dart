@@ -29,8 +29,8 @@ class SSOCredentials {
   /// The token type, typically `"session_transfer"`.
   final String tokenType;
 
-  /// The number of seconds until the [sessionTransferToken] expires.
-  final int expiresIn;
+  /// The date and time, in UTC, at which the [sessionTransferToken] expires.
+  final DateTime expiresAt;
 
   /// A JSON web token containing user identity information.
   final String idToken;
@@ -44,7 +44,7 @@ class SSOCredentials {
   const SSOCredentials({
     required this.sessionTransferToken,
     required this.tokenType,
-    required this.expiresIn,
+    required this.expiresAt,
     required this.idToken,
     this.refreshToken,
   });
@@ -54,8 +54,16 @@ class SSOCredentials {
       SSOCredentials(
         sessionTransferToken: result['sessionTransferToken'] as String,
         tokenType: result['tokenType'] as String,
-        expiresIn: result['expiresIn'] as int,
+        expiresAt: DateTime.parse(result['expiresAt'] as String).toUtc(),
         idToken: result['idToken'] as String,
         refreshToken: result['refreshToken'] as String?,
       );
+
+  Map<String, dynamic> toMap() => {
+        'sessionTransferToken': sessionTransferToken,
+        'tokenType': tokenType,
+        'expiresAt': expiresAt.toUtc().toIso8601String(),
+        'idToken': idToken,
+        'refreshToken': refreshToken,
+      };
 }
