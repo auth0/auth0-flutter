@@ -27,6 +27,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         case sso = "credentialsManager#getSSOCredentials"
         case apiCredentials = "credentialsManager#getApiCredentials"
         case clearApiCredentials = "credentialsManager#clearApiCredentials"
+        case clearAll = "credentialsManager#clearAll"
     }
 
     private struct ManagerCacheKey: Equatable {
@@ -139,6 +140,7 @@ public class CredentialsManagerHandler: NSObject, FlutterPlugin {
         case .sso: return SSOCredentialsMethodHandler(credentialsManager: credentialsManager)
         case .apiCredentials: return ApiCredentialsMethodHandler(credentialsManager: credentialsManager)
         case .clearApiCredentials: return ClearApiCredentialsMethodHandler(credentialsManager: credentialsManager)
+        case .clearAll: return CredentialsManagerClearAllMethodHandler(credentialsManager: credentialsManager)
         }
     }
 

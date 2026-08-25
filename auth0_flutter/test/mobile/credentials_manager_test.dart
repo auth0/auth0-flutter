@@ -191,6 +191,20 @@ void main() {
     });
   });
 
+  group('clearAll', () {
+    test('calls the platform', () async {
+      when(mockedPlatform.clearAll(any)).thenAnswer((_) async {});
+
+      await DefaultCredentialsManager(account, userAgent).clearAll();
+
+      final verificationResult =
+          verify(mockedPlatform.clearAll(captureAny)).captured.single
+              as CredentialsManagerRequest;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.account.clientId, 'test-clientId');
+    });
+  });
+
   group('renewCredentials', () {
     test('renew credentials return new set of credentials', () async {
       when(mockedPlatform.renewCredentials(any))

@@ -797,6 +797,22 @@ await auth0.credentialsManager.clearApiCredentials(
 >
 > 💡 Stored API credentials are keyed by **both** audience and scope on every platform, so pass the same `scope` to `clearApiCredentials()` that you used when fetching them. The native APIs do not consistently report whether a matching entry existed, so this method returns `void` rather than a success flag.
 
+### Clear all credentials and encryption keys
+
+To wipe **everything** the Credentials Manager stores – all credentials, all cached API credentials, and the underlying encryption keys – use `clearAll()`:
+
+```dart
+await auth0.credentialsManager.clearAll();
+```
+
+> 💡 `clearAll()` is a more thorough wipe than `clearCredentials()` or `clearApiCredentials()`:
+>
+> - `clearCredentials()` removes the stored credential entries only. On iOS/macOS it deletes the credentials, DPoP thumbprint, and session-expiry entries; on Android it clears the credentials store.
+> - `clearApiCredentials(audience:)` removes only the cached API credentials for a specific audience (and scope), leaving the main credentials and the encryption keys intact.
+> - `clearAll()` additionally removes the cryptographic keys used to protect the stored data – on Android the crypto key pair and the DPoP key; on iOS/macOS every entry in the credentials store plus the DPoP key pair.
+>
+> ⚠️ Because `clearAll()` deletes *all* entries in the underlying store, avoid sharing the Credentials Manager's storage (for example, a custom `sharedPreferencesName` on Android or `storeKey`/`accessGroup` on iOS) with unrelated app data.
+
 ### Retrieve user profile
 
 Fetch the user profile associated with the stored credentials. This method returns `null` if no credentials are present in storage.
@@ -1758,7 +1774,7 @@ try {
   if (e.isVerificationRequired) {
     final credentials = await auth0.webAuthentication().login(
         scopes: scopes,
-        useEphemeralSession: true, // Otherwise a session cookie will remain (iOS/macOS only)
+        useEphemeralSession: true, // Otherwise a session cookie will remain (see note below)
         parameters: {
           'connection': connection,
           'login_hint': email // So the user doesn't have to type it again
@@ -1767,6 +1783,8 @@ try {
   }
 }
 ```
+
+> 💡 `useEphemeralSession` starts a private browser session so no session cookie is persisted. It is honored on iOS/macOS and, as of v3, on Android. On Android it depends on the device browser supporting ephemeral (private) Custom Tabs sessions — if the browser doesn't support it, the login falls back to a normal Custom Tabs session and is **not** ephemeral.
 
 ---
 
