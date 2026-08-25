@@ -20,6 +20,7 @@ behavior that surfaces through the Dart API.
   - [`api.multifactorChallenge` requires `authenticatorId` (Android)](#apimultifactorchallenge-requires-authenticatorid-android)
   - [Web Auth `useEphemeralSession` is now honored on Android](#web-auth-useephemeralsession-is-now-honored-on-android)
   - [Android Web Auth recovers login results across process death](#android-web-auth-recovers-login-results-across-process-death)
+  - [Credentials manager `minTtl` now defaults to 60 seconds](#credentials-manager-minttl-now-defaults-to-60-seconds)
 - [Getting Help](#getting-help)
 
 ## Requirements Changes
@@ -165,6 +166,33 @@ process is killed and restarted while the browser is in the foreground.
 
 **Impact:** This is an internal improvement. The Dart API is unchanged and no
 code change is required.
+
+### Credentials manager `minTtl` now defaults to 60 seconds
+
+**Change:** To match Auth0.Android v4 and Auth0.swift v3, the credential
+retrieval APIs now default `minTtl` to **60** seconds instead of `0`. This
+applies to `credentialsManager.credentials()` and
+`credentialsManager.getApiCredentials()` on both Android and iOS/macOS. A
+returned access token must have at least 60 seconds of remaining lifetime; if it
+would expire sooner, it is refreshed (when a refresh token is available) instead
+of being returned as-is.
+
+**Impact:** Calling these methods without an explicit `minTtl` now applies a
+60-second floor. Tokens within 60 seconds of expiration trigger a refresh, and
+if no refresh token is available the call fails instead of returning the
+near-expired token.
+
+**Migration:** No code change is required to adopt the new default. To keep the
+previous behavior, pass `minTtl: 0` explicitly:
+
+```dart
+await auth0.credentialsManager.credentials(minTtl: 0);
+await auth0.credentialsManager.getApiCredentials(audience: '...', minTtl: 0);
+```
+
+`hasValidCredentials` is intentionally left at `minTtl: 0`, matching the native
+`hasValid` behavior — it reports whether a credential is currently valid without
+applying the 60-second floor.
 
 ## Getting Help
 

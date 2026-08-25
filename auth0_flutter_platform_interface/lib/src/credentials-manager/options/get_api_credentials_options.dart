@@ -25,7 +25,7 @@ class GetApiCredentialsOptions implements RequestOptions {
   GetApiCredentialsOptions({
     required this.audience,
     this.scopes = const {},
-    this.minTtl = 0,
+    this.minTtl = 60,
     this.parameters = const {},
     this.headers = const {},
   });
