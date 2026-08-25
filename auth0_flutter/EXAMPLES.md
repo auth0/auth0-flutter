@@ -954,7 +954,7 @@ try {
 
   print('Session Transfer Token: ${ssoCredentials.sessionTransferToken}');
   print('Token Type: ${ssoCredentials.tokenType}');
-  print('Expires In: ${ssoCredentials.expiresIn} seconds');
+  print('Expires At: ${ssoCredentials.expiresAt}');
 } on CredentialsManagerException catch (e) {
   print('Failed to get SSO credentials: ${e.message}');
 }
@@ -967,7 +967,7 @@ try {
   final ssoCredentials = await auth0.api.ssoExchange(refreshToken: refreshToken);
 
   print('Session Transfer Token: ${ssoCredentials.sessionTransferToken}');
-  print('Expires In: ${ssoCredentials.expiresIn} seconds');
+  print('Expires At: ${ssoCredentials.expiresAt}');
 } on ApiException catch (e) {
   print('SSO Exchange failed: ${e.code} - ${e.message}');
 }

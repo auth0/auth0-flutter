@@ -21,7 +21,7 @@ class MethodCallHandler {
   static const Map<dynamic, dynamic> ssoCredentials = {
     'sessionTransferToken': 'ssoToken',
     'tokenType': 'session_transfer',
-    'expiresIn': 60,
+    'expiresAt': '2024-11-01T22:16:35.000Z',
     'idToken': 'idToken',
     'refreshToken': 'refreshToken',
   };
@@ -952,7 +952,11 @@ void main() {
       expect(result.sessionTransferToken,
           MethodCallHandler.ssoCredentials['sessionTransferToken']);
       expect(result.tokenType, MethodCallHandler.ssoCredentials['tokenType']);
-      expect(result.expiresIn, MethodCallHandler.ssoCredentials['expiresIn']);
+      expect(
+          result.expiresAt,
+          DateTime.parse(
+                  MethodCallHandler.ssoCredentials['expiresAt'] as String)
+              .toUtc());
       expect(result.idToken, MethodCallHandler.ssoCredentials['idToken']);
       expect(result.refreshToken,
           MethodCallHandler.ssoCredentials['refreshToken']);
@@ -962,7 +966,7 @@ void main() {
       when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
             'sessionTransferToken': 'ssoToken',
             'tokenType': 'session_transfer',
-            'expiresIn': 30,
+            'expiresAt': '2024-11-01T22:16:35.000Z',
             'idToken': 'id-token',
           });
 

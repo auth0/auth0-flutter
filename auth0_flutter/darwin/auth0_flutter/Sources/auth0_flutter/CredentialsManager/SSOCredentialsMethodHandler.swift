@@ -29,7 +29,7 @@ struct SSOCredentialsMethodHandler: MethodHandler {
                 var response: [String: Any] = [
                     "sessionTransferToken": ssoCredentials.sessionTransferToken,
                     "tokenType": ssoCredentials.issuedTokenType,
-                    "expiresIn": Int(ssoCredentials.expiresAt.timeIntervalSinceNow)
+                    "expiresAt": ssoCredentials.expiresAt.asISO8601String
                 ]
                 response["idToken"] = ssoCredentials.idToken
                 if let refreshToken = ssoCredentials.refreshToken {

@@ -109,7 +109,8 @@ class GetSSOCredentialsRequestHandlerTest {
         val mockSSOCredentials = mock<SSOCredentials>()
         `when`(mockSSOCredentials.sessionTransferToken).thenReturn("sso-token")
         `when`(mockSSOCredentials.issuedTokenType).thenReturn("session_transfer")
-        `when`(mockSSOCredentials.expiresAt).thenReturn(Date(System.currentTimeMillis() + 3_600_000))
+        val expiresAt = Date(1730499395000L)
+        `when`(mockSSOCredentials.expiresAt).thenReturn(expiresAt)
         `when`(mockSSOCredentials.idToken).thenReturn("id-token")
         `when`(mockSSOCredentials.refreshToken).thenReturn(null)
 
@@ -134,8 +135,8 @@ class GetSSOCredentialsRequestHandlerTest {
             CoreMatchers.equalTo("session_transfer")
         )
         MatcherAssert.assertThat(
-            (resultMap["expiresIn"] as Long) in 3598L..3600L,
-            CoreMatchers.equalTo(true)
+            resultMap["expiresAt"],
+            CoreMatchers.equalTo(expiresAt.toInstant().toString())
         )
         MatcherAssert.assertThat(
             resultMap["idToken"],

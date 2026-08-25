@@ -33,10 +33,10 @@ class TestPlatform extends Mock
     'tokenType': 'Bearer'
   });
 
-  static const SSOCredentials ssoResult = SSOCredentials(
+  static final SSOCredentials ssoResult = SSOCredentials(
     sessionTransferToken: 'ssoToken',
     tokenType: 'session_transfer',
-    expiresIn: 60,
+    expiresAt: DateTime.utc(2024, 11, 1, 22, 16, 35),
     idToken: 'idToken',
     refreshToken: 'refreshToken',
   );
@@ -355,7 +355,7 @@ void main() {
       expect(result.sessionTransferToken,
           TestPlatform.ssoResult.sessionTransferToken);
       expect(result.tokenType, TestPlatform.ssoResult.tokenType);
-      expect(result.expiresIn, TestPlatform.ssoResult.expiresIn);
+      expect(result.expiresAt, TestPlatform.ssoResult.expiresAt);
       expect(result.idToken, TestPlatform.ssoResult.idToken);
       expect(result.refreshToken, TestPlatform.ssoResult.refreshToken);
     });

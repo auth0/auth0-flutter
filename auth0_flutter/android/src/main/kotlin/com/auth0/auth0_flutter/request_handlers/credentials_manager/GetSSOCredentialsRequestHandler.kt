@@ -27,12 +27,10 @@ class GetSSOCredentialsRequestHandler : CredentialsManagerRequestHandler {
             }
 
             override fun onSuccess(credentials: SSOCredentials) {
-                val expiresIn =
-                    (credentials.expiresAt.time - System.currentTimeMillis()) / 1000
                 val map = mutableMapOf<String, Any?>(
                     "sessionTransferToken" to credentials.sessionTransferToken,
                     "tokenType" to credentials.issuedTokenType,
-                    "expiresIn" to expiresIn,
+                    "expiresAt" to credentials.expiresAt.toInstant().toString(),
                     "idToken" to credentials.idToken
                 )
                 credentials.refreshToken?.let { map["refreshToken"] = it }

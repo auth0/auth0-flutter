@@ -56,7 +56,7 @@ class MethodCallHandler {
   static const Map<dynamic, dynamic> ssoExchangeResult = {
     'sessionTransferToken': 'sso-token',
     'tokenType': 'session_transfer',
-    'expiresIn': 60,
+    'expiresAt': '2024-11-01T22:16:35.000Z',
     'idToken': 'id-token',
     'refreshToken': 'new-refresh-token'
   };
@@ -1328,7 +1328,10 @@ void main() {
       expect(
           result.tokenType, MethodCallHandler.ssoExchangeResult['tokenType']);
       expect(
-          result.expiresIn, MethodCallHandler.ssoExchangeResult['expiresIn']);
+          result.expiresAt,
+          DateTime.parse(
+                  MethodCallHandler.ssoExchangeResult['expiresAt'] as String)
+              .toUtc());
       expect(result.idToken, MethodCallHandler.ssoExchangeResult['idToken']);
       expect(result.refreshToken,
           MethodCallHandler.ssoExchangeResult['refreshToken']);

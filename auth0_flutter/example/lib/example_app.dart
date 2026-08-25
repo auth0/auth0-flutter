@@ -232,7 +232,7 @@ class _ExampleAppState extends State<ExampleApp> {
       output = 'SSO Credentials:\n\n'
           'Session Transfer Token: ${token.substring(0, 20)}...\n'
           'Token Type: ${ssoCredentials.tokenType}\n'
-          'Expires In: ${ssoCredentials.expiresIn}s\n'
+          'Expires At: ${ssoCredentials.expiresAt.toIso8601String()}\n'
           'ID Token: ****\n'
           'Refresh Token: '
           '${ssoCredentials.refreshToken != null ? '****' : 'N/A'}';

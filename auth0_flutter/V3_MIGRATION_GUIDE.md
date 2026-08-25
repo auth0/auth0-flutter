@@ -21,6 +21,7 @@ behavior that surfaces through the Dart API.
   - [Web Auth `useEphemeralSession` is now honored on Android](#web-auth-useephemeralsession-is-now-honored-on-android)
   - [Android Web Auth recovers login results across process death](#android-web-auth-recovers-login-results-across-process-death)
   - [Credentials manager `minTtl` now defaults to 60 seconds](#credentials-manager-minttl-now-defaults-to-60-seconds)
+  - [`SSOCredentials.expiresIn` is now `expiresAt` (`DateTime`)](#ssocredentialsexpiresin-is-now-expiresat-datetime)
 - [Getting Help](#getting-help)
 
 ## Requirements Changes
@@ -193,6 +194,31 @@ await auth0.credentialsManager.getApiCredentials(audience: '...', minTtl: 0);
 `hasValidCredentials` is intentionally left at `minTtl: 0`, matching the native
 `hasValid` behavior — it reports whether a credential is currently valid without
 applying the 60-second floor.
+
+### `SSOCredentials.expiresIn` is now `expiresAt` (`DateTime`)
+
+**Change:** Auth0.Android v4 and Auth0.swift v3 changed the Native to Web SSO
+credential expiry from a relative `expiresIn` (seconds) to an absolute
+`expiresAt` (date). `SSOCredentials` now exposes `expiresAt` as a UTC `DateTime`
+instead of `expiresIn` as an `int`, matching `Credentials.expiresAt`. This
+affects both `credentialsManager.ssoCredentials()` and `api.ssoExchange()` on
+Android and iOS/macOS.
+
+**Impact:** Code that reads `ssoCredentials.expiresIn` no longer compiles.
+
+**Migration:** Read `expiresAt`, and derive the remaining lifetime yourself if
+you still need a relative value:
+
+```dart
+final sso = await auth0.credentialsManager.ssoCredentials();
+
+// ❌ v2 — relative seconds
+// final secondsLeft = sso.expiresIn;
+
+// ✅ v3 — absolute UTC timestamp
+final DateTime expiresAt = sso.expiresAt;
+final secondsLeft = expiresAt.difference(DateTime.now().toUtc()).inSeconds;
+```
 
 ## Getting Help
 
