@@ -1751,7 +1751,7 @@ try {
   if (e.isVerificationRequired) {
     final credentials = await auth0.webAuthentication().login(
         scopes: scopes,
-        useEphemeralSession: true, // Otherwise a session cookie will remain (iOS/macOS only)
+        useEphemeralSession: true, // Otherwise a session cookie will remain (see note below)
         parameters: {
           'connection': connection,
           'login_hint': email // So the user doesn't have to type it again
@@ -1760,6 +1760,8 @@ try {
   }
 }
 ```
+
+> 💡 `useEphemeralSession` starts a private browser session so no session cookie is persisted. It is honored on iOS/macOS and, as of v3, on Android. On Android it depends on the device browser supporting ephemeral (private) Custom Tabs sessions — if the browser doesn't support it, the login falls back to a normal Custom Tabs session and is **not** ephemeral.
 
 ---
 
