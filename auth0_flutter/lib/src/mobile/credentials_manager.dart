@@ -84,6 +84,15 @@ abstract class CredentialsManager {
     required final String audience,
     final String? scope,
   });
+
+  /// Removes all stored credentials and API credentials, including the
+  /// underlying encryption keys.
+  ///
+  /// This is a more thorough wipe than [clearCredentials]: in addition to the
+  /// stored credential entries it also removes the cryptographic keys used to
+  /// protect them — on Android the crypto key pair and the DPoP key; on
+  /// iOS/macOS every entry in the credentials store plus the DPoP key pair.
+  Future<void> clearAll();
 }
 
 /// Default [CredentialsManager] implementation that passes calls to
@@ -220,6 +229,14 @@ class DefaultCredentialsManager extends CredentialsManager {
   }) =>
       CredentialsManagerPlatform.instance.clearApiCredentials(_createApiRequest(
           ClearApiCredentialsOptions(audience: audience, scope: scope)));
+
+  /// Removes all stored credentials and API credentials, including the
+  /// underlying encryption keys.
+  ///
+  /// See [CredentialsManager.clearAll] for full documentation.
+  @override
+  Future<void> clearAll() =>
+      CredentialsManagerPlatform.instance.clearAll(_createApiRequest(null));
 
   CredentialsManagerRequest<TOptions>
       _createApiRequest<TOptions extends RequestOptions>(
