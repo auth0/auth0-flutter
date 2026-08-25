@@ -14,7 +14,11 @@ class ClearAllRequestHandler : CredentialsManagerRequestHandler {
         request: MethodCallRequest,
         result: MethodChannel.Result
     ) {
-        credentialsManager.clearAll()
-        result.success(null)
+        try {
+            credentialsManager.clearAll()
+            result.success(null)
+        } catch (exception: Exception) {
+            result.error(exception.message ?: "UNKNOWN ERROR", exception.message, null)
+        }
     }
 }

@@ -48,4 +48,26 @@ class ClearAllRequestHandlerTest {
         verify(mockResult).success(isNull())
     }
 
+    @Test
+    fun `should call result error when clearAll throws`() {
+        val handler = ClearAllRequestHandler()
+        val mockResult = mock<Result>()
+        val mockAccount = mock<Auth0>()
+        val mockCredentialsManager = mock<SecureCredentialsManager>()
+        val request = MethodCallRequest(account = mockAccount, mock())
+
+        doThrow(RuntimeException("keystore error"))
+            .whenever(mockCredentialsManager).clearAll()
+
+        handler.handle(
+            mockCredentialsManager,
+            mock(),
+            request,
+            mockResult
+        )
+
+        verify(mockResult).error(eq("keystore error"), eq("keystore error"), isNull())
+        verify(mockResult, never()).success(any())
+    }
+
 }

@@ -9,7 +9,7 @@ import FlutterMacOS
 
 @testable import auth0_flutter
 
-class CredentialsManagerClearAllMethodHandlerTests: XCTestCase {
+final class CredentialsManagerClearAllMethodHandlerTests: XCTestCase {
     var spy: SpyCredentialsStorage!
     var sut: CredentialsManagerClearAllMethodHandler!
 
