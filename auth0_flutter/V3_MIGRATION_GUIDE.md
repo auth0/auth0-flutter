@@ -16,6 +16,7 @@ behavior that surfaces through the Dart API.
 - [Requirements Changes](#requirements-changes)
 - [Behavior Changes](#behavior-changes)
   - [`credentialsManager.clearCredentials` now clears all stored data (Android)](#credentialsmanagerclearcredentials-now-clears-all-stored-data-android)
+  - [New `credentialsManager.clearAll()` for a full wipe](#new-credentialsmanagerclearall-for-a-full-wipe)
   - [`api.multifactorChallenge` requires `authenticatorId` (Android)](#apimultifactorchallenge-requires-authenticatorid-android)
   - [Web Auth `useEphemeralSession` is now honored on Android](#web-auth-useephemeralsession-is-now-honored-on-android)
   - [Android Web Auth recovers login results across process death](#android-web-auth-recovers-login-results-across-process-death)
@@ -68,6 +69,27 @@ await credentialsManager.clearCredentials();
 ```
 
 This affects Android only. iOS/macOS behavior is unchanged.
+
+### New `credentialsManager.clearAll()` for a full wipe
+
+**Change (additive):** v3 adds `credentialsManager.clearAll()`, which removes all
+stored credentials and cached API credentials **and** the underlying encryption
+keys — on Android the crypto key pair and the DPoP key, on iOS/macOS every entry
+in the credentials store plus the DPoP key pair. It maps to Auth0.Android v4's
+`clearAll()` and Auth0.swift v3's `clearAll()`.
+
+**Impact:** This is a new, optional method, so existing code is unaffected. Use
+`clearCredentials()` to remove only the stored credential entries, or
+`clearAll()` when you also want to drop the encryption keys (for example a full
+sign-out/reset):
+
+```dart
+await auth0.credentialsManager.clearAll();
+```
+
+Because `clearAll()` deletes every entry in the underlying store, avoid sharing
+that store (a custom `sharedPreferencesName` on Android, or `storeKey` /
+`accessGroup` on iOS/macOS) with unrelated app data.
 
 ### `api.multifactorChallenge` requires `authenticatorId` (Android)
 

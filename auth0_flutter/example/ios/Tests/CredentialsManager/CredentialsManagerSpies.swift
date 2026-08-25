@@ -8,10 +8,12 @@ struct SpyCredentialsStorageError: Error {}
 class SpyCredentialsStorage: CredentialsStorage {
     var setEntryReturnValue = true
     var deleteEntryReturnValue = true
+    var deleteAllEntriesReturnValue = true
 
     var calledGetEntry = false
     var calledSetEntry = false
     var calledDeleteEntry = false
+    var calledDeleteAllEntries = false
 
     private var storage: [String: Data] = [:]
 
@@ -44,5 +46,11 @@ class SpyCredentialsStorage: CredentialsStorage {
         self.calledDeleteEntry = true
         self.storage.removeValue(forKey: key)
         if !self.deleteEntryReturnValue { throw SpyCredentialsStorageError() }
+    }
+
+    func deleteAllEntries() throws {
+        self.calledDeleteAllEntries = true
+        self.storage.removeAll()
+        if !self.deleteAllEntriesReturnValue { throw SpyCredentialsStorageError() }
     }
 }
