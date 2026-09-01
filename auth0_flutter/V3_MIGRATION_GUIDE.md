@@ -22,6 +22,7 @@ behavior that surfaces through the Dart API.
   - [Android Web Auth recovers login results across process death](#android-web-auth-recovers-login-results-across-process-death)
   - [Credentials manager `minTtl` now defaults to 60 seconds](#credentials-manager-minttl-now-defaults-to-60-seconds)
   - [`SSOCredentials.expiresIn` is now `expiresAt` (`DateTime`)](#ssocredentialsexpiresin-is-now-expiresat-datetime)
+- [`WebAuthenticationException` error codes reconciled (Android + iOS)](#webauthenticationexception-error-codes-reconciled-android--ios)
 - [Getting Help](#getting-help)
 
 ## Requirements Changes
@@ -219,6 +220,82 @@ final sso = await auth0.credentialsManager.ssoCredentials();
 final DateTime expiresAt = sso.expiresAt;
 final secondsLeft = expiresAt.difference(DateTime.now().toUtc()).inSeconds;
 ```
+
+---
+
+## `WebAuthenticationException` error codes reconciled (Android + iOS)
+
+**Change:** The error codes emitted by `WebAuthenticationException` are now
+consistent across Android and iOS, and the Dart class exposes typed boolean
+getters for each case.
+
+### Android now emits `USER_CANCELLED` on user cancel
+
+Previously, when a user dismissed the browser on Android, the native SDK
+emitted the raw code `a0.authentication_canceled`. iOS already emitted
+`USER_CANCELLED`. Both platforms now emit `USER_CANCELLED`.
+
+**Migration:** Replace any check on the raw Android code:
+
+```dart
+// v2 — required platform-branching
+if (e.code == 'USER_CANCELLED' || e.code == 'a0.authentication_canceled') { ... }
+
+// v3 — single check, or use the typed getter
+if (e.isUserCancelledException) { ... }
+```
+
+### New typed getters on `WebAuthenticationException`
+
+| Getter | Code | Platforms |
+|--------|------|-----------|
+| `isUserCancelledException` | `USER_CANCELLED` | Android + iOS |
+| `isAuthenticationFailed` | `AUTHENTICATION_FAILED` | iOS |
+| `isCodeExchangeFailed` | `CODE_EXCHANGE_FAILED` | iOS |
+| `isIdTokenValidationFailed` | `ID_TOKEN_VALIDATION_FAILED` | iOS |
+| `isTransactionActiveAlready` | `TRANSACTION_ACTIVE_ALREADY` | iOS |
+
+### Server error codes surface through `authenticationFailed` / `codeExchangeFailed` (iOS)
+
+Auth0.swift v3 wraps server-returned errors (e.g. `dpop_jkt_mismatch`,
+`access_denied`, `invalid_grant`) inside `authenticationFailed` or
+`codeExchangeFailed` as the cause. The Flutter SDK now extracts the underlying
+server error code and surfaces it directly, so `exception.code` returns the
+actual server code rather than the generic wrapper case name.
+
+**Migration:** If you were matching on `AUTHENTICATION_FAILED` or
+`CODE_EXCHANGE_FAILED` and needed the underlying error detail, switch to
+checking `exception.code` directly:
+
+```dart
+try {
+  await auth0.webAuthentication().login();
+} on WebAuthenticationException catch (e) {
+  if (e.isUserCancelledException) {
+    // User dismissed the browser — same code on Android and iOS
+  } else if (e.code == 'dpop_jkt_mismatch') {
+    // DPoP thumbprint mismatch from the Auth0 server
+  } else if (e.isAuthenticationFailed) {
+    // authenticationFailed with no recognized server cause
+  }
+}
+```
+
+### Removed iOS error codes (v2 only)
+
+The following iOS-only v2 error codes are no longer emitted (they mapped to
+removed `WebAuthError` cases in Auth0.swift v3):
+
+| Removed code | Replacement |
+|---|---|
+| `a0.no_bundle_identifier` | `UNKNOWN` |
+| `a0.pkce_not_allowed` | `UNKNOWN` |
+| `a0.no_authorization_code` | `UNKNOWN` — code-exchange failures now use `CODE_EXCHANGE_FAILED` |
+| `a0.invalid_invitation_url` | `UNKNOWN` |
+
+**Migration:** Remove any `catch` branches that match these codes.
+
+---
 
 ## Getting Help
 

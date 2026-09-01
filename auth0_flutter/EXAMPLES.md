@@ -416,15 +416,19 @@ try {
   final credentials = await auth0.webAuthentication().login();
   // ...
 } on WebAuthenticationException catch (e) {
-  if (e.isRetryable) {
+  if (e.isUserCancelledException) {
+    // User dismissed the browser — same on Android and iOS
+  } else if (e.isRetryable) {
     // Transient error (e.g. network issue) — safe to retry
+  } else if (e.code == 'dpop_jkt_mismatch') {
+    // DPoP thumbprint mismatch returned by the Auth0 server (iOS)
   } else {
     print(e);
   }
 }
 ```
 
-The `isRetryable` property indicates whether the error is transient (e.g. a network outage) and the operation can be retried.
+`isUserCancelledException` returns `true` when the user dismisses the browser without completing login — on both Android and iOS. The `isRetryable` property indicates whether the error is transient (e.g. a network outage) and the operation can be retried. For server-returned errors (e.g. `dpop_jkt_mismatch`, `access_denied`), `exception.code` contains the raw server error code directly.
 
 </details>
 

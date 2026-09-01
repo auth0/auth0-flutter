@@ -361,6 +361,28 @@ class LoginWebAuthRequestHandlerTest {
     }
 
     @Test
+    fun `returns USER_CANCELLED when the user cancels`() {
+        val builder = mock<WebAuthProvider.Builder>()
+        val mockResult = mock<Result>()
+        val exception = mock<AuthenticationException>()
+        whenever(exception.isCanceled).thenReturn(true)
+        whenever(exception.getDescription()).thenReturn("User cancelled")
+        whenever(exception.isNetworkError).thenReturn(false)
+
+        doAnswer { invocation ->
+            val cb = invocation.getArgument<Callback<Credentials, AuthenticationException>>(1)
+            cb.onFailure(exception)
+        }.`when`(builder).start(any(), any())
+
+        val handler = LoginWebAuthRequestHandler { _ -> builder }
+        val mockAccount = mock<Auth0>()
+        val mockRequest = MethodCallRequest(mockAccount, hashMapOf<String, Any>())
+        handler.handle(mock(), mockRequest, mockResult)
+
+        verify(mockResult).error(eq("USER_CANCELLED"), any(), any())
+    }
+
+    @Test
     fun `returns cause and causeStackTrace in error details when cause is present`() {
         val builder = mock<WebAuthProvider.Builder>()
         val mockResult = mock<Result>()

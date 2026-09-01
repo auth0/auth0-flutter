@@ -15,8 +15,15 @@ class WebAuthenticationException extends Auth0Exception {
   WebAuthenticationException.fromPlatformException(final PlatformException e)
       : this(e.code, e.messageString, e.detailsMap);
 
-  bool get isUserCancelledException =>
-      code == 'USER_CANCELLED' || code == 'a0.authentication_canceled';
+  bool get isUserCancelledException => code == 'USER_CANCELLED';
+
+  bool get isAuthenticationFailed => code == 'AUTHENTICATION_FAILED';
+
+  bool get isCodeExchangeFailed => code == 'CODE_EXCHANGE_FAILED';
+
+  bool get isIdTokenValidationFailed => code == 'ID_TOKEN_VALIDATION_FAILED';
+
+  bool get isTransactionActiveAlready => code == 'TRANSACTION_ACTIVE_ALREADY';
 
   bool get isRetryable => details.getBooleanOrFalse('_isRetryable');
 }
