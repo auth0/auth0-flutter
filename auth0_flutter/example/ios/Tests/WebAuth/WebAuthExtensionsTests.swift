@@ -27,34 +27,20 @@ class WebAuthExtensionsTests: XCTestCase {
         }
     }
 
-    func testAuthenticationFailedExtractsUnderlyingServerCode() {
-        let serverError = AuthenticationError(info: ["error": "dpop_jkt_mismatch", "error_description": "DPoP thumbprint mismatch"], statusCode: 401)
-        let webAuthError = WebAuthError.authenticationFailed(cause: serverError)
-        let flutterError = FlutterError(from: webAuthError)
-        XCTAssertEqual(flutterError.code, "dpop_jkt_mismatch")
-    }
-
-    func testCodeExchangeFailedExtractsUnderlyingServerCode() {
-        let serverError = AuthenticationError(info: ["error": "invalid_grant", "error_description": "Code expired"], statusCode: 400)
-        let webAuthError = WebAuthError.codeExchangeFailed(cause: serverError)
-        let flutterError = FlutterError(from: webAuthError)
-        XCTAssertEqual(flutterError.code, "invalid_grant")
-    }
-
     func testAuthenticationFailedFallsBackWhenNoCause() {
-        let flutterError = FlutterError(from: WebAuthError.authenticationFailed(cause: NSError(domain: "test", code: 0)))
+        let flutterError = FlutterError(from: WebAuthError.authenticationFailed)
         XCTAssertEqual(flutterError.code, "AUTHENTICATION_FAILED")
     }
 
     func testIsRetryableIsFalseForNonNetworkErrors() {
         let nonRetryableErrors: [WebAuthError] = [
             .userCancelled,
-            .authenticationFailed(cause: NSError(domain: "test", code: 0)),
-            .codeExchangeFailed(cause: NSError(domain: "test", code: 0)),
-            .credentialsManagerError(cause: NSError(domain: "test", code: 0)),
-            .idTokenValidationFailed(cause: NSError(domain: "test", code: 0)),
+            .authenticationFailed,
+            .codeExchangeFailed,
+            .credentialsManagerError,
+            .idTokenValidationFailed,
             .transactionActiveAlready,
-            .other(cause: NSError(domain: "test", code: 0))
+            .other
         ]
         for error in nonRetryableErrors {
             let flutterError = FlutterError(from: error)
