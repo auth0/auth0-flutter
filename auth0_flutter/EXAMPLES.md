@@ -11,6 +11,7 @@
     - [1. Configure a custom URL scheme](#1-configure-a-custom-url-scheme)
     - [2. Capture the callback URL](#2-capture-the-callback-url)
   - [Using Partial Custom Tabs (Android only)](#using-partial-custom-tabs-android-only)
+  - [DPoP](#dpop)
   - [Errors](#errors)
   - [Android: Custom schemes](#android-custom-schemes)
 - [🪟 Windows Web Authentication](#-windows-web-authentication)
@@ -403,6 +404,16 @@ await auth0.webAuthentication().logout(
         toolbarCornerRadius: 12,
     ));
 ```
+
+### DPoP
+
+To obtain DPoP-bound tokens from the Web Auth token exchange when DPoP is enabled for your client, pass `useDPoP: true` directly to `login()`:
+
+```dart
+final credentials = await auth0.webAuthentication().login(useDPoP: true);
+```
+
+DPoP can be enabled or disabled independently on each `login()` call — no constructor configuration is required.
 
 ### Errors
 
@@ -1539,12 +1550,6 @@ final credentials = await auth0.passwordless.loginWithOtp(
 
 > [!NOTE]
 > If the user has MFA configured, `loginWithOtp` fails with an [`ApiException`](#errors-2) whose `isMultifactorRequired` is `true`. Continue the flow using the existing MFA APIs (`auth0.api.multifactorChallenge` / `auth0.api.loginWithOtp`).
-
-To receive DPoP-bound tokens from the token exchange when DPoP is enabled for your client, construct your `Auth0` instance with `useDPoP: true`:
-
-```dart
-final auth0 = Auth0('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID', useDPoP: true);
-```
 
 ### Retrieve user information
 

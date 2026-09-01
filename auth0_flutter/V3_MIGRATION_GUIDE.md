@@ -23,6 +23,7 @@ behavior that surfaces through the Dart API.
   - [Credentials manager `minTtl` now defaults to 60 seconds](#credentials-manager-minttl-now-defaults-to-60-seconds)
   - [`SSOCredentials.expiresIn` is now `expiresAt` (`DateTime`)](#ssocredentialsexpiresin-is-now-expiresat-datetime)
 - [`WebAuthenticationException` error codes reconciled (Android + iOS)](#webauthenticationexception-error-codes-reconciled-android--ios)
+- [DPoP moved to a per-request Web Auth option](#dpop-moved-to-a-per-request-web-auth-option)
 - [Getting Help](#getting-help)
 
 ## Requirements Changes
@@ -294,6 +295,43 @@ removed `WebAuthError` cases in Auth0.swift v3):
 | `a0.invalid_invitation_url` | `UNKNOWN` |
 
 **Migration:** Remove any `catch` branches that match these codes.
+
+---
+
+## DPoP moved to a per-request Web Auth option
+
+**Change:** The `useDPoP` parameter has been removed from the `Auth0` constructor.
+Auth0.Android v4 moved `WebAuthProvider.useDPoP()` to a per-request builder option,
+and v3 aligns the Flutter SDK: DPoP for Web Auth is now configured per `login()` call.
+
+**Impact:** Code that sets `useDPoP: true` on the `Auth0` constructor no longer compiles.
+
+**Migration — Web Auth:** pass `useDPoP: true` directly to `login()`:
+
+```dart
+// ❌ v2 — constructor-level global
+final auth0 = Auth0('domain', 'clientId', useDPoP: true);
+await auth0.webAuthentication().login();
+
+// ✅ v3 — per-request
+final auth0 = Auth0('domain', 'clientId');
+await auth0.webAuthentication().login(useDPoP: true);
+```
+
+**Migration — CredentialsManager:** if you relied on the constructor-level `useDPoP`
+to bind credentials renewal to a DPoP key, supply your own `DefaultCredentialsManager`
+with `useDPoP: true` via the `credentialsManager` parameter:
+
+```dart
+// ✅ v3 — explicit DPoP credentials manager
+final auth0 = Auth0('domain', 'clientId',
+  credentialsManager: DefaultCredentialsManager(
+    Account('domain', 'clientId'),
+    UserAgent(name: 'auth0-flutter', version: version),
+    useDPoP: true,
+  ),
+);
+```
 
 ---
 

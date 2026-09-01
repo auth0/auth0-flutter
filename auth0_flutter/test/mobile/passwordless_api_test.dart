@@ -173,25 +173,4 @@ void main() {
     });
   });
 
-  group('useDPoP', () {
-    test('threads useDPoP from the Auth0 constructor into the request',
-        () async {
-      when(mockedPlatform.passwordlessChallengeWithEmail(any))
-          .thenAnswer((_) async => TestPlatform.challengeResult);
-
-      await Auth0('test-domain', 'test-clientId', useDPoP: true)
-          .passwordless
-          .challengeWithEmail(
-            email: 'test@example.com',
-            connection: 'test-connection',
-          );
-
-      final verificationResult =
-          verify(mockedPlatform.passwordlessChallengeWithEmail(captureAny))
-                  .captured
-                  .single
-              as ApiRequest<AuthPasswordlessChallengeEmailOptions>;
-      expect(verificationResult.useDPoP, true);
-    });
-  });
 }

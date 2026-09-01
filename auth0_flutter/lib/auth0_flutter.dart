@@ -65,8 +65,6 @@ class Auth0 {
   final UserAgent _userAgent =
       UserAgent(name: 'auth0-flutter', version: version);
 
-  final bool _useDPoP;
-
   late final CredentialsManager _credentialsManager;
 
   /// Secure [Credentials] store.
@@ -89,15 +87,12 @@ class Auth0 {
   Auth0(final String domain, final String clientId,
       {final LocalAuthentication? localAuthentication,
       final CredentialsManager? credentialsManager,
-      final CredentialsManagerConfiguration? credentialsManagerConfiguration,
-      final bool useDPoP = false})
-      : _account = Account(domain, clientId),
-        _useDPoP = useDPoP {
+      final CredentialsManagerConfiguration? credentialsManagerConfiguration})
+      : _account = Account(domain, clientId) {
     _credentialsManager = credentialsManager ??
         DefaultCredentialsManager(_account, _userAgent,
             localAuthentication: localAuthentication,
-            credentialsManagerConfiguration: credentialsManagerConfiguration,
-            useDPoP: useDPoP);
+            credentialsManagerConfiguration: credentialsManagerConfiguration);
   }
 
   /// An instance of [AuthenticationApi], the primary interface for interacting
@@ -125,9 +120,6 @@ class Auth0 {
   /// dedicated `email`/`sms` strategy connections. Use this against a standard
   /// database connection configured with `email_otp`/`phone_otp`.
   ///
-  /// Set `useDPoP` to `true` on the [Auth0] constructor to obtain DPoP-bound
-  /// tokens from the OTP token exchange, when DPoP is enabled for the client.
-  ///
   /// Usage example:
   ///
   /// ```dart
@@ -143,8 +135,7 @@ class Auth0 {
   ///   otp: '123456',
   /// );
   /// ```
-  Passwordless get passwordless =>
-      Passwordless(_account, _userAgent, useDPoP: _useDPoP);
+  Passwordless get passwordless => Passwordless(_account, _userAgent);
 
   /// Creates an instance of [WebAuthentication], the primary interface for interacting with the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login).
   ///
