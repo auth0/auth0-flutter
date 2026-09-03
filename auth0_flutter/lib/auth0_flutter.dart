@@ -164,7 +164,8 @@ class Auth0 {
   WebAuthentication webAuthentication(
           {final String? scheme, final bool useCredentialsManager = true}) =>
       WebAuthentication(_account, _userAgent, scheme,
-          useCredentialsManager ? credentialsManager : null);
+          useCredentialsManager ? credentialsManager : null,
+          useDPoP: _useDPoP);
 
   /// Creates a class of [WindowsWebAuthentication], the Windows-specific
   /// class for interacting with the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login).
