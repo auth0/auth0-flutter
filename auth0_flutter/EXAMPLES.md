@@ -421,14 +421,16 @@ try {
   } else if (e.isRetryable) {
     // Transient error (e.g. network issue) — safe to retry
   } else if (e.code == 'dpop_jkt_mismatch') {
-    // DPoP thumbprint mismatch returned by the Auth0 server (iOS)
+    // DPoP thumbprint mismatch returned by the Auth0 server (Android + iOS)
   } else {
     print(e);
   }
 }
 ```
 
-`isUserCancelledException` returns `true` when the user dismisses the browser without completing login — on both Android and iOS. The `isRetryable` property indicates whether the error is transient (e.g. a network outage) and the operation can be retried. For server-returned errors (e.g. `dpop_jkt_mismatch`, `access_denied`), `exception.code` contains the raw server error code directly.
+- `isUserCancelledException` — `true` when the user dismisses the browser without completing login (Android + iOS).
+- `isRetryable` — `true` when the error is transient (e.g. a network outage) and the operation can be retried.
+- For server-returned errors (e.g. `dpop_jkt_mismatch`, `access_denied`), `exception.code` contains the raw server error code directly.
 
 </details>
 
