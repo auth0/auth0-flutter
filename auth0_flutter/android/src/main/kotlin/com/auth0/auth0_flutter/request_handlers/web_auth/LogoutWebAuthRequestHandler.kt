@@ -5,6 +5,7 @@ import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
 import com.auth0.android.provider.WebAuthProvider
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
+import com.auth0.auth0_flutter.toWebAuthResult
 import com.auth0.auth0_flutter.utils.buildCustomTabsOptions
 import io.flutter.plugin.common.MethodChannel
 
@@ -36,12 +37,7 @@ class LogoutWebAuthRequestHandler(private val builderResolver: (MethodCallReques
 
         builder.start(context, object : Callback<Void?, AuthenticationException> {
             override fun onFailure(exception: AuthenticationException) {
-                val details = mutableMapOf<String, Any>("_isRetryable" to exception.isNetworkError)
-                exception.cause?.let {
-                    details["cause"] = it.toString()
-                    details["causeStackTrace"] = it.stackTraceToString()
-                }
-                result.error(exception.getCode(), exception.getDescription(), details)
+                exception.toWebAuthResult(result)
             }
 
             override fun onSuccess(res: Void?) {

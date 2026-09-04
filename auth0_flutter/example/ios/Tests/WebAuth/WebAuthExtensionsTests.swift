@@ -27,6 +27,11 @@ class WebAuthExtensionsTests: XCTestCase {
         }
     }
 
+    func testAuthenticationFailedFallsBackWhenNoCause() {
+        let flutterError = FlutterError(from: WebAuthError.authenticationFailed)
+        XCTAssertEqual(flutterError.code, "AUTHENTICATION_FAILED")
+    }
+
     func testIsRetryableIsFalseForNonNetworkErrors() {
         let nonRetryableErrors: [WebAuthError] = [
             .userCancelled,
