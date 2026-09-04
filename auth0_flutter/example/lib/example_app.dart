@@ -194,12 +194,17 @@ class _ExampleAppState extends State<ExampleApp> {
             'Expires At: ${credentials.expiresAt}';
       } else {
         // Mobile (Android/iOS): Use WebAuth with DPoP
-        final webAuthDPoP = auth0.webAuthentication(
+        final auth0DPoP = Auth0(
+          dotenv.env['AUTH0_DOMAIN']!,
+          dotenv.env['AUTH0_CLIENT_ID']!,
+          useDPoP: true, // Enable DPoP for mobile
+        );
+
+        final webAuthDPoP = auth0DPoP.webAuthentication(
           scheme: dotenv.env['AUTH0_CUSTOM_SCHEME'],
         );
 
         final result = await webAuthDPoP.login(
-          useDPoP: true, // Enable DPoP for mobile
           useHTTPS: true,
           audience: dotenv.env['AUTH0_AUDIENCE'],
         );
