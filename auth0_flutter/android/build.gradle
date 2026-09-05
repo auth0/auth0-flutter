@@ -16,7 +16,21 @@ plugins {
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+
+// AGP 9+ compiles Kotlin itself (built-in Kotlin) unless the host app opts out
+// with android.builtInKotlin=false, and it fails the build when the Kotlin
+// Gradle Plugin is applied on top of that. Apply KGP only where AGP will not
+// compile Kotlin for us. pluginManager is used instead of `apply plugin:` on
+// purpose: Flutter detects KGP usage by regex-scanning this script and would
+// otherwise warn about it even on AGP 9, where this branch never runs.
+def agpMajor = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0] as int
+def builtInKotlin = providers.gradleProperty("android.builtInKotlin")
+        .map { it.toBoolean() }
+        .orElse(agpMajor >= 9)
+        .get()
+if (agpMajor < 9 || !builtInKotlin) {
+    pluginManager.apply('kotlin-android')
+}
 
 def libApplicationId = 'com.auth0.auth0_flutter'
 
@@ -41,10 +55,6 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
-
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
@@ -67,6 +77,16 @@ android {
         unitTests {
             includeAndroidResources = true
             returnDefaultValues = true
+        }
+    }
+}
+
+// kotlinOptions is KGP DSL and does not exist with built-in Kotlin, where AGP
+// derives the JVM target from compileOptions.targetCompatibility above.
+plugins.withId("org.jetbrains.kotlin.android") {
+    kotlin {
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8
         }
     }
 }
