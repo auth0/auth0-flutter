@@ -1,5 +1,11 @@
 # Change Log
 
+## [afpi-v2.7.0](https://github.com/auth0/auth0-flutter/tree/afpi-v2.7.0) (2026-09-07)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.6.0...afpi-v2.7.0)
+
+**Changed**
+- refactor: replace deprecated cpprestsdk dependency with cpp-httplib [\#906](https://github.com/auth0/auth0-flutter/pull/906) ([NandanPrabhu](https://github.com/NandanPrabhu))
+
 ## [afpi-v2.6.0](https://github.com/auth0/auth0-flutter/tree/afpi-v2.6.0) (2026-07-31)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.5.0...afpi-v2.6.0)
 
