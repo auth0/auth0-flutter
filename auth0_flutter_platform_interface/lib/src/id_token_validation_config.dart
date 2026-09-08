@@ -19,5 +19,16 @@ class IdTokenValidationConfig {
   /// Defaults to `0`.
   final int? maxAge;
 
-  const IdTokenValidationConfig({this.leeway, this.issuer, this.maxAge});
+  /// A one-time random value used to mitigate replay attacks. When provided, it
+  /// must match the `nonce` claim in the returned ID token.
+  ///
+  /// When omitted, the underlying SDK generates and validates a nonce
+  /// automatically.
+  ///
+  /// Not supported on web, where the nonce is always managed internally by
+  /// auth0-spa-js.
+  final String? nonce;
+
+  const IdTokenValidationConfig(
+      {this.leeway, this.issuer, this.maxAge, this.nonce});
 }

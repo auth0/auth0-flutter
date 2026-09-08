@@ -43,6 +43,7 @@ class SpyWebAuth: WebAuth, @unchecked Sendable {
     private(set) var issuerValue: String?
     private(set) var leewayValue: Int?
     private(set) var maxAgeValue: Int?
+    private(set) var nonceValue: String?
     private(set) var useHTTPSValue: Bool?
     private(set) var useEmphemeralSessionValue: Bool?
     private(set) var invitationURLValue: URL?
@@ -84,6 +85,7 @@ class SpyWebAuth: WebAuth, @unchecked Sendable {
     }
 
     func nonce(_ nonce: String) -> Self {
+        self.nonceValue = nonce
         return self
     }
 

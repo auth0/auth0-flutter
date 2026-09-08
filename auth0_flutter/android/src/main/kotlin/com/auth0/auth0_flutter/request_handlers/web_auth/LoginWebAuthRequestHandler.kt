@@ -58,6 +58,10 @@ class LoginWebAuthRequestHandler(
             builder.withIdTokenVerificationIssuer(args["issuer"] as String)
         }
 
+        if (args["nonce"] is String) {
+            builder.withNonce(args["nonce"] as String)
+        }
+
         if (args["scheme"] is String) {
             builder.withScheme(args["scheme"] as String)
         }
