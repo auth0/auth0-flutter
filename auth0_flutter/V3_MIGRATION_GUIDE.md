@@ -99,8 +99,8 @@ that store (a custom `sharedPreferencesName` on Android, or `storeKey` /
 **Change:** The inline MFA methods `api.loginWithOtp` and
 `api.multifactorChallenge` have been removed from the authentication client.
 This follows Auth0.Android v4 and Auth0.swift v3, which route MFA through a
-dedicated MFA client. Their functionality is covered by the `auth0.mfa` API
-(reached via `auth0.mfa(mfaToken:)`), which lists authenticators, requests a
+dedicated MFA client. Their functionality is covered by the MFA API
+(`auth0.mfa()`), which lists authenticators, requests a
 challenge, and verifies OTP/OOB/recovery-code factors. The `ChallengeType`
 enum, used only by `multifactorChallenge`, has also been removed.
 
@@ -112,9 +112,9 @@ enum, used only by `multifactorChallenge`, has also been removed.
 | `loginWithOtp({otp, mfaToken})` | `verifyOtp({otp})` |
 | `multifactorChallenge({mfaToken, types, authenticatorId})` | `challenge({authenticatorId})` |
 
-**Migration:** Obtain an `MfaApi` instance from the `mfa_token` exposed on the
-MFA-required `ApiException`, then drive the challenge/verify flow through it. The
-`mfa_token` is passed once to `auth0.mfa(mfaToken:)` rather than repeated on each
+**Migration:** Obtain an `MfaApi` instance by passing the `mfaToken` from the
+MFA-required `ApiException` to `auth0.mfa()`, then drive the challenge/verify
+flow through it. The `mfaToken` is supplied once rather than repeated on each
 call, and challenges target a specific `authenticatorId`:
 
 ```dart
