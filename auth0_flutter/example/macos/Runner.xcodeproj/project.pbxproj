@@ -41,10 +41,8 @@
 		5C13992A2B0EB5F3006DCE54 /* WebAuthHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C13990D2B0EB5F3006DCE54 /* WebAuthHandlerTests.swift */; };
 		5C13992B2B0EB5F3006DCE54 /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C13990E2B0EB5F3006DCE54 /* Mocks.swift */; };
 		5C13992C2B0EB5F3006DCE54 /* AuthAPIExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399102B0EB5F3006DCE54 /* AuthAPIExtensionsTests.swift */; };
-		5C13992D2B0EB5F3006DCE54 /* AuthAPIMultifactorChallengeMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399112B0EB5F3006DCE54 /* AuthAPIMultifactorChallengeMethodHandlerTests.swift */; };
 		5C13992E2B0EB5F3006DCE54 /* AuthAPISignupMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399122B0EB5F3006DCE54 /* AuthAPISignupMethodHandlerTests.swift */; };
 		5C13992F2B0EB5F3006DCE54 /* AuthAPIRenewMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399132B0EB5F3006DCE54 /* AuthAPIRenewMethodHandlerTests.swift */; };
-		5C1399302B0EB5F3006DCE54 /* AuthAPILoginWithOTPMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399142B0EB5F3006DCE54 /* AuthAPILoginWithOTPMethodHandlerTests.swift */; };
 		5C1399312B0EB5F3006DCE54 /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399152B0EB5F3006DCE54 /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift */; };
 		5C1399322B0EB5F3006DCE54 /* AuthAPIHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399162B0EB5F3006DCE54 /* AuthAPIHandlerTests.swift */; };
 		5C1399332B0EB5F3006DCE54 /* AuthAPIResetPasswordMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C1399172B0EB5F3006DCE54 /* AuthAPIResetPasswordMethodHandlerTests.swift */; };
@@ -160,10 +158,8 @@
 		5C13990D2B0EB5F3006DCE54 /* WebAuthHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebAuthHandlerTests.swift; sourceTree = "<group>"; };
 		5C13990E2B0EB5F3006DCE54 /* Mocks.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
 		5C1399102B0EB5F3006DCE54 /* AuthAPIExtensionsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIExtensionsTests.swift; sourceTree = "<group>"; };
-		5C1399112B0EB5F3006DCE54 /* AuthAPIMultifactorChallengeMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIMultifactorChallengeMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C1399122B0EB5F3006DCE54 /* AuthAPISignupMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPISignupMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C1399132B0EB5F3006DCE54 /* AuthAPIRenewMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIRenewMethodHandlerTests.swift; sourceTree = "<group>"; };
-		5C1399142B0EB5F3006DCE54 /* AuthAPILoginWithOTPMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPILoginWithOTPMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C1399152B0EB5F3006DCE54 /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPILoginUsernameOrEmailMethodHandlerTests.swift; sourceTree = "<group>"; };
 		5C1399162B0EB5F3006DCE54 /* AuthAPIHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIHandlerTests.swift; sourceTree = "<group>"; };
 		5C1399172B0EB5F3006DCE54 /* AuthAPIResetPasswordMethodHandlerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthAPIResetPasswordMethodHandlerTests.swift; sourceTree = "<group>"; };
@@ -352,10 +348,8 @@
 			isa = PBXGroup;
 			children = (
 				5C1399102B0EB5F3006DCE54 /* AuthAPIExtensionsTests.swift */,
-				5C1399112B0EB5F3006DCE54 /* AuthAPIMultifactorChallengeMethodHandlerTests.swift */,
 				5C1399122B0EB5F3006DCE54 /* AuthAPISignupMethodHandlerTests.swift */,
 				5C1399132B0EB5F3006DCE54 /* AuthAPIRenewMethodHandlerTests.swift */,
-				5C1399142B0EB5F3006DCE54 /* AuthAPILoginWithOTPMethodHandlerTests.swift */,
 				5C1399152B0EB5F3006DCE54 /* AuthAPILoginUsernameOrEmailMethodHandlerTests.swift */,
 				5C1399162B0EB5F3006DCE54 /* AuthAPIHandlerTests.swift */,
 				5C1399172B0EB5F3006DCE54 /* AuthAPIResetPasswordMethodHandlerTests.swift */,
@@ -706,11 +700,9 @@
 				5C13992A2B0EB5F3006DCE54 /* WebAuthHandlerTests.swift in Sources */,
 				5C1399282B0EB5F3006DCE54 /* WebAuthLogoutMethodHandlerTests.swift in Sources */,
 				5C1399272B0EB5F3006DCE54 /* WebAuthExtensionsTests.swift in Sources */,
-				5C13992D2B0EB5F3006DCE54 /* AuthAPIMultifactorChallengeMethodHandlerTests.swift in Sources */,
 				5C1399262B0EB5F3006DCE54 /* WebAuthSpies.swift in Sources */,
 				5C1399322B0EB5F3006DCE54 /* AuthAPIHandlerTests.swift in Sources */,
 				5C1399362B0EB5F3006DCE54 /* Auth0FlutterPluginTests.swift in Sources */,
-				5C1399302B0EB5F3006DCE54 /* AuthAPILoginWithOTPMethodHandlerTests.swift in Sources */,
 				5C1399372B0EB5F3006DCE54 /* CredentialsManagerHasValidMethodHandlerTests.swift in Sources */,
 				5C13993B2B0EB5F3006DCE54 /* CredentialsManagerClearMethodHandlerTests.swift in Sources */,
 				5C13992F2B0EB5F3006DCE54 /* AuthAPIRenewMethodHandlerTests.swift in Sources */,
