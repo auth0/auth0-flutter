@@ -17,7 +17,7 @@ behavior that surfaces through the Dart API.
 - [Behavior Changes](#behavior-changes)
   - [`credentialsManager.clearCredentials` now clears all stored data (Android)](#credentialsmanagerclearcredentials-now-clears-all-stored-data-android)
   - [New `credentialsManager.clearAll()` for a full wipe](#new-credentialsmanagerclearall-for-a-full-wipe)
-  - [`api.multifactorChallenge` requires `authenticatorId` (Android)](#apimultifactorchallenge-requires-authenticatorid-android)
+  - [Inline MFA methods removed from the Authentication API](#inline-mfa-methods-removed-from-the-authentication-api)
   - [Web Auth `useEphemeralSession` is now honored on Android](#web-auth-useephemeralsession-is-now-honored-on-android)
   - [Android Web Auth recovers login results across process death](#android-web-auth-recovers-login-results-across-process-death)
   - [Credentials manager `minTtl` now defaults to 60 seconds](#credentials-manager-minttl-now-defaults-to-60-seconds)
@@ -94,44 +94,56 @@ Because `clearAll()` deletes every entry in the underlying store, avoid sharing
 that store (a custom `sharedPreferencesName` on Android, or `storeKey` /
 `accessGroup` on iOS/macOS) with unrelated app data.
 
-### `api.multifactorChallenge` requires `authenticatorId` (Android)
+### Inline MFA methods removed from the Authentication API
 
-**Change:** Auth0.Android v4 removed the inline MFA methods from the
-authentication client and routes MFA through a dedicated MFA client whose
-`challenge` operation accepts only an `authenticatorId` — there is no
-challenge-type filtering.
+**Change:** The inline MFA methods `api.loginWithOtp` and
+`api.multifactorChallenge` have been removed from the authentication client.
+This follows Auth0.Android v4 and Auth0.swift v3, which route MFA through a
+dedicated MFA client. Their functionality is covered by the MFA API
+(`auth0.mfa()`), which lists authenticators, requests a
+challenge, and verifies OTP/OOB/recovery-code factors. The `ChallengeType`
+enum, used only by `multifactorChallenge`, has also been removed.
 
-**Impact:** On Android, a `multifactorChallenge` call must now include
-`authenticatorId`. A call that supplies only `types` and omits
-`authenticatorId` — which was accepted in v2 — now fails on Android. Any `types`
-value passed is ignored on Android.
+**Impact:** Code that calls `auth0.api.loginWithOtp` or
+`auth0.api.multifactorChallenge` no longer compiles.
 
-> **Note**
-> The Dart signature of `multifactorChallenge` is unchanged in this release
-> (`types` and `authenticatorId` remain optional parameters), so this is a
-> runtime behavior change on Android rather than a compile-time break. iOS
-> already requires `authenticatorId`. A later v3 PR realigns the shared Dart
-> API to make `authenticatorId` required and remove `types` across platforms.
+| Removed (`auth0.api`) | Replacement (`auth0.mfa`) |
+|-----------------------|---------------------------|
+| `loginWithOtp({otp, mfaToken})` | `verifyOtp({otp})` |
+| `multifactorChallenge({mfaToken, types, authenticatorId})` | `challenge({authenticatorId})` |
 
-**Migration:** Always pass `authenticatorId` when calling
-`multifactorChallenge`, and stop relying on `types`:
+**Migration:** Obtain an `MfaApi` instance by passing the `mfaToken` from the
+MFA-required `ApiException` to `auth0.mfa()`, then drive the challenge/verify
+flow through it. The `mfaToken` is supplied once rather than repeated on each
+call, and challenges target a specific `authenticatorId`:
 
 ```dart
-// ❌ v2 — worked on Android, relied on challenge-type filtering
-final challenge = await auth0.api.multifactorChallenge(
-  mfaToken: mfaToken,
-  types: [ChallengeType.otp, ChallengeType.oob],
-);
+try {
+  await auth0.api.login(
+    usernameOrEmail: email,
+    password: password,
+    connectionOrRealm: 'Username-Password-Authentication',
+  );
+} on ApiException catch (e) {
+  if (e.isMultifactorRequired && e.mfaToken != null) {
+    final mfa = auth0.mfa(mfaToken: e.mfaToken!);
 
-// ✅ v3 — pass the authenticator to challenge
-final challenge = await auth0.api.multifactorChallenge(
-  mfaToken: mfaToken,
-  authenticatorId: authenticatorId,
-);
+    // ❌ v2 — inline challenge + OTP login on the auth client
+    // await auth0.api.multifactorChallenge(mfaToken: e.mfaToken!, ...);
+    // final credentials =
+    //     await auth0.api.loginWithOtp(otp: '123456', mfaToken: e.mfaToken!);
+
+    // ✅ v3 — challenge a specific authenticator, then verify the OTP
+    final authenticators =
+        await mfa.getAuthenticators(factorsAllowed: ['totp', 'phone']);
+    await mfa.challenge(authenticatorId: authenticators.first.id);
+    final credentials = await mfa.verifyOtp(otp: '123456');
+  }
+}
 ```
 
-If you support one-time passwords and don't need to select a specific factor,
-you can skip the challenge request and call `api.loginWithOtp` directly.
+For TOTP factors you can skip the challenge request and call `mfa.verifyOtp`
+directly; use `mfa.challenge` for out-of-band factors (SMS, email, push).
 
 ### Web Auth `useEphemeralSession` is now honored on Android
 

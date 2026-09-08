@@ -4,8 +4,6 @@ import 'auth/api_exception.dart';
 import 'auth/auth_custom_token_exchange_options.dart';
 import 'auth/auth_login_code_options.dart';
 import 'auth/auth_login_options.dart';
-import 'auth/auth_login_with_otp_options.dart';
-import 'auth/auth_multifactor_challenge_options.dart';
 import 'auth/auth_passkey_exchange_options.dart';
 import 'auth/auth_passkey_login_challenge_options.dart';
 import 'auth/auth_passkey_signup_challenge_options.dart';
@@ -18,7 +16,6 @@ import 'auth/auth_reset_password_options.dart';
 import 'auth/auth_signup_options.dart';
 import 'auth/auth_sso_exchange_options.dart';
 import 'auth/auth_user_info_options.dart';
-import 'auth/challenge.dart';
 import 'auth/passkey_challenge.dart';
 import 'auth/passwordless_challenge.dart';
 import 'auth0_flutter_auth_platform.dart';
@@ -32,8 +29,6 @@ import 'user_profile.dart';
 const MethodChannel _channel = MethodChannel('auth0.com/auth0_flutter/auth');
 
 const String authLoginMethod = 'auth#login';
-const String authLoginWithOtpMethod = 'auth#loginOtp';
-const String authMultifactorChallengeMethod = 'auth#multifactorChallenge';
 const String authStartPasswordlessWithEmailMethod =
     'auth#passwordlessWithEmail';
 const String authStartPasswordlessWithPhoneNumberMethod =
@@ -65,24 +60,6 @@ class MethodChannelAuth0FlutterAuth extends Auth0FlutterAuthPlatform {
         await invokeRequest(method: authLoginMethod, request: request);
 
     return Credentials.fromMap(result);
-  }
-
-  @override
-  Future<Credentials> loginWithOtp(
-      final ApiRequest<AuthLoginWithOtpOptions> request) async {
-    final Map<String, dynamic> result =
-        await invokeRequest(method: authLoginWithOtpMethod, request: request);
-
-    return Credentials.fromMap(result);
-  }
-
-  @override
-  Future<Challenge> multifactorChallenge(
-      final ApiRequest<AuthMultifactorChallengeOptions> request) async {
-    final Map<String, dynamic> result = await invokeRequest(
-        method: authMultifactorChallengeMethod, request: request);
-
-    return Challenge.fromMap(result);
   }
 
   @override
