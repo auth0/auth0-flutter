@@ -8,16 +8,18 @@ import FlutterMacOS
 
 extension FlutterError {
     convenience init(from webAuthError: WebAuthError) {
+        func causeCode(fallback: String) -> String {
+            (webAuthError.cause as? AuthenticationError)?.code ?? fallback
+        }
         var code: String
         switch webAuthError {
-        case WebAuthError.noBundleIdentifier: code = "NO_BUNDLE_IDENTIFIER"
-        case WebAuthError.invalidInvitationURL: code = "INVALID_INVITATION_URL"
         case WebAuthError.userCancelled: code = "USER_CANCELLED"
-        case WebAuthError.noAuthorizationCode: code = "NO_AUTHORIZATION_CODE"
-        case WebAuthError.pkceNotAllowed: code = "PKCE_NOT_ALLOWED"
+        case WebAuthError.authenticationFailed: code = causeCode(fallback: "AUTHENTICATION_FAILED")
+        case WebAuthError.codeExchangeFailed: code = causeCode(fallback: "CODE_EXCHANGE_FAILED")
         case WebAuthError.idTokenValidationFailed: code = "ID_TOKEN_VALIDATION_FAILED"
+        case WebAuthError.credentialsManagerError: code = "CREDENTIALS_MANAGER_ERROR"
         case WebAuthError.transactionActiveAlready: code = "TRANSACTION_ACTIVE_ALREADY"
-        case WebAuthError.other: code = "OTHER"
+        case WebAuthError.other: code = causeCode(fallback: "OTHER")
         default: code = "UNKNOWN"
         }
         var details = webAuthError.details

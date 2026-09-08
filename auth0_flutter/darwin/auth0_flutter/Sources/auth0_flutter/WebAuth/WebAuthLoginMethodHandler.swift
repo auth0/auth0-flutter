@@ -8,7 +8,7 @@ import FlutterMacOS
 #endif
 
 #if os(iOS)
-typealias WebAuthProviderFunction = (UIModalPresentationStyle) -> WebAuthProvider
+typealias WebAuthProviderFunction = @MainActor (UIModalPresentationStyle) -> WebAuthProvider
 #endif
 
 struct WebAuthLoginMethodHandler: MethodHandler {
@@ -35,7 +35,9 @@ struct WebAuthLoginMethodHandler: MethodHandler {
     #if os(iOS)
     let safariProvider: WebAuthProviderFunction
 
-    init(client: WebAuth, safariProvider: @escaping WebAuthProviderFunction = WebAuthentication.safariProvider) {
+    init(client: WebAuth, safariProvider: @escaping WebAuthProviderFunction = { style in
+        WebAuthentication.safariProvider(style: style)
+    }) {
         self.client = client
         self.safariProvider = safariProvider
     }
@@ -103,7 +105,11 @@ struct WebAuthLoginMethodHandler: MethodHandler {
         #if os(iOS)
         if let safariViewControllerDictionary = arguments[SafariViewController.key] as? [String: Any?] {
             let safariViewController = SafariViewController(from: safariViewControllerDictionary)
-            webAuth = webAuth.provider(self.safariProvider(safariViewController.presentationStyle))
+            // Flutter dispatches method calls on the main thread, so this is safe to assert.
+            let provider = MainActor.assumeIsolated {
+                self.safariProvider(safariViewController.presentationStyle)
+            }
+            webAuth = webAuth.provider(provider)
         }
         #endif
 

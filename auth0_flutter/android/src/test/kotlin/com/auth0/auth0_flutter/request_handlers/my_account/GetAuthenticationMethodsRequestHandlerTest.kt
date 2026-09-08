@@ -7,6 +7,7 @@ import com.auth0.android.myaccount.MyAccountAPIClient
 import com.auth0.android.myaccount.MyAccountException
 import com.auth0.android.request.Request
 import com.auth0.android.result.AuthenticationMethod
+import com.auth0.android.result.PhoneAuthenticationMethod
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodChannel.Result
 import org.junit.Test
@@ -61,10 +62,16 @@ class GetAuthenticationMethodsRequestHandlerTest {
         val mockRequest = mock<Request<List<AuthenticationMethod>, MyAccountException>>()
         val request = MethodCallRequest(account = mockAccount, hashMapOf<String, Any>())
 
-        val mockMethod = mock<AuthenticationMethod>()
-        whenever(mockMethod.id).thenReturn("test-id")
-        whenever(mockMethod.type).thenReturn("phone")
-        whenever(mockMethod.createdAt).thenReturn("2026-01-01T00:00:00.000Z")
+        val mockMethod = PhoneAuthenticationMethod(
+            id = "test-id",
+            type = "phone",
+            createdAt = "2026-01-01T00:00:00.000Z",
+            usage = emptyList(),
+            confirmed = true,
+            name = null,
+            phoneNumber = null,
+            preferredAuthenticationMethod = null
+        )
 
         whenever(mockClient.getAuthenticationMethods(anyOrNull())).thenReturn(mockRequest)
         doAnswer {

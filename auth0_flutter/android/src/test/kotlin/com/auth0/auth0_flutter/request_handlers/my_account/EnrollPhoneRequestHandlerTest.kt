@@ -7,6 +7,7 @@ import com.auth0.android.myaccount.MyAccountException
 import com.auth0.android.myaccount.PhoneAuthenticationMethodType
 import com.auth0.android.request.Request
 import com.auth0.android.result.EnrollmentChallenge
+import com.auth0.android.result.MfaEnrollmentChallenge
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodChannel.Result
 import org.junit.Test
@@ -70,9 +71,10 @@ class EnrollPhoneRequestHandlerTest {
         )
         val request = MethodCallRequest(account = mockAccount, options)
 
-        val mockChallenge = mock<EnrollmentChallenge>()
-        whenever(mockChallenge.id).thenReturn("phone|test123")
-        whenever(mockChallenge.authSession).thenReturn("session123")
+        val mockChallenge = MfaEnrollmentChallenge(
+            id = "phone|test123",
+            authSession = "session123"
+        )
 
         whenever(mockClient.enrollPhone(any(), any())).thenReturn(mockRequest)
         doAnswer {

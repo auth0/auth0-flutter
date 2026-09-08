@@ -71,7 +71,7 @@ struct AuthAPIPasskeyCredentialExchangeMethodHandler: MethodHandler {
         let response = credentialMap["response"] as? [String: Any]
         let isSignup = response?["attestationObject"] != nil
 
-        let request: Request<Credentials, AuthenticationError>
+        let request: any TokenRequestable<Credentials, AuthenticationError>
         if isSignup {
             guard let challenge = Self.reconstructSignupChallenge(from: challengeMap) else {
                 return callback(FlutterError(code: "PASSKEY_ERROR",

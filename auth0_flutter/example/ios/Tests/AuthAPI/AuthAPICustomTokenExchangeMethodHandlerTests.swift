@@ -48,7 +48,7 @@ extension AuthAPICustomTokenExchangeMethodHandlerTests {
                                       tokenType: "tokenType",
                                       idToken: testIdToken,
                                       refreshToken: "refreshToken",
-                                      expiresIn: Date(),
+                                      expiresAt: Date(),
                                       scope: "openid profile email")
         let expectation = self.expectation(description: "Produced credentials")
         spy.credentialsResult = .success(credentials)

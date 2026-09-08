@@ -318,6 +318,28 @@ class LoginWebAuthRequestHandlerTest {
     }
 
     @Test
+    fun `handler should enable ephemeral browsing when useEphemeralSession is true`() {
+        val args = hashMapOf<String, Any?>(
+            "useEphemeralSession" to true
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withEphemeralBrowsing()
+        }
+    }
+
+    @Test
+    fun `handler should not enable ephemeral browsing when useEphemeralSession is false or absent`() {
+        runRequestHandler(hashMapOf<String, Any?>("useEphemeralSession" to false)) { _, builder ->
+            verify(builder, never()).withEphemeralBrowsing()
+        }
+
+        runRequestHandler(hashMapOf<String, Any?>()) { _, builder ->
+            verify(builder, never()).withEphemeralBrowsing()
+        }
+    }
+
+    @Test
     fun `returns the error when the builder fails`() {
         val builder = mock<WebAuthProvider.Builder>()
         val mockResult = mock<Result>()
@@ -336,6 +358,28 @@ class LoginWebAuthRequestHandlerTest {
         handler.handle(mock(), mockRequest, mockResult)
 
         verify(mockResult).error(eq("code"), eq("description"), eq(mapOf("_isRetryable" to false)))
+    }
+
+    @Test
+    fun `returns USER_CANCELLED when the user cancels`() {
+        val builder = mock<WebAuthProvider.Builder>()
+        val mockResult = mock<Result>()
+        val exception = mock<AuthenticationException>()
+        whenever(exception.isCanceled).thenReturn(true)
+        whenever(exception.getDescription()).thenReturn("User cancelled")
+        whenever(exception.isNetworkError).thenReturn(false)
+
+        doAnswer { invocation ->
+            val cb = invocation.getArgument<Callback<Credentials, AuthenticationException>>(1)
+            cb.onFailure(exception)
+        }.`when`(builder).start(any(), any())
+
+        val handler = LoginWebAuthRequestHandler { _ -> builder }
+        val mockAccount = mock<Auth0>()
+        val mockRequest = MethodCallRequest(mockAccount, hashMapOf<String, Any>())
+        handler.handle(mock(), mockRequest, mockResult)
+
+        verify(mockResult).error(eq("USER_CANCELLED"), any(), any())
     }
 
     @Test

@@ -43,7 +43,7 @@ extension AuthAPISSOExchangeMethodHandlerTests {
         let expectation = self.expectation(description: "Produced SSO credentials")
         sut.handle(with: arguments()) { result in
             let expectedKeys: [SSOCredentialsProperty] = [
-                .sessionTransferToken, .tokenType, .expiresIn, .idToken
+                .sessionTransferToken, .tokenType, .expiresAt, .idToken
             ]
             assert(result: result, has: expectedKeys)
             expectation.fulfill()
@@ -55,7 +55,7 @@ extension AuthAPISSOExchangeMethodHandlerTests {
         let ssoCredentials = SSOCredentials(
             sessionTransferToken: "session-token",
             issuedTokenType: "urn:ietf:params:oauth:token-type:session_transfer",
-            expiresIn: Date(timeIntervalSinceNow: 60),
+            expiresAt: Date(timeIntervalSinceNow: 60),
             idToken: testIdToken,
             refreshToken: "new-refresh-token"
         )

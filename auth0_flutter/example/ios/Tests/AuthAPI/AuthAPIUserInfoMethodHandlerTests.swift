@@ -78,7 +78,7 @@ extension AuthAPIUserInfoMethodHandlerTests {
             UserInfoProperty.customClaims.rawValue: ["foo": "bar"],
             UserInfoProperty.act.rawValue: ["sub": "actor-sub"]
         ]
-        let userInfo = UserInfo(json: data)!
+        let userInfo = UserProfile(json: data)!
         let expectation = self.expectation(description: "Produced a user profile")
         spy.userInfoResult = .success(userInfo)
         sut.handle(with: arguments()) { result in

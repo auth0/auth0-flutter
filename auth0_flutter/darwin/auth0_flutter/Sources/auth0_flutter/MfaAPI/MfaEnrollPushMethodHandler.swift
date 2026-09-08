@@ -14,7 +14,7 @@ struct MfaEnrollPushMethodHandler: MethodHandler {
             return callback(FlutterError(from: .requiredArgumentMissing("mfaToken")))
         }
 
-        let request: Request<PushMFAEnrollmentChallenge, MfaEnrollmentError> =
+        let request: any Requestable<PushMFAEnrollmentChallenge, MfaEnrollmentError> =
             client.enroll(mfaToken: mfaToken)
         request.start {
             switch $0 {

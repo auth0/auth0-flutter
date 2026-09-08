@@ -6,6 +6,7 @@ import com.auth0.android.myaccount.MyAccountAPIClient
 import com.auth0.android.myaccount.MyAccountException
 import com.auth0.android.request.Request
 import com.auth0.android.result.EnrollmentChallenge
+import com.auth0.android.result.MfaEnrollmentChallenge
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodChannel.Result
 import org.junit.Test
@@ -43,9 +44,10 @@ class EnrollEmailRequestHandlerTest {
         val options = hashMapOf<String, Any>("email" to "test@example.com")
         val request = MethodCallRequest(account = mockAccount, options)
 
-        val mockChallenge = mock<EnrollmentChallenge>()
-        whenever(mockChallenge.id).thenReturn("email|test123")
-        whenever(mockChallenge.authSession).thenReturn("session123")
+        val mockChallenge = MfaEnrollmentChallenge(
+            id = "email|test123",
+            authSession = "session123"
+        )
 
         whenever(mockClient.enrollEmail(any())).thenReturn(mockRequest)
         doAnswer {

@@ -27,9 +27,6 @@ class TestPlatform extends Mock
     'tokenType': 'Bearer'
   });
 
-  static Challenge multifactorChallengeResult =
-      Challenge(type: ChallengeType.oob, oobCode: 'oobCode');
-
   static Credentials renewResult = Credentials.fromMap({
     'accessToken': 'accessToken',
     'idToken': 'idToken',
@@ -40,10 +37,10 @@ class TestPlatform extends Mock
     'tokenType': 'Bearer'
   });
 
-  static const SSOCredentials ssoExchangeResult = SSOCredentials(
+  static final SSOCredentials ssoExchangeResult = SSOCredentials(
     sessionTransferToken: 'sso-token',
     tokenType: 'session_transfer',
-    expiresIn: 60,
+    expiresAt: DateTime.utc(2024, 11, 1, 22, 16, 35),
     idToken: 'id-token',
     refreshToken: 'new-refresh-token',
   );
@@ -202,67 +199,6 @@ void main() {
           .captured
           .single as ApiRequest<AuthLoginOptions>;
       expect(verificationResult.options.audience, null);
-    });
-  });
-
-  group('loginWithOtp', () {
-    test('passes through properties to the platform', () async {
-      when(mockedPlatform.loginWithOtp(any))
-          .thenAnswer((_) async => TestPlatform.loginResult);
-
-      final result = await Auth0('test-domain', 'test-clientId')
-          .api
-          .loginWithOtp(otp: 'test-otp', mfaToken: 'test-mfa-token');
-
-      final verificationResult = verify(mockedPlatform.loginWithOtp(captureAny))
-          .captured
-          .single as ApiRequest<AuthLoginWithOtpOptions>;
-      expect(verificationResult.account.domain, 'test-domain');
-      expect(verificationResult.account.clientId, 'test-clientId');
-      expect(verificationResult.options.mfaToken, 'test-mfa-token');
-      expect(verificationResult.options.otp, 'test-otp');
-      expect(result, TestPlatform.loginResult);
-    });
-  });
-
-  group('multifactorChallenge', () {
-    test('passes through properties to the platform', () async {
-      when(mockedPlatform.multifactorChallenge(any)).thenAnswer(
-          (_) async => TestPlatform.multifactorChallengeResult);
-
-      final result = await Auth0('test-domain', 'test-clientId')
-          .api
-          .multifactorChallenge(
-              mfaToken: 'test-mfa-token',
-              types: [ChallengeType.otp, ChallengeType.oob],
-              authenticatorId: 'test-authenticatorId');
-
-      final verificationResult =
-          verify(mockedPlatform.multifactorChallenge(captureAny))
-              .captured
-              .single as ApiRequest<AuthMultifactorChallengeOptions>;
-      expect(verificationResult.account.domain, 'test-domain');
-      expect(verificationResult.account.clientId, 'test-clientId');
-      expect(verificationResult.options.mfaToken, 'test-mfa-token');
-      expect(verificationResult.options.types,
-          [ChallengeType.otp, ChallengeType.oob]);
-      expect(
-          verificationResult.options.authenticatorId, 'test-authenticatorId');
-      expect(result, TestPlatform.multifactorChallengeResult);
-    });
-
-    test('set parameters to default value when omitted', () async {
-      when(mockedPlatform.multifactorChallenge(any)).thenAnswer(
-          (_) async => TestPlatform.multifactorChallengeResult);
-
-      await Auth0('', '').api.multifactorChallenge(mfaToken: '');
-
-      final verificationResult =
-          verify(mockedPlatform.multifactorChallenge(captureAny))
-              .captured
-              .single as ApiRequest<AuthMultifactorChallengeOptions>;
-      expect(verificationResult.options.types, isNull);
-      expect(verificationResult.options.authenticatorId, isNull);
     });
   });
 

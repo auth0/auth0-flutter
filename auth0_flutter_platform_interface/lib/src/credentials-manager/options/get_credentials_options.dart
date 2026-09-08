@@ -9,7 +9,7 @@ class GetCredentialsOptions implements RequestOptions {
   final Map<String, String> parameters;
 
   GetCredentialsOptions({
-    this.minTtl = 0,
+    this.minTtl = 60,
     this.scopes = const {},
     this.parameters = const {},
   });

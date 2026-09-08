@@ -117,7 +117,6 @@ extension AuthAPIHandlerTests {
         var expectations: [XCTestExpectation] = []
         var methodHandlers: [AuthAPIHandler.Method: MethodHandler.Type] = [
             .loginWithUsernameOrEmail: AuthAPILoginUsernameOrEmailMethodHandler.self,
-            .loginWithOTP: AuthAPILoginWithOTPMethodHandler.self,
             .signup: AuthAPISignupMethodHandler.self,
             .userInfo: AuthAPIUserInfoMethodHandler.self,
             .renew: AuthAPIRenewMethodHandler.self,
@@ -149,7 +148,8 @@ extension AuthAPIHandlerTests {
 
     func testCallsMethodHandlers() {
         var expectations: [XCTestExpectation] = []
-        AuthAPIHandler.Method.allCases.forEach { method in
+        let methods = AuthAPIHandler.Method.allCases
+        methods.forEach { method in
             let arguments: [String: Any] = arguments()
             let expectation = self.expectation(description: "\(method.rawValue) handler call")
             expectations.append(expectation)

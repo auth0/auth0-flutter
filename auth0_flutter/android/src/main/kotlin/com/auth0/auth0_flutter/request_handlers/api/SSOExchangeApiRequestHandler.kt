@@ -46,7 +46,7 @@ class SSOExchangeApiRequestHandler : ApiRequestHandler {
                 val map = mutableMapOf<String, Any?>(
                     "sessionTransferToken" to credentials.sessionTransferToken,
                     "tokenType" to credentials.issuedTokenType,
-                    "expiresIn" to credentials.expiresIn,
+                    "expiresAt" to credentials.expiresAt.toInstant().toString(),
                     "idToken" to credentials.idToken
                 )
                 credentials.refreshToken?.let { map["refreshToken"] = it }

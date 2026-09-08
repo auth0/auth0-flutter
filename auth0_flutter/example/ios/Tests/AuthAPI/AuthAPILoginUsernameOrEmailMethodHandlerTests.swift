@@ -119,7 +119,7 @@ extension AuthAPILoginUsernameOrEmailMethodHandlerTests {
                                       tokenType: "tokenType",
                                       idToken: testIdToken,
                                       refreshToken: "refreshToken",
-                                      expiresIn: Date(),
+                                      expiresAt: Date(),
                                       scope: "foo bar")
         let expectation = self.expectation(description: "Produced credentials")
         spy.credentialsResult = .success(credentials)

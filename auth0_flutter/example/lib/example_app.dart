@@ -135,6 +135,7 @@ class _ExampleAppState extends State<ExampleApp> {
   Future<void> apiLogin(
       final String usernameOrEmail, final String password) async {
     String output;
+    bool loggedIn = _isLoggedIn;
     // Platform messages may fail, so we use a try/catch PlatformException.
     // We also handle the message potentially returning null.
     try {
@@ -143,6 +144,7 @@ class _ExampleAppState extends State<ExampleApp> {
           password: password,
           connectionOrRealm: 'Username-Password-Authentication');
       output = result.accessToken;
+      loggedIn = true;
     } on ApiException catch (e) {
       output = e.toString();
     }
@@ -153,7 +155,7 @@ class _ExampleAppState extends State<ExampleApp> {
     if (!mounted) return;
 
     setState(() {
-      _isLoggedIn = true;
+      _isLoggedIn = loggedIn;
       _output = output;
     });
   }
@@ -192,12 +194,17 @@ class _ExampleAppState extends State<ExampleApp> {
             'Expires At: ${credentials.expiresAt}';
       } else {
         // Mobile (Android/iOS): Use WebAuth with DPoP
-        final webAuthDPoP = auth0.webAuthentication(
+        final auth0DPoP = Auth0(
+          dotenv.env['AUTH0_DOMAIN']!,
+          dotenv.env['AUTH0_CLIENT_ID']!,
+          useDPoP: true, // Enable DPoP for mobile
+        );
+
+        final webAuthDPoP = auth0DPoP.webAuthentication(
           scheme: dotenv.env['AUTH0_CUSTOM_SCHEME'],
         );
 
         final result = await webAuthDPoP.login(
-          useDPoP: true, // Enable DPoP for mobile
           useHTTPS: true,
           audience: dotenv.env['AUTH0_AUDIENCE'],
         );
@@ -230,7 +237,7 @@ class _ExampleAppState extends State<ExampleApp> {
       output = 'SSO Credentials:\n\n'
           'Session Transfer Token: ${token.substring(0, 20)}...\n'
           'Token Type: ${ssoCredentials.tokenType}\n'
-          'Expires In: ${ssoCredentials.expiresIn}s\n'
+          'Expires At: ${ssoCredentials.expiresAt.toIso8601String()}\n'
           'ID Token: ****\n'
           'Refresh Token: '
           '${ssoCredentials.refreshToken != null ? '****' : 'N/A'}';

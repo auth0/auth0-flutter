@@ -21,7 +21,7 @@ struct MyAccountConfirmEnrollmentMethodHandler: MethodHandler {
             return callback(FlutterError(from: .requiredArgumentMissing("factorType")))
         }
 
-        let request: Request<AuthenticationMethod, MyAccountError>
+        let request: any Requestable<AuthenticationMethod, MyAccountError>
         if factorType == "push-notification" {
             request = client.authenticationMethods.confirmPushNotificationEnrollment(id: id, authSession: authSession)
         } else {

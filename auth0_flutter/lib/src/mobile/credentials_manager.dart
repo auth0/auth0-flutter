@@ -4,7 +4,7 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 /// CredentialManager.
 abstract class CredentialsManager {
   Future<Credentials> credentials({
-    final int minTtl = 0,
+    final int minTtl = 60,
     final Set<String> scopes = const {},
     final Map<String, String> parameters = const {},
   });
@@ -68,7 +68,7 @@ abstract class CredentialsManager {
   Future<ApiCredentials> getApiCredentials({
     required final String audience,
     final Set<String> scope = const {},
-    final int minTtl = 0,
+    final int minTtl = 60,
     final Map<String, String> parameters = const {},
     final Map<String, String> headers = const {},
   });
@@ -84,6 +84,15 @@ abstract class CredentialsManager {
     required final String audience,
     final String? scope,
   });
+
+  /// Removes all stored credentials and API credentials, including the
+  /// underlying encryption keys.
+  ///
+  /// This is a more thorough wipe than [clearCredentials]: in addition to the
+  /// stored credential entries it also removes the cryptographic keys used to
+  /// protect them — on Android the crypto key pair and the DPoP key; on
+  /// iOS/macOS every entry in the credentials store plus the DPoP key pair.
+  Future<void> clearAll();
 }
 
 /// Default [CredentialsManager] implementation that passes calls to
@@ -115,7 +124,7 @@ class DefaultCredentialsManager extends CredentialsManager {
   /// request to refresh expired credentials.
   @override
   Future<Credentials> credentials({
-    final int minTtl = 0,
+    final int minTtl = 60,
     final Set<String> scopes = const {},
     final Map<String, String> parameters = const {},
   }) =>
@@ -197,7 +206,7 @@ class DefaultCredentialsManager extends CredentialsManager {
   Future<ApiCredentials> getApiCredentials({
     required final String audience,
     final Set<String> scope = const {},
-    final int minTtl = 0,
+    final int minTtl = 60,
     final Map<String, String> parameters = const {},
     final Map<String, String> headers = const {},
   }) =>
@@ -220,6 +229,14 @@ class DefaultCredentialsManager extends CredentialsManager {
   }) =>
       CredentialsManagerPlatform.instance.clearApiCredentials(_createApiRequest(
           ClearApiCredentialsOptions(audience: audience, scope: scope)));
+
+  /// Removes all stored credentials and API credentials, including the
+  /// underlying encryption keys.
+  ///
+  /// See [CredentialsManager.clearAll] for full documentation.
+  @override
+  Future<void> clearAll() =>
+      CredentialsManagerPlatform.instance.clearAll(_createApiRequest(null));
 
   CredentialsManagerRequest<TOptions>
       _createApiRequest<TOptions extends RequestOptions>(

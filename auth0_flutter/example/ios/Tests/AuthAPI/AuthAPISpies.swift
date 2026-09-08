@@ -4,19 +4,19 @@ import Foundation
 fileprivate let mockCredentials = Credentials()
 fileprivate let mockChallenge = Challenge(challengeType: "", oobCode: nil, bindingMethod: nil)
 fileprivate let mockDatabaseUser: DatabaseUser = (email: "", username: nil, verified: true)
-fileprivate let mockUserInfo = UserInfo(json: ["sub": ""])!
+fileprivate let mockUserInfo = UserProfile(json: ["sub": ""])!
 fileprivate let mockSSOCredentials = SSOCredentials(
     sessionTransferToken: "token",
     issuedTokenType: "type",
-    expiresIn: Date(),
+    expiresAt: Date(),
     idToken: testIdToken,
     refreshToken: nil
 )
 
-class SpyAuthentication: Authentication {
+class SpyAuthentication: Authentication, @unchecked Sendable {
     let clientId = ""
     let url = mockURL
-    var telemetry = Telemetry()
+    var auth0ClientInfo = Auth0ClientInfo()
     var logger: Logger?
     var sender: String = "auth0-flutter"
     var dpop: DPoP?
@@ -25,11 +25,9 @@ class SpyAuthentication: Authentication {
     var ssoCredentialsResult: AuthenticationResult<SSOCredentials> = .success(mockSSOCredentials)
     var challengeResult: AuthenticationResult<Challenge> = .success(mockChallenge)
     var databaseUserResult: AuthenticationResult<DatabaseUser> = .success(mockDatabaseUser)
-    var userInfoResult: AuthenticationResult<UserInfo> = .success(mockUserInfo)
+    var userInfoResult: AuthenticationResult<UserProfile> = .success(mockUserInfo)
     var voidResult: AuthenticationResult<Void> = .success(())
     var calledLoginWithUsernameOrEmail = false
-    var calledLoginWithOTP = false
-    var calledMultifactorChallenge = false
     var calledSignup = false
     var calledUserInfo = false
     var calledRenew = false
@@ -60,35 +58,14 @@ class SpyAuthentication: Authentication {
                password: String,
                realmOrConnection realm: String,
                audience: String?,
-               scope: String) -> Request<Credentials, AuthenticationError> {
+               scope: String) -> any TokenRequestable<Credentials, AuthenticationError> {
         arguments["usernameOrEmail"] = username
         arguments["password"] = password
         arguments["connectionOrRealm"] = realm
         arguments["audience"] = audience
         arguments["scope"] = scope
         calledLoginWithUsernameOrEmail = true
-        return request(credentialsResult)
-    }
-
-    func login(withOTP otp: String, mfaToken: String) -> Request<Credentials, AuthenticationError> {
-        arguments["otp"] = otp
-        arguments["mfaToken"] = mfaToken
-        calledLoginWithOTP = true
-        return request(credentialsResult)
-    }
-
-    func login(withRecoveryCode recoveryCode: String, mfaToken: String) -> Request<Credentials, AuthenticationError> {
-        return request(credentialsResult)
-    }
-
-    func multifactorChallenge(mfaToken: String,
-                              types: [String]?,
-                              authenticatorId: String?) -> Request<Challenge, AuthenticationError> {
-        arguments["mfaToken"] = mfaToken
-        arguments["types"] = types
-        arguments["authenticatorId"] = authenticatorId
-        calledMultifactorChallenge = true
-        return request(challengeResult)
+        return tokenRequest(credentialsResult)
     }
 
     func signup(email: String,
@@ -96,7 +73,7 @@ class SpyAuthentication: Authentication {
                 password: String,
                 connection: String,
                 userMetadata: [String: Any]?,
-                rootAttributes: [String: Any]?) -> Request<DatabaseUser, AuthenticationError> {
+                rootAttributes: [String: Any]?) -> any Requestable<DatabaseUser, AuthenticationError> {
         arguments["email"] = email
         arguments["username"] = username
         arguments["password"] = password
@@ -107,14 +84,14 @@ class SpyAuthentication: Authentication {
         return request(databaseUserResult)
     }
 
-    func resetPassword(email: String, connection: String) -> Request<Void, AuthenticationError> {
+    func resetPassword(email: String, connection: String) -> any Requestable<Void, AuthenticationError> {
         arguments["email"] = email
         arguments["connection"] = connection
         calledResetPassword = true
         return request(voidResult)
     }
 
-    func userInfo(withAccessToken accessToken: String, tokenType: String) -> Request<UserInfo, AuthenticationError> {
+    func userInfo(withAccessToken accessToken: String, tokenType: String) -> any Requestable<UserProfile, AuthenticationError> {
         arguments["accessToken"] = accessToken
         arguments["tokenType"] = tokenType
         calledUserInfo = true
@@ -123,21 +100,21 @@ class SpyAuthentication: Authentication {
 
     func codeExchange(withCode code: String,
                       codeVerifier: String,
-                      redirectURI: String) -> Request<Credentials, AuthenticationError> {
-        return request(credentialsResult)
+                      redirectURI: String) -> any TokenRequestable<Credentials, AuthenticationError> {
+        return tokenRequest(credentialsResult)
     }
 
-    func renew(withRefreshToken refreshToken: String, audience: String?, scope: String?) -> Request<Credentials, AuthenticationError> {
+    func renew(withRefreshToken refreshToken: String, audience: String?, scope: String?) -> any TokenRequestable<Credentials, AuthenticationError> {
         arguments["refreshToken"] = refreshToken
         arguments["scope"] = scope
         arguments["audience"] = audience
         calledRenew = true
-        return request(credentialsResult)
+        return tokenRequest(credentialsResult)
     }
 
-    func ssoExchange(withRefreshToken refreshToken: String) -> Request<SSOCredentials, AuthenticationError> {
+    func ssoExchange(withRefreshToken refreshToken: String) -> any TokenRequestable<SSOCredentials, AuthenticationError> {
         arguments["refreshToken"] = refreshToken
-        return request(ssoCredentialsResult)
+        return tokenRequest(ssoCredentialsResult)
     }
 
     var calledCustomTokenExchange = false
@@ -147,7 +124,7 @@ class SpyAuthentication: Authentication {
                              audience: String?,
                              scope: String,
                              organization: String?,
-                             parameters: [String: Any]) -> Request<Credentials, AuthenticationError> {
+                             parameters: [String: Any]) -> any TokenRequestable<Credentials, AuthenticationError> {
         arguments["subjectToken"] = subjectToken
         arguments["subjectTokenType"] = subjectTokenType
         arguments["audience"] = audience
@@ -156,21 +133,21 @@ class SpyAuthentication: Authentication {
         arguments["actor_token"] = parameters["actor_token"]
         arguments["actor_token_type"] = parameters["actor_token_type"]
         calledCustomTokenExchange = true
-        return request(credentialsResult)
+        return tokenRequest(credentialsResult)
     }
 
-    func revoke(refreshToken: String) -> Request<Void, AuthenticationError> {
+    func revoke(refreshToken: String) -> any Requestable<Void, AuthenticationError> {
         return request(voidResult)
     }
 
-    func jwks() -> Request<JWKS, AuthenticationError> {
+    func jwks() -> any Requestable<JWKS, AuthenticationError> {
         return request(.success(JWKS(keys: [])))
     }
 
     #if PASSKEYS_PLATFORM
     @available(iOS 16.6, macOS 13.5, visionOS 1.0, *)
     func passkeyLoginChallenge(connection: String?,
-                               organization: String?) -> Request<PasskeyLoginChallenge, AuthenticationError> {
+                               organization: String?) -> any Requestable<PasskeyLoginChallenge, AuthenticationError> {
         arguments["connection"] = connection
         arguments["organization"] = organization
         calledPasskeyLoginChallenge = true
@@ -184,13 +161,13 @@ class SpyAuthentication: Authentication {
                connection: String?,
                audience: String?,
                scope: String,
-               organization: String?) -> Request<Credentials, AuthenticationError> {
+               organization: String?) -> any TokenRequestable<Credentials, AuthenticationError> {
         arguments["connection"] = connection
         arguments["audience"] = audience
         arguments["scope"] = scope
         arguments["organization"] = organization
         calledLoginWithPasskey = true
-        return request(credentialsResult)
+        return tokenRequest(credentialsResult)
     }
 
     @available(iOS 16.6, macOS 13.5, visionOS 1.0, *)
@@ -204,7 +181,7 @@ class SpyAuthentication: Authentication {
                                 picture: String?,
                                 userMetadata: [String: String]?,
                                 connection: String?,
-                                organization: String?) -> Request<PasskeySignupChallenge, AuthenticationError> {
+                                organization: String?) -> any Requestable<PasskeySignupChallenge, AuthenticationError> {
         arguments["email"] = email
         arguments["phoneNumber"] = phoneNumber
         arguments["username"] = username
@@ -227,13 +204,13 @@ class SpyAuthentication: Authentication {
                connection: String?,
                audience: String?,
                scope: String,
-               organization: String?) -> Request<Credentials, AuthenticationError> {
+               organization: String?) -> any TokenRequestable<Credentials, AuthenticationError> {
         arguments["connection"] = connection
         arguments["audience"] = audience
         arguments["scope"] = scope
         arguments["organization"] = organization
         calledSignupWithPasskey = true
-        return request(credentialsResult)
+        return tokenRequest(credentialsResult)
     }
     #endif
 }
@@ -279,12 +256,11 @@ extension SpyAuthentication {
 #endif
 
 private extension SpyAuthentication {
-    func request<T>(_ result: AuthenticationResult<T>) -> Request<T, AuthenticationError> {
-        Request(session: mockURLSession,
-                url: url,
-                method: "",
-                handle: {_, callback in callback(result)},
-                logger: nil,
-                telemetry: telemetry)
+    func request<T>(_ result: AuthenticationResult<T>) -> any Requestable<T, AuthenticationError> {
+        MockRequest(result: result)
+    }
+
+    func tokenRequest<T>(_ result: AuthenticationResult<T>) -> any TokenRequestable<T, AuthenticationError> {
+        MockTokenRequest(result: result)
     }
 }

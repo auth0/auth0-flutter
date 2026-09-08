@@ -58,7 +58,7 @@ extension ExtensionsTests {
         let credentials = try XCTUnwrap(Credentials(from: values))
         XCTAssertEqual(values[CredentialsProperty.accessToken] as? String, credentials.accessToken)
         XCTAssertEqual(values[CredentialsProperty.idToken] as? String, credentials.idToken)
-        XCTAssertEqual(values[CredentialsProperty.expiresAt] as? String, credentials.expiresIn.asISO8601String)
+        XCTAssertEqual(values[CredentialsProperty.expiresAt] as? String, credentials.expiresAt.asISO8601String)
         XCTAssertEqual(values[CredentialsProperty.tokenType] as? String, credentials.tokenType)
         XCTAssertNil(credentials.scope)
     }
@@ -116,11 +116,11 @@ extension ExtensionsTests {
         let credentials = Credentials(accessToken: "accessToken",
                                       tokenType: "tokenType",
                                       idToken: idToken,
-                                      expiresIn: Date())
+                                      expiresAt: Date())
         let values = try credentials.asDictionary()
         XCTAssertEqual(credentials.accessToken, values[CredentialsProperty.accessToken] as? String)
         XCTAssertEqual(credentials.idToken, values[CredentialsProperty.idToken] as? String)
-        XCTAssertEqual(credentials.expiresIn.asISO8601String, values[CredentialsProperty.expiresAt] as? String)
+        XCTAssertEqual(credentials.expiresAt.asISO8601String, values[CredentialsProperty.expiresAt] as? String)
         XCTAssertEqual(credentials.tokenType, values[CredentialsProperty.tokenType] as? String)
         XCTAssertTrue([] == values[CredentialsProperty.scopes] as? [String])
         XCTAssertTrue([:] == values[CredentialsProperty.userProfile] as? [String: Any])
@@ -131,7 +131,7 @@ extension ExtensionsTests {
                                       tokenType: "",
                                       idToken: testIdToken,
                                       refreshToken: "refreshToken",
-                                      expiresIn: Date())
+                                      expiresAt: Date())
         let values = try credentials.asDictionary()
         XCTAssertNotNil(credentials.refreshToken)
         XCTAssertEqual(credentials.refreshToken, values[CredentialsProperty.refreshToken] as? String)
@@ -141,7 +141,7 @@ extension ExtensionsTests {
         let credentials = Credentials(accessToken: "",
                                       tokenType: "",
                                       idToken: testIdToken,
-                                      expiresIn: Date(),
+                                      expiresAt: Date(),
                                       scope: "foo bar")
         let values = try credentials.asDictionary()
         XCTAssertNotNil(credentials.scope)
@@ -150,22 +150,22 @@ extension ExtensionsTests {
     }
 
     func testMapsUserProfileToDictionary() throws {
-        let credentials = Credentials(accessToken: "", tokenType: "", idToken: testIdToken, expiresIn: Date())
+        let credentials = Credentials(accessToken: "", tokenType: "", idToken: testIdToken, expiresAt: Date())
         let values = try credentials.asDictionary()
         let jwt = try decode(jwt: credentials.idToken)
-        let userProfile = try XCTUnwrap(UserInfo(json: jwt.body)?.asDictionary())
+        let userProfile = try XCTUnwrap(UserProfile(json: jwt.body)?.asDictionary())
         XCTAssertTrue(userProfile == values[CredentialsProperty.userProfile] as? [String: Any])
     }
 
     func testFailsToMapCredentialsWithMalformedIdTokenToDictionary() {
         let idToken = "foo"
-        let credentials = Credentials(accessToken: "", tokenType: "", idToken: idToken, expiresIn: Date())
+        let credentials = Credentials(accessToken: "", tokenType: "", idToken: idToken, expiresAt: Date())
         XCTAssertThrowsError(try credentials.asDictionary(), HandlerError.idTokenDecodingFailed.message)
     }
 
     func testMapsSessionExpiryIntoDictionaryWhenClaimPresent() throws {
         // `testIdToken` carries a `session_expiry` claim of 4102444800 (2100-01-01).
-        let credentials = Credentials(accessToken: "", tokenType: "", idToken: testIdToken, expiresIn: Date())
+        let credentials = Credentials(accessToken: "", tokenType: "", idToken: testIdToken, expiresAt: Date())
         let values = try credentials.asDictionary()
         let expected = Date(timeIntervalSince1970: 4102444800).asISO8601String
         XCTAssertEqual(values[CredentialsProperty.sessionExpiry] as? String, expected)
@@ -174,7 +174,7 @@ extension ExtensionsTests {
     func testOmitsSessionExpiryFromDictionaryWhenClaimAbsent() throws {
         // `{}` payload — no `session_expiry` claim.
         let idToken = "eyJhbGciOiJIUzI1NiJ9.e30.ZRrHA1JJJW8opsbCGfG_HACGpVUMN_a9IV7pAx_Zmeo"
-        let credentials = Credentials(accessToken: "", tokenType: "", idToken: idToken, expiresIn: Date())
+        let credentials = Credentials(accessToken: "", tokenType: "", idToken: idToken, expiresAt: Date())
         let values = try credentials.asDictionary()
         XCTAssertNil(values[CredentialsProperty.sessionExpiry])
     }
@@ -184,7 +184,7 @@ extension ExtensionsTests {
 
 extension ExtensionsTests {
     func testMapsRequiredUserInfoProperties() throws {
-        let userInfo = try XCTUnwrap(UserInfo(json: [UserInfoProperty.sub.rawValue: "foo"]))
+        let userInfo = try XCTUnwrap(UserProfile(json: [UserInfoProperty.sub.rawValue: "foo"]))
         let values = userInfo.asDictionary()
         XCTAssertEqual(userInfo.sub, values[UserInfoProperty.sub] as? String)
         XCTAssertTrue(values[UserInfoProperty.customClaims] as? [String: Any] == [:])
@@ -195,7 +195,7 @@ extension ExtensionsTests {
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.name.rawValue: "name"
         ]
-        let userInfo = try XCTUnwrap(UserInfo(json: data))
+        let userInfo = try XCTUnwrap(UserProfile(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.name)
         XCTAssertEqual(userInfo.name, values[UserInfoProperty.name] as? String)
@@ -206,7 +206,7 @@ extension ExtensionsTests {
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.givenName.rawValue: "givenName"
         ]
-        let userInfo = try XCTUnwrap(UserInfo(json: data))
+        let userInfo = try XCTUnwrap(UserProfile(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.givenName)
         XCTAssertEqual(userInfo.givenName, values[UserInfoProperty.givenName] as? String)
@@ -217,7 +217,7 @@ extension ExtensionsTests {
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.familyName.rawValue: "familyName"
         ]
-        let userInfo = try XCTUnwrap(UserInfo(json: data))
+        let userInfo = try XCTUnwrap(UserProfile(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.familyName)
         XCTAssertEqual(userInfo.familyName, values[UserInfoProperty.familyName] as? String)
@@ -228,7 +228,7 @@ extension ExtensionsTests {
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.middleName.rawValue: "middleName"
         ]
-        let userInfo = try XCTUnwrap(UserInfo(json: data))
+        let userInfo = try XCTUnwrap(UserProfile(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.middleName)
         XCTAssertEqual(userInfo.middleName, values[UserInfoProperty.middleName] as? String)
@@ -239,7 +239,7 @@ extension ExtensionsTests {
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.nickname.rawValue: "nickname"
         ]
-        let userInfo = try XCTUnwrap(UserInfo(json: data))
+        let userInfo = try XCTUnwrap(UserProfile(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.nickname)
         XCTAssertEqual(userInfo.nickname, values[UserInfoProperty.nickname] as? String)
@@ -250,7 +250,7 @@ extension ExtensionsTests {
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.preferredUsername.rawValue: "preferredUsername"
         ]
-        let userInfo = try XCTUnwrap(UserInfo(json: data))
+        let userInfo = try XCTUnwrap(UserProfile(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.preferredUsername)
         XCTAssertEqual(userInfo.preferredUsername, values[UserInfoProperty.preferredUsername] as? String)
@@ -261,7 +261,7 @@ extension ExtensionsTests {
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.profile.rawValue: "https://example.com/profile"
         ]
-        let userInfo = try XCTUnwrap(UserInfo(json: data))
+        let userInfo = try XCTUnwrap(UserProfile(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.profile)
         XCTAssertEqual(userInfo.profile?.absoluteString, values[UserInfoProperty.profile] as? String)
@@ -272,7 +272,7 @@ extension ExtensionsTests {
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.picture.rawValue: "https://example.com/picture"
         ]
-        let userInfo = try XCTUnwrap(UserInfo(json: data))
+        let userInfo = try XCTUnwrap(UserProfile(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.picture)
         XCTAssertEqual(userInfo.picture?.absoluteString, values[UserInfoProperty.picture] as? String)
@@ -283,7 +283,7 @@ extension ExtensionsTests {
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.website.rawValue: "https://example.com/website"
         ]
-        let userInfo = try XCTUnwrap(UserInfo(json: data))
+        let userInfo = try XCTUnwrap(UserProfile(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.website)
         XCTAssertEqual(userInfo.website?.absoluteString, values[UserInfoProperty.website] as? String)
@@ -294,7 +294,7 @@ extension ExtensionsTests {
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.email.rawValue: "email"
         ]
-        let userInfo = try XCTUnwrap(UserInfo(json: data))
+        let userInfo = try XCTUnwrap(UserProfile(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.email)
         XCTAssertEqual(userInfo.email, values[UserInfoProperty.email] as? String)
@@ -305,7 +305,7 @@ extension ExtensionsTests {
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.emailVerified.rawValue: true
         ]
-        let userInfo = try XCTUnwrap(UserInfo(json: data))
+        let userInfo = try XCTUnwrap(UserProfile(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.emailVerified)
         XCTAssertEqual(userInfo.emailVerified, values[UserInfoProperty.emailVerified] as? Bool)
@@ -316,7 +316,7 @@ extension ExtensionsTests {
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.gender.rawValue: "gender"
         ]
-        let userInfo = try XCTUnwrap(UserInfo(json: data))
+        let userInfo = try XCTUnwrap(UserProfile(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.gender)
         XCTAssertEqual(userInfo.gender, values[UserInfoProperty.gender] as? String)
@@ -327,7 +327,7 @@ extension ExtensionsTests {
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.birthdate.rawValue: "birthdate"
         ]
-        let userInfo = try XCTUnwrap(UserInfo(json: data))
+        let userInfo = try XCTUnwrap(UserProfile(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.birthdate)
         XCTAssertEqual(userInfo.birthdate, values[UserInfoProperty.birthdate] as? String)
@@ -338,7 +338,7 @@ extension ExtensionsTests {
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.zoneinfo.rawValue: "America/Los_Angeles"
         ]
-        let userInfo = try XCTUnwrap(UserInfo(json: data))
+        let userInfo = try XCTUnwrap(UserProfile(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.zoneinfo)
         XCTAssertEqual(userInfo.zoneinfo?.identifier, values[UserInfoProperty.zoneinfo] as? String)
@@ -349,7 +349,7 @@ extension ExtensionsTests {
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.locale.rawValue: "en_US"
         ]
-        let userInfo = try XCTUnwrap(UserInfo(json: data))
+        let userInfo = try XCTUnwrap(UserProfile(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.locale)
         XCTAssertEqual(userInfo.locale?.identifier, values[UserInfoProperty.locale] as? String)
@@ -360,7 +360,7 @@ extension ExtensionsTests {
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.phoneNumber.rawValue: "phoneNumber"
         ]
-        let userInfo = try XCTUnwrap(UserInfo(json: data))
+        let userInfo = try XCTUnwrap(UserProfile(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.phoneNumber)
         XCTAssertEqual(userInfo.phoneNumber, values[UserInfoProperty.phoneNumber] as? String)
@@ -371,7 +371,7 @@ extension ExtensionsTests {
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.phoneNumberVerified.rawValue: true
         ]
-        let userInfo = try XCTUnwrap(UserInfo(json: data))
+        let userInfo = try XCTUnwrap(UserProfile(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.phoneNumberVerified)
         XCTAssertEqual(userInfo.phoneNumberVerified, values[UserInfoProperty.phoneNumberVerified] as? Bool)
@@ -382,7 +382,7 @@ extension ExtensionsTests {
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.address.rawValue: ["foo": "bar"] as [String: String]
         ]
-        let userInfo = try XCTUnwrap(UserInfo(json: data))
+        let userInfo = try XCTUnwrap(UserProfile(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.address)
         XCTAssertEqual(userInfo.address, values[UserInfoProperty.address] as? [String: String])
@@ -393,7 +393,7 @@ extension ExtensionsTests {
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.updatedAt.rawValue: "2022-04-15T03:15:51.787Z"
         ]
-        let userInfo = try XCTUnwrap(UserInfo(json: data))
+        let userInfo = try XCTUnwrap(UserProfile(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.updatedAt)
         XCTAssertEqual(userInfo.updatedAt?.asISO8601String, values[UserInfoProperty.updatedAt] as? String)
@@ -404,7 +404,7 @@ extension ExtensionsTests {
             UserInfoProperty.sub.rawValue: "",
             UserInfoProperty.customClaims.rawValue: ["foo": "bar"]
         ]
-        let userInfo = try XCTUnwrap(UserInfo(json: data))
+        let userInfo = try XCTUnwrap(UserProfile(json: data))
         let values = userInfo.asDictionary()
         XCTAssertNotNil(userInfo.customClaims)
         XCTAssertTrue(userInfo.customClaims == values[UserInfoProperty.customClaims] as? [String: Any])
@@ -427,7 +427,7 @@ extension ExtensionsTests {
             "c_hash": "cHash"
         ]
         let data = customClaims.merging(claims) { (first, _) in first }
-        let userInfo = try XCTUnwrap(UserInfo(json: data))
+        let userInfo = try XCTUnwrap(UserProfile(json: data))
         let values = userInfo.asDictionary()
         XCTAssertTrue(values[UserInfoProperty.customClaims] as? [String: Any] == customClaims)
     }

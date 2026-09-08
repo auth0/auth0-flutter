@@ -15,6 +15,7 @@ import org.mockito.ArgumentMatchers.anyMap
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
+import java.util.Date
 
 @RunWith(RobolectricTestRunner::class)
 class GetSSOCredentialsRequestHandlerTest {
@@ -108,7 +109,8 @@ class GetSSOCredentialsRequestHandlerTest {
         val mockSSOCredentials = mock<SSOCredentials>()
         `when`(mockSSOCredentials.sessionTransferToken).thenReturn("sso-token")
         `when`(mockSSOCredentials.issuedTokenType).thenReturn("session_transfer")
-        `when`(mockSSOCredentials.expiresIn).thenReturn(3600)
+        val expiresAt = Date(1730499395000L)
+        `when`(mockSSOCredentials.expiresAt).thenReturn(expiresAt)
         `when`(mockSSOCredentials.idToken).thenReturn("id-token")
         `when`(mockSSOCredentials.refreshToken).thenReturn(null)
 
@@ -133,8 +135,8 @@ class GetSSOCredentialsRequestHandlerTest {
             CoreMatchers.equalTo("session_transfer")
         )
         MatcherAssert.assertThat(
-            resultMap["expiresIn"],
-            CoreMatchers.equalTo(3600)
+            resultMap["expiresAt"],
+            CoreMatchers.equalTo(expiresAt.toInstant().toString())
         )
         MatcherAssert.assertThat(
             resultMap["idToken"],

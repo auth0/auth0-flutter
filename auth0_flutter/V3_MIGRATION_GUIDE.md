@@ -1,0 +1,316 @@
+# Migration Guide from auth0_flutter v2 to v3
+
+`auth0_flutter` v3 upgrades the wrapped native SDKs to their next major versions
+— **Auth0.Android v4** on Android and **Auth0.swift v3** on iOS/macOS. Those
+upgrades raise the minimum platform requirements and change some native
+behavior that surfaces through the Dart API.
+
+> **Note**
+> This is a living document. It currently covers the **Android** track changes.
+> The remaining cross-platform Dart API renames (for example
+> `expiresIn` → `expiresAt`, `clearSession` → `logout`, `UserInfo` →
+> `UserProfile`) land in later v3 PRs and will be documented here as they merge.
+
+## Table of Contents
+
+- [Requirements Changes](#requirements-changes)
+- [Behavior Changes](#behavior-changes)
+  - [`credentialsManager.clearCredentials` now clears all stored data (Android)](#credentialsmanagerclearcredentials-now-clears-all-stored-data-android)
+  - [New `credentialsManager.clearAll()` for a full wipe](#new-credentialsmanagerclearall-for-a-full-wipe)
+  - [Inline MFA methods removed from the Authentication API](#inline-mfa-methods-removed-from-the-authentication-api)
+  - [Web Auth `useEphemeralSession` is now honored on Android](#web-auth-useephemeralsession-is-now-honored-on-android)
+  - [Android Web Auth recovers login results across process death](#android-web-auth-recovers-login-results-across-process-death)
+  - [Credentials manager `minTtl` now defaults to 60 seconds](#credentials-manager-minttl-now-defaults-to-60-seconds)
+  - [`SSOCredentials.expiresIn` is now `expiresAt` (`DateTime`)](#ssocredentialsexpiresin-is-now-expiresat-datetime)
+- [`WebAuthenticationException` error codes reconciled (Android + iOS)](#webauthenticationexception-error-codes-reconciled-android--ios)
+- [Getting Help](#getting-help)
+
+## Requirements Changes
+
+Because the underlying native SDKs raised their floors, `auth0_flutter` v3
+raises the Android minimums:
+
+| Requirement | v2 | v3 |
+| --- | --- | --- |
+| Android `minSdkVersion` | 21 | **26** (Android 8.0) |
+| Android compile/target SDK | 34 | **36** |
+| JDK (to build the Android module) | 8 | **17** |
+| Kotlin | 1.9.x | **2.0.21** |
+| Android Gradle Plugin | 8.4.x | **8.10.1** |
+| Gradle | 8.7 | **8.11.1** |
+
+**Migration:** if your app targets an Android `minSdkVersion` below 26, raise it
+to at least 26 in your app's `android/app/build.gradle`. Ensure your build
+environment uses JDK 17 (for example, set it in Android Studio under
+*Settings → Build, Execution, Deployment → Build Tools → Gradle → Gradle JDK*,
+or via `org.gradle.java.home`).
+
+There are **no source changes required** to your Dart code for these
+requirement bumps.
+
+## Behavior Changes
+
+### `credentialsManager.clearCredentials` now clears all stored data (Android)
+
+**Change:** In Auth0.Android v4, `clearCredentials()` performs a full wipe of
+the underlying storage (`Storage.removeAll()`) rather than removing only the
+individual credential entries it wrote.
+
+**Impact:** If your app stored unrelated values in the same
+`SharedPreferences` instance that the credentials manager uses (for example, by
+supplying a custom `sharedPreferencesName` via
+`CredentialsManagerConfiguration` and reusing it elsewhere), calling
+`clearCredentials` now removes those values too.
+
+**Migration:** Do not share the credentials manager's storage with other data.
+Keep any app data you need to persist independently of Auth0 credentials in a
+separate store. The Dart API is unchanged:
+
+```dart
+// Same call as v2 — behavior on Android is now a full wipe of the store.
+await credentialsManager.clearCredentials();
+```
+
+This affects Android only. iOS/macOS behavior is unchanged.
+
+### New `credentialsManager.clearAll()` for a full wipe
+
+**Change (additive):** v3 adds `credentialsManager.clearAll()`, which removes all
+stored credentials and cached API credentials **and** the underlying encryption
+keys — on Android the crypto key pair and the DPoP key, on iOS/macOS every entry
+in the credentials store plus the DPoP key pair. It maps to Auth0.Android v4's
+`clearAll()` and Auth0.swift v3's `clearAll()`.
+
+**Impact:** This is a new, optional method, so existing code is unaffected. Use
+`clearCredentials()` to remove only the stored credential entries, or
+`clearAll()` when you also want to drop the encryption keys (for example a full
+sign-out/reset):
+
+```dart
+await auth0.credentialsManager.clearAll();
+```
+
+Because `clearAll()` deletes every entry in the underlying store, avoid sharing
+that store (a custom `sharedPreferencesName` on Android, or `storeKey` /
+`accessGroup` on iOS/macOS) with unrelated app data.
+
+### Inline MFA methods removed from the Authentication API
+
+**Change:** The inline MFA methods `api.loginWithOtp` and
+`api.multifactorChallenge` have been removed from the authentication client.
+This follows Auth0.Android v4 and Auth0.swift v3, which route MFA through a
+dedicated MFA client. Their functionality is covered by the MFA API
+(`auth0.mfa()`), which lists authenticators, requests a
+challenge, and verifies OTP/OOB/recovery-code factors. The `ChallengeType`
+enum, used only by `multifactorChallenge`, has also been removed.
+
+**Impact:** Code that calls `auth0.api.loginWithOtp` or
+`auth0.api.multifactorChallenge` no longer compiles.
+
+| Removed (`auth0.api`) | Replacement (`auth0.mfa`) |
+|-----------------------|---------------------------|
+| `loginWithOtp({otp, mfaToken})` | `verifyOtp({otp})` |
+| `multifactorChallenge({mfaToken, types, authenticatorId})` | `challenge({authenticatorId})` |
+
+**Migration:** Obtain an `MfaApi` instance by passing the `mfaToken` from the
+MFA-required `ApiException` to `auth0.mfa()`, then drive the challenge/verify
+flow through it. The `mfaToken` is supplied once rather than repeated on each
+call, and challenges target a specific `authenticatorId`:
+
+```dart
+try {
+  await auth0.api.login(
+    usernameOrEmail: email,
+    password: password,
+    connectionOrRealm: 'Username-Password-Authentication',
+  );
+} on ApiException catch (e) {
+  if (e.isMultifactorRequired && e.mfaToken != null) {
+    final mfa = auth0.mfa(mfaToken: e.mfaToken!);
+
+    // ❌ v2 — inline challenge + OTP login on the auth client
+    // await auth0.api.multifactorChallenge(mfaToken: e.mfaToken!, ...);
+    // final credentials =
+    //     await auth0.api.loginWithOtp(otp: '123456', mfaToken: e.mfaToken!);
+
+    // ✅ v3 — challenge a specific authenticator, then verify the OTP
+    final authenticators =
+        await mfa.getAuthenticators(factorsAllowed: ['totp', 'phone']);
+    await mfa.challenge(authenticatorId: authenticators.first.id);
+    final credentials = await mfa.verifyOtp(otp: '123456');
+  }
+}
+```
+
+For TOTP factors you can skip the challenge request and call `mfa.verifyOtp`
+directly; use `mfa.challenge` for out-of-band factors (SMS, email, push).
+
+### Web Auth `useEphemeralSession` is now honored on Android
+
+**Change:** In v2 the Web Auth `useEphemeralSession` login option had no effect
+on Android (it was accepted but ignored, and documented as iOS/macOS only). In
+v3, Android honors it via Auth0.Android v4's ephemeral browsing, matching
+iOS/macOS.
+
+**Impact:** If your Android app already passed `useEphemeralSession: true`
+expecting it to be ignored, the login now runs in a private/ephemeral browser
+session: no session is shared with or persisted in the system browser, so the
+user is not silently signed in from an existing browser session.
+
+**Migration:** No code change is required. Review your use of
+`useEphemeralSession` on Android if you relied on the previous no-op behavior:
+
+```dart
+// v3: on Android this now starts an ephemeral browser session (as on iOS/macOS).
+await auth0.webAuthentication().login(useEphemeralSession: true);
+```
+
+> **Note**
+> Ephemeral sessions depend on the device browser supporting them. If the
+> browser that handles the login does not support ephemeral browsing, Android
+> falls back to a normal Custom Tabs login and the session is not ephemeral.
+
+### Android Web Auth recovers login results across process death
+
+**Change:** Android Web Auth now registers its login callback against the
+activity lifecycle (via Auth0.Android v4's `WebAuthProvider.registerCallbacks`)
+instead of the deprecated global callback. As a result, a login result is
+delivered even if the activity is recreated across a configuration change or the
+process is killed and restarted while the browser is in the foreground.
+
+**Impact:** This is an internal improvement. The Dart API is unchanged and no
+code change is required.
+
+### Credentials manager `minTtl` now defaults to 60 seconds
+
+**Change:** To match Auth0.Android v4 and Auth0.swift v3, the credential
+retrieval APIs now default `minTtl` to **60** seconds instead of `0`. This
+applies to `credentialsManager.credentials()` and
+`credentialsManager.getApiCredentials()` on both Android and iOS/macOS. A
+returned access token must have at least 60 seconds of remaining lifetime; if it
+would expire sooner, it is refreshed (when a refresh token is available) instead
+of being returned as-is.
+
+**Impact:** Calling these methods without an explicit `minTtl` now applies a
+60-second floor. Tokens within 60 seconds of expiration trigger a refresh, and
+if no refresh token is available the call fails instead of returning the
+near-expired token.
+
+**Migration:** No code change is required to adopt the new default. To keep the
+previous behavior, pass `minTtl: 0` explicitly:
+
+```dart
+await auth0.credentialsManager.credentials(minTtl: 0);
+await auth0.credentialsManager.getApiCredentials(audience: '...', minTtl: 0);
+```
+
+`hasValidCredentials` is intentionally left at `minTtl: 0`, matching the native
+`hasValid` behavior — it reports whether a credential is currently valid without
+applying the 60-second floor.
+
+### `SSOCredentials.expiresIn` is now `expiresAt` (`DateTime`)
+
+**Change:** Auth0.Android v4 and Auth0.swift v3 changed the Native to Web SSO
+credential expiry from a relative `expiresIn` (seconds) to an absolute
+`expiresAt` (date). `SSOCredentials` now exposes `expiresAt` as a UTC `DateTime`
+instead of `expiresIn` as an `int`, matching `Credentials.expiresAt`. This
+affects both `credentialsManager.ssoCredentials()` and `api.ssoExchange()` on
+Android and iOS/macOS.
+
+**Impact:** Code that reads `ssoCredentials.expiresIn` no longer compiles.
+
+**Migration:** Read `expiresAt`, and derive the remaining lifetime yourself if
+you still need a relative value:
+
+```dart
+final sso = await auth0.credentialsManager.ssoCredentials();
+
+// ❌ v2 — relative seconds
+// final secondsLeft = sso.expiresIn;
+
+// ✅ v3 — absolute UTC timestamp
+final DateTime expiresAt = sso.expiresAt;
+final secondsLeft = expiresAt.difference(DateTime.now().toUtc()).inSeconds;
+```
+
+---
+
+## `WebAuthenticationException` error codes reconciled (Android + iOS)
+
+**Change:** The error codes emitted by `WebAuthenticationException` are now
+consistent across Android and iOS, and the Dart class exposes typed boolean
+getters for each case.
+
+### Android now emits `USER_CANCELLED` on user cancel
+
+Previously, when a user dismissed the browser on Android, the native SDK
+emitted the raw code `a0.authentication_canceled`. iOS already emitted
+`USER_CANCELLED`. Both platforms now emit `USER_CANCELLED`.
+
+**Migration:** Replace any check on the raw Android code:
+
+```dart
+// v2 — required platform-branching
+if (e.code == 'USER_CANCELLED' || e.code == 'a0.authentication_canceled') { ... }
+
+// v3 — single check, or use the typed getter
+if (e.isUserCancelledException) { ... }
+```
+
+### New typed getters on `WebAuthenticationException`
+
+| Getter | Code | Platforms |
+|--------|------|-----------|
+| `isUserCancelledException` | `USER_CANCELLED` | Android + iOS |
+| `isAuthenticationFailed` | `AUTHENTICATION_FAILED` | iOS |
+| `isCodeExchangeFailed` | `CODE_EXCHANGE_FAILED` | iOS |
+| `isIdTokenValidationFailed` | `ID_TOKEN_VALIDATION_FAILED` | iOS |
+| `isTransactionActiveAlready` | `TRANSACTION_ACTIVE_ALREADY` | iOS |
+
+### Server error codes surface through `authenticationFailed` / `codeExchangeFailed` (iOS)
+
+Auth0.swift v3 wraps server-returned errors (e.g. `dpop_jkt_mismatch`,
+`access_denied`, `invalid_grant`) inside `authenticationFailed` or
+`codeExchangeFailed` as the cause. The Flutter SDK now extracts the underlying
+server error code and surfaces it directly, so `exception.code` returns the
+actual server code rather than the generic wrapper case name.
+
+**Migration:** If you were matching on `AUTHENTICATION_FAILED` or
+`CODE_EXCHANGE_FAILED` and needed the underlying error detail, switch to
+checking `exception.code` directly:
+
+```dart
+try {
+  await auth0.webAuthentication().login();
+} on WebAuthenticationException catch (e) {
+  if (e.isUserCancelledException) {
+    // User dismissed the browser — same code on Android and iOS
+  } else if (e.code == 'dpop_jkt_mismatch') {
+    // DPoP thumbprint mismatch from the Auth0 server
+  } else if (e.isAuthenticationFailed) {
+    // authenticationFailed with no recognized server cause
+  }
+}
+```
+
+### Removed iOS error codes (v2 only)
+
+The following iOS-only v2 error codes are no longer emitted (they mapped to
+removed `WebAuthError` cases in Auth0.swift v3):
+
+| Removed code | Replacement |
+|---|---|
+| `a0.no_bundle_identifier` | `UNKNOWN` |
+| `a0.pkce_not_allowed` | `UNKNOWN` |
+| `a0.no_authorization_code` | `UNKNOWN` — code-exchange failures now use `CODE_EXCHANGE_FAILED` |
+| `a0.invalid_invitation_url` | `UNKNOWN` |
+
+**Migration:** Remove any `catch` branches that match these codes.
+
+---
+
+## Getting Help
+
+If you encounter issues migrating, please open an issue on the
+[auth0-flutter repository](https://github.com/auth0/auth0-flutter/issues) with
+details of the API you're migrating and the platform affected.
