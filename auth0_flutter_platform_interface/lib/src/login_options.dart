@@ -27,6 +27,7 @@ class LoginOptions implements RequestOptions {
         'leeway': idTokenValidationConfig?.leeway,
         'maxAge': idTokenValidationConfig?.maxAge,
         'issuer': idTokenValidationConfig?.issuer,
+        'nonce': idTokenValidationConfig?.nonce,
         'audience': audience,
         'scopes': scopes.toList(),
         'redirectUrl': redirectUrl,
