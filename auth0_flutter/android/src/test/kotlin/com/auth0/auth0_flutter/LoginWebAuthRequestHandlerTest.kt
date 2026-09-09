@@ -69,6 +69,7 @@ class LoginWebAuthRequestHandlerTest {
             verify(builder, never()).withIdTokenVerificationLeeway(any())
             verify(builder, never()).withMaxAge(any())
             verify(builder, never()).withIdTokenVerificationIssuer(any())
+            verify(builder, never()).withNonce(any())
             verify(builder, never()).withScheme(any())
             verify(builder, never()).withParameters(any())
         }
@@ -272,6 +273,26 @@ class LoginWebAuthRequestHandlerTest {
 
         runRequestHandler(args) { _, builder ->
             verify(builder, never()).withIdTokenVerificationIssuer(anyOrNull())
+        }
+    }
+
+    @Test
+    fun `handler should set the nonce on the SDK when specified`() {
+        val args = hashMapOf<String, Any?>(
+            "nonce" to "test-nonce"
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withNonce("test-nonce")
+        }
+    }
+
+    @Test
+    fun `handler should not set the nonce on the SDK when not specified`() {
+        val args = hashMapOf<String, Any?>()
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder, never()).withNonce(anyOrNull())
         }
     }
 

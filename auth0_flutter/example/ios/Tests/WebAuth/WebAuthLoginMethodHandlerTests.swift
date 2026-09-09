@@ -197,6 +197,18 @@ extension WebAuthLoginHandlerTests {
         XCTAssertNil(spy.maxAgeValue)
     }
 
+
+    func testAddsNonce() {
+        let value = "foo"
+        sut.handle(with: arguments(withKey: Argument.nonce, value: value)) { _ in }
+        XCTAssertEqual(spy.nonceValue, value)
+    }
+
+    func testDoesNotAddNonceWhenNil() {
+        sut.handle(with: arguments(without: Argument.nonce)) { _ in }
+        XCTAssertNil(spy.nonceValue)
+    }
+
     #if os(iOS)
     // MARK: safariViewController
 
@@ -286,6 +298,7 @@ extension WebAuthLoginHandlerTests {
             Argument.leeway.rawValue: 1,
             Argument.issuer.rawValue: "",
             Argument.maxAge.rawValue: 1,
+            Argument.nonce.rawValue: "",
         ]
 
         #if os(iOS)

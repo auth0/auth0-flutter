@@ -260,6 +260,16 @@ final credentials =
     await auth0.webAuthentication().login(idTokenValidationConfig: config);
 ```
 
+You can also supply your own `nonce` to be validated against the `nonce` claim of the returned ID token. When omitted, the SDK generates and validates one automatically.
+
+```dart
+const config = IdTokenValidationConfig(nonce: 'a1b2c3d4');
+final credentials =
+    await auth0.webAuthentication().login(idTokenValidationConfig: config);
+```
+
+> ℹ️ `nonce` is not supported on Web, where it is always managed internally by auth0-spa-js.
+
 </details>
 
 <details>

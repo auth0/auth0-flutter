@@ -25,6 +25,7 @@ struct WebAuthLoginMethodHandler: MethodHandler {
         case useDPoP
         case issuer
         case maxAge
+        case nonce
         #if os(iOS)
         case safariViewController
         #endif
@@ -100,6 +101,10 @@ struct WebAuthLoginMethodHandler: MethodHandler {
 
         if let maxAge = arguments[Argument.maxAge] as? Int {
             webAuth = webAuth.maxAge(maxAge)
+        }
+
+        if let nonce = arguments[Argument.nonce] as? String {
+            webAuth = webAuth.nonce(nonce)
         }
 
         #if os(iOS)
