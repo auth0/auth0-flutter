@@ -75,36 +75,36 @@ JwtParts SplitJwt(const std::string &token)
   return {parts[0], parts[1], parts[2]};
 }
 
-web::json::value DecodeJwtHeader(const std::string &token)
+nlohmann::json DecodeJwtHeader(const std::string &token)
 {
   auto parts = SplitJwt(token);
   auto decoded = Base64UrlDecode(parts.header);
-  return web::json::value::parse(decoded);
+  return nlohmann::json::parse(decoded);
 }
 
-web::json::value DecodeJwtPayload(const std::string &token)
+nlohmann::json DecodeJwtPayload(const std::string &token)
 {
   auto parts = SplitJwt(token);
   auto decoded = Base64UrlDecode(parts.payload);
-  return web::json::value::parse(decoded);
+  return nlohmann::json::parse(decoded);
 }
 
-flutter::EncodableValue JsonToEncodable(const web::json::value &v)
+flutter::EncodableValue JsonToEncodable(const nlohmann::json &v)
 {
   if (v.is_null())
     return flutter::EncodableValue();
 
   if (v.is_boolean())
-    return flutter::EncodableValue(v.as_bool());
+    return flutter::EncodableValue(v.get<bool>());
   if (v.is_number())
-    return flutter::EncodableValue(v.as_double());
+    return flutter::EncodableValue(v.get<double>());
   if (v.is_string())
-    return flutter::EncodableValue(utility::conversions::to_utf8string(v.as_string()));
+    return flutter::EncodableValue(v.get<std::string>());
 
   if (v.is_array())
   {
     flutter::EncodableList list;
-    for (const auto &item : v.as_array())
+    for (const auto &item : v)
     {
       list.push_back(JsonToEncodable(item));
     }
@@ -114,10 +114,9 @@ flutter::EncodableValue JsonToEncodable(const web::json::value &v)
   if (v.is_object())
   {
     flutter::EncodableMap map;
-    for (const auto &kv : v.as_object())
+    for (const auto &kv : v.items())
     {
-      map[flutter::EncodableValue(utility::conversions::to_utf8string(kv.first))] =
-          JsonToEncodable(kv.second);
+      map[flutter::EncodableValue(kv.key())] = JsonToEncodable(kv.value());
     }
     return flutter::EncodableValue(map);
   }

@@ -1,41 +1,38 @@
 #include "user_identity.h"
 #include "jwt_util.h"
 
-using web::json::value;
-
 static std::string GetRequiredString(
-    const value& v, const utility::string_t& key) {
-  return utility::conversions::to_utf8string(v.at(key).as_string());
+    const nlohmann::json& v, const std::string& key) {
+  return v.at(key).get<std::string>();
 }
 
 static std::optional<std::string> GetOptionalString(
-    const value& v, const utility::string_t& key) {
-  if (v.has_field(key) && v.at(key).is_string()) {
-    return utility::conversions::to_utf8string(v.at(key).as_string());
+    const nlohmann::json& v, const std::string& key) {
+  if (v.contains(key) && v.at(key).is_string()) {
+    return v.at(key).get<std::string>();
   }
   return std::nullopt;
 }
 
-UserIdentity UserIdentity::FromJson(const value& json) {
+UserIdentity UserIdentity::FromJson(const nlohmann::json& json) {
   UserIdentity identity;
 
-  identity.id = GetRequiredString(json, U("user_id"));
-  identity.connection = GetRequiredString(json, U("connection"));
-  identity.provider = GetRequiredString(json, U("provider"));
+  identity.id = GetRequiredString(json, "user_id");
+  identity.connection = GetRequiredString(json, "connection");
+  identity.provider = GetRequiredString(json, "provider");
 
-  if (json.has_field(U("isSocial"))) {
-    identity.isSocial = json.at(U("isSocial")).as_bool();
+  if (json.contains("isSocial")) {
+    identity.isSocial = json.at("isSocial").get<bool>();
   }
 
-  identity.accessToken = GetOptionalString(json, U("access_token"));
-  identity.accessTokenSecret = GetOptionalString(json, U("access_token_secret"));
+  identity.accessToken = GetOptionalString(json, "access_token");
+  identity.accessTokenSecret = GetOptionalString(json, "access_token_secret");
 
-  if (json.has_field(U("profileData")) &&
-      json.at(U("profileData")).is_object()) {
-    for (const auto& kv : json.at(U("profileData")).as_object()) {
-      identity.profileInfo[flutter::EncodableValue(
-          utility::conversions::to_utf8string(kv.first))] =
-          JsonToEncodable(kv.second);
+  if (json.contains("profileData") &&
+      json.at("profileData").is_object()) {
+    for (const auto& kv : json.at("profileData").items()) {
+      identity.profileInfo[flutter::EncodableValue(kv.key())] =
+          JsonToEncodable(kv.value());
     }
   }
 

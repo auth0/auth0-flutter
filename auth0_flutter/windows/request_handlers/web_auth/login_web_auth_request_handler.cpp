@@ -24,7 +24,7 @@
 #include <iomanip>
 #include <map>
 
-#include <cpprest/json.h>
+#include <nlohmann/json.hpp>
 
 namespace auth0_flutter
 {
@@ -360,13 +360,13 @@ namespace auth0_flutter
         // Cancel any previously running login task so a second call to handle()
         // does not leave a stale task that still holds a reference to the old
         // (now-replaced) MethodResult.
-        // pplx::cancellation_token has a private default constructor; it must
+        // concurrency::cancellation_token has a private default constructor; it must
         // be obtained from a cancellation_token_source or from ::none().
-        pplx::cancellation_token token = pplx::cancellation_token::none();
+        concurrency::cancellation_token token = concurrency::cancellation_token::none();
         {
             std::lock_guard<std::mutex> lock(_cts_mutex);
             _cts.cancel();
-            _cts = pplx::cancellation_token_source{};
+            _cts = concurrency::cancellation_token_source{};
             token = _cts.get_token();
         }
 
@@ -374,10 +374,10 @@ namespace auth0_flutter
 
         auto taskRunner = ui_task_runner_;
 
-        // Run authentication on a cancellable pplx task to avoid blocking the
+        // Run authentication on a cancellable PPL task to avoid blocking the
         // Flutter UI thread.  The cancellation token lets the destructor (or a
         // subsequent handle() call) abort a running flow cleanly.
-        pplx::create_task([taskRunner, sharedResult,
+        concurrency::create_task([taskRunner, sharedResult,
                            clientId, domain, domainUrl, scopeStr, redirectUri, appCustomURL, audience, organizationId, invitationUrl, authTimeoutSeconds, leeway, maxAge, state, nonce, issuer, token, queryParams, auth0ClientHeader]()
                           {
             try
@@ -571,7 +571,7 @@ namespace auth0_flutter
 
             // Step 7: Validate ID token (OIDC compliance)
             // This validates issuer, audience, expiration, and other critical claims
-            web::json::value validatedPayload;
+            nlohmann::json validatedPayload;
             try
             {
                 IdTokenValidationConfig validationConfig;
@@ -659,7 +659,7 @@ namespace auth0_flutter
                     });
                 }
             }
-            catch (const pplx::task_canceled &)
+            catch (const concurrency::task_canceled &)
             {
                 // Cancellation was requested (engine shutdown or a subsequent
                 // handle() call).  result is no longer valid — exit silently.

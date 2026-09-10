@@ -28,69 +28,69 @@ namespace auth0_flutter
      * @brief Extract a required integer claim from JWT payload
      */
     static int64_t GetRequiredIntClaim(
-        const web::json::value &payload,
+        const nlohmann::json &payload,
         const std::string &claimName)
     {
-        if (!payload.has_field(utility::conversions::to_string_t(claimName)))
+        if (!payload.contains(claimName))
         {
             throw IdTokenValidationException("Missing required claim: " + claimName);
         }
 
-        const auto &field = payload.at(utility::conversions::to_string_t(claimName));
+        const auto &field = payload.at(claimName);
         if (!field.is_number())
         {
             throw IdTokenValidationException("Claim '" + claimName + "' is not a number");
         }
 
-        return field.as_number().to_int64();
+        return field.get<int64_t>();
     }
 
     /**
      * @brief Extract an optional integer claim from JWT payload
      */
     static std::optional<int64_t> GetOptionalIntClaim(
-        const web::json::value &payload,
+        const nlohmann::json &payload,
         const std::string &claimName)
     {
-        if (!payload.has_field(utility::conversions::to_string_t(claimName)))
+        if (!payload.contains(claimName))
         {
             return std::nullopt;
         }
 
-        const auto &field = payload.at(utility::conversions::to_string_t(claimName));
+        const auto &field = payload.at(claimName);
         if (!field.is_number())
         {
             return std::nullopt;
         }
 
-        return field.as_number().to_int64();
+        return field.get<int64_t>();
     }
 
     /**
      * @brief Extract an optional string claim from JWT payload
      */
     static std::optional<std::string> GetOptionalStringClaim(
-        const web::json::value &payload,
+        const nlohmann::json &payload,
         const std::string &claimName)
     {
-        if (!payload.has_field(utility::conversions::to_string_t(claimName)))
+        if (!payload.contains(claimName))
         {
             return std::nullopt;
         }
 
-        const auto &field = payload.at(utility::conversions::to_string_t(claimName));
+        const auto &field = payload.at(claimName);
         if (!field.is_string())
         {
             return std::nullopt;
         }
 
-        return utility::conversions::to_utf8string(field.as_string());
+        return field.get<std::string>();
     }
 
     void ValidateIdToken(
         const std::string &idToken,
         const IdTokenValidationConfig &config,
-        web::json::value *outPayload)
+        nlohmann::json *outPayload)
     {
         if (idToken.empty())
         {
@@ -106,7 +106,7 @@ namespace auth0_flutter
         }
 
         // Decode JWT payload
-        web::json::value payload;
+        nlohmann::json payload;
         try
         {
             payload = DecodeJwtPayload(idToken);
@@ -146,19 +146,19 @@ namespace auth0_flutter
             }
         }
 
-        // 3. Validate audience (aud) claim 
+        // 3. Validate audience (aud) claim
         // aud can be a string or an array of strings.
-        if (!payload.has_field(U("aud")))
+        if (!payload.contains("aud"))
         {
             throw IdTokenValidationException(
                 "Audience (aud) claim must be a string or array of strings present in the ID token");
         }
 
-        const auto &audField = payload.at(U("aud"));
+        const auto &audField = payload.at("aud");
 
         if (audField.is_string())
         {
-            std::string aud = utility::conversions::to_utf8string(audField.as_string());
+            std::string aud = audField.get<std::string>();
             if (aud != config.audience)
             {
                 std::ostringstream msg;
@@ -169,8 +169,7 @@ namespace auth0_flutter
         }
         else if (audField.is_array())
         {
-            const auto &audArray = audField.as_array();
-            if (audArray.size() == 0)
+            if (audField.empty())
             {
                 throw IdTokenValidationException(
                     "Audience (aud) claim must be a string or array of strings present in the ID token");
@@ -178,11 +177,11 @@ namespace auth0_flutter
 
             std::vector<std::string> audValues;
             bool found = false;
-            for (const auto &v : audArray)
+            for (const auto &v : audField)
             {
                 if (v.is_string())
                 {
-                    std::string s = utility::conversions::to_utf8string(v.as_string());
+                    std::string s = v.get<std::string>();
                     audValues.push_back(s);
                     if (s == config.audience) found = true;
                 }
@@ -209,7 +208,7 @@ namespace auth0_flutter
 
         // 4. Validate expiration time (exp) claim
         {
-            if (!payload.has_field(U("exp")))
+            if (!payload.contains("exp"))
             {
                 throw IdTokenValidationException(
                     "Expiration time (exp) claim must be a number present in the ID token");
@@ -226,7 +225,7 @@ namespace auth0_flutter
         }
 
         // 5. Validate issued at (iat) claim
-        if (!payload.has_field(U("iat")))
+        if (!payload.contains("iat"))
         {
             throw IdTokenValidationException(
                 "Issued At (iat) claim must be a number present in the ID token");
@@ -260,8 +259,8 @@ namespace auth0_flutter
             }
         }
 
-        // 7. Validate azp (Authorized Party) when aud has multiple values 
-        if (audField.is_array() && audField.as_array().size() > 1)
+        // 7. Validate azp (Authorized Party) when aud has multiple values
+        if (audField.is_array() && audField.size() > 1)
         {
             auto azp = GetOptionalStringClaim(payload, "azp");
             if (!azp.has_value())

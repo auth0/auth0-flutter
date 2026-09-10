@@ -149,11 +149,11 @@ The default `flutter test` suites (Dart) run without credentials — they need o
 
 ### Naming Conventions
 
-Dart defaults: `UpperCamelCase` for classes/enums, `lowerCamelCase` for members/variables, `lowercase_with_underscores` for files — enforced by `flutter_lints` plus repo-specific rules in `analysis_options.yaml` (identical in both packages).
+Dart defaults: `UpperCamelCase` for classes/enums, `lowerCamelCase` for members/variables, `lowercase_with_underscores` for files — enforced by `flutter_lints` plus repo-specific rules in `analysis_options.yaml` (identical in both packages, except `avoid_final_parameters`/`prefer_final_parameters` below).
 
 **CI-enforced rules** (from `analysis_options.yaml`, `flutter analyze` fails otherwise):
 - `prefer_single_quotes`, `lines_longer_than_80_chars`, `always_declare_return_types`, `type_annotate_public_apis`
-- `prefer_final_locals`, `prefer_final_parameters`, `prefer_final_in_for_each`
+- `prefer_final_locals`, `prefer_final_in_for_each` — plus `avoid_final_parameters` in `auth0_flutter` (newer Dart SDKs reject `final` on non-constructor parameters); `auth0_flutter_platform_interface` still has the deprecated `prefer_final_parameters` pending the same cleanup
 - `strict-casts`, `strict-inference`, `strict-raw-types` (analyzer language modes), `unawaited_futures: error`, `missing_required_param: error`
 
 See [references/code-style.md](references/code-style.md) for good/bad examples and the dominant options/models pattern.

@@ -5,8 +5,8 @@ import 'package:auth0_flutter/src/web/extensions/web_exception_extensions.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  JSObject createJsException(final String error, final String description,
-      {final Map<String, dynamic>? additionalProps}) {
+  JSObject createJsException(String error, String description,
+      {Map<String, dynamic>? additionalProps}) {
     final jsObject = JSObject();
     jsObject.setProperty('error'.toJS, error.toJS);
     jsObject.setProperty('error_description'.toJS, description.toJS);

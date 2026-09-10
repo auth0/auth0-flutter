@@ -65,7 +65,7 @@ void main() {
   group('credentials', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.getCredentials(any))
-          .thenAnswer((final _) async => TestPlatform.credentials);
+          .thenAnswer((_) async => TestPlatform.credentials);
 
       await DefaultCredentialsManager(account, userAgent)
           .credentials(minTtl: 30, scopes: {'a', 'b'}, parameters: {'a': 'b'});
@@ -83,7 +83,7 @@ void main() {
     test('set minTtl, scope and parameters to default value when omitted',
         () async {
       when(mockedPlatform.getCredentials(any))
-          .thenAnswer((final _) async => TestPlatform.credentials);
+          .thenAnswer((_) async => TestPlatform.credentials);
 
       await DefaultCredentialsManager(account, userAgent).credentials();
 
@@ -100,7 +100,7 @@ void main() {
   group('storeCredentials', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.saveCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((_) async => true);
 
       await DefaultCredentialsManager(account, userAgent)
           .storeCredentials(TestPlatform.credentials);
@@ -128,7 +128,7 @@ void main() {
   group('hasValidCredentials', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.hasValidCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((_) async => true);
 
       await DefaultCredentialsManager(account, userAgent)
           .hasValidCredentials(minTtl: 30);
@@ -143,7 +143,7 @@ void main() {
 
     test('uses a default value for minTtl when omitted', () async {
       when(mockedPlatform.hasValidCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((_) async => true);
 
       await DefaultCredentialsManager(account, userAgent).hasValidCredentials();
 
@@ -157,7 +157,7 @@ void main() {
 
     test('returns the value from the platform when true', () async {
       when(mockedPlatform.hasValidCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((_) async => true);
 
       final result = await DefaultCredentialsManager(account, userAgent)
           .hasValidCredentials();
@@ -167,7 +167,7 @@ void main() {
 
     test('returns the value from the platform when false', () async {
       when(mockedPlatform.hasValidCredentials(any))
-          .thenAnswer((final _) async => false);
+          .thenAnswer((_) async => false);
 
       final result = await DefaultCredentialsManager(account, userAgent)
           .hasValidCredentials();
@@ -179,7 +179,7 @@ void main() {
   group('clearCredentials', () {
     test('calls the platform', () async {
       when(mockedPlatform.clearCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((_) async => true);
 
       await DefaultCredentialsManager(account, userAgent).clearCredentials();
 
@@ -194,7 +194,7 @@ void main() {
   group('renewCredentials', () {
     test('renew credentials return new set of credentials', () async {
       when(mockedPlatform.renewCredentials(any))
-          .thenAnswer((final _) async => TestPlatform.renewedCredentials);
+          .thenAnswer((_) async => TestPlatform.renewedCredentials);
 
       final result = await DefaultCredentialsManager(account, userAgent)
           .renewCredentials();
@@ -208,7 +208,7 @@ void main() {
 
     test('passes through properties to the platform', () async {
       when(mockedPlatform.renewCredentials(any))
-          .thenAnswer((final _) async => TestPlatform.renewedCredentials);
+          .thenAnswer((_) async => TestPlatform.renewedCredentials);
 
       await DefaultCredentialsManager(account, userAgent)
           .renewCredentials(parameters: {'a': 'b'});
@@ -232,7 +232,7 @@ void main() {
       });
 
       when(mockedPlatform.user(argThat(isA<CredentialsManagerRequest>())))
-          .thenAnswer((final _) async => userProfile);
+          .thenAnswer((_) async => userProfile);
 
       final result = await DefaultCredentialsManager(account, userAgent).user();
 
@@ -257,7 +257,7 @@ void main() {
       });
 
       when(mockedPlatform.user(argThat(isA<CredentialsManagerRequest>())))
-          .thenAnswer((final _) async => userProfile);
+          .thenAnswer((_) async => userProfile);
 
       final result = await DefaultCredentialsManager(account, userAgent).user();
 
@@ -272,7 +272,7 @@ void main() {
 
     test('returns null when platform returns null', () async {
       when(mockedPlatform.user(argThat(isA<CredentialsManagerRequest>())))
-          .thenAnswer((final _) async => null);
+          .thenAnswer((_) async => null);
 
       final result = await DefaultCredentialsManager(account, userAgent).user();
 
@@ -289,7 +289,7 @@ void main() {
 
       await expectLater(
           actual,
-          throwsA(predicate((final e) =>
+          throwsA(predicate((e) =>
               e is CredentialsManagerException &&
               e.code == 'FAILED' &&
               e.message == 'No credentials stored')));
@@ -299,7 +299,7 @@ void main() {
   group('ssoCredentials', () {
     test('passes through parameters and headers to the platform', () async {
       when(mockedPlatform.getSSOCredentials(any))
-          .thenAnswer((final _) async => TestPlatform.ssoResult);
+          .thenAnswer((_) async => TestPlatform.ssoResult);
 
       await DefaultCredentialsManager(account, userAgent).ssoCredentials(
         parameters: {'param': 'value'},
@@ -318,7 +318,7 @@ void main() {
     test('uses empty defaults for parameters and headers when omitted',
         () async {
       when(mockedPlatform.getSSOCredentials(any))
-          .thenAnswer((final _) async => TestPlatform.ssoResult);
+          .thenAnswer((_) async => TestPlatform.ssoResult);
 
       await DefaultCredentialsManager(account, userAgent).ssoCredentials();
 
@@ -333,7 +333,7 @@ void main() {
 
     test('returns the SSOCredentials from the platform', () async {
       when(mockedPlatform.getSSOCredentials(any))
-          .thenAnswer((final _) async => TestPlatform.ssoResult);
+          .thenAnswer((_) async => TestPlatform.ssoResult);
 
       final result =
           await DefaultCredentialsManager(account, userAgent).ssoCredentials();
@@ -350,7 +350,7 @@ void main() {
   group('getApiCredentials', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.getApiCredentials(any))
-          .thenAnswer((final _) async => TestPlatform.apiResult);
+          .thenAnswer((_) async => TestPlatform.apiResult);
 
       await DefaultCredentialsManager(account, userAgent).getApiCredentials(
         audience: 'test-audience',
@@ -374,7 +374,7 @@ void main() {
 
     test('uses default values for optional properties when omitted', () async {
       when(mockedPlatform.getApiCredentials(any))
-          .thenAnswer((final _) async => TestPlatform.apiResult);
+          .thenAnswer((_) async => TestPlatform.apiResult);
 
       await DefaultCredentialsManager(account, userAgent)
           .getApiCredentials(audience: 'test-audience');
@@ -394,7 +394,7 @@ void main() {
 
     test('returns the ApiCredentials from the platform', () async {
       when(mockedPlatform.getApiCredentials(any))
-          .thenAnswer((final _) async => TestPlatform.apiResult);
+          .thenAnswer((_) async => TestPlatform.apiResult);
 
       final result = await DefaultCredentialsManager(account, userAgent)
           .getApiCredentials(audience: 'test-audience');
@@ -409,7 +409,7 @@ void main() {
   group('clearApiCredentials', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.clearApiCredentials(any))
-          .thenAnswer((final _) async {});
+          .thenAnswer((_) async {});
 
       await DefaultCredentialsManager(account, userAgent).clearApiCredentials(
         audience: 'test-audience',
@@ -427,7 +427,7 @@ void main() {
 
     test('leaves the scope null when omitted', () async {
       when(mockedPlatform.clearApiCredentials(any))
-          .thenAnswer((final _) async {});
+          .thenAnswer((_) async {});
 
       await DefaultCredentialsManager(account, userAgent)
           .clearApiCredentials(audience: 'test-audience');

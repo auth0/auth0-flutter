@@ -1,6 +1,6 @@
 #pragma once
-#include <cpprest/json.h>
+#include <nlohmann/json.hpp>
 #include "credentials.h"
 
 Credentials DecodeTokenResponse(
-    const web::json::value &json);
+    const nlohmann::json &json);

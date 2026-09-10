@@ -10,7 +10,7 @@
 #include <string>
 #include <stdexcept>
 #include <map>
-#include <cpprest/json.h>
+#include <nlohmann/json.hpp>
 
 namespace auth0_flutter
 {
@@ -46,20 +46,20 @@ namespace auth0_flutter
          * - Legacy format: { "code": "...", "description": "..." }
          */
         AuthenticationError(
-            const web::json::value &errorJson,
+            const nlohmann::json &errorJson,
             int statusCode)
             : std::runtime_error("An error occurred when trying to authenticate with the server."),
               statusCode_(statusCode)
         {
             // Try modern format first: "error" and "error_description"
-            if (errorJson.has_field(U("error")))
+            if (errorJson.contains("error"))
             {
-                code_ = GetJsonString(errorJson, U("error"));
+                code_ = GetJsonString(errorJson, "error");
             }
-            else if (errorJson.has_field(U("code")))
+            else if (errorJson.contains("code"))
             {
                 // Fallback to legacy format
-                code_ = GetJsonString(errorJson, U("code"));
+                code_ = GetJsonString(errorJson, "code");
             }
             else
             {
@@ -67,13 +67,13 @@ namespace auth0_flutter
             }
 
             // Try "error_description" first, then "description"
-            if (errorJson.has_field(U("error_description")))
+            if (errorJson.contains("error_description"))
             {
-                description_ = GetJsonString(errorJson, U("error_description"));
+                description_ = GetJsonString(errorJson, "error_description");
             }
-            else if (errorJson.has_field(U("description")))
+            else if (errorJson.contains("description"))
             {
-                description_ = GetJsonString(errorJson, U("description"));
+                description_ = GetJsonString(errorJson, "description");
             }
             else
             {
@@ -110,10 +110,9 @@ namespace auth0_flutter
          */
         std::string GetValue(const std::string &key) const
         {
-            utility::string_t wkey = utility::conversions::to_string_t(key);
-            if (errorJson_.has_field(wkey))
+            if (errorJson_.contains(key))
             {
-                return GetJsonString(errorJson_, wkey);
+                return GetJsonString(errorJson_, key);
             }
             return std::string();
         }
@@ -255,15 +254,15 @@ namespace auth0_flutter
         std::string code_;
         std::string description_;
         int statusCode_;
-        web::json::value errorJson_;
+        nlohmann::json errorJson_;
 
         static std::string GetJsonString(
-            const web::json::value &json,
-            const utility::string_t &key)
+            const nlohmann::json &json,
+            const std::string &key)
         {
-            if (json.has_field(key) && json.at(key).is_string())
+            if (json.contains(key) && json.at(key).is_string())
             {
-                return utility::conversions::to_utf8string(json.at(key).as_string());
+                return json.at(key).get<std::string>();
             }
             return std::string();
         }

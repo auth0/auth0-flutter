@@ -105,7 +105,7 @@ void main() {
   group('signup', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.signup(any))
-          .thenAnswer((final _) async => TestPlatform.signupResult);
+          .thenAnswer((_) async => TestPlatform.signupResult);
 
       final result = await Auth0('test-domain', 'test-clientId').api.signup(
         email: 'test-email',
@@ -128,7 +128,7 @@ void main() {
 
     test('set userMetadata to default value when omitted', () async {
       when(mockedPlatform.signup(any))
-          .thenAnswer((final _) async => TestPlatform.signupResult);
+          .thenAnswer((_) async => TestPlatform.signupResult);
 
       final result = await Auth0('test-domain', 'test-clientId').api.signup(
             email: 'test-email',
@@ -147,7 +147,7 @@ void main() {
   group('login', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
 
       final result = await Auth0('test-domain', 'test-clientId').api.login(
           usernameOrEmail: 'test-user',
@@ -173,7 +173,7 @@ void main() {
 
     test('set scope and parameters to default value when omitted', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
 
       final result = await Auth0('test-domain', 'test-clientId').api.login(
           usernameOrEmail: 'test-user',
@@ -191,7 +191,7 @@ void main() {
 
     test('set audience to null when omitted', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
 
       await Auth0('test-domain', 'test-clientId').api.login(
           usernameOrEmail: 'test-user',
@@ -208,7 +208,7 @@ void main() {
   group('loginWithOtp', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.loginWithOtp(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
 
       final result = await Auth0('test-domain', 'test-clientId')
           .api
@@ -228,7 +228,7 @@ void main() {
   group('multifactorChallenge', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.multifactorChallenge(any)).thenAnswer(
-          (final _) async => TestPlatform.multifactorChallengeResult);
+          (_) async => TestPlatform.multifactorChallengeResult);
 
       final result = await Auth0('test-domain', 'test-clientId')
           .api
@@ -253,7 +253,7 @@ void main() {
 
     test('set parameters to default value when omitted', () async {
       when(mockedPlatform.multifactorChallenge(any)).thenAnswer(
-          (final _) async => TestPlatform.multifactorChallengeResult);
+          (_) async => TestPlatform.multifactorChallengeResult);
 
       await Auth0('', '').api.multifactorChallenge(mfaToken: '');
 
@@ -268,7 +268,7 @@ void main() {
 
   group('resetPassword', () {
     test('passes through properties to the platform', () async {
-      when(mockedPlatform.resetPassword(any)).thenAnswer((final _) async => {});
+      when(mockedPlatform.resetPassword(any)).thenAnswer((_) async => {});
 
       await Auth0('test-domain', 'test-clientId').api.resetPassword(
           email: 'test-user',
@@ -285,7 +285,7 @@ void main() {
     });
 
     test('set parameters to default value when omitted', () async {
-      when(mockedPlatform.resetPassword(any)).thenAnswer((final _) async => {});
+      when(mockedPlatform.resetPassword(any)).thenAnswer((_) async => {});
 
       await Auth0('test-domain', 'test-clientId')
           .api
@@ -300,7 +300,7 @@ void main() {
   group('renewCredentials', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.renew(any))
-          .thenAnswer((final _) async => TestPlatform.renewResult);
+          .thenAnswer((_) async => TestPlatform.renewResult);
 
       final result = await Auth0('test-domain', 'test-clientId')
           .api
@@ -322,7 +322,7 @@ void main() {
 
     test('set scope and parameters to default value when omitted', () async {
       when(mockedPlatform.renew(any))
-          .thenAnswer((final _) async => TestPlatform.renewResult);
+          .thenAnswer((_) async => TestPlatform.renewResult);
 
       final result = await Auth0('test-domain', 'test-clientId')
           .api
@@ -340,7 +340,7 @@ void main() {
   group('ssoExchange', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.ssoExchange(any))
-          .thenAnswer((final _) async => TestPlatform.ssoExchangeResult);
+          .thenAnswer((_) async => TestPlatform.ssoExchangeResult);
 
       final result = await Auth0('test-domain', 'test-clientId')
           .api
@@ -362,7 +362,7 @@ void main() {
 
     test('sets parameters and headers to empty maps when omitted', () async {
       when(mockedPlatform.ssoExchange(any))
-          .thenAnswer((final _) async => TestPlatform.ssoExchangeResult);
+          .thenAnswer((_) async => TestPlatform.ssoExchangeResult);
 
       await Auth0('test-domain', 'test-clientId')
           .api
@@ -379,7 +379,7 @@ void main() {
   group('customTokenExchange', () {
     test('passes actor token and type through to the platform', () async {
       when(mockedPlatform.customTokenExchange(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
 
       await Auth0('test-domain', 'test-clientId').api.customTokenExchange(
             subjectToken: 'subject-token',
@@ -401,7 +401,7 @@ void main() {
 
     test('leaves actor null when omitted', () async {
       when(mockedPlatform.customTokenExchange(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
 
       await Auth0('test-domain', 'test-clientId').api.customTokenExchange(
             subjectToken: 'subject-token',
@@ -419,7 +419,7 @@ void main() {
   group('userInfo', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.userInfo(any))
-          .thenAnswer((final _) async => const UserProfile(sub: 'sub'));
+          .thenAnswer((_) async => const UserProfile(sub: 'sub'));
 
       await Auth0('test-domain', 'test-clientId')
           .api
@@ -434,7 +434,7 @@ void main() {
 
     test('set parameters to default value when omitted', () async {
       when(mockedPlatform.userInfo(any))
-          .thenAnswer((final _) async => const UserProfile(sub: 'sub'));
+          .thenAnswer((_) async => const UserProfile(sub: 'sub'));
 
       await Auth0('test-domain', 'test-clientId')
           .api
@@ -447,7 +447,7 @@ void main() {
 
     test('defaults tokenType to Bearer when not specified', () async {
       when(mockedPlatform.userInfo(any))
-          .thenAnswer((final _) async => const UserProfile(sub: 'sub'));
+          .thenAnswer((_) async => const UserProfile(sub: 'sub'));
 
       await Auth0('test-domain', 'test-clientId')
           .api
@@ -460,7 +460,7 @@ void main() {
 
     test('passes through custom tokenType to the platform', () async {
       when(mockedPlatform.userInfo(any))
-          .thenAnswer((final _) async => const UserProfile(sub: 'sub'));
+          .thenAnswer((_) async => const UserProfile(sub: 'sub'));
 
       await Auth0('test-domain', 'test-clientId')
           .api
@@ -478,7 +478,7 @@ void main() {
   group('passkeyLoginChallenge', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.passkeyLoginChallenge(any)).thenAnswer(
-          (final _) async => TestPlatform.passkeyLoginChallengeResult);
+          (_) async => TestPlatform.passkeyLoginChallengeResult);
 
       final result = await Auth0('test-domain', 'test-clientId')
           .api
@@ -498,7 +498,7 @@ void main() {
 
     test('sets connection and organization to null when omitted', () async {
       when(mockedPlatform.passkeyLoginChallenge(any)).thenAnswer(
-          (final _) async => TestPlatform.passkeyLoginChallengeResult);
+          (_) async => TestPlatform.passkeyLoginChallengeResult);
 
       await Auth0('test-domain', 'test-clientId').api.passkeyLoginChallenge();
 
@@ -515,7 +515,7 @@ void main() {
     test('passes through properties to the platform with login credential',
         () async {
       when(mockedPlatform.passkeyCredentialExchange(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
 
       final result = await Auth0('test-domain', 'test-clientId')
           .api
@@ -549,7 +549,7 @@ void main() {
     test('uses default scopes and empty params/null fields when omitted',
         () async {
       when(mockedPlatform.passkeyCredentialExchange(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
 
       await Auth0('test-domain', 'test-clientId').api.passkeyCredentialExchange(
             challenge: TestPlatform.passkeyLoginChallengeResult,
@@ -571,7 +571,7 @@ void main() {
     test('passes through properties to the platform with signup credential',
         () async {
       when(mockedPlatform.passkeyCredentialExchange(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
 
       final result = await Auth0('test-domain', 'test-clientId')
           .api
@@ -606,7 +606,7 @@ void main() {
   group('passkeySignupChallenge', () {
     test('passes through properties to the platform', () async {
       when(mockedPlatform.passkeySignupChallenge(any)).thenAnswer(
-          (final _) async => TestPlatform.passkeySignupChallengeResult);
+          (_) async => TestPlatform.passkeySignupChallengeResult);
 
       final result = await Auth0('test-domain', 'test-clientId')
           .api

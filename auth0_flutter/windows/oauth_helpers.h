@@ -7,7 +7,7 @@
 
 #include <string>
 #include <vector>
-#include <pplx/pplxtasks.h>
+#include <ppltasks.h>
 
 namespace auth0_flutter
 {
@@ -84,7 +84,7 @@ namespace auth0_flutter
     OAuthCallbackResult waitForAuthCode_CustomScheme(
         int timeoutSeconds = 180,
         const std::string &expectedState = "",
-        pplx::cancellation_token ct = pplx::cancellation_token::none(),
+        concurrency::cancellation_token ct = concurrency::cancellation_token::none(),
         const std::string &appCustomUrl = kDefaultRedirectUri);
 
     /**
@@ -106,6 +106,6 @@ namespace auth0_flutter
     bool waitForLogoutCallback(
         const std::string &returnToUri,
         int timeoutSeconds = 300,
-        pplx::cancellation_token ct = pplx::cancellation_token::none());
+        concurrency::cancellation_token ct = concurrency::cancellation_token::none());
 
 } // namespace auth0_flutter

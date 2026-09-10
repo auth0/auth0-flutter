@@ -9,7 +9,7 @@ import 'dart:js_interop';
 
 @JSExport()
 class Auth0ClientImpl {
-  Future<void> handleRedirectCallback([final String? url]) =>
+  Future<void> handleRedirectCallback([String? url]) =>
       throw Exception('');
 }
 

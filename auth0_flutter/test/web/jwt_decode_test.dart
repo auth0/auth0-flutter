@@ -62,7 +62,7 @@ void main() {
   });
 }
 
-String testJWT(final String payload) => 'HEADER.$payload.SIGNATURE';
+String testJWT(String payload) => 'HEADER.$payload.SIGNATURE';
 
-Matcher throwsJWTDecodeException(final String code, final String message) =>
+Matcher throwsJWTDecodeException(String code, String message) =>
     throwsA(Auth0ExceptionMatcher<JWTDecodeException>(code, message));

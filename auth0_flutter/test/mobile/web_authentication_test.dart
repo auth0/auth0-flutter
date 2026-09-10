@@ -48,9 +48,9 @@ void main() {
   group('login', () {
     test('calls the platform to login', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
       when(mockedCMPlatform.saveCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((_) async => true);
 
       final result = await Auth0('test-domain', 'test-clientId')
           .webAuthentication()
@@ -89,9 +89,9 @@ void main() {
 
     test('saves the credentials on success', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
       when(mockedCMPlatform.saveCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((_) async => true);
 
       await Auth0('test-domain', 'test-clientId').webAuthentication().login();
 
@@ -106,9 +106,9 @@ void main() {
 
     test('does not save the credentials on success when opted out', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
       when(mockedCMPlatform.saveCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((_) async => true);
 
       await Auth0('test-domain', 'test-clientId')
           .webAuthentication(useCredentialsManager: false)
@@ -119,12 +119,12 @@ void main() {
 
     test('uses custom Credentials Manager on success', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
       when(mockedCMPlatform.saveCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((_) async => true);
       final mockCm = MockCredentialsManager();
 
-      when(mockCm.storeCredentials(any)).thenAnswer((final _) async => true);
+      when(mockCm.storeCredentials(any)).thenAnswer((_) async => true);
 
       await Auth0('test-domain', 'test-clientId', credentialsManager: mockCm)
           .webAuthentication()
@@ -144,9 +144,9 @@ void main() {
 
     test('set scope and parameters to default value when omitted', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
       when(mockedCMPlatform.saveCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((_) async => true);
 
       final result = await Auth0('test-domain', 'test-clientId')
           .webAuthentication()
@@ -165,9 +165,9 @@ void main() {
 
     test('does not use HTTPS redirect URLs by default', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
       when(mockedCMPlatform.saveCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((_) async => true);
 
       await Auth0('test-domain', 'test-clientId').webAuthentication().login();
 
@@ -179,9 +179,9 @@ void main() {
 
     test('does not use EphemeralSession by default', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
       when(mockedCMPlatform.saveCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((_) async => true);
 
       await Auth0('test-domain', 'test-clientId').webAuthentication().login();
 
@@ -193,9 +193,9 @@ void main() {
 
     test('passes custom parameters to platform', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
       when(mockedCMPlatform.saveCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((_) async => true);
 
       await Auth0('test-domain', 'test-clientId')
           .webAuthentication()
@@ -217,9 +217,9 @@ void main() {
 
   group('logout', () {
     test('passes the federated flag to the platform', () async {
-      when(mockedPlatform.logout(any)).thenAnswer((final _) async => {});
+      when(mockedPlatform.logout(any)).thenAnswer((_) async => {});
       when(mockedCMPlatform.clearCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((_) async => true);
 
       await Auth0('test-domain', 'test-clientId')
           .webAuthentication()
@@ -232,9 +232,9 @@ void main() {
     });
 
     test('defaults federated flag to false when omitted', () async {
-      when(mockedPlatform.logout(any)).thenAnswer((final _) async => {});
+      when(mockedPlatform.logout(any)).thenAnswer((_) async => {});
       when(mockedCMPlatform.clearCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((_) async => true);
 
       await Auth0('test-domain', 'test-clientId').webAuthentication().logout();
 
@@ -244,9 +244,9 @@ void main() {
       expect(verificationResult.options.federated, false);
     });
     test('calls the platform to logout', () async {
-      when(mockedPlatform.logout(any)).thenAnswer((final _) async => {});
+      when(mockedPlatform.logout(any)).thenAnswer((_) async => {});
       when(mockedCMPlatform.clearCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((_) async => true);
 
       await Auth0('test-domain', 'test-clientId')
           .webAuthentication()
@@ -262,9 +262,9 @@ void main() {
     });
 
     test('clears the credentials on success', () async {
-      when(mockedPlatform.logout(any)).thenAnswer((final _) async => {});
+      when(mockedPlatform.logout(any)).thenAnswer((_) async => {});
       when(mockedCMPlatform.clearCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((_) async => true);
 
       await Auth0('test-domain', 'test-clientId').webAuthentication().logout();
 
@@ -277,9 +277,9 @@ void main() {
 
     test('does not clear the credentials on success when opted out', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
       when(mockedCMPlatform.clearCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((_) async => true);
 
       await Auth0('test-domain', 'test-clientId')
           .webAuthentication(useCredentialsManager: false)
@@ -290,11 +290,11 @@ void main() {
 
     test('uses custom Credentials Manager on success', () async {
       when(mockedPlatform.login(any))
-          .thenAnswer((final _) async => TestPlatform.loginResult);
+          .thenAnswer((_) async => TestPlatform.loginResult);
       when(mockedCMPlatform.clearCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((_) async => true);
       final mockCm = MockCredentialsManager();
-      when(mockCm.clearCredentials()).thenAnswer((final _) async => true);
+      when(mockCm.clearCredentials()).thenAnswer((_) async => true);
 
       await Auth0('test-domain', 'test-clientId', credentialsManager: mockCm)
           .webAuthentication()
@@ -308,9 +308,9 @@ void main() {
     });
 
     test('passes allowedBrowsers to the platform when specified', () async {
-      when(mockedPlatform.logout(any)).thenAnswer((final _) async => {});
+      when(mockedPlatform.logout(any)).thenAnswer((_) async => {});
       when(mockedCMPlatform.clearCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((_) async => true);
 
       await Auth0('test-domain', 'test-clientId').webAuthentication().logout(
           allowedBrowsers: ['com.android.chrome', 'org.mozilla.firefox']);
@@ -323,9 +323,9 @@ void main() {
     });
 
     test('defaults allowedBrowsers to empty list when not specified', () async {
-      when(mockedPlatform.logout(any)).thenAnswer((final _) async => {});
+      when(mockedPlatform.logout(any)).thenAnswer((_) async => {});
       when(mockedCMPlatform.clearCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((_) async => true);
 
       await Auth0('test-domain', 'test-clientId').webAuthentication().logout();
 
@@ -336,9 +336,9 @@ void main() {
     });
 
     test('passes allowedBrowsers with other logout parameters', () async {
-      when(mockedPlatform.logout(any)).thenAnswer((final _) async => {});
+      when(mockedPlatform.logout(any)).thenAnswer((_) async => {});
       when(mockedCMPlatform.clearCredentials(any))
-          .thenAnswer((final _) async => true);
+          .thenAnswer((_) async => true);
 
       await Auth0('test-domain', 'test-clientId').webAuthentication().logout(
           useHTTPS: true,
@@ -361,9 +361,9 @@ void main() {
     group('login', () {
       test('passes customTabsOptions to the platform when specified', () async {
         when(mockedPlatform.login(any))
-            .thenAnswer((final _) async => TestPlatform.loginResult);
+            .thenAnswer((_) async => TestPlatform.loginResult);
         when(mockedCMPlatform.saveCredentials(any))
-            .thenAnswer((final _) async => true);
+            .thenAnswer((_) async => true);
 
         await Auth0('test-domain', 'test-clientId').webAuthentication().login(
             customTabsOptions: const CustomTabsOptions(
@@ -397,9 +397,9 @@ void main() {
 
       test('customTabsOptions defaults to null when not specified', () async {
         when(mockedPlatform.login(any))
-            .thenAnswer((final _) async => TestPlatform.loginResult);
+            .thenAnswer((_) async => TestPlatform.loginResult);
         when(mockedCMPlatform.saveCredentials(any))
-            .thenAnswer((final _) async => true);
+            .thenAnswer((_) async => true);
 
         await Auth0('test-domain', 'test-clientId').webAuthentication().login();
 
@@ -411,9 +411,9 @@ void main() {
 
       test('passes customTabsOptions with side sheet options', () async {
         when(mockedPlatform.login(any))
-            .thenAnswer((final _) async => TestPlatform.loginResult);
+            .thenAnswer((_) async => TestPlatform.loginResult);
         when(mockedCMPlatform.saveCredentials(any))
-            .thenAnswer((final _) async => true);
+            .thenAnswer((_) async => true);
 
         await Auth0('test-domain', 'test-clientId').webAuthentication().login(
             customTabsOptions: const CustomTabsOptions(
@@ -435,9 +435,9 @@ void main() {
 
     group('logout', () {
       test('passes customTabsOptions to the platform when specified', () async {
-        when(mockedPlatform.logout(any)).thenAnswer((final _) async => {});
+        when(mockedPlatform.logout(any)).thenAnswer((_) async => {});
         when(mockedCMPlatform.clearCredentials(any))
-            .thenAnswer((final _) async => true);
+            .thenAnswer((_) async => true);
 
         await Auth0('test-domain', 'test-clientId').webAuthentication().logout(
             customTabsOptions: const CustomTabsOptions(
@@ -460,9 +460,9 @@ void main() {
       });
 
       test('customTabsOptions defaults to null when not specified', () async {
-        when(mockedPlatform.logout(any)).thenAnswer((final _) async => {});
+        when(mockedPlatform.logout(any)).thenAnswer((_) async => {});
         when(mockedCMPlatform.clearCredentials(any))
-            .thenAnswer((final _) async => true);
+            .thenAnswer((_) async => true);
 
         await Auth0('test-domain', 'test-clientId')
             .webAuthentication()
@@ -480,9 +480,9 @@ void main() {
     group('login with DPoP', () {
       test('passes useDPoP parameter to platform when enabled', () async {
         when(mockedPlatform.login(any))
-            .thenAnswer((final _) async => TestPlatform.loginResult);
+            .thenAnswer((_) async => TestPlatform.loginResult);
         when(mockedCMPlatform.saveCredentials(any))
-            .thenAnswer((final _) async => true);
+            .thenAnswer((_) async => true);
 
         await Auth0('test-domain', 'test-clientId')
             .webAuthentication()
@@ -499,9 +499,9 @@ void main() {
 
       test('passes useDPoP parameter to platform when disabled', () async {
         when(mockedPlatform.login(any))
-            .thenAnswer((final _) async => TestPlatform.loginResult);
+            .thenAnswer((_) async => TestPlatform.loginResult);
         when(mockedCMPlatform.saveCredentials(any))
-            .thenAnswer((final _) async => true);
+            .thenAnswer((_) async => true);
 
         await Auth0('test-domain', 'test-clientId').webAuthentication().login();
 
@@ -514,9 +514,9 @@ void main() {
 
       test('defaults useDPoP to false when not specified', () async {
         when(mockedPlatform.login(any))
-            .thenAnswer((final _) async => TestPlatform.loginResult);
+            .thenAnswer((_) async => TestPlatform.loginResult);
         when(mockedCMPlatform.saveCredentials(any))
-            .thenAnswer((final _) async => true);
+            .thenAnswer((_) async => true);
 
         await Auth0('test-domain', 'test-clientId').webAuthentication().login();
 
@@ -529,9 +529,9 @@ void main() {
 
       test('passes useDPoP with other authentication parameters', () async {
         when(mockedPlatform.login(any))
-            .thenAnswer((final _) async => TestPlatform.loginResult);
+            .thenAnswer((_) async => TestPlatform.loginResult);
         when(mockedCMPlatform.saveCredentials(any))
-            .thenAnswer((final _) async => true);
+            .thenAnswer((_) async => true);
 
         await Auth0('test-domain', 'test-clientId').webAuthentication().login(
             useDPoP: true,
@@ -563,9 +563,9 @@ void main() {
         });
 
         when(mockedPlatform.login(any))
-            .thenAnswer((final _) async => dpopLoginResult);
+            .thenAnswer((_) async => dpopLoginResult);
         when(mockedCMPlatform.saveCredentials(any))
-            .thenAnswer((final _) async => true);
+            .thenAnswer((_) async => true);
 
         final result = await Auth0('test-domain', 'test-clientId')
             .webAuthentication()
@@ -585,7 +585,7 @@ void main() {
           'does not save DPoP credentials when credentials manager is disabled',
           () async {
         when(mockedPlatform.login(any))
-            .thenAnswer((final _) async => TestPlatform.loginResult);
+            .thenAnswer((_) async => TestPlatform.loginResult);
 
         await Auth0('test-domain', 'test-clientId')
             .webAuthentication(useCredentialsManager: false)
@@ -596,9 +596,9 @@ void main() {
 
       test('passes useDPoP with redirectUrl parameter', () async {
         when(mockedPlatform.login(any))
-            .thenAnswer((final _) async => TestPlatform.loginResult);
+            .thenAnswer((_) async => TestPlatform.loginResult);
         when(mockedCMPlatform.saveCredentials(any))
-            .thenAnswer((final _) async => true);
+            .thenAnswer((_) async => true);
 
         await Auth0('test-domain', 'test-clientId')
             .webAuthentication()
@@ -615,9 +615,9 @@ void main() {
 
       test('passes useDPoP with useHTTPS parameter', () async {
         when(mockedPlatform.login(any))
-            .thenAnswer((final _) async => TestPlatform.loginResult);
+            .thenAnswer((_) async => TestPlatform.loginResult);
         when(mockedCMPlatform.saveCredentials(any))
-            .thenAnswer((final _) async => true);
+            .thenAnswer((_) async => true);
 
         await Auth0('test-domain', 'test-clientId')
             .webAuthentication()
@@ -633,9 +633,9 @@ void main() {
 
       test('passes useDPoP with useEphemeralSession parameter', () async {
         when(mockedPlatform.login(any))
-            .thenAnswer((final _) async => TestPlatform.loginResult);
+            .thenAnswer((_) async => TestPlatform.loginResult);
         when(mockedCMPlatform.saveCredentials(any))
-            .thenAnswer((final _) async => true);
+            .thenAnswer((_) async => true);
 
         await Auth0('test-domain', 'test-clientId')
             .webAuthentication()
@@ -651,9 +651,9 @@ void main() {
 
       test('passes useDPoP with custom parameters', () async {
         when(mockedPlatform.login(any))
-            .thenAnswer((final _) async => TestPlatform.loginResult);
+            .thenAnswer((_) async => TestPlatform.loginResult);
         when(mockedCMPlatform.saveCredentials(any))
-            .thenAnswer((final _) async => true);
+            .thenAnswer((_) async => true);
 
         await Auth0('test-domain', 'test-clientId')
             .webAuthentication()
@@ -670,9 +670,9 @@ void main() {
 
       test('passes useDPoP with invitationUrl parameter', () async {
         when(mockedPlatform.login(any))
-            .thenAnswer((final _) async => TestPlatform.loginResult);
+            .thenAnswer((_) async => TestPlatform.loginResult);
         when(mockedCMPlatform.saveCredentials(any))
-            .thenAnswer((final _) async => true);
+            .thenAnswer((_) async => true);
 
         await Auth0('test-domain', 'test-clientId').webAuthentication().login(
             useDPoP: true,
@@ -690,9 +690,9 @@ void main() {
       test('passes useDPoP with safariViewController parameter (iOS)',
           () async {
         when(mockedPlatform.login(any))
-            .thenAnswer((final _) async => TestPlatform.loginResult);
+            .thenAnswer((_) async => TestPlatform.loginResult);
         when(mockedCMPlatform.saveCredentials(any))
-            .thenAnswer((final _) async => true);
+            .thenAnswer((_) async => true);
 
         await Auth0('test-domain', 'test-clientId').webAuthentication().login(
             useDPoP: true,
@@ -714,9 +714,9 @@ void main() {
 
       test('passes useDPoP with allowedBrowsers parameter (Android)', () async {
         when(mockedPlatform.login(any))
-            .thenAnswer((final _) async => TestPlatform.loginResult);
+            .thenAnswer((_) async => TestPlatform.loginResult);
         when(mockedCMPlatform.saveCredentials(any))
-            .thenAnswer((final _) async => true);
+            .thenAnswer((_) async => true);
 
         await Auth0('test-domain', 'test-clientId').webAuthentication().login(
             useDPoP: true,
@@ -733,9 +733,9 @@ void main() {
 
       test('uses custom credentials manager with DPoP', () async {
         when(mockedPlatform.login(any))
-            .thenAnswer((final _) async => TestPlatform.loginResult);
+            .thenAnswer((_) async => TestPlatform.loginResult);
         final mockCm = MockCredentialsManager();
-        when(mockCm.storeCredentials(any)).thenAnswer((final _) async => true);
+        when(mockCm.storeCredentials(any)).thenAnswer((_) async => true);
 
         await Auth0('test-domain', 'test-clientId', credentialsManager: mockCm)
             .webAuthentication()
@@ -771,9 +771,9 @@ void main() {
         });
 
         when(mockedPlatform.login(any))
-            .thenAnswer((final _) async => dpopCredentials);
+            .thenAnswer((_) async => dpopCredentials);
         when(mockedCMPlatform.saveCredentials(any))
-            .thenAnswer((final _) async => true);
+            .thenAnswer((_) async => true);
 
         final result = await Auth0('test-domain', 'test-clientId')
             .webAuthentication()
@@ -786,9 +786,9 @@ void main() {
 
       test('DPoP works with full authentication flow', () async {
         when(mockedPlatform.login(any))
-            .thenAnswer((final _) async => TestPlatform.loginResult);
+            .thenAnswer((_) async => TestPlatform.loginResult);
         when(mockedCMPlatform.saveCredentials(any))
-            .thenAnswer((final _) async => true);
+            .thenAnswer((_) async => true);
 
         final result = await Auth0('test-domain', 'test-clientId')
             .webAuthentication()
@@ -830,9 +830,9 @@ void main() {
         });
 
         when(mockedPlatform.login(any))
-            .thenAnswer((final _) async => dpopCredentials);
+            .thenAnswer((_) async => dpopCredentials);
         when(mockedCMPlatform.saveCredentials(any))
-            .thenAnswer((final _) async => true);
+            .thenAnswer((_) async => true);
 
         await Auth0('test-domain', 'test-clientId')
             .webAuthentication()

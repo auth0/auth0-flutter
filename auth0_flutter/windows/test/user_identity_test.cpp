@@ -1,20 +1,19 @@
 #include <gtest/gtest.h>
 
 #include "user_identity.h"
-#include <cpprest/json.h>
+#include <nlohmann/json.hpp>
 #include <flutter/encodable_value.h>
 
-using web::json::value;
 using flutter::EncodableMap;
 using flutter::EncodableValue;
 
 /* ---------------- FromJson ---------------- */
 
 TEST(UserIdentityFromJsonTest, ParsesMinimalIdentity) {
-  value json;
-  json[U("user_id")] = value::string(U("auth0|123456"));
-  json[U("connection")] = value::string(U("Username-Password-Authentication"));
-  json[U("provider")] = value::string(U("auth0"));
+  nlohmann::json json;
+  json["user_id"] = "auth0|123456";
+  json["connection"] = "Username-Password-Authentication";
+  json["provider"] = "auth0";
 
   UserIdentity identity = UserIdentity::FromJson(json);
 
@@ -28,18 +27,18 @@ TEST(UserIdentityFromJsonTest, ParsesMinimalIdentity) {
 }
 
 TEST(UserIdentityFromJsonTest, ParsesFullIdentity) {
-  value json;
-  json[U("user_id")] = value::string(U("google-oauth2|123456"));
-  json[U("connection")] = value::string(U("google-oauth2"));
-  json[U("provider")] = value::string(U("google-oauth2"));
-  json[U("isSocial")] = value::boolean(true);
-  json[U("access_token")] = value::string(U("test_access_token"));
-  json[U("access_token_secret")] = value::string(U("test_secret"));
+  nlohmann::json json;
+  json["user_id"] = "google-oauth2|123456";
+  json["connection"] = "google-oauth2";
+  json["provider"] = "google-oauth2";
+  json["isSocial"] = true;
+  json["access_token"] = "test_access_token";
+  json["access_token_secret"] = "test_secret";
 
-  value profileData;
-  profileData[U("email")] = value::string(U("user@example.com"));
-  profileData[U("name")] = value::string(U("John Doe"));
-  json[U("profileData")] = profileData;
+  nlohmann::json profileData;
+  profileData["email"] = "user@example.com";
+  profileData["name"] = "John Doe";
+  json["profileData"] = profileData;
 
   UserIdentity identity = UserIdentity::FromJson(json);
 
@@ -58,11 +57,11 @@ TEST(UserIdentityFromJsonTest, ParsesFullIdentity) {
 }
 
 TEST(UserIdentityFromJsonTest, HandlesSocialIdentityWithoutTokens) {
-  value json;
-  json[U("user_id")] = value::string(U("facebook|123456"));
-  json[U("connection")] = value::string(U("facebook"));
-  json[U("provider")] = value::string(U("facebook"));
-  json[U("isSocial")] = value::boolean(true);
+  nlohmann::json json;
+  json["user_id"] = "facebook|123456";
+  json["connection"] = "facebook";
+  json["provider"] = "facebook";
+  json["isSocial"] = true;
 
   UserIdentity identity = UserIdentity::FromJson(json);
 
@@ -73,11 +72,11 @@ TEST(UserIdentityFromJsonTest, HandlesSocialIdentityWithoutTokens) {
 }
 
 TEST(UserIdentityFromJsonTest, HandlesEmptyProfileData) {
-  value json;
-  json[U("user_id")] = value::string(U("auth0|123456"));
-  json[U("connection")] = value::string(U("Username-Password-Authentication"));
-  json[U("provider")] = value::string(U("auth0"));
-  json[U("profileData")] = value::object();
+  nlohmann::json json;
+  json["user_id"] = "auth0|123456";
+  json["connection"] = "Username-Password-Authentication";
+  json["provider"] = "auth0";
+  json["profileData"] = nlohmann::json::object();
 
   UserIdentity identity = UserIdentity::FromJson(json);
 
@@ -85,16 +84,16 @@ TEST(UserIdentityFromJsonTest, HandlesEmptyProfileData) {
 }
 
 TEST(UserIdentityFromJsonTest, HandlesProfileDataWithVariousTypes) {
-  value json;
-  json[U("user_id")] = value::string(U("auth0|123456"));
-  json[U("connection")] = value::string(U("Username-Password-Authentication"));
-  json[U("provider")] = value::string(U("auth0"));
+  nlohmann::json json;
+  json["user_id"] = "auth0|123456";
+  json["connection"] = "Username-Password-Authentication";
+  json["provider"] = "auth0";
 
-  value profileData;
-  profileData[U("string_field")] = value::string(U("text"));
-  profileData[U("number_field")] = value::number(42);
-  profileData[U("bool_field")] = value::boolean(true);
-  json[U("profileData")] = profileData;
+  nlohmann::json profileData;
+  profileData["string_field"] = "text";
+  profileData["number_field"] = 42;
+  profileData["bool_field"] = true;
+  json["profileData"] = profileData;
 
   UserIdentity identity = UserIdentity::FromJson(json);
 
@@ -114,12 +113,12 @@ TEST(UserIdentityFromJsonTest, HandlesProfileDataWithVariousTypes) {
 }
 
 TEST(UserIdentityFromJsonTest, ThrowsOnMissingRequiredField) {
-  value json;
-  json[U("user_id")] = value::string(U("auth0|123456"));
-  json[U("connection")] = value::string(U("Username-Password-Authentication"));
+  nlohmann::json json;
+  json["user_id"] = "auth0|123456";
+  json["connection"] = "Username-Password-Authentication";
   // Missing provider
 
-  EXPECT_THROW(UserIdentity::FromJson(json), web::json::json_exception);
+  EXPECT_THROW(UserIdentity::FromJson(json), nlohmann::json::out_of_range);
 }
 
 /* ---------------- FromEncodable ---------------- */
@@ -238,12 +237,12 @@ TEST(UserIdentityToEncodableMapTest, HandlesEmptyProfileInfo) {
 /* ---------------- Round-trip tests ---------------- */
 
 TEST(UserIdentityRoundTripTest, FromJsonToEncodableMapPreservesData) {
-  value json;
-  json[U("user_id")] = value::string(U("google-oauth2|123456"));
-  json[U("connection")] = value::string(U("google-oauth2"));
-  json[U("provider")] = value::string(U("google-oauth2"));
-  json[U("isSocial")] = value::boolean(true);
-  json[U("access_token")] = value::string(U("test_token"));
+  nlohmann::json json;
+  json["user_id"] = "google-oauth2|123456";
+  json["connection"] = "google-oauth2";
+  json["provider"] = "google-oauth2";
+  json["isSocial"] = true;
+  json["access_token"] = "test_token";
 
   UserIdentity identity = UserIdentity::FromJson(json);
   EncodableMap map = identity.ToEncodableMap();
