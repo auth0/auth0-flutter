@@ -4,7 +4,7 @@
 <dict>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>webcredentials:{YOUR_AUTH0_DOMAIN}</string>
+		<string>webcredentials:int-dx-enterprise-test.us.auth0.com</string>
 	</array>
 </dict>
 </plist>

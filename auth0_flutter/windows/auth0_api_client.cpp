@@ -88,7 +88,7 @@ std::string BuildAuth0ClientHeader(const std::string &name, const std::string &v
 {
     nlohmann::json env;
     env["cpp"] = GetCppStandard();
-    env["Windows"] = GetWindowsVersion();
+    env["windows"] = GetWindowsVersion();
 
     nlohmann::json payload;
     payload["name"] = name;
