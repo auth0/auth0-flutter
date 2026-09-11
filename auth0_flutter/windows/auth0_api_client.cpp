@@ -61,9 +61,33 @@ static std::string GetWindowsVersion()
     return oss.str();
 }
 
+// Returns the C++ language standard the plugin was compiled against, derived
+// from the standard __cplusplus macro so it stays accurate if the standard is
+// raised. Analogous to the "swift" key Auth0.swift reports.
+static std::string GetCppStandard()
+{
+    // MSVC only reports the real standard via _MSVC_LANG unless
+    // /Zc:__cplusplus is set, so prefer it when available.
+#if defined(_MSVC_LANG)
+    const long standard = _MSVC_LANG;
+#else
+    const long standard = __cplusplus;
+#endif
+    switch (standard)
+    {
+        case 201103L: return "11";
+        case 201402L: return "14";
+        case 201703L: return "17";
+        case 202002L: return "20";
+        case 202302L: return "23";
+        default:      return std::to_string(standard);
+    }
+}
+
 std::string BuildAuth0ClientHeader(const std::string &name, const std::string &version)
 {
     nlohmann::json env;
+    env["cpp"] = GetCppStandard();
     env["Windows"] = GetWindowsVersion();
 
     nlohmann::json payload;

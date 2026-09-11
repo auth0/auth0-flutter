@@ -75,6 +75,7 @@ TEST(BuildAuth0ClientHeaderTest, DecodestoValidJson)
     EXPECT_NE(decoded.find("\"2.1.0\""), std::string::npos);
     EXPECT_NE(decoded.find("\"env\""), std::string::npos);
     EXPECT_NE(decoded.find("\"Windows\""), std::string::npos);
+    EXPECT_NE(decoded.find("\"cpp\""), std::string::npos);
 }
 
 TEST(BuildAuth0ClientHeaderTest, EmptyNameAndVersionStillProducesValidHeader)
