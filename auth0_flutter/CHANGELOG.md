@@ -1,5 +1,11 @@
 # Change Log
 
+## [af-v2.6.2](https://github.com/auth0/auth0-flutter/tree/af-v2.6.2) (2026-09-15)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.6.1...af-v2.6.2)
+
+**Fixed**
+- fix: apply the Kotlin Gradle Plugin only when AGP has no built-in Kotlin [\#939](https://github.com/auth0/auth0-flutter/pull/939) ([devwithmj](https://github.com/devwithmj))
+
 ## [af-v2.6.1](https://github.com/auth0/auth0-flutter/tree/af-v2.6.1) (2026-09-07)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.6.0...af-v2.6.1)
 
