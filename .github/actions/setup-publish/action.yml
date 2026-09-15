@@ -32,3 +32,5 @@ runs:
 
     - name: Setup Dart SDK for publishing # With JWT token
       uses: dart-lang/setup-dart@6afc89df92d6eb3834022f73cd65adc8cdfcb92d # pin@v1.8.1
+      with:
+        problem-matcher: false
