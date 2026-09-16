@@ -1,5 +1,27 @@
 # Change Log
 
+## [afpi-v3.0.0-beta.0](https://github.com/auth0/auth0-flutter/tree/afpi-v3.0.0-beta.0) (2026-09-16)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.6.2...afpi-v3.0.0-beta.0)
+
+**Breaking Change**
+- feat: remove inline MFA methods from the Authentication API. [\#943](https://github.com/auth0/auth0-flutter/pull/943) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: reconcile WebAuthenticationException error codes across Android and iOS [\#935](https://github.com/auth0/auth0-flutter/pull/935) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: change SSOCredentials.expiresIn to expiresAt (Android + iOS) [\#931](https://github.com/auth0/auth0-flutter/pull/931) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: Upgrade Auth0.Android to v4.0.0. [\#918](https://github.com/auth0/auth0-flutter/pull/918) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: Upgrade Auth0.swift to v3.0.2 [\#909](https://github.com/auth0/auth0-flutter/pull/909) ([NandanPrabhu](https://github.com/NandanPrabhu))
+
+**Added**
+- feat: add nonce to IdTokenValidationConfig for Web Auth login [\#944](https://github.com/auth0/auth0-flutter/pull/944) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: dpop web auth init config [\#938](https://github.com/auth0/auth0-flutter/pull/938) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: add credentialsManager.clearAll() for full credential and key wipe [\#930](https://github.com/auth0/auth0-flutter/pull/930) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
+**Changed**
+- feat: default credentialsManager minTtl to 60 seconds [\#929](https://github.com/auth0/auth0-flutter/pull/929) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: honor useEphemeralSession on Android web auth [\#927](https://github.com/auth0/auth0-flutter/pull/927) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
+**Fixed**
+- fix: register Android web auth callbacks with the activity lifecycle [\#928](https://github.com/auth0/auth0-flutter/pull/928) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
 ## [afpi-v2.6.2](https://github.com/auth0/auth0-flutter/tree/afpi-v2.6.2) (2026-09-11)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.6.1...afpi-v2.6.2)
 
