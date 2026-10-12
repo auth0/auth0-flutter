@@ -11,6 +11,7 @@
     - [1. Configure a custom URL scheme](#1-configure-a-custom-url-scheme)
     - [2. Capture the callback URL](#2-capture-the-callback-url)
   - [Using Partial Custom Tabs (Android only)](#using-partial-custom-tabs-android-only)
+  - [Using Trusted Web Activity or Auth Tab (Android only)](#using-trusted-web-activity-or-auth-tab-android-only)
   - [Errors](#errors)
   - [Android: Custom schemes](#android-custom-schemes)
 - [🪟 Windows Web Authentication](#-windows-web-authentication)
@@ -403,6 +404,8 @@ The available options are:
 | `sideSheetBreakpoint` | `int?` | Screen width threshold (dp) to switch between bottom sheet and side sheet. Defaults to the browser's built-in value (typically 840dp). |
 | `backgroundInteractionEnabled` | `bool?` | Whether the user can interact with the app behind the partial tab. Defaults to `false`. |
 | `allowedBrowsers` | `List<String>` | Allowlist of browser packages for Custom Tabs. |
+| `useTrustedWebActivity` | `bool?` | Launch the browser as a [Trusted Web Activity](#using-trusted-web-activity-or-auth-tab-android-only). Defaults to `false`. |
+| `useAuthTab` | `bool?` | Launch the browser as an [Auth Tab](#using-trusted-web-activity-or-auth-tab-android-only). Defaults to `false`. |
 
 You can also use `customTabsOptions` during logout:
 
@@ -413,6 +416,25 @@ await auth0.webAuthentication().logout(
         toolbarCornerRadius: 12,
     ));
 ```
+
+### Using Trusted Web Activity or Auth Tab (Android only)
+
+Both launch mechanisms are opt-in and are enabled through `CustomTabsOptions`. They apply to `login` and `logout`, and are ignored on iOS, macOS, Windows and web.
+
+- **Auth Tab** uses the Chrome Custom Tabs Activity Result API instead of inferring the result from the activity lifecycle. This avoids spurious `isUserCancelledException` errors when Chrome is minimized. It requires Chrome 137+; older browsers fall back to a standard Custom Tab.
+- **Trusted Web Activity (TWA)** opens the Auth0 domain without browser UI. Your app must be verified for the domain through [Digital Asset Links](https://developer.android.com/training/app-links/verify-android-applinks).
+
+```dart
+// Auth Tab
+await auth0.webAuthentication().login(
+    customTabsOptions: const CustomTabsOptions(useAuthTab: true));
+
+// Trusted Web Activity
+await auth0.webAuthentication().logout(
+    customTabsOptions: const CustomTabsOptions(useTrustedWebActivity: true));
+```
+
+The two are mutually exclusive. If both are set to `true`, Trusted Web Activity takes precedence and Auth Tab is not used.
 
 ### Errors
 

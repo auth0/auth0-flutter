@@ -270,4 +270,70 @@ class LogoutWebAuthRequestHandlerTest {
             verify(builder).withCustomTabsOptions(any())
         }
     }
+
+    @Test
+    fun `handler calls withTrustedWebActivity when useTrustedWebActivity is true`() {
+        val args = hashMapOf<String, Any?>(
+            "customTabsOptions" to mapOf(
+                "useTrustedWebActivity" to true
+            )
+        )
+
+        runHandler(args) { _, builder ->
+            verify(builder).withTrustedWebActivity()
+            verify(builder, never()).withAuthTab()
+        }
+    }
+
+    @Test
+    fun `handler calls withAuthTab when useAuthTab is true`() {
+        val args = hashMapOf<String, Any?>(
+            "customTabsOptions" to mapOf(
+                "useAuthTab" to true
+            )
+        )
+
+        runHandler(args) { _, builder ->
+            verify(builder).withAuthTab()
+            verify(builder, never()).withTrustedWebActivity()
+        }
+    }
+
+    @Test
+    fun `handler passes both flags through to Auth0.Android (TWA wins there) when both flags are true`() {
+        val args = hashMapOf<String, Any?>(
+            "customTabsOptions" to mapOf(
+                "useTrustedWebActivity" to true,
+                "useAuthTab" to true
+            )
+        )
+
+        runHandler(args) { _, builder ->
+            verify(builder).withTrustedWebActivity()
+            verify(builder).withAuthTab()
+        }
+    }
+
+    @Test
+    fun `handler does not call either when both flags are false`() {
+        val args = hashMapOf<String, Any?>(
+            "customTabsOptions" to mapOf(
+                "useTrustedWebActivity" to false,
+                "useAuthTab" to false
+            )
+        )
+
+        runHandler(args) { _, builder ->
+            verify(builder, never()).withTrustedWebActivity()
+            verify(builder, never()).withAuthTab()
+        }
+    }
+
+    @Test
+    fun `handler does not call withTrustedWebActivity or withAuthTab when customTabsOptions is absent`() {
+        runHandler(hashMapOf()) { _, builder ->
+            verify(builder, never()).withTrustedWebActivity()
+            verify(builder, never()).withAuthTab()
+        }
+    }
 }
