@@ -586,7 +586,7 @@ class LoginWebAuthRequestHandlerTest {
     }
 
     @Test
-    fun `handler passes both flags through to Auth0.Android (TWA wins there) when both flags are true`() {
+    fun `handler calls both withTrustedWebActivity and withAuthTab when both flags are true`() {
         val args = hashMapOf<String, Any?>(
             "customTabsOptions" to mapOf(
                 "useTrustedWebActivity" to true,
