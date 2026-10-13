@@ -404,8 +404,8 @@ The available options are:
 | `sideSheetBreakpoint` | `int?` | Screen width threshold (dp) to switch between bottom sheet and side sheet. Defaults to the browser's built-in value (typically 840dp). |
 | `backgroundInteractionEnabled` | `bool?` | Whether the user can interact with the app behind the partial tab. Defaults to `false`. |
 | `allowedBrowsers` | `List<String>` | Allowlist of browser packages for Custom Tabs. |
-| `useTrustedWebActivity` | `bool?` | Launch the browser as a [Trusted Web Activity](#using-trusted-web-activity-or-auth-tab-android-only). Defaults to `false`. |
-| `useAuthTab` | `bool?` | Launch the browser as an [Auth Tab](#using-trusted-web-activity-or-auth-tab-android-only). Defaults to `false`. |
+| `useTrustedWebActivity` | `bool` | Launch the browser as a [Trusted Web Activity](#using-trusted-web-activity-or-auth-tab-android-only). Defaults to `false`. |
+| `useAuthTab` | `bool` | Launch the browser as an [Auth Tab](#using-trusted-web-activity-or-auth-tab-android-only). Defaults to `false`. |
 
 You can also use `customTabsOptions` during logout:
 
