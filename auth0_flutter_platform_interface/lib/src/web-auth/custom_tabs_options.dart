@@ -42,6 +42,21 @@ class CustomTabsOptions {
   /// When no allowed browser is installed, an error is returned.
   final List<String> allowedBrowsers;
 
+  /// Whether to launch the browser as a Trusted Web Activity (TWA).
+  ///
+  /// Defaults to `false`. TWA requires the app to be verified for the Auth0
+  /// domain through Digital Asset Links. Takes precedence over [useAuthTab]
+  /// when both are `true`.
+  final bool useTrustedWebActivity;
+
+  /// Whether to launch the browser as an Auth Tab.
+  ///
+  /// Auth Tab uses the Chrome Custom Tabs Activity Result API, which avoids
+  /// spurious user-cancelled errors caused by Chrome being minimized. It
+  /// requires Chrome 137+; older browsers fall back to a standard Custom Tab.
+  /// Defaults to `false`. Ignored when [useTrustedWebActivity] is `true`.
+  final bool useAuthTab;
+
   const CustomTabsOptions({
     this.initialHeight,
     this.resizable,
@@ -50,6 +65,8 @@ class CustomTabsOptions {
     this.sideSheetBreakpoint,
     this.backgroundInteractionEnabled,
     this.allowedBrowsers = const [],
+    this.useTrustedWebActivity = false,
+    this.useAuthTab = false,
   });
 
   Map<String, dynamic> toMap() => {
@@ -60,5 +77,7 @@ class CustomTabsOptions {
         'sideSheetBreakpoint': sideSheetBreakpoint,
         'backgroundInteractionEnabled': backgroundInteractionEnabled,
         'allowedBrowsers': allowedBrowsers,
+        'useTrustedWebActivity': useTrustedWebActivity,
+        'useAuthTab': useAuthTab,
       };
 }

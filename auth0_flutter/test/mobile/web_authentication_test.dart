@@ -409,6 +409,43 @@ void main() {
         expect(verificationResult.options.customTabsOptions, isNull);
       });
 
+      test('passes useTrustedWebActivity and useAuthTab to the platform',
+          () async {
+        when(mockedPlatform.login(any))
+            .thenAnswer((_) async => TestPlatform.loginResult);
+        when(mockedCMPlatform.saveCredentials(any))
+            .thenAnswer((_) async => true);
+
+        await Auth0('test-domain', 'test-clientId').webAuthentication().login(
+            customTabsOptions: const CustomTabsOptions(
+                useTrustedWebActivity: true, useAuthTab: true));
+
+        final verificationResult = verify(mockedPlatform.login(captureAny))
+            .captured
+            .single as WebAuthRequest<WebAuthLoginOptions>;
+        final options = verificationResult.options.customTabsOptions!;
+        expect(options.useTrustedWebActivity, true);
+        expect(options.useAuthTab, true);
+      });
+
+      test('useTrustedWebActivity and useAuthTab default to false', () async {
+        when(mockedPlatform.login(any))
+            .thenAnswer((_) async => TestPlatform.loginResult);
+        when(mockedCMPlatform.saveCredentials(any))
+            .thenAnswer((_) async => true);
+
+        await Auth0('test-domain', 'test-clientId')
+            .webAuthentication()
+            .login(customTabsOptions: const CustomTabsOptions());
+
+        final verificationResult = verify(mockedPlatform.login(captureAny))
+            .captured
+            .single as WebAuthRequest<WebAuthLoginOptions>;
+        final options = verificationResult.options.customTabsOptions!;
+        expect(options.useTrustedWebActivity, false);
+        expect(options.useAuthTab, false);
+      });
+
       test('passes customTabsOptions with side sheet options', () async {
         when(mockedPlatform.login(any))
             .thenAnswer((_) async => TestPlatform.loginResult);

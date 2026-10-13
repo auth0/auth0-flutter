@@ -35,6 +35,17 @@ class LogoutWebAuthRequestHandler(private val builderResolver: (MethodCallReques
 
         buildCustomTabsOptions(args)?.let { builder.withCustomTabsOptions(it) }
 
+        // The flags are forwarded as-is. TWA and Auth Tab are mutually
+        // exclusive and Auth0.Android resolves the conflict: if both are set,
+        // TWA wins.
+        val customTabsOptions = args["customTabsOptions"] as? Map<*, *>
+        if (customTabsOptions?.get("useTrustedWebActivity") == true) {
+            builder.withTrustedWebActivity()
+        }
+        if (customTabsOptions?.get("useAuthTab") == true) {
+            builder.withAuthTab()
+        }
+
         builder.start(context, object : Callback<Void?, AuthenticationException> {
             override fun onFailure(exception: AuthenticationException) {
                 exception.toWebAuthResult(result)
