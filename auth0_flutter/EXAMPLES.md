@@ -436,6 +436,16 @@ await auth0.webAuthentication().logout(
 
 The two are mutually exclusive. If both are set to `true`, Trusted Web Activity takes precedence and Auth Tab is not used.
 
+#### Ephemeral sessions
+
+`useEphemeralSession: true` on `login` is honored by Auth Tab: the tab runs in an isolated session when the browser supports it (Chrome 136+ or a compatible browser), and otherwise falls back to a regular Auth Tab. It has no effect with Trusted Web Activity, because a TWA shares the user's browser profile by design and cannot run in an isolated session.
+
+```dart
+await auth0.webAuthentication().login(
+    useEphemeralSession: true,
+    customTabsOptions: const CustomTabsOptions(useAuthTab: true));
+```
+
 ### Errors
 
 <details>

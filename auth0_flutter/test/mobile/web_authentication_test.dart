@@ -428,7 +428,7 @@ void main() {
         expect(options.useAuthTab, true);
       });
 
-      test('useTrustedWebActivity and useAuthTab default to null', () async {
+      test('useTrustedWebActivity and useAuthTab default to false', () async {
         when(mockedPlatform.login(any))
             .thenAnswer((_) async => TestPlatform.loginResult);
         when(mockedCMPlatform.saveCredentials(any))
@@ -442,8 +442,8 @@ void main() {
             .captured
             .single as WebAuthRequest<WebAuthLoginOptions>;
         final options = verificationResult.options.customTabsOptions!;
-        expect(options.useTrustedWebActivity, isNull);
-        expect(options.useAuthTab, isNull);
+        expect(options.useTrustedWebActivity, false);
+        expect(options.useAuthTab, false);
       });
 
       test('passes customTabsOptions with side sheet options', () async {

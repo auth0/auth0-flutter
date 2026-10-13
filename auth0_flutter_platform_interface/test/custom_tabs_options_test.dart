@@ -15,11 +15,11 @@ void main() {
       expect(map['useAuthTab'], true);
     });
 
-    test('useTrustedWebActivity and useAuthTab default to null', () {
+    test('useTrustedWebActivity and useAuthTab default to false', () {
       final map = const CustomTabsOptions().toMap();
 
-      expect(map['useTrustedWebActivity'], isNull);
-      expect(map['useAuthTab'], isNull);
+      expect(map['useTrustedWebActivity'], false);
+      expect(map['useAuthTab'], false);
     });
 
     test('is passed through WebAuthLoginOptions and WebAuthLogoutOptions', () {

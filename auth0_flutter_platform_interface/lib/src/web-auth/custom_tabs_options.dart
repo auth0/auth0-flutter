@@ -47,7 +47,7 @@ class CustomTabsOptions {
   /// Defaults to `false`. TWA requires the app to be verified for the Auth0
   /// domain through Digital Asset Links. Takes precedence over [useAuthTab]
   /// when both are `true`.
-  final bool? useTrustedWebActivity;
+  final bool useTrustedWebActivity;
 
   /// Whether to launch the browser as an Auth Tab.
   ///
@@ -55,7 +55,7 @@ class CustomTabsOptions {
   /// spurious user-cancelled errors caused by Chrome being minimized. It
   /// requires Chrome 137+; older browsers fall back to a standard Custom Tab.
   /// Defaults to `false`. Ignored when [useTrustedWebActivity] is `true`.
-  final bool? useAuthTab;
+  final bool useAuthTab;
 
   const CustomTabsOptions({
     this.initialHeight,
@@ -65,19 +65,19 @@ class CustomTabsOptions {
     this.sideSheetBreakpoint,
     this.backgroundInteractionEnabled,
     this.allowedBrowsers = const [],
-    this.useTrustedWebActivity,
-    this.useAuthTab,
+    this.useTrustedWebActivity = false,
+    this.useAuthTab = false,
   });
 
   Map<String, dynamic> toMap() => {
-    'initialHeight': initialHeight,
-    'resizable': resizable,
-    'toolbarCornerRadius': toolbarCornerRadius,
-    'initialWidth': initialWidth,
-    'sideSheetBreakpoint': sideSheetBreakpoint,
-    'backgroundInteractionEnabled': backgroundInteractionEnabled,
-    'allowedBrowsers': allowedBrowsers,
-    'useTrustedWebActivity': useTrustedWebActivity,
-    'useAuthTab': useAuthTab,
-  };
+        'initialHeight': initialHeight,
+        'resizable': resizable,
+        'toolbarCornerRadius': toolbarCornerRadius,
+        'initialWidth': initialWidth,
+        'sideSheetBreakpoint': sideSheetBreakpoint,
+        'backgroundInteractionEnabled': backgroundInteractionEnabled,
+        'allowedBrowsers': allowedBrowsers,
+        'useTrustedWebActivity': useTrustedWebActivity,
+        'useAuthTab': useAuthTab,
+      };
 }

@@ -46,8 +46,9 @@ class LoginWebAuthRequestHandler(
 
         buildCustomTabsOptions(args)?.let { builder.withCustomTabsOptions(it) }
 
-        // TWA and Auth Tab are mutually exclusive; if both are set, TWA wins
-        // (Auth0.Android behaviour).
+        // The flags are forwarded as-is. TWA and Auth Tab are mutually
+        // exclusive and Auth0.Android resolves the conflict: if both are set,
+        // TWA wins.
         val customTabsOptions = args["customTabsOptions"] as? Map<*, *>
         if (customTabsOptions?.get("useTrustedWebActivity") == true) {
             builder.withTrustedWebActivity()
