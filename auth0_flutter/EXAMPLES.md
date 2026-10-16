@@ -49,7 +49,7 @@
   - [Log in to an organization](#log-in-to-an-organization)
   - [Accept user invitations](#accept-user-invitations)
 - [📱 Bot detection](#-bot-detection)
-- [📱 My Account API](#-my-account-api)
+- [🌐📱 My Account API](#-my-account-api)
   - [Obtaining an access token for the My Account API](#obtaining-an-access-token-for-the-my-account-api)
   - [Listing and managing authentication methods](#listing-and-managing-authentication-methods)
   - [Enrolling a factor with OTP (phone, email, TOTP)](#enrolling-a-factor-with-otp-phone-email-totp)
@@ -57,6 +57,7 @@
   - [Enrolling a passkey](#enrolling-a-passkey)
   - [Using DPoP](#using-dpop)
   - [Errors](#errors-3)
+  - [My Account on the Web](#my-account-on-the-web)
 - [🌐📱 Multi-Factor Authentication (MFA)](#-multi-factor-authentication-mfa)
   - [Obtaining an `mfa_token`](#obtaining-an-mfa_token)
   - [Listing authenticators and challenging a factor](#listing-authenticators-and-challenging-a-factor)
@@ -1765,9 +1766,9 @@ try {
 
 [Go up ⤴](#examples)
 
-## 📱 My Account API
+## 🌐📱 My Account API
 
-The My Account API lets authenticated users manage their own multi-factor authentication (MFA) methods — enrolling, confirming, listing, updating, and deleting factors such as phone, email, TOTP, push notifications, and recovery codes. It is available on **mobile (Android/iOS) only**.
+The My Account API lets authenticated users manage their own multi-factor authentication (MFA) methods — enrolling, confirming, listing, updating, and deleting factors such as phone, email, TOTP, push notifications, and recovery codes. It is available on **mobile (Android/iOS)** and **Web**. The examples below use the mobile client; see [My Account on the Web](#my-account-on-the-web) for the web setup.
 
 > 💡 The My Account API requires [Multi-Resource Refresh Tokens (MRRT)](https://auth0.com/docs/secure/tokens/refresh-tokens/multi-resource-refresh-token) to be enabled for your tenant. Contact Auth0 support if MRRT is not yet available on your account.
 
@@ -1935,6 +1936,58 @@ try {
   print('${e.code}: ${e.message} (${e.statusCode})');
 }
 ```
+
+### My Account on the Web
+
+On the web, create the client with `Auth0Web.myAccount(accessToken:)`. It returns a `MyAccountWeb` with the same methods and parameters as the mobile client, so the [listing](#listing-and-managing-authentication-methods) and [enrollment](#enrolling-a-factor-with-otp-phone-email-totp) examples above work unchanged. It is backed by the `MyAccountApiClient` of [auth0-spa-js](https://github.com/auth0/auth0-spa-js) and requires **auth0-spa-js v2.21.1 or later** loaded on your page.
+
+> ⚠️ [Passkey enrollment](#enrolling-a-passkey) (`enrollPasskeyChallenge`/`enrollPasskey`) is not yet available on the web.
+
+As on mobile, the recommended approach is to log in **once** with the `offline_access` scope, then exchange the refresh token for a My Account–scoped token. On the web, enable [Multi-Resource Refresh Tokens (MRRT)](https://auth0.com/docs/secure/tokens/refresh-tokens/multi-resource-refresh-token) in `onLoad` and use `getApiCredentials`:
+
+```dart
+final auth0Web = Auth0Web('YOUR_DOMAIN', 'YOUR_CLIENT_ID');
+
+// 1. Enable MRRT and request offline_access so a refresh token is available.
+await auth0Web.onLoad(
+  useMrrt: true,
+  scopes: {'openid', 'profile', 'email', 'offline_access'},
+);
+
+// 2. Once the user is logged in, exchange the refresh token for a token
+//    scoped to the My Account API.
+final myAccountCredentials = await auth0Web.getApiCredentials(
+  audience: 'https://YOUR_DOMAIN/me/',
+  scopes: {
+    'read:me:authentication_methods',
+    'create:me:authentication_methods',
+    'update:me:authentication_methods',
+    'delete:me:authentication_methods',
+    'read:me:factors',
+  },
+);
+
+// 3. Create the My Account client with the resulting access token.
+final myAccount = auth0Web.myAccount(
+  accessToken: myAccountCredentials.accessToken,
+);
+
+// Enroll an authenticator app, then confirm it with the code it shows.
+final challenge = await myAccount.enrollTotp();
+// Show challenge.totpUri as a QR code (or challenge.totpSecret for manual entry).
+final method = await myAccount.verifyOtp(
+  id: challenge.id,
+  authSession: challenge.authSession,
+  otp: '123456',
+  factorType: 'totp',
+);
+```
+
+> ⚠️ Auth0 only issues refresh tokens to browser-based code exchanges for **Single Page Applications** with [refresh token rotation](https://auth0.com/docs/secure/tokens/refresh-tokens/refresh-token-rotation) enabled. With other application types, `getApiCredentials` fails with `MISSING_REFRESH_TOKEN`. In that case, request the `https://YOUR_DOMAIN/me/` audience and My Account scopes at login instead, and use the access token returned by `credentials()`.
+
+> 💡 There is no `useDPoP` parameter on `Auth0Web.myAccount`: requests use DPoP when the `Auth0Web` instance was created with `useDPoP: true`. In that case, requests are signed with that instance's DPoP key, so the access token must also come from the same instance (for example, from `getApiCredentials` as shown above). The **Auth0 My Account API** in your tenant must also allow DPoP; otherwise Auth0 issues a Bearer token for it, and calls fail with a `MyAccountException` (`401`, "Missing or invalid DPoP cnf").
+
+Errors are reported as a `MyAccountException`, the same as on mobile. If the request could not be sent at all (for example, the browser is offline), `isNetworkError` and `isRetryable` are `true`.
 
 ---
 

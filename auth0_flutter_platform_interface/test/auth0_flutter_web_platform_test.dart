@@ -1,5 +1,6 @@
 import 'package:auth0_flutter_platform_interface/src/account.dart';
 import 'package:auth0_flutter_platform_interface/src/auth0_flutter_web_platform.dart';
+import 'package:auth0_flutter_platform_interface/src/myaccount/phone_type.dart';
 import 'package:auth0_flutter_platform_interface/src/user_agent.dart';
 import 'package:auth0_flutter_platform_interface/src/web/client_options.dart';
 import 'package:auth0_flutter_platform_interface/src/web/web_get_token_by_passkey_options.dart';
@@ -129,4 +130,39 @@ void main() {
       );
     },
   );
+
+  group('My Account', () {
+    const accessToken = 'access-token';
+    final platform = TestAuth0FlutterWeb();
+
+    final Map<String, Future<Object?> Function()> methods = {
+      'myAccountGetAuthenticationMethods': () =>
+          platform.myAccountGetAuthenticationMethods(accessToken, null),
+      'myAccountGetAuthenticationMethod': () =>
+          platform.myAccountGetAuthenticationMethod(accessToken, 'id'),
+      'myAccountDeleteAuthenticationMethod': () =>
+          platform.myAccountDeleteAuthenticationMethod(accessToken, 'id'),
+      'myAccountUpdateAuthenticationMethod': () => platform
+          .myAccountUpdateAuthenticationMethod(accessToken, 'id', null, null),
+      'myAccountGetFactors': () => platform.myAccountGetFactors(accessToken),
+      'myAccountEnrollPhone': () => platform.myAccountEnrollPhone(
+          accessToken, '+15555550100', PhoneType.sms),
+      'myAccountEnrollEmail': () =>
+          platform.myAccountEnrollEmail(accessToken, 'user@example.com'),
+      'myAccountEnrollTotp': () => platform.myAccountEnrollTotp(accessToken),
+      'myAccountEnrollPush': () => platform.myAccountEnrollPush(accessToken),
+      'myAccountEnrollRecoveryCode': () =>
+          platform.myAccountEnrollRecoveryCode(accessToken),
+      'myAccountVerifyOtp': () => platform.myAccountVerifyOtp(
+          accessToken, 'id', 'auth-session', '123456', 'totp'),
+      'myAccountConfirmEnrollment': () => platform.myAccountConfirmEnrollment(
+          accessToken, 'id', 'auth-session', 'push-notification'),
+    };
+
+    methods.forEach((final name, final call) {
+      test('Auth0FlutterWebPlatform $name throws unimplemented error', () {
+        expect(call, throwsUnimplementedError);
+      });
+    });
+  });
 }
