@@ -1,5 +1,6 @@
 import 'package:auth0_flutter_platform_interface/src/account.dart';
 import 'package:auth0_flutter_platform_interface/src/auth0_flutter_web_platform.dart';
+import 'package:auth0_flutter_platform_interface/src/myaccount/phone_type.dart';
 import 'package:auth0_flutter_platform_interface/src/user_agent.dart';
 import 'package:auth0_flutter_platform_interface/src/web/client_options.dart';
 import 'package:auth0_flutter_platform_interface/src/web/web_get_token_by_passkey_options.dart';
@@ -129,4 +130,38 @@ void main() {
       );
     },
   );
+
+  group('My Account', () {
+    const accessToken = 'access-token';
+    final platform = TestAuth0FlutterWeb();
+
+    final Map<String, Future<Object?> Function()> methods = {
+      'getAuthenticationMethods': () =>
+          platform.getAuthenticationMethods(accessToken, null),
+      'getAuthenticationMethod': () =>
+          platform.getAuthenticationMethod(accessToken, 'id'),
+      'deleteAuthenticationMethod': () =>
+          platform.deleteAuthenticationMethod(accessToken, 'id'),
+      'updateAuthenticationMethod': () =>
+          platform.updateAuthenticationMethod(accessToken, 'id', null, null),
+      'getFactors': () => platform.getFactors(accessToken),
+      'enrollPhone': () =>
+          platform.enrollPhone(accessToken, '+15555550100', PhoneType.sms),
+      'enrollEmail': () =>
+          platform.enrollEmail(accessToken, 'user@example.com'),
+      'enrollTotp': () => platform.enrollTotp(accessToken),
+      'enrollPush': () => platform.enrollPush(accessToken),
+      'enrollRecoveryCode': () => platform.enrollRecoveryCode(accessToken),
+      'verifyOtp': () => platform.verifyOtp(
+          accessToken, 'id', 'auth-session', '123456', 'totp'),
+      'confirmEnrollment': () => platform.confirmEnrollment(
+          accessToken, 'id', 'auth-session', 'push-notification'),
+    };
+
+    methods.forEach((final name, final call) {
+      test('Auth0FlutterWebPlatform $name throws unimplemented error', () {
+        expect(call, throwsUnimplementedError);
+      });
+    });
+  });
 }

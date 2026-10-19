@@ -198,8 +198,8 @@ class Auth0 {
   /// (Demonstrating Proof-of-Possession) sender-constrained tokens. Defaults
   /// to `false`.
   ///
-  /// **Note:** Only supported on mobile platforms (Android/iOS). Web is not
-  /// supported.
+  /// **Note:** Only supported on mobile platforms (Android/iOS). On the web,
+  /// use `Auth0Web.myAccount(accessToken:)` instead.
   ///
   /// Usage example:
   ///
