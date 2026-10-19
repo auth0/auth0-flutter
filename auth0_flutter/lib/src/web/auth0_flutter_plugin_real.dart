@@ -462,6 +462,34 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
           String authSession, String factorType) =>
       _myAccountVerify(accessToken, id, authSession, factorType, null);
 
+  @override
+  Future<PasskeyEnrollmentChallenge> enrollPasskeyChallenge(
+          String accessToken, String? userIdentityId, String? connection) =>
+      _myAccountCall((client) async =>
+          PasskeyEnrollmentChallengeWebExtension.fromWeb(
+              await client.myAccountEnrollmentChallenge(
+                  accessToken,
+                  JsInteropUtils.stripNulls(
+                      interop.MyAccountEnrollmentChallengeParams(
+                          type: 'passkey',
+                          connection: connection,
+                          identity_user_id: userIdentityId)))));
+
+  @override
+  Future<MyAccountPasskeyAuthenticationMethod> enrollPasskey(String accessToken,
+          PasskeyEnrollmentChallenge challenge, PasskeyCredential credential) =>
+      _myAccountCall((client) async {
+        final params = interop.MyAccountEnrollmentVerifyParams(
+            type: 'passkey',
+            location: myAccountAuthenticationMethodLocation(
+                client.myAccountApiBase, challenge.authenticationMethodId),
+            auth_session: challenge.authSession,
+            authn_response: credential.toWebEnrollmentResponse());
+        return MyAccountPasskeyAuthenticationMethodWebExtension.fromWeb(
+            await client.myAccountEnrollmentVerify(
+                accessToken, JsInteropUtils.stripNulls(params)));
+      });
+
   Future<EnrollmentChallenge> _myAccountEnroll(String accessToken,
           interop.MyAccountEnrollmentChallengeParams params) =>
       _myAccountCall((client) async => EnrollmentChallengeWebExtension.fromWeb(

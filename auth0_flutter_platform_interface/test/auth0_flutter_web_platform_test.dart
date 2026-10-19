@@ -1,5 +1,7 @@
 import 'package:auth0_flutter_platform_interface/src/account.dart';
+import 'package:auth0_flutter_platform_interface/src/auth/passkey_credential.dart';
 import 'package:auth0_flutter_platform_interface/src/auth0_flutter_web_platform.dart';
+import 'package:auth0_flutter_platform_interface/src/myaccount/my_account_passkey_enrollment_challenge.dart';
 import 'package:auth0_flutter_platform_interface/src/myaccount/phone_type.dart';
 import 'package:auth0_flutter_platform_interface/src/user_agent.dart';
 import 'package:auth0_flutter_platform_interface/src/web/client_options.dart';
@@ -156,6 +158,20 @@ void main() {
           accessToken, 'id', 'auth-session', '123456', 'totp'),
       'confirmEnrollment': () => platform.confirmEnrollment(
           accessToken, 'id', 'auth-session', 'push-notification'),
+      'enrollPasskeyChallenge': () =>
+          platform.enrollPasskeyChallenge(accessToken, null, null),
+      'enrollPasskey': () => platform.enrollPasskey(
+          accessToken,
+          const PasskeyEnrollmentChallenge(
+              authenticationMethodId: 'passkey|new',
+              authSession: 'auth-session',
+              authParamsPublicKey: {}),
+          const PasskeyCredential(
+              id: 'id',
+              rawId: 'raw-id',
+              type: 'public-key',
+              response:
+                  PasskeyAuthenticatorResponse(clientDataJSON: 'client-data'))),
     };
 
     methods.forEach((final name, final call) {

@@ -58,6 +58,7 @@
   - [Using DPoP](#using-dpop)
   - [Errors](#errors-3)
   - [My Account on the Web](#my-account-on-the-web)
+    - [Enrolling a passkey on the web](#enrolling-a-passkey-on-the-web)
 - [🌐📱 Multi-Factor Authentication (MFA)](#-multi-factor-authentication-mfa)
   - [Obtaining an `mfa_token`](#obtaining-an-mfa_token)
   - [Listing authenticators and challenging a factor](#listing-authenticators-and-challenging-a-factor)
@@ -1884,6 +1885,8 @@ A signed-in user can add a passkey as a new authentication method. Like passkey 
 2. **In your app**, present the platform authenticator using `challenge.authParamsPublicKey` to create a passkey, and map the resulting WebAuthn attestation into a `PasskeyCredential`. The SDK does **not** do this step — call the OS APIs directly (for example, [`ASAuthorizationController`](https://developer.apple.com/documentation/authenticationservices/asauthorizationcontroller) on iOS/macOS or [Credential Manager](https://developer.android.com/identity/sign-in/credential-manager) on Android, typically over your own platform channel).
 3. Submit the credential with `enrollPasskey` to complete the enrollment.
 
+On the web, create the passkey with the browser's WebAuthn API instead. See [Enrolling a passkey on the web](#enrolling-a-passkey-on-the-web).
+
 > ⚠️ Passkeys require a [custom domain](https://auth0.com/docs/customize/custom-domains) on your tenant and additional configuration. See [Sign up with passkeys](#sign-up-with-passkeys) for details.
 
 The access token must include the `create:me:authentication_methods` scope.
@@ -1941,7 +1944,7 @@ try {
 
 On the web, create the client with `Auth0Web.myAccount(accessToken:)`. It returns a `MyAccountWeb` with the same methods and parameters as the mobile client, so the [listing](#listing-and-managing-authentication-methods) and [enrollment](#enrolling-a-factor-with-otp-phone-email-totp) examples above work unchanged. It is backed by the `MyAccountApiClient` of [auth0-spa-js](https://github.com/auth0/auth0-spa-js) and requires **auth0-spa-js v2.21.1 or later** loaded on your page.
 
-> ⚠️ [Passkey enrollment](#enrolling-a-passkey) (`enrollPasskeyChallenge`/`enrollPasskey`) is not yet available on the web.
+To enroll a passkey on the web, see [Enrolling a passkey on the web](#enrolling-a-passkey-on-the-web).
 
 As on mobile, the recommended approach is to log in **once** with the `offline_access` scope, then exchange the refresh token for a My Account–scoped token. On the web, enable [Multi-Resource Refresh Tokens (MRRT)](https://auth0.com/docs/secure/tokens/refresh-tokens/multi-resource-refresh-token) in `onLoad` and use `getApiCredentials`:
 
@@ -1988,6 +1991,104 @@ final method = await myAccount.verifyOtp(
 > 💡 There is no `useDPoP` parameter on `Auth0Web.myAccount`: requests use DPoP when the `Auth0Web` instance was created with `useDPoP: true`. In that case, requests are signed with that instance's DPoP key, so the access token must also come from the same instance (for example, from `getApiCredentials` as shown above). The **Auth0 My Account API** in your tenant must also allow DPoP; otherwise Auth0 issues a Bearer token for it, and calls fail with a `MyAccountException` (`401`, "Missing or invalid DPoP cnf").
 
 Errors are reported as a `MyAccountException`, the same as on mobile. If the request could not be sent at all (for example, the browser is offline), `isNetworkError` and `isRetryable` are `true`.
+
+#### Enrolling a passkey on the web
+
+`enrollPasskeyChallenge` and `enrollPasskey` work the same as on mobile, using the same `PasskeyEnrollmentChallenge` and `PasskeyCredential` types. The difference is the middle step: instead of the OS passkey UI, your app creates the passkey with the browser's [WebAuthn API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API).
+
+`challenge.authParamsPublicKey` holds the WebAuthn creation options as JSON (base64url-encoded values), so:
+
+1. Decode it with `PublicKeyCredential.parseCreationOptionsFromJSON()`.
+2. Pass the result to `navigator.credentials.create()`.
+3. Convert the new credential with its `toJSON()` method, then `PasskeyCredential.fromMap`.
+
+> ⚠️ `parseCreationOptionsFromJSON()` and `toJSON()` require **Chrome or Edge 129+, Firefox 119+, or Safari 18.4+**. `package:web` doesn't provide bindings for them yet, so the example calls them through `dart:js_interop_unsafe`. To support older browsers, convert the values yourself instead; see [Supporting older browsers](#supporting-older-browsers) below. `navigator.credentials.create()` requires a user gesture, so start the flow from a click handler.
+
+> ⚠️ Passkey enrollment requires a [custom domain](https://auth0.com/docs/customize/custom-domains). Create `Auth0Web` with your custom domain; on the canonical `*.auth0.com` domain, `enrollPasskeyChallenge` fails with a `MyAccountException` (`400`, "please use a custom domain to execute this request"). The challenge's relying party ID (`rp.id`) is that custom domain, so the browser only allows `navigator.credentials.create()` on pages served from the custom domain or one of its subdomains. On any other origin, including `localhost`, it throws a `SecurityError` ("The relying party ID is not a registrable domain suffix of, nor equal to the current domain").
+
+The access token must include the `create:me:authentication_methods` scope.
+
+```dart
+import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
+
+import 'package:auth0_flutter/auth0_flutter_web.dart';
+import 'package:web/web.dart' as web;
+
+// 1. Request an enrollment challenge.
+final challenge = await myAccount.enrollPasskeyChallenge();
+
+// 2. Create the passkey in the browser.
+final publicKeyCredential = globalContext['PublicKeyCredential']! as JSObject;
+final publicKey = publicKeyCredential.callMethod<JSObject>(
+    'parseCreationOptionsFromJSON'.toJS,
+    challenge.authParamsPublicKey.jsify());
+final created = await web.window.navigator.credentials
+    .create(web.CredentialCreationOptions(
+        publicKey: publicKey as web.PublicKeyCredentialCreationOptions))
+    .toDart;
+final credentialJson =
+    (created! as JSObject).callMethod<JSObject>('toJSON'.toJS);
+
+// 3. Submit the credential to complete the enrollment.
+final method = await myAccount.enrollPasskey(
+  challenge: challenge,
+  credential: PasskeyCredential.fromMap(credentialJson.dartify()! as Map),
+);
+```
+
+##### Supporting older browsers
+
+Browsers without `parseCreationOptionsFromJSON()` and `toJSON()` still support `navigator.credentials.create()`. Decode the base64url values in `authParamsPublicKey` to bytes yourself, and encode the binary values of the new credential back to base64url:
+
+```dart
+import 'dart:convert';
+import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
+
+import 'package:auth0_flutter/auth0_flutter_web.dart';
+import 'package:web/web.dart' as web;
+
+JSUint8Array fromBase64Url(JSAny? value) =>
+    base64Url.decode(base64Url.normalize((value! as JSString).toDart)).toJS;
+String toBase64Url(JSArrayBuffer buffer) =>
+    base64Url.encode(buffer.toDart.asUint8List()).replaceAll('=', '');
+
+// 1. Request an enrollment challenge.
+final challenge = await myAccount.enrollPasskeyChallenge();
+
+// 2. Decode the binary values, then create the passkey in the browser.
+final publicKey = challenge.authParamsPublicKey.jsify()! as JSObject;
+publicKey['challenge'] = fromBase64Url(publicKey['challenge']);
+final user = publicKey['user']! as JSObject;
+user['id'] = fromBase64Url(user['id']);
+final excluded = publicKey['excludeCredentials'] as JSArray<JSObject>?;
+for (final credential in excluded?.toDart ?? <JSObject>[]) {
+  credential['id'] = fromBase64Url(credential['id']);
+}
+
+final created = await web.window.navigator.credentials
+    .create(web.CredentialCreationOptions(
+        publicKey: publicKey as web.PublicKeyCredentialCreationOptions))
+    .toDart;
+final passkey = created! as web.PublicKeyCredential;
+final response = passkey.response as web.AuthenticatorAttestationResponse;
+
+// 3. Encode the credential and submit it to complete the enrollment.
+final method = await myAccount.enrollPasskey(
+  challenge: challenge,
+  credential: PasskeyCredential(
+    id: passkey.id,
+    rawId: toBase64Url(passkey.rawId),
+    type: passkey.type,
+    authenticatorAttachment: passkey.authenticatorAttachment,
+    response: PasskeyAuthenticatorResponse(
+      clientDataJSON: toBase64Url(response.clientDataJSON),
+      attestationObject: toBase64Url(response.attestationObject),
+    ),
+  ),
+);
+```
 
 ---
 

@@ -4,6 +4,7 @@ import 'dart:js_interop_unsafe';
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 
 import '../js_interop.dart' as interop;
+import '../js_interop_utils.dart';
 
 /// Builds the My Account API base URL, `https://{domain}/me/`.
 ///
@@ -66,6 +67,58 @@ extension EnrollmentChallengeWebExtension on EnrollmentChallenge {
         barcodeUri: js.barcode_uri,
         recoveryCode: js.recovery_code,
       );
+}
+
+/// Maps a passkey `EnrollmentChallengeResponse` from auth0-spa-js into
+/// [PasskeyEnrollmentChallenge].
+///
+/// `authn_params_public_key` is passed through as the raw WebAuthn creation
+/// options JSON, the same as on Android and iOS.
+extension PasskeyEnrollmentChallengeWebExtension on PasskeyEnrollmentChallenge {
+  static PasskeyEnrollmentChallenge fromWeb(
+          interop.MyAccountEnrollmentChallengeJS js) =>
+      PasskeyEnrollmentChallenge(
+        authenticationMethodId: js.id,
+        authSession: js.auth_session,
+        authParamsPublicKey: Map<String, dynamic>.from(
+            js.authn_params_public_key.dartify()! as Map<Object?, Object?>),
+      );
+}
+
+/// Converts a passkey registration [PasskeyCredential] into the
+/// `authn_response` that auth0-spa-js sends to verify a My Account passkey
+/// enrollment.
+///
+/// Only the registration (attestation) fields of the authenticator response
+/// are sent, because the My Account API rejects any others. The browser's
+/// `credential.toJSON()` output also includes `authenticatorData`, which
+/// [PasskeyCredential.fromMap] keeps because passkey login uses it. Unset
+/// optional fields are omitted rather than sent as `null`.
+extension PasskeyCredentialWebExtension on PasskeyCredential {
+  JSObject toWebEnrollmentResponse() => JsInteropUtils.stripNulls({
+        'id': id,
+        'rawId': rawId,
+        'type': type,
+        'authenticatorAttachment': authenticatorAttachment,
+        'response': {
+          'clientDataJSON': response.clientDataJSON,
+          if (response.attestationObject != null)
+            'attestationObject': response.attestationObject,
+        },
+        'clientExtensionResults': clientExtensionResults,
+      }.jsify()! as JSObject);
+}
+
+/// Maps the passkey authentication method returned by auth0-spa-js into
+/// [MyAccountPasskeyAuthenticationMethod].
+///
+/// auth0-spa-js returns the raw My Account API JSON, so this reuses the same
+/// [MyAccountPasskeyAuthenticationMethod.fromMap] mapping as mobile.
+extension MyAccountPasskeyAuthenticationMethodWebExtension
+    on MyAccountPasskeyAuthenticationMethod {
+  static MyAccountPasskeyAuthenticationMethod fromWeb(JSObject js) =>
+      MyAccountPasskeyAuthenticationMethod.fromMap(
+          Map<String, dynamic>.from(js.dartify()! as Map<Object?, Object?>));
 }
 
 extension MyAccountExceptionWebExtension on MyAccountException {

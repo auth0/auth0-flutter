@@ -14,6 +14,14 @@ class _RecordingWebPlatform extends Auth0FlutterWebPlatform {
   List<Factor> factorsResult = const [];
   EnrollmentChallenge enrollmentResult =
       const EnrollmentChallenge(id: 'totp|dev_1', authSession: 'session');
+  PasskeyEnrollmentChallenge passkeyChallenge =
+      const PasskeyEnrollmentChallenge(
+          authenticationMethodId: 'passkey|dev_1',
+          authSession: 'session',
+          authParamsPublicKey: {'challenge': 'Y2hhbGxlbmdl'});
+  MyAccountPasskeyAuthenticationMethod passkeyMethod =
+      const MyAccountPasskeyAuthenticationMethod(
+          id: 'passkey|dev_1', type: 'passkey');
 
   @override
   Future<List<AuthenticationMethod>> getAuthenticationMethods(
@@ -83,6 +91,21 @@ class _RecordingWebPlatform extends Auth0FlutterWebPlatform {
   Future<EnrollmentChallenge> enrollRecoveryCode(String accessToken) {
     calls.add(['enrollRecoveryCode', accessToken]);
     return Future.value(enrollmentResult);
+  }
+
+  @override
+  Future<PasskeyEnrollmentChallenge> enrollPasskeyChallenge(
+      String accessToken, String? userIdentityId, String? connection) {
+    calls.add(
+        ['enrollPasskeyChallenge', accessToken, userIdentityId, connection]);
+    return Future.value(passkeyChallenge);
+  }
+
+  @override
+  Future<MyAccountPasskeyAuthenticationMethod> enrollPasskey(String accessToken,
+      PasskeyEnrollmentChallenge challenge, PasskeyCredential credential) {
+    calls.add(['enrollPasskey', accessToken, challenge, credential]);
+    return Future.value(passkeyMethod);
   }
 
   @override
@@ -226,6 +249,49 @@ void main() {
       await myAccount.enrollRecoveryCode();
 
       expect(platform.calls.single, ['enrollRecoveryCode', accessToken]);
+    });
+  });
+
+  group('passkey enrollment', () {
+    test('enrollPasskeyChallenge forwards no identity or connection by default',
+        () async {
+      final result = await myAccount.enrollPasskeyChallenge();
+
+      expect(platform.calls.single,
+          ['enrollPasskeyChallenge', accessToken, null, null]);
+      expect(result.authenticationMethodId, 'passkey|dev_1');
+    });
+
+    test('enrollPasskeyChallenge forwards the identity and connection',
+        () async {
+      await myAccount.enrollPasskeyChallenge(
+          userIdentityId: 'auth0|user', connection: 'Username-Password');
+
+      expect(platform.calls.single, [
+        'enrollPasskeyChallenge',
+        accessToken,
+        'auth0|user',
+        'Username-Password'
+      ]);
+    });
+
+    test('enrollPasskey forwards the challenge and credential', () async {
+      const credential = PasskeyCredential(
+          id: 'cred-id',
+          rawId: 'cred-raw-id',
+          type: 'public-key',
+          response: PasskeyAuthenticatorResponse(clientDataJSON: 'cd'));
+
+      final result = await myAccount.enrollPasskey(
+          challenge: platform.passkeyChallenge, credential: credential);
+
+      expect(platform.calls.single, [
+        'enrollPasskey',
+        accessToken,
+        platform.passkeyChallenge,
+        credential
+      ]);
+      expect(result.type, 'passkey');
     });
   });
 

@@ -45,6 +45,10 @@ class _FakeClientProxy extends Auth0FlutterWebClientProxy {
   /// When set, every call fails with this error.
   Object? error;
 
+  /// The responses returned by `enrollmentChallenge` and `enrollmentVerify`.
+  interop.MyAccountEnrollmentChallengeJS challengeResult = _challenge;
+  interop.MyAccountAuthenticationMethodJS verifyResult = _method;
+
   Future<T> _respond<T>(List<Object?> call, T result) {
     calls.add(call);
     final error = this.error;
@@ -91,13 +95,14 @@ class _FakeClientProxy extends Auth0FlutterWebClientProxy {
   Future<interop.MyAccountEnrollmentChallengeJS> myAccountEnrollmentChallenge(
           String accessToken,
           interop.MyAccountEnrollmentChallengeParams params) =>
-      _respond(
-          ['enrollmentChallenge', accessToken, _dartify(params)], _challenge);
+      _respond(['enrollmentChallenge', accessToken, _dartify(params)],
+          challengeResult);
 
   @override
   Future<interop.MyAccountAuthenticationMethodJS> myAccountEnrollmentVerify(
           String accessToken, interop.MyAccountEnrollmentVerifyParams params) =>
-      _respond(['enrollmentVerify', accessToken, _dartify(params)], _method);
+      _respond(
+          ['enrollmentVerify', accessToken, _dartify(params)], verifyResult);
 }
 
 void main() {
@@ -261,6 +266,151 @@ void main() {
             'push-notification%7Cdev_1',
         'auth_session': 'session'
       });
+    });
+  });
+
+  group('passkey enrollment', () {
+    const passkeyId = 'passkey|dev_abc123';
+    const creationOptions = {
+      'challenge': 'Y2hhbGxlbmdl',
+      'rp': {'id': 'login.example.com', 'name': 'Example'},
+      'user': {
+        'id': 'dXNlcg',
+        'name': 'user@example.com',
+        'displayName': 'User'
+      },
+      'pubKeyCredParams': [
+        {'type': 'public-key', 'alg': -7}
+      ],
+    };
+
+    setUp(() {
+      proxy.challengeResult = _jsObject({
+        'id': passkeyId,
+        'auth_session': 'session',
+        'authn_params_public_key': creationOptions,
+      }) as interop.MyAccountEnrollmentChallengeJS;
+      proxy.verifyResult = _jsObject({
+        'id': passkeyId,
+        'type': 'passkey',
+        'identity_user_id': 'auth0|user',
+        'key_id': 'key-id',
+        'credential_device_type': 'multi_device',
+        'credential_backed_up': true,
+        'relying_party_id': 'login.example.com',
+        'transports': ['internal', 'hybrid'],
+        'created_at': '2026-01-02T03:04:05.000Z',
+        'usage': ['primary'],
+      }) as interop.MyAccountAuthenticationMethodJS;
+    });
+
+    test('enrollPasskeyChallenge sends only the type by default', () async {
+      await myAccount.enrollPasskeyChallenge();
+
+      expect(proxy.calls.single, [
+        'enrollmentChallenge',
+        _accessToken,
+        {'type': 'passkey'}
+      ]);
+    });
+
+    test('enrollPasskeyChallenge sends the connection and identity', () async {
+      await myAccount.enrollPasskeyChallenge(
+          userIdentityId: 'auth0|user', connection: 'Username-Password');
+
+      expect(proxy.calls.single[2], {
+        'type': 'passkey',
+        'connection': 'Username-Password',
+        'identity_user_id': 'auth0|user'
+      });
+    });
+
+    test('enrollPasskeyChallenge maps the raw creation options', () async {
+      final challenge = await myAccount.enrollPasskeyChallenge();
+
+      expect(challenge.authenticationMethodId, passkeyId);
+      expect(challenge.authSession, 'session');
+      expect(challenge.authParamsPublicKey['challenge'], 'Y2hhbGxlbmdl');
+      expect(challenge.authParamsPublicKey['rp'],
+          {'id': 'login.example.com', 'name': 'Example'});
+      expect(challenge.authParamsPublicKey['pubKeyCredParams'], [
+        {'type': 'public-key', 'alg': -7}
+      ]);
+    });
+
+    test('enrollPasskey verifies the credential at the method location',
+        () async {
+      final method = await myAccount.enrollPasskey(
+        challenge: const PasskeyEnrollmentChallenge(
+            authenticationMethodId: passkeyId,
+            authSession: 'session',
+            authParamsPublicKey: creationOptions),
+        credential: const PasskeyCredential(
+            id: 'cred-id',
+            rawId: 'cred-raw-id',
+            type: 'public-key',
+            authenticatorAttachment: 'platform',
+            response: PasskeyAuthenticatorResponse(
+                clientDataJSON: 'client-data',
+                attestationObject: 'att-obj',
+                // Present in the browser's credential.toJSON() output, but
+                // rejected by the My Account API, so it must not be sent.
+                authenticatorData: 'auth-data')),
+      );
+
+      expect(proxy.calls.single, [
+        'enrollmentVerify',
+        _accessToken,
+        {
+          'type': 'passkey',
+          'location': '${_apiBase}v1/authentication-methods/'
+              'passkey%7Cdev_abc123',
+          'auth_session': 'session',
+          'authn_response': {
+            'id': 'cred-id',
+            'rawId': 'cred-raw-id',
+            'type': 'public-key',
+            'authenticatorAttachment': 'platform',
+            'response': {
+              'clientDataJSON': 'client-data',
+              'attestationObject': 'att-obj'
+            }
+          }
+        }
+      ]);
+      expect(method.id, passkeyId);
+      expect(method.type, 'passkey');
+      expect(method.userIdentityId, 'auth0|user');
+      expect(method.credentialBackedUp, true);
+      expect(method.relyingPartyId, 'login.example.com');
+      expect(method.transports, ['internal', 'hybrid']);
+      expect(method.createdAt, DateTime.utc(2026, 1, 2, 3, 4, 5));
+    });
+
+    test('enrollPasskey failures are thrown as MyAccountException', () async {
+      proxy.error = _jsObject({
+        'name': 'MyAccountApiError',
+        'type': 'https://auth0.com/api-errors/A0E-400-0001',
+        'status': 400,
+        'title': 'Bad Request',
+        'detail': 'Invalid credential',
+      });
+
+      await expectLater(
+          myAccount.enrollPasskey(
+              challenge: const PasskeyEnrollmentChallenge(
+                  authenticationMethodId: passkeyId,
+                  authSession: 'session',
+                  authParamsPublicKey: {}),
+              credential: const PasskeyCredential(
+                  id: 'cred-id',
+                  rawId: 'cred-raw-id',
+                  type: 'public-key',
+                  response: PasskeyAuthenticatorResponse(
+                      clientDataJSON: 'client-data'))),
+          throwsA(isA<MyAccountException>()
+              .having((e) => e.statusCode, 'statusCode', 400)
+              .having((e) => e.message, 'message', 'Invalid credential')));
     });
   });
 
