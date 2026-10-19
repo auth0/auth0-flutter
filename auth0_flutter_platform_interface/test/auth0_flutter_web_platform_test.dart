@@ -136,26 +136,25 @@ void main() {
     final platform = TestAuth0FlutterWeb();
 
     final Map<String, Future<Object?> Function()> methods = {
-      'myAccountGetAuthenticationMethods': () =>
-          platform.myAccountGetAuthenticationMethods(accessToken, null),
-      'myAccountGetAuthenticationMethod': () =>
-          platform.myAccountGetAuthenticationMethod(accessToken, 'id'),
-      'myAccountDeleteAuthenticationMethod': () =>
-          platform.myAccountDeleteAuthenticationMethod(accessToken, 'id'),
-      'myAccountUpdateAuthenticationMethod': () => platform
-          .myAccountUpdateAuthenticationMethod(accessToken, 'id', null, null),
-      'myAccountGetFactors': () => platform.myAccountGetFactors(accessToken),
-      'myAccountEnrollPhone': () => platform.myAccountEnrollPhone(
-          accessToken, '+15555550100', PhoneType.sms),
-      'myAccountEnrollEmail': () =>
-          platform.myAccountEnrollEmail(accessToken, 'user@example.com'),
-      'myAccountEnrollTotp': () => platform.myAccountEnrollTotp(accessToken),
-      'myAccountEnrollPush': () => platform.myAccountEnrollPush(accessToken),
-      'myAccountEnrollRecoveryCode': () =>
-          platform.myAccountEnrollRecoveryCode(accessToken),
-      'myAccountVerifyOtp': () => platform.myAccountVerifyOtp(
+      'getAuthenticationMethods': () =>
+          platform.getAuthenticationMethods(accessToken, null),
+      'getAuthenticationMethod': () =>
+          platform.getAuthenticationMethod(accessToken, 'id'),
+      'deleteAuthenticationMethod': () =>
+          platform.deleteAuthenticationMethod(accessToken, 'id'),
+      'updateAuthenticationMethod': () =>
+          platform.updateAuthenticationMethod(accessToken, 'id', null, null),
+      'getFactors': () => platform.getFactors(accessToken),
+      'enrollPhone': () =>
+          platform.enrollPhone(accessToken, '+15555550100', PhoneType.sms),
+      'enrollEmail': () =>
+          platform.enrollEmail(accessToken, 'user@example.com'),
+      'enrollTotp': () => platform.enrollTotp(accessToken),
+      'enrollPush': () => platform.enrollPush(accessToken),
+      'enrollRecoveryCode': () => platform.enrollRecoveryCode(accessToken),
+      'verifyOtp': () => platform.verifyOtp(
           accessToken, 'id', 'auth-session', '123456', 'totp'),
-      'myAccountConfirmEnrollment': () => platform.myAccountConfirmEnrollment(
+      'confirmEnrollment': () => platform.confirmEnrollment(
           accessToken, 'id', 'auth-session', 'push-notification'),
     };
 

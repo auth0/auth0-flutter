@@ -376,7 +376,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
   }
 
   @override
-  Future<List<AuthenticationMethod>> myAccountGetAuthenticationMethods(
+  Future<List<AuthenticationMethod>> getAuthenticationMethods(
           String accessToken, AuthenticationMethodType? type) =>
       _myAccountCall((client) async {
         final result = await client.myAccountGetAuthenticationMethods(
@@ -387,23 +387,19 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
       });
 
   @override
-  Future<AuthenticationMethod> myAccountGetAuthenticationMethod(
+  Future<AuthenticationMethod> getAuthenticationMethod(
           String accessToken, String id) =>
       _myAccountCall((client) async => AuthenticationMethodWebExtension.fromWeb(
           await client.myAccountGetAuthenticationMethod(accessToken, id)));
 
   @override
-  Future<void> myAccountDeleteAuthenticationMethod(
-          String accessToken, String id) =>
+  Future<void> deleteAuthenticationMethod(String accessToken, String id) =>
       _myAccountCall((client) =>
           client.myAccountDeleteAuthenticationMethod(accessToken, id));
 
   @override
-  Future<AuthenticationMethod> myAccountUpdateAuthenticationMethod(
-          String accessToken,
-          String id,
-          String? name,
-          PhoneType? preferredAuthenticationMethod) =>
+  Future<AuthenticationMethod> updateAuthenticationMethod(String accessToken,
+          String id, String? name, PhoneType? preferredAuthenticationMethod) =>
       _myAccountCall((client) async => AuthenticationMethodWebExtension.fromWeb(
           await client.myAccountUpdateAuthenticationMethod(
               accessToken,
@@ -415,14 +411,14 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
                           preferredAuthenticationMethod?.toValue())))));
 
   @override
-  Future<List<Factor>> myAccountGetFactors(String accessToken) =>
+  Future<List<Factor>> getFactors(String accessToken) =>
       _myAccountCall((client) async {
         final result = await client.myAccountGetFactors(accessToken);
         return result.toDart.map(FactorWebExtension.fromWeb).toList();
       });
 
   @override
-  Future<EnrollmentChallenge> myAccountEnrollPhone(
+  Future<EnrollmentChallenge> enrollPhone(
           String accessToken, String phoneNumber, PhoneType type) =>
       _myAccountEnroll(
           accessToken,
@@ -432,38 +428,38 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
               preferred_authentication_method: type.toValue()));
 
   @override
-  Future<EnrollmentChallenge> myAccountEnrollEmail(
-          String accessToken, String email) =>
+  Future<EnrollmentChallenge> enrollEmail(String accessToken, String email) =>
       _myAccountEnroll(
           accessToken,
           interop.MyAccountEnrollmentChallengeParams(
               type: 'email', email: email));
 
   @override
-  Future<EnrollmentChallenge> myAccountEnrollTotp(String accessToken) =>
+  Future<EnrollmentChallenge> enrollTotp(String accessToken) =>
       _myAccountEnroll(accessToken,
           interop.MyAccountEnrollmentChallengeParams(type: 'totp'));
 
   @override
-  Future<EnrollmentChallenge> myAccountEnrollPush(String accessToken) =>
+  Future<EnrollmentChallenge> enrollPush(
+          String accessToken) =>
       _myAccountEnroll(
           accessToken,
           interop.MyAccountEnrollmentChallengeParams(
               type: 'push-notification'));
 
   @override
-  Future<EnrollmentChallenge> myAccountEnrollRecoveryCode(String accessToken) =>
+  Future<EnrollmentChallenge> enrollRecoveryCode(String accessToken) =>
       _myAccountEnroll(accessToken,
           interop.MyAccountEnrollmentChallengeParams(type: 'recovery-code'));
 
   @override
-  Future<AuthenticationMethod> myAccountVerifyOtp(String accessToken, String id,
+  Future<AuthenticationMethod> verifyOtp(String accessToken, String id,
           String authSession, String otp, String factorType) =>
       _myAccountVerify(accessToken, id, authSession, factorType, otp);
 
   @override
-  Future<AuthenticationMethod> myAccountConfirmEnrollment(String accessToken,
-          String id, String authSession, String factorType) =>
+  Future<AuthenticationMethod> confirmEnrollment(String accessToken, String id,
+          String authSession, String factorType) =>
       _myAccountVerify(accessToken, id, authSession, factorType, null);
 
   Future<EnrollmentChallenge> _myAccountEnroll(String accessToken,

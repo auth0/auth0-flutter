@@ -16,32 +16,28 @@ class _RecordingWebPlatform extends Auth0FlutterWebPlatform {
       const EnrollmentChallenge(id: 'totp|dev_1', authSession: 'session');
 
   @override
-  Future<List<AuthenticationMethod>> myAccountGetAuthenticationMethods(
+  Future<List<AuthenticationMethod>> getAuthenticationMethods(
       String accessToken, AuthenticationMethodType? type) {
     calls.add(['getAuthenticationMethods', accessToken, type]);
     return Future.value(methodsResult);
   }
 
   @override
-  Future<AuthenticationMethod> myAccountGetAuthenticationMethod(
+  Future<AuthenticationMethod> getAuthenticationMethod(
       String accessToken, String id) {
     calls.add(['getAuthenticationMethod', accessToken, id]);
     return Future.value(methodResult);
   }
 
   @override
-  Future<void> myAccountDeleteAuthenticationMethod(
-      String accessToken, String id) {
+  Future<void> deleteAuthenticationMethod(String accessToken, String id) {
     calls.add(['deleteAuthenticationMethod', accessToken, id]);
     return Future.value();
   }
 
   @override
-  Future<AuthenticationMethod> myAccountUpdateAuthenticationMethod(
-      String accessToken,
-      String id,
-      String? name,
-      PhoneType? preferredAuthenticationMethod) {
+  Future<AuthenticationMethod> updateAuthenticationMethod(String accessToken,
+      String id, String? name, PhoneType? preferredAuthenticationMethod) {
     calls.add([
       'updateAuthenticationMethod',
       accessToken,
@@ -53,52 +49,51 @@ class _RecordingWebPlatform extends Auth0FlutterWebPlatform {
   }
 
   @override
-  Future<List<Factor>> myAccountGetFactors(String accessToken) {
+  Future<List<Factor>> getFactors(String accessToken) {
     calls.add(['getFactors', accessToken]);
     return Future.value(factorsResult);
   }
 
   @override
-  Future<EnrollmentChallenge> myAccountEnrollPhone(
+  Future<EnrollmentChallenge> enrollPhone(
       String accessToken, String phoneNumber, PhoneType type) {
     calls.add(['enrollPhone', accessToken, phoneNumber, type]);
     return Future.value(enrollmentResult);
   }
 
   @override
-  Future<EnrollmentChallenge> myAccountEnrollEmail(
-      String accessToken, String email) {
+  Future<EnrollmentChallenge> enrollEmail(String accessToken, String email) {
     calls.add(['enrollEmail', accessToken, email]);
     return Future.value(enrollmentResult);
   }
 
   @override
-  Future<EnrollmentChallenge> myAccountEnrollTotp(String accessToken) {
+  Future<EnrollmentChallenge> enrollTotp(String accessToken) {
     calls.add(['enrollTotp', accessToken]);
     return Future.value(enrollmentResult);
   }
 
   @override
-  Future<EnrollmentChallenge> myAccountEnrollPush(String accessToken) {
+  Future<EnrollmentChallenge> enrollPush(String accessToken) {
     calls.add(['enrollPush', accessToken]);
     return Future.value(enrollmentResult);
   }
 
   @override
-  Future<EnrollmentChallenge> myAccountEnrollRecoveryCode(String accessToken) {
+  Future<EnrollmentChallenge> enrollRecoveryCode(String accessToken) {
     calls.add(['enrollRecoveryCode', accessToken]);
     return Future.value(enrollmentResult);
   }
 
   @override
-  Future<AuthenticationMethod> myAccountVerifyOtp(String accessToken, String id,
+  Future<AuthenticationMethod> verifyOtp(String accessToken, String id,
       String authSession, String otp, String factorType) {
     calls.add(['verifyOtp', accessToken, id, authSession, otp, factorType]);
     return Future.value(methodResult);
   }
 
   @override
-  Future<AuthenticationMethod> myAccountConfirmEnrollment(
+  Future<AuthenticationMethod> confirmEnrollment(
       String accessToken, String id, String authSession, String factorType) {
     calls.add(['confirmEnrollment', accessToken, id, authSession, factorType]);
     return Future.value(methodResult);

@@ -128,95 +128,87 @@ abstract class Auth0FlutterWebPlatform extends PlatformInterface {
     throw UnimplementedError('web.getTokenByPasskey has not been implemented');
   }
 
-  Future<List<AuthenticationMethod>> myAccountGetAuthenticationMethods(
+  Future<List<AuthenticationMethod>> getAuthenticationMethods(
     final String accessToken,
     final AuthenticationMethodType? type,
   ) {
     throw UnimplementedError(
-        'web.myAccountGetAuthenticationMethods has not been implemented');
+        'web.getAuthenticationMethods has not been implemented');
   }
 
-  Future<AuthenticationMethod> myAccountGetAuthenticationMethod(
+  Future<AuthenticationMethod> getAuthenticationMethod(
     final String accessToken,
     final String id,
   ) {
     throw UnimplementedError(
-        'web.myAccountGetAuthenticationMethod has not been implemented');
+        'web.getAuthenticationMethod has not been implemented');
   }
 
-  Future<void> myAccountDeleteAuthenticationMethod(
+  Future<void> deleteAuthenticationMethod(
     final String accessToken,
     final String id,
   ) {
     throw UnimplementedError(
-        'web.myAccountDeleteAuthenticationMethod has not been implemented');
+        'web.deleteAuthenticationMethod has not been implemented');
   }
 
-  Future<AuthenticationMethod> myAccountUpdateAuthenticationMethod(
+  Future<AuthenticationMethod> updateAuthenticationMethod(
     final String accessToken,
     final String id,
     final String? name,
     final PhoneType? preferredAuthenticationMethod,
   ) {
     throw UnimplementedError(
-        'web.myAccountUpdateAuthenticationMethod has not been implemented');
+        'web.updateAuthenticationMethod has not been implemented');
   }
 
-  Future<List<Factor>> myAccountGetFactors(final String accessToken) {
-    throw UnimplementedError(
-        'web.myAccountGetFactors has not been implemented');
+  Future<List<Factor>> getFactors(final String accessToken) {
+    throw UnimplementedError('web.getFactors has not been implemented');
   }
 
-  Future<EnrollmentChallenge> myAccountEnrollPhone(
+  Future<EnrollmentChallenge> enrollPhone(
     final String accessToken,
     final String phoneNumber,
     final PhoneType type,
   ) {
-    throw UnimplementedError(
-        'web.myAccountEnrollPhone has not been implemented');
+    throw UnimplementedError('web.enrollPhone has not been implemented');
   }
 
-  Future<EnrollmentChallenge> myAccountEnrollEmail(
+  Future<EnrollmentChallenge> enrollEmail(
     final String accessToken,
     final String email,
   ) {
-    throw UnimplementedError(
-        'web.myAccountEnrollEmail has not been implemented');
+    throw UnimplementedError('web.enrollEmail has not been implemented');
   }
 
-  Future<EnrollmentChallenge> myAccountEnrollTotp(final String accessToken) {
-    throw UnimplementedError(
-        'web.myAccountEnrollTotp has not been implemented');
+  Future<EnrollmentChallenge> enrollTotp(final String accessToken) {
+    throw UnimplementedError('web.enrollTotp has not been implemented');
   }
 
-  Future<EnrollmentChallenge> myAccountEnrollPush(final String accessToken) {
-    throw UnimplementedError(
-        'web.myAccountEnrollPush has not been implemented');
+  Future<EnrollmentChallenge> enrollPush(final String accessToken) {
+    throw UnimplementedError('web.enrollPush has not been implemented');
   }
 
-  Future<EnrollmentChallenge> myAccountEnrollRecoveryCode(
-      final String accessToken) {
-    throw UnimplementedError(
-        'web.myAccountEnrollRecoveryCode has not been implemented');
+  Future<EnrollmentChallenge> enrollRecoveryCode(final String accessToken) {
+    throw UnimplementedError('web.enrollRecoveryCode has not been implemented');
   }
 
-  Future<AuthenticationMethod> myAccountVerifyOtp(
+  Future<AuthenticationMethod> verifyOtp(
     final String accessToken,
     final String id,
     final String authSession,
     final String otp,
     final String factorType,
   ) {
-    throw UnimplementedError('web.myAccountVerifyOtp has not been implemented');
+    throw UnimplementedError('web.verifyOtp has not been implemented');
   }
 
-  Future<AuthenticationMethod> myAccountConfirmEnrollment(
+  Future<AuthenticationMethod> confirmEnrollment(
     final String accessToken,
     final String id,
     final String authSession,
     final String factorType,
   ) {
-    throw UnimplementedError(
-        'web.myAccountConfirmEnrollment has not been implemented');
+    throw UnimplementedError('web.confirmEnrollment has not been implemented');
   }
 }

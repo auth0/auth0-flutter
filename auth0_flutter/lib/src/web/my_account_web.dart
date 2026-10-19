@@ -64,7 +64,7 @@ class MyAccountWeb {
   Future<List<AuthenticationMethod>> getAuthenticationMethods(
           {AuthenticationMethodType? type}) =>
       Auth0FlutterWebPlatform.instance
-          .myAccountGetAuthenticationMethods(_accessToken, type);
+          .getAuthenticationMethods(_accessToken, type);
 
   /// Gets a specific authentication method by [id].
   ///
@@ -80,7 +80,7 @@ class MyAccountWeb {
   /// ```
   Future<AuthenticationMethod> getAuthenticationMethod({required String id}) =>
       Auth0FlutterWebPlatform.instance
-          .myAccountGetAuthenticationMethod(_accessToken, id);
+          .getAuthenticationMethod(_accessToken, id);
 
   /// Deletes an authentication method by [id].
   ///
@@ -94,7 +94,7 @@ class MyAccountWeb {
   /// ```
   Future<void> deleteAuthenticationMethod({required String id}) =>
       Auth0FlutterWebPlatform.instance
-          .myAccountDeleteAuthenticationMethod(_accessToken, id);
+          .deleteAuthenticationMethod(_accessToken, id);
 
   /// Lists the factors available for enrollment on the tenant.
   ///
@@ -107,7 +107,7 @@ class MyAccountWeb {
   /// final factors = await myAccount.getFactors();
   /// ```
   Future<List<Factor>> getFactors() =>
-      Auth0FlutterWebPlatform.instance.myAccountGetFactors(_accessToken);
+      Auth0FlutterWebPlatform.instance.getFactors(_accessToken);
 
   /// Initiates phone enrollment with the specified [phoneNumber] and [type].
   ///
@@ -130,7 +130,7 @@ class MyAccountWeb {
     required PhoneType type,
   }) =>
       Auth0FlutterWebPlatform.instance
-          .myAccountEnrollPhone(_accessToken, phoneNumber, type);
+          .enrollPhone(_accessToken, phoneNumber, type);
 
   /// Initiates email enrollment with the specified [email] address.
   ///
@@ -148,8 +148,7 @@ class MyAccountWeb {
   /// );
   /// ```
   Future<EnrollmentChallenge> enrollEmail({required String email}) =>
-      Auth0FlutterWebPlatform.instance
-          .myAccountEnrollEmail(_accessToken, email);
+      Auth0FlutterWebPlatform.instance.enrollEmail(_accessToken, email);
 
   /// Initiates TOTP (authenticator app) enrollment.
   ///
@@ -167,7 +166,7 @@ class MyAccountWeb {
   /// // Use challenge.totpUri to display a QR code
   /// ```
   Future<EnrollmentChallenge> enrollTotp() =>
-      Auth0FlutterWebPlatform.instance.myAccountEnrollTotp(_accessToken);
+      Auth0FlutterWebPlatform.instance.enrollTotp(_accessToken);
 
   /// Initiates push notification enrollment.
   ///
@@ -184,7 +183,7 @@ class MyAccountWeb {
   /// final challenge = await myAccount.enrollPush();
   /// ```
   Future<EnrollmentChallenge> enrollPush() =>
-      Auth0FlutterWebPlatform.instance.myAccountEnrollPush(_accessToken);
+      Auth0FlutterWebPlatform.instance.enrollPush(_accessToken);
 
   /// Initiates recovery code enrollment.
   ///
@@ -202,8 +201,7 @@ class MyAccountWeb {
   /// // Store challenge.recoveryCode securely
   /// ```
   Future<EnrollmentChallenge> enrollRecoveryCode() =>
-      Auth0FlutterWebPlatform.instance
-          .myAccountEnrollRecoveryCode(_accessToken);
+      Auth0FlutterWebPlatform.instance.enrollRecoveryCode(_accessToken);
 
   /// Verifies an enrollment using a one-time password [otp].
   ///
@@ -239,7 +237,7 @@ class MyAccountWeb {
     required String factorType,
   }) =>
       Auth0FlutterWebPlatform.instance
-          .myAccountVerifyOtp(_accessToken, id, authSession, otp, factorType);
+          .verifyOtp(_accessToken, id, authSession, otp, factorType);
 
   /// Confirms an enrollment that does not require a one-time password, namely
   /// push notification and recovery code enrollments.
@@ -272,8 +270,8 @@ class MyAccountWeb {
     required String authSession,
     required String factorType,
   }) =>
-      Auth0FlutterWebPlatform.instance.myAccountConfirmEnrollment(
-          _accessToken, id, authSession, factorType);
+      Auth0FlutterWebPlatform.instance
+          .confirmEnrollment(_accessToken, id, authSession, factorType);
 
   /// Updates an existing authentication method identified by [id].
   ///
@@ -300,6 +298,6 @@ class MyAccountWeb {
     String? name,
     PhoneType? preferredAuthenticationMethod,
   }) =>
-      Auth0FlutterWebPlatform.instance.myAccountUpdateAuthenticationMethod(
+      Auth0FlutterWebPlatform.instance.updateAuthenticationMethod(
           _accessToken, id, name, preferredAuthenticationMethod);
 }
