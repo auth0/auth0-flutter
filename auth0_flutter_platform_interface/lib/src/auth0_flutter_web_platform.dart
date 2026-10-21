@@ -203,6 +203,23 @@ abstract class Auth0FlutterWebPlatform extends PlatformInterface {
     throw UnimplementedError('web.verifyOtp has not been implemented');
   }
 
+  Future<PasskeyEnrollmentChallenge> enrollPasskeyChallenge(
+    final String accessToken,
+    final String? userIdentityId,
+    final String? connection,
+  ) {
+    throw UnimplementedError(
+        'web.enrollPasskeyChallenge has not been implemented');
+  }
+
+  Future<MyAccountPasskeyAuthenticationMethod> enrollPasskey(
+    final String accessToken,
+    final PasskeyEnrollmentChallenge challenge,
+    final PasskeyCredential credential,
+  ) {
+    throw UnimplementedError('web.enrollPasskey has not been implemented');
+  }
+
   Future<AuthenticationMethod> confirmEnrollment(
     final String accessToken,
     final String id,

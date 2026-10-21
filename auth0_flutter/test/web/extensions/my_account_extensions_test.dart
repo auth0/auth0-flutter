@@ -124,6 +124,127 @@ void main() {
     });
   });
 
+  test('PasskeyEnrollmentChallengeWebExtension maps the raw creation options',
+      () {
+    final js = _jsObject({
+      'id': 'passkey|dev_1',
+      'auth_session': 'session',
+      'authn_params_public_key': {
+        'challenge': 'Y2hhbGxlbmdl',
+        'rp': {'id': 'login.example.com', 'name': 'Example'},
+      },
+    }) as interop.MyAccountEnrollmentChallengeJS;
+
+    final challenge = PasskeyEnrollmentChallengeWebExtension.fromWeb(js);
+
+    expect(challenge.authenticationMethodId, 'passkey|dev_1');
+    expect(challenge.authSession, 'session');
+    expect(challenge.authParamsPublicKey, {
+      'challenge': 'Y2hhbGxlbmdl',
+      'rp': {'id': 'login.example.com', 'name': 'Example'},
+    });
+  });
+
+  group('PasskeyCredentialWebExtension', () {
+    test('omits unset optional fields', () {
+      const credential = PasskeyCredential(
+          id: 'cred-id',
+          rawId: 'cred-raw-id',
+          type: 'public-key',
+          response: PasskeyAuthenticatorResponse(
+              clientDataJSON: 'client-data', attestationObject: 'att-obj'));
+
+      expect(credential.toWebEnrollmentResponse().dartify(), {
+        'id': 'cred-id',
+        'rawId': 'cred-raw-id',
+        'type': 'public-key',
+        'response': {
+          'clientDataJSON': 'client-data',
+          'attestationObject': 'att-obj'
+        },
+      });
+    });
+
+    test('sends only the registration response fields', () {
+      // The browser's credential.toJSON() includes authenticatorData, which
+      // the My Account API rejects in an enrollment verification.
+      final credential = PasskeyCredential.fromMap({
+        'id': 'cred-id',
+        'rawId': 'cred-raw-id',
+        'type': 'public-key',
+        'response': {
+          'clientDataJSON': 'client-data',
+          'attestationObject': 'att-obj',
+          'authenticatorData': 'auth-data',
+          'signature': 'sig',
+          'userHandle': 'user-handle',
+          'transports': ['internal'],
+          'publicKey': 'public-key',
+          'publicKeyAlgorithm': -7,
+        },
+      });
+
+      expect(
+          (credential.toWebEnrollmentResponse().dartify()! as Map)['response'],
+          {'clientDataJSON': 'client-data', 'attestationObject': 'att-obj'});
+    });
+
+    test('keeps the attachment and extension results when set', () {
+      const credential = PasskeyCredential(
+          id: 'cred-id',
+          rawId: 'cred-raw-id',
+          type: 'public-key',
+          authenticatorAttachment: 'platform',
+          clientExtensionResults: {
+            'credProps': {'rk': true}
+          },
+          response: PasskeyAuthenticatorResponse(clientDataJSON: 'cd'));
+
+      final map = credential.toWebEnrollmentResponse().dartify()! as Map;
+
+      expect(map['authenticatorAttachment'], 'platform');
+      expect(map['clientExtensionResults'], {
+        'credProps': {'rk': true}
+      });
+    });
+  });
+
+  test('MyAccountPasskeyAuthenticationMethodWebExtension maps all fields', () {
+    final js = _jsObject({
+      'id': 'passkey|dev_1',
+      'type': 'passkey',
+      'identity_user_id': 'auth0|user',
+      'user_agent': 'Chrome',
+      'key_id': 'key-id',
+      'public_key': 'public-key',
+      'user_handle': 'user-handle',
+      'credential_device_type': 'multi_device',
+      'credential_backed_up': true,
+      'aaguid': 'aaguid',
+      'relying_party_id': 'login.example.com',
+      'transports': ['internal'],
+      'created_at': '2026-01-02T03:04:05.000Z',
+      'usage': ['primary'],
+    });
+
+    final method = MyAccountPasskeyAuthenticationMethodWebExtension.fromWeb(js);
+
+    expect(method.id, 'passkey|dev_1');
+    expect(method.type, 'passkey');
+    expect(method.userIdentityId, 'auth0|user');
+    expect(method.userAgent, 'Chrome');
+    expect(method.keyId, 'key-id');
+    expect(method.publicKey, 'public-key');
+    expect(method.userHandle, 'user-handle');
+    expect(method.credentialDeviceType, 'multi_device');
+    expect(method.credentialBackedUp, true);
+    expect(method.aaguid, 'aaguid');
+    expect(method.relyingPartyId, 'login.example.com');
+    expect(method.transports, ['internal']);
+    expect(method.createdAt, DateTime.utc(2026, 1, 2, 3, 4, 5));
+    expect(method.usage, ['primary']);
+  });
+
   group('MyAccountExceptionWebExtension', () {
     test('maps a MyAccountApiError', () {
       final exception = MyAccountExceptionWebExtension.fromJsObject(_jsObject({

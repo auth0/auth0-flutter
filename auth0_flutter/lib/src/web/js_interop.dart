@@ -457,6 +457,10 @@ extension type MyAccountEnrollmentChallengeJS._(JSObject _)
   external String? get barcode_uri;
   external String? get manual_input_code;
   external String? get recovery_code;
+
+  /// The raw WebAuthn creation options for a passkey enrollment (base64url
+  /// strings, not yet decoded into a `PublicKeyCredentialCreationOptions`).
+  external JSObject? get authn_params_public_key;
 }
 
 @JS()
@@ -467,12 +471,16 @@ extension type MyAccountEnrollmentChallengeParams._(JSObject _)
   external String? get phone_number;
   external String? get preferred_authentication_method;
   external String? get email;
+  external String? get connection;
+  external String? get identity_user_id;
 
   external factory MyAccountEnrollmentChallengeParams({
     required String type,
     String? phone_number,
     String? preferred_authentication_method,
     String? email,
+    String? connection,
+    String? identity_user_id,
   });
 }
 
@@ -484,12 +492,14 @@ extension type MyAccountEnrollmentVerifyParams._(JSObject _)
   external String get location;
   external String get auth_session;
   external String? get otp_code;
+  external JSObject? get authn_response;
 
   external factory MyAccountEnrollmentVerifyParams({
     required String type,
     required String location,
     required String auth_session,
     String? otp_code,
+    JSObject? authn_response,
   });
 }
 

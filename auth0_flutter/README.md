@@ -795,7 +795,7 @@ try {
 - [passkeySignupChallenge](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/passkeySignupChallenge.html) - request a WebAuthn registration challenge to sign up a new user with a passkey. Requires `auth0-spa-js` v2.24.0+.
 - [passkeyLoginChallenge](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/passkeyLoginChallenge.html) - request a WebAuthn assertion challenge to log in an existing user with a passkey. Requires `auth0-spa-js` v2.24.0+.
 - [getTokenByPasskey](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/getTokenByPasskey.html) - exchange a passkey credential from `navigator.credentials` for Auth0 tokens. Requires `auth0-spa-js` v2.24.0+.
-- [myAccount](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/myAccount.html) - manage the signed-in user's authentication methods via the My Account API (all mobile methods except passkey enrollment). Requires `auth0-spa-js` v2.21.1+.
+- [myAccount](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/myAccount.html) - manage the signed-in user's authentication methods via the My Account API, with the same methods as mobile (including passkey enrollment). Requires `auth0-spa-js` v2.21.1+.
 
 ## Feedback
 

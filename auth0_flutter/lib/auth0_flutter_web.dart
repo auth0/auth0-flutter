@@ -20,7 +20,11 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         AuthenticationMethodType,
         EnrollmentChallenge,
         Factor,
-        MyAccountException;
+        MyAccountException,
+        PasskeyEnrollmentChallenge,
+        PasskeyCredential,
+        PasskeyAuthenticatorResponse,
+        MyAccountPasskeyAuthenticationMethod;
 
 export 'src/web/mfa_web.dart' show MfaWeb;
 export 'src/web/my_account_web.dart' show MyAccountWeb;

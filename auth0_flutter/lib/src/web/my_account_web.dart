@@ -109,6 +109,76 @@ class MyAccountWeb {
   Future<List<Factor>> getFactors() =>
       Auth0FlutterWebPlatform.instance.getFactors(_accessToken);
 
+  /// Requests a challenge for enrolling a new passkey. This is the first part
+  /// of the passkey enrollment flow.
+  ///
+  /// Returns a [PasskeyEnrollmentChallenge] whose `authParamsPublicKey` holds
+  /// the WebAuthn creation options as JSON (base64url-encoded values). Decode
+  /// it with the browser's
+  /// `PublicKeyCredential.parseCreationOptionsFromJSON()`, pass the result to
+  /// `navigator.credentials.create()`, then convert the new
+  /// credential with its `toJSON()` method and [PasskeyCredential.fromMap].
+  /// Finally, pass the challenge and credential to [enrollPasskey].
+  ///
+  /// **Note:** `parseCreationOptionsFromJSON()` and `toJSON()` require Chrome
+  /// or Edge 129+, Firefox 119+, or Safari 18.4+. `navigator.credentials
+  /// .create()` requires a user gesture, so start the flow from a click
+  /// handler.
+  ///
+  /// **Note:** Passkey enrollment requires a custom domain: create `Auth0Web`
+  /// with it. The challenge's relying party ID is that custom domain, so the
+  /// passkey can only be created on pages served from it or one of its
+  /// subdomains; elsewhere the browser throws a `SecurityError`.
+  ///
+  /// Optionally pass a [userIdentityId] (needed if the user logged in with a
+  /// linked account) and/or a database [connection] name. If a connection name
+  /// is not specified, your tenant's default directory is used.
+  ///
+  /// Requires an access token with the `create:me:authentication_methods`
+  /// scope and audience `https://{domain}/me/`.
+  ///
+  /// ## Usage example
+  ///
+  /// ```dart
+  /// final challenge = await myAccount.enrollPasskeyChallenge();
+  /// // Create the passkey in the browser with challenge.authParamsPublicKey,
+  /// // then call enrollPasskey with the resulting credential.
+  /// ```
+  Future<PasskeyEnrollmentChallenge> enrollPasskeyChallenge({
+    String? userIdentityId,
+    String? connection,
+  }) =>
+      Auth0FlutterWebPlatform.instance
+          .enrollPasskeyChallenge(_accessToken, userIdentityId, connection);
+
+  /// Enrolls a new passkey [credential]. This is the last part of the passkey
+  /// enrollment flow.
+  ///
+  /// Call this after [enrollPasskeyChallenge] and after creating the passkey
+  /// in the browser. Pass the same [challenge] returned by
+  /// [enrollPasskeyChallenge], and the [credential] built with
+  /// [PasskeyCredential.fromMap] from the new credential's `toJSON()` output.
+  ///
+  /// Returns the enrolled [MyAccountPasskeyAuthenticationMethod].
+  ///
+  /// Requires an access token with the `create:me:authentication_methods`
+  /// scope and audience `https://{domain}/me/`.
+  ///
+  /// ## Usage example
+  ///
+  /// ```dart
+  /// final method = await myAccount.enrollPasskey(
+  ///   challenge: challenge,
+  ///   credential: credential,
+  /// );
+  /// ```
+  Future<MyAccountPasskeyAuthenticationMethod> enrollPasskey({
+    required PasskeyEnrollmentChallenge challenge,
+    required PasskeyCredential credential,
+  }) =>
+      Auth0FlutterWebPlatform.instance
+          .enrollPasskey(_accessToken, challenge, credential);
+
   /// Initiates phone enrollment with the specified [phoneNumber] and [type].
   ///
   /// Returns an [EnrollmentChallenge] containing the enrollment `id` and
