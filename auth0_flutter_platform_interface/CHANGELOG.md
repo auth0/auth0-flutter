@@ -1,5 +1,16 @@
 # Change Log
 
+## [afpi-v2.7.0](https://github.com/auth0/auth0-flutter/tree/afpi-v2.7.0) (2026-10-23)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.6.2...afpi-v2.7.0)
+
+**Added**
+- feat(web): add My Account passkey enrollment on Web [\#967](https://github.com/auth0/auth0-flutter/pull/967) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat(web): Add My Account API support on Web [\#966](https://github.com/auth0/auth0-flutter/pull/966) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
+**Fixed**
+- fix: bump Auth0.Android to 3.21.2 for biometric failure fix [\#968](https://github.com/auth0/auth0-flutter/pull/968) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- fix(android): bump Auth0.Android to 3.21.1 for Keystore2 INCOMPATIBLE_DEVICE fix [\#963](https://github.com/auth0/auth0-flutter/pull/963) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
 ## [afpi-v2.6.2](https://github.com/auth0/auth0-flutter/tree/afpi-v2.6.2) (2026-09-11)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.6.1...afpi-v2.6.2)
 
