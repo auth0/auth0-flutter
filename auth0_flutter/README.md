@@ -30,7 +30,7 @@
 
 | Flutter     | Android         | iOS               | macOS             | Windows                          |
 | :---------- | :-------------- | :---------------- | :---------------- | :------------------------------- |
-| SDK 3.24.0+ | Android API 26+ | iOS 14+           | macOS 11+         | Windows 10+                      |
+| SDK 3.24.0+ | Android API 26+ | iOS 15+           | macOS 12+         | Windows 10+                      |
 | Dart 3.5.0+ | Java 17+        | Swift 5.9+        | Swift 5.9+        | C++ 17, Visual Studio 2022       |
 |             |                 | Xcode 15.x / 16.x | Xcode 15.x / 16.x | vcpkg (for dependencies)         |
 

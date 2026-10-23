@@ -4,8 +4,8 @@ import PackageDescription
 let package = Package(
     name: "auth0_flutter",
     platforms: [
-        .iOS("14.0"),
-        .macOS("11.0"),
+        .iOS("15.0"),
+        .macOS("12.0"),
     ],
     products: [
         .library(name: "auth0-flutter", targets: ["auth0_flutter"]),

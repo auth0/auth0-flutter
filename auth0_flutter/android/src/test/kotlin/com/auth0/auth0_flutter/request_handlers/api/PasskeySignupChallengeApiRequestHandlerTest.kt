@@ -61,7 +61,7 @@ class PasskeySignupChallengeApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        doReturn(mockBuilder).`when`(mockApi).signupWithPasskey(any(), anyOrNull(), anyOrNull())
+        doReturn(mockBuilder).`when`(mockApi).signupWithPasskey(any(), anyOrNull(), anyOrNull(), anyOrNull())
 
         handler.handle(mockApi, request, mockResult)
 
@@ -77,7 +77,8 @@ class PasskeySignupChallengeApiRequestHandlerTest {
                     this.picture == "https://www.okta.com"
             },
             eq("test-connection"),
-            eq("test-org")
+            eq("test-org"),
+            isNull()
         )
         verify(mockBuilder).start(any())
     }
@@ -92,7 +93,7 @@ class PasskeySignupChallengeApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        doReturn(mockBuilder).`when`(mockApi).signupWithPasskey(any(), anyOrNull(), anyOrNull())
+        doReturn(mockBuilder).`when`(mockApi).signupWithPasskey(any(), anyOrNull(), anyOrNull(), anyOrNull())
         doAnswer {
             val cb = it.getArgument<Callback<PasskeyRegistrationChallenge, AuthenticationException>>(0)
             cb.onSuccess(challenge())
@@ -121,7 +122,7 @@ class PasskeySignupChallengeApiRequestHandlerTest {
         val exception =
             AuthenticationException(code = "test-code", description = "test-description")
 
-        doReturn(mockBuilder).`when`(mockApi).signupWithPasskey(any(), anyOrNull(), anyOrNull())
+        doReturn(mockBuilder).`when`(mockApi).signupWithPasskey(any(), anyOrNull(), anyOrNull(), anyOrNull())
         doAnswer {
             val cb = it.getArgument<Callback<PasskeyRegistrationChallenge, AuthenticationException>>(0)
             cb.onFailure(exception)

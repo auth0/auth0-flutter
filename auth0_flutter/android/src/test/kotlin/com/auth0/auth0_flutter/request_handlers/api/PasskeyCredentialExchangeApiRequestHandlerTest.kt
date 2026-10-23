@@ -206,7 +206,7 @@ class PasskeyCredentialExchangeApiRequestHandlerTest {
         val request = MethodCallRequest(account = mockAccount, options)
 
         doReturn(mockBuilder).`when`(mockApi)
-            .signinWithPasskey(any<String>(), any<String>(), anyOrNull(), anyOrNull())
+            .signinWithPasskey(any<String>(), any<String>(), anyOrNull(), anyOrNull(), any(), any())
         doReturn(mockBuilder).`when`(mockBuilder).validateClaims()
         doReturn(mockBuilder).`when`(mockBuilder).setScope(any())
         doReturn(mockBuilder).`when`(mockBuilder).setAudience(any())
@@ -218,7 +218,9 @@ class PasskeyCredentialExchangeApiRequestHandlerTest {
             eq("test-auth-session"),
             any<String>(),
             eq("test-connection"),
-            eq("test-org")
+            eq("test-org"),
+            any(),
+            any()
         )
         verify(mockBuilder).validateClaims()
         verify(mockBuilder).setScope("openid profile")
@@ -241,7 +243,7 @@ class PasskeyCredentialExchangeApiRequestHandlerTest {
         val request = MethodCallRequest(account = mockAccount, options)
 
         doReturn(mockBuilder).`when`(mockApi)
-            .signinWithPasskey(any<String>(), any<String>(), anyOrNull(), anyOrNull())
+            .signinWithPasskey(any<String>(), any<String>(), anyOrNull(), anyOrNull(), any(), any())
         doReturn(mockBuilder).`when`(mockBuilder).validateClaims()
 
         handler.handle(mockApi, request, mockResult)
@@ -250,7 +252,9 @@ class PasskeyCredentialExchangeApiRequestHandlerTest {
             eq("test-auth-session"),
             any<String>(),
             anyOrNull(),
-            anyOrNull()
+            anyOrNull(),
+            any(),
+            any()
         )
         verify(mockBuilder).validateClaims()
         verify(mockBuilder).start(any())
@@ -272,7 +276,7 @@ class PasskeyCredentialExchangeApiRequestHandlerTest {
             AuthenticationException(code = "test-code", description = "test-description")
 
         doReturn(mockBuilder).`when`(mockApi)
-            .signinWithPasskey(any<String>(), any<String>(), anyOrNull(), anyOrNull())
+            .signinWithPasskey(any<String>(), any<String>(), anyOrNull(), anyOrNull(), any(), any())
         doReturn(mockBuilder).`when`(mockBuilder).validateClaims()
         doAnswer {
             val cb = it.getArgument<Callback<Credentials, AuthenticationException>>(0)
@@ -307,7 +311,7 @@ class PasskeyCredentialExchangeApiRequestHandlerTest {
         )
 
         doReturn(mockBuilder).`when`(mockApi)
-            .signinWithPasskey(any<String>(), any<String>(), anyOrNull(), anyOrNull())
+            .signinWithPasskey(any<String>(), any<String>(), anyOrNull(), anyOrNull(), any(), any())
         doReturn(mockBuilder).`when`(mockBuilder).validateClaims()
         doAnswer {
             val cb = it.getArgument<Callback<Credentials, AuthenticationException>>(0)

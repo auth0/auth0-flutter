@@ -31,10 +31,12 @@ from v2 to v3.
 ## Requirements Changes
 
 Because the underlying native SDKs raised their floors, `auth0_flutter` v3
-raises the Android minimums:
+raises the Android, iOS, and macOS minimums:
 
 | Requirement | v2 | v3 |
 | --- | --- | --- |
+| iOS deployment target | 14.0 | **15.0** |
+| macOS deployment target | 11.0 | **12.0** |
 | Android `minSdkVersion` | 21 | **26** (Android 8.0) |
 | Android compile/target SDK | 34 | **36** |
 | JDK (to build the Android module) | 8 | **17** |
@@ -42,7 +44,13 @@ raises the Android minimums:
 | Android Gradle Plugin | 8.4.x | **8.10.1** |
 | Gradle | 8.7 | **8.11.1** |
 
-**Migration:** if your app targets an Android `minSdkVersion` below 26, raise it
+**Migration (iOS/macOS):** if your app's deployment target is below iOS 15.0 or
+macOS 12.0, raise it. Update the `platform` line in `ios/Podfile` (for example
+`platform :ios, '15.0'`) and `macos/Podfile` (`platform :osx, '12.0'`), and the
+deployment target of the Runner target in Xcode. These floors come from
+Auth0.swift v3.
+
+**Migration (Android):** if your app targets an Android `minSdkVersion` below 26, raise it
 to at least 26 in your app's `android/app/build.gradle`. Ensure your build
 environment uses JDK 17 (for example, set it in Android Studio under
 *Settings → Build, Execution, Deployment → Build Tools → Gradle → Gradle JDK*,
