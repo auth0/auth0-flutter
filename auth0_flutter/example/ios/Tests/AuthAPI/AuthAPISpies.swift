@@ -84,9 +84,10 @@ class SpyAuthentication: Authentication, @unchecked Sendable {
         return request(databaseUserResult)
     }
 
-    func resetPassword(email: String, connection: String) -> any Requestable<Void, AuthenticationError> {
+    func resetPassword(email: String, connection: String, organization: String?) -> any Requestable<Void, AuthenticationError> {
         arguments["email"] = email
         arguments["connection"] = connection
+        arguments["organization"] = organization
         calledResetPassword = true
         return request(voidResult)
     }
@@ -144,6 +145,56 @@ class SpyAuthentication: Authentication, @unchecked Sendable {
         return request(.success(JWKS(keys: [])))
     }
 
+    // The next two are kept outside `#if PASSKEYS_PLATFORM`: the macOS test target
+    // does not define that flag, and since Auth0.swift 3.2.0 no protocol extension
+    // method matches these requirements' signatures, so the spy must always provide them.
+    @available(iOS 16.6, macOS 13.5, visionOS 1.0, *)
+    func login(passkey: SignupPasskey,
+               challenge: PasskeySignupChallenge,
+               connection: String?,
+               audience: String?,
+               scope: String,
+               organization: String?) -> any TokenRequestable<Credentials, AuthenticationError> {
+        arguments["connection"] = connection
+        arguments["audience"] = audience
+        arguments["scope"] = scope
+        arguments["organization"] = organization
+        calledSignupWithPasskey = true
+        return tokenRequest(credentialsResult)
+    }
+
+    @available(iOS 16.6, macOS 13.5, visionOS 1.0, *)
+    func passkeySignupChallenge(email: String?,
+                                phoneNumber: String?,
+                                username: String?,
+                                name: String?,
+                                givenName: String?,
+                                familyName: String?,
+                                nickname: String?,
+                                picture: String?,
+                                userMetadata: [String: String]?,
+                                connection: String?,
+                                organization: String?) -> any Requestable<PasskeySignupChallenge, AuthenticationError> {
+        arguments["email"] = email
+        arguments["phoneNumber"] = phoneNumber
+        arguments["username"] = username
+        arguments["name"] = name
+        arguments["givenName"] = givenName
+        arguments["familyName"] = familyName
+        arguments["nickname"] = nickname
+        arguments["picture"] = picture
+        arguments["connection"] = connection
+        arguments["organization"] = organization
+        arguments["userMetadata"] = userMetadata
+        calledPasskeySignupChallenge = true
+        #if PASSKEYS_PLATFORM
+        return request(passkeySignupChallengeResultOverride
+            ?? SpyAuthentication.passkeySignupChallengeResult)
+        #else
+        return request(.failure(AuthenticationError(info: [:], statusCode: 0)))
+        #endif
+    }
+
     #if PASSKEYS_PLATFORM
     @available(iOS 16.6, macOS 13.5, visionOS 1.0, *)
     func passkeyLoginChallenge(connection: String?,
@@ -181,30 +232,30 @@ class SpyAuthentication: Authentication, @unchecked Sendable {
                                 picture: String?,
                                 userMetadata: [String: String]?,
                                 connection: String?,
-                                organization: String?) -> any Requestable<PasskeySignupChallenge, AuthenticationError> {
-        arguments["email"] = email
-        arguments["phoneNumber"] = phoneNumber
-        arguments["username"] = username
-        arguments["name"] = name
-        arguments["givenName"] = givenName
-        arguments["familyName"] = familyName
-        arguments["nickname"] = nickname
-        arguments["picture"] = picture
-        arguments["connection"] = connection
-        arguments["organization"] = organization
-        arguments["userMetadata"] = userMetadata
-        calledPasskeySignupChallenge = true
-        return request(passkeySignupChallengeResultOverride
-            ?? SpyAuthentication.passkeySignupChallengeResult)
+                                organization: String?,
+                                deliveryMethod: DeliveryMethod?) -> any Requestable<PasskeySignupChallenge, AuthenticationError> {
+        return passkeySignupChallenge(email: email,
+                                      phoneNumber: phoneNumber,
+                                      username: username,
+                                      name: name,
+                                      givenName: givenName,
+                                      familyName: familyName,
+                                      nickname: nickname,
+                                      picture: picture,
+                                      userMetadata: userMetadata,
+                                      connection: connection,
+                                      organization: organization)
     }
 
     @available(iOS 16.6, macOS 13.5, visionOS 1.0, *)
     func login(passkey: SignupPasskey,
-               challenge: PasskeySignupChallenge,
+               verificationRequired: [PasskeyVerificationMethod],
+               authSession: String,
                connection: String?,
                audience: String?,
                scope: String,
-               organization: String?) -> any TokenRequestable<Credentials, AuthenticationError> {
+               organization: String?,
+               verification: [PasskeyVerificationMethod: String]) -> any TokenRequestable<Credentials, AuthenticationError> {
         arguments["connection"] = connection
         arguments["audience"] = audience
         arguments["scope"] = scope

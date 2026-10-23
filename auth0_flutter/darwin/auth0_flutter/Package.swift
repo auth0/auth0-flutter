@@ -4,14 +4,14 @@ import PackageDescription
 let package = Package(
     name: "auth0_flutter",
     platforms: [
-        .iOS("14.0"),
-        .macOS("11.0"),
+        .iOS("15.0"),
+        .macOS("12.0"),
     ],
     products: [
         .library(name: "auth0-flutter", targets: ["auth0_flutter"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/auth0/Auth0.swift", exact: "3.0.2"),
+        .package(url: "https://github.com/auth0/Auth0.swift", exact: "3.2.0"),
         .package(url: "https://github.com/auth0/JWTDecode.swift", exact: "4.0.0"),
         .package(url: "https://github.com/auth0/SimpleKeychain", exact: "1.3.0"),
     ],

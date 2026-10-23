@@ -79,7 +79,7 @@ runs:
           echo "::error::FlutterGeneratedPluginSwiftPackage/Package.swift not found at expected path"
           exit 1
         fi
-        sed -i '' 's/\.iOS(".*")/.iOS("14.0")/g' "$PACKAGE_FILE"
+        sed -i '' 's/\.iOS(".*")/.iOS("15.0")/g' "$PACKAGE_FILE"
       shell: bash
 
     - name: Fix macOS minimum deployment target for SPM
@@ -90,7 +90,7 @@ runs:
           echo "::error::FlutterGeneratedPluginSwiftPackage/Package.swift not found at expected path"
           exit 1
         fi
-        sed -i '' 's/\.macOS(".*")/.macOS("11.0")/g' "$PACKAGE_FILE"
+        sed -i '' 's/\.macOS(".*")/.macOS("12.0")/g' "$PACKAGE_FILE"
       shell: bash
 
     - name: Set .env
