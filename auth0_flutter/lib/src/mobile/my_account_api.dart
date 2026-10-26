@@ -9,8 +9,8 @@ import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
 /// It is not intended for you to instantiate this class yourself, as an
 /// instance of it is available via `Auth0.myAccount(accessToken:)`.
 ///
-/// **Note:** This API is only supported on mobile platforms (Android/iOS).
-/// Web is not supported.
+/// **Note:** This API is supported on mobile platforms (Android/iOS). On the
+/// web, use `Auth0Web.myAccount(accessToken:)` instead.
 ///
 /// Usage example:
 ///

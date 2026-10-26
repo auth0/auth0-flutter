@@ -50,7 +50,7 @@
   - [Log in to an organization](#log-in-to-an-organization)
   - [Accept user invitations](#accept-user-invitations)
 - [📱 Bot detection](#-bot-detection)
-- [📱 My Account API](#-my-account-api)
+- [🌐📱 My Account API](#-my-account-api)
   - [Obtaining an access token for the My Account API](#obtaining-an-access-token-for-the-my-account-api)
   - [Listing and managing authentication methods](#listing-and-managing-authentication-methods)
   - [Enrolling a factor with OTP (phone, email, TOTP)](#enrolling-a-factor-with-otp-phone-email-totp)
@@ -58,6 +58,8 @@
   - [Enrolling a passkey](#enrolling-a-passkey)
   - [Using DPoP](#using-dpop)
   - [Errors](#errors-3)
+  - [My Account on the Web](#my-account-on-the-web)
+    - [Enrolling a passkey on the web](#enrolling-a-passkey-on-the-web)
 - [🌐📱 Multi-Factor Authentication (MFA)](#-multi-factor-authentication-mfa)
   - [Obtaining an `mfa_token`](#obtaining-an-mfa_token)
   - [Listing authenticators and challenging a factor](#listing-authenticators-and-challenging-a-factor)
@@ -1838,9 +1840,9 @@ try {
 
 [Go up ⤴](#examples)
 
-## 📱 My Account API
+## 🌐📱 My Account API
 
-The My Account API lets authenticated users manage their own multi-factor authentication (MFA) methods — enrolling, confirming, listing, updating, and deleting factors such as phone, email, TOTP, push notifications, and recovery codes. It is available on **mobile (Android/iOS) only**.
+The My Account API lets authenticated users manage their own multi-factor authentication (MFA) methods — enrolling, confirming, listing, updating, and deleting factors such as phone, email, TOTP, push notifications, and recovery codes. It is available on **mobile (Android/iOS)** and **Web**. The examples below use the mobile client; see [My Account on the Web](#my-account-on-the-web) for the web setup.
 
 > 💡 The My Account API requires [Multi-Resource Refresh Tokens (MRRT)](https://auth0.com/docs/secure/tokens/refresh-tokens/multi-resource-refresh-token) to be enabled for your tenant. Contact Auth0 support if MRRT is not yet available on your account.
 
@@ -1956,6 +1958,8 @@ A signed-in user can add a passkey as a new authentication method. Like passkey 
 2. **In your app**, present the platform authenticator using `challenge.authParamsPublicKey` to create a passkey, and map the resulting WebAuthn attestation into a `PasskeyCredential`. The SDK does **not** do this step — call the OS APIs directly (for example, [`ASAuthorizationController`](https://developer.apple.com/documentation/authenticationservices/asauthorizationcontroller) on iOS/macOS or [Credential Manager](https://developer.android.com/identity/sign-in/credential-manager) on Android, typically over your own platform channel).
 3. Submit the credential with `enrollPasskey` to complete the enrollment.
 
+On the web, create the passkey with the browser's WebAuthn API instead. See [Enrolling a passkey on the web](#enrolling-a-passkey-on-the-web).
+
 > ⚠️ Passkeys require a [custom domain](https://auth0.com/docs/customize/custom-domains) on your tenant and additional configuration. See [Sign up with passkeys](#sign-up-with-passkeys) for details.
 
 The access token must include the `create:me:authentication_methods` scope.
@@ -2007,6 +2011,156 @@ try {
 } on MyAccountException catch (e) {
   print('${e.code}: ${e.message} (${e.statusCode})');
 }
+```
+
+### My Account on the Web
+
+On the web, create the client with `Auth0Web.myAccount(accessToken:)`. It returns a `MyAccountWeb` with the same methods and parameters as the mobile client, so the [listing](#listing-and-managing-authentication-methods) and [enrollment](#enrolling-a-factor-with-otp-phone-email-totp) examples above work unchanged. It is backed by the `MyAccountApiClient` of [auth0-spa-js](https://github.com/auth0/auth0-spa-js) and requires **auth0-spa-js v2.21.1 or later** loaded on your page.
+
+To enroll a passkey on the web, see [Enrolling a passkey on the web](#enrolling-a-passkey-on-the-web).
+
+As on mobile, the recommended approach is to log in **once** with the `offline_access` scope, then exchange the refresh token for a My Account–scoped token. On the web, enable [Multi-Resource Refresh Tokens (MRRT)](https://auth0.com/docs/secure/tokens/refresh-tokens/multi-resource-refresh-token) in `onLoad` and use `getApiCredentials`:
+
+```dart
+final auth0Web = Auth0Web('YOUR_DOMAIN', 'YOUR_CLIENT_ID');
+
+// 1. Enable MRRT and request offline_access so a refresh token is available.
+await auth0Web.onLoad(
+  useMrrt: true,
+  scopes: {'openid', 'profile', 'email', 'offline_access'},
+);
+
+// 2. Once the user is logged in, exchange the refresh token for a token
+//    scoped to the My Account API.
+final myAccountCredentials = await auth0Web.getApiCredentials(
+  audience: 'https://YOUR_DOMAIN/me/',
+  scopes: {
+    'read:me:authentication_methods',
+    'create:me:authentication_methods',
+    'update:me:authentication_methods',
+    'delete:me:authentication_methods',
+    'read:me:factors',
+  },
+);
+
+// 3. Create the My Account client with the resulting access token.
+final myAccount = auth0Web.myAccount(
+  accessToken: myAccountCredentials.accessToken,
+);
+
+// Enroll an authenticator app, then confirm it with the code it shows.
+final challenge = await myAccount.enrollTotp();
+// Show challenge.totpUri as a QR code (or challenge.totpSecret for manual entry).
+final method = await myAccount.verifyOtp(
+  id: challenge.id,
+  authSession: challenge.authSession,
+  otp: '123456',
+  factorType: 'totp',
+);
+```
+
+> ⚠️ Auth0 only issues refresh tokens to browser-based code exchanges for **Single Page Applications** with [refresh token rotation](https://auth0.com/docs/secure/tokens/refresh-tokens/refresh-token-rotation) enabled. With other application types, `getApiCredentials` fails with `MISSING_REFRESH_TOKEN`. In that case, request the `https://YOUR_DOMAIN/me/` audience and My Account scopes at login instead, and use the access token returned by `credentials()`.
+
+> 💡 There is no `useDPoP` parameter on `Auth0Web.myAccount`: requests use DPoP when the `Auth0Web` instance was created with `useDPoP: true`. In that case, requests are signed with that instance's DPoP key, so the access token must also come from the same instance (for example, from `getApiCredentials` as shown above). The **Auth0 My Account API** in your tenant must also allow DPoP; otherwise Auth0 issues a Bearer token for it, and calls fail with a `MyAccountException` (`401`, "Missing or invalid DPoP cnf").
+
+Errors are reported as a `MyAccountException`, the same as on mobile. If the request could not be sent at all (for example, the browser is offline), `isNetworkError` and `isRetryable` are `true`.
+
+#### Enrolling a passkey on the web
+
+`enrollPasskeyChallenge` and `enrollPasskey` work the same as on mobile, using the same `PasskeyEnrollmentChallenge` and `PasskeyCredential` types. The difference is the middle step: instead of the OS passkey UI, your app creates the passkey with the browser's [WebAuthn API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API).
+
+`challenge.authParamsPublicKey` holds the WebAuthn creation options as JSON (base64url-encoded values), so:
+
+1. Decode it with `PublicKeyCredential.parseCreationOptionsFromJSON()`.
+2. Pass the result to `navigator.credentials.create()`.
+3. Convert the new credential with its `toJSON()` method, then `PasskeyCredential.fromMap`.
+
+> ⚠️ `parseCreationOptionsFromJSON()` and `toJSON()` require **Chrome or Edge 129+, Firefox 119+, or Safari 18.4+**. `package:web` doesn't provide bindings for them yet, so the example calls them through `dart:js_interop_unsafe`. To support older browsers, convert the values yourself instead; see [Supporting older browsers](#supporting-older-browsers) below. `navigator.credentials.create()` requires a user gesture, so start the flow from a click handler.
+
+> ⚠️ Passkey enrollment requires a [custom domain](https://auth0.com/docs/customize/custom-domains). Create `Auth0Web` with your custom domain; on the canonical `*.auth0.com` domain, `enrollPasskeyChallenge` fails with a `MyAccountException` (`400`, "please use a custom domain to execute this request"). The challenge's relying party ID (`rp.id`) is that custom domain, so the browser only allows `navigator.credentials.create()` on pages served from the custom domain or one of its subdomains. On any other origin, including `localhost`, it throws a `SecurityError` ("The relying party ID is not a registrable domain suffix of, nor equal to the current domain").
+
+The access token must include the `create:me:authentication_methods` scope.
+
+```dart
+import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
+
+import 'package:auth0_flutter/auth0_flutter_web.dart';
+import 'package:web/web.dart' as web;
+
+// 1. Request an enrollment challenge.
+final challenge = await myAccount.enrollPasskeyChallenge();
+
+// 2. Create the passkey in the browser.
+final publicKeyCredential = globalContext['PublicKeyCredential']! as JSObject;
+final publicKey = publicKeyCredential.callMethod<JSObject>(
+    'parseCreationOptionsFromJSON'.toJS,
+    challenge.authParamsPublicKey.jsify());
+final created = await web.window.navigator.credentials
+    .create(web.CredentialCreationOptions(
+        publicKey: publicKey as web.PublicKeyCredentialCreationOptions))
+    .toDart;
+final credentialJson =
+    (created! as JSObject).callMethod<JSObject>('toJSON'.toJS);
+
+// 3. Submit the credential to complete the enrollment.
+final method = await myAccount.enrollPasskey(
+  challenge: challenge,
+  credential: PasskeyCredential.fromMap(credentialJson.dartify()! as Map),
+);
+```
+
+##### Supporting older browsers
+
+Browsers without `parseCreationOptionsFromJSON()` and `toJSON()` still support `navigator.credentials.create()`. Decode the base64url values in `authParamsPublicKey` to bytes yourself, and encode the binary values of the new credential back to base64url:
+
+```dart
+import 'dart:convert';
+import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
+
+import 'package:auth0_flutter/auth0_flutter_web.dart';
+import 'package:web/web.dart' as web;
+
+JSUint8Array fromBase64Url(JSAny? value) =>
+    base64Url.decode(base64Url.normalize((value! as JSString).toDart)).toJS;
+String toBase64Url(JSArrayBuffer buffer) =>
+    base64Url.encode(buffer.toDart.asUint8List()).replaceAll('=', '');
+
+// 1. Request an enrollment challenge.
+final challenge = await myAccount.enrollPasskeyChallenge();
+
+// 2. Decode the binary values, then create the passkey in the browser.
+final publicKey = challenge.authParamsPublicKey.jsify()! as JSObject;
+publicKey['challenge'] = fromBase64Url(publicKey['challenge']);
+final user = publicKey['user']! as JSObject;
+user['id'] = fromBase64Url(user['id']);
+final excluded = publicKey['excludeCredentials'] as JSArray<JSObject>?;
+for (final credential in excluded?.toDart ?? <JSObject>[]) {
+  credential['id'] = fromBase64Url(credential['id']);
+}
+
+final created = await web.window.navigator.credentials
+    .create(web.CredentialCreationOptions(
+        publicKey: publicKey as web.PublicKeyCredentialCreationOptions))
+    .toDart;
+final passkey = created! as web.PublicKeyCredential;
+final response = passkey.response as web.AuthenticatorAttestationResponse;
+
+// 3. Encode the credential and submit it to complete the enrollment.
+final method = await myAccount.enrollPasskey(
+  challenge: challenge,
+  credential: PasskeyCredential(
+    id: passkey.id,
+    rawId: toBase64Url(passkey.rawId),
+    type: passkey.type,
+    authenticatorAttachment: passkey.authenticatorAttachment,
+    response: PasskeyAuthenticatorResponse(
+      clientDataJSON: toBase64Url(response.clientDataJSON),
+      attestationObject: toBase64Url(response.attestationObject),
+    ),
+  ),
+);
 ```
 
 ---

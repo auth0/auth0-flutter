@@ -406,6 +406,149 @@ extension type PasskeyApiClient._(JSObject _) implements JSObject {
 }
 
 @JS()
+@anonymous
+extension type FetcherConfig._(JSObject _) implements JSObject {
+  external JSFunction? get getAccessToken;
+  external String? get baseUrl;
+  external String? get dpopNonceId;
+
+  external factory FetcherConfig({
+    JSFunction? getAccessToken,
+    String? baseUrl,
+    String? dpopNonceId,
+  });
+}
+
+/// An opaque `Fetcher` created by `Auth0Client.createFetcher`, which attaches
+/// the access token (and a DPoP proof, when enabled) to each request.
+@JS()
+@anonymous
+extension type Fetcher._(JSObject _) implements JSObject {}
+
+@JS()
+@anonymous
+extension type MyAccountAuthenticationMethodJS._(JSObject _)
+    implements JSObject {
+  external String get id;
+  external String get type;
+  external String? get name;
+  external String? get phone_number;
+  external String? get email;
+  external String? get preferred_authentication_method;
+  external String? get created_at;
+  external String? get last_auth_at;
+  external bool? get confirmed;
+  external JSArray<JSString>? get usage;
+}
+
+@JS()
+@anonymous
+extension type MyAccountFactorJS._(JSObject _) implements JSObject {
+  external String get type;
+  external JSArray<JSString>? get usage;
+}
+
+@JS()
+@anonymous
+extension type MyAccountEnrollmentChallengeJS._(JSObject _)
+    implements JSObject {
+  external String get id;
+  external String get auth_session;
+  external String? get barcode_uri;
+  external String? get manual_input_code;
+  external String? get recovery_code;
+
+  /// The raw WebAuthn creation options for a passkey enrollment (base64url
+  /// strings, not yet decoded into a `PublicKeyCredentialCreationOptions`).
+  external JSObject? get authn_params_public_key;
+}
+
+@JS()
+@anonymous
+extension type MyAccountEnrollmentChallengeParams._(JSObject _)
+    implements JSObject {
+  external String get type;
+  external String? get phone_number;
+  external String? get preferred_authentication_method;
+  external String? get email;
+  external String? get connection;
+  external String? get identity_user_id;
+
+  external factory MyAccountEnrollmentChallengeParams({
+    required String type,
+    String? phone_number,
+    String? preferred_authentication_method,
+    String? email,
+    String? connection,
+    String? identity_user_id,
+  });
+}
+
+@JS()
+@anonymous
+extension type MyAccountEnrollmentVerifyParams._(JSObject _)
+    implements JSObject {
+  external String get type;
+  external String get location;
+  external String get auth_session;
+  external String? get otp_code;
+  external JSObject? get authn_response;
+
+  external factory MyAccountEnrollmentVerifyParams({
+    required String type,
+    required String location,
+    required String auth_session,
+    String? otp_code,
+    JSObject? authn_response,
+  });
+}
+
+@JS()
+@anonymous
+extension type MyAccountUpdateAuthenticationMethodParams._(JSObject _)
+    implements JSObject {
+  external String? get name;
+  external String? get preferred_authentication_method;
+
+  external factory MyAccountUpdateAuthenticationMethodParams({
+    String? name,
+    String? preferred_authentication_method,
+  });
+}
+
+/// The `MyAccountApiClient` class exported by auth0-spa-js (v2.21.0+).
+///
+/// The enrollment API used here (`location`-based `enrollmentVerify`) requires
+/// v2.21.1+; v2.21.0 shipped an earlier, `id`-based shape.
+///
+/// A new instance is created per call with a `Fetcher` that returns the
+/// caller-supplied access token, instead of using `Auth0Client.myAccount`
+/// (which always obtains its own token via `getTokenSilently`).
+@JS()
+extension type MyAccountApiClient._(JSObject _) implements JSObject {
+  external MyAccountApiClient(Fetcher fetcher, String apiBase);
+
+  external JSPromise<JSArray<MyAccountAuthenticationMethodJS>>
+      getAuthenticationMethods([String? type]);
+  external JSPromise<MyAccountAuthenticationMethodJS> getAuthenticationMethod(
+    String id,
+  );
+  external JSPromise<JSAny?> deleteAuthenticationMethod(String id);
+  external JSPromise<MyAccountAuthenticationMethodJS>
+      updateAuthenticationMethod(
+    String id,
+    MyAccountUpdateAuthenticationMethodParams data,
+  );
+  external JSPromise<JSArray<MyAccountFactorJS>> getFactors();
+  external JSPromise<MyAccountEnrollmentChallengeJS> enrollmentChallenge(
+    MyAccountEnrollmentChallengeParams options,
+  );
+  external JSPromise<MyAccountAuthenticationMethodJS> enrollmentVerify(
+    MyAccountEnrollmentVerifyParams options,
+  );
+}
+
+@JS()
 extension type Auth0Client._(JSObject _) implements JSObject {
   external Auth0Client(final Auth0ClientOptions options);
   external JSPromise<JSAny?> loginWithRedirect([
@@ -435,6 +578,10 @@ extension type Auth0Client._(JSObject _) implements JSObject {
   /// The passkey API client exposed by auth0-spa-js (v2.24.0+) for driving
   /// the granular passkey signup/login challenge and token exchange flow.
   external PasskeyApiClient get passkey;
+
+  /// Creates a `Fetcher` (auth0-spa-js v2.21.0+) that authenticates requests
+  /// using the given [config].
+  external Fetcher createFetcher([FetcherConfig? config]);
 }
 
 // TODO: remove this extension when updating to Dart 3.6.0
