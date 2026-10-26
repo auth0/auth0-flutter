@@ -1,6 +1,7 @@
 import 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart';
 import 'src/version.dart';
 import 'src/web/mfa_web.dart';
+import 'src/web/my_account_web.dart';
 
 export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interface.dart'
     show
@@ -14,9 +15,19 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         MfaChallenge,
         MfaEnrollmentChallenge,
         PhoneType,
-        WebPasskeyChallenge;
+        WebPasskeyChallenge,
+        AuthenticationMethod,
+        AuthenticationMethodType,
+        EnrollmentChallenge,
+        Factor,
+        MyAccountException,
+        PasskeyEnrollmentChallenge,
+        PasskeyCredential,
+        PasskeyAuthenticatorResponse,
+        MyAccountPasskeyAuthenticationMethod;
 
 export 'src/web/mfa_web.dart' show MfaWeb;
+export 'src/web/my_account_web.dart' show MyAccountWeb;
 
 /// Primary interface for interacting with Auth0 on web platforms.
 class Auth0Web {
@@ -473,6 +484,32 @@ class Auth0Web {
   /// final credentials = await mfa.verifyOtp(otp: '123456');
   /// ```
   MfaWeb mfa({required final String mfaToken}) => MfaWeb(mfaToken);
+
+  /// Creates a [MyAccountWeb] instance for managing the user's authentication
+  /// methods (MFA factors) via the
+  /// [My Account API](https://auth0.com/docs/manage-users/my-account-api).
+  ///
+  /// Requires an [accessToken] with the appropriate scopes and audience
+  /// `https://{domain}/me/`, which you can obtain with [getApiCredentials].
+  ///
+  /// **Note:** This is backed by the `auth0-spa-js` `MyAccountApiClient` and
+  /// requires `auth0-spa-js` v2.21.1 or later. When DPoP is enabled, the
+  /// [accessToken] must have been issued to this same [Auth0Web] instance.
+  ///
+  /// ## Usage example
+  ///
+  /// ```dart
+  /// final apiCredentials = await auth0Web.getApiCredentials(
+  ///   audience: 'https://DOMAIN/me/',
+  ///   scopes: {'read:me:authentication_methods'},
+  /// );
+  /// final myAccount = auth0Web.myAccount(
+  ///   accessToken: apiCredentials.accessToken,
+  /// );
+  /// final methods = await myAccount.getAuthenticationMethods();
+  /// ```
+  MyAccountWeb myAccount({required String accessToken}) =>
+      MyAccountWeb(accessToken);
 
   /// Requests a WebAuthn registration challenge for signing up a new user
   /// with a passkey.

@@ -379,6 +379,8 @@ Finally, in your `index.html` add the following `<script>` tag:
 
 > ⚠️ [Passkeys on the web](EXAMPLES.md#passkeys-on-the-web) (`passkeySignupChallenge`/`passkeyLoginChallenge`/`getTokenByPasskey`) require `auth0-spa-js` **2.24.0 or later**. The passkey API was added to the underlying SPA SDK in [2.24.0](https://github.com/auth0/auth0-spa-js/releases/tag/v2.24.0); older versions do not expose it.
 
+> ⚠️ The [My Account API on the web](EXAMPLES.md#my-account-on-the-web) (`Auth0Web.myAccount`) requires `auth0-spa-js` **2.21.1 or later**. The `MyAccountApiClient` was added to the underlying SPA SDK in [2.21.0](https://github.com/auth0/auth0-spa-js/releases/tag/v2.21.0), and enrollment verification was fixed in [2.21.1](https://github.com/auth0/auth0-spa-js/releases/tag/v2.21.1); with older versions, calls fail with a `MyAccountException`.
+
 ### Logging in
 
 #### 📱 Mobile/macOS
@@ -610,6 +612,7 @@ void dispose() {
 - [Handling credentials on the web](EXAMPLES.md#handling-credentials-on-the-web) - how to check and retrieve credentials on the web platform.
 - [Multi-Factor Authentication (MFA)](EXAMPLES.md#-multi-factor-authentication-mfa) - complete an MFA flow mid-login using an `mfa_token`. Backed by [auth0-spa-js](https://github.com/auth0/auth0-spa-js) and requires auth0-spa-js v2.21.0+ loaded on your page.
 - [Passkeys on the Web](EXAMPLES.md#passkeys-on-the-web) - authenticate with a passkey using the browser's WebAuthn API. Backed by [auth0-spa-js](https://github.com/auth0/auth0-spa-js) and requires auth0-spa-js v2.24.0+ loaded on your page.
+- [My Account on the Web](EXAMPLES.md#my-account-on-the-web) - let signed-in users list, enroll, update, and delete their MFA methods. Backed by [auth0-spa-js](https://github.com/auth0/auth0-spa-js) and requires auth0-spa-js v2.21.1+ loaded on your page.
 
 ## API reference
 
@@ -648,7 +651,7 @@ void dispose() {
 
 #### My Account API
 
-The My Account API allows users to manage their own multi-factor authentication (MFA) methods. Available on **mobile (Android/iOS) only**.
+The My Account API allows users to manage their own multi-factor authentication (MFA) methods. Available on **mobile (Android/iOS)** and **Web** (see `myAccount` in the Web API reference below and [My Account on the Web](EXAMPLES.md#my-account-on-the-web)).
 
 The My Account API requires an access token issued for the `https://{domain}/me/` audience. The recommended approach is to log in **once** with the `offline_access` scope, then exchange the stored refresh token for a My Account–scoped token — rather than launching a second interactive login. This mirrors the other Auth0 SDKs.
 
@@ -701,6 +704,7 @@ await myAccount.verifyOtp(
   id: challenge.id,
   authSession: challenge.authSession,
   otp: '123456',
+  factorType: 'phone', // 'phone' | 'email' | 'totp'
 );
 
 // Update an existing method (e.g. rename, change preferred channel)
@@ -724,6 +728,7 @@ final challenge = await myAccount.enrollPush();
 await myAccount.confirmEnrollment(
   id: challenge.id,
   authSession: challenge.authSession,
+  factorType: 'push-notification', // 'push-notification' | 'recovery-code'
 );
 ```
 
@@ -790,6 +795,7 @@ try {
 - [passkeySignupChallenge](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/passkeySignupChallenge.html) - request a WebAuthn registration challenge to sign up a new user with a passkey. Requires `auth0-spa-js` v2.24.0+.
 - [passkeyLoginChallenge](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/passkeyLoginChallenge.html) - request a WebAuthn assertion challenge to log in an existing user with a passkey. Requires `auth0-spa-js` v2.24.0+.
 - [getTokenByPasskey](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/getTokenByPasskey.html) - exchange a passkey credential from `navigator.credentials` for Auth0 tokens. Requires `auth0-spa-js` v2.24.0+.
+- [myAccount](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/Auth0Web/myAccount.html) - manage the signed-in user's authentication methods via the My Account API, with the same methods as mobile (including passkey enrollment). Requires `auth0-spa-js` v2.21.1+.
 
 ## Feedback
 

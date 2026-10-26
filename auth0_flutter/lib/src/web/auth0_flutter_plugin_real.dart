@@ -13,6 +13,7 @@ import 'extensions/credentials_options_extension.dart';
 import 'extensions/exchange_token_options_extension.dart';
 import 'extensions/logout_options.extension.dart';
 import 'extensions/mfa_extensions.dart';
+import 'extensions/my_account_extensions.dart';
 import 'extensions/passkey_extensions.dart';
 import 'extensions/web_exception_extensions.dart';
 import 'js_interop.dart' as interop;
@@ -47,7 +48,9 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
       final ClientOptions clientOptions, final UserAgent userAgent) async {
     clientProxy ??= Auth0FlutterWebClientProxy(
         client: interop.Auth0Client(JsInteropUtils.stripNulls(
-            clientOptions.toAuth0ClientOptions(userAgent))));
+            clientOptions.toAuth0ClientOptions(userAgent))),
+        myAccountApiBase: myAccountApiBaseFor(clientOptions.account.domain),
+        useDPoP: clientOptions.useDPoP);
 
     final search = urlSearchProvider();
 
@@ -368,6 +371,157 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
       return CredentialsExtension.fromWeb(result);
     } catch (e) {
       throw WebExceptionExtension.fromPasskeyError(
+          JSObject.fromInteropObject(e));
+    }
+  }
+
+  @override
+  Future<List<AuthenticationMethod>> getAuthenticationMethods(
+          String accessToken, AuthenticationMethodType? type) =>
+      _myAccountCall((client) async {
+        final result = await client.myAccountGetAuthenticationMethods(
+            accessToken, type?.toValue());
+        return result.toDart
+            .map(AuthenticationMethodWebExtension.fromWeb)
+            .toList();
+      });
+
+  @override
+  Future<AuthenticationMethod> getAuthenticationMethod(
+          String accessToken, String id) =>
+      _myAccountCall((client) async => AuthenticationMethodWebExtension.fromWeb(
+          await client.myAccountGetAuthenticationMethod(accessToken, id)));
+
+  @override
+  Future<void> deleteAuthenticationMethod(String accessToken, String id) =>
+      _myAccountCall((client) =>
+          client.myAccountDeleteAuthenticationMethod(accessToken, id));
+
+  @override
+  Future<AuthenticationMethod> updateAuthenticationMethod(String accessToken,
+          String id, String? name, PhoneType? preferredAuthenticationMethod) =>
+      _myAccountCall((client) async => AuthenticationMethodWebExtension.fromWeb(
+          await client.myAccountUpdateAuthenticationMethod(
+              accessToken,
+              id,
+              JsInteropUtils.stripNulls(
+                  interop.MyAccountUpdateAuthenticationMethodParams(
+                      name: name,
+                      preferred_authentication_method:
+                          preferredAuthenticationMethod?.toValue())))));
+
+  @override
+  Future<List<Factor>> getFactors(String accessToken) =>
+      _myAccountCall((client) async {
+        final result = await client.myAccountGetFactors(accessToken);
+        return result.toDart.map(FactorWebExtension.fromWeb).toList();
+      });
+
+  @override
+  Future<EnrollmentChallenge> enrollPhone(
+          String accessToken, String phoneNumber, PhoneType type) =>
+      _myAccountEnroll(
+          accessToken,
+          interop.MyAccountEnrollmentChallengeParams(
+              type: 'phone',
+              phone_number: phoneNumber,
+              preferred_authentication_method: type.toValue()));
+
+  @override
+  Future<EnrollmentChallenge> enrollEmail(String accessToken, String email) =>
+      _myAccountEnroll(
+          accessToken,
+          interop.MyAccountEnrollmentChallengeParams(
+              type: 'email', email: email));
+
+  @override
+  Future<EnrollmentChallenge> enrollTotp(String accessToken) =>
+      _myAccountEnroll(accessToken,
+          interop.MyAccountEnrollmentChallengeParams(type: 'totp'));
+
+  @override
+  Future<EnrollmentChallenge> enrollPush(
+          String accessToken) =>
+      _myAccountEnroll(
+          accessToken,
+          interop.MyAccountEnrollmentChallengeParams(
+              type: 'push-notification'));
+
+  @override
+  Future<EnrollmentChallenge> enrollRecoveryCode(String accessToken) =>
+      _myAccountEnroll(accessToken,
+          interop.MyAccountEnrollmentChallengeParams(type: 'recovery-code'));
+
+  @override
+  Future<AuthenticationMethod> verifyOtp(String accessToken, String id,
+          String authSession, String otp, String factorType) =>
+      _myAccountVerify(accessToken, id, authSession, factorType, otp);
+
+  @override
+  Future<AuthenticationMethod> confirmEnrollment(String accessToken, String id,
+          String authSession, String factorType) =>
+      _myAccountVerify(accessToken, id, authSession, factorType, null);
+
+  @override
+  Future<PasskeyEnrollmentChallenge> enrollPasskeyChallenge(
+          String accessToken, String? userIdentityId, String? connection) =>
+      _myAccountCall((client) async =>
+          PasskeyEnrollmentChallengeWebExtension.fromWeb(
+              await client.myAccountEnrollmentChallenge(
+                  accessToken,
+                  JsInteropUtils.stripNulls(
+                      interop.MyAccountEnrollmentChallengeParams(
+                          type: 'passkey',
+                          connection: connection,
+                          identity_user_id: userIdentityId)))));
+
+  @override
+  Future<MyAccountPasskeyAuthenticationMethod> enrollPasskey(String accessToken,
+          PasskeyEnrollmentChallenge challenge, PasskeyCredential credential) =>
+      _myAccountCall((client) async {
+        final params = interop.MyAccountEnrollmentVerifyParams(
+            type: 'passkey',
+            location: myAccountAuthenticationMethodLocation(
+                client.myAccountApiBase, challenge.authenticationMethodId),
+            auth_session: challenge.authSession,
+            authn_response: credential.toWebEnrollmentResponse());
+        return MyAccountPasskeyAuthenticationMethodWebExtension.fromWeb(
+            await client.myAccountEnrollmentVerify(
+                accessToken, JsInteropUtils.stripNulls(params)));
+      });
+
+  Future<EnrollmentChallenge> _myAccountEnroll(String accessToken,
+          interop.MyAccountEnrollmentChallengeParams params) =>
+      _myAccountCall((client) async => EnrollmentChallengeWebExtension.fromWeb(
+          await client.myAccountEnrollmentChallenge(
+              accessToken, JsInteropUtils.stripNulls(params))));
+
+  // The mobile `factorType` values (`phone`, `email`, `totp`,
+  // `push-notification`, `recovery-code`) are the enrollment types expected by
+  // auth0-spa-js, so they are passed through unchanged.
+  Future<AuthenticationMethod> _myAccountVerify(String accessToken, String id,
+          String authSession, String factorType, String? otp) =>
+      _myAccountCall((client) async => AuthenticationMethodWebExtension.fromWeb(
+          await client.myAccountEnrollmentVerify(
+              accessToken,
+              JsInteropUtils.stripNulls(interop.MyAccountEnrollmentVerifyParams(
+                  type: factorType,
+                  location: myAccountAuthenticationMethodLocation(
+                      client.myAccountApiBase, id),
+                  auth_session: authSession,
+                  otp_code: otp)))));
+
+  /// Runs a My Account [call] against the initialized client, converting any
+  /// failure into a [MyAccountException].
+  Future<T> _myAccountCall<T>(
+      Future<T> Function(Auth0FlutterWebClientProxy client) call) async {
+    final client = _ensureClient();
+    try {
+      return await call(client);
+    } on MyAccountException {
+      rethrow;
+    } catch (e) {
+      throw MyAccountExceptionWebExtension.fromJsObject(
           JSObject.fromInteropObject(e));
     }
   }
