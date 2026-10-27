@@ -95,4 +95,12 @@ abstract class CredentialsManagerPlatform extends PlatformInterface {
   ) {
     throw UnimplementedError('clearApiCredentials() has not been implemented');
   }
+
+  /// Removes all credentials and API credentials from the native storage,
+  /// including the underlying encryption keys.
+  ///
+  /// See `CredentialsManager.clearAll` for full documentation.
+  Future<void> clearAll(final CredentialsManagerRequest request) {
+    throw UnimplementedError('clearAll() has not been implemented');
+  }
 }

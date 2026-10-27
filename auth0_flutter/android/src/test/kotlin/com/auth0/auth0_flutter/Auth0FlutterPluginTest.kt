@@ -2,8 +2,10 @@ package com.auth0.auth0_flutter
 
 import android.app.Activity
 import android.content.Context
+import androidx.lifecycle.Lifecycle
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+import io.flutter.embedding.engine.plugins.lifecycle.HiddenLifecycleReference
 import io.flutter.plugin.common.MethodChannel
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -95,6 +97,8 @@ class Auth0FlutterPluginTest {
             val mockActivityBindings = mock<ActivityPluginBinding>()
             val mockActivity = mock<Activity>()
             `when`(mockActivityBindings.activity).thenReturn(mockActivity)
+            `when`(mockActivityBindings.lifecycle)
+                .thenReturn(HiddenLifecycleReference(mock<Lifecycle>()))
 
             plugin.onAttachedToActivity(mockActivityBindings)
 

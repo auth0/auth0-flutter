@@ -41,7 +41,7 @@ extension CredentialsManagerRenewMethodHandlerTests {
                                          tokenType: "tokenType",
                                          idToken: testIdToken,
                                          refreshToken: "refreshToken",
-                                         expiresIn: Date(),
+                                         expiresAt: Date(),
                                          scope: "scope")
            let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
            let expectation = self.expectation(description: "Produced credentials")
@@ -58,7 +58,7 @@ extension CredentialsManagerRenewMethodHandlerTests {
                                           tokenType: "tokenType",
                                           idToken: testIdToken,
                                           refreshToken: "refreshToken",
-                                          expiresIn: Date(timeIntervalSinceNow: 3600),
+                                          expiresAt: Date(timeIntervalSinceNow: 3600),
                                           scope: "scope")
             let data = try? NSKeyedArchiver.archivedData(withRootObject: credentials, requiringSecureCoding: true)
             let expectation = self.expectation(description: "Produced credentials")

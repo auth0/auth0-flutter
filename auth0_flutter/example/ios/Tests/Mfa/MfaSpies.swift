@@ -8,9 +8,9 @@ import FlutterMacOS
 
 // MARK: - Spy MFAClient
 
-class SpyMFAClient: MFAClient {
+class SpyMFAClient: MFAClient, @unchecked Sendable {
     var dpop: DPoP?
-    var telemetry = Telemetry()
+    var auth0ClientInfo = Auth0ClientInfo()
     var logger: Logger?
 
     // MARK: Stubbed results
@@ -40,7 +40,7 @@ class SpyMFAClient: MFAClient {
     var verifyResult: Result<Credentials, MFAVerifyError> = .success(
         Credentials(accessToken: "access-token", tokenType: "Bearer",
                     idToken: testIdToken, refreshToken: "refresh-token",
-                    expiresIn: Date(timeIntervalSinceNow: 3600), scope: "openid")
+                    expiresAt: Date(timeIntervalSinceNow: 3600), scope: "openid")
     )
 
     // MARK: Spied args
@@ -63,83 +63,59 @@ class SpyMFAClient: MFAClient {
     var verifyRecoveryCodeArg: String?
 
     func getAuthenticators(mfaToken: String,
-                           factorsAllowed: [String]) -> Request<[Authenticator], MfaListAuthenticatorsError> {
+                           factorsAllowed: [String]) -> any Requestable<[Authenticator], MfaListAuthenticatorsError> {
         calledGetAuthenticators = true
         getAuthenticatorsMfaTokenArg = mfaToken
         getAuthenticatorsFactorsArg = factorsAllowed
-        return request(getAuthenticatorsResult)
+        return MockRequest(result: getAuthenticatorsResult)
     }
 
-    func enroll(mfaToken: String, phoneNumber: String) -> Request<MFAEnrollmentChallenge, MfaEnrollmentError> {
+    func enroll(mfaToken: String, phoneNumber: String) -> any Requestable<MFAEnrollmentChallenge, MfaEnrollmentError> {
         calledEnrollPhone = true
         enrollPhoneNumberArg = phoneNumber
-        return request(enrollPhoneResult)
+        return MockRequest(result: enrollPhoneResult)
     }
 
-    func enroll(mfaToken: String, email: String) -> Request<MFAEnrollmentChallenge, MfaEnrollmentError> {
+    func enroll(mfaToken: String, email: String) -> any Requestable<MFAEnrollmentChallenge, MfaEnrollmentError> {
         calledEnrollEmail = true
         enrollEmailArg = email
-        return request(enrollEmailResult)
+        return MockRequest(result: enrollEmailResult)
     }
 
-    func enroll(mfaToken: String) -> Request<OTPMFAEnrollmentChallenge, MfaEnrollmentError> {
+    func enroll(mfaToken: String) -> any Requestable<OTPMFAEnrollmentChallenge, MfaEnrollmentError> {
         calledEnrollTotp = true
-        return request(enrollTotpResult)
+        return MockRequest(result: enrollTotpResult)
     }
 
-    func enroll(mfaToken: String) -> Request<PushMFAEnrollmentChallenge, MfaEnrollmentError> {
+    func enroll(mfaToken: String) -> any Requestable<PushMFAEnrollmentChallenge, MfaEnrollmentError> {
         calledEnrollPush = true
-        return request(enrollPushResult)
+        return MockRequest(result: enrollPushResult)
     }
 
     func challenge(with authenticatorId: String,
-                   mfaToken: String) -> Request<MFAChallenge, MfaChallengeError> {
+                   mfaToken: String) -> any Requestable<MFAChallenge, MfaChallengeError> {
         calledChallenge = true
         challengeAuthenticatorIdArg = authenticatorId
-        return request(challengeResult)
+        return MockRequest(result: challengeResult)
     }
 
     func verify(oobCode: String, bindingCode: String?,
-                mfaToken: String) -> Request<Credentials, MFAVerifyError> {
+                mfaToken: String) -> any TokenRequestable<Credentials, MFAVerifyError> {
         calledVerify = true
         verifyOobCodeArg = oobCode
         verifyBindingCodeArg = bindingCode
-        return request(verifyResult)
+        return MockTokenRequest(result: verifyResult)
     }
 
-    func verify(otp: String, mfaToken: String) -> Request<Credentials, MFAVerifyError> {
+    func verify(otp: String, mfaToken: String) -> any TokenRequestable<Credentials, MFAVerifyError> {
         calledVerify = true
         verifyOtpArg = otp
-        return request(verifyResult)
+        return MockTokenRequest(result: verifyResult)
     }
 
-    func verify(recoveryCode: String, mfaToken: String) -> Request<Credentials, MFAVerifyError> {
+    func verify(recoveryCode: String, mfaToken: String) -> any TokenRequestable<Credentials, MFAVerifyError> {
         calledVerify = true
         verifyRecoveryCodeArg = recoveryCode
-        return request(verifyResult)
-    }
-}
-
-// MARK: - Request Helper
-
-private extension SpyMFAClient {
-    func request<T>(_ result: Result<T, MfaListAuthenticatorsError>) -> Request<T, MfaListAuthenticatorsError> {
-        Request(session: mockURLSession, url: mockURL, method: "",
-                handle: { _, callback in callback(result) }, logger: nil, telemetry: telemetry)
-    }
-
-    func request<T>(_ result: Result<T, MfaEnrollmentError>) -> Request<T, MfaEnrollmentError> {
-        Request(session: mockURLSession, url: mockURL, method: "",
-                handle: { _, callback in callback(result) }, logger: nil, telemetry: telemetry)
-    }
-
-    func request<T>(_ result: Result<T, MfaChallengeError>) -> Request<T, MfaChallengeError> {
-        Request(session: mockURLSession, url: mockURL, method: "",
-                handle: { _, callback in callback(result) }, logger: nil, telemetry: telemetry)
-    }
-
-    func request<T>(_ result: Result<T, MFAVerifyError>) -> Request<T, MFAVerifyError> {
-        Request(session: mockURLSession, url: mockURL, method: "",
-                handle: { _, callback in callback(result) }, logger: nil, telemetry: telemetry)
+        return MockTokenRequest(result: verifyResult)
     }
 }

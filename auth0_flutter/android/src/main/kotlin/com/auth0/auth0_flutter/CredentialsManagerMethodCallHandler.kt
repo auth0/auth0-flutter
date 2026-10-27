@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import androidx.annotation.NonNull
 import androidx.fragment.app.FragmentActivity
-import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.storage.AuthenticationLevel
 import com.auth0.android.authentication.storage.LocalAuthenticationOptions
@@ -114,11 +113,11 @@ class CredentialsManagerMethodCallHandler(private val requestHandlers: List<Cred
 
                 val newManager = if (options != null) {
                     SecureCredentialsManager(
-                        apiClient, context, request.account, storage, activity as FragmentActivity, options
+                        apiClient, context, storage, activity as FragmentActivity, options
                     )
                 } else {
                     SecureCredentialsManager(
-                        apiClient, context, request.account, storage
+                        apiClient, context, storage
                     )
                 }
 

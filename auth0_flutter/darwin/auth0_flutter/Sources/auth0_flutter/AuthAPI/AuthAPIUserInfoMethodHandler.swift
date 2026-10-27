@@ -7,7 +7,7 @@ import FlutterMacOS
 #endif
 
 fileprivate extension MethodHandler {
-    func result(from userInfo: UserInfo) -> Any? {
+    func result(from userInfo: UserProfile) -> Any? {
         return userInfo.asDictionary()
     }
 }

@@ -50,10 +50,19 @@ class MfaGetAuthenticatorsMethodHandlerTests: XCTestCase {
 
     func testProducesAuthenticatorListOnSuccess() {
         let expectation = self.expectation(description: "Produced list")
-        spy.getAuthenticatorsResult = .success([
-            Authenticator(authenticatorType: "oob", oobChannel: "sms", id: "sms|dev_1",
-                          name: "+1******90", active: true, type: "sms")
-        ])
+        let json = """
+        {
+            "authenticator_type": "oob",
+            "oob_channel": "sms",
+            "id": "sms|dev_1",
+            "name": "+1******90",
+            "active": true,
+            "type": "sms"
+        }
+        """.data(using: .utf8)!
+        // swiftlint:disable:next force_try
+        let authenticator = try! JSONDecoder().decode(Authenticator.self, from: json)
+        spy.getAuthenticatorsResult = .success([authenticator])
         sut.handle(with: ["mfaToken": "mfa-token"]) { result in
             guard let list = result as? [[String: Any?]] else {
                 return XCTFail("Did not produce a list")

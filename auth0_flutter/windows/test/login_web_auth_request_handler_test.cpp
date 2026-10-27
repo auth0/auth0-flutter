@@ -272,6 +272,23 @@ TEST(LoginHandlerTest, SilentlyIgnoresUseDPoPTrue)
         << "useDPoP:true must not cause a bad_args error on Windows";
 }
 
+TEST(LoginHandlerTest, AcceptsTopLevelNonce)
+{
+    LoginWebAuthRequestHandler handler;
+
+    auto args = MinimalArgs();
+    args[flutter::EncodableValue("nonce")] =
+        flutter::EncodableValue(std::string("test-nonce"));
+
+    auto state = Invoke(args);
+
+    if (state->kind == CapturingMethodResult::Kind::Error)
+    {
+        EXPECT_NE(state->errorCode, "bad_args")
+            << "A top-level nonce must not cause a bad_args error";
+    }
+}
+
 TEST(LoginHandlerTest, DISABLED_AcceptsValidScopesListTopLevel)
 {
     LoginWebAuthRequestHandler handler;

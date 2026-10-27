@@ -10,6 +10,11 @@ struct CredentialsManagerClearMethodHandler: MethodHandler {
     let credentialsManager: CredentialsManager
 
     func handle(with arguments: [String: Any], callback: @escaping FlutterResult) {
-        callback(self.credentialsManager.clear())
+        do {
+            try self.credentialsManager.clear()
+            callback(true)
+        } catch {
+            callback(FlutterError(from: (error as? CredentialsManagerError) ?? .unknown))
+        }
     }
 }

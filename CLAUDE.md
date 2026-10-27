@@ -26,7 +26,7 @@ Apply these on every task in this repo — they keep changes correct, small, and
 - **Language:** Dart 3.5.0+ (Flutter 3.24.0+), plus native Kotlin (Android), Swift (iOS/macOS via SPM/CocoaPods), and C++ (Windows)
 - **Tech Stack:** Federated Flutter plugin — a Dart-facing package (`auth0_flutter`) and a platform-interface package (`auth0_flutter_platform_interface`) that dispatches to native implementations over `MethodChannel`; web uses `dart:js_interop` over `auth0-spa-js`
 - **Package Manager:** `pub` (Dart/Flutter); native deps via CocoaPods/SPM (Apple), Gradle (Android), vcpkg (Windows)
-- **Minimum Platform Version:** Android API 21+, iOS 14+, macOS 11+, Windows 10+
+- **Minimum Platform Version:** Android API 26+, iOS 15+, macOS 12+, Windows 10+
 - **Dependencies:** `auth0_flutter_platform_interface`, `plugin_platform_interface`, `web` · native: SimpleKeychain 1.3.0 (Apple) · test: `mockito`, `flutter_test`, `dart_jsonwebtoken` — see `auth0_flutter/pubspec.yaml` and `auth0_flutter_platform_interface/pubspec.yaml` for the full list
 
 ---

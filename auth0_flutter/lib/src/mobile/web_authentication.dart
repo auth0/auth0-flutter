@@ -24,9 +24,12 @@ class WebAuthentication {
   final UserAgent _userAgent;
   final String? _scheme;
   final CredentialsManager? _credentialsManager;
+  final bool _useDPoP;
 
   WebAuthentication(
-      this._account, this._userAgent, this._scheme, this._credentialsManager);
+      this._account, this._userAgent, this._scheme, this._credentialsManager,
+      {bool useDPoP = false})
+      : _useDPoP = useDPoP;
 
   /// Redirects the user to the [Auth0 Universal Login page](https://auth0.com/docs/authenticate/login/auth0-universal-login) for authentication. If successful, it returns
   /// a set of tokens, as well as the user's profile (constructed from ID token
@@ -74,8 +77,9 @@ class WebAuthentication {
   /// See [CustomTabsOptions] for available settings.
   /// * (android only): [allowedBrowsers] Defines an allowlist of browser
   /// packages. **Deprecated**: use [customTabsOptions] instead.
-  /// * [useDPoP] enables DPoP for enhanced token security.
-  /// See README for details. Defaults to `false`.
+  ///
+  /// DPoP-bound tokens are obtained when `useDPoP` is set to `true` on the
+  /// [Auth0] constructor.
   Future<Credentials> login(
       {final String? audience,
       final Set<String> scopes = const {
@@ -95,8 +99,7 @@ class WebAuthentication {
       final Map<String, String> parameters = const {},
       final IdTokenValidationConfig idTokenValidationConfig =
           const IdTokenValidationConfig(),
-      final SafariViewController? safariViewController,
-      final bool useDPoP = false}) async {
+      final SafariViewController? safariViewController}) async {
     final credentials = await Auth0FlutterWebAuthPlatform.instance.login(
         _createWebAuthRequest(WebAuthLoginOptions(
             audience: audience,
@@ -113,7 +116,7 @@ class WebAuthentication {
             customTabsOptions: customTabsOptions,
             // ignore: deprecated_member_use_from_same_package
             allowedBrowsers: allowedBrowsers,
-            useDPoP: useDPoP)));
+            useDPoP: _useDPoP)));
 
     await _credentialsManager?.storeCredentials(credentials);
 

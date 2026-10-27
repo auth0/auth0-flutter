@@ -11,6 +11,7 @@
     - [1. Configure a custom URL scheme](#1-configure-a-custom-url-scheme)
     - [2. Capture the callback URL](#2-capture-the-callback-url)
   - [Using Partial Custom Tabs (Android only)](#using-partial-custom-tabs-android-only)
+  - [Using Trusted Web Activity or Auth Tab (Android only)](#using-trusted-web-activity-or-auth-tab-android-only)
   - [Errors](#errors)
   - [Android: Custom schemes](#android-custom-schemes)
 - [🪟 Windows Web Authentication](#-windows-web-authentication)
@@ -262,6 +263,16 @@ final credentials =
     await auth0.webAuthentication().login(idTokenValidationConfig: config);
 ```
 
+You can also supply your own `nonce` to be validated against the `nonce` claim of the returned ID token. When omitted, the SDK generates and validates one automatically.
+
+```dart
+const config = IdTokenValidationConfig(nonce: 'a1b2c3d4');
+final credentials =
+    await auth0.webAuthentication().login(idTokenValidationConfig: config);
+```
+
+> ℹ️ `nonce` is not supported on Web, where it is always managed internally by auth0-spa-js.
+
 </details>
 
 <details>
@@ -395,6 +406,8 @@ The available options are:
 | `sideSheetBreakpoint` | `int?` | Screen width threshold (dp) to switch between bottom sheet and side sheet. Defaults to the browser's built-in value (typically 840dp). |
 | `backgroundInteractionEnabled` | `bool?` | Whether the user can interact with the app behind the partial tab. Defaults to `false`. |
 | `allowedBrowsers` | `List<String>` | Allowlist of browser packages for Custom Tabs. |
+| `useTrustedWebActivity` | `bool` | Launch the browser as a [Trusted Web Activity](#using-trusted-web-activity-or-auth-tab-android-only). Defaults to `false`. |
+| `useAuthTab` | `bool` | Launch the browser as an [Auth Tab](#using-trusted-web-activity-or-auth-tab-android-only). Defaults to `false`. |
 
 You can also use `customTabsOptions` during logout:
 
@@ -404,6 +417,35 @@ await auth0.webAuthentication().logout(
         initialHeight: 500,
         toolbarCornerRadius: 12,
     ));
+```
+
+### Using Trusted Web Activity or Auth Tab (Android only)
+
+Both launch mechanisms are opt-in and are enabled through `CustomTabsOptions`. They apply to `login` and `logout`, and are ignored on iOS, macOS, Windows and web.
+
+- **Auth Tab** uses the Chrome Custom Tabs Activity Result API instead of inferring the result from the activity lifecycle. This avoids spurious `isUserCancelledException` errors when Chrome is minimized. It requires Chrome 137+; older browsers fall back to a standard Custom Tab.
+- **Trusted Web Activity (TWA)** opens the Auth0 domain without browser UI. Your app must be verified for the domain through [Digital Asset Links](https://developer.android.com/training/app-links/verify-android-applinks).
+
+```dart
+// Auth Tab
+await auth0.webAuthentication().login(
+    customTabsOptions: const CustomTabsOptions(useAuthTab: true));
+
+// Trusted Web Activity
+await auth0.webAuthentication().logout(
+    customTabsOptions: const CustomTabsOptions(useTrustedWebActivity: true));
+```
+
+The two are mutually exclusive. If both are set to `true`, Trusted Web Activity takes precedence and Auth Tab is not used.
+
+#### Ephemeral sessions
+
+`useEphemeralSession: true` on `login` is honored by Auth Tab: the tab runs in an isolated session when the browser supports it (Chrome 136+ or a compatible browser), and otherwise falls back to a regular Auth Tab. It has no effect with Trusted Web Activity, because a TWA shares the user's browser profile by design and cannot run in an isolated session.
+
+```dart
+await auth0.webAuthentication().login(
+    useEphemeralSession: true,
+    customTabsOptions: const CustomTabsOptions(useAuthTab: true));
 ```
 
 ### Errors
@@ -418,15 +460,21 @@ try {
   final credentials = await auth0.webAuthentication().login();
   // ...
 } on WebAuthenticationException catch (e) {
-  if (e.isRetryable) {
+  if (e.isUserCancelledException) {
+    // User dismissed the browser — same on Android and iOS
+  } else if (e.isRetryable) {
     // Transient error (e.g. network issue) — safe to retry
+  } else if (e.code == 'dpop_jkt_mismatch') {
+    // DPoP thumbprint mismatch returned by the Auth0 server (Android + iOS)
   } else {
     print(e);
   }
 }
 ```
 
-The `isRetryable` property indicates whether the error is transient (e.g. a network outage) and the operation can be retried.
+- `isUserCancelledException` — `true` when the user dismisses the browser without completing login (Android + iOS).
+- `isRetryable` — `true` when the error is transient (e.g. a network outage) and the operation can be retried.
+- For server-returned errors (e.g. `dpop_jkt_mismatch`, `access_denied`), `exception.code` contains the raw server error code directly.
 
 </details>
 
@@ -710,6 +758,13 @@ final credentials = await auth0.credentialsManager.credentials();
 
 > 💡 You do not need to call `credentialsManager.storeCredentials()` afterward. The Credentials Manager automatically persists the renewed credentials.
 
+> 💡 By default, `credentials()` (and `getApiCredentials()`) requires the access token to have at least **60 seconds** of remaining lifetime, matching Auth0.Android v4 and Auth0.swift v3. If the token would expire sooner, it is refreshed using the refresh token. Pass `minTtl: 0` to return the stored token regardless of how soon it expires, or a larger value to require more headroom:
+>
+> ```dart
+> // Return the stored token even if it is about to expire.
+> final credentials = await auth0.credentialsManager.credentials(minTtl: 0);
+> ```
+
 ### 🕒 Session expiry from an upstream IdP
 
 > ⚠️ **Early Access:** upstream IdP session expiry (the IPSIE [`session_expiry`](https://openid.github.io/ipsie-openid-sl1/draft-openid-ipsie-sl1-profile.html) claim) is an **Early Access** feature. The API surface described here (the `sessionExpiry` field and the `isSessionExpired` error) may change before it is generally available.
@@ -791,6 +846,22 @@ await auth0.credentialsManager.clearApiCredentials(
 > ⚠️ **Prerequisites:** Multi-Resource Refresh Tokens must be enabled on your tenant, and the `offline_access` scope must have been requested at login so that a refresh token is available for the exchange.
 >
 > 💡 Stored API credentials are keyed by **both** audience and scope on every platform, so pass the same `scope` to `clearApiCredentials()` that you used when fetching them. The native APIs do not consistently report whether a matching entry existed, so this method returns `void` rather than a success flag.
+
+### Clear all credentials and encryption keys
+
+To wipe **everything** the Credentials Manager stores – all credentials, all cached API credentials, and the underlying encryption keys – use `clearAll()`:
+
+```dart
+await auth0.credentialsManager.clearAll();
+```
+
+> 💡 `clearAll()` is a more thorough wipe than `clearCredentials()` or `clearApiCredentials()`:
+>
+> - `clearCredentials()` removes the stored credential entries only. On iOS/macOS it deletes the credentials, DPoP thumbprint, and session-expiry entries; on Android it clears the credentials store.
+> - `clearApiCredentials(audience:)` removes only the cached API credentials for a specific audience (and scope), leaving the main credentials and the encryption keys intact.
+> - `clearAll()` additionally removes the cryptographic keys used to protect the stored data – on Android the crypto key pair and the DPoP key; on iOS/macOS every entry in the credentials store plus the DPoP key pair.
+>
+> ⚠️ Because `clearAll()` deletes *all* entries in the underlying store, avoid sharing the Credentials Manager's storage (for example, a custom `sharedPreferencesName` on Android or `storeKey`/`accessGroup` on iOS) with unrelated app data.
 
 ### Retrieve user profile
 
@@ -933,7 +1004,7 @@ try {
 
   print('Session Transfer Token: ${ssoCredentials.sessionTransferToken}');
   print('Token Type: ${ssoCredentials.tokenType}');
-  print('Expires In: ${ssoCredentials.expiresIn} seconds');
+  print('Expires At: ${ssoCredentials.expiresAt}');
 } on CredentialsManagerException catch (e) {
   print('Failed to get SSO credentials: ${e.message}');
 }
@@ -946,7 +1017,7 @@ try {
   final ssoCredentials = await auth0.api.ssoExchange(refreshToken: refreshToken);
 
   print('Session Transfer Token: ${ssoCredentials.sessionTransferToken}');
-  print('Expires In: ${ssoCredentials.expiresIn} seconds');
+  print('Expires At: ${ssoCredentials.expiresAt}');
 } on ApiException catch (e) {
   print('SSO Exchange failed: ${e.code} - ${e.message}');
 }
@@ -1513,7 +1584,7 @@ final credentials = await auth0.passwordless.loginWithOtp(
 </details>
 
 > [!NOTE]
-> If the user has MFA configured, `loginWithOtp` fails with an [`ApiException`](#errors-2) whose `isMultifactorRequired` is `true`. Continue the flow using the existing MFA APIs (`auth0.api.multifactorChallenge` / `auth0.api.loginWithOtp`).
+> If the user has MFA configured, `loginWithOtp` fails with an [`ApiException`](#errors-2) whose `isMultifactorRequired` is `true`. Continue the flow using the MFA APIs (`auth0.mfa.challenge` / `auth0.mfa.verifyOtp`).
 
 To receive DPoP-bound tokens from the token exchange when DPoP is enabled for your client, construct your `Auth0` instance with `useDPoP: true`:
 
@@ -1753,7 +1824,7 @@ try {
   if (e.isVerificationRequired) {
     final credentials = await auth0.webAuthentication().login(
         scopes: scopes,
-        useEphemeralSession: true, // Otherwise a session cookie will remain (iOS/macOS only)
+        useEphemeralSession: true, // Otherwise a session cookie will remain (see note below)
         parameters: {
           'connection': connection,
           'login_hint': email // So the user doesn't have to type it again
@@ -1762,6 +1833,8 @@ try {
   }
 }
 ```
+
+> 💡 `useEphemeralSession` starts a private browser session so no session cookie is persisted. It is honored on iOS/macOS and, as of v3, on Android. On Android it depends on the device browser supporting ephemeral (private) Custom Tabs sessions — if the browser doesn't support it, the login falls back to a normal Custom Tabs session and is **not** ephemeral.
 
 ---
 

@@ -21,7 +21,12 @@ struct ClearApiCredentialsMethodHandler: MethodHandler {
         }
         let scope = arguments[Argument.scope] as? String
 
-        callback(self.credentialsManager.clear(forAudience: audience, scope: scope))
+        do {
+            try self.credentialsManager.clear(forAudience: audience, scope: scope)
+            callback(nil)
+        } catch {
+            callback(FlutterError(from: (error as? CredentialsManagerError) ?? .unknown))
+        }
     }
 
 }

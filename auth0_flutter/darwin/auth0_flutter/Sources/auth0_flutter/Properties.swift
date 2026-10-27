@@ -12,7 +12,7 @@ enum CredentialsProperty: String, CaseIterable {
 enum SSOCredentialsProperty: String, CaseIterable {
     case sessionTransferToken
     case tokenType
-    case expiresIn
+    case expiresAt
     case idToken
     case refreshToken
 }

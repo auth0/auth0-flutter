@@ -1,6 +1,12 @@
 import XCTest
 import Auth0
 
+#if os(iOS)
+import Flutter
+#else
+import FlutterMacOS
+#endif
+
 @testable import auth0_flutter
 
 fileprivate typealias Argument = ClearApiCredentialsMethodHandler.Argument
@@ -37,21 +43,21 @@ extension ClearApiCredentialsMethodHandlerTests {
         XCTAssertTrue(spy.calledDeleteEntry)
     }
 
-    func testProducesTrueOnSuccess() {
-        let expectation = self.expectation(description: "Produced true")
+    func testProducesNilOnSuccess() {
+        let expectation = self.expectation(description: "Produced nil")
         spy.deleteEntryReturnValue = true
         sut.handle(with: arguments()) { result in
-            XCTAssertEqual(result as? Bool, true)
+            XCTAssertNil(result)
             expectation.fulfill()
         }
         wait(for: [expectation])
     }
 
-    func testProducesFalseOnFailure() {
-        let expectation = self.expectation(description: "Produced false")
+    func testProducesFlutterErrorOnFailure() {
+        let expectation = self.expectation(description: "Produced a FlutterError")
         spy.deleteEntryReturnValue = false
         sut.handle(with: arguments()) { result in
-            XCTAssertEqual(result as? Bool, false)
+            XCTAssertTrue(result is FlutterError)
             expectation.fulfill()
         }
         wait(for: [expectation])

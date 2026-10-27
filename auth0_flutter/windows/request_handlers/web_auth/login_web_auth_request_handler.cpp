@@ -285,6 +285,15 @@ namespace auth0_flutter
             }
         }
 
+        if (auto nonceIt = arguments->find(flutter::EncodableValue("nonce"));
+            nonceIt != arguments->end())
+        {
+            if (auto s = std::get_if<std::string>(&nonceIt->second); s && !s->empty())
+            {
+                nonce = *s;
+            }
+        }
+
         std::map<std::string, std::string> queryParams;
         if (parametersMap)
         {

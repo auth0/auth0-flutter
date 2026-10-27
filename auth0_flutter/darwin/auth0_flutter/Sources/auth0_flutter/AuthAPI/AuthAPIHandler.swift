@@ -16,8 +16,6 @@ typealias AuthAPIMethodHandlerProvider = (_ method: AuthAPIHandler.Method, _ cli
 public class AuthAPIHandler: NSObject, FlutterPlugin {
     enum Method: String, CaseIterable {
         case loginWithUsernameOrEmail = "auth#login"
-        case loginWithOTP = "auth#loginOtp"
-        case multifactorChallenge = "auth#multifactorChallenge"
         case signup = "auth#signUp"
         case userInfo = "auth#userInfo"
         case renew = "auth#renew"
@@ -67,8 +65,6 @@ public class AuthAPIHandler: NSObject, FlutterPlugin {
     var methodHandlerProvider: AuthAPIMethodHandlerProvider = { method, client in
         switch method {
         case .loginWithUsernameOrEmail: return AuthAPILoginUsernameOrEmailMethodHandler(client: client)
-        case .loginWithOTP: return AuthAPILoginWithOTPMethodHandler(client: client)
-        case .multifactorChallenge: return AuthAPIMultifactorChallengeMethodHandler(client: client)
         case .signup: return AuthAPISignupMethodHandler(client: client)
         case .userInfo: return AuthAPIUserInfoMethodHandler(client: client)
         case .renew: return AuthAPIRenewMethodHandler(client: client)

@@ -22,6 +22,8 @@ const String credentialsManagerGetApiCredentialsMethod =
     'credentialsManager#getApiCredentials';
 const String credentialsManagerClearApiCredentialsMethod =
     'credentialsManager#clearApiCredentials';
+const String credentialsManagerClearAllMethod =
+    'credentialsManager#clearAll';
 
 /// Method Channel implementation to communicate with the Native
 /// CredentialsManager
@@ -144,6 +146,19 @@ class MethodChannelCredentialsManager extends CredentialsManagerPlatform {
           request) async {
     await _invokeRequest<void, ClearApiCredentialsOptions>(
         method: credentialsManagerClearApiCredentialsMethod,
+        request: request,
+        throwOnNull: false);
+  }
+
+  /// Removes all credentials and API credentials from the native storage,
+  /// including the underlying encryption keys.
+  ///
+  /// Uses the [MethodChannel] to communicate with the native platforms.
+  /// See `CredentialsManager.clearAll` for full documentation.
+  @override
+  Future<void> clearAll(final CredentialsManagerRequest request) async {
+    await _invokeRequest<void, RequestOptions?>(
+        method: credentialsManagerClearAllMethod,
         request: request,
         throwOnNull: false);
   }

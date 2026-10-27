@@ -7,6 +7,7 @@ import com.auth0.android.provider.WebAuthProvider
 import com.auth0.android.result.Credentials
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.toMap
+import com.auth0.auth0_flutter.toWebAuthResult
 import com.auth0.auth0_flutter.utils.buildCustomTabsOptions
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
@@ -45,6 +46,17 @@ class LoginWebAuthRequestHandler(
 
         buildCustomTabsOptions(args)?.let { builder.withCustomTabsOptions(it) }
 
+        // The flags are forwarded as-is. TWA and Auth Tab are mutually
+        // exclusive and Auth0.Android resolves the conflict: if both are set,
+        // TWA wins.
+        val customTabsOptions = args["customTabsOptions"] as? Map<*, *>
+        if (customTabsOptions?.get("useTrustedWebActivity") == true) {
+            builder.withTrustedWebActivity()
+        }
+        if (customTabsOptions?.get("useAuthTab") == true) {
+            builder.withAuthTab()
+        }
+
         if (args["leeway"] is Int) {
             builder.withIdTokenVerificationLeeway(args["leeway"] as Int)
         }
@@ -57,6 +69,10 @@ class LoginWebAuthRequestHandler(
             builder.withIdTokenVerificationIssuer(args["issuer"] as String)
         }
 
+        if (args["nonce"] is String) {
+            builder.withNonce(args["nonce"] as String)
+        }
+
         if (args["scheme"] is String) {
             builder.withScheme(args["scheme"] as String)
         }
@@ -65,18 +81,17 @@ class LoginWebAuthRequestHandler(
             builder.withParameters(args["parameters"] as Map<String, *>)
         }
 
+        if (args["useEphemeralSession"] == true) {
+            builder.withEphemeralBrowsing()
+        }
+
         if (args["useDPoP"] == true) {
-            WebAuthProvider.useDPoP(context)
+            builder.useDPoP(context)
         }
 
         builder.start(context, object : Callback<Credentials, AuthenticationException> {
             override fun onFailure(exception: AuthenticationException) {
-                val details = mutableMapOf<String, Any>("_isRetryable" to exception.isNetworkError)
-                exception.cause?.let {
-                    details["cause"] = it.toString()
-                    details["causeStackTrace"] = it.stackTraceToString()
-                }
-                result.error(exception.getCode(), exception.getDescription(), details)
+                exception.toWebAuthResult(result)
             }
 
             override fun onSuccess(credentials: Credentials) {

@@ -51,5 +51,63 @@ void main() {
 
       expect(exception.isRetryable, false);
     });
+
+    test('isUserCancelledException returns true for USER_CANCELLED', () {
+      final exception = WebAuthenticationException.fromPlatformException(
+          PlatformException(
+              code: 'USER_CANCELLED',
+              message: '',
+              details: <String, dynamic>{}));
+      expect(exception.isUserCancelledException, true);
+    });
+
+    test('isUserCancelledException returns false for other codes', () {
+      final exception = WebAuthenticationException.fromPlatformException(
+          PlatformException(
+              code: 'a0.authentication_canceled',
+              message: '',
+              details: <String, dynamic>{}));
+      expect(exception.isUserCancelledException, false);
+    });
+
+    test('isAuthenticationFailed returns true for AUTHENTICATION_FAILED', () {
+      final exception = WebAuthenticationException.fromPlatformException(
+          PlatformException(
+              code: 'AUTHENTICATION_FAILED',
+              message: '',
+              details: <String, dynamic>{}));
+      expect(exception.isAuthenticationFailed, true);
+    });
+
+    test('isCodeExchangeFailed returns true for CODE_EXCHANGE_FAILED', () {
+      final exception = WebAuthenticationException.fromPlatformException(
+          PlatformException(
+              code: 'CODE_EXCHANGE_FAILED',
+              message: '',
+              details: <String, dynamic>{}));
+      expect(exception.isCodeExchangeFailed, true);
+    });
+
+    test(
+        'isIdTokenValidationFailed returns true for '
+        'ID_TOKEN_VALIDATION_FAILED', () {
+      final exception = WebAuthenticationException.fromPlatformException(
+          PlatformException(
+              code: 'ID_TOKEN_VALIDATION_FAILED',
+              message: '',
+              details: <String, dynamic>{}));
+      expect(exception.isIdTokenValidationFailed, true);
+    });
+
+    test(
+        'isTransactionActiveAlready returns true for '
+        'TRANSACTION_ACTIVE_ALREADY', () {
+      final exception = WebAuthenticationException.fromPlatformException(
+          PlatformException(
+              code: 'TRANSACTION_ACTIVE_ALREADY',
+              message: '',
+              details: <String, dynamic>{}));
+      expect(exception.isTransactionActiveAlready, true);
+    });
   });
 }

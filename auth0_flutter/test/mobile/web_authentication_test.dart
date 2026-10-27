@@ -409,6 +409,43 @@ void main() {
         expect(verificationResult.options.customTabsOptions, isNull);
       });
 
+      test('passes useTrustedWebActivity and useAuthTab to the platform',
+          () async {
+        when(mockedPlatform.login(any))
+            .thenAnswer((_) async => TestPlatform.loginResult);
+        when(mockedCMPlatform.saveCredentials(any))
+            .thenAnswer((_) async => true);
+
+        await Auth0('test-domain', 'test-clientId').webAuthentication().login(
+            customTabsOptions: const CustomTabsOptions(
+                useTrustedWebActivity: true, useAuthTab: true));
+
+        final verificationResult = verify(mockedPlatform.login(captureAny))
+            .captured
+            .single as WebAuthRequest<WebAuthLoginOptions>;
+        final options = verificationResult.options.customTabsOptions!;
+        expect(options.useTrustedWebActivity, true);
+        expect(options.useAuthTab, true);
+      });
+
+      test('useTrustedWebActivity and useAuthTab default to false', () async {
+        when(mockedPlatform.login(any))
+            .thenAnswer((_) async => TestPlatform.loginResult);
+        when(mockedCMPlatform.saveCredentials(any))
+            .thenAnswer((_) async => true);
+
+        await Auth0('test-domain', 'test-clientId')
+            .webAuthentication()
+            .login(customTabsOptions: const CustomTabsOptions());
+
+        final verificationResult = verify(mockedPlatform.login(captureAny))
+            .captured
+            .single as WebAuthRequest<WebAuthLoginOptions>;
+        final options = verificationResult.options.customTabsOptions!;
+        expect(options.useTrustedWebActivity, false);
+        expect(options.useAuthTab, false);
+      });
+
       test('passes customTabsOptions with side sheet options', () async {
         when(mockedPlatform.login(any))
             .thenAnswer((_) async => TestPlatform.loginResult);
@@ -484,9 +521,9 @@ void main() {
         when(mockedCMPlatform.saveCredentials(any))
             .thenAnswer((_) async => true);
 
-        await Auth0('test-domain', 'test-clientId')
+        await Auth0('test-domain', 'test-clientId', useDPoP: true)
             .webAuthentication()
-            .login(useDPoP: true);
+            .login();
 
         final verificationResult = verify(mockedPlatform.login(captureAny))
             .captured
@@ -533,11 +570,12 @@ void main() {
         when(mockedCMPlatform.saveCredentials(any))
             .thenAnswer((_) async => true);
 
-        await Auth0('test-domain', 'test-clientId').webAuthentication().login(
-            useDPoP: true,
-            audience: 'test-audience',
-            scopes: {'openid', 'profile', 'email'},
-            organizationId: 'org_123');
+        await Auth0('test-domain', 'test-clientId', useDPoP: true)
+            .webAuthentication()
+            .login(
+                audience: 'test-audience',
+                scopes: {'openid', 'profile', 'email'},
+                organizationId: 'org_123');
 
         final verificationResult = verify(mockedPlatform.login(captureAny))
             .captured
@@ -567,9 +605,10 @@ void main() {
         when(mockedCMPlatform.saveCredentials(any))
             .thenAnswer((_) async => true);
 
-        final result = await Auth0('test-domain', 'test-clientId')
-            .webAuthentication()
-            .login(useDPoP: true);
+        final result =
+            await Auth0('test-domain', 'test-clientId', useDPoP: true)
+                .webAuthentication()
+                .login();
 
         final verificationResult =
             verify(mockedCMPlatform.saveCredentials(captureAny)).captured.single
@@ -587,9 +626,9 @@ void main() {
         when(mockedPlatform.login(any))
             .thenAnswer((_) async => TestPlatform.loginResult);
 
-        await Auth0('test-domain', 'test-clientId')
+        await Auth0('test-domain', 'test-clientId', useDPoP: true)
             .webAuthentication(useCredentialsManager: false)
-            .login(useDPoP: true);
+            .login();
 
         verifyNever(mockedCMPlatform.saveCredentials(any));
       });
@@ -600,9 +639,9 @@ void main() {
         when(mockedCMPlatform.saveCredentials(any))
             .thenAnswer((_) async => true);
 
-        await Auth0('test-domain', 'test-clientId')
+        await Auth0('test-domain', 'test-clientId', useDPoP: true)
             .webAuthentication()
-            .login(useDPoP: true, redirectUrl: 'https://example.com/callback');
+            .login(redirectUrl: 'https://example.com/callback');
 
         final verificationResult = verify(mockedPlatform.login(captureAny))
             .captured
@@ -619,9 +658,9 @@ void main() {
         when(mockedCMPlatform.saveCredentials(any))
             .thenAnswer((_) async => true);
 
-        await Auth0('test-domain', 'test-clientId')
+        await Auth0('test-domain', 'test-clientId', useDPoP: true)
             .webAuthentication()
-            .login(useDPoP: true, useHTTPS: true);
+            .login(useHTTPS: true);
 
         final verificationResult = verify(mockedPlatform.login(captureAny))
             .captured
@@ -637,9 +676,9 @@ void main() {
         when(mockedCMPlatform.saveCredentials(any))
             .thenAnswer((_) async => true);
 
-        await Auth0('test-domain', 'test-clientId')
+        await Auth0('test-domain', 'test-clientId', useDPoP: true)
             .webAuthentication()
-            .login(useDPoP: true, useEphemeralSession: true);
+            .login(useEphemeralSession: true);
 
         final verificationResult = verify(mockedPlatform.login(captureAny))
             .captured
@@ -655,9 +694,9 @@ void main() {
         when(mockedCMPlatform.saveCredentials(any))
             .thenAnswer((_) async => true);
 
-        await Auth0('test-domain', 'test-clientId')
+        await Auth0('test-domain', 'test-clientId', useDPoP: true)
             .webAuthentication()
-            .login(useDPoP: true, parameters: {'custom_param': 'custom_value'});
+            .login(parameters: {'custom_param': 'custom_value'});
 
         final verificationResult = verify(mockedPlatform.login(captureAny))
             .captured
@@ -674,9 +713,9 @@ void main() {
         when(mockedCMPlatform.saveCredentials(any))
             .thenAnswer((_) async => true);
 
-        await Auth0('test-domain', 'test-clientId').webAuthentication().login(
-            useDPoP: true,
-            invitationUrl: 'https://example.com/invite?ticket=abc123');
+        await Auth0('test-domain', 'test-clientId', useDPoP: true)
+            .webAuthentication()
+            .login(invitationUrl: 'https://example.com/invite?ticket=abc123');
 
         final verificationResult = verify(mockedPlatform.login(captureAny))
             .captured
@@ -694,11 +733,12 @@ void main() {
         when(mockedCMPlatform.saveCredentials(any))
             .thenAnswer((_) async => true);
 
-        await Auth0('test-domain', 'test-clientId').webAuthentication().login(
-            useDPoP: true,
-            safariViewController: const SafariViewController(
-                presentationStyle:
-                    SafariViewControllerPresentationStyle.fullScreen));
+        await Auth0('test-domain', 'test-clientId', useDPoP: true)
+            .webAuthentication()
+            .login(
+                safariViewController: const SafariViewController(
+                    presentationStyle:
+                        SafariViewControllerPresentationStyle.fullScreen));
 
         final verificationResult = verify(mockedPlatform.login(captureAny))
             .captured
@@ -718,9 +758,11 @@ void main() {
         when(mockedCMPlatform.saveCredentials(any))
             .thenAnswer((_) async => true);
 
-        await Auth0('test-domain', 'test-clientId').webAuthentication().login(
-            useDPoP: true,
-            allowedBrowsers: ['com.android.chrome', 'org.mozilla.firefox']);
+        await Auth0('test-domain', 'test-clientId', useDPoP: true)
+            .webAuthentication()
+            .login(
+                // ignore: deprecated_member_use_from_same_package
+                allowedBrowsers: ['com.android.chrome', 'org.mozilla.firefox']);
 
         final verificationResult = verify(mockedPlatform.login(captureAny))
             .captured
@@ -737,9 +779,10 @@ void main() {
         final mockCm = MockCredentialsManager();
         when(mockCm.storeCredentials(any)).thenAnswer((_) async => true);
 
-        await Auth0('test-domain', 'test-clientId', credentialsManager: mockCm)
+        await Auth0('test-domain', 'test-clientId',
+                credentialsManager: mockCm, useDPoP: true)
             .webAuthentication()
-            .login(useDPoP: true);
+            .login();
 
         verifyNever(mockedCMPlatform.saveCredentials(any));
 
@@ -775,9 +818,10 @@ void main() {
         when(mockedCMPlatform.saveCredentials(any))
             .thenAnswer((_) async => true);
 
-        final result = await Auth0('test-domain', 'test-clientId')
-            .webAuthentication()
-            .login(useDPoP: true);
+        final result =
+            await Auth0('test-domain', 'test-clientId', useDPoP: true)
+                .webAuthentication()
+                .login();
 
         expect(result.accessToken, 'dpop-token');
         expect(result.tokenType, 'DPoP');
@@ -790,16 +834,16 @@ void main() {
         when(mockedCMPlatform.saveCredentials(any))
             .thenAnswer((_) async => true);
 
-        final result = await Auth0('test-domain', 'test-clientId')
-            .webAuthentication()
-            .login(
-                useDPoP: true,
-                audience: 'https://api.example.com',
-                scopes: {'openid', 'profile', 'email', 'offline_access'},
-                organizationId: 'org_123',
-                redirectUrl: 'myapp://callback',
-                useHTTPS: true,
-                parameters: {'connection': 'google-oauth2'});
+        final result =
+            await Auth0('test-domain', 'test-clientId', useDPoP: true)
+                .webAuthentication()
+                .login(
+                    audience: 'https://api.example.com',
+                    scopes: {'openid', 'profile', 'email', 'offline_access'},
+                    organizationId: 'org_123',
+                    redirectUrl: 'myapp://callback',
+                    useHTTPS: true,
+                    parameters: {'connection': 'google-oauth2'});
 
         final verificationResult = verify(mockedPlatform.login(captureAny))
             .captured
@@ -834,9 +878,9 @@ void main() {
         when(mockedCMPlatform.saveCredentials(any))
             .thenAnswer((_) async => true);
 
-        await Auth0('test-domain', 'test-clientId')
+        await Auth0('test-domain', 'test-clientId', useDPoP: true)
             .webAuthentication()
-            .login(useDPoP: true);
+            .login();
 
         final savedCredentials =
             verify(mockedCMPlatform.saveCredentials(captureAny)).captured.single

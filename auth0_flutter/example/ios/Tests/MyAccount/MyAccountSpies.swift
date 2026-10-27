@@ -23,7 +23,7 @@ private func makeAuthMethod(id: String = "test-id", type: String = "phone",
 class SpyMyAccountAuthenticationMethods: MyAccountAuthenticationMethods {
     var url: URL { mockURL }
     var token: String { "test-token" }
-    var telemetry = Telemetry()
+    var auth0ClientInfo = Auth0ClientInfo()
     var logger: Logger?
     var dpop: DPoP?
 
@@ -31,6 +31,20 @@ class SpyMyAccountAuthenticationMethods: MyAccountAuthenticationMethods {
     var getAuthMethodResult: Result<AuthenticationMethod, MyAccountError> = .success(makeAuthMethod())
     var deleteResult: Result<Void, MyAccountError> = .success(())
     var getFactorsResult: Result<[Factor], MyAccountError> = .success([])
+    var enrollPasswordResult: Result<PasswordEnrollmentChallenge, MyAccountError> = .success(
+        PasswordEnrollmentChallenge(
+            authenticationId: "password|test", authenticationSession: "session123",
+            policy: PasswordPolicy(
+                complexity: PasswordComplexity(minLength: 8, characterTypes: nil, characterTypeRule: nil,
+                                               identicalCharacters: nil, sequentialCharacters: nil,
+                                               maxLengthExceeded: nil),
+                profileData: PasswordProfileData(active: nil, blockedFields: nil),
+                history: PasswordHistory(active: nil, size: nil),
+                dictionary: PasswordDictionary(active: nil, default: nil)
+            )
+        )
+    )
+    var confirmPasswordResult: Result<AuthenticationMethod, MyAccountError> = .success(makeAuthMethod())
     var enrollPhoneResult: Result<PhoneEnrollmentChallenge, MyAccountError> = .success(
         PhoneEnrollmentChallenge(authenticationId: "phone|test", authenticationSession: "session123")
     )
@@ -88,7 +102,7 @@ class SpyMyAccountAuthenticationMethods: MyAccountAuthenticationMethods {
     var updateNameArg: String?
     var updatePreferredArg: PreferredAuthenticationMethod?
 
-    func getAuthenticationMethods(type: AuthenticationMethodType?) -> Request<[AuthenticationMethod], MyAccountError> {
+    func getAuthenticationMethods(type: AuthenticationMethodType?) -> any Requestable<[AuthenticationMethod], MyAccountError> {
         calledGetAuthMethods = true
         getAuthMethodsTypeArg = type
         return request(getAuthMethodsResult)
@@ -96,7 +110,7 @@ class SpyMyAccountAuthenticationMethods: MyAccountAuthenticationMethods {
 
     func updateAuthenticationMethod(by id: String,
                                     name: String?,
-                                    preferredAuthenticationMethod: PreferredAuthenticationMethod?) -> Request<AuthenticationMethod, MyAccountError> {
+                                    preferredAuthenticationMethod: PreferredAuthenticationMethod?) -> any Requestable<AuthenticationMethod, MyAccountError> {
         calledUpdate = true
         updateIdArg = id
         updateNameArg = name
@@ -104,54 +118,54 @@ class SpyMyAccountAuthenticationMethods: MyAccountAuthenticationMethods {
         return request(updateResult)
     }
 
-    func getAuthenticationMethod(by id: String) -> Request<AuthenticationMethod, MyAccountError> {
+    func getAuthenticationMethod(by id: String) -> any Requestable<AuthenticationMethod, MyAccountError> {
         calledGetAuthMethod = true
         getAuthMethodIdArg = id
         return request(getAuthMethodResult)
     }
 
-    func deleteAuthenticationMethod(by id: String) -> Request<Void, MyAccountError> {
+    func deleteAuthenticationMethod(by id: String) -> any Requestable<Void, MyAccountError> {
         calledDelete = true
         deleteIdArg = id
         return request(deleteResult)
     }
 
-    func getFactors() -> Request<[Factor], MyAccountError> {
+    func getFactors() -> any Requestable<[Factor], MyAccountError> {
         calledGetFactors = true
         return request(getFactorsResult)
     }
 
     func enrollPhone(phoneNumber: String,
-                     preferredAuthenticationMethod: PreferredAuthenticationMethod?) -> Request<PhoneEnrollmentChallenge, MyAccountError> {
+                     preferredAuthenticationMethod: PreferredAuthenticationMethod?) -> any Requestable<PhoneEnrollmentChallenge, MyAccountError> {
         calledEnrollPhone = true
         enrollPhoneNumberArg = phoneNumber
         enrollPhoneMethodArg = preferredAuthenticationMethod
         return request(enrollPhoneResult)
     }
 
-    func enrollEmail(emailAddress: String) -> Request<EmailEnrollmentChallenge, MyAccountError> {
+    func enrollEmail(emailAddress: String) -> any Requestable<EmailEnrollmentChallenge, MyAccountError> {
         calledEnrollEmail = true
         enrollEmailArg = emailAddress
         return request(enrollEmailResult)
     }
 
-    func enrollTOTP() -> Request<TOTPEnrollmentChallenge, MyAccountError> {
+    func enrollTOTP() -> any Requestable<TOTPEnrollmentChallenge, MyAccountError> {
         calledEnrollTOTP = true
         return request(enrollTOTPResult)
     }
 
-    func enrollPushNotification() -> Request<PushEnrollmentChallenge, MyAccountError> {
+    func enrollPushNotification() -> any Requestable<PushEnrollmentChallenge, MyAccountError> {
         calledEnrollPush = true
         return request(enrollPushResult)
     }
 
-    func enrollRecoveryCode() -> Request<RecoveryCodeEnrollmentChallenge, MyAccountError> {
+    func enrollRecoveryCode() -> any Requestable<RecoveryCodeEnrollmentChallenge, MyAccountError> {
         calledEnrollRecovery = true
         return request(enrollRecoveryResult)
     }
 
     func confirmPhoneEnrollment(id: String, authSession: String,
-                                otpCode: String) -> Request<AuthenticationMethod, MyAccountError> {
+                                otpCode: String) -> any Requestable<AuthenticationMethod, MyAccountError> {
         calledConfirm = true
         confirmIdArg = id
         confirmAuthSessionArg = authSession
@@ -162,7 +176,7 @@ class SpyMyAccountAuthenticationMethods: MyAccountAuthenticationMethods {
 
     @available(iOS 16.6, macOS 13.5, visionOS 1.0, *)
     func passkeyEnrollmentChallenge(userIdentityId: String?,
-                                    connection: String?) -> Request<PasskeyEnrollmentChallenge, MyAccountError> {
+                                    connection: String?) -> any Requestable<PasskeyEnrollmentChallenge, MyAccountError> {
         calledEnrollPasskeyChallenge = true
         enrollPasskeyChallengeUserIdentityIdArg = userIdentityId
         enrollPasskeyChallengeConnectionArg = connection
@@ -182,7 +196,7 @@ class SpyMyAccountAuthenticationMethods: MyAccountAuthenticationMethods {
 
     @available(iOS 16.6, macOS 13.5, visionOS 1.0, *)
     func enroll(passkey: NewPasskey,
-                challenge: PasskeyEnrollmentChallenge) -> Request<PasskeyAuthenticationMethod, MyAccountError> {
+                challenge: PasskeyEnrollmentChallenge) -> any Requestable<PasskeyAuthenticationMethod, MyAccountError> {
         calledEnrollPasskey = true
         if enrollPasskeyShouldFail {
             return request(.failure(MyAccountError(info: [:], statusCode: 401)))
@@ -208,7 +222,7 @@ class SpyMyAccountAuthenticationMethods: MyAccountAuthenticationMethods {
     }
 
     func confirmTOTPEnrollment(id: String, authSession: String,
-                               otpCode: String) -> Request<AuthenticationMethod, MyAccountError> {
+                               otpCode: String) -> any Requestable<AuthenticationMethod, MyAccountError> {
         calledConfirm = true
         confirmIdArg = id
         confirmAuthSessionArg = authSession
@@ -218,7 +232,7 @@ class SpyMyAccountAuthenticationMethods: MyAccountAuthenticationMethods {
     }
 
     func confirmEmailEnrollment(id: String, authSession: String,
-                                otpCode: String) -> Request<AuthenticationMethod, MyAccountError> {
+                                otpCode: String) -> any Requestable<AuthenticationMethod, MyAccountError> {
         calledConfirm = true
         confirmIdArg = id
         confirmAuthSessionArg = authSession
@@ -228,7 +242,7 @@ class SpyMyAccountAuthenticationMethods: MyAccountAuthenticationMethods {
     }
 
     func confirmPushNotificationEnrollment(id: String,
-                                           authSession: String) -> Request<AuthenticationMethod, MyAccountError> {
+                                           authSession: String) -> any Requestable<AuthenticationMethod, MyAccountError> {
         calledConfirm = true
         confirmIdArg = id
         confirmAuthSessionArg = authSession
@@ -237,12 +251,26 @@ class SpyMyAccountAuthenticationMethods: MyAccountAuthenticationMethods {
     }
 
     func confirmRecoveryCodeEnrollment(id: String,
-                                       authSession: String) -> Request<AuthenticationMethod, MyAccountError> {
+                                       authSession: String) -> any Requestable<AuthenticationMethod, MyAccountError> {
         calledConfirm = true
         confirmIdArg = id
         confirmAuthSessionArg = authSession
         confirmEnrollmentFactorType = "recovery-code"
         return request(confirmResult)
+    }
+
+    func enrollPassword(userIdentityId: String?,
+                        connection: String?) -> any Requestable<PasswordEnrollmentChallenge, MyAccountError> {
+        return request(enrollPasswordResult)
+    }
+
+    func confirmPasswordEnrollment(id: String, authSession: String,
+                                   newPassword: String) -> any Requestable<AuthenticationMethod, MyAccountError> {
+        calledConfirm = true
+        confirmIdArg = id
+        confirmAuthSessionArg = authSession
+        confirmEnrollmentFactorType = "password"
+        return request(confirmPasswordResult)
     }
 }
 
@@ -252,7 +280,7 @@ class SpyMyAccount: MyAccount {
     static var apiVersion: String { "v1" }
     var url: URL { mockURL }
     var token: String { "test-token" }
-    var telemetry = Telemetry()
+    var auth0ClientInfo = Auth0ClientInfo()
     var logger: Logger?
     var dpop: DPoP?
 
@@ -267,12 +295,7 @@ class SpyMyAccount: MyAccount {
 // MARK: - Request Helper
 
 private extension SpyMyAccountAuthenticationMethods {
-    func request<T>(_ result: Result<T, MyAccountError>) -> Request<T, MyAccountError> {
-        Request(session: mockURLSession,
-                url: url,
-                method: "",
-                handle: { _, callback in callback(result) },
-                logger: nil,
-                telemetry: telemetry)
+    func request<T>(_ result: Result<T, MyAccountError>) -> any Requestable<T, MyAccountError> {
+        MockRequest(result: result)
     }
 }

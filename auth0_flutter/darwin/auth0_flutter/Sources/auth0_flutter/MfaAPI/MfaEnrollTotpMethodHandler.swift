@@ -14,7 +14,7 @@ struct MfaEnrollTotpMethodHandler: MethodHandler {
             return callback(FlutterError(from: .requiredArgumentMissing("mfaToken")))
         }
 
-        let request: Request<OTPMFAEnrollmentChallenge, MfaEnrollmentError> =
+        let request: any Requestable<OTPMFAEnrollmentChallenge, MfaEnrollmentError> =
             client.enroll(mfaToken: mfaToken)
         request.start {
             switch $0 {

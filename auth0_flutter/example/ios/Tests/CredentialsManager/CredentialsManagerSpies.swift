@@ -3,22 +3,20 @@ import Auth0
 
 // MARK: - Auth0.swift Spies
 
+struct SpyCredentialsStorageError: Error {}
+
 class SpyCredentialsStorage: CredentialsStorage {
     var setEntryReturnValue = true
     var deleteEntryReturnValue = true
+    var deleteAllEntriesReturnValue = true
 
     var calledGetEntry = false
     var calledSetEntry = false
     var calledDeleteEntry = false
+    var calledDeleteAllEntries = false
 
-    // Backing store keyed by entry name so the credentials blob and the pinned
-    // `session_expiry` value (which the manager stores under separate keys) can
-    // coexist. A single-slot spy would let the second write clobber the first.
     private var storage: [String: Data] = [:]
 
-    /// Convenience for tests that set/read the credentials blob without caring
-    /// about the key, preserving the previous single-value spy API. Setting
-    /// `nil` clears all entries (used to simulate "no credentials stored").
     var getEntryReturnValue: Data? {
         get { self.storage["_default"] ?? self.storage.values.first }
         set {
@@ -30,22 +28,29 @@ class SpyCredentialsStorage: CredentialsStorage {
         }
     }
 
-    func getEntry(forKey key: String) -> Data? {
+    func getEntry(forKey key: String) throws -> Data {
         self.calledGetEntry = true
-        // Fall back to the `_default` slot for tests that seed a value via
-        // `getEntryReturnValue` without going through `setEntry`.
-        return self.storage[key] ?? self.storage["_default"]
+        guard let value = self.storage[key] ?? self.storage["_default"] else {
+            throw SpyCredentialsStorageError()
+        }
+        return value
     }
 
-    func setEntry(_ data: Data, forKey key: String) -> Bool {
+    func setEntry(_ data: Data, forKey key: String) throws {
         self.calledSetEntry = true
         self.storage[key] = data
-        return self.setEntryReturnValue
+        if !self.setEntryReturnValue { throw SpyCredentialsStorageError() }
     }
 
-    func deleteEntry(forKey key: String) -> Bool {
+    func deleteEntry(forKey key: String) throws {
         self.calledDeleteEntry = true
         self.storage.removeValue(forKey: key)
-        return self.deleteEntryReturnValue
+        if !self.deleteEntryReturnValue { throw SpyCredentialsStorageError() }
+    }
+
+    func deleteAllEntries() throws {
+        self.calledDeleteAllEntries = true
+        self.storage.removeAll()
+        if !self.deleteAllEntriesReturnValue { throw SpyCredentialsStorageError() }
     }
 }

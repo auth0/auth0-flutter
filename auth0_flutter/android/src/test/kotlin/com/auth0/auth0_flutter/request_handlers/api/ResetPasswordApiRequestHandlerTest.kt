@@ -81,7 +81,7 @@ class ResetPasswordApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        doReturn(mockBuilder).`when`(mockApi).resetPassword(any(), any())
+        doReturn(mockBuilder).`when`(mockApi).resetPassword(any(), any(), anyOrNull())
 
         handler.handle(
             mockApi,
@@ -89,7 +89,7 @@ class ResetPasswordApiRequestHandlerTest {
             mockResult
         )
 
-        verify(mockApi).resetPassword("test-email", "test-connection")
+        verify(mockApi).resetPassword("test-email", "test-connection", null)
         verify(mockBuilder).start(any())
     }
 
@@ -107,7 +107,7 @@ class ResetPasswordApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        doReturn(mockBuilder).`when`(mockApi).resetPassword(any(), any())
+        doReturn(mockBuilder).`when`(mockApi).resetPassword(any(), any(), anyOrNull())
         doReturn(mockBuilder).`when`(mockBuilder).addParameters(any())
 
         handler.handle(
@@ -137,7 +137,7 @@ class ResetPasswordApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        doReturn(mockBuilder).`when`(mockApi).resetPassword(any(), any())
+        doReturn(mockBuilder).`when`(mockApi).resetPassword(any(), any(), anyOrNull())
         doReturn(mockBuilder).`when`(mockBuilder).addParameters(any())
 
         handler.handle(
@@ -164,7 +164,7 @@ class ResetPasswordApiRequestHandlerTest {
         val exception =
             AuthenticationException(code = "test-code", description = "test-description")
 
-        doReturn(mockBuilder).`when`(mockApi).resetPassword(any(), any())
+        doReturn(mockBuilder).`when`(mockApi).resetPassword(any(), any(), anyOrNull())
         doReturn(mockBuilder).`when`(mockBuilder).addParameters(any())
         doAnswer {
             val ob = it.getArgument<Callback<Void?, AuthenticationException>>(0)
@@ -193,7 +193,7 @@ class ResetPasswordApiRequestHandlerTest {
         val mockResult = mock<Result>()
         val request = MethodCallRequest(account = mockAccount, options)
 
-        doReturn(mockBuilder).`when`(mockApi).resetPassword(any(), any())
+        doReturn(mockBuilder).`when`(mockApi).resetPassword(any(), any(), anyOrNull())
         doReturn(mockBuilder).`when`(mockBuilder).addParameters(any())
         doAnswer {
             val ob = it.getArgument<Callback<Void?, AuthenticationException>>(0)

@@ -69,6 +69,7 @@ class LoginWebAuthRequestHandlerTest {
             verify(builder, never()).withIdTokenVerificationLeeway(any())
             verify(builder, never()).withMaxAge(any())
             verify(builder, never()).withIdTokenVerificationIssuer(any())
+            verify(builder, never()).withNonce(any())
             verify(builder, never()).withScheme(any())
             verify(builder, never()).withParameters(any())
         }
@@ -276,6 +277,26 @@ class LoginWebAuthRequestHandlerTest {
     }
 
     @Test
+    fun `handler should set the nonce on the SDK when specified`() {
+        val args = hashMapOf<String, Any?>(
+            "nonce" to "test-nonce"
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withNonce("test-nonce")
+        }
+    }
+
+    @Test
+    fun `handler should not set the nonce on the SDK when not specified`() {
+        val args = hashMapOf<String, Any?>()
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder, never()).withNonce(anyOrNull())
+        }
+    }
+
+    @Test
     fun `handler should set the scheme on the SDK when specified`() {
         val args = hashMapOf<String, Any?>(
             "scheme" to "demo"
@@ -318,6 +339,28 @@ class LoginWebAuthRequestHandlerTest {
     }
 
     @Test
+    fun `handler should enable ephemeral browsing when useEphemeralSession is true`() {
+        val args = hashMapOf<String, Any?>(
+            "useEphemeralSession" to true
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withEphemeralBrowsing()
+        }
+    }
+
+    @Test
+    fun `handler should not enable ephemeral browsing when useEphemeralSession is false or absent`() {
+        runRequestHandler(hashMapOf<String, Any?>("useEphemeralSession" to false)) { _, builder ->
+            verify(builder, never()).withEphemeralBrowsing()
+        }
+
+        runRequestHandler(hashMapOf<String, Any?>()) { _, builder ->
+            verify(builder, never()).withEphemeralBrowsing()
+        }
+    }
+
+    @Test
     fun `returns the error when the builder fails`() {
         val builder = mock<WebAuthProvider.Builder>()
         val mockResult = mock<Result>()
@@ -336,6 +379,28 @@ class LoginWebAuthRequestHandlerTest {
         handler.handle(mock(), mockRequest, mockResult)
 
         verify(mockResult).error(eq("code"), eq("description"), eq(mapOf("_isRetryable" to false)))
+    }
+
+    @Test
+    fun `returns USER_CANCELLED when the user cancels`() {
+        val builder = mock<WebAuthProvider.Builder>()
+        val mockResult = mock<Result>()
+        val exception = mock<AuthenticationException>()
+        whenever(exception.isCanceled).thenReturn(true)
+        whenever(exception.getDescription()).thenReturn("User cancelled")
+        whenever(exception.isNetworkError).thenReturn(false)
+
+        doAnswer { invocation ->
+            val cb = invocation.getArgument<Callback<Credentials, AuthenticationException>>(1)
+            cb.onFailure(exception)
+        }.`when`(builder).start(any(), any())
+
+        val handler = LoginWebAuthRequestHandler { _ -> builder }
+        val mockAccount = mock<Auth0>()
+        val mockRequest = MethodCallRequest(mockAccount, hashMapOf<String, Any>())
+        handler.handle(mock(), mockRequest, mockResult)
+
+        verify(mockResult).error(eq("USER_CANCELLED"), any(), any())
     }
 
     @Test
@@ -492,4 +557,69 @@ class LoginWebAuthRequestHandlerTest {
         }
     }
 
+    @Test
+    fun `handler calls withTrustedWebActivity when useTrustedWebActivity is true`() {
+        val args = hashMapOf<String, Any?>(
+            "customTabsOptions" to mapOf(
+                "useTrustedWebActivity" to true
+            )
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withTrustedWebActivity()
+            verify(builder, never()).withAuthTab()
+        }
+    }
+
+    @Test
+    fun `handler calls withAuthTab when useAuthTab is true`() {
+        val args = hashMapOf<String, Any?>(
+            "customTabsOptions" to mapOf(
+                "useAuthTab" to true
+            )
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withAuthTab()
+            verify(builder, never()).withTrustedWebActivity()
+        }
+    }
+
+    @Test
+    fun `handler calls both withTrustedWebActivity and withAuthTab when both flags are true`() {
+        val args = hashMapOf<String, Any?>(
+            "customTabsOptions" to mapOf(
+                "useTrustedWebActivity" to true,
+                "useAuthTab" to true
+            )
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder).withTrustedWebActivity()
+            verify(builder).withAuthTab()
+        }
+    }
+
+    @Test
+    fun `handler does not call either when both flags are false`() {
+        val args = hashMapOf<String, Any?>(
+            "customTabsOptions" to mapOf(
+                "useTrustedWebActivity" to false,
+                "useAuthTab" to false
+            )
+        )
+
+        runRequestHandler(args) { _, builder ->
+            verify(builder, never()).withTrustedWebActivity()
+            verify(builder, never()).withAuthTab()
+        }
+    }
+
+    @Test
+    fun `handler does not call withTrustedWebActivity or withAuthTab when customTabsOptions is absent`() {
+        runRequestHandler(hashMapOf()) { _, builder ->
+            verify(builder, never()).withTrustedWebActivity()
+            verify(builder, never()).withAuthTab()
+        }
+    }
 }

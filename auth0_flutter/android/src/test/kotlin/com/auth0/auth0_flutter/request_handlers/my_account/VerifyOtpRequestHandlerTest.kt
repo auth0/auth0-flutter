@@ -6,6 +6,7 @@ import com.auth0.android.myaccount.MyAccountAPIClient
 import com.auth0.android.myaccount.MyAccountException
 import com.auth0.android.request.Request
 import com.auth0.android.result.AuthenticationMethod
+import com.auth0.android.result.PhoneAuthenticationMethod
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodChannel.Result
 import org.hamcrest.CoreMatchers.equalTo
@@ -53,10 +54,16 @@ class VerifyOtpRequestHandlerTest {
         )
         val request = MethodCallRequest(account = mockAccount, options)
 
-        val mockMethod = mock<AuthenticationMethod>()
-        whenever(mockMethod.id).thenReturn("phone|test123")
-        whenever(mockMethod.type).thenReturn("phone")
-        whenever(mockMethod.createdAt).thenReturn("2026-01-01")
+        val mockMethod = PhoneAuthenticationMethod(
+            id = "phone|test123",
+            type = "phone",
+            createdAt = "2026-01-01",
+            usage = emptyList(),
+            confirmed = true,
+            name = null,
+            phoneNumber = null,
+            preferredAuthenticationMethod = null
+        )
 
         whenever(mockClient.verifyOtp(any(), any(), any())).thenReturn(mockRequest)
         doAnswer {

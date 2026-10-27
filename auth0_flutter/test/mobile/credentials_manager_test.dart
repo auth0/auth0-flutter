@@ -33,10 +33,10 @@ class TestPlatform extends Mock
     'tokenType': 'Bearer'
   });
 
-  static const SSOCredentials ssoResult = SSOCredentials(
+  static final SSOCredentials ssoResult = SSOCredentials(
     sessionTransferToken: 'ssoToken',
     tokenType: 'session_transfer',
-    expiresIn: 60,
+    expiresAt: DateTime.utc(2024, 11, 1, 22, 16, 35),
     idToken: 'idToken',
     refreshToken: 'refreshToken',
   );
@@ -90,7 +90,7 @@ void main() {
       final verificationResult =
           verify(mockedPlatform.getCredentials(captureAny)).captured.single
               as CredentialsManagerRequest<GetCredentialsOptions>;
-      expect(verificationResult.options?.minTtl, 0);
+      expect(verificationResult.options?.minTtl, 60);
       // ignore: inference_failure_on_collection_literal
       expect(verificationResult.options?.scopes, isEmpty);
       expect(verificationResult.options?.parameters, isEmpty);
@@ -185,6 +185,20 @@ void main() {
 
       final verificationResult =
           verify(mockedPlatform.clearCredentials(captureAny)).captured.single
+              as CredentialsManagerRequest;
+      expect(verificationResult.account.domain, 'test-domain');
+      expect(verificationResult.account.clientId, 'test-clientId');
+    });
+  });
+
+  group('clearAll', () {
+    test('calls the platform', () async {
+      when(mockedPlatform.clearAll(any)).thenAnswer((_) async {});
+
+      await DefaultCredentialsManager(account, userAgent).clearAll();
+
+      final verificationResult =
+          verify(mockedPlatform.clearAll(captureAny)).captured.single
               as CredentialsManagerRequest;
       expect(verificationResult.account.domain, 'test-domain');
       expect(verificationResult.account.clientId, 'test-clientId');
@@ -341,7 +355,7 @@ void main() {
       expect(result.sessionTransferToken,
           TestPlatform.ssoResult.sessionTransferToken);
       expect(result.tokenType, TestPlatform.ssoResult.tokenType);
-      expect(result.expiresIn, TestPlatform.ssoResult.expiresIn);
+      expect(result.expiresAt, TestPlatform.ssoResult.expiresAt);
       expect(result.idToken, TestPlatform.ssoResult.idToken);
       expect(result.refreshToken, TestPlatform.ssoResult.refreshToken);
     });
@@ -385,7 +399,7 @@ void main() {
       expect(verificationResult.options?.audience, 'test-audience');
       // ignore: inference_failure_on_collection_literal
       expect(verificationResult.options?.scopes, isEmpty);
-      expect(verificationResult.options?.minTtl, 0);
+      expect(verificationResult.options?.minTtl, 60);
       // ignore: inference_failure_on_collection_literal
       expect(verificationResult.options?.parameters, isEmpty);
       // ignore: inference_failure_on_collection_literal

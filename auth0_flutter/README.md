@@ -11,6 +11,8 @@
 
 ## What's New
 
+> 📖 **Migrating from auth0_flutter v2?** See the [v3 Migration Guide](V3_MIGRATION_GUIDE.md) for the raised platform requirements, changed defaults, and breaking changes.
+
 **auth0_flutter** supports **Passkeys** on Android, iOS, and Web. On mobile, use `Auth0.api.passkeyLoginChallenge`/`passkeySignupChallenge`/`passkeyCredentialExchange`; on web, use the equivalent `Auth0Web.passkeyLoginChallenge`/`passkeySignupChallenge`/`getTokenByPasskey` (requires `auth0-spa-js` v2.24.0+). See the [Auth0 passkeys documentation](https://auth0.com/docs/authenticate/database-connections/passkeys) for setup instructions.
 
 ## Documentation
@@ -28,8 +30,8 @@
 
 | Flutter     | Android         | iOS               | macOS             | Windows                          |
 | :---------- | :-------------- | :---------------- | :---------------- | :------------------------------- |
-| SDK 3.24.0+ | Android API 21+ | iOS 14+           | macOS 11+         | Windows 10+                      |
-| Dart 3.5.0+ | Java 8+         | Swift 5.9+        | Swift 5.9+        | C++ 17, Visual Studio 2022       |
+| SDK 3.24.0+ | Android API 26+ | iOS 15+           | macOS 12+         | Windows 10+                      |
+| Dart 3.5.0+ | Java 17+        | Swift 5.9+        | Swift 5.9+        | C++ 17, Visual Studio 2022       |
 |             |                 | Xcode 15.x / 16.x | Xcode 15.x / 16.x | vcpkg (for dependencies)         |
 
 ### Installation
@@ -368,7 +370,7 @@ final auth0Web = Auth0Web('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID');
 Finally, in your `index.html` add the following `<script>` tag:
 
 ```html
-<script src="https://cdn.auth0.com/js/auth0-spa-js/2.24/auth0-spa-js.production.js" defer></script>
+<script src="https://cdn.auth0.com/js/auth0-spa-js/2.29/auth0-spa-js.production.js" defer></script>
 ```
 
 > ⚠️ If you use [Custom Token Exchange](EXAMPLES.md#custom-token-exchange) with delegation/impersonation (an actor token), you must reference `auth0-spa-js` **2.20.0 or later**. Actor-token support was added to the underlying SPA SDK in [2.20.0](https://github.com/auth0/auth0-spa-js/releases/tag/v2.20.0); older versions silently drop the actor token, so the returned ID token has no `act` claim and `credentials.user.actor` is `null`.
@@ -627,8 +629,6 @@ void dispose() {
 #### API
 
 - [login](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/login.html)
-- [loginWithOtp](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/loginWithOtp.html)
-- [multifactorChallenge](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/multifactorChallenge.html)
 - [renewCredentials](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/renewCredentials.html)
 - [resetPassword](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/resetPassword.html)
 - [signup](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter/AuthenticationApi/signup.html)

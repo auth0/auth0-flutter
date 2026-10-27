@@ -70,7 +70,7 @@ void main() {
 
       expect(map['audience'], 'test-audience');
       expect(map['scopes'], isEmpty);
-      expect(map['minTtl'], 0);
+      expect(map['minTtl'], 60);
       expect(map['parameters'], isEmpty);
       expect(map['headers'], isEmpty);
     });

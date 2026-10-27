@@ -6,8 +6,8 @@ void main() {
     test('toMap should include all fields correctly', () {
       const safariViewController = SafariViewController(
           presentationStyle: SafariViewControllerPresentationStyle.automatic);
-      const idTokenValidationConfig =
-          IdTokenValidationConfig(leeway: 0, maxAge: 0, issuer: 'issuer');
+      const idTokenValidationConfig = IdTokenValidationConfig(
+          leeway: 0, maxAge: 0, issuer: 'issuer', nonce: 'test-nonce');
       final options = WebAuthLoginOptions(
         audience: 'https://myapi.com',
         idTokenValidationConfig: idTokenValidationConfig,
@@ -30,6 +30,7 @@ void main() {
       expect(map['leeway'], idTokenValidationConfig.leeway);
       expect(map['issuer'], idTokenValidationConfig.issuer);
       expect(map['maxAge'], idTokenValidationConfig.maxAge);
+      expect(map['nonce'], idTokenValidationConfig.nonce);
       expect(map['organizationId'], 'org_123');
       expect(map['invitationUrl'], 'https://invite.com');
       expect(map['redirectUrl'], 'com.app://login');

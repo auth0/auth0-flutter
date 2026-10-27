@@ -22,13 +22,14 @@ class SpyMethodHandler: MethodHandler {
 
 // MARK: - Auth0.swift Spies
 
-class SpyWebAuth: WebAuth {
+class SpyWebAuth: WebAuth, @unchecked Sendable {
     let clientId = ""
     let url = mockURL
-    var telemetry = Telemetry()
+    var auth0ClientInfo = Auth0ClientInfo()
     var logger: Logger?
     var sender: String = "auth0-flutter"
     var dpop: DPoP?
+    var credentialsManager: CredentialsManager?
 
     var loginResult: WebAuthResult = .success(Credentials())
     var logoutResult: WebAuthResult = .success(())
@@ -42,6 +43,7 @@ class SpyWebAuth: WebAuth {
     private(set) var issuerValue: String?
     private(set) var leewayValue: Int?
     private(set) var maxAgeValue: Int?
+    private(set) var nonceValue: String?
     private(set) var useHTTPSValue: Bool?
     private(set) var useEmphemeralSessionValue: Bool?
     private(set) var invitationURLValue: URL?
@@ -83,6 +85,7 @@ class SpyWebAuth: WebAuth {
     }
 
     func nonce(_ nonce: String) -> Self {
+        self.nonceValue = nonce
         return self
     }
 
@@ -138,9 +141,18 @@ class SpyWebAuth: WebAuth {
         return self
     }
 
-    func start(_ callback: @escaping (WebAuthResult<Credentials>) -> Void) {
+    func useCredentialsManager(_ credentialsManager: CredentialsManager) -> Self {
+        self.credentialsManager = credentialsManager
+        return self
+    }
+
+    func presentationWindow(_ window: Auth0WindowRepresentable) -> Self {
+        return self
+    }
+
+    func start(_ callback: @escaping @MainActor @Sendable (WebAuthResult<Credentials>) -> Void) {
         calledLogin = true
-        callback(loginResult)
+        Task { @MainActor in callback(loginResult) }
     }
 
 #if canImport(_Concurrency)
@@ -153,9 +165,9 @@ class SpyWebAuth: WebAuth {
         return loginResult.publisher.eraseToAnyPublisher()
     }
 
-    func clearSession(federated: Bool, callback: @escaping (WebAuthResult<Void>) -> Void) {
+    func logout(federated: Bool, callback: @escaping @MainActor @Sendable (WebAuthResult<Void>) -> Void) {
         calledLogout = true
-        callback(logoutResult)
+        Task { @MainActor in callback(logoutResult) }
     }
 }
 

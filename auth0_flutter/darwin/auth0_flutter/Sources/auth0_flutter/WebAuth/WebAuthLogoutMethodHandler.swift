@@ -34,7 +34,7 @@ struct WebAuthLogoutMethodHandler: MethodHandler {
             webAuth = webAuth.redirectURL(url)
         }
 
-        webAuth.clearSession(federated: federated) { // Pass federated here
+        webAuth.logout(federated: federated) { // Pass federated here
             switch $0 {
             case .success: callback(nil)
             case let .failure(error): callback(FlutterError(from: error))
