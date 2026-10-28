@@ -1,5 +1,6 @@
 import XCTest
 import Auth0
+import SimpleKeychain
 
 #if os(iOS)
 import Flutter
@@ -118,9 +119,20 @@ extension CredentialsManagerUserInfoMethodHandlerTests {
         wait(for: [expectation], timeout: 5.0)
     }
 
-    func testProducesFlutterErrorWhenNoCredentialsAreStored() {
+    func testProducesNilWhenNoCredentialsAreStored() {
+        let expectation = self.expectation(description: "Produced nil")
+        spyStorage.getEntryError = SimpleKeychainError.itemNotFound
+
+        sut.handle(with: [:]) { result in
+            XCTAssertNil(result)
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 5.0)
+    }
+
+    func testProducesFlutterErrorOnOtherStorageErrors() {
         let expectation = self.expectation(description: "Produced a FlutterError")
-        spyStorage.getEntryReturnValue = nil
+        spyStorage.getEntryError = SimpleKeychainError.authFailed
 
         sut.handle(with: [:]) { result in
             XCTAssertTrue(result is FlutterError)

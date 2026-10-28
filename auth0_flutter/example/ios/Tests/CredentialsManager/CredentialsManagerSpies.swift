@@ -11,6 +11,7 @@ class SpyCredentialsStorage: CredentialsStorage {
     /// When set, `deleteEntry` throws this error (e.g. the keychain's "item not found").
     var deleteEntryError: Error?
     var deleteAllEntriesReturnValue = true
+    var getEntryError: Error?
 
     var calledGetEntry = false
     var calledSetEntry = false
@@ -32,6 +33,7 @@ class SpyCredentialsStorage: CredentialsStorage {
 
     func getEntry(forKey key: String) throws -> Data {
         self.calledGetEntry = true
+        if let error = self.getEntryError { throw error }
         guard let value = self.storage[key] ?? self.storage["_default"] else {
             throw SpyCredentialsStorageError()
         }
