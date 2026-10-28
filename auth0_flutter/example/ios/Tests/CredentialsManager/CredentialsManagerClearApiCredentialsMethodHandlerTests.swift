@@ -1,5 +1,6 @@
 import XCTest
 import Auth0
+import SimpleKeychain
 
 #if os(iOS)
 import Flutter
@@ -48,6 +49,26 @@ extension ClearApiCredentialsMethodHandlerTests {
         spy.deleteEntryReturnValue = true
         sut.handle(with: arguments()) { result in
             XCTAssertNil(result)
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
+    }
+
+    func testProducesNilWhenThereAreNoApiCredentialsToClear() {
+        let expectation = self.expectation(description: "Produced nil")
+        spy.deleteEntryError = SimpleKeychainError.itemNotFound
+        sut.handle(with: arguments()) { result in
+            XCTAssertNil(result)
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
+    }
+
+    func testProducesFlutterErrorOnOtherKeychainErrors() {
+        let expectation = self.expectation(description: "Produced a FlutterError")
+        spy.deleteEntryError = SimpleKeychainError.authFailed
+        sut.handle(with: arguments()) { result in
+            XCTAssertTrue(result is FlutterError)
             expectation.fulfill()
         }
         wait(for: [expectation])
