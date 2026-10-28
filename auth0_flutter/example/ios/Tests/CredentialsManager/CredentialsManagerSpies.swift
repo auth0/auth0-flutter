@@ -8,6 +8,8 @@ struct SpyCredentialsStorageError: Error {}
 class SpyCredentialsStorage: CredentialsStorage {
     var setEntryReturnValue = true
     var deleteEntryReturnValue = true
+    /// When set, `deleteEntry` throws this error (e.g. the keychain's "item not found").
+    var deleteEntryError: Error?
     var deleteAllEntriesReturnValue = true
 
     var calledGetEntry = false
@@ -45,6 +47,7 @@ class SpyCredentialsStorage: CredentialsStorage {
     func deleteEntry(forKey key: String) throws {
         self.calledDeleteEntry = true
         self.storage.removeValue(forKey: key)
+        if let error = self.deleteEntryError { throw error }
         if !self.deleteEntryReturnValue { throw SpyCredentialsStorageError() }
     }
 

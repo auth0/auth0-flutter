@@ -1,4 +1,5 @@
 import Auth0
+import SimpleKeychain
 
 #if os(iOS)
 import Flutter
@@ -23,6 +24,8 @@ struct ClearApiCredentialsMethodHandler: MethodHandler {
 
         do {
             try self.credentialsManager.clear(forAudience: audience, scope: scope)
+            callback(nil)
+        } catch let error as SimpleKeychainError where error == .itemNotFound {
             callback(nil)
         } catch {
             callback(FlutterError(from: (error as? CredentialsManagerError) ?? .unknown))
