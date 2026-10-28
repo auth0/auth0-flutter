@@ -633,6 +633,15 @@ class Auth0Web {
   /// identifiers in [WebPasskeyChallenge.verificationRequired], keyed by
   /// [PasskeyVerificationMethod]. Omit it when no verification is required.
   ///
+  /// ## Identifier verification
+  ///
+  /// Pass a non-empty code in [verification] for **every** identifier listed
+  /// in [WebPasskeyChallenge.verificationRequired], or, on a retry, in
+  /// [WebException.passkeyVerificationRequired]. Unlike iOS and Android, the
+  /// web SDK does not check this before sending the request: an empty code is
+  /// rejected by auth0-spa-js, but a missing one is only caught by the server,
+  /// after the passkey has been created.
+  ///
   /// ## Retrying after a wrong code
   ///
   /// If a code is wrong but the session is still alive, a [WebException] with

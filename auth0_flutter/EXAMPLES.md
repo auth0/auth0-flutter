@@ -1360,7 +1360,7 @@ When identifier verification is enabled for your database connection, Auth0 send
 - **Collect the codes before the OS passkey UI.** Ask the user for the codes first, then create the passkey. If you create the passkey first and verification then fails for good, the user is left with a passkey on their device that isn't linked to any account.
 - Pass the codes as `verification`, keyed by `PasskeyVerificationMethod`. Every identifier in `verificationRequired` needs a non-empty code; on iOS and Android a missing or empty code fails the call straight away with an `invalid_request` `ApiException`, without a network request. Omit `verification` when nothing needs verifying.
 - If a code is wrong but the session is still alive, `passkeyCredentialExchange` throws an `ApiException` with `isPasskeyVerificationRetryable` set to `true`. Ask the user again for the codes in `passkeyVerificationRequired` only, and call `passkeyCredentialExchange` again with the **same** `credential` and a new `PasskeyChallenge` built from `passkeyAuthSession` and `passkeyVerificationRequired`. The user is not prompted for the passkey again.
-- When `isPasskeyVerificationRetryable` is `false` (for example, the attempts are used up or the session expired), start again from `passkeySignupChallenge`. Auth0 doesn't say how many attempts are left, so cap the number of retries in your app.
+- When `isPasskeyVerificationRetryable` is `false` (for example, the attempts are used up or the session expired), start again from `passkeySignupChallenge`. Auth0 controls how many wrong codes it accepts. When they run out, the error comes back without a session, so `isPasskeyVerificationRetryable` turns `false` and the loop below stops. There is no need to set a retry limit in your app, and a limit lower than Auth0's would force the user to request a new code.
 - Use `deliveryMethod` (`DeliveryMethod.text` or `DeliveryMethod.voice`) on `passkeySignupChallenge` to choose how a phone code is delivered. It only applies to the phone identifier and is ignored when only an email is verified.
 
 ```dart
@@ -1378,9 +1378,10 @@ var codes = await askUserForCodes(challenge.verificationRequired ?? const []);
 final credential = await createPasskeyCredential(challenge);
 
 // 4. Exchange the credential, re-asking only for the codes that were wrong.
+//    Any error that isn't retryable is rethrown, which ends the loop.
 var currentChallenge = challenge;
 Credentials? credentials;
-for (var attempt = 0; credentials == null && attempt < 3; attempt++) {
+while (credentials == null) {
   try {
     credentials = await auth0.api.passkeyCredentialExchange(
         challenge: currentChallenge,
@@ -1468,6 +1469,8 @@ Future<void> logInWithPasskey() async {
 
 The web flow supports identifier verification as well; see [Verify identifiers during passkey signup](#verify-identifiers-during-passkey-signup) for how it works. `WebPasskeyChallenge.verificationRequired` lists the identifiers to verify, `passkeySignupChallenge` takes an optional `deliveryMethod`, and `getTokenByPasskey` takes the codes as `verification`. Collect the codes **before** calling `navigator.credentials.create()`.
 
+On web, you must pass a non-empty code in `verification` for every identifier listed in `WebPasskeyChallenge.verificationRequired` (or, on a retry, in `WebException.passkeyVerificationRequired`). On iOS and Android the SDK also checks this before sending the request. On web it does not, so a missing code is only caught by the server, after the passkey has been created.
+
 If a code is wrong but the session is still alive, `getTokenByPasskey` throws a `WebException` with `isPasskeyVerificationRetryable` set to `true`. Ask again for the codes in `passkeyVerificationRequired`, then call `getTokenByPasskey` again with the **same** credential and `passkeyAuthSession` as the `authSession`.
 
 ```dart
@@ -1483,9 +1486,10 @@ final credential = await web.window.navigator.credentials.create(
         publicKey: challenge.authParamsPublicKey
             as web.PublicKeyCredentialCreationOptions));
 
+// Any error that isn't retryable is rethrown, which ends the loop.
 var authSession = challenge.authSession;
 Credentials? credentials;
-for (var attempt = 0; credentials == null && attempt < 3; attempt++) {
+while (credentials == null) {
   try {
     credentials = await auth0Web.getTokenByPasskey(
         authSession: authSession,
