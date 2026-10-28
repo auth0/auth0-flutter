@@ -701,6 +701,43 @@ void main() {
         expect(params.email, 'user@example.com');
         expect(params.name, 'John Doe');
         expect(params.realm, 'Username-Password-Authentication');
+        expect(params.deliveryMethod, isNull);
+        expect(result.verificationRequired, isNull);
+      });
+
+      test('forwards the delivery method', () async {
+        when(mockClientProxy.passkeyGetSignupChallenge(any))
+            .thenAnswer((_) => Future.value(passkeyChallengeCredentials));
+
+        await auth0.passkeySignupChallenge(
+          phoneNumber: '+15550100',
+          deliveryMethod: DeliveryMethod.voice,
+        );
+
+        final params =
+            verify(mockClientProxy.passkeyGetSignupChallenge(captureAny))
+                .captured
+                .single as interop.PasskeySignupChallengeParams;
+        expect(params.deliveryMethod, 'voice');
+      });
+
+      test('maps the identifiers to verify from the response', () async {
+        when(mockClientProxy.passkeyGetSignupChallenge(any)).thenAnswer(
+            (_) => Future.value(interop.PasskeyChallengeResponse(
+                  authSession: 'auth-session-123',
+                  publicKey: {'challenge': 'challenge-value'}.jsify()
+                      as JSObject,
+                  verificationRequired: ['email'.toJS, 'phone'.toJS].toJS,
+                )));
+
+        final result = await auth0.passkeySignupChallenge(
+          email: 'user@example.com',
+        );
+
+        expect(result.verificationRequired, [
+          PasskeyVerificationMethod.email,
+          PasskeyVerificationMethod.phone,
+        ]);
       });
 
       test('throws WebException when the challenge request fails', () async {
@@ -812,6 +849,75 @@ void main() {
                 .single as interop.PasskeyGetTokenParams;
         expect(params.authSession, 'auth-session-123');
         expect(params.realm, 'Username-Password-Authentication');
+        expect(params.verification, isNull);
+      });
+
+      test('forwards the verification codes', () async {
+        when(mockClientProxy.passkeyGetTokenWithPasskey(any))
+            .thenAnswer((_) => Future.value(webCredentials));
+
+        await auth0.getTokenByPasskey(
+          authSession: 'auth-session-123',
+          authResponse: JSObject(),
+          verification: {
+            PasskeyVerificationMethod.email: '123456',
+            PasskeyVerificationMethod.phone: '654321',
+          },
+        );
+
+        final params =
+            verify(mockClientProxy.passkeyGetTokenWithPasskey(captureAny))
+                .captured
+                .single as interop.PasskeyGetTokenParams;
+        final verification = params.verification!;
+        expect((verification.getProperty('email'.toJS) as JSString).toDart,
+            '123456');
+        expect((verification.getProperty('phone'.toJS) as JSString).toDart,
+            '654321');
+      });
+
+      test('maps a retryable verification failure', () async {
+        final error = JSObject()
+          ..setProperty('code'.toJS, 'passkey_get_token_error'.toJS)
+          ..setProperty('message'.toJS, 'Invalid or expired session'.toJS)
+          ..setProperty('isRetryable'.toJS, true.toJS)
+          ..setProperty('authSession'.toJS, 'retry-session'.toJS)
+          ..setProperty('verificationRequired'.toJS, ['email'.toJS].toJS);
+        when(mockClientProxy.passkeyGetTokenWithPasskey(any)).thenThrow(error);
+
+        expect(
+            () async => auth0.getTokenByPasskey(
+                  authSession: 'auth-session-123',
+                  authResponse: JSObject(),
+                  verification: {PasskeyVerificationMethod.email: '000000'},
+                ),
+            throwsA(predicate((e) =>
+                e is WebException &&
+                e.code == 'PASSKEY_ERROR' &&
+                e.isPasskeyVerificationRetryable &&
+                e.passkeyAuthSession == 'retry-session' &&
+                e.passkeyVerificationRequired!.single ==
+                    PasskeyVerificationMethod.email)));
+      });
+
+      test('does not flag a terminal passkey failure as retryable', () async {
+        final error = JSObject()
+          ..setProperty('code'.toJS, 'passkey_get_token_error'.toJS)
+          ..setProperty('message'.toJS, 'Invalid or expired session'.toJS)
+          ..setProperty('isRetryable'.toJS, false.toJS);
+        when(mockClientProxy.passkeyGetTokenWithPasskey(any)).thenThrow(error);
+
+        expect(
+            () async => auth0.getTokenByPasskey(
+                  authSession: 'auth-session-123',
+                  authResponse: JSObject(),
+                ),
+            throwsA(predicate((e) =>
+                e is WebException &&
+                e.code == 'PASSKEY_ERROR' &&
+                !e.isPasskeyVerificationRetryable &&
+                e.passkeyAuthSession == null &&
+                e.passkeyVerificationRequired == null)));
       });
 
       test('throws WebException when the exchange fails', () async {

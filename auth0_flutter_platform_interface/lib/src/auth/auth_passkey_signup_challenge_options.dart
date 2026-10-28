@@ -1,4 +1,5 @@
 import '../request/request_options.dart';
+import 'delivery_method.dart';
 
 class AuthPasskeySignupChallengeOptions implements RequestOptions {
   final String? email;
@@ -12,6 +13,7 @@ class AuthPasskeySignupChallengeOptions implements RequestOptions {
   final String? connection;
   final String? organization;
   final Map<String, String>? userMetadata;
+  final DeliveryMethod? deliveryMethod;
 
   AuthPasskeySignupChallengeOptions({
     this.email,
@@ -25,6 +27,7 @@ class AuthPasskeySignupChallengeOptions implements RequestOptions {
     this.connection,
     this.organization,
     this.userMetadata,
+    this.deliveryMethod,
   });
 
   @override
@@ -40,5 +43,6 @@ class AuthPasskeySignupChallengeOptions implements RequestOptions {
         'connection': connection,
         'organization': organization,
         'userMetadata': userMetadata,
+        'deliveryMethod': deliveryMethod?.value,
       };
 }

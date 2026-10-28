@@ -2,6 +2,7 @@ package com.auth0.auth0_flutter.request_handlers.api
 
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
+import com.auth0.android.authentication.passwordless.DeliveryMethod
 import com.auth0.android.callback.Callback
 import com.auth0.android.request.UserData
 import com.auth0.android.result.PasskeyRegistrationChallenge
@@ -39,7 +40,10 @@ class PasskeySignupChallengeApiRequestHandler : ApiRequestHandler {
             userMetadata = userMetadata
         )
 
-        api.signupWithPasskey(userData, connection, organization)
+        val deliveryMethod = DeliveryMethod.values()
+            .firstOrNull { it.value == args["deliveryMethod"] }
+
+        api.signupWithPasskey(userData, connection, organization, deliveryMethod)
             .start(object : Callback<PasskeyRegistrationChallenge, AuthenticationException> {
                 override fun onFailure(exception: AuthenticationException) {
                     result.error(
@@ -58,10 +62,13 @@ class PasskeySignupChallengeApiRequestHandler : ApiRequestHandler {
                         Map::class.java
                     )
                     result.success(
-                        mapOf(
-                            "authSession" to challenge.authSession,
-                            "authParamsPublicKey" to authParamsPublicKey
-                        )
+                        buildMap {
+                            put("authSession", challenge.authSession)
+                            put("authParamsPublicKey", authParamsPublicKey)
+                            challenge.verificationRequired?.let { required ->
+                                put("verificationRequired", required.map { it.value })
+                            }
+                        }
                     )
                 }
             })

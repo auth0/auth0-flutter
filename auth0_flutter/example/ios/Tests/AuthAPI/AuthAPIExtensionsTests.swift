@@ -28,7 +28,10 @@ class AuthAPIExtensionsTests: XCTestCase {
             .isVerificationRequired: ["code": "requires_verification"],
             .isPasswordLeaked: ["code": "password_leaked"],
             .isLoginRequired: ["code": "login_required"],
-            .isNetworkError: ["cause": URLError(URLError.Code.notConnectedToInternet)]
+            .isNetworkError: ["cause": URLError(URLError.Code.notConnectedToInternet)],
+            .isPasskeyVerificationRetryable: ["code": "invalid_grant",
+                                              "auth_session": "test-auth-session",
+                                              "verification_required": ["email"]]
         ]
         for (flag, info) in errors {
             let error = AuthenticationError(info: info, statusCode: 400)
@@ -38,5 +41,24 @@ class AuthAPIExtensionsTests: XCTestCase {
             assert(flutterError: flutterError, is: error)
             XCTAssertEqual(flags[flag], true)
         }
+    }
+
+    func testForwardsPasskeyRetryDataInTheErrorDetails() throws {
+        let error = AuthenticationError(info: ["code": "invalid_grant",
+                                               "auth_session": "test-auth-session",
+                                               "verification_required": ["email", "phone"]],
+                                        statusCode: 400)
+        let flutterError = FlutterError(from: error)
+        let details = try XCTUnwrap(flutterError.details as? [String: Any])
+        XCTAssertEqual(details["auth_session"] as? String, "test-auth-session")
+        XCTAssertEqual(details["verification_required"] as? [String], ["email", "phone"])
+    }
+
+    func testDoesNotFlagAnInvalidGrantWithoutASessionAsPasskeyRetryable() throws {
+        let error = AuthenticationError(info: ["code": "invalid_grant"], statusCode: 400)
+        let flutterError = FlutterError(from: error)
+        let details = try XCTUnwrap(flutterError.details as? [String: Any])
+        let flags = try XCTUnwrap(details[AuthAPIErrorKey.errorFlags] as? [String: Bool])
+        XCTAssertEqual(flags[AuthAPIErrorFlag.isPasskeyVerificationRetryable], false)
     }
 }

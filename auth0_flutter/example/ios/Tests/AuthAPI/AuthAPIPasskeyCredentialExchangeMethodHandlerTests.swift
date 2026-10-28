@@ -199,6 +199,39 @@ extension AuthAPIPasskeyCredentialExchangeMethodHandlerTests {
     }
 }
 
+// MARK: - Identifier Verification
+
+@available(iOS 16.6, macOS 13.5, visionOS 1.0, *)
+extension AuthAPIPasskeyCredentialExchangeMethodHandlerTests {
+    func testForwardsVerificationCodesAndRequiredIdentifiersForSignup() {
+        var args = signupArguments()
+        var challenge = args[Argument.challenge.rawValue] as? [String: Any] ?? [:]
+        challenge["verificationRequired"] = ["email", "phone"]
+        args[Argument.challenge.rawValue] = challenge
+        args[Argument.verification.rawValue] = ["email": "123456", "phone": "654321"]
+        sut.handle(with: args) { _ in }
+        XCTAssertTrue(spy.calledSignupWithPasskey)
+        XCTAssertEqual(spy.arguments["authSession"] as? String, "test-auth-session")
+        XCTAssertEqual(spy.arguments["verificationRequired"] as? [PasskeyVerificationMethod], [.email, .phone])
+        XCTAssertEqual(spy.arguments["verification"] as? [PasskeyVerificationMethod: String],
+                       [.email: "123456", .phone: "654321"])
+    }
+
+    func testForwardsNoVerificationWhenNoneIsProvidedForSignup() {
+        sut.handle(with: signupArguments()) { _ in }
+        XCTAssertEqual(spy.arguments["verificationRequired"] as? [PasskeyVerificationMethod], [])
+        XCTAssertEqual(spy.arguments["verification"] as? [PasskeyVerificationMethod: String], [:])
+    }
+
+    func testForwardsUnknownIdentifiersAsUnknownMethods() {
+        var args = signupArguments()
+        args[Argument.verification.rawValue] = ["fax": "000000"]
+        sut.handle(with: args) { _ in }
+        XCTAssertEqual(spy.arguments["verification"] as? [PasskeyVerificationMethod: String],
+                       [.unknown("fax"): "000000"])
+    }
+}
+
 // MARK: - Results
 
 @available(iOS 16.6, macOS 13.5, visionOS 1.0, *)

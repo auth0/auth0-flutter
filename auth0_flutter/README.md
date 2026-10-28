@@ -379,6 +379,8 @@ Finally, in your `index.html` add the following `<script>` tag:
 
 > ⚠️ [Passkeys on the web](EXAMPLES.md#passkeys-on-the-web) (`passkeySignupChallenge`/`passkeyLoginChallenge`/`getTokenByPasskey`) require `auth0-spa-js` **2.24.0 or later**. The passkey API was added to the underlying SPA SDK in [2.24.0](https://github.com/auth0/auth0-spa-js/releases/tag/v2.24.0); older versions do not expose it.
 
+> ⚠️ [Identifier verification during passkey signup on the web](EXAMPLES.md#identifier-verification-on-the-web) (`verificationRequired`, `deliveryMethod`, and `verification`) requires `auth0-spa-js` **2.29.0 or later**. Support was added to the underlying SPA SDK in [2.29.0](https://github.com/auth0/auth0-spa-js/releases/tag/v2.29.0).
+
 > ⚠️ The [My Account API on the web](EXAMPLES.md#my-account-on-the-web) (`Auth0Web.myAccount`) requires `auth0-spa-js` **2.21.1 or later**. The `MyAccountApiClient` was added to the underlying SPA SDK in [2.21.0](https://github.com/auth0/auth0-spa-js/releases/tag/v2.21.0), and enrollment verification was fixed in [2.21.1](https://github.com/auth0/auth0-spa-js/releases/tag/v2.21.1); with older versions, calls fail with a `MyAccountException`.
 
 ### Logging in
@@ -596,6 +598,7 @@ void dispose() {
 - [Retrieve user information](EXAMPLES.md#retrieve-user-information) - fetch the latest user information from the `/userinfo` endpoint.
 - [Log in with passkeys](EXAMPLES.md#log-in-with-passkeys) - authenticate an existing user with a passkey using the platform authenticator (iOS/Android; see [Passkeys on the Web](EXAMPLES.md#passkeys-on-the-web) for the web equivalent).
 - [Sign up with passkeys](EXAMPLES.md#sign-up-with-passkeys) - register a new user with a passkey using the platform authenticator (iOS/Android; see [Passkeys on the Web](EXAMPLES.md#passkeys-on-the-web) for the web equivalent).
+- [Verify identifiers during passkey signup](EXAMPLES.md#verify-identifiers-during-passkey-signup) - collect and send the one-time codes that verify the user's email or phone number when signing up with a passkey, and retry after a wrong code.
 - [Native to Web SSO](EXAMPLES.md#native-to-web-sso) - obtain a session transfer token to authenticate a WebView without re-prompting the user.
 - [Multi-Factor Authentication (MFA)](EXAMPLES.md#-multi-factor-authentication-mfa) - complete an MFA flow mid-login using an `mfa_token`: list, challenge, enroll, and verify factors.
 - [Handle Android process death](#android-handle-process-death-during-login) - recover credentials when the OS kills your app during login.

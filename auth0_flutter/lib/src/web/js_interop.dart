@@ -333,6 +333,7 @@ extension type PasskeySignupChallengeParams._(JSObject _) implements JSObject {
   external JSObject? get userMetadata;
   external String? get realm;
   external String? get organization;
+  external String? get deliveryMethod;
 
   external factory PasskeySignupChallengeParams({
     final String? email,
@@ -346,6 +347,7 @@ extension type PasskeySignupChallengeParams._(JSObject _) implements JSObject {
     final JSObject? userMetadata,
     final String? realm,
     final String? organization,
+    final String? deliveryMethod,
   });
 }
 
@@ -366,10 +368,12 @@ extension type PasskeyLoginChallengeParams._(JSObject _) implements JSObject {
 extension type PasskeyChallengeResponse._(JSObject _) implements JSObject {
   external String get authSession;
   external JSObject get publicKey;
+  external JSArray<JSString>? get verificationRequired;
 
   external factory PasskeyChallengeResponse({
     required final String authSession,
     required final JSObject publicKey,
+    final JSArray<JSString>? verificationRequired,
   });
 }
 
@@ -382,6 +386,7 @@ extension type PasskeyGetTokenParams._(JSObject _) implements JSObject {
   external String? get organization;
   external String? get scope;
   external String? get audience;
+  external JSObject? get verification;
 
   external factory PasskeyGetTokenParams({
     required final String authSession,
@@ -390,6 +395,7 @@ extension type PasskeyGetTokenParams._(JSObject _) implements JSObject {
     final String? organization,
     final String? scope,
     final String? audience,
+    final JSObject? verification,
   });
 }
 

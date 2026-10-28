@@ -22,6 +22,7 @@ enum AuthAPIErrorFlag: String, CaseIterable {
     case isPasswordLeaked
     case isLoginRequired
     case isNetworkError
+    case isPasskeyVerificationRetryable
 }
 
 enum AuthAPIErrorKey: String, CaseIterable {
@@ -49,6 +50,7 @@ extension FlutterError {
             AuthAPIErrorFlag.isPasswordLeaked.rawValue: authenticationError.isPasswordLeaked,
             AuthAPIErrorFlag.isLoginRequired.rawValue: authenticationError.isLoginRequired,
             AuthAPIErrorFlag.isNetworkError.rawValue: authenticationError.isNetworkError,
+            AuthAPIErrorFlag.isPasskeyVerificationRetryable.rawValue: authenticationError.isPasskeyVerificationRetryable,
         ]
         var errorDetails = authenticationError.details
         errorDetails[AuthAPIErrorKey.errorFlags] = errorFlags

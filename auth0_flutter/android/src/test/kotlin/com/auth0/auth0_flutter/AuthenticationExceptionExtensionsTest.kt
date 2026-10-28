@@ -38,6 +38,7 @@ class AuthenticationExceptionExtensionsTest {
         assertThat(errorFlags["isCanceled"], equalTo(false))
         assertThat(errorFlags["isPasswordLeaked"], equalTo(false))
         assertThat(errorFlags["isLoginRequired"], equalTo(false))
+        assertThat(errorFlags["isPasskeyVerificationRetryable"], equalTo(false))
     }
 
     @Test
@@ -142,6 +143,11 @@ class AuthenticationExceptionExtensionsTest {
                 `when`(exception.isLoginRequired).thenReturn(
                     true
                 )
+            },
+            "isPasskeyVerificationRetryable" to { exception: AuthenticationException ->
+                `when`(exception.isPasskeyVerificationRetryable).thenReturn(
+                    true
+                )
             }
         )
 
@@ -210,5 +216,40 @@ class AuthenticationExceptionExtensionsTest {
         val mfaToken = map["mfa_token"] as String?
 
         assertThat(mfaToken, equalTo(null))
+    }
+
+    @Test
+    fun `should set the passkey retry data when the verification is retryable`() {
+        val exception = AuthenticationException(mapOf(
+            "error" to "invalid_grant",
+            "error_description" to "Invalid or expired session",
+            "auth_session" to "test-auth-session",
+            "verification_required" to listOf("email", "phone")
+        ), 400)
+
+        val map = exception.toMap()
+        val errorFlags = map["_errorFlags"] as Map<*, *>
+
+        assertThat(errorFlags["isPasskeyVerificationRetryable"], equalTo(true))
+        assertThat(map["auth_session"] as String, equalTo("test-auth-session"))
+        assertThat(
+            map["verification_required"] as List<*>,
+            equalTo(listOf("email", "phone"))
+        )
+    }
+
+    @Test
+    fun `should not set the passkey retry data when the session is gone`() {
+        val exception = AuthenticationException(mapOf(
+            "error" to "invalid_grant",
+            "error_description" to "Invalid or expired session"
+        ), 400)
+
+        val map = exception.toMap()
+        val errorFlags = map["_errorFlags"] as Map<*, *>
+
+        assertThat(errorFlags["isPasskeyVerificationRetryable"], equalTo(false))
+        assertThat(map.containsKey("auth_session"), equalTo(false))
+        assertThat(map.containsKey("verification_required"), equalTo(false))
     }
 }

@@ -7,6 +7,7 @@ import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
 import com.auth0.android.request.AuthenticationRequest
 import com.auth0.android.result.Credentials
+import com.auth0.android.result.PasskeyVerificationMethod
 import com.auth0.auth0_flutter.JwtTestUtils
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import io.flutter.plugin.common.MethodChannel.Result
@@ -258,6 +259,100 @@ class PasskeyCredentialExchangeApiRequestHandlerTest {
         )
         verify(mockBuilder).validateClaims()
         verify(mockBuilder).start(any())
+    }
+
+    @Test
+    fun `should forward the verification codes and the identifiers to verify`() {
+        val options = hashMapOf<String, Any>(
+            "challenge" to (challengeMap() + mapOf("verificationRequired" to listOf("email", "phone"))),
+            "credential" to signupCredentialMap(),
+            "verification" to mapOf("email" to "123456", "phone" to "654321")
+        )
+        val handler = PasskeyCredentialExchangeApiRequestHandler()
+        val mockBuilder = mock<AuthenticationRequest>()
+        val mockApi = mock<AuthenticationAPIClient>()
+        val mockAccount = mock<Auth0>()
+        val mockResult = mock<Result>()
+        val request = MethodCallRequest(account = mockAccount, options)
+
+        doReturn(mockBuilder).`when`(mockApi)
+            .signinWithPasskey(any<String>(), any<String>(), anyOrNull(), anyOrNull(), any(), any())
+        doReturn(mockBuilder).`when`(mockBuilder).validateClaims()
+
+        handler.handle(mockApi, request, mockResult)
+
+        verify(mockApi).signinWithPasskey(
+            eq("test-auth-session"),
+            any<String>(),
+            anyOrNull(),
+            anyOrNull(),
+            eq(
+                mapOf(
+                    PasskeyVerificationMethod.EMAIL to "123456",
+                    PasskeyVerificationMethod.PHONE to "654321"
+                )
+            ),
+            eq(listOf(PasskeyVerificationMethod.EMAIL, PasskeyVerificationMethod.PHONE))
+        )
+    }
+
+    @Test
+    fun `should send no verification when none is provided`() {
+        val options = hashMapOf<String, Any>(
+            "challenge" to challengeMap(),
+            "credential" to signupCredentialMap()
+        )
+        val handler = PasskeyCredentialExchangeApiRequestHandler()
+        val mockBuilder = mock<AuthenticationRequest>()
+        val mockApi = mock<AuthenticationAPIClient>()
+        val mockAccount = mock<Auth0>()
+        val mockResult = mock<Result>()
+        val request = MethodCallRequest(account = mockAccount, options)
+
+        doReturn(mockBuilder).`when`(mockApi)
+            .signinWithPasskey(any<String>(), any<String>(), anyOrNull(), anyOrNull(), any(), any())
+        doReturn(mockBuilder).`when`(mockBuilder).validateClaims()
+
+        handler.handle(mockApi, request, mockResult)
+
+        verify(mockApi).signinWithPasskey(
+            eq("test-auth-session"),
+            any<String>(),
+            anyOrNull(),
+            anyOrNull(),
+            eq(emptyMap()),
+            eq(emptyList())
+        )
+    }
+
+    @Test
+    fun `should skip identifiers it does not know`() {
+        val options = hashMapOf<String, Any>(
+            "challenge" to (challengeMap() + mapOf("verificationRequired" to listOf("email", "fax"))),
+            "credential" to signupCredentialMap(),
+            "verification" to mapOf("email" to "123456", "fax" to "000000")
+        )
+        val handler = PasskeyCredentialExchangeApiRequestHandler()
+        val mockBuilder = mock<AuthenticationRequest>()
+        val mockApi = mock<AuthenticationAPIClient>()
+        val mockAccount = mock<Auth0>()
+        val mockResult = mock<Result>()
+        val request = MethodCallRequest(account = mockAccount, options)
+
+        doReturn(mockBuilder).`when`(mockApi)
+            .signinWithPasskey(any<String>(), any<String>(), anyOrNull(), anyOrNull(), any(), any())
+        doReturn(mockBuilder).`when`(mockBuilder).validateClaims()
+
+        handler.handle(mockApi, request, mockResult)
+
+        verify(mockApi).signinWithPasskey(
+            eq("test-auth-session"),
+            any<String>(),
+            anyOrNull(),
+            anyOrNull(),
+            eq(mapOf(PasskeyVerificationMethod.EMAIL to "123456")),
+            eq(listOf(PasskeyVerificationMethod.EMAIL))
+        )
     }
 
     @Test

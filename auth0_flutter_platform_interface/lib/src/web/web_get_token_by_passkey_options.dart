@@ -1,3 +1,5 @@
+import '../auth/passkey_verification_method.dart';
+
 /// Options for exchanging a passkey credential response for Auth0 tokens on
 /// the web platform.
 class WebGetTokenByPasskeyOptions {
@@ -23,6 +25,10 @@ class WebGetTokenByPasskeyOptions {
   /// The optional Auth0 organization to authenticate with.
   final String? organization;
 
+  /// The one-time codes that verify ownership of the identifiers, keyed by
+  /// [PasskeyVerificationMethod].
+  final Map<PasskeyVerificationMethod, String> verification;
+
   WebGetTokenByPasskeyOptions({
     required this.authSession,
     required this.authResponse,
@@ -30,5 +36,6 @@ class WebGetTokenByPasskeyOptions {
     this.audience,
     this.scopes,
     this.organization,
+    this.verification = const {},
   });
 }

@@ -50,6 +50,7 @@ struct AuthAPIPasskeyCredentialExchangeMethodHandler: MethodHandler {
         case scopes
         case organization
         case parameters
+        case verification
     }
 
     let client: Authentication
@@ -67,6 +68,10 @@ struct AuthAPIPasskeyCredentialExchangeMethodHandler: MethodHandler {
         let scopes = (arguments[Argument.scopes.rawValue] as? [String]) ?? []
         let organization = arguments[Argument.organization.rawValue] as? String
         let parameters = (arguments[Argument.parameters.rawValue] as? [String: Any]) ?? [:]
+        let verification = ((arguments[Argument.verification.rawValue] as? [String: String]) ?? [:])
+            .reduce(into: [PasskeyVerificationMethod: String]()) { result, entry in
+                result[PasskeyVerificationMethod(rawValue: entry.key)] = entry.value
+            }
 
         let response = credentialMap["response"] as? [String: Any]
         let isSignup = response?["attestationObject"] != nil
@@ -88,7 +93,8 @@ struct AuthAPIPasskeyCredentialExchangeMethodHandler: MethodHandler {
                                    connection: connection,
                                    audience: audience,
                                    scope: scopes.asSpaceSeparatedString,
-                                   organization: organization)
+                                   organization: organization,
+                                   verification: verification)
         } else {
             guard let challenge = Self.reconstructLoginChallenge(from: challengeMap) else {
                 return callback(FlutterError(code: "PASSKEY_ERROR",
@@ -192,7 +198,7 @@ struct AuthAPIPasskeyCredentialExchangeMethodHandler: MethodHandler {
             return nil
         }
 
-        let challengeJson: [String: Any] = [
+        var challengeJson: [String: Any] = [
             "auth_session": authSession,
             "authn_params_public_key": [
                 "rp": ["id": relyingPartyId],
@@ -200,6 +206,9 @@ struct AuthAPIPasskeyCredentialExchangeMethodHandler: MethodHandler {
                 "challenge": challengeString
             ]
         ]
+        if let verificationRequired = challengeMap["verificationRequired"] as? [String] {
+            challengeJson["verification_required"] = verificationRequired
+        }
 
         guard let jsonData = try? JSONSerialization.data(withJSONObject: challengeJson) else {
             return nil

@@ -1,3 +1,5 @@
+import '../auth/delivery_method.dart';
+
 /// Options for requesting a passkey signup challenge on the web platform.
 class WebPasskeySignupChallengeOptions {
   final String? email;
@@ -11,6 +13,7 @@ class WebPasskeySignupChallengeOptions {
   final String? connection;
   final String? organization;
   final Map<String, String>? userMetadata;
+  final DeliveryMethod? deliveryMethod;
 
   WebPasskeySignupChallengeOptions({
     this.email,
@@ -24,5 +27,6 @@ class WebPasskeySignupChallengeOptions {
     this.connection,
     this.organization,
     this.userMetadata,
+    this.deliveryMethod,
   });
 }
