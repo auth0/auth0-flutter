@@ -1,5 +1,12 @@
 # Change Log
 
+## [af-v3.0.0](https://github.com/auth0/auth0-flutter/tree/af-v3.0.0) (2026-10-29)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.7.0...af-v3.0.0)
+
+**Added**
+- fix(ios): return null from user() when no credentials are stored [\#981](https://github.com/auth0/auth0-flutter/pull/981) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- fix(ios): do not throw when clearing credentials that are not stored [\#980](https://github.com/auth0/auth0-flutter/pull/980) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
 ## [af-v2.7.0](https://github.com/auth0/auth0-flutter/tree/af-v2.7.0) (2026-10-26)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.6.2...af-v2.7.0)
 
