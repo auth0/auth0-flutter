@@ -16,6 +16,8 @@ export 'package:auth0_flutter_platform_interface/auth0_flutter_platform_interfac
         MfaEnrollmentChallenge,
         PhoneType,
         WebPasskeyChallenge,
+        PasskeyVerificationMethod,
+        DeliveryMethod,
         AuthenticationMethod,
         AuthenticationMethodType,
         EnrollmentChallenge,
@@ -533,6 +535,17 @@ class Auth0Web {
   /// passkeys.
   /// * [organizationId] is the optional Auth0 organization to sign up to.
   /// * [userMetadata] is optional metadata to associate with the new user.
+  /// * [deliveryMethod] selects how a phone one-time code is delivered when
+  /// the connection requires phone identifier verification. It is ignored when
+  /// only an email is verified. Defaults to the connection's setting.
+  ///
+  /// ## Identifier verification
+  ///
+  /// When identifier verification is enabled for the connection,
+  /// [WebPasskeyChallenge.verificationRequired] lists the identifiers to
+  /// verify. Collect a one-time code for each of them **before** calling
+  /// `navigator.credentials.create()`, then pass the codes as `verification`
+  /// to [getTokenByPasskey].
   Future<WebPasskeyChallenge> passkeySignupChallenge({
     final String? email,
     final String? phoneNumber,
@@ -545,6 +558,7 @@ class Auth0Web {
     final String? connection,
     final String? organizationId,
     final Map<String, String>? userMetadata,
+    final DeliveryMethod? deliveryMethod,
   }) =>
       Auth0FlutterWebPlatform.instance.passkeySignupChallenge(
         WebPasskeySignupChallengeOptions(
@@ -559,6 +573,7 @@ class Auth0Web {
           connection: connection,
           organization: organizationId,
           userMetadata: userMetadata,
+          deliveryMethod: deliveryMethod,
         ),
       );
 
@@ -614,6 +629,28 @@ class Auth0Web {
   /// this setting.
   /// * [organizationId] is the optional Auth0 organization to authenticate
   /// with.
+  /// * [verification] holds the one-time codes that verify ownership of the
+  /// identifiers in [WebPasskeyChallenge.verificationRequired], keyed by
+  /// [PasskeyVerificationMethod]. Omit it when no verification is required.
+  ///
+  /// ## Identifier verification
+  ///
+  /// Pass a non-empty code in [verification] for **every** identifier listed
+  /// in [WebPasskeyChallenge.verificationRequired], or, on a retry, in
+  /// [WebException.passkeyVerificationRequired]. Unlike iOS and Android, the
+  /// web SDK does not check this before sending the request: an empty code is
+  /// rejected by auth0-spa-js, but a missing one is only caught by the server,
+  /// after the passkey has been created.
+  ///
+  /// ## Retrying after a wrong code
+  ///
+  /// If a code is wrong but the session is still alive, a [WebException] with
+  /// [WebException.isPasskeyVerificationRetryable] set to `true` is thrown.
+  /// Ask the user again for the codes in
+  /// [WebException.passkeyVerificationRequired] only, and call this method
+  /// again with the **same** [authResponse] and
+  /// [WebException.passkeyAuthSession] as [authSession]. The user is not
+  /// prompted for the passkey again.
   ///
   /// ## Usage example
   ///
@@ -647,6 +684,7 @@ class Auth0Web {
       'offline_access'
     },
     final String? organizationId,
+    final Map<PasskeyVerificationMethod, String> verification = const {},
   }) =>
       Auth0FlutterWebPlatform.instance.getTokenByPasskey(
         WebGetTokenByPasskeyOptions(
@@ -656,6 +694,7 @@ class Auth0Web {
           audience: audience,
           scopes: scopes,
           organization: organizationId,
+          verification: verification,
         ),
       );
 }

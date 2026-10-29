@@ -41,4 +41,32 @@ class WebException extends Auth0Exception {
 
   WebException.popupClosed(final String message)
       : this(WebException._popupClosed, message, const {});
+
+  /// Whether this is a passkey identifier verification failure that can be
+  /// retried on the same session, typically because a one-time code was wrong.
+  ///
+  /// When `true`, re-collect the codes for [passkeyVerificationRequired] and
+  /// call `Auth0Web.getTokenByPasskey` again with the same credential and
+  /// [passkeyAuthSession]. When `false`, restart the signup with
+  /// `Auth0Web.passkeySignupChallenge`.
+  bool get isPasskeyVerificationRetryable =>
+      details['isPasskeyVerificationRetryable'] == true;
+
+  /// The auth session to use when retrying after a wrong one-time code, or
+  /// `null` when the error carries none.
+  ///
+  /// See [isPasskeyVerificationRetryable].
+  String? get passkeyAuthSession => details['auth_session'] is String
+      ? details['auth_session'] as String
+      : null;
+
+  /// The identifiers that still need a valid one-time code, or `null` unless
+  /// [isPasskeyVerificationRetryable] is `true`.
+  ///
+  /// Identifiers that this version of the SDK doesn't know are dropped.
+  List<PasskeyVerificationMethod>? get passkeyVerificationRequired =>
+      isPasskeyVerificationRetryable && details['verification_required'] is List
+          ? PasskeyVerificationMethod.fromValues(
+              details['verification_required'] as List)
+          : null;
 }

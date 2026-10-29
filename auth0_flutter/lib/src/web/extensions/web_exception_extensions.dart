@@ -36,8 +36,8 @@ extension WebExceptionExtension on WebException {
       case 'mfa_required':
         final mfaToken =
             (jsException.getProperty<JSString?>('mfa_token'.toJS) ??
-                    jsException.getProperty<JSString?>('mfaToken'.toJS))
-                ?.toDart ??
+                        jsException.getProperty<JSString?>('mfaToken'.toJS))
+                    ?.toDart ??
                 '';
         return WebException.mfaError(description.toDart, mfaToken);
       case 'timeout':
@@ -69,6 +69,13 @@ extension WebExceptionExtension on WebException {
   /// `credentials()`/`customTokenExchange()` already handle these same
   /// error codes (for example, `code == 'MFA_REQUIRED'` with `mfaToken` in
   /// `details`, usable directly with `Auth0Web.mfa(mfaToken:)`).
+  ///
+  /// A wrong one-time code on a signup with identifier verification is thrown
+  /// as a `PasskeyGetTokenError` (a `PasskeyError`) with `isRetryable`,
+  /// `authSession` and `verificationRequired`. Those are kept in `details` so
+  /// [WebException.isPasskeyVerificationRetryable],
+  /// [WebException.passkeyAuthSession] and
+  /// [WebException.passkeyVerificationRequired] can read them.
   static WebException fromPasskeyError(final JSObject jsException) {
     if (jsException.has('error')) {
       return fromJsObject(jsException);
@@ -76,8 +83,19 @@ extension WebExceptionExtension on WebException {
 
     final code = jsException.getProperty<JSString?>('code'.toJS);
     final message = jsException.getProperty<JSString?>('message'.toJS);
+    final isRetryable = jsException.getProperty<JSBoolean?>('isRetryable'.toJS);
+    final authSession = jsException.getProperty<JSString?>('authSession'.toJS);
+    final verificationRequired = jsException
+        .getProperty<JSArray<JSString>?>('verificationRequired'.toJS);
 
     return WebException.passkeyError(
-        code?.toDart ?? 'passkey_error', message?.toDart ?? 'Unknown error');
+        code?.toDart ?? 'passkey_error', message?.toDart ?? 'Unknown error', {
+      if (isRetryable != null)
+        'isPasskeyVerificationRetryable': isRetryable.toDart,
+      if (authSession != null) 'auth_session': authSession.toDart,
+      if (verificationRequired != null)
+        'verification_required':
+            verificationRequired.toDart.map((final v) => v.toDart).toList(),
+    });
   }
 }

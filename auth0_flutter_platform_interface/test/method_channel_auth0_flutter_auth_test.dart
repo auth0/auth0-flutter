@@ -1268,6 +1268,41 @@ void main() {
       expect(verificationResult.arguments['scopes'], ['a', 'b']);
       expect(verificationResult.arguments['organization'], 'test-org');
       expect(verificationResult.arguments['parameters']['test'], 'test-123');
+      expect(verificationResult.arguments['verification'], isEmpty);
+      expect(verificationResult.arguments['challenge'],
+          isNot(contains('verificationRequired')));
+    });
+
+    test('correctly maps the identifier verification properties', () async {
+      when(mocked.methodCallHandler(any))
+          .thenAnswer((final _) async => MethodCallHandler.loginResult);
+
+      await MethodChannelAuth0FlutterAuth().passkeyCredentialExchange(
+        ApiRequest<AuthPasskeyExchangeOptions>(
+            account: const Account('test-domain', 'test-clientId'),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasskeyExchangeOptions(
+                challenge: const PasskeyChallenge(
+                  authSession: 'test-auth-session',
+                  authParamsPublicKey: {'challenge': 'test-challenge'},
+                  verificationRequired: [
+                    PasskeyVerificationMethod.email,
+                    PasskeyVerificationMethod.phone,
+                  ],
+                ),
+                credential: _testSignupCredential,
+                verification: {
+                  PasskeyVerificationMethod.email: '123456',
+                  PasskeyVerificationMethod.phone: '654321',
+                })),
+      );
+
+      final verificationResult =
+          verify(mocked.methodCallHandler(captureAny)).captured.single;
+      expect(verificationResult.arguments['challenge']['verificationRequired'],
+          ['email', 'phone']);
+      expect(verificationResult.arguments['verification'],
+          {'email': '123456', 'phone': '654321'});
     });
 
     test('correctly returns credentials from Method Channel', () async {
@@ -1356,6 +1391,28 @@ void main() {
       expect(verificationResult.arguments['connection'], 'test-connection');
       expect(verificationResult.arguments['organization'], 'test-org');
       expect(verificationResult.arguments['userMetadata'], {'plan': 'gold'});
+      expect(verificationResult.arguments['deliveryMethod'], isNull);
+    });
+
+    test('correctly maps the delivery method', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer(
+          (final _) async => MethodCallHandler.passkeySignupChallengeResult);
+
+      await MethodChannelAuth0FlutterAuth().passkeySignupChallenge(
+        ApiRequest<AuthPasskeySignupChallengeOptions>(
+            account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasskeySignupChallengeOptions(
+                phoneNumber: 'test-phone',
+                deliveryMethod: DeliveryMethod.voice)),
+      );
+
+      expect(
+          verify(mocked.methodCallHandler(captureAny))
+              .captured
+              .single
+              .arguments['deliveryMethod'],
+          'voice');
     });
 
     test('correctly returns the challenge from the Method Channel', () async {
@@ -1372,6 +1429,25 @@ void main() {
 
       expect(result.authSession, 'test-auth-session');
       expect(result.authParamsPublicKey['userName'], 'test-user-name');
+      expect(result.verificationRequired, isNull);
+    });
+
+    test('correctly returns the identifiers to verify', () async {
+      when(mocked.methodCallHandler(any)).thenAnswer((final _) async => {
+            ...MethodCallHandler.passkeySignupChallengeResult,
+            'verificationRequired': ['email', 'phone'],
+          });
+
+      final result =
+          await MethodChannelAuth0FlutterAuth().passkeySignupChallenge(
+        ApiRequest<AuthPasskeySignupChallengeOptions>(
+            account: const Account('', ''),
+            userAgent: UserAgent(name: 'test-name', version: 'test-version'),
+            options: AuthPasskeySignupChallengeOptions()),
+      );
+
+      expect(result.verificationRequired,
+          [PasskeyVerificationMethod.email, PasskeyVerificationMethod.phone]);
     });
 
     test('throws an ApiException when the method channel throws', () async {

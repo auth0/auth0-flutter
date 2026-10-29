@@ -3,6 +3,7 @@ package com.auth0.auth0_flutter.request_handlers.api
 import com.auth0.android.Auth0
 import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
+import com.auth0.android.authentication.passwordless.DeliveryMethod
 import com.auth0.android.callback.Callback
 import com.auth0.android.request.Request
 import com.auth0.android.request.UserData
@@ -10,6 +11,7 @@ import com.auth0.android.result.AuthenticatorSelection
 import com.auth0.android.result.AuthnParamsPublicKey
 import com.auth0.android.result.PasskeyRegistrationChallenge
 import com.auth0.android.result.PasskeyUser
+import com.auth0.android.result.PasskeyVerificationMethod
 import com.auth0.android.result.PubKeyCredParam
 import com.auth0.android.result.RelyingParty
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
@@ -21,7 +23,7 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class PasskeySignupChallengeApiRequestHandlerTest {
-    private fun challenge() = PasskeyRegistrationChallenge(
+    private fun challenge(verificationRequired: List<PasskeyVerificationMethod>? = null) = PasskeyRegistrationChallenge(
         authSession = "test-auth-session",
         authParamsPublicKey = AuthnParamsPublicKey(
             authenticatorSelection = AuthenticatorSelection(
@@ -37,7 +39,8 @@ class PasskeySignupChallengeApiRequestHandlerTest {
                 id = "test-user-id",
                 name = "test-user-name"
             )
-        )
+        ),
+        verificationRequired = verificationRequired
     )
 
     @Test
@@ -108,6 +111,72 @@ class PasskeySignupChallengeApiRequestHandlerTest {
         val publicKey = resultMap["authParamsPublicKey"] as Map<*, *>
         assert((publicKey["challenge"]) == "test-challenge")
         assert((publicKey["user"] as Map<*, *>)["name"] == "test-user-name")
+        assert(!resultMap.containsKey("verificationRequired"))
+    }
+
+    @Test
+    fun `should call result success with the identifiers to verify`() {
+        val options = hashMapOf<String, Any>("connection" to "test-connection")
+        val handler = PasskeySignupChallengeApiRequestHandler()
+        val mockBuilder = mock<Request<PasskeyRegistrationChallenge, AuthenticationException>>()
+        val mockApi = mock<AuthenticationAPIClient>()
+        val mockAccount = mock<Auth0>()
+        val mockResult = mock<Result>()
+        val request = MethodCallRequest(account = mockAccount, options)
+
+        doReturn(mockBuilder).`when`(mockApi).signupWithPasskey(any(), anyOrNull(), anyOrNull(), anyOrNull())
+        doAnswer {
+            val cb = it.getArgument<Callback<PasskeyRegistrationChallenge, AuthenticationException>>(0)
+            cb.onSuccess(
+                challenge(listOf(PasskeyVerificationMethod.EMAIL, PasskeyVerificationMethod.PHONE))
+            )
+        }.`when`(mockBuilder).start(any())
+
+        handler.handle(mockApi, request, mockResult)
+
+        val captor = argumentCaptor<Map<String, *>>()
+        verify(mockResult).success(captor.capture())
+        assert(captor.firstValue["verificationRequired"] == listOf("email", "phone"))
+    }
+
+    @Test
+    fun `should forward the delivery method`() {
+        val options = hashMapOf<String, Any>(
+            "phoneNumber" to "test-phone",
+            "deliveryMethod" to "voice"
+        )
+        val handler = PasskeySignupChallengeApiRequestHandler()
+        val mockBuilder = mock<Request<PasskeyRegistrationChallenge, AuthenticationException>>()
+        val mockApi = mock<AuthenticationAPIClient>()
+        val mockAccount = mock<Auth0>()
+        val mockResult = mock<Result>()
+        val request = MethodCallRequest(account = mockAccount, options)
+
+        doReturn(mockBuilder).`when`(mockApi).signupWithPasskey(any(), anyOrNull(), anyOrNull(), anyOrNull())
+
+        handler.handle(mockApi, request, mockResult)
+
+        verify(mockApi).signupWithPasskey(any(), isNull(), isNull(), eq(DeliveryMethod.VOICE))
+    }
+
+    @Test
+    fun `should ignore an unknown delivery method`() {
+        val options = hashMapOf<String, Any>(
+            "phoneNumber" to "test-phone",
+            "deliveryMethod" to "pigeon"
+        )
+        val handler = PasskeySignupChallengeApiRequestHandler()
+        val mockBuilder = mock<Request<PasskeyRegistrationChallenge, AuthenticationException>>()
+        val mockApi = mock<AuthenticationAPIClient>()
+        val mockAccount = mock<Auth0>()
+        val mockResult = mock<Result>()
+        val request = MethodCallRequest(account = mockAccount, options)
+
+        doReturn(mockBuilder).`when`(mockApi).signupWithPasskey(any(), anyOrNull(), anyOrNull(), anyOrNull())
+
+        handler.handle(mockApi, request, mockResult)
+
+        verify(mockApi).signupWithPasskey(any(), isNull(), isNull(), isNull())
     }
 
     @Test

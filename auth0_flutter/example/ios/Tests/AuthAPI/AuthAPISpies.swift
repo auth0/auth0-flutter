@@ -234,6 +234,7 @@ class SpyAuthentication: Authentication, @unchecked Sendable {
                                 connection: String?,
                                 organization: String?,
                                 deliveryMethod: DeliveryMethod?) -> any Requestable<PasskeySignupChallenge, AuthenticationError> {
+        arguments["deliveryMethod"] = deliveryMethod
         return passkeySignupChallenge(email: email,
                                       phoneNumber: phoneNumber,
                                       username: username,
@@ -256,6 +257,9 @@ class SpyAuthentication: Authentication, @unchecked Sendable {
                scope: String,
                organization: String?,
                verification: [PasskeyVerificationMethod: String]) -> any TokenRequestable<Credentials, AuthenticationError> {
+        arguments["verificationRequired"] = verificationRequired
+        arguments["authSession"] = authSession
+        arguments["verification"] = verification
         arguments["connection"] = connection
         arguments["audience"] = audience
         arguments["scope"] = scope

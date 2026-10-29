@@ -1,3 +1,5 @@
+import '../auth/passkey_verification_method.dart';
+
 /// A passkey challenge issued by Auth0 on the web platform.
 ///
 /// Returned by `Auth0Web.passkeyLoginChallenge` (for an existing user) or
@@ -18,8 +20,18 @@ class WebPasskeyChallenge {
   /// (login).
   final Object authParamsPublicKey;
 
+  /// The identifiers that must be verified with a one-time code before tokens
+  /// are issued, or `null` when no verification is required.
+  ///
+  /// Only set on a signup challenge when identifier verification is enabled
+  /// for the connection. Collect a code for each identifier **before** calling
+  /// `navigator.credentials.create()`, and pass them as `verification` to
+  /// `Auth0Web.getTokenByPasskey`.
+  final List<PasskeyVerificationMethod>? verificationRequired;
+
   const WebPasskeyChallenge({
     required this.authSession,
     required this.authParamsPublicKey,
+    this.verificationRequired,
   });
 }

@@ -50,6 +50,16 @@ extension AuthAPIPasskeySignupChallengeMethodHandlerTests {
         XCTAssertEqual(spy.arguments["userMetadata"] as? [String: String], ["plan": "gold"])
     }
 
+    func testAddsDeliveryMethod() {
+        sut.handle(with: arguments(withKey: Argument.deliveryMethod, value: "voice")) { _ in }
+        XCTAssertEqual(spy.arguments["deliveryMethod"] as? DeliveryMethod, .voice)
+    }
+
+    func testIgnoresAnUnknownDeliveryMethod() {
+        sut.handle(with: arguments(withKey: Argument.deliveryMethod, value: "pigeon")) { _ in }
+        XCTAssertNil(spy.arguments["deliveryMethod"] as? DeliveryMethod)
+    }
+
     func testAddsProfileIdentifiers() {
         var args: [String: Any] = [:]
         args[Argument.givenName.rawValue] = "test-given-name"
@@ -83,6 +93,33 @@ extension AuthAPIPasskeySignupChallengeMethodHandlerTests {
             XCTAssertEqual(publicKey?["userName"] as? String, "test-user-name")
             XCTAssertNotNil(publicKey?["challenge"] as? String)
             XCTAssertNotNil(publicKey?["userId"] as? String)
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
+    }
+
+    func testOmitsVerificationRequiredWhenTheChallengeHasNone() {
+        let expectation = self.expectation(description: "Produced a challenge response")
+        sut.handle(with: arguments()) { result in
+            let dictionary = result as? [String: Any]
+            XCTAssertNil(dictionary?["verificationRequired"])
+            expectation.fulfill()
+        }
+        wait(for: [expectation])
+    }
+
+    func testProducesVerificationRequired() {
+        let challenge = PasskeySignupChallenge(authenticationSession: "test-auth-session",
+                                               relyingPartyId: "test-rp-id",
+                                               userId: Data("test-user-id".utf8),
+                                               userName: "test-user-name",
+                                               challengeData: Data("test-challenge".utf8),
+                                               verificationRequired: [.email, .phone])
+        let expectation = self.expectation(description: "Produced a challenge response")
+        spy.passkeySignupChallengeResultOverride = .success(challenge)
+        sut.handle(with: arguments()) { result in
+            let dictionary = result as? [String: Any]
+            XCTAssertEqual(dictionary?["verificationRequired"] as? [String], ["email", "phone"])
             expectation.fulfill()
         }
         wait(for: [expectation])

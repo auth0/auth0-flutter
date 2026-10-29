@@ -24,6 +24,7 @@ export 'src/auth/dpop_headers.dart';
 export 'src/auth/empty_request_options.dart';
 export 'src/auth/passkey_challenge.dart';
 export 'src/auth/passkey_credential.dart';
+export 'src/auth/passkey_verification_method.dart';
 export 'src/auth/passwordless_challenge.dart';
 export 'src/auth0_exception.dart';
 export 'src/auth0_flutter_auth_platform.dart';

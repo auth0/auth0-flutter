@@ -4,6 +4,7 @@ import '../auth0_exception.dart';
 import '../extensions/exception_extensions.dart';
 import '../extensions/map_extensions.dart';
 import '../mfa/mfa_requirements.dart';
+import 'passkey_verification_method.dart';
 
 class ApiException extends Auth0Exception {
   static const _errorFlagsKey = '_errorFlags';
@@ -44,11 +45,10 @@ class ApiException extends Auth0Exception {
   /// The MFA factors the user can challenge or enroll, parsed from the
   /// `mfa_requirements` field of an `mfa_required` error. Returns `null` when
   /// the error carries no requirements.
-  MfaRequirements? get mfaRequirements =>
-      details['mfa_requirements'] is Map
-          ? MfaRequirements.fromMap(
-              Map<String, dynamic>.from(details['mfa_requirements'] as Map))
-          : null;
+  MfaRequirements? get mfaRequirements => details['mfa_requirements'] is Map
+      ? MfaRequirements.fromMap(
+          Map<String, dynamic>.from(details['mfa_requirements'] as Map))
+      : null;
   bool get isMultifactorEnrollRequired =>
       _errorFlags.getBooleanOrFalse('isMultifactorEnrollRequired');
   bool get isMultifactorCodeInvalid =>
@@ -83,4 +83,34 @@ class ApiException extends Auth0Exception {
       _errorFlags.getBooleanOrFalse('isPasswordLeaked');
   bool get isLoginRequired => _errorFlags.getBooleanOrFalse('isLoginRequired');
   bool get isRetryable => isNetworkError;
+
+  /// Whether this is a passkey identifier verification failure that can be
+  /// retried on the same session, typically because a one-time code was wrong.
+  ///
+  /// When `true`, re-collect the codes for [passkeyVerificationRequired] and
+  /// call `passkeyCredentialExchange` again with the same credential and a
+  /// challenge built from [passkeyAuthSession]. When `false`, restart the
+  /// signup with `passkeySignupChallenge`.
+  ///
+  /// This is unrelated to [isRetryable] and [isVerificationRequired].
+  bool get isPasskeyVerificationRetryable =>
+      _errorFlags.getBooleanOrFalse('isPasskeyVerificationRetryable');
+
+  /// The auth session to use when retrying after a wrong one-time code, or
+  /// `null` when the error carries none.
+  ///
+  /// See [isPasskeyVerificationRetryable].
+  String? get passkeyAuthSession => details['auth_session'] is String
+      ? details['auth_session'] as String
+      : null;
+
+  /// The identifiers that still need a valid one-time code, or `null` unless
+  /// [isPasskeyVerificationRetryable] is `true`.
+  ///
+  /// Identifiers that this version of the SDK doesn't know are dropped.
+  List<PasskeyVerificationMethod>? get passkeyVerificationRequired =>
+      isPasskeyVerificationRetryable && details['verification_required'] is List
+          ? PasskeyVerificationMethod.fromValues(
+              details['verification_required'] as List)
+          : null;
 }

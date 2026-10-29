@@ -27,7 +27,12 @@ fun AuthenticationException.toMap(): Map<String, Any> {
             "isCanceled" to exception.isCanceled,
             "isPasswordLeaked" to exception.isPasswordLeaked,
             "isLoginRequired" to exception.isLoginRequired,
+            "isPasskeyVerificationRetryable" to exception.isPasskeyVerificationRetryable,
         ))
         if (exception.getValue("mfa_token") != null) { put("mfa_token", exception.getValue("mfa_token")!!) }
+        exception.passkeyAuthSession?.let { put("auth_session", it) }
+        exception.passkeyVerificationRequired?.let { required ->
+            put("verification_required", required.map { it.value })
+        }
     }
 }

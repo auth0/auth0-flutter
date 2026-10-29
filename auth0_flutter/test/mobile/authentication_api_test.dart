@@ -576,7 +576,77 @@ void main() {
       expect(verificationResult.options.connection, 'test-connection');
       expect(verificationResult.options.organization, 'test-org');
       expect(verificationResult.options.userMetadata, {'plan': 'gold'});
+      expect(verificationResult.options.deliveryMethod, isNull);
       expect(result, TestPlatform.passkeySignupChallengeResult);
+    });
+
+    test('passes the delivery method through to the platform', () async {
+      when(mockedPlatform.passkeySignupChallenge(any)).thenAnswer(
+          (_) async => TestPlatform.passkeySignupChallengeResult);
+
+      await Auth0('test-domain', 'test-clientId').api.passkeySignupChallenge(
+            phoneNumber: 'test-phone',
+            deliveryMethod: DeliveryMethod.voice,
+          );
+
+      final verificationResult =
+          verify(mockedPlatform.passkeySignupChallenge(captureAny))
+              .captured
+              .single as ApiRequest<AuthPasskeySignupChallengeOptions>;
+      expect(verificationResult.options.deliveryMethod, DeliveryMethod.voice);
+    });
+  });
+
+  group('passkey identifier verification', () {
+    test('passes the verification codes through to the platform', () async {
+      when(mockedPlatform.passkeyCredentialExchange(any))
+          .thenAnswer((_) async => TestPlatform.loginResult);
+
+      await Auth0('test-domain', 'test-clientId').api.passkeyCredentialExchange(
+        challenge: const PasskeyChallenge(
+          authSession: 'test-auth-session',
+          authParamsPublicKey: {'challenge': 'test-challenge'},
+          verificationRequired: [
+            PasskeyVerificationMethod.email,
+            PasskeyVerificationMethod.phone,
+          ],
+        ),
+        credential: TestPlatform.passkeySignupCredential,
+        verification: {
+          PasskeyVerificationMethod.email: '123456',
+          PasskeyVerificationMethod.phone: '654321',
+        },
+      );
+
+      final verificationResult =
+          verify(mockedPlatform.passkeyCredentialExchange(captureAny))
+              .captured
+              .single as ApiRequest<AuthPasskeyExchangeOptions>;
+      expect(verificationResult.options.challenge.verificationRequired, [
+        PasskeyVerificationMethod.email,
+        PasskeyVerificationMethod.phone,
+      ]);
+      expect(verificationResult.options.verification, {
+        PasskeyVerificationMethod.email: '123456',
+        PasskeyVerificationMethod.phone: '654321',
+      });
+    });
+
+    test('sends no verification codes when omitted', () async {
+      when(mockedPlatform.passkeyCredentialExchange(any))
+          .thenAnswer((_) async => TestPlatform.loginResult);
+
+      await Auth0('test-domain', 'test-clientId').api.passkeyCredentialExchange(
+            challenge: TestPlatform.passkeySignupChallengeResult,
+            credential: TestPlatform.passkeySignupCredential,
+          );
+
+      final verificationResult =
+          verify(mockedPlatform.passkeyCredentialExchange(captureAny))
+              .captured
+              .single as ApiRequest<AuthPasskeyExchangeOptions>;
+      expect(verificationResult.options.verification, isEmpty);
+      expect(verificationResult.options.challenge.verificationRequired, isNull);
     });
   });
 

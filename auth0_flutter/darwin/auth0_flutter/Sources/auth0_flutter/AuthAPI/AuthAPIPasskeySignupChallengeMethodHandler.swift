@@ -21,6 +21,7 @@ struct AuthAPIPasskeySignupChallengeMethodHandler: MethodHandler {
         case connection
         case organization
         case userMetadata
+        case deliveryMethod
     }
 
     let client: Authentication
@@ -37,6 +38,8 @@ struct AuthAPIPasskeySignupChallengeMethodHandler: MethodHandler {
         let connection = arguments[Argument.connection] as? String
         let organization = arguments[Argument.organization] as? String
         let userMetadata = arguments[Argument.userMetadata] as? [String: String]
+        let deliveryMethod = (arguments[Argument.deliveryMethod] as? String)
+            .flatMap { DeliveryMethod(rawValue: $0) }
 
         client
             .passkeySignupChallenge(email: email,
@@ -49,11 +52,12 @@ struct AuthAPIPasskeySignupChallengeMethodHandler: MethodHandler {
                                     picture: picture,
                                     userMetadata: userMetadata,
                                     connection: connection,
-                                    organization: organization)
+                                    organization: organization,
+                                    deliveryMethod: deliveryMethod)
             .start {
                 switch $0 {
                 case let .success(challenge):
-                    let response: [String: Any] = [
+                    var response: [String: Any] = [
                         "authSession": challenge.authenticationSession,
                         "authParamsPublicKey": [
                             "challenge": challenge.challengeData.base64URLEncodedString(),
@@ -62,6 +66,9 @@ struct AuthAPIPasskeySignupChallengeMethodHandler: MethodHandler {
                             "userName": challenge.userName
                         ]
                     ]
+                    if let verificationRequired = challenge.verificationRequired {
+                        response["verificationRequired"] = verificationRequired.map { $0.rawValue }
+                    }
                     callback(response)
                 case let .failure(error):
                     callback(FlutterError(from: error))

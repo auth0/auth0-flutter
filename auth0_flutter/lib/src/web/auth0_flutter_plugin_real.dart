@@ -366,6 +366,7 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
         organization: options.organization,
         scope: scopeString,
         audience: options.audience,
+        verification: passkeyVerificationToJs(options.verification),
       )));
 
       return CredentialsExtension.fromWeb(result);

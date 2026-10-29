@@ -365,8 +365,8 @@ class AuthenticationApi {
     final String? organization,
     final ActorToken? actor,
   }) =>
-      Auth0FlutterAuthPlatform.instance.customTokenExchange(
-          _createApiRequest(AuthCustomTokenExchangeOptions(
+      Auth0FlutterAuthPlatform.instance.customTokenExchange(_createApiRequest(
+          AuthCustomTokenExchangeOptions(
               subjectToken: subjectToken,
               subjectTokenType: subjectTokenType,
               audience: audience,
@@ -451,6 +451,18 @@ class AuthenticationApi {
   /// omitted.
   /// * [organization] is the optional Auth0 organization to sign up to.
   /// * [userMetadata] is optional metadata to associate with the new user.
+  /// * [deliveryMethod] selects how a phone one-time code is delivered when
+  /// the connection requires phone identifier verification. It is ignored when
+  /// only an email is verified. Defaults to the connection's setting.
+  ///
+  /// ## Identifier verification
+  ///
+  /// When identifier verification is enabled for the connection,
+  /// [PasskeyChallenge.verificationRequired] lists the identifiers to verify.
+  /// Collect a one-time code for each of them **before** presenting the OS
+  /// passkey creation UI, then pass the codes as `verification` to
+  /// [passkeyCredentialExchange]. Otherwise, a failed verification leaves a
+  /// passkey on the device that is not linked to any account.
   ///
   /// ## Usage example
   ///
@@ -472,6 +484,7 @@ class AuthenticationApi {
     final String? connection,
     final String? organization,
     final Map<String, String>? userMetadata,
+    final DeliveryMethod? deliveryMethod,
   }) =>
       Auth0FlutterAuthPlatform.instance.passkeySignupChallenge(
           _createApiRequest(AuthPasskeySignupChallengeOptions(
@@ -486,6 +499,7 @@ class AuthenticationApi {
         connection: connection,
         organization: organization,
         userMetadata: userMetadata,
+        deliveryMethod: deliveryMethod,
       )));
 
   /// Exchanges a passkey [credential] for Auth0 tokens.
@@ -498,6 +512,43 @@ class AuthenticationApi {
   /// [passkeyLoginChallenge] or [passkeySignupChallenge]. This call exchanges
   /// that credential at the
   /// `/oauth/token` endpoint.
+  ///
+  /// ## Identifier verification
+  ///
+  /// [verification] holds the one-time codes that verify ownership of the
+  /// identifiers in [PasskeyChallenge.verificationRequired], keyed by
+  /// [PasskeyVerificationMethod]. Every required identifier needs a non-empty
+  /// code; otherwise the call fails with an `invalid_request` [ApiException]
+  /// and nothing is sent. Omit it when no verification is required.
+  ///
+  /// If a code is wrong but the session is still alive, the call fails with an
+  /// [ApiException] whose [ApiException.isPasskeyVerificationRetryable] is
+  /// `true`. Ask the user again for the codes in
+  /// [ApiException.passkeyVerificationRequired] only, and call this method
+  /// again with the **same** [credential] and a [PasskeyChallenge] built from
+  /// [ApiException.passkeyAuthSession] and
+  /// [ApiException.passkeyVerificationRequired], so the user is not prompted
+  /// for the passkey again:
+  ///
+  /// ```dart
+  /// try {
+  ///   return await auth0.api.passkeyCredentialExchange(
+  ///     challenge: challenge,
+  ///     credential: credential,
+  ///     verification: {PasskeyVerificationMethod.email: emailCode},
+  ///   );
+  /// } on ApiException catch (e) {
+  ///   if (!e.isPasskeyVerificationRetryable) rethrow;
+  ///
+  ///   final retryChallenge = PasskeyChallenge(
+  ///     authSession: e.passkeyAuthSession!,
+  ///     authParamsPublicKey: challenge.authParamsPublicKey,
+  ///     verificationRequired: e.passkeyVerificationRequired,
+  ///   );
+  ///   // Ask for the codes in `e.passkeyVerificationRequired`, then call
+  ///   // passkeyCredentialExchange again with `retryChallenge`.
+  /// }
+  /// ```
   Future<Credentials> passkeyCredentialExchange({
     required final PasskeyChallenge challenge,
     required final PasskeyCredential credential,
@@ -511,6 +562,7 @@ class AuthenticationApi {
     },
     final String? organization,
     final Map<String, String> parameters = const {},
+    final Map<PasskeyVerificationMethod, String> verification = const {},
   }) =>
       Auth0FlutterAuthPlatform.instance.passkeyCredentialExchange(
           _createApiRequest(AuthPasskeyExchangeOptions(
@@ -521,6 +573,7 @@ class AuthenticationApi {
         scopes: scopes,
         organization: organization,
         parameters: parameters,
+        verification: verification,
       )));
 
   ApiRequest<TOptions> _createApiRequest<TOptions extends RequestOptions>(

@@ -35,6 +35,7 @@ extension PasskeySignupChallengeOptionsExtension
         userMetadata: _jsifyUserMetadata(userMetadata),
         realm: connection,
         organization: organization,
+        deliveryMethod: deliveryMethod?.value,
       );
 }
 
@@ -52,5 +53,23 @@ extension PasskeyChallengeResponseExtension
   WebPasskeyChallenge toWebPasskeyChallenge() => WebPasskeyChallenge(
         authSession: authSession,
         authParamsPublicKey: publicKey,
+        verificationRequired: verificationRequired == null
+            ? null
+            : PasskeyVerificationMethod.fromValues(
+                verificationRequired!.toDart.map((final v) => v.toDart)),
       );
+}
+
+/// Converts [verification] to the `{email: '123456'}` object that
+/// `auth0-spa-js` expects, or returns null when there are no codes: an empty
+/// `verification` object must not be sent.
+JSObject? passkeyVerificationToJs(
+    final Map<PasskeyVerificationMethod, String> verification) {
+  if (verification.isEmpty) {
+    return null;
+  }
+
+  return {
+    for (final entry in verification.entries) entry.key.value: entry.value
+  }.jsify() as JSObject;
 }

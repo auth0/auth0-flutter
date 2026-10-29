@@ -134,5 +134,32 @@ void main() {
       expect(result.organization, 'org_123');
       expect(result.userMetadata, isA<JSObject>());
     });
+
+    test('delivery method is forwarded by its wire value', () {
+      expect(WebPasskeySignupChallengeOptions().toInterop().deliveryMethod,
+          isNull);
+      expect(
+          WebPasskeySignupChallengeOptions(deliveryMethod: DeliveryMethod.text)
+              .toInterop()
+              .deliveryMethod,
+          'text');
+    });
+  });
+
+  group('passkeyVerificationToJs', () {
+    test('returns null when there are no codes, so no empty object is sent',
+        () {
+      expect(passkeyVerificationToJs(const {}), isNull);
+    });
+
+    test('keys the codes by identifier', () {
+      final result = passkeyVerificationToJs({
+        PasskeyVerificationMethod.email: '123456',
+        PasskeyVerificationMethod.phone: '654321',
+      })!;
+
+      expect(_readString(result, 'email'), '123456');
+      expect(_readString(result, 'phone'), '654321');
+    });
   });
 }

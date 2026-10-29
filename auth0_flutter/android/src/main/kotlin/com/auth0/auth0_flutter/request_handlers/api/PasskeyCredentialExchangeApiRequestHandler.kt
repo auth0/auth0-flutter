@@ -4,6 +4,7 @@ import com.auth0.android.authentication.AuthenticationAPIClient
 import com.auth0.android.authentication.AuthenticationException
 import com.auth0.android.callback.Callback
 import com.auth0.android.result.Credentials
+import com.auth0.android.result.PasskeyVerificationMethod
 import com.auth0.auth0_flutter.request_handlers.MethodCallRequest
 import com.auth0.auth0_flutter.toMap
 import com.auth0.auth0_flutter.utils.assertHasProperties
@@ -51,6 +52,16 @@ class PasskeyCredentialExchangeApiRequestHandler : ApiRequestHandler {
         val parameters = (args["parameters"] as? Map<*, *>)?.mapKeys { it.key.toString() }
             ?.mapValues { it.value.toString() } ?: emptyMap()
 
+        // Identifiers are matched by value; ones this SDK version doesn't know are skipped.
+        val verification = (args["verification"] as? Map<*, *>)
+            ?.mapNotNull { (key, code) ->
+                val method = PasskeyVerificationMethod.values().firstOrNull { it.value == key }
+                if (method != null && code is String) method to code else null
+            }?.toMap() ?: emptyMap()
+        val verificationRequired = (challenge["verificationRequired"] as? List<*>)
+            ?.mapNotNull { value -> PasskeyVerificationMethod.values().firstOrNull { it.value == value } }
+            ?: emptyList()
+
         // signinWithPasskey accepts the WebAuthn credential response as a JSON
         // string in the standard format produced by the platform authenticator.
         val authResponseJson = gson.toJson(credentialMap)
@@ -59,7 +70,9 @@ class PasskeyCredentialExchangeApiRequestHandler : ApiRequestHandler {
             authSession,
             authResponseJson,
             connection,
-            organization
+            organization,
+            verification,
+            verificationRequired
         )
             .validateClaims()
 

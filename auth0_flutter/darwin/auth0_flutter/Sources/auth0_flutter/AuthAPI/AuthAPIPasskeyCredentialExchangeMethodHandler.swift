@@ -50,6 +50,7 @@ struct AuthAPIPasskeyCredentialExchangeMethodHandler: MethodHandler {
         case scopes
         case organization
         case parameters
+        case verification
     }
 
     let client: Authentication
@@ -67,6 +68,12 @@ struct AuthAPIPasskeyCredentialExchangeMethodHandler: MethodHandler {
         let scopes = (arguments[Argument.scopes.rawValue] as? [String]) ?? []
         let organization = arguments[Argument.organization.rawValue] as? String
         let parameters = (arguments[Argument.parameters.rawValue] as? [String: Any]) ?? [:]
+        let verification = ((arguments[Argument.verification.rawValue] as? [String: String]) ?? [:])
+            .reduce(into: [PasskeyVerificationMethod: String]()) { result, entry in
+                result[PasskeyVerificationMethod(rawValue: entry.key)] = entry.value
+            }
+        let verificationRequired = ((challengeMap["verificationRequired"] as? [String]) ?? [])
+            .map { PasskeyVerificationMethod(rawValue: $0) }
 
         let response = credentialMap["response"] as? [String: Any]
         let isSignup = response?["attestationObject"] != nil
@@ -84,11 +91,13 @@ struct AuthAPIPasskeyCredentialExchangeMethodHandler: MethodHandler {
                                              details: nil))
             }
             request = client.login(passkey: passkey,
-                                   challenge: challenge,
+                                   verificationRequired: verificationRequired,
+                                   authSession: challenge.authenticationSession,
                                    connection: connection,
                                    audience: audience,
                                    scope: scopes.asSpaceSeparatedString,
-                                   organization: organization)
+                                   organization: organization,
+                                   verification: verification)
         } else {
             guard let challenge = Self.reconstructLoginChallenge(from: challengeMap) else {
                 return callback(FlutterError(code: "PASSKEY_ERROR",

@@ -1353,6 +1353,56 @@ final credentials = await auth0.api.passkeyCredentialExchange(
 
 </details>
 
+#### Verify identifiers during passkey signup
+
+When identifier verification is enabled for your database connection, Auth0 sends a one-time code to each identifier being verified (for example, the user's email) as part of `passkeySignupChallenge`, and won't issue tokens until the correct codes are sent back. In that case `PasskeyChallenge.verificationRequired` lists the identifiers to verify; it is `null` when no verification is required, so existing flows keep working unchanged.
+
+- **Collect the codes before the OS passkey UI.** Ask the user for the codes first, then create the passkey. If you create the passkey first and verification then fails for good, the user is left with a passkey on their device that isn't linked to any account.
+- Pass the codes as `verification`, keyed by `PasskeyVerificationMethod`. Every identifier in `verificationRequired` needs a non-empty code; on iOS and Android a missing or empty code fails the call straight away with an `invalid_request` `ApiException`, without a network request. Omit `verification` when nothing needs verifying.
+- If a code is wrong but the session is still alive, `passkeyCredentialExchange` throws an `ApiException` with `isPasskeyVerificationRetryable` set to `true`. Ask the user again for the codes in `passkeyVerificationRequired` only, and call `passkeyCredentialExchange` again with the **same** `credential` and a new `PasskeyChallenge` built from `passkeyAuthSession` and `passkeyVerificationRequired`. The user is not prompted for the passkey again.
+- When `isPasskeyVerificationRetryable` is `false` (for example, the attempts are used up or the session expired), start again from `passkeySignupChallenge`. Auth0 controls how many wrong codes it accepts. When they run out, the error comes back without a session, so `isPasskeyVerificationRetryable` turns `false` and the loop below stops. There is no need to set a retry limit in your app, and a limit lower than Auth0's would force the user to request a new code.
+- Use `deliveryMethod` (`DeliveryMethod.text` or `DeliveryMethod.voice`) on `passkeySignupChallenge` to choose how a phone code is delivered. It only applies to the phone identifier and is ignored when only an email is verified.
+
+```dart
+// 1. Request a challenge. Auth0 sends a code to each identifier to verify.
+final challenge = await auth0.api.passkeySignupChallenge(
+    email: 'jane.smith@example.com',
+    connection: 'Username-Password-Authentication');
+
+// 2. Collect the codes BEFORE creating the passkey. `askUserForCodes` is your
+//    own UI that returns a code for each of the given identifiers.
+var codes = await askUserForCodes(challenge.verificationRequired ?? const []);
+
+// 3. Present the OS passkey-creation UI and build a PasskeyCredential from the
+//    attestation, as in the example above.
+final credential = await createPasskeyCredential(challenge);
+
+// 4. Exchange the credential, re-asking only for the codes that were wrong.
+//    Any error that isn't retryable is rethrown, which ends the loop.
+var currentChallenge = challenge;
+Credentials? credentials;
+while (credentials == null) {
+  try {
+    credentials = await auth0.api.passkeyCredentialExchange(
+        challenge: currentChallenge,
+        credential: credential,
+        connection: 'Username-Password-Authentication',
+        verification: codes);
+  } on ApiException catch (e) {
+    if (!e.isPasskeyVerificationRetryable) rethrow;
+
+    final stillRequired = e.passkeyVerificationRequired ?? const [];
+    currentChallenge = PasskeyChallenge(
+        authSession: e.passkeyAuthSession!,
+        authParamsPublicKey: challenge.authParamsPublicKey,
+        verificationRequired: stillRequired);
+    codes = await askUserForCodes(stillRequired);
+  }
+}
+```
+
+> A rate-limited request (HTTP 429, for example too many signup attempts from one IP address) isn't a verification failure and isn't retryable on the same session. Check `ApiException.statusCode == 429` and ask the user to try again later.
+
 ### Passkeys on the Web
 
 Passkeys are supported on web via `Auth0Web`, backed by `@auth0/auth0-spa-js`'s passkey API (requires **auth0-spa-js v2.24.0 or later** loaded on your page). The flow is the same three steps as native (challenge → credential manager → exchange), but step 2 uses the browser's built-in [WebAuthn API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Authentication_API) (`navigator.credentials.create()`/`.get()`) instead of a native platform authenticator.
@@ -1415,6 +1465,48 @@ Future<void> logInWithPasskey() async {
 
 </details>
 
+#### Identifier verification on the web
+
+The web flow supports identifier verification as well; see [Verify identifiers during passkey signup](#verify-identifiers-during-passkey-signup) for how it works. `WebPasskeyChallenge.verificationRequired` lists the identifiers to verify, `passkeySignupChallenge` takes an optional `deliveryMethod`, and `getTokenByPasskey` takes the codes as `verification`. Collect the codes **before** calling `navigator.credentials.create()`.
+
+On web, you must pass a non-empty code in `verification` for every identifier listed in `WebPasskeyChallenge.verificationRequired` (or, on a retry, in `WebException.passkeyVerificationRequired`). On iOS and Android the SDK also checks this before sending the request. On web it does not, so a missing code is only caught by the server, after the passkey has been created.
+
+If a code is wrong but the session is still alive, `getTokenByPasskey` throws a `WebException` with `isPasskeyVerificationRetryable` set to `true`. Ask again for the codes in `passkeyVerificationRequired`, then call `getTokenByPasskey` again with the **same** credential and `passkeyAuthSession` as the `authSession`.
+
+```dart
+final challenge = await auth0Web.passkeySignupChallenge(
+    email: 'jane.smith@example.com',
+    connection: 'Username-Password-Authentication');
+
+// Collect the codes BEFORE creating the passkey.
+var codes = await askUserForCodes(challenge.verificationRequired ?? const []);
+
+final credential = await web.window.navigator.credentials.create(
+    web.CredentialCreationOptions(
+        publicKey: challenge.authParamsPublicKey
+            as web.PublicKeyCredentialCreationOptions));
+
+// Any error that isn't retryable is rethrown, which ends the loop.
+var authSession = challenge.authSession;
+Credentials? credentials;
+while (credentials == null) {
+  try {
+    credentials = await auth0Web.getTokenByPasskey(
+        authSession: authSession,
+        authResponse: credential,
+        connection: 'Username-Password-Authentication',
+        verification: codes);
+  } on WebException catch (e) {
+    if (!e.isPasskeyVerificationRetryable) rethrow;
+
+    authSession = e.passkeyAuthSession!;
+    codes = await askUserForCodes(e.passkeyVerificationRequired ?? const []);
+  }
+}
+```
+
+> Unlike iOS and Android, the web SDK only rejects empty codes on the client. A code that is missing for a required identifier fails on the server after the passkey was created, so always send a code for every identifier in `verificationRequired`.
+
 #### Handling errors on the web
 
 `passkeySignupChallenge`, `passkeyLoginChallenge`, and `getTokenByPasskey` all throw a [`WebException`](https://pub.dev/documentation/auth0_flutter/latest/auth0_flutter_web/WebException-class.html) on failure, decoded from whatever `auth0-spa-js` throws:
@@ -1423,6 +1515,7 @@ Future<void> logInWithPasskey() async {
 | :--- | :--- | :--- |
 | Challenge request fails (`passkeySignupChallenge`/`passkeyLoginChallenge`) | `PASSKEY_ERROR` | `details['code']` carries the underlying `auth0-spa-js` code, e.g. `passkey_register_error`, `passkey_challenge_error`, `passkey_not_supported` (WebAuthn unavailable in this browser). |
 | `getTokenByPasskey`'s credential-shape check fails | `PASSKEY_ERROR` | `details['code'] == 'passkey_invalid_credential'` — the `authResponse` isn't a valid attestation or assertion response. |
+| `getTokenByPasskey`'s token exchange has a wrong verification code and the session is still alive | `PASSKEY_ERROR` | `isPasskeyVerificationRetryable` is `true`; `passkeyAuthSession` and `passkeyVerificationRequired` carry what is needed to retry. See [Identifier verification on the web](#identifier-verification-on-the-web). |
 | `getTokenByPasskey`'s token exchange requires MFA | `MFA_REQUIRED` | Same shape as [`credentials()`/`customTokenExchange()`](#-multi-factor-authentication-mfa) — `details['mfaToken']` is ready to pass to `Auth0Web.mfa(mfaToken:)`. |
 | `getTokenByPasskey`'s token exchange fails for another reason (e.g. `invalid_grant`, `access_denied`, an expired `authSession`) | `AUTHENTICATION_ERROR` | `details['code']` carries the OAuth error code returned by `/oauth/token`. |
 
