@@ -72,6 +72,8 @@ struct AuthAPIPasskeyCredentialExchangeMethodHandler: MethodHandler {
             .reduce(into: [PasskeyVerificationMethod: String]()) { result, entry in
                 result[PasskeyVerificationMethod(rawValue: entry.key)] = entry.value
             }
+        let verificationRequired = ((challengeMap["verificationRequired"] as? [String]) ?? [])
+            .map { PasskeyVerificationMethod(rawValue: $0) }
 
         let response = credentialMap["response"] as? [String: Any]
         let isSignup = response?["attestationObject"] != nil
@@ -89,7 +91,8 @@ struct AuthAPIPasskeyCredentialExchangeMethodHandler: MethodHandler {
                                              details: nil))
             }
             request = client.login(passkey: passkey,
-                                   challenge: challenge,
+                                   verificationRequired: verificationRequired,
+                                   authSession: challenge.authenticationSession,
                                    connection: connection,
                                    audience: audience,
                                    scope: scopes.asSpaceSeparatedString,
@@ -198,7 +201,7 @@ struct AuthAPIPasskeyCredentialExchangeMethodHandler: MethodHandler {
             return nil
         }
 
-        var challengeJson: [String: Any] = [
+        let challengeJson: [String: Any] = [
             "auth_session": authSession,
             "authn_params_public_key": [
                 "rp": ["id": relyingPartyId],
@@ -206,9 +209,6 @@ struct AuthAPIPasskeyCredentialExchangeMethodHandler: MethodHandler {
                 "challenge": challengeString
             ]
         ]
-        if let verificationRequired = challengeMap["verificationRequired"] as? [String] {
-            challengeJson["verification_required"] = verificationRequired
-        }
 
         guard let jsonData = try? JSONSerialization.data(withJSONObject: challengeJson) else {
             return nil
