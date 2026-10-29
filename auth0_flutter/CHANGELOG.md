@@ -1,5 +1,32 @@
 # Change Log
 
+## [af-v3.0.0](https://github.com/auth0/auth0-flutter/tree/af-v3.0.0) (2026-10-29)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.7.0...af-v3.0.0)
+
+**Breaking Change**
+- feat: remove inline MFA methods from the Authentication API. [\#943](https://github.com/auth0/auth0-flutter/pull/943) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: reconcile WebAuthenticationException error codes across Android and iOS [\#935](https://github.com/auth0/auth0-flutter/pull/935) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: change SSOCredentials.expiresIn to expiresAt (Android + iOS) [\#931](https://github.com/auth0/auth0-flutter/pull/931) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: Upgrade Auth0.Android to v4.0.0. [\#918](https://github.com/auth0/auth0-flutter/pull/918) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: Upgrade Auth0.swift to v3.0.2 [\#909](https://github.com/auth0/auth0-flutter/pull/909) ([NandanPrabhu](https://github.com/NandanPrabhu))
+
+**Added**
+- feat(android): add opt-in Trusted Web Activity and Auth Tab support [\#961](https://github.com/auth0/auth0-flutter/pull/961) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: add nonce to IdTokenValidationConfig for Web Auth login [\#944](https://github.com/auth0/auth0-flutter/pull/944) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: dpop web auth init config [\#938](https://github.com/auth0/auth0-flutter/pull/938) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: add credentialsManager.clearAll() for full credential and key wipe [\#930](https://github.com/auth0/auth0-flutter/pull/930) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
+**Changed**
+- build(deps): bump Auth0.Android to 4.2.0, Auth0.swift to 3.2.0 and auth0-spa-js to 2.29 [\#969](https://github.com/auth0/auth0-flutter/pull/969) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: default credentialsManager minTtl to 60 seconds [\#929](https://github.com/auth0/auth0-flutter/pull/929) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- feat: honor useEphemeralSession on Android web auth [\#927](https://github.com/auth0/auth0-flutter/pull/927) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
+**Fixed**
+- fix(ios): return null from user() when no credentials are stored [\#981](https://github.com/auth0/auth0-flutter/pull/981) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- fix(ios): do not throw when clearing credentials that are not stored [\#980](https://github.com/auth0/auth0-flutter/pull/980) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- Fix/bump auth0 android 4.2.1 [\#977](https://github.com/auth0/auth0-flutter/pull/977) ([utkrishtsahu](https://github.com/utkrishtsahu))
+- fix: register Android web auth callbacks with the activity lifecycle [\#928](https://github.com/auth0/auth0-flutter/pull/928) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
 ## [af-v2.7.0](https://github.com/auth0/auth0-flutter/tree/af-v2.7.0) (2026-10-26)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v2.6.2...af-v2.7.0)
 
