@@ -55,6 +55,12 @@ extension FlutterError {
         var errorDetails = authenticationError.details
         errorDetails[AuthAPIErrorKey.errorFlags] = errorFlags
         errorDetails[AuthAPIErrorKey.statusCode] = authenticationError.statusCode
+        if let authSession = authenticationError.passkeyAuthSession {
+            errorDetails["auth_session"] = authSession
+        }
+        if let verificationRequired = authenticationError.passkeyVerificationRequired {
+            errorDetails["verification_required"] = verificationRequired.map { $0.rawValue }
+        }
 
         self.init(code: authenticationError.code,
                   message: String(describing: authenticationError),
