@@ -1,5 +1,11 @@
 # Change Log
 
+## [afpi-v3.1.0](https://github.com/auth0/auth0-flutter/tree/afpi-v3.1.0) (2026-10-29)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v3.0.0...afpi-v3.1.0)
+
+**Added**
+- feat: Add passkey identifier verification support [\#979](https://github.com/auth0/auth0-flutter/pull/979) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
 ## [afpi-v3.0.0](https://github.com/auth0/auth0-flutter/tree/afpi-v3.0.0) (2026-10-29)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v2.7.0...afpi-v3.0.0)
 
