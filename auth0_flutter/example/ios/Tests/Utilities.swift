@@ -136,6 +136,7 @@ func assert(flutterError: FlutterError, is authenticationError: AuthenticationEr
     XCTAssertEqual(flags[AuthAPIErrorFlag.isRuleError], authenticationError.isRuleError)
     XCTAssertEqual(flags[AuthAPIErrorFlag.isInvalidCredentials], authenticationError.isInvalidCredentials)
     XCTAssertEqual(flags[AuthAPIErrorFlag.isRefreshTokenDeleted], authenticationError.isRefreshTokenDeleted)
+    XCTAssertEqual(flags[AuthAPIErrorFlag.isInvalidRefreshToken], authenticationError.isInvalidRefreshToken)
     XCTAssertEqual(flags[AuthAPIErrorFlag.isAccessDenied], authenticationError.isAccessDenied)
     XCTAssertEqual(flags[AuthAPIErrorFlag.isTooManyAttempts], authenticationError.isTooManyAttempts)
     XCTAssertEqual(flags[AuthAPIErrorFlag.isVerificationRequired], authenticationError.isVerificationRequired)

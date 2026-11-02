@@ -16,6 +16,7 @@ enum AuthAPIErrorFlag: String, CaseIterable {
     case isRuleError
     case isInvalidCredentials
     case isRefreshTokenDeleted
+    case isInvalidRefreshToken
     case isAccessDenied
     case isTooManyAttempts
     case isVerificationRequired
@@ -44,6 +45,7 @@ extension FlutterError {
             AuthAPIErrorFlag.isRuleError.rawValue: authenticationError.isRuleError,
             AuthAPIErrorFlag.isInvalidCredentials.rawValue: authenticationError.isInvalidCredentials,
             AuthAPIErrorFlag.isRefreshTokenDeleted.rawValue: authenticationError.isRefreshTokenDeleted,
+            AuthAPIErrorFlag.isInvalidRefreshToken.rawValue: authenticationError.isInvalidRefreshToken,
             AuthAPIErrorFlag.isAccessDenied.rawValue: authenticationError.isAccessDenied,
             AuthAPIErrorFlag.isTooManyAttempts.rawValue: authenticationError.isTooManyAttempts,
             AuthAPIErrorFlag.isVerificationRequired.rawValue: authenticationError.isVerificationRequired,

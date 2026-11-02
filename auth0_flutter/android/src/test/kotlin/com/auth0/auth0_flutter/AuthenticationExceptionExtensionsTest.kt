@@ -27,6 +27,7 @@ class AuthenticationExceptionExtensionsTest {
         assertThat(errorFlags["isRuleError"], equalTo(false))
         assertThat(errorFlags["isInvalidCredentials"], equalTo(false))
         assertThat(errorFlags["isRefreshTokenDeleted"], equalTo(false))
+        assertThat(errorFlags["isInvalidRefreshToken"], equalTo(false))
         assertThat(errorFlags["isAccessDenied"], equalTo(false))
         assertThat(errorFlags["isTooManyAttempts"], equalTo(false))
         assertThat(errorFlags["isVerificationRequired"], equalTo(false))
@@ -86,6 +87,11 @@ class AuthenticationExceptionExtensionsTest {
             },
             "isRefreshTokenDeleted" to { exception: AuthenticationException ->
                 `when`(exception.isRefreshTokenDeleted).thenReturn(
+                    true
+                )
+            },
+            "isInvalidRefreshToken" to { exception: AuthenticationException ->
+                `when`(exception.isInvalidRefreshToken).thenReturn(
                     true
                 )
             },
