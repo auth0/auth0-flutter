@@ -71,6 +71,15 @@ class GetUserProfileRequestHandlerTest {
     }
 
     @Test
+    fun `should ignore non-string fields`() {
+        val (client, _) = handle(
+            hashMapOf("fields" to listOf("given_name", 42, null))
+        )
+
+        verify(client).getUserProfile(eq(GetUserProfileOptions(listOf("given_name"), true)))
+    }
+
+    @Test
     fun `should call result success with the mapped profile`() {
         val profile = MyAccountProfile(
             userId = "auth0|123",

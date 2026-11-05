@@ -21,8 +21,8 @@ class GetUserProfileRequestHandler : MyAccountRequestHandler {
         request: MethodCallRequest,
         result: MethodChannel.Result
     ) {
-        @Suppress("UNCHECKED_CAST")
-        val fields = (request.data["fields"] as? List<String>) ?: emptyList()
+        val fields = (request.data["fields"] as? List<*>)
+            ?.filterIsInstance<String>() ?: emptyList()
         val includeFields = request.data["includeFields"] as? Boolean ?: true
 
         client.getUserProfile(GetUserProfileOptions(fields, includeFields))

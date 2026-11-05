@@ -33,6 +33,21 @@ podspecs=(
 pods=('Auth0' 'JWTDecode' 'SimpleKeychain')
 urls=('Auth0.swift' 'JWTDecode.swift' 'SimpleKeychain')
 
+# Pods whose CocoaPods version is pinned independently of Package.swift, as
+# '<pod>=<version>'. Auth0.swift is no longer released to CocoaPods: 3.2.0 is
+# its last CocoaPods release, so the podspecs stay on it while SPM moves ahead.
+cocoapods_pins=('Auth0=3.2.0')
+
+pinned_version() {
+    local entry
+    for entry in "${cocoapods_pins[@]}"; do
+        if [ "${entry%%=*}" = "$1" ]; then
+            echo "${entry#*=}"
+            return
+        fi
+    done
+}
+
 for i in "${!pods[@]}"; do
     pod="${pods[$i]}"
     url="${urls[$i]}"
@@ -46,6 +61,11 @@ for i in "${!pods[@]}"; do
     if [ -z "$version" ]; then
         echo "::error::Could not find a version for '$url' in $package_swift"
         exit 1
+    fi
+
+    pin=$(pinned_version "$pod")
+    if [ -n "$pin" ]; then
+        version="$pin"
     fi
 
     for spec in "${podspecs[@]}"; do
