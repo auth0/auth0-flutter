@@ -178,6 +178,9 @@ class GetUserProfileRequestHandlerTest {
         whenever(exception.getDescription()).thenReturn("Insufficient scope")
         whenever(exception.statusCode).thenReturn(403)
         whenever(exception.isNetworkError).thenReturn(false)
+        // Auth0.Android returns null when the response has no validation_errors.
+        // An unstubbed mock would return an empty list instead.
+        whenever(exception.validationErrors).thenReturn(null)
 
         val (_, result) = handle(hashMapOf()) { request ->
             doAnswer {
