@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import '../auth0_exception.dart';
 import '../extensions/exception_extensions.dart';
 import '../extensions/map_extensions.dart';
+import 'my_account_validation_error.dart';
 
 class MyAccountException extends Auth0Exception {
   static const _statusCodeKey = '_statusCode';
@@ -47,4 +48,12 @@ class MyAccountException extends Auth0Exception {
 
   bool get isNetworkError => _errorFlags.getBooleanOrFalse('isNetworkError');
   bool get isRetryable => isNetworkError;
+
+  /// The server-side validation errors, typically returned on a `400`
+  /// response. `null` when the response has no `validation_errors`.
+  List<MyAccountValidationError>? get validationErrors =>
+      (details['validation_errors'] as List<dynamic>?)
+          ?.map((final e) =>
+              MyAccountValidationError.fromMap(e as Map<dynamic, dynamic>))
+          .toList();
 }

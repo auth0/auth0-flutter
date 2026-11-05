@@ -56,6 +56,7 @@
   - [Enrolling a factor with OTP (phone, email, TOTP)](#enrolling-a-factor-with-otp-phone-email-totp)
   - [Enrolling a factor without OTP (push, recovery code)](#enrolling-a-factor-without-otp-push-recovery-code)
   - [Enrolling a passkey](#enrolling-a-passkey)
+  - [Managing the user's profile](#managing-the-users-profile)
   - [Using DPoP](#using-dpop)
   - [Errors](#errors-3)
   - [My Account on the Web](#my-account-on-the-web)
@@ -2083,6 +2084,58 @@ final method = await myAccount.enrollPasskey(
 print('Enrolled passkey: ${method.id} (${method.relyingPartyId})');
 ```
 
+### Managing the user's profile
+
+> ⚠️ The My Account profile API is currently available in [Early Access](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#early-access). Please reach out to Auth0 support to get it enabled for your tenant. Once enabled, grant the `read:me:profile` and `update:me:profile` scopes of the **Auth0 My Account API** to your application under **Application Access** in the dashboard; they are not granted automatically.
+
+A signed-in user can read and update their own profile with `getUserProfile` and `updateUserProfile`. The access token must include the `read:me:profile` scope to read the profile, and `update:me:profile` to update it.
+
+Every field of the returned `MyAccountProfile` comes with a `profilePolicy` entry, keyed by a JSON Pointer to the field (e.g. `/given_name`), that tells whether the user can edit it and why. Use it to render your profile UI without hardcoding which fields are editable for each connection type. For example, the `given_name` of a social user is read-only because it is managed by the identity provider.
+
+```dart
+final profile = await myAccount.getUserProfile();
+
+final givenNamePolicy = profile.profilePolicy?['/given_name'];
+if (givenNamePolicy?.access == ProfileFieldAccess.readOnly) {
+  // e.g. givenNamePolicy.reason == 'managed_by_identity_provider'
+  print('given_name is read-only: ${givenNamePolicy?.reason}');
+}
+
+// Only return some fields...
+final names = await myAccount.getUserProfile(
+  fields: ['given_name', 'family_name', 'profile_policy'],
+);
+
+// ...or every field except some.
+final withoutPolicy = await myAccount.getUserProfile(
+  fields: ['profile_policy'],
+  includeFields: false,
+);
+```
+
+> 💡 `profilePolicy` is `null` when `profile_policy` is not part of the response: when `fields` does not list it, or when it is listed with `includeFields: false`.
+
+`updateUserProfile` changes only the fields you pass and returns the full, updated profile. Only `givenName`, `familyName`, `name`, `nickname`, and `picture` can be updated. `userId`, `email`, `emailVerified`, `phoneNumber`, `phoneVerified`, and `username` are read-only. The update is all-or-nothing: if any field is read-only for the user or fails validation, the whole request is rejected with a `400` and nothing is changed.
+
+```dart
+try {
+  final updated = await myAccount.updateUserProfile(
+    givenName: 'Jane',
+    nickname: 'jane',
+  );
+  print('Updated: ${updated.givenName}');
+} on MyAccountException catch (e) {
+  // On a 400, each rejected field is described in `validationErrors`.
+  for (final error in e.validationErrors ?? <MyAccountValidationError>[]) {
+    print('${error.pointer ?? error.field}: ${error.detail}');
+  }
+}
+```
+
+> 💡 If the feature is not enabled for your tenant, or the token lacks the required scope, the call fails with a `MyAccountException` with `statusCode` `403`.
+
+> ⚠️ On iOS and macOS, the profile API requires [Swift Package Manager](https://docs.flutter.dev/packages-and-plugins/swift-package-manager/for-app-developers). It is backed by Auth0.swift 3.3.0, which is not available on CocoaPods, so with CocoaPods both methods fail with an `UNSUPPORTED_PLATFORM` error. On the web, it requires **auth0-spa-js v2.30.0 or later**.
+
 ### Using DPoP
 
 To secure My Account API requests with [DPoP](https://www.rfc-editor.org/rfc/rfc9449.html) (Demonstrating Proof-of-Possession) sender-constrained tokens, set `useDPoP` to `true` when creating the client. It defaults to `false`. The DPoP key pair is generated and stored securely on the device (Keychain on iOS, Keystore on Android).
@@ -2106,9 +2159,11 @@ try {
 }
 ```
 
+When the API rejects a request with a `400`, `validationErrors` describes each invalid field, if the response includes them.
+
 ### My Account on the Web
 
-On the web, create the client with `Auth0Web.myAccount(accessToken:)`. It returns a `MyAccountWeb` with the same methods and parameters as the mobile client, so the [listing](#listing-and-managing-authentication-methods) and [enrollment](#enrolling-a-factor-with-otp-phone-email-totp) examples above work unchanged. It is backed by the `MyAccountApiClient` of [auth0-spa-js](https://github.com/auth0/auth0-spa-js) and requires **auth0-spa-js v2.21.1 or later** loaded on your page.
+On the web, create the client with `Auth0Web.myAccount(accessToken:)`. It returns a `MyAccountWeb` with the same methods and parameters as the mobile client, so the [listing](#listing-and-managing-authentication-methods), [enrollment](#enrolling-a-factor-with-otp-phone-email-totp), and [profile](#managing-the-users-profile) examples above work unchanged. It is backed by the `MyAccountApiClient` of [auth0-spa-js](https://github.com/auth0/auth0-spa-js) and requires **auth0-spa-js v2.21.1 or later** loaded on your page (**v2.30.0 or later** for `getUserProfile` and `updateUserProfile`).
 
 To enroll a passkey on the web, see [Enrolling a passkey on the web](#enrolling-a-passkey-on-the-web).
 

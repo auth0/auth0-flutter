@@ -112,6 +112,30 @@ class Auth0FlutterWebClientProxy {
   Future<JSArray<MyAccountFactorJS>> myAccountGetFactors(String accessToken) =>
       JSPromiseToFuture(_myAccount(accessToken).getFactors()).toDart;
 
+  Future<JSObject> myAccountGetUserProfile(
+          String accessToken, MyAccountGetUserProfileParams params) =>
+      JSPromiseToFuture(
+              _myAccountWithProfile(accessToken).getUserProfile(params))
+          .toDart;
+
+  Future<JSObject> myAccountUpdateUserProfile(
+          String accessToken, MyAccountUpdateUserProfileParams params) =>
+      JSPromiseToFuture(
+              _myAccountWithProfile(accessToken).updateUserProfile(params))
+          .toDart;
+
+  // Without this check, auth0-spa-js versions older than v2.30.0 fail with a
+  // generic "is not a function" TypeError, which would be indistinguishable
+  // from a network failure.
+  MyAccountApiClient _myAccountWithProfile(String accessToken) {
+    final myAccount = _myAccount(accessToken);
+    if (!myAccount.has('getUserProfile')) {
+      throw const MyAccountException.unknown(
+          'The My Account profile API requires auth0-spa-js v2.30.0 or later.');
+    }
+    return myAccount;
+  }
+
   Future<MyAccountEnrollmentChallengeJS> myAccountEnrollmentChallenge(
           String accessToken, MyAccountEnrollmentChallengeParams params) =>
       JSPromiseToFuture(_myAccount(accessToken).enrollmentChallenge(params))

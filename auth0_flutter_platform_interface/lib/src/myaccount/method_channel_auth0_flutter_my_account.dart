@@ -19,9 +19,12 @@ import 'my_account_exception.dart';
 import 'my_account_get_auth_method_options.dart';
 import 'my_account_get_auth_methods_options.dart';
 import 'my_account_get_factors_options.dart';
+import 'my_account_get_user_profile_options.dart';
 import 'my_account_passkey_authentication_method.dart';
 import 'my_account_passkey_enrollment_challenge.dart';
+import 'my_account_profile.dart';
 import 'my_account_update_auth_method_options.dart';
+import 'my_account_update_user_profile_options.dart';
 import 'my_account_verify_otp_options.dart';
 
 const MethodChannel _channel =
@@ -46,6 +49,8 @@ const String myAccountVerifyOtpMethod = 'myAccount#verifyOtp';
 const String myAccountConfirmEnrollmentMethod = 'myAccount#confirmEnrollment';
 const String myAccountUpdateAuthMethodMethod =
     'myAccount#updateAuthenticationMethod';
+const String myAccountGetUserProfileMethod = 'myAccount#getUserProfile';
+const String myAccountUpdateUserProfileMethod = 'myAccount#updateUserProfile';
 
 class MethodChannelAuth0FlutterMyAccount
     extends Auth0FlutterMyAccountPlatform {
@@ -179,6 +184,24 @@ class MethodChannelAuth0FlutterMyAccount
         method: myAccountUpdateAuthMethodMethod, request: request);
 
     return AuthenticationMethod.fromMap(result);
+  }
+
+  @override
+  Future<MyAccountProfile> getUserProfile(
+      final ApiRequest<MyAccountGetUserProfileOptions> request) async {
+    final Map<String, dynamic> result = await invokeMapRequest(
+        method: myAccountGetUserProfileMethod, request: request);
+
+    return MyAccountProfile.fromMap(result);
+  }
+
+  @override
+  Future<MyAccountProfile> updateUserProfile(
+      final ApiRequest<MyAccountUpdateUserProfileOptions> request) async {
+    final Map<String, dynamic> result = await invokeMapRequest(
+        method: myAccountUpdateUserProfileMethod, request: request);
+
+    return MyAccountProfile.fromMap(result);
   }
 
   Future<Map<String, dynamic>>

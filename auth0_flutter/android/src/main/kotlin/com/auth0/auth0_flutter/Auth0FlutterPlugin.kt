@@ -72,7 +72,9 @@ class Auth0FlutterPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     EnrollRecoveryCodeRequestHandler(),
     VerifyOtpRequestHandler(),
     ConfirmEnrollmentRequestHandler(),
-    UpdateAuthenticationMethodRequestHandler()
+    UpdateAuthenticationMethodRequestHandler(),
+    GetUserProfileRequestHandler(),
+    UpdateUserProfileRequestHandler()
   ))
   private val mfaCallHandler = Auth0FlutterMfaMethodCallHandler(listOf(
     com.auth0.auth0_flutter.request_handlers.mfa.GetAuthenticatorsRequestHandler(),

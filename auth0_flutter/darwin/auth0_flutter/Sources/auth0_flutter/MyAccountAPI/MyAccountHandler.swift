@@ -25,6 +25,8 @@ public class MyAccountHandler: NSObject, FlutterPlugin {
         case verifyOtp = "myAccount#verifyOtp"
         case confirmEnrollment = "myAccount#confirmEnrollment"
         case updateAuthenticationMethod = "myAccount#updateAuthenticationMethod"
+        case getUserProfile = "myAccount#getUserProfile"
+        case updateUserProfile = "myAccount#updateUserProfile"
     }
 
     private static let channelName = "auth0.com/auth0_flutter/my_account"
@@ -80,6 +82,13 @@ public class MyAccountHandler: NSObject, FlutterPlugin {
         case .verifyOtp: return MyAccountVerifyOtpMethodHandler(client: client)
         case .confirmEnrollment: return MyAccountConfirmEnrollmentMethodHandler(client: client)
         case .updateAuthenticationMethod: return MyAccountUpdateAuthMethodMethodHandler(client: client)
+        #if MY_ACCOUNT_PROFILE
+        case .getUserProfile: return MyAccountGetUserProfileMethodHandler(client: client)
+        case .updateUserProfile: return MyAccountUpdateUserProfileMethodHandler(client: client)
+        #else
+        case .getUserProfile, .updateUserProfile:
+            return UnsupportedMethodHandler()
+        #endif
         }
     }
 
