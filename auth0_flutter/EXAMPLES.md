@@ -56,7 +56,7 @@
   - [Enrolling a factor with OTP (phone, email, TOTP)](#enrolling-a-factor-with-otp-phone-email-totp)
   - [Enrolling a factor without OTP (push, recovery code)](#enrolling-a-factor-without-otp-push-recovery-code)
   - [Enrolling a passkey](#enrolling-a-passkey)
-  - [Managing the user's profile](#managing-the-users-profile)
+  - [Managing the user's profile \[Beta\]](#managing-the-users-profile-beta)
   - [Using DPoP](#using-dpop)
   - [Errors](#errors-3)
   - [My Account on the Web](#my-account-on-the-web)
@@ -2084,9 +2084,9 @@ final method = await myAccount.enrollPasskey(
 print('Enrolled passkey: ${method.id} (${method.relyingPartyId})');
 ```
 
-### Managing the user's profile
+### Managing the user's profile [Beta]
 
-> ⚠️ The My Account profile API is currently available in [Early Access](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#early-access). Please reach out to Auth0 support to get it enabled for your tenant. Once enabled, grant the `read:me:profile` and `update:me:profile` scopes of the **Auth0 My Account API** to your application under **Application Access** in the dashboard; they are not granted automatically.
+> ⚠️ The My Account profile API is currently in [Beta](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#beta). It might change before General Availability, and Auth0 does not support beta functionality for production use. The feature must be enabled for your tenant. Once enabled, grant the `read:me:profile` and `update:me:profile` scopes of the **Auth0 My Account API** to your application under **Application Access** in the dashboard; they are not granted automatically.
 
 A signed-in user can read and update their own profile with `getUserProfile` and `updateUserProfile`. The access token must include the `read:me:profile` scope to read the profile, and `update:me:profile` to update it.
 
@@ -2163,7 +2163,7 @@ When the API rejects a request with a `400`, `validationErrors` describes each i
 
 ### My Account on the Web
 
-On the web, create the client with `Auth0Web.myAccount(accessToken:)`. It returns a `MyAccountWeb` with the same methods and parameters as the mobile client, so the [listing](#listing-and-managing-authentication-methods), [enrollment](#enrolling-a-factor-with-otp-phone-email-totp), and [profile](#managing-the-users-profile) examples above work unchanged. It is backed by the `MyAccountApiClient` of [auth0-spa-js](https://github.com/auth0/auth0-spa-js) and requires **auth0-spa-js v2.21.1 or later** loaded on your page (**v2.30.0 or later** for `getUserProfile` and `updateUserProfile`).
+On the web, create the client with `Auth0Web.myAccount(accessToken:)`. It returns a `MyAccountWeb` with the same methods and parameters as the mobile client, so the [listing](#listing-and-managing-authentication-methods), [enrollment](#enrolling-a-factor-with-otp-phone-email-totp), and [profile](#managing-the-users-profile-beta) examples above work unchanged. It is backed by the `MyAccountApiClient` of [auth0-spa-js](https://github.com/auth0/auth0-spa-js) and requires **auth0-spa-js v2.21.1 or later** loaded on your page (**v2.30.0 or later** for `getUserProfile` and `updateUserProfile`).
 
 To enroll a passkey on the web, see [Enrolling a passkey on the web](#enrolling-a-passkey-on-the-web).
 

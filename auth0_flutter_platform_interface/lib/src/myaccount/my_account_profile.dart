@@ -1,4 +1,8 @@
 /// Whether a profile field can be edited by the user.
+///
+/// This API is currently in
+/// [Beta](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#beta)
+/// and might change before General Availability.
 enum ProfileFieldAccess {
   readOnly,
   readWrite;
@@ -26,6 +30,10 @@ enum ProfileFieldAccess {
 }
 
 /// Where a profile field's value comes from.
+///
+/// This API is currently in
+/// [Beta](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#beta)
+/// and might change before General Availability.
 enum ProfileFieldSource {
   user,
   idp,
@@ -58,6 +66,10 @@ enum ProfileFieldSource {
 }
 
 /// Describes whether a profile field can be edited by the user and why.
+///
+/// This API is currently in
+/// [Beta](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#beta)
+/// and might change before General Availability.
 class ProfileFieldPolicy {
   /// Whether the field is editable. `null` if the server returned a value
   /// unknown to this SDK version.
@@ -97,6 +109,10 @@ class ProfileFieldPolicy {
 ///
 /// [userId], [emailVerified] and [phoneVerified] are read-only: they can't be
 /// changed with `updateUserProfile`.
+///
+/// This API is currently in
+/// [Beta](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#beta)
+/// and might change before General Availability.
 class MyAccountProfile {
   final String? userId;
   final String? givenName;

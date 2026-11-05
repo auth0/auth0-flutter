@@ -385,9 +385,13 @@ class MyAccountWeb {
   /// not part of the response: when [fields] is set and does not list it, or
   /// when it is listed with [includeFields] `false`.
   ///
-  /// This feature is currently available in
-  /// [Early Access](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#early-access).
-  /// Please reach out to Auth0 support to get it enabled for your tenant.
+  /// ## Availability
+  ///
+  /// This feature is currently in
+  /// [Beta](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#beta).
+  /// It might change before General Availability, and Auth0 does not support
+  /// beta functionality for production use. The feature must be enabled for
+  /// your tenant.
   ///
   /// Requires `auth0-spa-js` v2.30.0 or later, and an access token with the
   /// `read:me:profile` scope and audience `https://{domain}/me/`. A
@@ -420,9 +424,13 @@ class MyAccountWeb {
   /// fails validation, the whole request is rejected. On a `400` response,
   /// [MyAccountException.validationErrors] describes each rejected field.
   ///
-  /// This feature is currently available in
-  /// [Early Access](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#early-access).
-  /// Please reach out to Auth0 support to get it enabled for your tenant.
+  /// ## Availability
+  ///
+  /// This feature is currently in
+  /// [Beta](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#beta).
+  /// It might change before General Availability, and Auth0 does not support
+  /// beta functionality for production use. The feature must be enabled for
+  /// your tenant.
   ///
   /// Requires `auth0-spa-js` v2.30.0 or later, and an access token with the
   /// `update:me:profile` scope and audience `https://{domain}/me/`.

@@ -272,7 +272,35 @@ class SpyMyAccountAuthenticationMethods: MyAccountAuthenticationMethods {
         confirmEnrollmentFactorType = "password"
         return request(confirmPasswordResult)
     }
+
+    #if MY_ACCOUNT_PROFILE
+    var userProfileResult: Result<MyAccountProfile, MyAccountError> = .success(makeProfile())
+    var calledGetUserProfile = false
+    var calledUpdateUserProfile = false
+    var getUserProfileOptionsArg: GetUserProfileOptions?
+    var updateUserProfileRequestArg: UpdateUserProfileRequest?
+
+    func getUserProfile(options: GetUserProfileOptions?) -> any Requestable<MyAccountProfile, MyAccountError> {
+        calledGetUserProfile = true
+        getUserProfileOptionsArg = options
+        return request(userProfileResult)
+    }
+
+    func updateUserProfile(_ request: UpdateUserProfileRequest) -> any Requestable<MyAccountProfile, MyAccountError> {
+        calledUpdateUserProfile = true
+        updateUserProfileRequestArg = request
+        return self.request(userProfileResult)
+    }
+    #endif
 }
+
+#if MY_ACCOUNT_PROFILE
+/// `MyAccountProfile` has no public initializer, so it is decoded from an API response.
+func makeProfile(_ json: [String: Any] = ["given_name": "Jane"]) -> MyAccountProfile {
+    let data = try! JSONSerialization.data(withJSONObject: json)
+    return try! JSONDecoder().decode(MyAccountProfile.self, from: data)
+}
+#endif
 
 // MARK: - Spy MyAccount
 

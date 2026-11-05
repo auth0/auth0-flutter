@@ -44,7 +44,7 @@ flutter pub add auth0_flutter
 
 > 💡 **iOS/macOS dependency management:** [Swift Package Manager](https://docs.flutter.dev/packages-and-plugins/swift-package-manager) (SPM) is the **recommended** way to use auth0_flutter on iOS and macOS. If you have SPM enabled in Flutter (`flutter config --enable-swift-package-manager`), the plugin and its native dependencies are resolved via SPM automatically. Otherwise, CocoaPods is used as a fallback — no extra setup is required either way.
 >
-> ⚠️ **CocoaPods builds stay on Auth0.swift 3.2.0.** [Auth0.swift is no longer released to CocoaPods](https://github.com/auth0/Auth0.swift#readme), so with CocoaPods, auth0_flutter uses Auth0.swift 3.2.0, which will not receive further updates. Features that need a newer Auth0.swift, such as the [My Account profile API](EXAMPLES.md#managing-the-users-profile), are only available with SPM; with CocoaPods they fail with an `UNSUPPORTED_PLATFORM` error. To keep receiving new features and fixes on iOS and macOS, enable SPM.
+> ⚠️ **CocoaPods builds stay on Auth0.swift 3.2.0.** [Auth0.swift is no longer released to CocoaPods](https://github.com/auth0/Auth0.swift#readme), so with CocoaPods, auth0_flutter uses Auth0.swift 3.2.0, which will not receive further updates. Features that need a newer Auth0.swift, such as the [My Account profile API](EXAMPLES.md#managing-the-users-profile-beta), are only available with SPM; with CocoaPods they fail with an `UNSUPPORTED_PLATFORM` error. To keep receiving new features and fixes on iOS and macOS, enable SPM.
 
 ### Configure Auth0
 
@@ -767,7 +767,7 @@ final method = await myAccount.enrollPasskey(
 
 The access token must include the `create:me:authentication_methods` scope. See [Enrolling a passkey](EXAMPLES.md#enrolling-a-passkey) for the full example.
 
-##### User profile (Early Access)
+##### User profile [Beta]
 
 A signed-in user can read and update their own profile. Each field comes with a `profilePolicy` entry that tells whether the user can edit it:
 
@@ -779,7 +779,7 @@ final canEditGivenName =
 final updated = await myAccount.updateUserProfile(givenName: 'Jane');
 ```
 
-The access token must include the `read:me:profile` and/or `update:me:profile` scopes. On iOS and macOS this requires Swift Package Manager, and on the web auth0-spa-js v2.30.0+. See [Managing the user's profile](EXAMPLES.md#managing-the-users-profile) for details.
+The access token must include the `read:me:profile` and/or `update:me:profile` scopes. On iOS and macOS this requires Swift Package Manager, and on the web auth0-spa-js v2.30.0+. See [Managing the user's profile](EXAMPLES.md#managing-the-users-profile-beta) for details.
 
 ##### DPoP
 

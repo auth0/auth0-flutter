@@ -58,6 +58,7 @@
 		B0CA00020000000000000008 /* MyAccountGetAuthMethodMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA00010000000000000008 /* MyAccountGetAuthMethodMethodHandlerTests.swift */; };
 		B0CA00020000000000000009 /* MyAccountGetAuthMethodsMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA00010000000000000009 /* MyAccountGetAuthMethodsMethodHandlerTests.swift */; };
 		B0CA0002000000000000000A /* MyAccountGetFactorsMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA0001000000000000000A /* MyAccountGetFactorsMethodHandlerTests.swift */; };
+		B0CA00020000000000000020 /* MyAccountUserProfileMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA00010000000000000020 /* MyAccountUserProfileMethodHandlerTests.swift */; };
 		B0CA0002000000000000000B /* MyAccountVerifyOtpMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA0001000000000000000B /* MyAccountVerifyOtpMethodHandlerTests.swift */; };
 		B0CA0002000000000000000C /* MyAccountConfirmEnrollmentMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA0001000000000000000C /* MyAccountConfirmEnrollmentMethodHandlerTests.swift */; };
 		B0CA0002000000000000000D /* MyAccountUpdateAuthMethodMethodHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0CA0001000000000000000D /* MyAccountUpdateAuthMethodMethodHandlerTests.swift */; };
@@ -172,6 +173,7 @@
 		B0CA00010000000000000008 /* MyAccountGetAuthMethodMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountGetAuthMethodMethodHandlerTests.swift; sourceTree = "<group>"; };
 		B0CA00010000000000000009 /* MyAccountGetAuthMethodsMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountGetAuthMethodsMethodHandlerTests.swift; sourceTree = "<group>"; };
 		B0CA0001000000000000000A /* MyAccountGetFactorsMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountGetFactorsMethodHandlerTests.swift; sourceTree = "<group>"; };
+		B0CA00010000000000000020 /* MyAccountUserProfileMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountUserProfileMethodHandlerTests.swift; sourceTree = "<group>"; };
 		B0CA0001000000000000000B /* MyAccountVerifyOtpMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountVerifyOtpMethodHandlerTests.swift; sourceTree = "<group>"; };
 		B0CA0001000000000000000C /* MyAccountConfirmEnrollmentMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountConfirmEnrollmentMethodHandlerTests.swift; sourceTree = "<group>"; };
 		B0CA0001000000000000000D /* MyAccountUpdateAuthMethodMethodHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyAccountUpdateAuthMethodMethodHandlerTests.swift; sourceTree = "<group>"; };
@@ -388,6 +390,7 @@
 				B0CA00010000000000000008 /* MyAccountGetAuthMethodMethodHandlerTests.swift */,
 				B0CA00010000000000000009 /* MyAccountGetAuthMethodsMethodHandlerTests.swift */,
 				B0CA0001000000000000000A /* MyAccountGetFactorsMethodHandlerTests.swift */,
+				B0CA00010000000000000020 /* MyAccountUserProfileMethodHandlerTests.swift */,
 				B0CA0001000000000000000B /* MyAccountVerifyOtpMethodHandlerTests.swift */,
 				B0CA0001000000000000000C /* MyAccountConfirmEnrollmentMethodHandlerTests.swift */,
 				B0CA0001000000000000000D /* MyAccountUpdateAuthMethodMethodHandlerTests.swift */,
@@ -679,6 +682,7 @@
 				B0CA00020000000000000008 /* MyAccountGetAuthMethodMethodHandlerTests.swift in Sources */,
 				B0CA00020000000000000009 /* MyAccountGetAuthMethodsMethodHandlerTests.swift in Sources */,
 				B0CA0002000000000000000A /* MyAccountGetFactorsMethodHandlerTests.swift in Sources */,
+				B0CA00020000000000000020 /* MyAccountUserProfileMethodHandlerTests.swift in Sources */,
 				B0CA0002000000000000000B /* MyAccountVerifyOtpMethodHandlerTests.swift in Sources */,
 				B0CA0002000000000000000C /* MyAccountConfirmEnrollmentMethodHandlerTests.swift in Sources */,
 				B0CA0002000000000000000D /* MyAccountUpdateAuthMethodMethodHandlerTests.swift in Sources */,
@@ -844,7 +848,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.auth0.sdks.Flutter.Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG PASSKEYS_PLATFORM";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG PASSKEYS_PLATFORM MY_ACCOUNT_PROFILE";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
