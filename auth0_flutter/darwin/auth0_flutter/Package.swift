@@ -11,7 +11,7 @@ let package = Package(
         .library(name: "auth0-flutter", targets: ["auth0_flutter"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/auth0/Auth0.swift", exact: "3.2.0"),
+        .package(url: "https://github.com/auth0/Auth0.swift", exact: "3.3.0"),
         .package(url: "https://github.com/auth0/JWTDecode.swift", exact: "4.0.0"),
         .package(url: "https://github.com/auth0/SimpleKeychain", exact: "1.3.0"),
     ],
@@ -24,7 +24,13 @@ let package = Package(
                 .product(name: "SimpleKeychain", package: "SimpleKeychain"),
             ],
             path: "Sources/auth0_flutter",
-            swiftSettings: [.define("PASSKEYS_PLATFORM")]
+            swiftSettings: [
+                .define("PASSKEYS_PLATFORM"),
+                // Auth0.swift 3.3.0 is only published to SPM, so the My Account
+                // profile API is only compiled in SPM builds. CocoaPods builds
+                // stay on Auth0.swift 3.2.0 (see auth0_flutter.podspec).
+                .define("MY_ACCOUNT_PROFILE"),
+            ]
         ),
     ]
 )

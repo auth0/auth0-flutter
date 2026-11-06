@@ -166,6 +166,16 @@ abstract class Auth0FlutterWebPlatform extends PlatformInterface {
     throw UnimplementedError('web.getFactors has not been implemented');
   }
 
+  Future<MyAccountProfile> getUserProfile(
+      final MyAccountGetUserProfileOptions options) {
+    throw UnimplementedError('web.getUserProfile has not been implemented');
+  }
+
+  Future<MyAccountProfile> updateUserProfile(
+      final MyAccountUpdateUserProfileOptions options) {
+    throw UnimplementedError('web.updateUserProfile has not been implemented');
+  }
+
   Future<EnrollmentChallenge> enrollPhone(
     final String accessToken,
     final String phoneNumber,

@@ -11,5 +11,15 @@ fun MyAccountException.toMyAccountMap(): Map<String, Any> {
         put("_errorFlags", mapOf(
             "isNetworkError" to exception.isNetworkError,
         ))
+        exception.validationErrors?.let { errors ->
+            put("validation_errors", errors.map {
+                mapOf(
+                    "detail" to it.detail,
+                    "field" to it.field,
+                    "pointer" to it.pointer,
+                    "source" to it.source
+                )
+            })
+        }
     }
 }

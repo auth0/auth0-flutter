@@ -5,6 +5,7 @@ import com.auth0.android.result.EmailAuthenticationMethod
 import com.auth0.android.result.EnrollmentChallenge
 import com.auth0.android.result.MfaAuthenticationMethod
 import com.auth0.android.result.MfaEnrollmentChallenge
+import com.auth0.android.result.MyAccountProfile
 import com.auth0.android.result.PasskeyAuthenticationMethod
 import com.auth0.android.result.PasskeyEnrollmentChallenge
 import com.auth0.android.result.PhoneAuthenticationMethod
@@ -98,5 +99,32 @@ fun EnrollmentChallenge.toMyAccountChallengeMap(): Map<String, Any?> {
             is MfaEnrollmentChallenge -> {}
             else -> {}
         }
+    }
+}
+
+fun MyAccountProfile.toMyAccountProfileMap(): Map<String, Any?> {
+    return buildMap {
+        put("user_id", userId)
+        put("given_name", givenName)
+        put("family_name", familyName)
+        put("name", name)
+        put("nickname", nickname)
+        put("picture", picture)
+        put("email", email)
+        put("email_verified", emailVerified)
+        put("phone_number", phoneNumber)
+        put("phone_verified", phoneVerified)
+        put("username", username)
+        put("created_at", createdAt)
+        put("updated_at", updatedAt)
+        // Auth0.Android returns an empty map when `profile_policy` is not part
+        // of the response; send null instead, as on iOS and the web.
+        put("profile_policy", profilePolicy.takeIf { it.isNotEmpty() }?.mapValues {
+            mapOf(
+                "access" to it.value.access?.value,
+                "source" to it.value.source?.value,
+                "reason" to it.value.reason
+            )
+        })
     }
 }

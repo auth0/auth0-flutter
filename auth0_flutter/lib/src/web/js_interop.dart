@@ -522,6 +522,39 @@ extension type MyAccountUpdateAuthenticationMethodParams._(JSObject _)
   });
 }
 
+/// The `GetUserProfileOptions` of auth0-spa-js (v2.30.0+).
+@JS()
+@anonymous
+extension type MyAccountGetUserProfileParams._(JSObject _) implements JSObject {
+  external JSArray<JSString>? get fields;
+  external bool? get includeFields;
+
+  external factory MyAccountGetUserProfileParams({
+    JSArray<JSString>? fields,
+    bool? includeFields,
+  });
+}
+
+/// The `UpdateUserProfileRequest` of auth0-spa-js (v2.30.0+).
+@JS()
+@anonymous
+extension type MyAccountUpdateUserProfileParams._(JSObject _)
+    implements JSObject {
+  external String? get given_name;
+  external String? get family_name;
+  external String? get name;
+  external String? get nickname;
+  external String? get picture;
+
+  external factory MyAccountUpdateUserProfileParams({
+    String? given_name,
+    String? family_name,
+    String? name,
+    String? nickname,
+    String? picture,
+  });
+}
+
 /// The `MyAccountApiClient` class exported by auth0-spa-js (v2.21.0+).
 ///
 /// The enrollment API used here (`location`-based `enrollmentVerify`) requires
@@ -551,6 +584,16 @@ extension type MyAccountApiClient._(JSObject _) implements JSObject {
   );
   external JSPromise<MyAccountAuthenticationMethodJS> enrollmentVerify(
     MyAccountEnrollmentVerifyParams options,
+  );
+
+  /// Requires auth0-spa-js v2.30.0+. Resolves to a `UserProfile`.
+  external JSPromise<JSObject> getUserProfile([
+    MyAccountGetUserProfileParams? options,
+  ]);
+
+  /// Requires auth0-spa-js v2.30.0+. Resolves to a `UserProfile`.
+  external JSPromise<JSObject> updateUserProfile(
+    MyAccountUpdateUserProfileParams data,
   );
 }
 

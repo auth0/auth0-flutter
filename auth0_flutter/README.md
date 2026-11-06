@@ -42,7 +42,9 @@ Add auth0_flutter into your project:
 flutter pub add auth0_flutter
 ```
 
-> 💡 **iOS/macOS dependency management:** auth0_flutter supports both [Swift Package Manager](https://docs.flutter.dev/packages-and-plugins/swift-package-manager) and CocoaPods. If you have Swift Package Manager enabled in Flutter (`flutter config --enable-swift-package-manager`), the plugin and its native dependencies are resolved via SPM automatically. Otherwise, CocoaPods is used as a fallback — no extra setup is required either way.
+> 💡 **iOS/macOS dependency management:** [Swift Package Manager](https://docs.flutter.dev/packages-and-plugins/swift-package-manager) (SPM) is the **recommended** way to use auth0_flutter on iOS and macOS. If you have SPM enabled in Flutter (`flutter config --enable-swift-package-manager`), the plugin and its native dependencies are resolved via SPM automatically. Otherwise, CocoaPods is used as a fallback — no extra setup is required either way.
+>
+> ⚠️ **CocoaPods builds stay on Auth0.swift 3.2.0.** [Auth0.swift is no longer released to CocoaPods](https://github.com/auth0/Auth0.swift#readme), so with CocoaPods, auth0_flutter uses Auth0.swift 3.2.0, which will not receive further updates. Features that need a newer Auth0.swift, such as the [My Account profile API](EXAMPLES.md#managing-the-users-profile-beta), are only available with SPM; with CocoaPods they fail with an `UNSUPPORTED_PLATFORM` error. To keep receiving new features and fixes on iOS and macOS, enable SPM.
 
 ### Configure Auth0
 
@@ -370,7 +372,7 @@ final auth0Web = Auth0Web('YOUR_AUTH0_DOMAIN', 'YOUR_AUTH0_CLIENT_ID');
 Finally, in your `index.html` add the following `<script>` tag:
 
 ```html
-<script src="https://cdn.auth0.com/js/auth0-spa-js/2.29/auth0-spa-js.production.js" defer></script>
+<script src="https://cdn.auth0.com/js/auth0-spa-js/2.30/auth0-spa-js.production.js" defer></script>
 ```
 
 > ⚠️ If you use [Custom Token Exchange](EXAMPLES.md#custom-token-exchange) with delegation/impersonation (an actor token), you must reference `auth0-spa-js` **2.20.0 or later**. Actor-token support was added to the underlying SPA SDK in [2.20.0](https://github.com/auth0/auth0-spa-js/releases/tag/v2.20.0); older versions silently drop the actor token, so the returned ID token has no `act` claim and `credentials.user.actor` is `null`.
@@ -381,7 +383,7 @@ Finally, in your `index.html` add the following `<script>` tag:
 
 > ⚠️ [Identifier verification during passkey signup on the web](EXAMPLES.md#identifier-verification-on-the-web) (`verificationRequired`, `deliveryMethod`, and `verification`) requires `auth0-spa-js` **2.29.0 or later**. Support was added to the underlying SPA SDK in [2.29.0](https://github.com/auth0/auth0-spa-js/releases/tag/v2.29.0).
 
-> ⚠️ The [My Account API on the web](EXAMPLES.md#my-account-on-the-web) (`Auth0Web.myAccount`) requires `auth0-spa-js` **2.21.1 or later**. The `MyAccountApiClient` was added to the underlying SPA SDK in [2.21.0](https://github.com/auth0/auth0-spa-js/releases/tag/v2.21.0), and enrollment verification was fixed in [2.21.1](https://github.com/auth0/auth0-spa-js/releases/tag/v2.21.1); with older versions, calls fail with a `MyAccountException`.
+> ⚠️ The [My Account API on the web](EXAMPLES.md#my-account-on-the-web) (`Auth0Web.myAccount`) requires `auth0-spa-js` **2.21.1 or later**. The `MyAccountApiClient` was added to the underlying SPA SDK in [2.21.0](https://github.com/auth0/auth0-spa-js/releases/tag/v2.21.0), and enrollment verification was fixed in [2.21.1](https://github.com/auth0/auth0-spa-js/releases/tag/v2.21.1); with older versions, calls fail with a `MyAccountException`. `getUserProfile` and `updateUserProfile` require **2.30.0 or later**, where they were [added](https://github.com/auth0/auth0-spa-js/releases/tag/v2.30.0).
 
 ### Logging in
 
@@ -764,6 +766,20 @@ final method = await myAccount.enrollPasskey(
 ```
 
 The access token must include the `create:me:authentication_methods` scope. See [Enrolling a passkey](EXAMPLES.md#enrolling-a-passkey) for the full example.
+
+##### User profile [Beta]
+
+A signed-in user can read and update their own profile. Each field comes with a `profilePolicy` entry that tells whether the user can edit it:
+
+```dart
+final profile = await myAccount.getUserProfile();
+final canEditGivenName =
+    profile.profilePolicy?['/given_name']?.access == ProfileFieldAccess.readWrite;
+
+final updated = await myAccount.updateUserProfile(givenName: 'Jane');
+```
+
+The access token must include the `read:me:profile` and/or `update:me:profile` scopes. On iOS and macOS this requires Swift Package Manager, and on the web auth0-spa-js v2.30.0+. See [Managing the user's profile](EXAMPLES.md#managing-the-users-profile-beta) for details.
 
 ##### DPoP
 

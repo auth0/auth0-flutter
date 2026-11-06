@@ -1,7 +1,9 @@
 import 'package:auth0_flutter_platform_interface/src/account.dart';
 import 'package:auth0_flutter_platform_interface/src/auth/passkey_credential.dart';
 import 'package:auth0_flutter_platform_interface/src/auth0_flutter_web_platform.dart';
+import 'package:auth0_flutter_platform_interface/src/myaccount/my_account_get_user_profile_options.dart';
 import 'package:auth0_flutter_platform_interface/src/myaccount/my_account_passkey_enrollment_challenge.dart';
+import 'package:auth0_flutter_platform_interface/src/myaccount/my_account_update_user_profile_options.dart';
 import 'package:auth0_flutter_platform_interface/src/myaccount/phone_type.dart';
 import 'package:auth0_flutter_platform_interface/src/user_agent.dart';
 import 'package:auth0_flutter_platform_interface/src/web/client_options.dart';
@@ -147,6 +149,10 @@ void main() {
       'updateAuthenticationMethod': () =>
           platform.updateAuthenticationMethod(accessToken, 'id', null, null),
       'getFactors': () => platform.getFactors(accessToken),
+      'getUserProfile': () => platform.getUserProfile(
+          MyAccountGetUserProfileOptions(accessToken: accessToken)),
+      'updateUserProfile': () => platform.updateUserProfile(
+          MyAccountUpdateUserProfileOptions(accessToken: accessToken)),
       'enrollPhone': () =>
           platform.enrollPhone(accessToken, '+15555550100', PhoneType.sms),
       'enrollEmail': () =>

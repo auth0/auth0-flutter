@@ -8,7 +8,7 @@ import FlutterMacOS
 
 extension FlutterError {
     convenience init(from error: MyAccountError) {
-        let details: [String: Any] = [
+        var details: [String: Any] = [
             "_statusCode": error.statusCode,
             "_title": error.title,
             "_detail": error.detail,
@@ -16,6 +16,16 @@ extension FlutterError {
                 "isNetworkError": error.isNetworkError
             ]
         ]
+        if let validationErrors = error.validationErrors {
+            details["validation_errors"] = validationErrors.map { validationError -> [String: Any?] in
+                return [
+                    "detail": validationError.detail,
+                    "field": validationError.field,
+                    "pointer": validationError.pointer,
+                    "source": validationError.source
+                ]
+            }
+        }
         self.init(code: error.code,
                   message: error.detail.isEmpty ? error.title : error.detail,
                   details: details)
@@ -145,6 +155,35 @@ extension PasskeyAuthenticationMethod {
             "aaguid": aaguid,
             "relying_party_id": relyingPartyIdentifier,
             "created_at": createdAtFormatter.string(from: createdAt)
+        ]
+    }
+}
+#endif
+
+#if MY_ACCOUNT_PROFILE
+extension MyAccountProfile {
+    func asDictionary() -> [String: Any?] {
+        return [
+            "user_id": userId,
+            "given_name": givenName,
+            "family_name": familyName,
+            "name": name,
+            "nickname": nickname,
+            "picture": picture,
+            "email": email,
+            "email_verified": emailVerified,
+            "phone_number": phoneNumber,
+            "phone_verified": phoneVerified,
+            "username": username,
+            "created_at": createdAt,
+            "updated_at": updatedAt,
+            "profile_policy": profilePolicy?.mapValues { policy -> [String: Any?] in
+                return [
+                    "access": policy.access.rawValue,
+                    "source": policy.source.rawValue,
+                    "reason": policy.reason
+                ]
+            }
         ]
     }
 }

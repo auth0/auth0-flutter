@@ -62,6 +62,22 @@ class _RecordingWebPlatform extends Auth0FlutterWebPlatform {
     return Future.value(factorsResult);
   }
 
+  MyAccountProfile profileResult = const MyAccountProfile(givenName: 'Jane');
+
+  @override
+  Future<MyAccountProfile> getUserProfile(
+      MyAccountGetUserProfileOptions options) {
+    calls.add(['getUserProfile', options.toMap()]);
+    return Future.value(profileResult);
+  }
+
+  @override
+  Future<MyAccountProfile> updateUserProfile(
+      MyAccountUpdateUserProfileOptions options) {
+    calls.add(['updateUserProfile', options.toMap()]);
+    return Future.value(profileResult);
+  }
+
   @override
   Future<EnrollmentChallenge> enrollPhone(
       String accessToken, String phoneNumber, PhoneType type) {
@@ -325,6 +341,48 @@ void main() {
         'push-notification|dev_1',
         'session',
         'push-notification'
+      ]);
+    });
+  });
+
+  group('profile', () {
+    test('getUserProfile forwards the access token and options', () async {
+      final profile = await myAccount
+          .getUserProfile(fields: ['given_name'], includeFields: false);
+
+      expect(platform.calls.single, [
+        'getUserProfile',
+        {
+          'accessToken': accessToken,
+          'fields': ['given_name'],
+          'includeFields': false
+        }
+      ]);
+      expect(profile.givenName, 'Jane');
+    });
+
+    test('getUserProfile defaults to includeFields true', () async {
+      await myAccount.getUserProfile();
+
+      expect(platform.calls.single, [
+        'getUserProfile',
+        {'accessToken': accessToken, 'fields': null, 'includeFields': true}
+      ]);
+    });
+
+    test('updateUserProfile forwards the access token and fields', () async {
+      await myAccount.updateUserProfile(givenName: 'Jane', picture: 'pic');
+
+      expect(platform.calls.single, [
+        'updateUserProfile',
+        {
+          'accessToken': accessToken,
+          'givenName': 'Jane',
+          'familyName': null,
+          'name': null,
+          'nickname': null,
+          'picture': 'pic'
+        }
       ]);
     });
   });

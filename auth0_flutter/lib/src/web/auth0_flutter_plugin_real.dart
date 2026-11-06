@@ -419,6 +419,40 @@ class Auth0FlutterPlugin extends Auth0FlutterWebPlatform {
       });
 
   @override
+  Future<MyAccountProfile> getUserProfile(
+      MyAccountGetUserProfileOptions options) {
+    final fields = options.fields;
+    final hasFields = fields != null && fields.isNotEmpty;
+
+    return _myAccountCall((client) async =>
+        MyAccountProfileWebExtension.fromWeb(
+            await client.myAccountGetUserProfile(
+                options.accessToken,
+                JsInteropUtils.stripNulls(interop.MyAccountGetUserProfileParams(
+                    fields: hasFields
+                        ? fields.map((field) => field.toJS).toList().toJS
+                        : null,
+                    // As on Android and iOS, `includeFields` is only sent along
+                    // with `fields`, and only for the exclusion mode.
+                    includeFields:
+                        hasFields && !options.includeFields ? false : null)))));
+  }
+
+  @override
+  Future<MyAccountProfile> updateUserProfile(
+          MyAccountUpdateUserProfileOptions options) =>
+      _myAccountCall((client) async => MyAccountProfileWebExtension.fromWeb(
+          await client.myAccountUpdateUserProfile(
+              options.accessToken,
+              JsInteropUtils.stripNulls(
+                  interop.MyAccountUpdateUserProfileParams(
+                      given_name: options.givenName,
+                      family_name: options.familyName,
+                      name: options.name,
+                      nickname: options.nickname,
+                      picture: options.picture)))));
+
+  @override
   Future<EnrollmentChallenge> enrollPhone(
           String accessToken, String phoneNumber, PhoneType type) =>
       _myAccountEnroll(

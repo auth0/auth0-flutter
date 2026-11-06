@@ -17,9 +17,12 @@ import 'my_account_enroll_totp_options.dart';
 import 'my_account_get_auth_method_options.dart';
 import 'my_account_get_auth_methods_options.dart';
 import 'my_account_get_factors_options.dart';
+import 'my_account_get_user_profile_options.dart';
 import 'my_account_passkey_authentication_method.dart';
 import 'my_account_passkey_enrollment_challenge.dart';
+import 'my_account_profile.dart';
 import 'my_account_update_auth_method_options.dart';
+import 'my_account_update_user_profile_options.dart';
 import 'my_account_verify_otp_options.dart';
 
 abstract class Auth0FlutterMyAccountPlatform extends PlatformInterface {
@@ -108,5 +111,15 @@ abstract class Auth0FlutterMyAccountPlatform extends PlatformInterface {
       final ApiRequest<MyAccountUpdateAuthMethodOptions> request) {
     throw UnimplementedError(
         'updateAuthenticationMethod() has not been implemented');
+  }
+
+  Future<MyAccountProfile> getUserProfile(
+      final ApiRequest<MyAccountGetUserProfileOptions> request) {
+    throw UnimplementedError('getUserProfile() has not been implemented');
+  }
+
+  Future<MyAccountProfile> updateUserProfile(
+      final ApiRequest<MyAccountUpdateUserProfileOptions> request) {
+    throw UnimplementedError('updateUserProfile() has not been implemented');
   }
 }

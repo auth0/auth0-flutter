@@ -370,4 +370,92 @@ class MyAccountWeb {
   }) =>
       Auth0FlutterWebPlatform.instance.updateAuthenticationMethod(
           _accessToken, id, name, preferredAuthenticationMethod);
+
+  /// Retrieves the current user's profile, including a
+  /// [MyAccountProfile.profilePolicy] descriptor for each field that tells
+  /// whether it can be edited by the user and why.
+  ///
+  /// Pass [fields] to choose which fields are returned, e.g.
+  /// `['given_name', 'picture', 'profile_policy']`. With [includeFields]
+  /// `true` (the default) only the listed fields are returned; with `false`
+  /// every field *except* the listed ones is returned. [includeFields] is
+  /// ignored when [fields] is `null` or empty.
+  ///
+  /// [MyAccountProfile.profilePolicy] is `null` whenever `profile_policy` is
+  /// not part of the response: when [fields] is set and does not list it, or
+  /// when it is listed with [includeFields] `false`.
+  ///
+  /// ## Availability
+  ///
+  /// This feature is currently in
+  /// [Beta](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#beta).
+  /// It might change before General Availability, and Auth0 does not support
+  /// beta functionality for production use. The feature must be enabled for
+  /// your tenant.
+  ///
+  /// Requires `auth0-spa-js` v2.30.0 or later, and an access token with the
+  /// `read:me:profile` scope and audience `https://{domain}/me/`. A
+  /// [MyAccountException] with status code `403` means the token lacks the
+  /// scope or the feature is not enabled for the tenant.
+  ///
+  /// ## Usage example
+  ///
+  /// ```dart
+  /// final profile = await myAccount.getUserProfile();
+  /// final canEditGivenName = profile.profilePolicy?['/given_name']?.access ==
+  ///     ProfileFieldAccess.readWrite;
+  /// ```
+  Future<MyAccountProfile> getUserProfile({
+    List<String>? fields,
+    bool includeFields = true,
+  }) =>
+      Auth0FlutterWebPlatform.instance.getUserProfile(
+          MyAccountGetUserProfileOptions(
+              accessToken: _accessToken,
+              fields: fields,
+              includeFields: includeFields));
+
+  /// Updates the current user's editable profile fields, and returns the
+  /// full, updated [MyAccountProfile].
+  ///
+  /// Parameters left as `null` are not sent and remain unchanged. Calling
+  /// this method with no parameters is valid and returns the current
+  /// profile. The update is all-or-nothing: if any field is read-only or
+  /// fails validation, the whole request is rejected. On a `400` response,
+  /// [MyAccountException.validationErrors] describes each rejected field.
+  ///
+  /// ## Availability
+  ///
+  /// This feature is currently in
+  /// [Beta](https://auth0.com/docs/troubleshoot/product-lifecycle/product-release-stages#beta).
+  /// It might change before General Availability, and Auth0 does not support
+  /// beta functionality for production use. The feature must be enabled for
+  /// your tenant.
+  ///
+  /// Requires `auth0-spa-js` v2.30.0 or later, and an access token with the
+  /// `update:me:profile` scope and audience `https://{domain}/me/`.
+  ///
+  /// ## Usage example
+  ///
+  /// ```dart
+  /// final profile = await myAccount.updateUserProfile(
+  ///   givenName: 'Jane',
+  ///   nickname: 'jane',
+  /// );
+  /// ```
+  Future<MyAccountProfile> updateUserProfile({
+    String? givenName,
+    String? familyName,
+    String? name,
+    String? nickname,
+    String? picture,
+  }) =>
+      Auth0FlutterWebPlatform.instance.updateUserProfile(
+          MyAccountUpdateUserProfileOptions(
+              accessToken: _accessToken,
+              givenName: givenName,
+              familyName: familyName,
+              name: name,
+              nickname: nickname,
+              picture: picture));
 }

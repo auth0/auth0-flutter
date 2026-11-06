@@ -121,6 +121,13 @@ extension MyAccountPasskeyAuthenticationMethodWebExtension
           Map<String, dynamic>.from(js.dartify()! as Map<Object?, Object?>));
 }
 
+extension MyAccountProfileWebExtension on MyAccountProfile {
+  /// Maps a JS `UserProfile` from auth0-spa-js into a [MyAccountProfile].
+  /// Its properties already use the API's snake_case names.
+  static MyAccountProfile fromWeb(JSObject js) => MyAccountProfile.fromMap(
+      Map<String, dynamic>.from(js.dartify()! as Map<Object?, Object?>));
+}
+
 extension MyAccountExceptionWebExtension on MyAccountException {
   /// Converts a failure from the auth0-spa-js `MyAccountApiClient` into a
   /// [MyAccountException], populated the same way as on Android and iOS.

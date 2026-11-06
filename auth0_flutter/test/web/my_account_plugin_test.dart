@@ -103,7 +103,32 @@ class _FakeClientProxy extends Auth0FlutterWebClientProxy {
           String accessToken, interop.MyAccountEnrollmentVerifyParams params) =>
       _respond(
           ['enrollmentVerify', accessToken, _dartify(params)], verifyResult);
+
+  @override
+  Future<JSObject> myAccountGetUserProfile(
+          String accessToken, interop.MyAccountGetUserProfileParams params) =>
+      _respond(['getUserProfile', accessToken, _dartify(params)], _profile);
+
+  @override
+  Future<JSObject> myAccountUpdateUserProfile(String accessToken,
+          interop.MyAccountUpdateUserProfileParams params) =>
+      _respond(['updateUserProfile', accessToken, _dartify(params)], _profile);
 }
+
+final _profile = _jsObject({
+  'user_id': 'auth0|123',
+  'given_name': 'Jane',
+  'email': 'jane@example.com',
+  'email_verified': true,
+  'phone_verified': false,
+  'profile_policy': {
+    '/given_name': {
+      'access': 'read_only',
+      'source': 'idp',
+      'reason': 'managed_by_identity_provider'
+    },
+  },
+});
 
 void main() {
   final auth0 = Auth0Web('test-domain', 'test-client-id');
@@ -174,6 +199,116 @@ void main() {
           id: 'phone|dev_1', name: 'My phone');
 
       expect(proxy.calls.single[3], {'name': 'My phone'});
+    });
+  });
+
+  group('profile', () {
+    test('getUserProfile sends no options by default and maps the profile',
+        () async {
+      final profile = await myAccount.getUserProfile();
+
+      expect(proxy.calls.single,
+          ['getUserProfile', _accessToken, <String, Object?>{}]);
+      expect(profile.userId, 'auth0|123');
+      expect(profile.givenName, 'Jane');
+      expect(profile.email, 'jane@example.com');
+      expect(profile.emailVerified, true);
+      expect(profile.phoneVerified, false);
+      final policy = profile.profilePolicy!['/given_name']!;
+      expect(policy.access, ProfileFieldAccess.readOnly);
+      expect(policy.source, ProfileFieldSource.idp);
+      expect(policy.reason, 'managed_by_identity_provider');
+    });
+
+    test('getUserProfile sends the fields', () async {
+      await myAccount.getUserProfile(fields: ['given_name', 'picture']);
+
+      expect(proxy.calls.single, [
+        'getUserProfile',
+        _accessToken,
+        {
+          'fields': ['given_name', 'picture']
+        }
+      ]);
+    });
+
+    test('getUserProfile sends includeFields false with fields', () async {
+      await myAccount
+          .getUserProfile(fields: ['profile_policy'], includeFields: false);
+
+      expect(proxy.calls.single[2], {
+        'fields': ['profile_policy'],
+        'includeFields': false
+      });
+    });
+
+    test('getUserProfile ignores includeFields without fields', () async {
+      await myAccount.getUserProfile(fields: [], includeFields: false);
+
+      expect(proxy.calls.single[2], <String, Object?>{});
+    });
+
+    test('updateUserProfile sends every provided field', () async {
+      final profile = await myAccount.updateUserProfile(
+          givenName: 'Jane',
+          familyName: 'Doe',
+          name: 'Jane Doe',
+          nickname: 'jane',
+          picture: 'https://example.com/jane.png');
+
+      expect(proxy.calls.single, [
+        'updateUserProfile',
+        _accessToken,
+        {
+          'given_name': 'Jane',
+          'family_name': 'Doe',
+          'name': 'Jane Doe',
+          'nickname': 'jane',
+          'picture': 'https://example.com/jane.png'
+        }
+      ]);
+      expect(profile.givenName, 'Jane');
+    });
+
+    test('updateUserProfile omits fields that are not provided', () async {
+      await myAccount.updateUserProfile(nickname: 'jane');
+
+      expect(proxy.calls.single[2], {'nickname': 'jane'});
+    });
+
+    test('updateUserProfile sends an empty body when nothing is provided',
+        () async {
+      await myAccount.updateUserProfile();
+
+      expect(proxy.calls.single,
+          ['updateUserProfile', _accessToken, <String, Object?>{}]);
+    });
+
+    test('a 400 exposes the validation errors', () async {
+      proxy.error = _jsObject({
+        'name': 'MyAccountApiError',
+        'type': 'https://auth0.com/api-errors/A0E-400-0001',
+        'status': 400,
+        'title': 'Bad Request',
+        'detail': 'Invalid request body',
+        'validation_errors': [
+          {
+            'detail': 'Must be at most 150 characters',
+            'field': 'given_name',
+            'pointer': '/given_name',
+            'source': 'body'
+          }
+        ],
+      });
+
+      await expectLater(
+          myAccount.updateUserProfile(givenName: 'x'),
+          throwsA(isA<MyAccountException>()
+              .having((e) => e.statusCode, 'statusCode', 400)
+              .having((e) => e.validationErrors?.single.pointer, 'pointer',
+                  '/given_name')
+              .having((e) => e.validationErrors?.single.detail, 'detail',
+                  'Must be at most 150 characters')));
     });
   });
 

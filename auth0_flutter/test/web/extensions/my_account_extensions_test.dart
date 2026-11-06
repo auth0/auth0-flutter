@@ -90,6 +90,55 @@ void main() {
     expect(factor.usage, ['secondary']);
   });
 
+  group('MyAccountProfileWebExtension', () {
+    test('maps every field of a UserProfile', () {
+      final profile = MyAccountProfileWebExtension.fromWeb(_jsObject({
+        'user_id': 'auth0|123',
+        'given_name': 'Jane',
+        'family_name': 'Doe',
+        'name': 'Jane Doe',
+        'nickname': 'jane',
+        'picture': 'https://example.com/jane.png',
+        'email': 'jane@example.com',
+        'email_verified': true,
+        'phone_number': '+15555550100',
+        'phone_verified': false,
+        'username': 'janedoe',
+        'created_at': '2026-01-02T03:04:05.000Z',
+        'updated_at': '2026-02-02T03:04:05.000Z',
+        'profile_policy': {
+          '/nickname': {'access': 'read_write', 'source': 'user'},
+        },
+      }));
+
+      expect(profile.userId, 'auth0|123');
+      expect(profile.givenName, 'Jane');
+      expect(profile.familyName, 'Doe');
+      expect(profile.name, 'Jane Doe');
+      expect(profile.nickname, 'jane');
+      expect(profile.picture, 'https://example.com/jane.png');
+      expect(profile.email, 'jane@example.com');
+      expect(profile.emailVerified, true);
+      expect(profile.phoneNumber, '+15555550100');
+      expect(profile.phoneVerified, false);
+      expect(profile.username, 'janedoe');
+      expect(profile.createdAt, '2026-01-02T03:04:05.000Z');
+      expect(profile.updatedAt, '2026-02-02T03:04:05.000Z');
+      expect(profile.profilePolicy!['/nickname']!.access,
+          ProfileFieldAccess.readWrite);
+      expect(
+          profile.profilePolicy!['/nickname']!.source, ProfileFieldSource.user);
+    });
+
+    test('leaves profilePolicy null when it is not returned', () {
+      final profile =
+          MyAccountProfileWebExtension.fromWeb(_jsObject({'name': 'Jane'}));
+
+      expect(profile.name, 'Jane');
+      expect(profile.profilePolicy, isNull);
+    });
+  });
+
   group('EnrollmentChallengeWebExtension', () {
     test('maps a TOTP challenge the same way as Android and iOS', () {
       final js = _jsObject({
