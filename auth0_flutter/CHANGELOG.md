@@ -1,5 +1,11 @@
 # Change Log
 
+## [af-v3.2.0](https://github.com/auth0/auth0-flutter/tree/af-v3.2.0) (2026-11-06)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v3.1.0...af-v3.2.0)
+
+**Added**
+- feat: Add My Account profile API (getUserProfile, updateUserProfile) [\#988](https://github.com/auth0/auth0-flutter/pull/988) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
 ## [af-v3.1.0](https://github.com/auth0/auth0-flutter/tree/af-v3.1.0) (2026-10-29)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/af-v3.0.0...af-v3.1.0)
 
