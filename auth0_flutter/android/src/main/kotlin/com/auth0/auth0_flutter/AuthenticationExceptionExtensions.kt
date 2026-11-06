@@ -16,6 +16,7 @@ fun AuthenticationException.toMap(): Map<String, Any> {
             "isRuleError" to exception.isRuleError,
             "isInvalidCredentials" to exception.isInvalidCredentials,
             "isRefreshTokenDeleted" to exception.isRefreshTokenDeleted,
+            "isInvalidRefreshToken" to exception.isInvalidRefreshToken,
             "isAccessDenied" to exception.isAccessDenied,
             "isTooManyAttempts" to exception.isTooManyAttempts,
             "isVerificationRequired" to exception.isVerificationRequired,

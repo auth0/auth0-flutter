@@ -78,6 +78,7 @@ void main() {
           'isRuleError': true,
           'isInvalidCredentials': true,
           'isRefreshTokenDeleted': true,
+          'isInvalidRefreshToken': true,
           'isAccessDenied': true,
           'isTooManyAttempts': true,
           'isVerificationRequired': true,
@@ -105,6 +106,7 @@ void main() {
       expect(exception.isRuleError, true);
       expect(exception.isInvalidCredentials, true);
       expect(exception.isRefreshTokenDeleted, true);
+      expect(exception.isInvalidRefreshToken, true);
       expect(exception.isAccessDenied, true);
       expect(exception.isTooManyAttempts, true);
       expect(exception.isVerificationRequired, true);
@@ -131,6 +133,7 @@ void main() {
           'isRuleError': false,
           'isInvalidCredentials': false,
           'isRefreshTokenDeleted': false,
+          'isInvalidRefreshToken': false,
           'isAccessDenied': false,
           'isTooManyAttempts': false,
           'isVerificationRequired': false,
@@ -158,6 +161,7 @@ void main() {
       expect(exception.isRuleError, false);
       expect(exception.isInvalidCredentials, false);
       expect(exception.isRefreshTokenDeleted, false);
+      expect(exception.isInvalidRefreshToken, false);
       expect(exception.isAccessDenied, false);
       expect(exception.isTooManyAttempts, false);
       expect(exception.isVerificationRequired, false);
@@ -192,6 +196,7 @@ void main() {
     expect(exception.isRuleError, false);
     expect(exception.isInvalidCredentials, false);
     expect(exception.isRefreshTokenDeleted, false);
+    expect(exception.isInvalidRefreshToken, false);
     expect(exception.isAccessDenied, false);
     expect(exception.isTooManyAttempts, false);
     expect(exception.isVerificationRequired, false);
@@ -221,6 +226,7 @@ void main() {
     expect(exception.isRuleError, false);
     expect(exception.isInvalidCredentials, false);
     expect(exception.isRefreshTokenDeleted, false);
+    expect(exception.isInvalidRefreshToken, false);
     expect(exception.isAccessDenied, false);
     expect(exception.isTooManyAttempts, false);
     expect(exception.isVerificationRequired, false);

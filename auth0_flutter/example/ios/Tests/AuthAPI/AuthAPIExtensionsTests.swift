@@ -23,6 +23,8 @@ class AuthAPIExtensionsTests: XCTestCase {
             .isRefreshTokenDeleted: ["code": "invalid_grant",
                                      "error_description": "The refresh_token was generated for a user who doesn't exist"
                                      + " anymore."],
+            .isInvalidRefreshToken: ["code": "invalid_grant",
+                                     "error_description": "Unknown or invalid refresh token."],
             .isAccessDenied: ["code": "access_denied"],
             .isTooManyAttempts: ["code": "too_many_attempts"],
             .isVerificationRequired: ["code": "requires_verification"],

@@ -64,6 +64,8 @@ class ApiException extends Auth0Exception {
       _errorFlags.getBooleanOrFalse('isInvalidCredentials');
   bool get isRefreshTokenDeleted =>
       _errorFlags.getBooleanOrFalse('isRefreshTokenDeleted');
+  bool get isInvalidRefreshToken =>
+      _errorFlags.getBooleanOrFalse('isInvalidRefreshToken');
   bool get isAccessDenied => _errorFlags.getBooleanOrFalse('isAccessDenied');
   bool get isTooManyAttempts =>
       _errorFlags.getBooleanOrFalse('isTooManyAttempts');
