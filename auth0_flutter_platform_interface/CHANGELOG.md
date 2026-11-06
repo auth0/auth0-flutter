@@ -1,5 +1,11 @@
 # Change Log
 
+## [afpi-v3.2.0](https://github.com/auth0/auth0-flutter/tree/afpi-v3.2.0) (2026-11-06)
+[Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v3.1.0...afpi-v3.2.0)
+
+**Added**
+- feat: Add My Account profile API (getUserProfile, updateUserProfile) [\#988](https://github.com/auth0/auth0-flutter/pull/988) ([utkrishtsahu](https://github.com/utkrishtsahu))
+
 ## [afpi-v3.1.0](https://github.com/auth0/auth0-flutter/tree/afpi-v3.1.0) (2026-10-29)
 [Full Changelog](https://github.com/auth0/auth0-flutter/compare/afpi-v3.0.0...afpi-v3.1.0)
 
